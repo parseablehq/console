@@ -1,5 +1,5 @@
 import moment from "moment";
-import { useEffect, useState, Fragment, useCallback } from "react";
+import { useState, Fragment } from "react";
 import Layout from "../../components/Layout";
 import SideDialog from "../../components/SideDialog";
 import { Listbox, Transition } from "@headlessui/react";
@@ -8,10 +8,10 @@ import { ChevronDownIcon } from "@heroicons/react/outline";
 import { Combobox } from "@headlessui/react";
 import { CheckIcon, XCircleIcon, SelectorIcon } from "@heroicons/react/solid";
 import BeatLoader from "react-spinners/BeatLoader";
-import { getLogStream, queryLogs } from "../../utils/api";
+import { Menu } from "@headlessui/react";
+import { useGetLogStream, useQueryLogs } from "../../utils/api";
 import "./index.css";
 import Picker from "./DateTimeRangePicker";
-import { useNavigate } from "react-router-dom";
 
 const override = {
   display: "block",
@@ -28,95 +28,153 @@ function hasSubArray(master, sub) {
   );
 }
 const Dashboard = () => {
+  const getCurrentTime = () => {
+    let now = new Date();
+    let start = moment(
+      new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        now.getHours(),
+        now.getMinutes(),
+        0,
+        0,
+      ),
+    );
+
+    return moment(start);
+  };
+  const getRange = () => {
+    return {
+      // "Live tracking": [moment(start), moment(end)],
+      "Past 10 Minutes": [
+        getCurrentTime().subtract(10, "minutes"),
+        getCurrentTime(),
+      ],
+      "Past 1 Hour": [
+        getCurrentTime().subtract(60, "minutes"),
+        getCurrentTime(),
+      ],
+      "Past 5 Hours": [getCurrentTime().subtract(5, "hours"), getCurrentTime()],
+      "Past 24 Hours": [
+        getCurrentTime().subtract(24, "hours"),
+        getCurrentTime(),
+      ],
+      "Past 3 Days": [getCurrentTime().subtract(3, "days"), getCurrentTime()],
+      "Past 7 Days": [getCurrentTime().subtract(7, "days"), getCurrentTime()],
+      "Past 2 Months": [
+        getCurrentTime().subtract(2, "months"),
+        getCurrentTime(),
+      ],
+    };
+  };
+
   const [open, setOpen] = useState(false);
   const [clickedRow, setClickedRow] = useState({});
   const [timeZone, setTimeZone] = useState("UTC");
-  const [logStreams, setLogStreams] = useState([]);
-  const [tableLoading, setTableLoading] = useState(false);
-  const [data, setData] = useState([]);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [stream, setStream] = useState({});
   const [query, setQuery] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [labelSelected, setLabelSelected] = useState([]);
-  const [filteredStreams, setFilteredStreams] = useState([]);
   const [searchSelected, setSearchSelected] = useState({});
+  const [interval, setInterval] = useState(null);
+  const [range, setRange] = useState(0);
+  const [dateRangeValues, setDateRangeValues] = useState(getRange);
   const [startTime, setStartTime] = useState(
-    moment()
-      .utcOffset("+00:00")
-      .subtract(10, "minutes")
-      .format("YYYY-MM-DDThh:mm:ssZ"),
+    getCurrentTime().subtract(10, "minutes"),
+    // .utcOffset("+00:00")
+    // .format("YYYY-MM-DDThh:mm:ss),
   );
 
-  const [endTime, setEndTime] = useState(
-    moment().utcOffset("+00:00").format("YYYY-MM-DDTHH:mm:ssZ"),
-  );
+  const [endTime, setEndTime] = useState(getCurrentTime());
 
-  const navigate = useNavigate();
+  const refreshInterval = [
+    {
+      name: "1 sec",
+      value: 1,
+    },
+    {
+      name: "2 sec",
+      value: 2,
+    },
+    {
+      name: "5 sec",
+      value: 5,
+    },
+    {
+      name: "10 sec",
+      value: 10,
+    },
+    {
+      name: "20 sec",
+      value: 20,
+    },
+    {
+      name: "1 min",
+      value: 60,
+    },
+    {
+      name: "None",
+      value: null,
+    },
+  ];
 
-  const selectStreamHandler = useCallback(async () => {
-    setLabelSelected([]);
-    setSearchSelected({});
-    setTableLoading(true);
-    const res = await queryLogs(stream.name, startTime, endTime);
-    setTableLoading(false);
-    setData(res.data);
-  }, [stream, startTime, endTime]);
+  let rangeArr = [
+    // "Live tracking",
+    "Past 10 Minutes",
+    "Past 1 Hour",
+    "Past 5 Hours",
+    "Past 24 Hours",
+    "Past 3 Days",
+    "Past 7 Days",
+    "Past 2 Months",
+  ];
 
-  useEffect(() => {
-    stream.name && selectStreamHandler();
-  }, [startTime, endTime, stream, selectStreamHandler]);
+  const [selectedLogStream, setSelectedLogStream] = useState(null);
 
-  useEffect(() => {
-    if (!localStorage.getItem("auth")) {
-      navigate("/");
-    }
-    const getStreams = async () => {
-      try {
-        const res = await getLogStream();
-        if (res.data.length > 0) {
-          setLogStreams(res.data.sort());
-          setStream(res.data.sort()[0]);
-          setTableLoading(false);
-        }
-      } catch (e) {
-        if (e.status === 401) {
-          navigate("/");
-        }
+  const logStream = useGetLogStream({ staleTime: 60 * 1000 });
+  if (logStream.isSuccess && logStream?.data?.data && !selectedLogStream) {
+    setSelectedLogStream(logStream.data.data[0]);
+  }
+
+  const logQueries = useQueryLogs(
+    selectedLogStream?.name,
+    moment(startTime).utcOffset("+00:00").format("YYYY-MM-DDTHH:mm:ssZ"),
+    moment(endTime).utcOffset("+00:00").format("YYYY-MM-DDTHH:mm:ssZ"),
+    () => {
+      if (range < 7) {
+        const rangeVal = getRange();
+        setDateRangeValues(rangeVal);
+        setStartTime(rangeVal[rangeArr[range]][0]);
+        setEndTime(rangeVal[rangeArr[range]][1]);
       }
-    };
-    setTableLoading(true);
-    getStreams();
-  }, []);
+    },
+    {
+      enabled: !!(selectedLogStream?.name != null),
+      refetchInterval:
+        interval === null || range === 7 ? false : interval * 1000,
+    },
+  );
 
   const timeZoneChange = (e) => {
     setTimeZone(e.target.value);
   };
 
-  useEffect(() => {
-    if (query === "") {
-      setFilteredStreams(logStreams);
+  const getFilteredArray = (data, searchString, key) => {
+    if (!data) {
+      return [];
+    }
+    if (!searchString) {
+      return data;
     } else {
-      setFilteredStreams(
-        logStreams.filter((stream) =>
-          stream.name
-            .toLowerCase()
-            .replace(/\s+/g, "")
-            .includes(query.toLowerCase().replace(/\s+/g, "")),
-        ),
+      return data.filter((data) =>
+        data[key]
+          .toLowerCase()
+          .replace(/\s+/g, "")
+          .includes(searchQuery.toLowerCase().replace(/\s+/g, "")),
       );
     }
-  }, [logStreams, query]);
-
-  const filteredSTreamStreams =
-    searchQuery === ""
-      ? data
-      : data.filter((data) =>
-          data.log
-            .toLowerCase()
-            .replace(/\s+/g, "")
-            .includes(searchQuery.toLowerCase().replace(/\s+/g, "")),
-        );
+  };
 
   const clearLabel = (label) => {
     const labelArray = labelSelected;
@@ -126,7 +184,11 @@ const Dashboard = () => {
 
   return (
     <>
-      <Layout labels={data.length > 0 && data[0]?.labels}>
+      <Layout
+        labels={
+          logQueries?.data?.data.length > 0 && logQueries?.data?.data[0]?.labels
+        }
+      >
         <div className="bg-white shadow">
           <div className="sticky top-0 flex-shrink-0 flex h-24 items-center  ">
             <div className="flex-1 px-4 flex justify-">
@@ -139,9 +201,9 @@ const Dashboard = () => {
                     Stream
                   </label>
                   <Combobox
-                    value={stream}
+                    value={selectedLogStream != null ? selectedLogStream : {}}
                     onChange={(e) => {
-                      setStream(e);
+                      setSelectedLogStream(e);
                     }}
                   >
                     <div className="relative mt-1">
@@ -164,12 +226,20 @@ const Dashboard = () => {
                         afterLeave={() => setQuery("")}
                       >
                         <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                          {filteredStreams.length === 0 && query !== "" ? (
+                          {getFilteredArray(
+                            logStream?.data?.data,
+                            query,
+                            "name",
+                          ).length === 0 && query !== "" ? (
                             <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
                               Nothing found.
                             </div>
                           ) : (
-                            filteredStreams.map((stream, index) => (
+                            getFilteredArray(
+                              logStream?.data?.data,
+                              query,
+                              "name",
+                            ).map((stream, index) => (
                               <Combobox.Option
                                 key={index}
                                 className={({ active }) =>
@@ -224,8 +294,16 @@ const Dashboard = () => {
                 </label>
                 <div className="flex items-center ml-3">
                   <Picker
+                    rangeArr={rangeArr}
+                    range={range}
+                    setRange={setRange}
                     setStartChange={setStartTime}
                     setEndChange={setEndTime}
+                    startDate={startTime}
+                    endDate={endTime}
+                    dateRangeValues={dateRangeValues}
+                    getRange={getRange}
+                    setDateRangeValues={setDateRangeValues}
                   />
                   <Combobox
                     value={searchSelected}
@@ -259,14 +337,25 @@ const Dashboard = () => {
                         afterLeave={() => setSearchQuery("")}
                       >
                         <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                          {filteredSTreamStreams.length === 0 &&
-                          searchQuery !== "" ? (
+                          {getFilteredArray(
+                            logQueries?.data?.data,
+                            searchQuery,
+                            "log",
+                          ).length === 0 && searchQuery !== "" ? (
                             <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
                               Nothing found.
                             </div>
                           ) : (
-                            filteredSTreamStreams?.map &&
-                            filteredSTreamStreams?.map((data, index) => (
+                            getFilteredArray(
+                              logQueries?.data?.data,
+                              searchQuery,
+                              "log",
+                            ) &&
+                            getFilteredArray(
+                              logQueries?.data?.data,
+                              searchQuery,
+                              "log",
+                            )?.map((data, index) => (
                               <Combobox.Option
                                 key={index}
                                 className={({ active }) =>
@@ -313,6 +402,46 @@ const Dashboard = () => {
                 </div>
               </div>
 
+              <div>
+                <label
+                  htmlFor="location"
+                  className="block text-xs text-gray-700 ml-4"
+                >
+                  Refresh Interval
+                </label>
+                <Menu as="div" className="relative text-left ml-3 w-40">
+                  <Menu.Button
+                    disabled={range === 7}
+                    className={
+                      "custom-input disabled:text-gray-300 mt-1 custom-focus text-left"
+                    }
+                  >
+                    {range === 7
+                      ? "None"
+                      : refreshInterval.find((obj) => obj.value === interval)
+                          .name}
+                  </Menu.Button>
+                  <Menu.Items
+                    className={
+                      "absolute left-0 mt-2 w-40 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    }
+                  >
+                    {refreshInterval.map((interval) => (
+                      <Menu.Item>
+                        {({ active, selected }) => (
+                          <div
+                            onClick={() => setInterval(interval.value)}
+                            className={`block custom-focus cursor-pointer hover:bg-bluePrimary hover:text-white text-sm font-semibold select-none py-2 px-4 text-gray-700`}
+                          >
+                            {interval.name}
+                          </div>
+                        )}
+                      </Menu.Item>
+                    ))}
+                  </Menu.Items>
+                </Menu>
+              </div>
+
               <div className="ml-3 flex-1">
                 <label
                   htmlFor="location"
@@ -352,8 +481,10 @@ const Dashboard = () => {
                       leaveTo="opacity-0"
                     >
                       <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto grid grid-cols-2 bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                        {Object.keys(data).length !== 0 ? (
-                          data[0]?.labels
+                        {Object.keys(
+                          logQueries?.data?.data ? logQueries?.data?.data : [],
+                        ).length !== 0 ? (
+                          logQueries?.data?.data[0].labels
                             ?.split(",")
                             .map((person, personIdx) => (
                               <Listbox.Option
@@ -448,14 +579,17 @@ const Dashboard = () => {
                     </th>
                   </tr>
                 </thead>
-                {tableLoading ? (
+                {logQueries.isFetching &&
+                (!logQueries.data ||
+                  !logQueries.data?.data ||
+                  logQueries.data?.data?.length === 0) ? (
                   <tbody>
                     <tr align={"center"}>
                       <td></td>
                       <td className=" flex py-3 justify-center">
                         <BeatLoader
                           color={"#1A237E"}
-                          loading={tableLoading}
+                          loading={logQueries.isFetching}
                           cssOverride={override}
                           size={10}
                         />
@@ -465,8 +599,8 @@ const Dashboard = () => {
                   </tbody>
                 ) : (
                   <tbody className="divide-y divide-gray-200 bg-white">
-                    {data.map &&
-                      data?.map(
+                    {logQueries?.data?.data?.map &&
+                      logQueries?.data?.data?.map(
                         (data, index) =>
                           hasSubArray(
                             data.labels?.split(","),
@@ -484,10 +618,10 @@ const Dashboard = () => {
                                 {timeZone === "UTC" || timeZone === "GMT"
                                   ? moment
                                       .utc(data.time)
-                                      .format("DD/MM/YYYY, HH:mm:ss")
+                                      .format("DD/MM/YYYY, HH:mm")
                                   : moment(data.time)
                                       .utcOffset("+05:30")
-                                      .format("DD/MM/YYYY, HH:mm:ss")}
+                                      .format("DD/MM/YYYY, HH:mm")}
                               </td>
                               <td className="truncate text-ellipsis overflow-hidden max-w-200 sm:max-w-xs md:max-w-sm lg:max-w-sm  xl:max-w-md px-3 py-4 text-xs md:text-sm text-gray-700">
                                 {data.log}

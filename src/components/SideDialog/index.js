@@ -5,8 +5,6 @@ import { XIcon } from "@heroicons/react/outline";
 import moment from "moment";
 
 export default function SideDialog({ open, setOpen, data }) {
-  console.log(data);
-
   const [log, setLog] = useState({})
 
   // const str =
@@ -28,12 +26,8 @@ export default function SideDialog({ open, setOpen, data }) {
 
   useEffect(() => {
     if (Object.keys(data).length !== 0) {
-      console.log("log found");
-      console.log(JSON.parse(`${data?.log}`));
-
       setLog(JSON.parse(`${data?.log}`));
     } else {
-      console.log('empty yet');
     }
   }, [data]);
 
