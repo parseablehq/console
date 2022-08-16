@@ -92,11 +92,6 @@ const Picker = ({
 
   return (
     <div>
-      {console.log(
-        `Render ${range} ${
-          dateRangeValues && range !== 7 && dateRangeValues[rangeArr[range]][0]
-        }`,
-      )}
       <DateTimeRangeContainer
         ranges={dateRangeValues}
         start={startDate}

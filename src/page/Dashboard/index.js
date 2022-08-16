@@ -150,6 +150,7 @@ const Dashboard = () => {
       }
     },
     {
+      retry : false,
       enabled: !!(selectedLogStream?.name != null),
       refetchInterval:
         interval === null || range === 7 ? false : interval * 1000,
@@ -413,13 +414,19 @@ const Dashboard = () => {
                   <Menu.Button
                     disabled={range === 7}
                     className={
-                      "custom-input disabled:text-gray-300 mt-1 custom-focus text-left"
+                      "custom-input flex disabled:text-gray-300 mt-1 custom-focus text-left"
                     }
                   >
-                    {range === 7
-                      ? "None"
-                      : refreshInterval.find((obj) => obj.value === interval)
-                          .name}
+                    <div>
+                      {range === 7
+                        ? "None"
+                        : refreshInterval.find((obj) => obj.value === interval)
+                            .name}
+                    </div>
+                    <SelectorIcon
+                      className="h-5 w-5 my-auto mr-0 ml-auto text-gray-400"
+                      aria-hidden="true"
+                    />
                   </Menu.Button>
                   <Menu.Items
                     className={
