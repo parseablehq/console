@@ -1,16 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/images/Group 308.svg";
 import React, { useState } from "react";
-import { getLogStream } from "../../utils/api";
+import { useGetLogStream } from "../../utils/api";
 
 const Login = () => {
   const navigate = useNavigate();
+  
+  const logStream = useGetLogStream({ enabled: false, onSuccess: () => navigate("/index.html") });
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
-  const [errorText, setErrorText] = useState("");
-  const [loading, setLoading] = useState("");
 
   const validate = () => {
     if (username.trim() === "") {
@@ -24,25 +23,12 @@ const Login = () => {
 
   const loginHandler = async (e) => {
     e.preventDefault();
-
-    setLoading(true);
-    setError(false);
     if (validate()) {
       const credentials = btoa(username + ":" + password);
       localStorage.setItem("auth", credentials);
       localStorage.setItem("username", username);
-      try {
-        await getLogStream();
-        navigate("/index.html");
-      } catch (e) {
-        setError(true);
-        setErrorText("Invalid credentials");
-      }
-    } else {
-      setError(true);
-      setErrorText("Invalid username or password");
+      logStream.refetch();
     }
-    setLoading(false);
   };
 
   return (
@@ -82,13 +68,13 @@ const Login = () => {
             </div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={logStream.isFetching}
               className="hover:bg-yellow-500 disabled:bg-yellow-300 transform duration-200 hover:shadow w-full py-3 flex justify-center items-center font-semibold text-white bg-yellowButton mt-3"
             >
               Login
             </button>
-            {error && (
-              <p className="text-red-600 text-center mt-1">{errorText}</p>
+            {logStream.isError && (
+              <p className="text-red-600 text-center mt-1">{"logStream.error"}</p>
             )}
           </form>
           <div

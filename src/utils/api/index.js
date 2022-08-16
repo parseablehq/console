@@ -1,11 +1,10 @@
 import axios from "axios";
 
-
 export const getServerURL = () => {
   return "/";
 };
 
-const get = async (url) => {
+export const get = async (url) => {
   return await axios.get(getServerURL() + url, {
     headers: {
       Authorization: "Basic " + localStorage.getItem("auth"),
@@ -13,12 +12,17 @@ const get = async (url) => {
   });
 };
 
-const post = async (url, data) => {
-  return await axios.post(getServerURL() + url, data, {
-    headers: {
-      Authorization: "Basic " + localStorage.getItem("auth"),
+export const post = async (url, data, signal) => {
+  return await axios.post(
+    getServerURL() + url,
+    data,
+    {
+      headers: {
+        Authorization: "Basic " + localStorage.getItem("auth"),
+      },
     },
-  });
+    { signal },
+  );
 };
 
 export const getLogStream = async () => {
@@ -32,3 +36,6 @@ export const queryLogs = async (streamName, startTime, endTime) => {
     endTime: endTime,
   });
 };
+
+export * from "./logstreams.js";
+export * from "./query.js";
