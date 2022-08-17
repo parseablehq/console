@@ -137,7 +137,11 @@ const Dashboard = () => {
     staleTime: 60 * 1000,
     refetchOnWindowFocus: false,
   });
-  if (logStream.isSuccess && logStream?.data?.data && !selectedLogStream) {
+  if (
+    logStream.isSuccess &&
+    logStream?.data?.data.length &&
+    !selectedLogStream
+  ) {
     setSelectedLogStream(logStream.data.data[0]);
   }
 
@@ -216,7 +220,9 @@ const Dashboard = () => {
                       <Combobox.Input
                         className="custom-input custom-focus"
                         displayValue={(stream) =>
-                          logStream.isError ? "No log streams found" : stream.name
+                          logStream.isError || !logStream?.data?.data.length
+                            ? "No log streams found"
+                            : stream.name
                         }
                         onChange={(event) => setQuery(event.target.value)}
                       />
@@ -593,7 +599,7 @@ const Dashboard = () => {
                     </th>
                   </tr>
                 </thead>
-                {logQueries.isLoading &&
+                {logQueries.fetchStatus !== "idle" &&
                 (!logQueries.data ||
                   !logQueries.data?.data ||
                   logQueries.data?.data?.length === 0) ? (
