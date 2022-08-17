@@ -60,7 +60,7 @@ const DateRangeSelector = ({
 
   const submitCal = () => {
     setRange(7);
-    setIsOpen(false)
+    setIsOpen(false);
     setFromDate(moment(fromInput, FORMAT));
     setToDate(moment(toInput, FORMAT));
   };
@@ -170,14 +170,21 @@ const DateRangeSelector = ({
                   Error dates are not valid
                 </div>
               )}
-              <div className="mt-auto ml-auto mb-2">
-                <button onClick={() => setIsOpen(false)} className="ml-auto mr-2 custom-focus btn text-sm font-semibold text-gray-600 border-gray-400 border-2 p-1 rounded px-3 px-2">
+              <div className="mt-auto mb-2 flex">
+                <div className="mr-auto mt-2 font-semibold text-xs">
+                  
+                  GMT {moment().format("Z")}
+                </div>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="ml-auto block mr-2 custom-focus btn text-sm font-semibold text-gray-600 border-gray-400 border-2 p-1 rounded px-3 px-2"
+                >
                   close
                 </button>
                 <button
                   disabled={!checkValidDate()}
                   onClick={submitCal}
-                  className="ml-auto custom-focus btn text-sm font-semibold text-white border-yellowButton disabled:border-yellow-400 disabled:bg-yellow-400 border-2 p-1 bg-yellowButton rounded px-3 px-2"
+                  className="block custom-focus btn text-sm font-semibold text-white border-yellowButton disabled:border-yellow-400 disabled:bg-yellow-400 border-2 p-1 bg-yellowButton rounded px-3 px-2"
                 >
                   apply
                 </button>
