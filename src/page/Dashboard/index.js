@@ -132,7 +132,11 @@ const Dashboard = () => {
 
   const [selectedLogStream, setSelectedLogStream] = useState(null);
 
-  const logStream = useGetLogStream({ staleTime: 60 * 1000 });
+  const logStream = useGetLogStream({
+    retry: false,
+    staleTime: 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
   if (logStream.isSuccess && logStream?.data?.data && !selectedLogStream) {
     setSelectedLogStream(logStream.data.data[0]);
   }
@@ -150,8 +154,9 @@ const Dashboard = () => {
       }
     },
     {
-      retry : false,
+      retry: false,
       enabled: !!(selectedLogStream?.name != null),
+      refetchOnWindowFocus: false,
       refetchInterval:
         interval === null || range === 7 ? false : interval * 1000,
     },
@@ -210,7 +215,9 @@ const Dashboard = () => {
                     <div className="relative mt-1">
                       <Combobox.Input
                         className="custom-input custom-focus"
-                        displayValue={(stream) => stream.name}
+                        displayValue={(stream) =>
+                          logStream.isError ? "No log streams found" : stream.name
+                        }
                         onChange={(event) => setQuery(event.target.value)}
                       />
                       <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
@@ -233,7 +240,7 @@ const Dashboard = () => {
                             "name",
                           ).length === 0 && query !== "" ? (
                             <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
-                              Nothing found.
+                              No log streams found
                             </div>
                           ) : (
                             getFilteredArray(
@@ -586,7 +593,7 @@ const Dashboard = () => {
                     </th>
                   </tr>
                 </thead>
-                {logQueries.isFetching &&
+                {logQueries.isLoading &&
                 (!logQueries.data ||
                   !logQueries.data?.data ||
                   logQueries.data?.data?.length === 0) ? (
@@ -596,7 +603,7 @@ const Dashboard = () => {
                       <td className=" flex py-3 justify-center">
                         <BeatLoader
                           color={"#1A237E"}
-                          loading={logQueries.isFetching}
+                          loading={logQueries.isLoading}
                           cssOverride={override}
                           size={10}
                         />
