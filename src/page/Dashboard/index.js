@@ -12,6 +12,7 @@ import { Menu } from "@headlessui/react";
 import { useGetLogStream, useQueryLogs } from "../../utils/api";
 import "./index.css";
 import Picker from "./DateTimeRangePicker";
+import Calendar from "./DateRangeSeletor";
 
 const override = {
   display: "block",
@@ -307,17 +308,14 @@ const Dashboard = () => {
                   Search
                 </label>
                 <div className="flex items-center ml-3">
-                  <Picker
-                    rangeArr={rangeArr}
+                  <Calendar
                     range={range}
+                    setFromDate={setStartTime}
+                    setToDate={setEndTime}
+                    fromDate={startTime}
+                    toDate={endTime}
                     setRange={setRange}
-                    setStartChange={setStartTime}
-                    setEndChange={setEndTime}
-                    startDate={startTime}
-                    endDate={endTime}
-                    dateRangeValues={dateRangeValues}
                     getRange={getRange}
-                    setDateRangeValues={setDateRangeValues}
                   />
                   <Combobox
                     value={searchSelected}
@@ -415,7 +413,6 @@ const Dashboard = () => {
                   </Combobox>
                 </div>
               </div>
-
               <div>
                 <label
                   htmlFor="location"
