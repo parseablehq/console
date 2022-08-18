@@ -671,6 +671,26 @@ const Dashboard = () => {
               </table>
             </div>
           </div>
+          {logStream.isError || !logStream?.data?.data.length ? (
+            <div
+              style={{ transform: "translateX(-50%) translateY(-50%)" }}
+              className="absolute -z-10 font-semibold text-gray-500 left-1/2 top-80"
+            >
+              Please create a log stream first to search logs. Refer to the
+              documentation{" "}
+              <a
+                rel="noreferrer"
+                target={"_blank"}
+                className="text-blue-500 hover:underline"
+                href="https://www.parseable.io/docs/intro"
+              >
+                here
+              </a>
+              .
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
 
         {Object.keys(searchSelected).length !== 0 && (
