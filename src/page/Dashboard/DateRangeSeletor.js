@@ -76,15 +76,15 @@ const DateRangeSelector = ({
   ];
 
   return (
-    <div className="relative">
+    <div className="relative z-50">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={
-          "search-button flex disabled:text-gray-300 mt-1 custom-focus text-left"
+          "search-button flex disabled:text-gray-300 mt-1 h-[2.65rem] custom-focus text-left"
         }
       >
         {range === 7 ? (
-          <span className="text-sm mt-[0.125rem] mb-[0.125rem]">
+          <span className="text-xs mt-[0.30rem]">
             {moment(fromDate).format(FORMAT)} - {moment(toDate).format(FORMAT)}
           </span>
         ) : (
@@ -99,7 +99,7 @@ const DateRangeSelector = ({
         <div
           ref={wrapperRef}
           className={
-            "absolute left-0 mt-2 w-[28rem] origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+            "absolute z-50 left-0 mt-2 w-[28rem] origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
           }
         >
           <div className="flex my-2 w-full border border-grey-200">
@@ -131,14 +131,14 @@ const DateRangeSelector = ({
                   className="custom-focus custom-input text-xs"
                   type="text"
                 />
-                <div className="absolute right-2 top-[1.85rem]">
+                {/* <div className="absolute right-2 top-[1.85rem]">
                   <DatePicker
                     setStartDate={setFromInput}
                     setEndDate={setToInput}
                     start={fromInput}
                     end={toInput}
                   />
-                </div>
+                </div> */}
               </div>
               <div className="mt-2 relative">
                 <label className="text-xs mt-2" htmlFor="">
@@ -156,14 +156,24 @@ const DateRangeSelector = ({
                   className="custom-input custom-focus text-xs"
                   type="text"
                 />
-                <div className="absolute right-2 top-[1.85rem]">
+                {/* <div className="absolute right-2 top-[1.85rem]">
                   <DatePicker
                     setStartDate={setFromInput}
                     setEndDate={setToInput}
                     start={fromInput}
                     end={toInput}
                   />
-                </div>
+                </div> */}
+              </div>
+              <div className="ml-auto">
+                <button className="mt-3 px-2 pt-2 rounded-md py-1 bg-bluePrimary">
+                  <DatePicker
+                    setStartDate={setFromInput}
+                    setEndDate={setToInput}
+                    start={fromInput}
+                    end={toInput}
+                  />
+                </button>
               </div>
               {!checkValidDate() && (
                 <div className="text-red-600 mt-2 font-semibold text-sm">
@@ -172,7 +182,6 @@ const DateRangeSelector = ({
               )}
               <div className="mt-auto mb-2 flex">
                 <div className="mr-auto mt-2 font-semibold text-xs">
-                  
                   GMT {moment().format("Z")}
                 </div>
                 <button
@@ -184,7 +193,7 @@ const DateRangeSelector = ({
                 <button
                   disabled={!checkValidDate()}
                   onClick={submitCal}
-                  className="block custom-focus btn text-sm font-semibold text-white border-yellowButton disabled:border-yellow-400 disabled:bg-yellow-400 border-2 p-1 bg-yellowButton rounded px-3 px-2"
+                  className="block custom-focus btn text-sm font-semibold text-white border-bluePrimary disabled:border-blue-400 disabled:bg-blue-400 border-2 p-1 bg-bluePrimary rounded px-3 px-2"
                 >
                   apply
                 </button>

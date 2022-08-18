@@ -15,7 +15,7 @@ const Calendar = ({ setStartDate, setEndDate, start, end }) => {
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <button onClick={onClick} ref={ref}>
       <CalendarIcon
-        className="h-5 w-5 text-gray-600 block ml-auto"
+        className="h-[1.2rem] w-[1.2rem] text-white block ml-auto"
         aria-hidden="true"
       />
     </button>
@@ -25,12 +25,11 @@ const Calendar = ({ setStartDate, setEndDate, start, end }) => {
       selectsRange={true}
       startDate={startDate}
       endDate={endDate}
+      filterDate={(day) => moment(day).isBefore(moment())}
       className={"custom-date-picker"}
       onChange={(update) => {
         setDateRange(update);
-        setStartDate(
-          moment(update[0]).startOf("day").format(FORMAT),
-        );
+        setStartDate(moment(update[0]).startOf("day").format(FORMAT));
         setEndDate(
           moment(update[update[1] ? 1 : 0])
             .endOf("day")
