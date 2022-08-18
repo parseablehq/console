@@ -12,6 +12,7 @@ import { Menu } from "@headlessui/react";
 import { useGetLogStream, useQueryLogs } from "../../utils/api";
 import "./index.css";
 import Picker from "./DateTimeRangePicker";
+import Calendar from "./DateRangeSeletor";
 
 const override = {
   display: "block",
@@ -137,7 +138,11 @@ const Dashboard = () => {
     staleTime: 60 * 1000,
     refetchOnWindowFocus: false,
   });
-  if (logStream.isSuccess && logStream?.data?.data && !selectedLogStream) {
+  if (
+    logStream.isSuccess &&
+    logStream?.data?.data.length &&
+    !selectedLogStream
+  ) {
     setSelectedLogStream(logStream.data.data[0]);
   }
 
@@ -216,7 +221,9 @@ const Dashboard = () => {
                       <Combobox.Input
                         className="custom-input custom-focus"
                         displayValue={(stream) =>
-                          logStream.isError ? "No log streams found" : stream.name
+                          logStream.isError || !logStream?.data?.data.length
+                            ? "No log streams found"
+                            : stream.name
                         }
                         onChange={(event) => setQuery(event.target.value)}
                       />
@@ -301,17 +308,14 @@ const Dashboard = () => {
                   Search
                 </label>
                 <div className="flex items-center ml-3">
-                  <Picker
-                    rangeArr={rangeArr}
+                  <Calendar
                     range={range}
+                    setFromDate={setStartTime}
+                    setToDate={setEndTime}
+                    fromDate={startTime}
+                    toDate={endTime}
                     setRange={setRange}
-                    setStartChange={setStartTime}
-                    setEndChange={setEndTime}
-                    startDate={startTime}
-                    endDate={endTime}
-                    dateRangeValues={dateRangeValues}
                     getRange={getRange}
-                    setDateRangeValues={setDateRangeValues}
                   />
                   <Combobox
                     value={searchSelected}
@@ -409,7 +413,6 @@ const Dashboard = () => {
                   </Combobox>
                 </div>
               </div>
-
               <div>
                 <label
                   htmlFor="location"
@@ -593,7 +596,7 @@ const Dashboard = () => {
                     </th>
                   </tr>
                 </thead>
-                {logQueries.isLoading &&
+                {logQueries.fetchStatus !== "idle" &&
                 (!logQueries.data ||
                   !logQueries.data?.data ||
                   logQueries.data?.data?.length === 0) ? (

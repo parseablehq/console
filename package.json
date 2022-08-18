@@ -16,6 +16,7 @@
     "moment-timezone": "0.5.31",
     "react": "^18.2.0",
     "react-advanced-datetimerange-picker": "^1.0.12",
+    "react-datepicker": "^4.8.0",
     "react-datetime": "^3.1.1",
     "react-datetime-range-picker": "^3.0.0",
     "react-dom": "^18.2.0",
