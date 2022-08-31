@@ -4,8 +4,17 @@ import { Dialog, Transition } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/outline";
 import moment from "moment";
 
+function isJsonString(str) {
+  try {
+    JSON.parse(str);
+  } catch (e) {
+    return false;
+  }
+  return true;
+}
+
 export default function SideDialog({ open, setOpen, data }) {
-  const [log, setLog] = useState({})
+  const [log, setLog] = useState({});
 
   // const str =
   //   Object.keys(data).length !== 0
@@ -94,7 +103,7 @@ export default function SideDialog({ open, setOpen, data }) {
                     <div className="relative flex-1 py-1 px-4 sm:px-6">
                       {/* Replace with your content */}
                       <div className="absolute inset-0 py-1 px-4 sm:px-6">
-                        <div className="flex flex-wrap items-center">
+                        {/* <div className="flex flex-wrap items-center">
                           {data.labels?.split(",").map((tag, index) => (
                             <div className="mx-1 h-6 text-xs mt-2 bg-slate-200 rounded-md flex justify-center items-center px-2 py-1">
                               {tag}
@@ -102,7 +111,7 @@ export default function SideDialog({ open, setOpen, data }) {
                           ))}
                         </div>
 
-                        <div className="border-t mt-3 border-gray-300"></div>
+                        <div className="border-t mt-3 border-gray-300"></div> */}
 
                         {/* <div className="bg-slate-100 rounded-md py-3 px-3 my-2">
                           <div className="text-xs font-bold text-gray-700 ">
@@ -114,62 +123,22 @@ export default function SideDialog({ open, setOpen, data }) {
                         </div> */}
 
                         <div className="border-y border-gray-300 grid md:grid-cols-2">
-                          <div className=" border-r py-3 border-gray-300">
-                            <div className="text-xs font-bold text-gray-700 ">
-                              Container Name
+                          {Object.keys(data).map((field) => (
+                            <div className="ml-2 py-3 border-gray-300">
+                              <div className="text-xs font-bold text-gray-700 ">
+                                {field}
+                              </div>
+                              <div className="text-xs text-gray-600 ">
+                                {isJsonString(data[field])
+                                  ? JSON.stringify(
+                                      JSON.parse(data[field]),
+                                      null,
+                                      2,
+                                    )
+                                  : data[field]}
+                              </div>
                             </div>
-                            <div className="text-xs text-gray-600 ">
-                              {data?.meta_ContainerName}
-                            </div>
-                          </div>
-                          <div className="py-3 px-3">
-                            <div className="text-xs font-bold text-gray-700 ">
-                              Container Image
-                            </div>
-                            <div className="text-xs text-gray-600 ">
-                              {data?.meta_ContainerImage}
-                            </div>
-                          </div>
-                          <div className="border-r py-3 border-gray-300">
-                            <div className="text-xs font-bold text-gray-700 ">
-                              Host
-                            </div>
-                            <div className="text-xs text-gray-600 ">
-                              {data?.meta_Host}
-                            </div>
-                          </div>
-                          <div className="py-3 px-3">
-                            <div className="text-xs font-bold text-gray-700 ">
-                              Namespace
-                            </div>
-                            <div className="text-xs text-gray-600 ">
-                              {data?.meta_Namespace}
-                            </div>
-                          </div>
-                          <div className="border-r py-3 border-gray-300">
-                            <div className="text-xs font-bold text-gray-700 ">
-                              PodLabels
-                            </div>
-                            <div className="text-xs text-gray-600 ">
-                              {data?.meta_PodLabels}
-                            </div>
-                          </div>
-                          <div className="py-3 px-3">
-                            <div className="text-xs font-bold text-gray-700 ">
-                              PodName
-                            </div>
-                            <div className="text-xs text-gray-600 ">
-                              {data?.meta_PodName}
-                            </div>
-                          </div>
-                          <div className="md:colspan-2 border-r py-3 border-gray-300">
-                            <div className="text-xs font-bold text-gray-700 ">
-                              Source
-                            </div>
-                            <div className="text-xs text-gray-600 ">
-                              {data?.meta_Source}
-                            </div>
-                          </div>
+                          ))}
                         </div>
 
                         <div className="mt-2">
@@ -185,7 +154,7 @@ export default function SideDialog({ open, setOpen, data }) {
                             <div className="bg-codeBack h-500 scrollbar-thin  scrollbar-thumb-white scrollbar-codeBlack overflow-y-scroll scrollbar-thumb-rounded-full scrollbar-track-rounded-full py-3 px-3">
                               <div>
                                 <pre className="text-white text-xs font-light">
-                                  {JSON.stringify(log, null, 2)}
+                                  {JSON.stringify(data, null, 2)}
                                 </pre>
                                 {/* <pre className="text-white text-xs font-light">
                                   {data.log}

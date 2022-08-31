@@ -1,12 +1,32 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { post } from "./index";
 import { QUERY_URL, QUERY } from "./constants";
 
-const queryLogs = async (streamName, startTime, endTime, signal) => {
+const queryLogs = async (
+  streamName,
+  startTime,
+  endTime,
+  signal,
+  pageParam,
+  selectedLogSchema,
+) => {
+  let dateStream = null;
+
+  for (let index in selectedLogSchema) {
+    if (
+      selectedLogSchema[index].includes("date") ||
+      selectedLogSchema[index].includes("time")
+    ) {
+      dateStream = selectedLogSchema[index];
+    }
+  }
+
   return await post(
     QUERY_URL,
     {
-      query: `select * from ${streamName}`,
+      query: `select * from ${streamName} ${
+        dateStream !== null ? `order by ${dateStream}` : ""
+      } limit 10 offset ${pageParam * 10}`,
       startTime: startTime,
       endTime: endTime,
     },
@@ -14,12 +34,32 @@ const queryLogs = async (streamName, startTime, endTime, signal) => {
   );
 };
 
-export const useQueryLogs = (streamName, startTime, endTime, fn, option = {}) =>
-  useQuery(
+export const useQueryLogs = (
+  streamName,
+  startTime,
+  endTime,
+  selectedLogSchema,
+  fn,
+  option = {},
+) =>
+  useInfiniteQuery(
     [QUERY, streamName, startTime, endTime],
-    async ({ signal }) => {
+    async ({ signal, pageParam = 1 }) => {
       await fn();
-      return await queryLogs(streamName, startTime, endTime, signal);
+      return await queryLogs(
+        streamName,
+        startTime,
+        endTime,
+        signal,
+        pageParam,
+        selectedLogSchema,
+      );
     },
-    option,
+    {
+      ...option,
+      getNextPageParam: (lastPage, allPages) => {
+        const nextPage = allPages.length + 1;
+        return lastPage.data.length !== 0 ? nextPage : undefined;
+      },
+    },
   );

@@ -15,7 +15,7 @@ const Navbar = ({setSidebarOpen}) => {
   return (
     <>
       <Dialogue isOpen={isHelpDialogueOpen} setIsOpen={setIsHelpDialogueOpen} />
-      <div className=" sticky top-0 z-10 px-10 flex-shrink-0 flex h-16 bg-bluePrimary border-b-2 border-gray-500 shadow">
+      <div className=" top-0 z-10 px-10 flex-shrink-0 flex h-16 bg-bluePrimary border-b-2 border-gray-500 shadow">
         <button
           type="button"
           className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-bluePrimary md:hidden"
