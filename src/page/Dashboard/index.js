@@ -25,6 +25,8 @@ const override = {
 };
 
 function hasSubArray(master, sub) {
+  master.sort();
+  sub.sort();
   return sub.every(
     (
       (i) => (v) =>
@@ -87,12 +89,22 @@ const Dashboard = () => {
   const [interval, setInterval] = useState(null);
   const [range, setRange] = useState(0);
   const [selectedLogSchema, setSelectedLogSchema] = useState([]);
+  const [availableTags, setAvailableTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
   // const [dateRangeValues, setDateRangeValues] = useState(getRange);
   const [startTime, setStartTime] = useState(
     getCurrentTime().subtract(10, "minutes"),
     // .utcOffset("+00:00")
     // .format("YYYY-MM-DDThh:mm:ss),
   );
+
+  const addAvailableTags = (label) => {
+    if (availableTags.includes(label)) {
+      return;
+    } else {
+      setAvailableTags([...availableTags, label]);
+    }
+  };
 
   const [endTime, setEndTime] = useState(getCurrentTime());
 
@@ -156,7 +168,12 @@ const Dashboard = () => {
       const allFields = data.data.fields.map((field) => {
         return field.name;
       });
-      setSelectedLogSchema([...allFields]);
+
+      setSelectedLogSchema([
+        ...allFields.filter(
+          (field) => field !== "p_metadata" && field !== "p_tags",
+        ),
+      ]);
     },
   });
 
@@ -173,6 +190,10 @@ const Dashboard = () => {
       }
     },
     {
+      onSuccess: () => {
+        setSelectedTags([]);
+        setAvailableTags([]);
+      },
       retry: false,
       enabled: !!(selectedLogSchema?.length !== 0),
       refetchOnWindowFocus: false,
@@ -220,10 +241,8 @@ const Dashboard = () => {
     }
   };
 
-  const clearLabel = (label) => {
-    const labelArray = labelSelected;
-    const filteredArray = [...labelArray.filter((item) => item !== label)];
-    setLabelSelected(filteredArray);
+  const removeTag = (tag) => {
+    setSelectedTags([...selectedTags.filter((item) => item !== tag)]);
   };
 
   return (
@@ -375,7 +394,7 @@ const Dashboard = () => {
                           />
                         </Combobox.Button>
                       </div>
-                      <Transition
+                      {/* <Transition
                         as={Fragment}
                         leave="transition ease-in duration-100"
                         leaveFrom="opacity-100"
@@ -442,7 +461,7 @@ const Dashboard = () => {
                             ))
                           )}
                         </Combobox.Options>
-                      </Transition>
+                      </Transition> */}
                     </div>
                   </Combobox>
                 </div>
@@ -501,18 +520,18 @@ const Dashboard = () => {
                   Tag filters
                 </label>
                 <Listbox
-                  value={labelSelected}
-                  onChange={setLabelSelected}
+                  value={selectedTags}
+                  onChange={setSelectedTags}
                   multiple
                 >
                   <div className="relative w-full mt-1">
                     <Listbox.Button className="custom-input flex text-left custom-focus">
-                      {labelSelected.length > 0
-                        ? labelSelected.map((label) => (
+                      {selectedTags.length > 0
+                        ? selectedTags.map((tag) => (
                             <span className="relative block w-min py-px pl-1 pr-6 truncate ml-1 bg-slate-200 rounded-md">
-                              {label}
+                              {tag}
                               <XCircleIcon
-                                onClick={() => clearLabel(label)}
+                                onClick={() => removeTag(tag)}
                                 className="hover:text-gray-600 transform duration-200 text-gray-700 w-4 absolute top-1 right-1"
                               />
                             </span>
@@ -532,43 +551,39 @@ const Dashboard = () => {
                       leaveTo="opacity-0"
                     >
                       <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto grid grid-cols-2 bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                        {Object.keys(
-                          logQueries?.data?.data ? logQueries?.data?.data : [],
-                        ).length !== 0 ? (
-                          logQueries?.data?.data[0].labels
-                            ?.split(",")
-                            .map((person, personIdx) => (
-                              <Listbox.Option
-                                key={personIdx}
-                                className={({ active }) =>
-                                  `relative cursor-default select-none py-2 px-2 ${
-                                    active
-                                      ? "bg-bluePrimary text-white"
-                                      : "text-gray-900"
-                                  }`
-                                }
-                                value={person}
-                              >
-                                {({ selected }) => (
-                                  <>
-                                    <span
-                                      className={`flex items-center truncate ${
-                                        selected ? "font-medium" : "font-normal"
-                                      }`}
-                                    >
-                                      {selected ? (
-                                        <div className="w-4 h-4 mr-1 flex items-center justify-center bg-white rounded-sm border-2 border-bluePrimary">
-                                          <CheckIcon className="w-3 h-3 font-bold text-bluePrimary" />
-                                        </div>
-                                      ) : (
-                                        <div className="w-4 h-4 mr-1 bg-white rounded-sm border-2 border-gray-400"></div>
-                                      )}
-                                      {person}
-                                    </span>
-                                  </>
-                                )}
-                              </Listbox.Option>
-                            ))
+                        {availableTags.length !== 0 ? (
+                          availableTags.map((person, personIdx) => (
+                            <Listbox.Option
+                              key={personIdx}
+                              className={({ active }) =>
+                                `relative cursor-default select-none py-2 px-2 ${
+                                  active
+                                    ? "bg-bluePrimary text-white"
+                                    : "text-gray-900"
+                                }`
+                              }
+                              value={person}
+                            >
+                              {({ selected }) => (
+                                <>
+                                  <span
+                                    className={`flex items-center truncate ${
+                                      selected ? "font-medium" : "font-normal"
+                                    }`}
+                                  >
+                                    {selected ? (
+                                      <div className="w-4 h-4 mr-1 flex items-center justify-center bg-white rounded-sm border-2 border-bluePrimary">
+                                        <CheckIcon className="w-3 h-3 font-bold text-bluePrimary" />
+                                      </div>
+                                    ) : (
+                                      <div className="w-4 h-4 mr-1 bg-white rounded-sm border-2 border-gray-400"></div>
+                                    )}
+                                    {person}
+                                  </span>
+                                </>
+                              )}
+                            </Listbox.Option>
+                          ))
                         ) : (
                           <Listbox.Option>Nothing Found</Listbox.Option>
                         )}
@@ -588,7 +603,7 @@ const Dashboard = () => {
 
           <div className="overflow-auto">
             <div className="flex min-w-full">
-              <div className="w-80">
+              <div className=" min-w-[16rem]">
                 <Field
                   logStreamSchema={logStreamSchema}
                   setSelectedLogSchema={setSelectedLogSchema}
@@ -603,11 +618,17 @@ const Dashboard = () => {
                       {selectedLogSchema?.map((name) => (
                         <th
                           // scope="col"
-                          className="px-3 w-fit py-3.5 text-left text-sm font-semibold text-gray-900"
+                          className="px-3 whitespace-nowrap py-3.5 text-left text-sm font-semibold text-gray-900"
                         >
                           {name}
                         </th>
                       ))}
+                      <th
+                        // scope="col"
+                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                      >
+                        Tags
+                      </th>
                     </tr>
                   </thead>
                   {logQueries.isLoading &&
@@ -638,11 +659,16 @@ const Dashboard = () => {
                             page?.data?.map(
                               (data, index) =>
                                 hasSubArray(
-                                  data.labels?.split(","),
-                                  labelSelected,
-                                ) && (
+                                  data.p_tags?.split(","),
+                                  selectedTags,
+                                ) &&
+                                (searchQuery === "" ||
+                                  JSON.stringify(data)
+                                    .toLowerCase()
+                                    .includes(searchQuery.toLowerCase())) && (
                                   <tr
                                     onClick={() => {
+                                      console.log(JSON.stringify(data));
                                       setOpen(true);
                                       setClickedRow(data);
                                     }}
@@ -654,6 +680,18 @@ const Dashboard = () => {
                                         {data[schema] || ""}
                                       </td>
                                     ))}
+                                    <td className="flex whitespace-nowrap px-3 py-4 text-sm text-gray-700">
+                                      {data.p_tags
+                                        ?.split(",")
+                                        .map((tag, index) => {
+                                          addAvailableTags(tag);
+                                          return (
+                                            <div className="mx-1  bg-slate-200 rounded-sm flex justify-center items-center px-1 py-1">
+                                              {tag}
+                                            </div>
+                                          );
+                                        })}
+                                    </td>
                                   </tr>
                                 ),
                             ),

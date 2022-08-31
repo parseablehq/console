@@ -11,30 +11,32 @@ const Field = ({
         <h3 className=" font-semibold text-gray-600 ">Columns</h3>
       </div>
       <div>
-        {logStreamSchema?.data?.data?.fields?.map((key, index) => (
-          <Checkbox
-            key={index}
-            name={key.name}
-            onClick={(e) =>
-              e.target.checked
-                ? setSelectedLogSchema(
-                    logStreamSchema.data.data.fields
-                      .map((x) => x.name)
-                      .filter(
-                        (schema) =>
-                          selectedLogSchema.includes(schema) ||
-                          schema === key.name,
+        {logStreamSchema?.data?.data?.fields
+          ?.filter((field) => field.name !== "p_metadata" && field.name !== "p_tags")
+          .map((key, index) => (
+            <Checkbox
+              key={index}
+              name={key.name}
+              onClick={(e) =>
+                e.target.checked
+                  ? setSelectedLogSchema(
+                      logStreamSchema.data.data.fields
+                        .map((x) => x.name)
+                        .filter(
+                          (schema) =>
+                            selectedLogSchema.includes(schema) ||
+                            schema === key.name,
+                        ),
+                    )
+                  : setSelectedLogSchema(
+                      selectedLogSchema.filter(
+                        (clickedName) => clickedName !== key.name,
                       ),
-                  )
-                : setSelectedLogSchema(
-                    selectedLogSchema.filter(
-                      (clickedName) => clickedName !== key.name,
-                    ),
-                  )
-            }
-            selected={selectedLogSchema?.includes(key.name)}
-          />
-        ))}
+                    )
+              }
+              selected={selectedLogSchema?.includes(key.name)}
+            />
+          ))}
       </div>
     </div>
   );

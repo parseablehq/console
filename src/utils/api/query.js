@@ -26,7 +26,7 @@ const queryLogs = async (
     {
       query: `select * from ${streamName} ${
         dateStream !== null ? `order by ${dateStream}` : ""
-      } limit 10 offset ${pageParam * 10}`,
+      } limit 10 ${pageParam === 1 ? "" : `offset ${pageParam * 10}`} `,
       startTime: startTime,
       endTime: endTime,
     },

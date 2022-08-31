@@ -13,6 +13,13 @@ function isJsonString(str) {
   return true;
 }
 
+const removeMeta = (data) => {
+  let res = { ...data };
+  delete res.p_tags;
+  delete res.p_metadata;
+  return { ...res };
+};
+
 export default function SideDialog({ open, setOpen, data }) {
   const [log, setLog] = useState({});
 
@@ -33,12 +40,12 @@ export default function SideDialog({ open, setOpen, data }) {
   //   )
   // );
 
-  useEffect(() => {
-    if (Object.keys(data).length !== 0) {
-      setLog(JSON.parse(`${data?.log}`));
-    } else {
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (Object.keys(data).length !== 0) {
+  //     setLog(JSON.parse(`${data?.log}`));
+  //   } else {
+  //   }
+  // }, [data]);
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -103,15 +110,15 @@ export default function SideDialog({ open, setOpen, data }) {
                     <div className="relative flex-1 py-1 px-4 sm:px-6">
                       {/* Replace with your content */}
                       <div className="absolute inset-0 py-1 px-4 sm:px-6">
-                        {/* <div className="flex flex-wrap items-center">
-                          {data.labels?.split(",").map((tag, index) => (
+                        <div className="flex flex-wrap items-center">
+                          {data.p_tags?.split(",").map((tag, index) => (
                             <div className="mx-1 h-6 text-xs mt-2 bg-slate-200 rounded-md flex justify-center items-center px-2 py-1">
                               {tag}
                             </div>
                           ))}
                         </div>
 
-                        <div className="border-t mt-3 border-gray-300"></div> */}
+                        <div className="border-t mt-3 border-gray-300"></div>
 
                         {/* <div className="bg-slate-100 rounded-md py-3 px-3 my-2">
                           <div className="text-xs font-bold text-gray-700 ">
@@ -123,19 +130,13 @@ export default function SideDialog({ open, setOpen, data }) {
                         </div> */}
 
                         <div className="border-y border-gray-300 grid md:grid-cols-2">
-                          {Object.keys(data).map((field) => (
+                          {data.p_metadata?.split(",").map((field) => (
                             <div className="ml-2 py-3 border-gray-300">
                               <div className="text-xs font-bold text-gray-700 ">
-                                {field}
+                                {field.split("=")[0]}
                               </div>
                               <div className="text-xs text-gray-600 ">
-                                {isJsonString(data[field])
-                                  ? JSON.stringify(
-                                      JSON.parse(data[field]),
-                                      null,
-                                      2,
-                                    )
-                                  : data[field]}
+                                {field.split("=")[1]}
                               </div>
                             </div>
                           ))}
@@ -154,7 +155,7 @@ export default function SideDialog({ open, setOpen, data }) {
                             <div className="bg-codeBack h-500 scrollbar-thin  scrollbar-thumb-white scrollbar-codeBlack overflow-y-scroll scrollbar-thumb-rounded-full scrollbar-track-rounded-full py-3 px-3">
                               <div>
                                 <pre className="text-white text-xs font-light">
-                                  {JSON.stringify(data, null, 2)}
+                                  {JSON.stringify(removeMeta(data), null, 2)}
                                 </pre>
                                 {/* <pre className="text-white text-xs font-light">
                                   {data.log}
