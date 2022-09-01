@@ -37,14 +37,29 @@ const DateRangeSelector = ({
 
   const [toInput, setToInput] = useState(moment().format(FORMAT));
 
+  const toDateRef = useRef(null);
+
   const getDate = (index) => {
     const rangeVal = getRange();
     setFromInput(moment(rangeVal[rangeArr[index]][0]).format(FORMAT));
     setToInput(moment(rangeVal[rangeArr[index]][1]).format(FORMAT));
-
     setFromDate(moment(rangeVal[rangeArr[index]][0]));
     setToDate(moment(rangeVal[rangeArr[index]][1]));
     setRange(index);
+  };
+
+  const submitDate = (e) => {
+    e.preventDefault();
+    if (checkValidDate()) {
+      submitCal();
+    }
+  };
+
+  const handleFromDateSubmit = (e) => {
+    e.preventDefault();
+    if (checkValidDate()) {
+      toDateRef?.current?.focus();
+    }
   };
 
   const checkValidDate = () => {
@@ -107,7 +122,10 @@ const DateRangeSelector = ({
               {rangeArr.map((item, index) => (
                 <button
                   key={index}
-                  onClick={() => getDate(index)}
+                  onClick={() => {
+                    setIsOpen(false);
+                    getDate(index);
+                  }}
                   className={`w-40 hover:bg-bluePrimary text-left px-3 hover:border-bluePrimary hover:text-gray-100 py-2 border border-gray-200 text-sm text-gray-600 font-medium`}
                 >
                   {item}
@@ -116,64 +134,53 @@ const DateRangeSelector = ({
             </div>
             <div className="flex flex-grow-1 w-full flex-col mx-4">
               <div className="mt-2 relative">
-                <label className="text-xs " htmlFor="">
-                  From
-                </label>
-                <input
-                  value={fromInput}
-                  onBlur={() => {
-                    if (moment(fromInput, FORMAT).isValid)
-                      setFromInput(moment(fromInput, FORMAT).format(FORMAT));
-                  }}
-                  onChange={(e) => {
-                    setFromInput(e.target.value);
-                  }}
-                  className="custom-focus custom-input text-xs"
-                  type="text"
-                />
-                {/* <div className="absolute right-2 top-[1.85rem]">
-                  <DatePicker
-                    setStartDate={setFromInput}
-                    setEndDate={setToInput}
-                    start={fromInput}
-                    end={toInput}
+                <form onSubmit={handleFromDateSubmit}>
+                  <label className="text-xs " htmlFor="">
+                    From
+                  </label>
+                  <input
+                    value={fromInput}
+                    onBlur={() => {
+                      if (moment(fromInput, FORMAT).isValid)
+                        setFromInput(moment(fromInput, FORMAT).format(FORMAT));
+                    }}
+                    onChange={(e) => {
+                      setFromInput(e.target.value);
+                    }}
+                    className="custom-focus custom-input text-xs"
+                    type="text"
                   />
-                </div> */}
+                </form>
               </div>
               <div className="mt-2 relative">
-                <label className="text-xs mt-2" htmlFor="">
-                  To
-                </label>
-                <input
-                  value={toInput}
-                  onBlur={() => {
-                    if (moment(toInput, FORMAT).isValid)
-                      setToInput(moment(toInput, FORMAT).format(FORMAT));
-                  }}
-                  onChange={(e) => {
-                    setToInput(e.target.value);
-                  }}
-                  className="custom-input custom-focus text-xs"
-                  type="text"
-                />
-                {/* <div className="absolute right-2 top-[1.85rem]">
-                  <DatePicker
-                    setStartDate={setFromInput}
-                    setEndDate={setToInput}
-                    start={fromInput}
-                    end={toInput}
+                <form onSubmit={submitDate}>
+                  <label className="text-xs mt-2" htmlFor="">
+                    To
+                  </label>
+                  <input
+                    value={toInput}
+                    ref={toDateRef}
+                    onBlur={() => {
+                      if (moment(toInput, FORMAT).isValid)
+                        setToInput(moment(toInput, FORMAT).format(FORMAT));
+                    }}
+                    onChange={(e) => {
+                      setToInput(e.target.value);
+                    }}
+                    className="custom-input custom-focus text-xs"
+                    type="text"
                   />
-                </div> */}
+                </form>
               </div>
               <div className="ml-auto">
-                <button className="mt-3 px-2 pt-2 rounded-md py-1 bg-bluePrimary">
+                <div className="mt-3 px-2 pt-2 rounded-md py-1 bg-bluePrimary">
                   <DatePicker
                     setStartDate={setFromInput}
                     setEndDate={setToInput}
                     start={fromInput}
                     end={toInput}
                   />
-                </button>
+                </div>
               </div>
               {!checkValidDate() && (
                 <div className="text-red-600 mt-2 font-semibold text-sm">

@@ -1,5 +1,5 @@
 import moment from "moment";
-import { useState, Fragment } from "react";
+import { useState, Fragment, useRef, useCallback, useEffect } from "react";
 import Layout from "../../components/Layout";
 import SideDialog from "../../components/SideDialog";
 import { Listbox, Transition } from "@headlessui/react";
@@ -9,9 +9,13 @@ import { Combobox } from "@headlessui/react";
 import { CheckIcon, XCircleIcon, SelectorIcon } from "@heroicons/react/solid";
 import BeatLoader from "react-spinners/BeatLoader";
 import { Menu } from "@headlessui/react";
-import { useGetLogStream, useQueryLogs } from "../../utils/api";
+import {
+  useGetLogStream,
+  useGetLogStreamSchema,
+  useQueryLogs,
+} from "../../utils/api";
 import "./index.css";
-import Picker from "./DateTimeRangePicker";
+import Field from "./FieldBox";
 import Calendar from "./DateRangeSeletor";
 
 const override = {
@@ -21,6 +25,8 @@ const override = {
 };
 
 function hasSubArray(master, sub) {
+  master.sort();
+  sub.sort();
   return sub.every(
     (
       (i) => (v) =>
@@ -28,6 +34,7 @@ function hasSubArray(master, sub) {
     )(0),
   );
 }
+
 const Dashboard = () => {
   const getCurrentTime = () => {
     let now = new Date();
@@ -45,6 +52,7 @@ const Dashboard = () => {
 
     return moment(start);
   };
+
   const getRange = () => {
     return {
       // "Live tracking": [moment(start), moment(end)],
@@ -80,12 +88,23 @@ const Dashboard = () => {
   const [searchSelected, setSearchSelected] = useState({});
   const [interval, setInterval] = useState(null);
   const [range, setRange] = useState(0);
-  const [dateRangeValues, setDateRangeValues] = useState(getRange);
+  const [selectedLogSchema, setSelectedLogSchema] = useState([]);
+  const [availableTags, setAvailableTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
+  // const [dateRangeValues, setDateRangeValues] = useState(getRange);
   const [startTime, setStartTime] = useState(
     getCurrentTime().subtract(10, "minutes"),
     // .utcOffset("+00:00")
     // .format("YYYY-MM-DDThh:mm:ss),
   );
+
+  const addAvailableTags = (label) => {
+    if (availableTags.includes(label)) {
+      return;
+    } else {
+      setAvailableTags([...availableTags, label]);
+    }
+  };
 
   const [endTime, setEndTime] = useState(getCurrentTime());
 
@@ -135,37 +154,72 @@ const Dashboard = () => {
 
   const logStream = useGetLogStream({
     retry: false,
-    staleTime: 60 * 1000,
     refetchOnWindowFocus: false,
+    onSuccess: (data) => {
+      setSelectedLogStream(data.data[0]);
+    },
   });
-  if (
-    logStream.isSuccess &&
-    logStream?.data?.data.length &&
-    !selectedLogStream
-  ) {
-    setSelectedLogStream(logStream.data.data[0]);
-  }
+
+  const logStreamSchema = useGetLogStreamSchema(selectedLogStream?.name, {
+    retry: false,
+    enabled: !!(selectedLogStream?.name != null),
+    refetchOnWindowFocus: false,
+    onSuccess: (data) => {
+      const allFields = data.data.fields.map((field) => {
+        return field.name;
+      });
+
+      setSelectedLogSchema([
+        ...allFields.filter(
+          (field) => field !== "p_metadata" && field !== "p_tags",
+        ),
+      ]);
+    },
+  });
 
   const logQueries = useQueryLogs(
     selectedLogStream?.name,
     moment(startTime).utcOffset("+00:00").format("YYYY-MM-DDTHH:mm:ssZ"),
     moment(endTime).utcOffset("+00:00").format("YYYY-MM-DDTHH:mm:ssZ"),
+    selectedLogSchema,
     () => {
       if (range < 7) {
         const rangeVal = getRange();
-        setDateRangeValues(rangeVal);
         setStartTime(rangeVal[rangeArr[range]][0]);
         setEndTime(rangeVal[rangeArr[range]][1]);
       }
     },
     {
+      onSuccess: () => {
+        setSelectedTags([]);
+        setAvailableTags([]);
+      },
       retry: false,
-      enabled: !!(selectedLogStream?.name != null),
+      enabled: !!(selectedLogSchema?.length !== 0),
       refetchOnWindowFocus: false,
       refetchInterval:
         interval === null || range === 7 ? false : interval * 1000,
     },
   );
+
+  const { fetchNextPage } = logQueries;
+
+  useEffect(() => {
+    let fetching = false;
+    const handleScroll = async (e) => {
+      const { scrollHeight, scrollTop, clientHeight } =
+        e.target.scrollingElement;
+      if (!fetching && scrollHeight - scrollTop <= clientHeight * 1.2) {
+        fetching = true;
+        await fetchNextPage();
+        fetching = false;
+      }
+    };
+    document.addEventListener("scroll", handleScroll);
+    return () => {
+      document.removeEventListener("scroll", handleScroll);
+    };
+  }, [fetchNextPage]);
 
   const timeZoneChange = (e) => {
     setTimeZone(e.target.value);
@@ -187,21 +241,20 @@ const Dashboard = () => {
     }
   };
 
-  const clearLabel = (label) => {
-    const labelArray = labelSelected;
-    const filteredArray = [...labelArray.filter((item) => item !== label)];
-    setLabelSelected(filteredArray);
+  const removeTag = (tag) => {
+    setSelectedTags([...selectedTags.filter((item) => item !== tag)]);
   };
 
   return (
     <>
       <Layout
         labels={
-          logQueries?.data?.data.length > 0 && logQueries?.data?.data[0]?.labels
+          logQueries?.data?.data?.length > 0 &&
+          logQueries?.data?.data[0]?.labels
         }
       >
-        <div className="bg-white shadow">
-          <div className="sticky top-0 flex-shrink-0 flex h-24 items-center  ">
+        <div className="">
+          <div className="sticky bg-white border top-0 flex-shrink-0 flex h-24 items-center  ">
             <div className="flex-1 px-4 flex justify-">
               <div className="flex- flex">
                 <div>
@@ -341,7 +394,7 @@ const Dashboard = () => {
                           />
                         </Combobox.Button>
                       </div>
-                      <Transition
+                      {/* <Transition
                         as={Fragment}
                         leave="transition ease-in duration-100"
                         leaveFrom="opacity-100"
@@ -408,7 +461,7 @@ const Dashboard = () => {
                             ))
                           )}
                         </Combobox.Options>
-                      </Transition>
+                      </Transition> */}
                     </div>
                   </Combobox>
                 </div>
@@ -444,7 +497,7 @@ const Dashboard = () => {
                     }
                   >
                     {refreshInterval.map((interval) => (
-                      <Menu.Item>
+                      <Menu.Item key={interval}>
                         {({ active, selected }) => (
                           <div
                             onClick={() => setInterval(interval.value)}
@@ -467,18 +520,18 @@ const Dashboard = () => {
                   Tag filters
                 </label>
                 <Listbox
-                  value={labelSelected}
-                  onChange={setLabelSelected}
+                  value={selectedTags}
+                  onChange={setSelectedTags}
                   multiple
                 >
                   <div className="relative w-full mt-1">
                     <Listbox.Button className="custom-input flex text-left custom-focus">
-                      {labelSelected.length > 0
-                        ? labelSelected.map((label) => (
+                      {selectedTags.length > 0
+                        ? selectedTags.map((tag) => (
                             <span className="relative block w-min py-px pl-1 pr-6 truncate ml-1 bg-slate-200 rounded-md">
-                              {label}
+                              {tag}
                               <XCircleIcon
-                                onClick={() => clearLabel(label)}
+                                onClick={() => removeTag(tag)}
                                 className="hover:text-gray-600 transform duration-200 text-gray-700 w-4 absolute top-1 right-1"
                               />
                             </span>
@@ -498,43 +551,39 @@ const Dashboard = () => {
                       leaveTo="opacity-0"
                     >
                       <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto grid grid-cols-2 bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                        {Object.keys(
-                          logQueries?.data?.data ? logQueries?.data?.data : [],
-                        ).length !== 0 ? (
-                          logQueries?.data?.data[0].labels
-                            ?.split(",")
-                            .map((person, personIdx) => (
-                              <Listbox.Option
-                                key={personIdx}
-                                className={({ active }) =>
-                                  `relative cursor-default select-none py-2 px-2 ${
-                                    active
-                                      ? "bg-bluePrimary text-white"
-                                      : "text-gray-900"
-                                  }`
-                                }
-                                value={person}
-                              >
-                                {({ selected }) => (
-                                  <>
-                                    <span
-                                      className={`flex items-center truncate ${
-                                        selected ? "font-medium" : "font-normal"
-                                      }`}
-                                    >
-                                      {selected ? (
-                                        <div className="w-4 h-4 mr-1 flex items-center justify-center bg-white rounded-sm border-2 border-bluePrimary">
-                                          <CheckIcon className="w-3 h-3 font-bold text-bluePrimary" />
-                                        </div>
-                                      ) : (
-                                        <div className="w-4 h-4 mr-1 bg-white rounded-sm border-2 border-gray-400"></div>
-                                      )}
-                                      {person}
-                                    </span>
-                                  </>
-                                )}
-                              </Listbox.Option>
-                            ))
+                        {availableTags.length !== 0 ? (
+                          availableTags.map((person, personIdx) => (
+                            <Listbox.Option
+                              key={personIdx}
+                              className={({ active }) =>
+                                `relative cursor-default select-none py-2 px-2 ${
+                                  active
+                                    ? "bg-bluePrimary text-white"
+                                    : "text-gray-900"
+                                }`
+                              }
+                              value={person}
+                            >
+                              {({ selected }) => (
+                                <>
+                                  <span
+                                    className={`flex items-center truncate ${
+                                      selected ? "font-medium" : "font-normal"
+                                    }`}
+                                  >
+                                    {selected ? (
+                                      <div className="w-4 h-4 mr-1 flex items-center justify-center bg-white rounded-sm border-2 border-bluePrimary">
+                                        <CheckIcon className="w-3 h-3 font-bold text-bluePrimary" />
+                                      </div>
+                                    ) : (
+                                      <div className="w-4 h-4 mr-1 bg-white rounded-sm border-2 border-gray-400"></div>
+                                    )}
+                                    {person}
+                                  </span>
+                                </>
+                              )}
+                            </Listbox.Option>
+                          ))
                         ) : (
                           <Listbox.Option>Nothing Found</Listbox.Option>
                         )}
@@ -552,123 +601,118 @@ const Dashboard = () => {
               <AdvanceDateTimePicker />
             </div> */}
 
-          <div className="overflow-x-auto">
-            <div className="inline-block min-w-full align-middle">
-              <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg"></div>
-              <table className="min-w-full divide-y divide-gray-300">
-                <thead className=" bg-gray-200">
-                  <tr>
-                    <th
-                      scope="col"
-                      className="py-2 flex items-center justify-between  space-x-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                    >
-                      <div>Time</div>
-
-                      <select
-                        id="time"
-                        name="time"
-                        className="mt-1 block pl-3 pr-10 py-1 text-base  bg-gray-200 border-gray-300 focus:outline-none sm:text-sm rounded-md"
-                        defaultValue={timeZone}
-                        onChange={(e) => timeZoneChange(e)}
+          <div className="overflow-auto">
+            <div className="flex min-w-full">
+              <div className=" min-w-[16rem]">
+                <Field
+                  logStreamSchema={logStreamSchema}
+                  setSelectedLogSchema={setSelectedLogSchema}
+                  selectedLogSchema={selectedLogSchema}
+                />
+              </div>
+              <div className="shadow ring-1 ring-black ring-opacity-5 md:rounded-lg"></div>
+              <div className="overflow-x-scroll flex-1 ">
+                <table className="divide-y min-w-full divide-gray-300">
+                  <thead className=" bg-gray-200">
+                    <tr className="">
+                      {selectedLogSchema?.map((name) => (
+                        <th
+                          // scope="col"
+                          className="px-3 whitespace-nowrap py-3.5 text-left text-sm font-semibold text-gray-900"
+                        >
+                          {name}
+                        </th>
+                      ))}
+                      <th
+                        // scope="col"
+                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                       >
-                        <option value="UTC">UTC</option>
-                        {/* <option value="GMT">GMT</option> */}
-                        <option value="IST">IST</option>
-                      </select>
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-3 py-3.5 w-full text-left text-sm font-semibold text-gray-900"
-                    >
-                      Log
-                    </th>
-                    <th
-                      scope="col"
-                      className="hidden lg:block px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                    >
-                      Tags
-                    </th>
-                    <th
-                      scope="col"
-                      className="relative py-3.5 pl-3 pr-4 sm:pr-6"
-                    >
-                      <span className="sr-only">Edit</span>
-                    </th>
-                  </tr>
-                </thead>
-                {logQueries.fetchStatus !== "idle" &&
-                (!logQueries.data ||
-                  !logQueries.data?.data ||
-                  logQueries.data?.data?.length === 0) ? (
-                  <tbody>
-                    <tr align={"center"}>
-                      <td></td>
-                      <td className=" flex py-3 justify-center">
-                        <BeatLoader
-                          color={"#1A237E"}
-                          loading={logQueries.isLoading}
-                          cssOverride={override}
-                          size={10}
-                        />
-                        <td></td>
-                      </td>
+                        Tags
+                      </th>
                     </tr>
-                  </tbody>
-                ) : (
-                  <tbody className="divide-y divide-gray-200 bg-white">
-                    {logQueries?.data?.data?.map &&
-                      logQueries?.data?.data?.map(
-                        (data, index) =>
-                          hasSubArray(
-                            data.labels?.split(","),
-                            labelSelected,
-                          ) && (
-                            <tr
-                              onClick={() => {
-                                setOpen(true);
-                                setClickedRow(data);
-                              }}
-                              className="cursor-pointer hover:bg-slate-100 hover:shadow"
-                              key={index}
-                            >
-                              <td className="whitespace-nowrap py-5 pl-4 pr-3 text-xs md:text-sm font-medium text-gray-900 sm:pl-6">
-                                {timeZone === "UTC" || timeZone === "GMT"
-                                  ? moment
-                                      .utc(data.time)
-                                      .format("DD/MM/YYYY, HH:mm")
-                                  : moment(data.time)
-                                      .utcOffset("+05:30")
-                                      .format("DD/MM/YYYY, HH:mm")}
-                              </td>
-                              <td className="truncate text-ellipsis overflow-hidden max-w-200 sm:max-w-xs md:max-w-sm lg:max-w-sm  xl:max-w-md px-3 py-4 text-xs md:text-sm text-gray-700">
-                                {data.log}
-                              </td>
-                              <td className="hidden xl:flex  whitespace-nowrap px-3 py-4 text-sm text-gray-700">
-                                {data.labels
-                                  ?.split(",")
-                                  .filter((tag, index) => index <= 2)
-                                  .map((tag, index) => (
-                                    <div className="mx-1  bg-slate-200 rounded-sm flex justify-center items-center px-1 py-1">
-                                      {tag}
-                                    </div>
-                                  ))}
-                              </td>
-                              <td className="hidden lg:flex xl:hidden whitespace-nowrap px-3 py-4 text-sm text-gray-700">
-                                {data.labels
-                                  ?.split(",")
-                                  .filter((tag, index) => index <= 1)
-                                  .map((tag, index) => (
-                                    <div className="mx-1  bg-slate-200 rounded-sm flex justify-center items-center px-1 py-1">
-                                      {tag}
-                                    </div>
-                                  ))}
-                              </td>
-                            </tr>
-                          ),
-                      )}
-                  </tbody>
-                )}
-              </table>
+                  </thead>
+                  {logQueries.isLoading &&
+                  (!logQueries.data ||
+                    !logQueries.data?.data ||
+                    logQueries.data?.data?.length === 0) ? (
+                    <tbody>
+                      <tr align={"center"}>
+                        <td
+                          colSpan={selectedLogSchema.length}
+                          className="py-3 justify-center"
+                        >
+                          <BeatLoader
+                            color={"#1A237E"}
+                            loading={logQueries.isLoading}
+                            cssOverride={override}
+                            size={10}
+                          />
+                        </td>
+                      </tr>
+                    </tbody>
+                  ) : (
+                    <tbody className="divide-y divide-gray-200 bg-white">
+                      {logQueries?.data?.pages?.map &&
+                        logQueries.data.pages.map(
+                          (page) =>
+                            page?.data?.map &&
+                            page?.data?.map(
+                              (data, index) =>
+                                hasSubArray(
+                                  data.p_tags?.split(","),
+                                  selectedTags,
+                                ) &&
+                                (searchQuery === "" ||
+                                  JSON.stringify(data)
+                                    .toLowerCase()
+                                    .includes(searchQuery.toLowerCase())) && (
+                                  <tr
+                                    onClick={() => {
+                                      console.log(JSON.stringify(data));
+                                      setOpen(true);
+                                      setClickedRow(data);
+                                    }}
+                                    className="cursor-pointer hover:bg-slate-100 hover:shadow"
+                                    key={index}
+                                  >
+                                    {selectedLogSchema.map((schema) => (
+                                      <td className="truncate text-ellipsis overflow-hidden max-w-200 sm:max-w-xs md:max-w-sm lg:max-w-sm  xl:max-w-md px-3 py-4 text-xs md:text-sm text-gray-700">
+                                        {data[schema] || ""}
+                                      </td>
+                                    ))}
+                                    <td className="flex whitespace-nowrap px-3 py-4 text-sm text-gray-700">
+                                      {data.p_tags
+                                        ?.split(",")
+                                        .map((tag, index) => {
+                                          addAvailableTags(tag);
+                                          return (
+                                            <div className="mx-1  bg-slate-200 rounded-sm flex justify-center items-center px-1 py-1">
+                                              {tag}
+                                            </div>
+                                          );
+                                        })}
+                                    </td>
+                                  </tr>
+                                ),
+                            ),
+                        )}
+                      <tr align={"center"}>
+                        <td
+                          colSpan={selectedLogSchema.length}
+                          className="py-3 justify-center"
+                        >
+                          <BeatLoader
+                            color={"#1A237E"}
+                            loading={logQueries.isFetchingNextPage}
+                            cssOverride={override}
+                            size={10}
+                          />
+                        </td>
+                      </tr>
+                    </tbody>
+                  )}
+                </table>
+              </div>
             </div>
           </div>
           {logStream.isError || !logStream?.data?.data.length ? (
