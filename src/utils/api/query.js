@@ -24,9 +24,7 @@ const queryLogs = async (
   return await post(
     QUERY_URL,
     {
-      query: `select * from ${streamName} ${
-        dateStream !== null ? `order by ${dateStream}` : ""
-      } limit 10 ${pageParam === 1 ? "" : `offset ${pageParam * 10}`} `,
+      query: `select * from ${streamName}`,
       startTime: startTime,
       endTime: endTime,
     },

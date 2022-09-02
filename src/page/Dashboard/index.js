@@ -659,7 +659,7 @@ const Dashboard = () => {
                             page?.data?.map(
                               (data, index) =>
                                 hasSubArray(
-                                  data.p_tags?.split(","),
+                                  data.p_tags?.split("^"),
                                   selectedTags,
                                 ) &&
                                 (searchQuery === "" ||
@@ -682,7 +682,7 @@ const Dashboard = () => {
                                     ))}
                                     <td className="flex whitespace-nowrap px-3 py-4 text-sm text-gray-700">
                                       {data.p_tags
-                                        ?.split(",")
+                                        ?.split("^")
                                         .map((tag, index) => {
                                           addAvailableTags(tag);
                                           return (
