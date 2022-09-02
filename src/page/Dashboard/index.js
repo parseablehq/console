@@ -181,7 +181,9 @@ const Dashboard = () => {
     selectedLogStream?.name,
     moment(startTime).utcOffset("+00:00").format("YYYY-MM-DDTHH:mm:ssZ"),
     moment(endTime).utcOffset("+00:00").format("YYYY-MM-DDTHH:mm:ssZ"),
-    selectedLogSchema,
+    logStreamSchema?.data?.data?.fields?.map((field) => {
+      return field.name;
+    }),
     () => {
       if (range < 7) {
         const rangeVal = getRange();
