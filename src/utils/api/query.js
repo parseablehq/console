@@ -8,23 +8,25 @@ const queryLogs = async (
   endTime,
   signal,
   pageParam,
-  selectedLogSchema,
+  logSchema,
 ) => {
   let dateStream = null;
 
-  for (let index in selectedLogSchema) {
+  for (let index in logSchema) {
     if (
-      selectedLogSchema[index].includes("date") ||
-      selectedLogSchema[index].includes("time")
+      logSchema[index].includes("date") ||
+      logSchema[index].includes("time")
     ) {
-      dateStream = selectedLogSchema[index];
+      dateStream = logSchema[index];
     }
   }
 
   return await post(
     QUERY_URL,
     {
-      query: `select * from ${streamName}`,
+      query: `select * from ${streamName} ${
+        dateStream !== null ? `order by ${dateStream} ` : ""
+      }limit 10${pageParam === 1 ? "" : ` offset ${(pageParam - 1) * 10}`}`,
       startTime: startTime,
       endTime: endTime,
     },
@@ -36,12 +38,12 @@ export const useQueryLogs = (
   streamName,
   startTime,
   endTime,
-  selectedLogSchema,
+  logSchema,
   fn,
   option = {},
 ) =>
   useInfiniteQuery(
-    [QUERY, streamName, startTime, endTime],
+    [QUERY, streamName, logSchema, startTime, endTime],
     async ({ signal, pageParam = 1 }) => {
       await fn();
       return await queryLogs(
@@ -50,7 +52,7 @@ export const useQueryLogs = (
         endTime,
         signal,
         pageParam,
-        selectedLogSchema,
+        logSchema,
       );
     },
     {

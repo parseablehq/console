@@ -181,7 +181,9 @@ const Dashboard = () => {
     selectedLogStream?.name,
     moment(startTime).utcOffset("+00:00").format("YYYY-MM-DDTHH:mm:ssZ"),
     moment(endTime).utcOffset("+00:00").format("YYYY-MM-DDTHH:mm:ssZ"),
-    selectedLogSchema,
+    logStreamSchema?.data?.data?.fields?.map((field) => {
+      return field.name;
+    }),
     () => {
       if (range < 7) {
         const rangeVal = getRange();
@@ -195,7 +197,12 @@ const Dashboard = () => {
         setAvailableTags([]);
       },
       retry: false,
-      enabled: !!(selectedLogSchema?.length !== 0),
+      enabled:
+        !!(
+          logStreamSchema?.data?.data?.fields?.map((field) => {
+            return field.name;
+          })?.length !== 0
+        ) && !!(selectedLogStream?.name != null),
       refetchOnWindowFocus: false,
       refetchInterval:
         interval === null || range === 7 ? false : interval * 1000,
@@ -623,12 +630,6 @@ const Dashboard = () => {
                           {name}
                         </th>
                       ))}
-                      <th
-                        // scope="col"
-                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                      >
-                        Tags
-                      </th>
                     </tr>
                   </thead>
                   {logQueries.isLoading &&
@@ -680,18 +681,11 @@ const Dashboard = () => {
                                         {data[schema] || ""}
                                       </td>
                                     ))}
-                                    <td className="flex whitespace-nowrap px-3 py-4 text-sm text-gray-700">
-                                      {data.p_tags
-                                        ?.split("^")
-                                        .map((tag, index) => {
-                                          addAvailableTags(tag);
-                                          return (
-                                            <div className="mx-1  bg-slate-200 rounded-sm flex justify-center items-center px-1 py-1">
-                                              {tag}
-                                            </div>
-                                          );
-                                        })}
-                                    </td>
+                                    {data.p_tags
+                                      ?.split("^")
+                                      .forEach((tag) => {
+                                        addAvailableTags(tag);
+                                      })}
                                   </tr>
                                 ),
                             ),
