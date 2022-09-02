@@ -25,8 +25,8 @@ const queryLogs = async (
     QUERY_URL,
     {
       query: `select * from ${streamName} ${
-        dateStream !== null ? `order by ${dateStream}` : ""
-      } limit 10${pageParam === 1 ? "" : ` offset ${pageParam * 10}`}`,
+        dateStream !== null ? `order by ${dateStream} ` : ""
+      }limit 10${pageParam === 1 ? "" : ` offset ${pageParam * 10}`}`,
       startTime: startTime,
       endTime: endTime,
     },
@@ -43,7 +43,7 @@ export const useQueryLogs = (
   option = {},
 ) =>
   useInfiniteQuery(
-    [QUERY, logSchema, startTime, endTime],
+    [QUERY, streamName, logSchema, startTime, endTime],
     async ({ signal, pageParam = 1 }) => {
       await fn();
       return await queryLogs(

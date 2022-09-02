@@ -197,7 +197,12 @@ const Dashboard = () => {
         setAvailableTags([]);
       },
       retry: false,
-      enabled: !!(selectedLogSchema?.length !== 0),
+      enabled:
+        !!(
+          logStreamSchema?.data?.data?.fields?.map((field) => {
+            return field.name;
+          })?.length !== 0
+        ) && !!(selectedLogStream?.name != null),
       refetchOnWindowFocus: false,
       refetchInterval:
         interval === null || range === 7 ? false : interval * 1000,
@@ -682,18 +687,11 @@ const Dashboard = () => {
                                         {data[schema] || ""}
                                       </td>
                                     ))}
-                                    <td className="flex whitespace-nowrap px-3 py-4 text-sm text-gray-700">
-                                      {data.p_tags
-                                        ?.split("^")
-                                        .map((tag, index) => {
-                                          addAvailableTags(tag);
-                                          return (
-                                            <div className="mx-1  bg-slate-200 rounded-sm flex justify-center items-center px-1 py-1">
-                                              {tag}
-                                            </div>
-                                          );
-                                        })}
-                                    </td>
+                                    {data.p_tags
+                                      ?.split("^")
+                                      .forEach((tag) => {
+                                        addAvailableTags(tag);
+                                      })}
                                   </tr>
                                 ),
                             ),

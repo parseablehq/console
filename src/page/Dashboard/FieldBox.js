@@ -7,7 +7,7 @@ const Field = ({
 }) => {
   return (
     <div className="flex flex-col">
-      <div className="bg-gray-200 py-3 px-5">
+      <div className="bg-gray-200 py-3 px-5 border-b border-b-gray-300">
         <h3 className=" font-semibold text-gray-600 ">Columns</h3>
       </div>
       <div>
