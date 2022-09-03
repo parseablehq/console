@@ -1,17 +1,17 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment, useEffect, useState } from "react";
+import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/outline";
 import moment from "moment";
 
-function isJsonString(str) {
-  try {
-    JSON.parse(str);
-  } catch (e) {
-    return false;
-  }
-  return true;
-}
+// function isJsonString(str) {
+//   try {
+//     JSON.parse(str);
+//   } catch (e) {
+//     return false;
+//   }
+//   return true;
+// }
 
 const removeMeta = (data) => {
   let res = { ...data };
@@ -21,7 +21,7 @@ const removeMeta = (data) => {
 };
 
 export default function SideDialog({ open, setOpen, data }) {
-  const [log, setLog] = useState({});
+  // const [log, setLog] = useState({});
 
   return (
     <Transition.Root show={open} as={Fragment}>

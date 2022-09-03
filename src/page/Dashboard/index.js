@@ -1,5 +1,5 @@
 import moment from "moment";
-import { useState, Fragment, useRef, useCallback, useEffect } from "react";
+import { useState, Fragment, useEffect } from "react";
 import Layout from "../../components/Layout";
 import SideDialog from "../../components/SideDialog";
 import { Listbox, Transition } from "@headlessui/react";
@@ -31,7 +31,7 @@ function hasSubArray(master, sub) {
     (
       (i) => (v) =>
         (i = master.indexOf(v, i) + 1)
-    )(0),
+    )(0)
   );
 }
 
@@ -46,8 +46,8 @@ const Dashboard = () => {
         now.getHours(),
         now.getMinutes(),
         0,
-        0,
-      ),
+        0
+      )
     );
 
     return moment(start);
@@ -80,11 +80,11 @@ const Dashboard = () => {
 
   const [open, setOpen] = useState(false);
   const [clickedRow, setClickedRow] = useState({});
-  const [timeZone, setTimeZone] = useState("UTC");
+  // const [timeZone, setTimeZone] = useState("UTC");
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [labelSelected, setLabelSelected] = useState([]);
+  // const [labelSelected, setLabelSelected] = useState([]);
   const [searchSelected, setSearchSelected] = useState({});
   const [interval, setInterval] = useState(null);
   const [range, setRange] = useState(0);
@@ -93,7 +93,7 @@ const Dashboard = () => {
   const [selectedTags, setSelectedTags] = useState([]);
   // const [dateRangeValues, setDateRangeValues] = useState(getRange);
   const [startTime, setStartTime] = useState(
-    getCurrentTime().subtract(10, "minutes"),
+    getCurrentTime().subtract(10, "minutes")
     // .utcOffset("+00:00")
     // .format("YYYY-MM-DDThh:mm:ss),
   );
@@ -171,7 +171,7 @@ const Dashboard = () => {
 
       setSelectedLogSchema([
         ...allFields.filter(
-          (field) => field !== "p_metadata" && field !== "p_tags",
+          (field) => field !== "p_metadata" && field !== "p_tags"
         ),
       ]);
     },
@@ -206,7 +206,7 @@ const Dashboard = () => {
       refetchOnWindowFocus: false,
       refetchInterval:
         interval === null || range === 7 ? false : interval * 1000,
-    },
+    }
   );
 
   const { fetchNextPage } = logQueries;
@@ -228,9 +228,9 @@ const Dashboard = () => {
     };
   }, [fetchNextPage]);
 
-  const timeZoneChange = (e) => {
-    setTimeZone(e.target.value);
-  };
+  // const timeZoneChange = (e) => {
+  //   setTimeZone(e.target.value);
+  // };
 
   const getFilteredArray = (data, searchString, key) => {
     if (!data) {
@@ -243,7 +243,7 @@ const Dashboard = () => {
         data[key]
           .toLowerCase()
           .replace(/\s+/g, "")
-          .includes(searchQuery.toLowerCase().replace(/\s+/g, "")),
+          .includes(searchQuery.toLowerCase().replace(/\s+/g, ""))
       );
     }
   };
@@ -304,7 +304,7 @@ const Dashboard = () => {
                           {getFilteredArray(
                             logStream?.data?.data,
                             query,
-                            "name",
+                            "name"
                           ).length === 0 && query !== "" ? (
                             <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
                               No log streams found
@@ -313,7 +313,7 @@ const Dashboard = () => {
                             getFilteredArray(
                               logStream?.data?.data,
                               query,
-                              "name",
+                              "name"
                             ).map((stream, index) => (
                               <Combobox.Option
                                 key={index}
@@ -661,7 +661,7 @@ const Dashboard = () => {
                               (data, index) =>
                                 hasSubArray(
                                   data.p_tags?.split("^"),
-                                  selectedTags,
+                                  selectedTags
                                 ) &&
                                 (searchQuery === "" ||
                                   JSON.stringify(data)
@@ -681,14 +681,12 @@ const Dashboard = () => {
                                         {data[schema] || ""}
                                       </td>
                                     ))}
-                                    {data.p_tags
-                                      ?.split("^")
-                                      .forEach((tag) => {
-                                        addAvailableTags(tag);
-                                      })}
+                                    {data.p_tags?.split("^").forEach((tag) => {
+                                      addAvailableTags(tag);
+                                    })}
                                   </tr>
-                                ),
-                            ),
+                                )
+                            )
                         )}
                       <tr align={"center"}>
                         <td

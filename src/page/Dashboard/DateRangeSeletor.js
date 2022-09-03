@@ -1,8 +1,8 @@
 import moment from "moment";
 import { useState, useEffect, useRef } from "react";
 import DatePicker from "./DatePicker";
-import { SelectorIcon } from "@heroicons/react/solid";
-import { CalculatorIcon, ClockIcon } from "@heroicons/react/outline";
+// import { SelectorIcon } from "@heroicons/react/solid";
+import { ClockIcon } from "@heroicons/react/outline";
 
 const FORMAT = "DD-MM-YYYY HH:mm";
 
@@ -32,7 +32,7 @@ const DateRangeSelector = ({
   const [isOpen, setIsOpen] = useState(false);
 
   const [fromInput, setFromInput] = useState(
-    moment().subtract(10, "minutes").format(FORMAT),
+    moment().subtract(10, "minutes").format(FORMAT)
   );
 
   const [toInput, setToInput] = useState(moment().format(FORMAT));
