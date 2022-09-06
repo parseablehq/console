@@ -1,17 +1,7 @@
-/* This example requires Tailwind CSS v2.0+ */
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/outline";
 import moment from "moment";
-
-// function isJsonString(str) {
-//   try {
-//     JSON.parse(str);
-//   } catch (e) {
-//     return false;
-//   }
-//   return true;
-// }
 
 const removeMeta = (data) => {
   let res = { ...data };
@@ -21,8 +11,6 @@ const removeMeta = (data) => {
 };
 
 export default function SideDialog({ open, setOpen, data }) {
-  // const [log, setLog] = useState({});
-
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={setOpen}>
@@ -71,7 +59,6 @@ export default function SideDialog({ open, setOpen, data }) {
                       </div>
                     </div>
                     <div className="relative flex-1 py-1 px-4 sm:px-6">
-                      {/* Replace with your content */}
                       <div className="absolute inset-0 py-1 px-4 sm:px-6">
                         <div className="flex flex-wrap items-center">
                           {data.p_tags?.split("^").map((tag, index) => (

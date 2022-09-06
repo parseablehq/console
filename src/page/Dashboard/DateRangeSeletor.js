@@ -1,7 +1,6 @@
 import moment from "moment";
 import { useState, useEffect, useRef } from "react";
 import DatePicker from "./DatePicker";
-// import { SelectorIcon } from "@heroicons/react/solid";
 import { ClockIcon } from "@heroicons/react/outline";
 
 const FORMAT = "DD-MM-YYYY HH:mm";

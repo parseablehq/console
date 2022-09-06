@@ -80,22 +80,17 @@ const Dashboard = () => {
 
   const [open, setOpen] = useState(false);
   const [clickedRow, setClickedRow] = useState({});
-  // const [timeZone, setTimeZone] = useState("UTC");
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  // const [labelSelected, setLabelSelected] = useState([]);
   const [searchSelected, setSearchSelected] = useState({});
   const [interval, setInterval] = useState(null);
   const [range, setRange] = useState(0);
   const [selectedLogSchema, setSelectedLogSchema] = useState([]);
   const [availableTags, setAvailableTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
-  // const [dateRangeValues, setDateRangeValues] = useState(getRange);
   const [startTime, setStartTime] = useState(
     getCurrentTime().subtract(10, "minutes")
-    // .utcOffset("+00:00")
-    // .format("YYYY-MM-DDThh:mm:ss),
   );
 
   const addAvailableTags = (label) => {
@@ -227,10 +222,6 @@ const Dashboard = () => {
       document.removeEventListener("scroll", handleScroll);
     };
   }, [fetchNextPage]);
-
-  // const timeZoneChange = (e) => {
-  //   setTimeZone(e.target.value);
-  // };
 
   const getFilteredArray = (data, searchString, key) => {
     if (!data) {
@@ -401,74 +392,6 @@ const Dashboard = () => {
                           />
                         </Combobox.Button>
                       </div>
-                      {/* <Transition
-                        as={Fragment}
-                        leave="transition ease-in duration-100"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                        afterLeave={() => setSearchQuery("")}
-                      >
-                        <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                          {getFilteredArray(
-                            logQueries?.data?.data,
-                            searchQuery,
-                            "log",
-                          ).length === 0 && searchQuery !== "" ? (
-                            <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
-                              Nothing found.
-                            </div>
-                          ) : (
-                            getFilteredArray(
-                              logQueries?.data?.data,
-                              searchQuery,
-                              "log",
-                            ) &&
-                            getFilteredArray(
-                              logQueries?.data?.data,
-                              searchQuery,
-                              "log",
-                            )?.map((data, index) => (
-                              <Combobox.Option
-                                key={index}
-                                className={({ active }) =>
-                                  `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                                    active
-                                      ? "bg-bluePrimary text-white"
-                                      : "text-gray-900"
-                                  }`
-                                }
-                                value={data}
-                              >
-                                {({ selected, active }) => (
-                                  <>
-                                    <span
-                                      className={`block truncate ${
-                                        selected ? "font-medium" : "font-normal"
-                                      }`}
-                                    >
-                                      {data.log}
-                                    </span>
-                                    {selected ? (
-                                      <span
-                                        className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
-                                          active
-                                            ? "text-white"
-                                            : "text-bluePrimary"
-                                        }`}
-                                      >
-                                        <CheckIcon
-                                          className="h-5 w-5"
-                                          aria-hidden="true"
-                                        />
-                                      </span>
-                                    ) : null}
-                                  </>
-                                )}
-                              </Combobox.Option>
-                            ))
-                          )}
-                        </Combobox.Options>
-                      </Transition> */}
                     </div>
                   </Combobox>
                 </div>
@@ -601,12 +524,6 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-
-          {/* <DatetimeRangePicker onChange={(e) => console.log('skhd',e)} /> */}
-
-          {/* <div className="w-44">
-              <AdvanceDateTimePicker />
-            </div> */}
 
           <div className="overflow-auto">
             <div className="flex min-w-full">
