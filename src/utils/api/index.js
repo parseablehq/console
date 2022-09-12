@@ -5,7 +5,7 @@ export const getServerURL = () => {
 };
 
 export const get = async (url) => {
-  return await axios.get(getServerURL() + url, {
+  return axios.get(getServerURL() + url, {
     headers: {
       Authorization: "Basic " + localStorage.getItem("auth"),
     },
@@ -13,7 +13,7 @@ export const get = async (url) => {
 };
 
 export const post = async (url, data, signal) => {
-  return await axios.post(
+  return axios.post(
     getServerURL() + url,
     data,
     {
@@ -26,11 +26,11 @@ export const post = async (url, data, signal) => {
 };
 
 export const getLogStream = async () => {
-  return await get("api/v1/logstream");
+  return get("api/v1/logstream");
 };
 
 export const queryLogs = async (streamName, startTime, endTime) => {
-  return await post("api/v1/query", {
+  return post("api/v1/query", {
     query: `select * from ${streamName}`,
     startTime: startTime,
     endTime: endTime,

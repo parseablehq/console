@@ -8,8 +8,8 @@ const FORMAT = "DD-MM-YYYY HH:mm";
 
 const Calendar = ({ setStartDate, setEndDate, start, end }) => {
   const [dateRange, setDateRange] = useState([
-    moment(start).unix(),
-    moment(end).unix(),
+    moment(start).toDate(),
+    moment(end).toDate(),
   ]);
   const [startDate, endDate] = dateRange;
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
@@ -20,6 +20,7 @@ const Calendar = ({ setStartDate, setEndDate, start, end }) => {
       />
     </button>
   ));
+  console.log({startDate,endDate})
   return (
     <DatePicker
       selectsRange={true}
