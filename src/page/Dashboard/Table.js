@@ -1,4 +1,5 @@
 import BeatLoader from "react-spinners/BeatLoader";
+import React from "react";
 
 function hasSubArray(master, sub) {
   master.sort();
@@ -73,7 +74,6 @@ const Table = ({
                           .includes(searchQuery.toLowerCase())) && (
                         <tr
                           onClick={() => {
-                            console.log(JSON.stringify(data));
                             setOpen(true);
                             setClickedRow(data);
                           }}

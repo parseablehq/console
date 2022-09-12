@@ -1,16 +1,20 @@
-import moment from "moment";
-import React, { useState, forwardRef } from "react";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./DatePicker.css";
+
+import React, { forwardRef, useState } from "react";
+
 import { CalendarIcon } from "@heroicons/react/outline";
+import DatePicker from "react-datepicker";
+import moment from "moment";
+
 const FORMAT = "DD-MM-YYYY HH:mm";
 
 const Calendar = ({ setStartDate, setEndDate, start, end }) => {
   const [dateRange, setDateRange] = useState([
-    moment(start).toDate(),
-    moment(end).toDate(),
+    moment(start, FORMAT).toDate(),
+    moment(end, FORMAT).toDate(),
   ]);
+  
   const [startDate, endDate] = dateRange;
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <button onClick={onClick} ref={ref}>
@@ -20,7 +24,6 @@ const Calendar = ({ setStartDate, setEndDate, start, end }) => {
       />
     </button>
   ));
-  console.log({startDate,endDate})
   return (
     <DatePicker
       selectsRange={true}
@@ -34,7 +37,7 @@ const Calendar = ({ setStartDate, setEndDate, start, end }) => {
         setEndDate(
           moment(update[update[1] ? 1 : 0])
             .endOf("day")
-            .format(FORMAT),
+            .format(FORMAT)
         );
       }}
       dayClassName={(date) => {

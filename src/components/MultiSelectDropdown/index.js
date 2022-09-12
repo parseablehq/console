@@ -1,6 +1,6 @@
-import { Listbox } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/outline";
 import Button from "../DropdownButton";
+import { ChevronDownIcon } from "@heroicons/react/outline";
+import { Listbox } from "@headlessui/react";
 import Pill from "../Pill";
 
 const MultipleSelectDropdown = ({

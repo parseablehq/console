@@ -1,8 +1,9 @@
-import React from "react";
-import DateTimeRangeContainer from "react-advanced-datetimerange-picker";
-import moment from "moment";
-import { CalendarIcon } from "@heroicons/react/outline";
 import "./DateTimeRangePicker.css";
+
+import { CalendarIcon } from "@heroicons/react/outline";
+import DateTimeRangeContainer from "react-advanced-datetimerange-picker";
+import React from "react";
+import moment from "moment";
 
 let local = {
   format: "DD-MM-YYYY HH:mm",

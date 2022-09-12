@@ -1,6 +1,7 @@
+import React from "react";
 import { XCircleIcon } from "@heroicons/react/solid";
 
-const Pill = ({ text, closable, onClose }) => {
+const Pill = ({ text, onClose }) => {
   return (
     <span className="relative block w-min py-1 pl-2 pr-6 truncate mr-1 bg-secondary-200 text-xs text-gray-800 font-semibold leading-3 rounded-md">
       {text}

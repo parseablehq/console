@@ -1,12 +1,11 @@
-import { memo, useState } from "react";
+import React, { memo, useState } from "react";
+
 import { Combobox } from "@headlessui/react";
-import { SelectorIcon } from "@heroicons/react/solid";
 import DropdownButton from "../DropdownButton";
+import { SelectorIcon } from "@heroicons/react/solid";
 
 const SearchableDropdown = ({ data, setValue, value, label }) => {
   const [query, setQuery] = useState("");
-  // TODO: Throw error on no name
-  // TODO: Remove value from prop
 
   const filteredData =
     query === ""
@@ -26,9 +25,9 @@ const SearchableDropdown = ({ data, setValue, value, label }) => {
             name="stream"
             className={"input"}
             onChange={(event) => setQuery(event.target.value)}
-            displayValue={(value) =>
-              data.length && value ? value.name : "No data found"
-            }
+            displayValue={(val) => {
+              return data.length && val ? val.name : "No data found";
+            }}
           />
           <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
             <SelectorIcon
@@ -41,12 +40,12 @@ const SearchableDropdown = ({ data, setValue, value, label }) => {
               "absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-gray-50 py-1 border border-1 border-gray-500"
             }
           >
-            {!!filteredData ? (
-              filteredData.map((data) => (
-                <Combobox.Option key={data.name} value={data}>
+            {filteredData?.map ? (
+              filteredData.map((obj) => (
+                <Combobox.Option key={obj.name} value={obj}>
                   {({ active, selected }) => (
                     <DropdownButton
-                      text={data.name}
+                      text={obj.name}
                       active={active}
                       selected={selected}
                     />

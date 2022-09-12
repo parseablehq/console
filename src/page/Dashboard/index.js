@@ -1,19 +1,21 @@
-import moment from "moment";
-import { useState, useEffect } from "react";
-import Layout from "../../components/Layout";
-import SideDialog from "../../components/SideDialog";
-import Table from "./Table";
+import "./index.css";
+
+import React, { useEffect, useState } from "react";
 import {
   useGetLogStream,
   useGetLogStreamSchema,
   useQueryLogs,
 } from "../../utils/api";
-import "./index.css";
-import Field from "./FieldBox";
-import TagFilters from "./TagFilters";
-import RefreshInterval from "./RefreshInterval";
+
 import DateSearchField from "./DateSearchField";
+import Field from "./FieldBox";
+import Layout from "../../components/Layout";
+import RefreshInterval from "./RefreshInterval";
 import SearchableDropdown from "../../components/SearchableDropdown";
+import SideDialog from "../../components/SideDialog";
+import Table from "./Table";
+import TagFilters from "./TagFilters";
+import moment from "moment";
 
 const Dashboard = () => {
   const getCurrentTime = () => {
@@ -69,8 +71,6 @@ const Dashboard = () => {
   const [selectedTags, setSelectedTags] = useState([]);
   const [startTime, setStartTime] = useState(
     getCurrentTime().subtract(10, "minutes")
-    // .utcOffset("+00:00")
-    // .format("YYYY-MM-DDThh:mm:ss),
   );
 
   const addAvailableTags = (label) => {
@@ -188,7 +188,9 @@ const Dashboard = () => {
             <div className="flex-1 px-4 flex justify-center">
               <SearchableDropdown
                 label={"Streams"}
-                data={!!logStream?.data?.data ? logStream?.data?.data : []}
+                data={
+                  logStream?.data?.data != null ? logStream?.data?.data : []
+                }
                 setValue={setSelectedLogStream}
                 value={selectedLogStream}
               />
