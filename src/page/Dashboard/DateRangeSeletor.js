@@ -94,11 +94,11 @@ const DateRangeSelector = ({
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={
-          "search-button flex disabled:text-gray-300 mt-1 h-[2.65rem] custom-focus text-left"
+          "input rounded-r-none flex border-r-0 disabled:text-gray-300 mt-1 h-[2.5rem] text-left w-80"
         }
       >
         {range === 7 ? (
-          <span className="text-xs mt-[0.30rem]">
+          <span className="text-xs mt-[0.2rem]">
             {moment(fromDate).format(FORMAT)} - {moment(toDate).format(FORMAT)}
           </span>
         ) : (
@@ -134,7 +134,7 @@ const DateRangeSelector = ({
             <div className="flex flex-grow-1 w-full flex-col mx-4">
               <div className="mt-2 relative">
                 <form onSubmit={handleFromDateSubmit}>
-                  <label className="text-xs " htmlFor="">
+                  <label className="text-label" htmlFor="">
                     From
                   </label>
                   <input
@@ -146,14 +146,14 @@ const DateRangeSelector = ({
                     onChange={(e) => {
                       setFromInput(e.target.value);
                     }}
-                    className="custom-focus custom-input text-xs"
+                    className=" input text-xs"
                     type="text"
                   />
                 </form>
               </div>
               <div className="mt-2 relative">
                 <form onSubmit={submitDate}>
-                  <label className="text-xs mt-2" htmlFor="">
+                  <label className="text-label mt-2" htmlFor="">
                     To
                   </label>
                   <input
@@ -166,7 +166,7 @@ const DateRangeSelector = ({
                     onChange={(e) => {
                       setToInput(e.target.value);
                     }}
-                    className="custom-input custom-focus text-xs"
+                    className="input text-xs"
                     type="text"
                   />
                 </form>
@@ -192,14 +192,14 @@ const DateRangeSelector = ({
                 </div>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="ml-auto block mr-2 custom-focus btn text-sm font-semibold text-gray-600 border-gray-400 border-2 p-1 rounded px-3 px-2"
+                  className="ml-auto block mr-2 custom-focus btn text-sm font-semibold text-gray-600 border-gray-400 border-2 p-1 rounded px-3 "
                 >
                   close
                 </button>
                 <button
                   disabled={!checkValidDate()}
                   onClick={submitCal}
-                  className="block custom-focus btn text-sm font-semibold text-white border-bluePrimary disabled:border-blue-400 disabled:bg-blue-400 border-2 p-1 bg-bluePrimary rounded px-3 px-2"
+                  className="block custom-focus btn text-sm font-semibold text-white border-bluePrimary disabled:border-blue-400 disabled:bg-blue-400 border-2 p-1 bg-bluePrimary rounded px-3 "
                 >
                   apply
                 </button>

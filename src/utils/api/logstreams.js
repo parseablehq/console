@@ -6,7 +6,7 @@ import {
 } from "./constants";
 
 const getLogStream = async () => {
-  return await get(LOG_STREAMS_URL);
+  return get(LOG_STREAMS_URL);
 };
 
 export const useGetLogStream = (option = {}) =>
@@ -14,7 +14,7 @@ export const useGetLogStream = (option = {}) =>
 
 
 const getLogStreamSchema = async (streamName) => {
-  return await get(`${LOG_STREAMS_URL}/${streamName}/schema`);
+  return get(`${LOG_STREAMS_URL}/${streamName}/schema`);
 };
 
 export const useGetLogStreamSchema = (streamName, option = {}) =>

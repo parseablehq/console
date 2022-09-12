@@ -2,8 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
-.custom-focus{
- @apply focus:ring-yellowButton focus:border-yellowButton focus:ring-1 focus:outline-0;
+@layer components {
+  .focus {
+    @apply focus:ring-secondary-700 focus:border-secondary-700 focus:ring-1 focus:outline-0;
+  }
+
+  .text-input {
+    @apply text-gray-800 font-medium text-sm;
+  }
+
+  .text-label {
+    @apply text-xs font-medium text-gray-900;
+  }
+
+  .input {
+    @apply w-full rounded-lg py-2 px-3 border-2 bg-gray-50 border-gray-400 text-input focus;
+  }
+}
+
+.custom-focus {
+  @apply focus:ring-yellowButton focus:border-yellowButton focus:ring-1 focus:outline-0;
 }
 
 .custom-input {
