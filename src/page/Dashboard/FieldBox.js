@@ -1,4 +1,5 @@
 import Checkbox from "../../components/Checkbox";
+import React from "react";
 
 const Field = ({
   logStreamSchema,

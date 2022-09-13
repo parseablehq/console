@@ -32,7 +32,7 @@ const DateSearchField = ({
       />
       <Combobox
         value={searchSelected}
-        onChange={(e) => {
+        onChange={function (e) {
           setSearchSelected(e);
           setSearchOpen(true);
         }}
@@ -43,7 +43,9 @@ const DateSearchField = ({
               className="input rounded-l-none placeholder-iconGrey"
               // displayValue={(data) => 'Search'}
               placeholder="Search"
-              onChange={(event) => setSearchQuery(event.target.value)}
+              onChange={function (e) {
+                setSearchQuery(e.target.value);
+              }}
             />
             <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
               <SearchIcon

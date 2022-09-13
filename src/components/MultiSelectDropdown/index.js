@@ -2,6 +2,7 @@ import Button from "../DropdownButton";
 import { ChevronDownIcon } from "@heroicons/react/outline";
 import { Listbox } from "@headlessui/react";
 import Pill from "../Pill";
+import React from "react";
 
 const MultipleSelectDropdown = ({
   name,
@@ -19,7 +20,12 @@ const MultipleSelectDropdown = ({
         <Listbox.Button className="input flex text-left">
           {values.length > 0
             ? values.map((val) => (
-                <Pill text={val} onClose={() => removeValue(val)} />
+                <Pill
+                  text={val}
+                  onClose={function () {
+                    removeValue(val);
+                  }}
+                />
               ))
             : "Select Tags"}
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">

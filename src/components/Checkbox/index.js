@@ -1,3 +1,5 @@
+import React from "react";
+
 const Checkbox = ({ name, selected, onClick }) => {
   return (
     <div className="mx-1 my-1 flex">

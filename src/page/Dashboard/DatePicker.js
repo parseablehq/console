@@ -14,7 +14,7 @@ const Calendar = ({ setStartDate, setEndDate, start, end }) => {
     moment(start, FORMAT).toDate(),
     moment(end, FORMAT).toDate(),
   ]);
-  
+
   const [startDate, endDate] = dateRange;
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <button onClick={onClick} ref={ref}>
@@ -29,9 +29,11 @@ const Calendar = ({ setStartDate, setEndDate, start, end }) => {
       selectsRange={true}
       startDate={startDate}
       endDate={endDate}
-      filterDate={(day) => moment(day).isBefore(moment())}
+      filterDate={function (day) {
+        return moment(day).isBefore(moment());
+      }}
       className={"custom-date-picker"}
-      onChange={(update) => {
+      onChange={function (update) {
         setDateRange(update);
         setStartDate(moment(update[0]).startOf("day").format(FORMAT));
         setEndDate(
@@ -40,7 +42,7 @@ const Calendar = ({ setStartDate, setEndDate, start, end }) => {
             .format(FORMAT)
         );
       }}
-      dayClassName={(date) => {
+      dayClassName={function (date) {
         return moment(date).isSame(moment(startDate))
           ? "custom-date-picker-day-start"
           : moment(date).isSame(moment(endDate))
