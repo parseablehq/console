@@ -14,7 +14,6 @@ const Calendar = ({ setStartDate, setEndDate, start, end }) => {
     moment(start, FORMAT).toDate(),
     moment(end, FORMAT).toDate(),
   ]);
-
   const [startDate, endDate] = dateRange;
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <button onClick={onClick} ref={ref}>

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const getServerURL = () => {
-  return "/";
+  return "https://demo.parseable.io/";
 };
 
 export const get = (url) => {
