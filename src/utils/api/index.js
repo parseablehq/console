@@ -4,7 +4,7 @@ export const getServerURL = () => {
   return "/";
 };
 
-export const get = async (url) => {
+export const get = (url) => {
   return axios.get(getServerURL() + url, {
     headers: {
       Authorization: "Basic " + localStorage.getItem("auth"),
@@ -12,7 +12,7 @@ export const get = async (url) => {
   });
 };
 
-export const post = async (url, data, signal) => {
+export const post = (url, data, signal) => {
   return axios.post(
     getServerURL() + url,
     data,
@@ -25,11 +25,11 @@ export const post = async (url, data, signal) => {
   );
 };
 
-export const getLogStream = async () => {
+export const getLogStream = () => {
   return get("api/v1/logstream");
 };
 
-export const queryLogs = async (streamName, startTime, endTime) => {
+export const queryLogs = (streamName, startTime, endTime) => {
   return post("api/v1/query", {
     query: `select * from ${streamName}`,
     startTime: startTime,

@@ -1,4 +1,5 @@
 import MultiSelectDropdown from "../../components/MultiSelectDropdown";
+import React from "react";
 
 const TagFilters = ({
   selectedTags,

@@ -1,11 +1,12 @@
-import { Fragment, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Dialogue from "./Dialogue";
-import { QuestionMarkCircleIcon } from "@heroicons/react/outline";
 import { LogoutIcon, MenuAlt2Icon } from "@heroicons/react/outline";
+
+import Dialogue from "./Dialogue";
+import Logo from "../../assets/images/Group 295.svg";
+import { QuestionMarkCircleIcon } from "@heroicons/react/outline";
 import StreamIcon from "../../assets/images/Icon awesome-stream (1).svg";
 import UserIcon from "../../assets/images/Icon feather-user.svg";
-import Logo from "../../assets/images/Group 295.svg";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const Navbar = ({setSidebarOpen}) => {
   const navigate = useNavigate();

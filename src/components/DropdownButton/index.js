@@ -1,5 +1,6 @@
-import classNames from "classnames";
 import { CheckIcon } from "@heroicons/react/solid";
+import React from "react";
+import classNames from "classnames";
 
 const Button = ({ text, active, selected }) => {
   return (

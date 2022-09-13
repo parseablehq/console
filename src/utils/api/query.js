@@ -2,7 +2,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { post } from "./index";
 import { QUERY_URL, QUERY } from "./constants";
 
-const queryLogs = async (
+const queryLogs = (
   streamName,
   startTime,
   endTime,
@@ -21,7 +21,7 @@ const queryLogs = async (
     }
   }
 
-  return await post(
+  return post(
     QUERY_URL,
     {
       query: `select * from ${streamName} ${
@@ -46,7 +46,7 @@ export const useQueryLogs = (
     [QUERY, streamName, logSchema, startTime, endTime],
     async ({ signal, pageParam = 1 }) => {
       await fn();
-      return await queryLogs(
+      return queryLogs(
         streamName,
         startTime,
         endTime,

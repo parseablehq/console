@@ -1,9 +1,10 @@
-import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { XIcon } from "@heroicons/react/outline";
-import { Disclosure } from "@headlessui/react";
+
 import { ChevronDownIcon } from "@heroicons/react/outline";
+import { Disclosure } from "@headlessui/react";
+import { Fragment } from "react";
 import Logo from "../../assets/images/Group 295.svg";
+import { XIcon } from "@heroicons/react/outline";
 
 const Sidebar = ({ setSidebarOpen, sidebarOpen, labels }) => {
   function classNames(...classes) {

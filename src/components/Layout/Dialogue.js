@@ -1,8 +1,9 @@
-import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import SlackIcon from "../../assets/images/slack_icon.png";
-import GitHubIcon from "../../assets/images/github_icon.png";
+
 import DocumentationIcon from "../../assets/images/documentation_icon.png";
+import { Fragment } from "react";
+import GitHubIcon from "../../assets/images/github_icon.png";
+import SlackIcon from "../../assets/images/slack_icon.png";
 import { XIcon } from "@heroicons/react/outline";
 
 const HelpDialog = ({ isOpen, setIsOpen }) => {

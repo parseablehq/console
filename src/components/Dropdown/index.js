@@ -1,6 +1,7 @@
-import { Listbox } from "@headlessui/react";
-import { SelectorIcon } from "@heroicons/react/solid";
 import Button from "../DropdownButton";
+import { Listbox } from "@headlessui/react";
+import React from "react";
+import { SelectorIcon } from "@heroicons/react/solid";
 
 const Dropdown = ({ name, disabled, value, setValue }) => {
   const data = [

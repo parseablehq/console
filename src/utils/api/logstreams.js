@@ -5,7 +5,7 @@ import {
   LOG_STREAMS_URL,
 } from "./constants";
 
-const getLogStream = async () => {
+const getLogStream = () => {
   return get(LOG_STREAMS_URL);
 };
 
@@ -13,7 +13,7 @@ export const useGetLogStream = (option = {}) =>
   useQuery([LOG_STREAMS], getLogStream, {...option});
 
 
-const getLogStreamSchema = async (streamName) => {
+const getLogStreamSchema = (streamName) => {
   return get(`${LOG_STREAMS_URL}/${streamName}/schema`);
 };
 
