@@ -24,8 +24,10 @@ const SearchableDropdown = ({ data, setValue, value, label }) => {
           <Combobox.Input
             name="stream"
             className={"input"}
-            onChange={(event) => setQuery(event.target.value)}
-            displayValue={(val) => {
+            onChange={function (event) {
+              setQuery(event.target.value);
+            }}
+            displayValue={function (val) {
               return data.length && val ? val.name : "No data found";
             }}
           />

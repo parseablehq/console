@@ -1,14 +1,17 @@
-import { LogoutIcon, MenuAlt2Icon } from "@heroicons/react/outline";
+import {
+  LogoutIcon,
+  MenuAlt2Icon,
+  QuestionMarkCircleIcon,
+} from "@heroicons/react/outline";
+import React, { useState } from "react";
 
 import Dialogue from "./Dialogue";
 import Logo from "../../assets/images/Group 295.svg";
-import { QuestionMarkCircleIcon } from "@heroicons/react/outline";
 import StreamIcon from "../../assets/images/Icon awesome-stream (1).svg";
 import UserIcon from "../../assets/images/Icon feather-user.svg";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 
-const Navbar = ({setSidebarOpen}) => {
+const Navbar = ({ setSidebarOpen }) => {
   const navigate = useNavigate();
 
   const [isHelpDialogueOpen, setIsHelpDialogueOpen] = useState(false);
@@ -20,7 +23,9 @@ const Navbar = ({setSidebarOpen}) => {
         <button
           type="button"
           className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-bluePrimary md:hidden"
-          onClick={() => setSidebarOpen(true)}
+          onClick={function () {
+            setSidebarOpen(true);
+          }}
         >
           <span className="sr-only">Open sidebar</span>
           <MenuAlt2Icon className="h-6 w-6" aria-hidden="true" />

@@ -1,7 +1,7 @@
 import { Dialog, Transition } from "@headlessui/react";
+import React, { Fragment } from "react";
 
 import DocumentationIcon from "../../assets/images/documentation_icon.png";
-import { Fragment } from "react";
 import GitHubIcon from "../../assets/images/github_icon.png";
 import SlackIcon from "../../assets/images/slack_icon.png";
 import { XIcon } from "@heroicons/react/outline";

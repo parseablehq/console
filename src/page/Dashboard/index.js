@@ -35,7 +35,7 @@ const Dashboard = () => {
     return moment(start);
   };
 
-  const getRange = () => {
+  function getRange() {
     return {
       "Past 10 Minutes": [
         getCurrentTime().subtract(10, "minutes"),
@@ -57,7 +57,7 @@ const Dashboard = () => {
         getCurrentTime(),
       ],
     };
-  };
+  }
 
   const [open, setOpen] = useState(false);
   const [clickedRow, setClickedRow] = useState({});
@@ -73,13 +73,13 @@ const Dashboard = () => {
     getCurrentTime().subtract(10, "minutes")
   );
 
-  const addAvailableTags = (label) => {
+  function addAvailableTags(label) {
     if (availableTags.includes(label)) {
       return;
     } else {
       setAvailableTags([...availableTags, label]);
     }
-  };
+  }
 
   const [endTime, setEndTime] = useState(getCurrentTime());
 
@@ -171,9 +171,9 @@ const Dashboard = () => {
     };
   }, [fetchNextPage]);
 
-  const removeTag = (tag) => {
+  function removeTag(tag) {
     setSelectedTags([...selectedTags.filter((item) => item !== tag)]);
-  };
+  }
 
   return (
     <>

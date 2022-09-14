@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { ClockIcon } from "@heroicons/react/outline";
 import DatePicker from "./DatePicker";
+import React from "react";
 import moment from "moment";
 
 const FORMAT = "DD-MM-YYYY HH:mm";
@@ -31,54 +32,52 @@ const DateRangeSelector = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const [fromInput, setFromInput] = useState(
-    moment(fromDate).format(FORMAT)
-  );
+  const [fromInput, setFromInput] = useState(moment(fromDate).format(FORMAT));
 
   const [toInput, setToInput] = useState(moment(toDate).format(FORMAT));
 
   const toDateRef = useRef(null);
 
-  const getDate = (index) => {
+  function getDate(index) {
     const rangeVal = getRange();
     setFromInput(moment(rangeVal[rangeArr[index]][0]).format(FORMAT));
     setToInput(moment(rangeVal[rangeArr[index]][1]).format(FORMAT));
     setFromDate(moment(rangeVal[rangeArr[index]][0]));
     setToDate(moment(rangeVal[rangeArr[index]][1]));
     setRange(index);
-  };
+  }
 
-  const submitDate = (e) => {
+  function submitDate(e) {
     e.preventDefault();
     if (checkValidDate()) {
       submitCal();
     }
-  };
+  }
 
-  const handleFromDateSubmit = (e) => {
+  function handleFromDateSubmit(e) {
     e.preventDefault();
     if (checkValidDate()) {
       toDateRef?.current?.focus();
     }
-  };
+  }
 
-  const checkValidDate = () => {
+  function checkValidDate() {
     return (
       moment(toInput, FORMAT).isValid() &&
       moment(fromInput, FORMAT).isValid() &&
       moment(toInput, FORMAT).isAfter(moment(fromInput, FORMAT))
     );
-  };
+  }
 
   const wrapperRef = useRef(null);
   useOutsideAlerter(wrapperRef, () => setIsOpen(false));
 
-  const submitCal = () => {
+  function submitCal() {
     setRange(7);
     setIsOpen(false);
     setFromDate(moment(fromInput, FORMAT));
     setToDate(moment(toInput, FORMAT));
-  };
+  }
 
   let rangeArr = [
     "Past 10 Minutes",
@@ -93,7 +92,9 @@ const DateRangeSelector = ({
   return (
     <div className="relative z-50">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={function () {
+          setIsOpen(!isOpen);
+        }}
         className={
           "input rounded-r-none flex border-r-0 disabled:text-gray-300 mt-1 h-[2.5rem] text-left w-80"
         }
@@ -122,7 +123,7 @@ const DateRangeSelector = ({
               {rangeArr.map((item, index) => (
                 <button
                   key={index}
-                  onClick={() => {
+                  onClick={function () {
                     setIsOpen(false);
                     getDate(index);
                   }}
@@ -140,11 +141,11 @@ const DateRangeSelector = ({
                   </label>
                   <input
                     value={fromInput}
-                    onBlur={() => {
+                    onBlur={function () {
                       if (moment(fromInput, FORMAT).isValid)
                         setFromInput(moment(fromInput, FORMAT).format(FORMAT));
                     }}
-                    onChange={(e) => {
+                    onChange={function (e) {
                       setFromInput(e.target.value);
                     }}
                     className=" input text-xs"
@@ -160,11 +161,11 @@ const DateRangeSelector = ({
                   <input
                     value={toInput}
                     ref={toDateRef}
-                    onBlur={() => {
+                    onBlur={function () {
                       if (moment(toInput, FORMAT).isValid)
                         setToInput(moment(toInput, FORMAT).format(FORMAT));
                     }}
-                    onChange={(e) => {
+                    onChange={function (e) {
                       setToInput(e.target.value);
                     }}
                     className="input text-xs"
@@ -192,7 +193,9 @@ const DateRangeSelector = ({
                   GMT {moment().format("Z")}
                 </div>
                 <button
-                  onClick={() => setIsOpen(false)}
+                  onClick={function () {
+                    setIsOpen(false);
+                  }}
                   className="ml-auto block mr-2 custom-focus btn text-sm font-semibold text-gray-600 border-gray-400 border-2 p-1 rounded px-3 "
                 >
                   close

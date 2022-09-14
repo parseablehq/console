@@ -1,10 +1,8 @@
-import { Dialog, Transition } from "@headlessui/react";
+import { ChevronDownIcon, XIcon } from "@heroicons/react/outline";
+import { Dialog, Disclosure, Transition } from "@headlessui/react";
+import React, { Fragment } from "react";
 
-import { ChevronDownIcon } from "@heroicons/react/outline";
-import { Disclosure } from "@headlessui/react";
-import { Fragment } from "react";
 import Logo from "../../assets/images/Group 295.svg";
-import { XIcon } from "@heroicons/react/outline";
 
 const Sidebar = ({ setSidebarOpen, sidebarOpen, labels }) => {
   function classNames(...classes) {
@@ -64,7 +62,9 @@ const Sidebar = ({ setSidebarOpen, sidebarOpen, labels }) => {
                     <button
                       type="button"
                       className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-                      onClick={() => setSidebarOpen(false)}
+                      onClick={function () {
+                        setSidebarOpen(false);
+                      }}
                     >
                       <span className="sr-only">Close sidebar</span>
                       <XIcon
@@ -94,7 +94,7 @@ const Sidebar = ({ setSidebarOpen, sidebarOpen, labels }) => {
                             <ChevronDownIcon
                               className={classNames(
                                 open ? "-rotate-180" : "rotate-0",
-                                "h-6 w-6 transform",
+                                "h-6 w-6 transform"
                               )}
                               aria-hidden="true"
                             />

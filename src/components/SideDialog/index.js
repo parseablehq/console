@@ -1,6 +1,6 @@
 import { Dialog, Transition } from "@headlessui/react";
+import React, { Fragment } from "react";
 
-import { Fragment } from "react";
 import { XIcon } from "@heroicons/react/outline";
 import moment from "moment";
 
@@ -51,7 +51,9 @@ export default function SideDialog({ open, setOpen, data }) {
                           <button
                             type="button"
                             className="rounded-md bg-bluePrimary text-white hover:text-white focus:outline-none "
-                            onClick={() => setOpen(false)}
+                            onClick={function () {
+                              setOpen(false);
+                            }}
                           >
                             <span className="sr-only">Close panel</span>
                             <XIcon className="h-4 w-4" aria-hidden="true" />
@@ -76,7 +78,7 @@ export default function SideDialog({ open, setOpen, data }) {
                                 {field.split("=")[0]}
                               </div>
                               <div className="text-xs text-gray-600 ">
-                                {field.substring(field.indexOf('=')+1)}
+                                {field.substring(field.indexOf("=") + 1)}
                               </div>
                             </div>
                           ))}

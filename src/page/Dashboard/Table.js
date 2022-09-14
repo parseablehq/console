@@ -73,7 +73,7 @@ const Table = ({
                           .toLowerCase()
                           .includes(searchQuery.toLowerCase())) && (
                         <tr
-                          onClick={() => {
+                          onClick={function () {
                             setOpen(true);
                             setClickedRow(data);
                           }}
