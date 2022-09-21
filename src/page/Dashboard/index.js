@@ -9,6 +9,7 @@ import {
 
 import DateSearchField from "./DateSearchField";
 import Field from "./FieldBox";
+import Filters from "./Filters";
 import Layout from "../../components/Layout";
 import RefreshInterval from "./RefreshInterval";
 import SearchableDropdown from "../../components/SearchableDropdown";
@@ -212,12 +213,7 @@ const Dashboard = () => {
                 interval={interval}
                 setInterval={setInterval}
               />
-              <TagFilters
-                selectedTags={selectedTags}
-                setSelectedTags={setSelectedTags}
-                availableTags={availableTags}
-                removeTag={removeTag}
-              />
+              <Filters />
             </div>
           </div>
 
