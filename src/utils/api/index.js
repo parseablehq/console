@@ -1,7 +1,11 @@
 import axios from "axios";
 
 export const getServerURL = () => {
-  return "/";
+  if (process.env.REACT_APP_ENV === "client") {
+    return `${localStorage.getItem("CLIENT_URL")}/`;
+  } else {
+    return "/";
+  }
 };
 
 export const get = (url) => {
@@ -21,7 +25,7 @@ export const post = (url, data, signal) => {
         Authorization: "Basic " + localStorage.getItem("auth"),
       },
     },
-    { signal },
+    { signal }
   );
 };
 

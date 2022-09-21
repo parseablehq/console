@@ -1,13 +1,19 @@
-import { useNavigate } from "react-router-dom";
-import logo from "../../assets/images/Group 308.svg";
 import React, { useState } from "react";
+
+import logo from "../../assets/images/Group 308.svg";
 import { useGetLogStream } from "../../utils/api";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
-  
-  const logStream = useGetLogStream({ enabled: false, onSuccess: () => navigate("/index.html") });
+  const isClientMode = process.env.REACT_APP_ENV === "client";
 
+  const logStream = useGetLogStream({
+    enabled: false,
+    onSuccess: () => navigate("/index.html"),
+  });
+
+  const [url, setURL] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -23,6 +29,9 @@ const Login = () => {
 
   const loginHandler = async (e) => {
     e.preventDefault();
+    if (isClientMode) {
+      localStorage.setItem("CLIENT_URL", url);
+    }
     if (validate()) {
       const credentials = btoa(username + ":" + password);
       localStorage.setItem("auth", credentials);
@@ -42,6 +51,20 @@ const Login = () => {
 
         <div className="mt-3 w-full">
           <form onSubmit={(e) => loginHandler(e)}>
+            {isClientMode && (
+              <div className="mt-1 mb-4 w-full">
+                <input
+                  type="url"
+                  name="url"
+                  id="url"
+                  required
+                  className="shadow-sm border-2 px-3 py-3 focus:outline outline-bluePrimary block w-full sm:text-sm border-gray-300 rounded-sm"
+                  placeholder="Enter API URL"
+                  value={url}
+                  onChange={(e) => setURL(e.target.value)}
+                />
+              </div>
+            )}
             <div className="mt-1 w-full">
               <input
                 type="username"
@@ -74,7 +97,9 @@ const Login = () => {
               Login
             </button>
             {logStream.isError && (
-              <p className="text-red-600 text-center mt-1">{"logStream.error"}</p>
+              <p className="text-red-600 text-center mt-1">
+                {"logStream.error"}
+              </p>
             )}
           </form>
           <div
