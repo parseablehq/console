@@ -1,48 +1,263 @@
-import { Index, PillFilterList } from "./../../components/PillFilterList/index";
-import React from "react";
-import { Popover } from "@headlessui/react";
-import SearchableDropdown from "../../components/SearchableDropdown";
 import Button from "../../components/Button";
-import PillFilter from "../../components/PillFilter";
+import Pill from "../../components/Pill";
+import { PillFilterList } from "./../../components/PillFilterList/index";
+import { Popover } from "@headlessui/react";
+import React from "react";
+import SearchableDropdown from "../../components/SearchableDropdown";
+import { useEffect } from "react";
+import { useState } from "react";
 
-const pills = [
-  "fhjdskbj",
-  "nhdfjjhfjdhkfjdhskjfhdskj",
-  "nhdfjjhfjdhkfjdhskjfhdskj",
-  "nhdfjjhfjdhkfjdhskjfhdskj",
-  "nhdfjjhfjdhkfjdhskjfhdskj",
-  "nhdfjjhfjdhkfjdhskjfhdskj",
-  "nhdfjjhfjdhkfjdhskjfhdskj",
+export default function Filters({
+  schema,
+  availableTags,
+  availableMeta,
+  removeTag,
+  removeMeta,
+  addTag,
+  addMeta,
+  addFilter,
+  removeFilter,
+}) {
+  const [columnValue, setColumnValue] = useState();
+  const [operator, setOperator] = useState({ name: "Contain" });
+  const [queryValue, setQueryValue] = useState();
+  const [filter, setFilters] = useState([]);
 
-];
+  useEffect(() => {
+    setFilters([]);
+    setColumnValue();
+    setOperator({ name: "Contain" });
+    setQueryValue();
+  }, [schema]);
 
-export default function Filters() {
+  function removeTagOrMeta(type, val) {
+    setFilters([
+      ...filter.filter(
+        (field) => !(field.type === type && field.value === val)
+      ),
+    ]);
+  }
+
+  function removeGlobalFilter(column, contains, query) {
+    removeFilter(column, contains, query);
+    setFilters([
+      ...filter.filter(
+        (item) =>
+          !(
+            item.column === column &&
+            item.contains === contains &&
+            item.query === query
+          )
+      ),
+    ]);
+  }
+
   return (
-    <Popover className="relative w-96 ml-3">
+    <Popover className="relative ml-3">
       <label className="text-label ml-1" htmlFor="">
         Filter
       </label>
-      <div className="input w-full mt-1">
-        <Popover.Button>Solutions</Popover.Button>
+      <div className=" w-full mt-1">
+        <Popover.Button className={"input w-[23rem] text-left"}>
+          <>
+            {filter?.length ? (
+              <div className="flex">
+                {filter.slice(0, 3).map((val) => {
+                  if (val.type === "Column") {
+                    return (
+                      <Pill
+                        equal
+                        text={`${val.column} ${
+                          val.contains ? "Contain" : "Not contain"
+                        } ${val.query}`}
+                        onClose={() => {
+                          removeGlobalFilter(
+                            val.column,
+                            val.contains,
+                            val.query
+                          );
+                        }}
+                      />
+                    );
+                  } else {
+                    return (
+                      <Pill
+                        equal
+                        text={val.value}
+                        onClose={() => {
+                          if (val.type === "Tag") {
+                            removeTag(val.value);
+                          } else {
+                            removeMeta(val.value);
+                          }
+                          removeTagOrMeta(val.type, val.value);
+                        }}
+                      />
+                    );
+                  }
+                })}
+                {filter.length > 3 ? (
+                  <Pill text={`+${filter.length - 3}`} />
+                ) : null}
+              </div>
+            ) : (
+              "Filter"
+            )}
+          </>
+        </Popover.Button>
       </div>
-      <Popover.Panel className="absolute mt-1 right-0 w-[48rem] overflow-auto rounded-md bg-gray-50 py-1 border border-1 border-gray-500">
+      <Popover.Panel className="absolute mt-1 right-0 w-[48rem] min-h-[23rem] overflow-auto rounded-md bg-gray-50 py-1 border border-1 border-gray-500">
         <div className="flex flex-col mx-4 my-2">
           <div className="flex">
-            <SearchableDropdown data={[]} label={"Column Filters"} />
+            <SearchableDropdown
+              data={schema?.fields.filter(field => field.name !== "p_metadata" && field.name !== "p_tags")}
+              label={"Column Filters"}
+              setValue={setColumnValue}
+              value={columnValue}
+              defaultValue={"Select column"}
+            />
             <div className="ml-2">
-              <SearchableDropdown data={[]} />
+              <SearchableDropdown
+                setValue={setOperator}
+                value={operator}
+                data={[{ name: "Contain" }, { name: "Not contain" }]}
+              />
             </div>
             <div className="ml-2">
-              <input type="text" className="input mt-7" />
+              <input
+                value={queryValue}
+                onChange={(e) => setQueryValue(e.target.value)}
+                type="text"
+                className="input mt-7"
+              />
             </div>
             <div className="mt-7 ml-4">
-              <Button>Add Filter</Button>
+              <Button
+                onClick={() => {
+                  setFilters([
+                    ...filter,
+                    {
+                      type: "Column",
+                      query: queryValue,
+                      contains: operator.name === "Contain",
+                      column: columnValue.name,
+                    },
+                  ]);
+
+                  addFilter({
+                    query: queryValue,
+                    contains: operator.name === "Contain",
+                    column: columnValue.name,
+                  });
+                  setQueryValue();
+                  setOperator({ name: "Contain" });
+                  setColumnValue();
+                }}
+                disabled={!(queryValue && operator && columnValue)}
+              >
+                Add Filter
+              </Button>
             </div>
           </div>
 
-          <PillFilterList x={pills} />
+          {!!availableTags?.length && (
+            <>
+              <p className="text-label mt-4 ml-1" htmlFor="">
+                Filter
+              </p>
+              <PillFilterList
+                x={availableTags || []}
+                values={filter
+                  .filter((filter) => filter.type === "Tag")
+                  .reduce((prev, curr) => [...prev, curr.value], [])}
+                onAdd={(val) => {
+                  addTag(val);
+                  setFilters([
+                    ...filter,
+                    {
+                      type: "Tag",
+                      value: val,
+                    },
+                  ]);
+                }}
+                onRemove={(val) => {
+                  removeTag(val);
+                  removeTagOrMeta("Tag", val);
+                }}
+              />
+            </>
+          )}
+
+          {!!availableMeta?.length && (
+            <>
+              <p className="text-label mt-4 ml-1" htmlFor="">
+                Filter
+              </p>
+              <PillFilterList
+                x={availableMeta || []}
+                values={filter
+                  .filter((filter) => filter.type === "Meta")
+                  .reduce((prev, curr) => [...prev, curr.value], [])}
+                onAdd={(val) => {
+                  addMeta(val);
+                  setFilters([
+                    ...filter,
+                    {
+                      type: "Meta",
+                      value: val,
+                    },
+                  ]);
+                }}
+                onRemove={(val) => {
+                  removeMeta(val);
+                  removeTagOrMeta("Meta", val);
+                }}
+              />
+            </>
+          )}
+          {filter.length ? (
+            <p className="text-label mt-3">Active Filter</p>
+          ) : null}
+          <div className="flex flex-wrap flex-row">
+            {filter.map((val) => {
+              if (val.type === "Column") {
+                return (
+                  <span className="my-2">
+                    <Pill
+                      text={`${val.column} ${
+                        val.contains ? "Contain" : "Not contain"
+                      } ${val.query}`}
+                      onClose={() => {
+                        removeGlobalFilter(val.column, val.contains, val.query);
+                      }}
+                    />
+                  </span>
+                );
+              } else {
+                return (
+                  <span className="my-1">
+                    <Pill
+                      text={val.value}
+                      onClose={() => {
+                        if (val.type === "Tag") {
+                          removeTag(val.value);
+                        } else {
+                          removeMeta(val.value);
+                        }
+                        removeTagOrMeta(val.type, val.value);
+                      }}
+                    />
+                  </span>
+                );
+              }
+            })}
+          </div>
         </div>
-        <img src="/solutions.jpg" alt="" />
+        <div className="flex">
+          <div className="ml-auto mr-4 mb-3">
+            <Popover.Button as={Button}>Close</Popover.Button>
+          </div>
+        </div>
       </Popover.Panel>
     </Popover>
   );

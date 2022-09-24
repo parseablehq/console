@@ -21,10 +21,10 @@ const useIsOverflow = (ref, callback) => {
   return isOverflow;
 };
 
-export function PillFilterList({ x }) {
+export function PillFilterList({ x, onAdd, onRemove, values }) {
   const [isOverflow, setIsOverflow] = useState(false);
   const [selectedShowMore, setSelectedShowMore] = useState(false);
-  const [selected, setSelected] = useState([]);
+  const [selected, setSelected] = useState(values);
 
   const containerRef = useRef(null);
 
@@ -34,7 +34,7 @@ export function PillFilterList({ x }) {
     <>
       <div
         ref={containerRef}
-        className={className("flex flex-wrap mt-2", {
+        className={className("flex flex-wrap", {
           "max-h-[6rem] overflow-hidden": !selectedShowMore,
         })}
       >
@@ -44,8 +44,10 @@ export function PillFilterList({ x }) {
             selected={selected.includes(x)}
             onClick={() => {
               if (selected.includes(x)) {
+                onRemove(x)
                 setSelected([...selected.filter((val) => val !== x)]);
               } else {
+                onAdd(x)
                 setSelected([...selected, x]);
               }
             }}

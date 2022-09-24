@@ -15,51 +15,51 @@ import RefreshInterval from "./RefreshInterval";
 import SearchableDropdown from "../../components/SearchableDropdown";
 import SideDialog from "../../components/SideDialog";
 import Table from "./Table";
-import TagFilters from "./TagFilters";
 import moment from "moment";
 
-const Dashboard = () => {
-  const getCurrentTime = () => {
-    let now = new Date();
-    let start = moment(
-      new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate(),
-        now.getHours(),
-        now.getMinutes(),
-        0,
-        0
-      )
-    );
+const getCurrentTime = () => {
+  let now = new Date();
+  let start = moment(
+    new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      now.getHours(),
+      now.getMinutes(),
+      0,
+      0
+    )
+  );
 
-    return moment(start);
+  return moment(start);
+};
+
+function getRange() {
+  return {
+    "Past 10 Minutes": [
+      getCurrentTime().subtract(10, "minutes"),
+      getCurrentTime(),
+    ],
+    "Past 1 Hour": [getCurrentTime().subtract(60, "minutes"), getCurrentTime()],
+    "Past 5 Hours": [getCurrentTime().subtract(5, "hours"), getCurrentTime()],
+    "Past 24 Hours": [getCurrentTime().subtract(24, "hours"), getCurrentTime()],
+    "Past 3 Days": [getCurrentTime().subtract(3, "days"), getCurrentTime()],
+    "Past 7 Days": [getCurrentTime().subtract(7, "days"), getCurrentTime()],
+    "Past 2 Months": [getCurrentTime().subtract(2, "months"), getCurrentTime()],
   };
+}
 
-  function getRange() {
-    return {
-      "Past 10 Minutes": [
-        getCurrentTime().subtract(10, "minutes"),
-        getCurrentTime(),
-      ],
-      "Past 1 Hour": [
-        getCurrentTime().subtract(60, "minutes"),
-        getCurrentTime(),
-      ],
-      "Past 5 Hours": [getCurrentTime().subtract(5, "hours"), getCurrentTime()],
-      "Past 24 Hours": [
-        getCurrentTime().subtract(24, "hours"),
-        getCurrentTime(),
-      ],
-      "Past 3 Days": [getCurrentTime().subtract(3, "days"), getCurrentTime()],
-      "Past 7 Days": [getCurrentTime().subtract(7, "days"), getCurrentTime()],
-      "Past 2 Months": [
-        getCurrentTime().subtract(2, "months"),
-        getCurrentTime(),
-      ],
-    };
-  }
+let rangeArr = [
+  "Past 10 Minutes",
+  "Past 1 Hour",
+  "Past 5 Hours",
+  "Past 24 Hours",
+  "Past 3 Days",
+  "Past 7 Days",
+  "Past 2 Months",
+];
 
+const Dashboard = () => {
   const [open, setOpen] = useState(false);
   const [clickedRow, setClickedRow] = useState({});
   const [searchOpen, setSearchOpen] = useState(false);
@@ -69,7 +69,11 @@ const Dashboard = () => {
   const [range, setRange] = useState(0);
   const [selectedLogSchema, setSelectedLogSchema] = useState([]);
   const [availableTags, setAvailableTags] = useState([]);
+  const [availableMeta, setAvailableMeta] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedMeta, setSelectedMeta] = useState([]);
+  const [selectedFilters, setSelectedFilters] = useState([]);
+  const [filters, setFilters] = useState([]);
   const [startTime, setStartTime] = useState(
     getCurrentTime().subtract(10, "minutes")
   );
@@ -82,17 +86,15 @@ const Dashboard = () => {
     }
   }
 
-  const [endTime, setEndTime] = useState(getCurrentTime());
+  function addAvailableMeta(label) {
+    if (availableMeta.includes(label)) {
+      return;
+    } else {
+      setAvailableMeta([...availableMeta, label]);
+    }
+  }
 
-  let rangeArr = [
-    "Past 10 Minutes",
-    "Past 1 Hour",
-    "Past 5 Hours",
-    "Past 24 Hours",
-    "Past 3 Days",
-    "Past 7 Days",
-    "Past 2 Months",
-  ];
+  const [endTime, setEndTime] = useState(getCurrentTime());
 
   const [selectedLogStream, setSelectedLogStream] = useState(null);
 
@@ -139,6 +141,9 @@ const Dashboard = () => {
       onSuccess: () => {
         setSelectedTags([]);
         setAvailableTags([]);
+        setAvailableMeta([]);
+        setSelectedFilters([]);
+        setSelectedMeta([])
       },
       retry: false,
       enabled:
@@ -152,6 +157,16 @@ const Dashboard = () => {
         interval === null || range === 7 ? false : interval * 1000,
     }
   );
+
+  function getData(logQueries) {
+    let dataSet = [];
+    logQueries?.data?.pages?.forEach &&
+      logQueries?.data?.pages?.data?.forEach((element) => {
+        dataSet = [...dataSet, element];
+      });
+
+    return dataSet;
+  }
 
   const { fetchNextPage } = logQueries;
 
@@ -174,6 +189,35 @@ const Dashboard = () => {
 
   function removeTag(tag) {
     setSelectedTags([...selectedTags.filter((item) => item !== tag)]);
+  }
+
+  function removeMeta(tag) {
+    setSelectedMeta([...selectedMeta.filter((item) => item !== tag)]);
+  }
+
+  function removeFilter(column, contains, query) {
+    setSelectedFilters([
+      ...selectedFilters.filter(
+        (item) =>
+          !(
+            item.column === column &&
+            item.contains === contains &&
+            item.query === query
+          )
+      ),
+    ]);
+  }
+
+  function addTag(tag) {
+    setSelectedTags([...selectedTags, tag]);
+  }
+
+  function addFilter(filter) {
+    setSelectedFilters([...selectedFilters, filter]);
+  }
+
+  function addMeta(tag) {
+    setSelectedMeta([...selectedMeta, tag]);
   }
 
   return (
@@ -213,7 +257,20 @@ const Dashboard = () => {
                 interval={interval}
                 setInterval={setInterval}
               />
-              <Filters />
+              <Filters
+                filter={filters}
+                setFilters={setFilters}
+                schema={logStreamSchema?.data?.data}
+                data={getData(logQueries)}
+                availableTags={availableTags}
+                availableMeta={availableMeta}
+                removeTag={removeTag}
+                removeMeta={removeMeta}
+                addTag={addTag}
+                addMeta={addMeta}
+                addFilter={addFilter}
+                removeFilter={removeFilter}
+              />
             </div>
           </div>
 
@@ -224,6 +281,7 @@ const Dashboard = () => {
                   logStreamSchema={logStreamSchema}
                   setSelectedLogSchema={setSelectedLogSchema}
                   selectedLogSchema={selectedLogSchema}
+                  availableTags={availableTags}
                 />
               </div>
 
@@ -238,6 +296,9 @@ const Dashboard = () => {
                   setOpen={setOpen}
                   setClickedRow={setClickedRow}
                   addAvailableTags={addAvailableTags}
+                  addAvailableMeta={addAvailableMeta}
+                  selectedMeta={selectedMeta}
+                  selectedFilters={selectedFilters}
                 />
               </div>
             </div>
