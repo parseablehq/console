@@ -35,7 +35,7 @@ export function PillFilterList({ x, onAdd, onRemove, values }) {
       <div
         ref={containerRef}
         className={className("flex flex-wrap", {
-          "max-h-[6rem] overflow-hidden": !selectedShowMore,
+          "max-h-[5rem] overflow-hidden": !selectedShowMore,
         })}
       >
         {x.map((x) => (

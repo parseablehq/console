@@ -106,7 +106,7 @@ export default function Filters({
           </>
         </Popover.Button>
       </div>
-      <Popover.Panel className="absolute mt-1 right-0 w-[48rem] min-h-[23rem] overflow-auto rounded-md bg-gray-50 py-1 border border-1 border-gray-500">
+      <Popover.Panel className="absolute mt-1 flex flex-col right-0 w-[48rem] min-h-[23rem] overflow-auto rounded-md bg-gray-50 py-1 border border-1 border-gray-500">
         <div className="flex flex-col mx-4 my-2">
           <div className="flex">
             <SearchableDropdown
@@ -253,8 +253,8 @@ export default function Filters({
             })}
           </div>
         </div>
-        <div className="flex">
-          <div className="ml-auto mr-4 mb-3">
+        <div className="flex mt-auto flex-1">
+          <div className="ml-auto mr-4 mb-3 mt-auto">
             <Popover.Button as={Button}>Close</Popover.Button>
           </div>
         </div>

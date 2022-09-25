@@ -1,5 +1,4 @@
 import React from "react";
-import { XCircleIcon } from "@heroicons/react/solid";
 import className from "classnames";
 
 const PillFilter = ({ text, onClick, selected }) => {
@@ -7,9 +6,9 @@ const PillFilter = ({ text, onClick, selected }) => {
     <div
       onClick={() => onClick()}
       className={className(
-        "block w-min py-3 px-6 max-w-[15rem] min-w-[8rem] cursor-pointer hover:bg-gray-600 hover:text-gray-50 border-2 border-gray-600 truncate mr-3 my-1 text-sm font-semibold leading-3 rounded-full",
-        { "bg-gray-600 text-gray-50": selected },
-        { "bg-gray-50 text-gray-600": !selected }
+        "block w-min py-2 px-3 max-w-[15rem] cursor-pointer hover:bg-gray-600 hover:text-gray-50 border-2 truncate mr-3 my-1 text-xs leading-3 rounded-xl",
+        { "bg-gray-600 font-semibold text-gray-50 border-gray-600": selected },
+        { "bg-gray-50 font-medium text-gray-600 border-gray-400": !selected }
 
       )}
     >
