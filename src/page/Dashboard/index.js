@@ -103,6 +103,11 @@ const Dashboard = () => {
     refetchOnWindowFocus: false,
     onSuccess: (data) => {
       setSelectedLogStream(data.data[0]);
+      setSelectedTags([]);
+      setAvailableTags([]);
+      setAvailableMeta([]);
+      setSelectedFilters([]);
+      setSelectedMeta([]);
     },
   });
 
@@ -131,6 +136,7 @@ const Dashboard = () => {
       return field.name;
     }),
     () => {
+      console.log(startTime, endTime);
       if (range < 7) {
         const rangeVal = getRange();
         setStartTime(rangeVal[rangeArr[range]][0]);
@@ -138,13 +144,6 @@ const Dashboard = () => {
       }
     },
     {
-      onSuccess: () => {
-        setSelectedTags([]);
-        setAvailableTags([]);
-        setAvailableMeta([]);
-        setSelectedFilters([]);
-        setSelectedMeta([])
-      },
       retry: false,
       enabled:
         !!(
@@ -221,121 +220,111 @@ const Dashboard = () => {
   }
 
   return (
-    <>
-      <Layout
-        labels={
-          logQueries?.data?.data?.length > 0 &&
-          logQueries?.data?.data[0]?.labels
-        }
-      >
-        <div className="">
-          <div className="sticky bg-white border top-0 flex-shrink-0 flex h-24 items-center  ">
-            <div className="flex-1 px-4 flex justify-center">
-              <SearchableDropdown
-                label={"Streams"}
-                data={
-                  logStream?.data?.data != null ? logStream?.data?.data : []
-                }
-                setValue={setSelectedLogStream}
-                value={selectedLogStream}
-              />
-              <DateSearchField
-                range={range}
-                setStartTime={setStartTime}
-                setEndTime={setStartTime}
-                startTime={startTime}
-                endTime={endTime}
-                setRange={setRange}
-                getRange={getRange}
-                searchSelected={searchSelected}
-                setSearchSelected={setSearchSelected}
-                setSearchOpen={setSearchOpen}
-                setSearchQuery={setSearchQuery}
-              />
-              <RefreshInterval
-                range={range}
-                interval={interval}
-                setInterval={setInterval}
-              />
-              <Filters
-                filter={filters}
-                setFilters={setFilters}
-                schema={logStreamSchema?.data?.data}
-                data={getData(logQueries)}
-                availableTags={availableTags}
-                availableMeta={availableMeta}
-                removeTag={removeTag}
-                removeMeta={removeMeta}
-                addTag={addTag}
-                addMeta={addMeta}
-                addFilter={addFilter}
-                removeFilter={removeFilter}
-              />
-            </div>
-          </div>
+    <Layout
+      labels={
+        logQueries?.data?.data?.length > 0 && logQueries?.data?.data[0]?.labels
+      }
+    >
+      <div className="bg-primary">
+        <div className="sticky top-0 h-screen">
+          <Field
+            logStreamSchema={logStreamSchema}
+            setSelectedLogSchema={setSelectedLogSchema}
+            selectedLogSchema={selectedLogSchema}
+            availableTags={availableTags}
+          />
+        </div>
+      </div>
 
-          <div className="overflow-auto">
-            <div className="flex min-w-full">
-              <div className=" min-w-[16rem]">
-                <Field
-                  logStreamSchema={logStreamSchema}
-                  setSelectedLogSchema={setSelectedLogSchema}
-                  selectedLogSchema={selectedLogSchema}
-                  availableTags={availableTags}
-                />
-              </div>
-
-              <div className="shadow ring-1 ring-black ring-opacity-5 md:rounded-lg"></div>
-
-              <div className="overflow-x-scroll flex-1 ">
-                <Table
-                  selectedLogSchema={selectedLogSchema}
-                  logQueries={logQueries}
-                  selectedTags={selectedTags}
-                  searchQuery={searchQuery}
-                  setOpen={setOpen}
-                  setClickedRow={setClickedRow}
-                  addAvailableTags={addAvailableTags}
-                  addAvailableMeta={addAvailableMeta}
-                  selectedMeta={selectedMeta}
-                  selectedFilters={selectedFilters}
-                />
-              </div>
-            </div>
-          </div>
-          {logStream.isError || !logStream?.data?.data.length ? (
-            <div
-              style={{ transform: "translateX(-50%) translateY(-50%)" }}
-              className="absolute -z-10 font-semibold text-gray-500 left-1/2 top-80"
-            >
-              Please create a log stream first to search logs. Refer to the
-              documentation{" "}
-              <a
-                rel="noreferrer"
-                target={"_blank"}
-                className="text-blue-500 hover:underline"
-                href="https://www.parseable.io/docs/intro"
-              >
-                here
-              </a>
-              .
-            </div>
-          ) : (
-            <></>
-          )}
+      <div className="min-w-0 flex-1">
+        <div className="sticky z-10 bg-white border px-4 top-0 flex-shrink-0 flex h-24 items-center  ">
+          <SearchableDropdown
+            label={"Streams"}
+            data={logStream?.data?.data != null ? logStream?.data?.data : []}
+            setValue={setSelectedLogStream}
+            value={selectedLogStream}
+          />
+          <DateSearchField
+            range={range}
+            setStartTime={setStartTime}
+            setEndTime={setEndTime}
+            startTime={startTime}
+            endTime={endTime}
+            setRange={setRange}
+            getRange={getRange}
+            searchSelected={searchSelected}
+            setSearchSelected={setSearchSelected}
+            setSearchOpen={setSearchOpen}
+            setSearchQuery={setSearchQuery}
+            logQueries={logQueries}
+          />
+          <RefreshInterval
+            range={range}
+            interval={interval}
+            setInterval={setInterval}
+          />
+          <Filters
+            filter={filters}
+            setFilters={setFilters}
+            schema={logStreamSchema?.data?.data}
+            data={getData(logQueries)}
+            availableTags={availableTags}
+            availableMeta={availableMeta}
+            removeTag={removeTag}
+            removeMeta={removeMeta}
+            addTag={addTag}
+            addMeta={addMeta}
+            addFilter={addFilter}
+            removeFilter={removeFilter}
+          />
+        </div>
+        <div className="overflow-x-scroll min-w-0">
+          <Table
+            selectedLogSchema={selectedLogSchema}
+            logQueries={logQueries}
+            selectedTags={selectedTags}
+            searchQuery={searchQuery}
+            setOpen={setOpen}
+            setClickedRow={setClickedRow}
+            addAvailableTags={addAvailableTags}
+            addAvailableMeta={addAvailableMeta}
+            selectedMeta={selectedMeta}
+            selectedFilters={selectedFilters}
+          />
         </div>
 
-        {Object.keys(searchSelected).length !== 0 && (
-          <SideDialog
-            open={searchOpen}
-            setOpen={setSearchOpen}
-            data={searchSelected}
-          />
+        {logStream.isError || !logStream?.data?.data.length ? (
+          <div
+            style={{ transform: "translateX(-50%) translateY(-50%)" }}
+            className="absolute -z-10 font-semibold text-gray-500 left-1/2 top-80"
+          >
+            Please create a log stream first to search logs. Refer to the
+            documentation{" "}
+            <a
+              rel="noreferrer"
+              target={"_blank"}
+              className="text-blue-500 hover:underline"
+              href="https://www.parseable.io/docs/intro"
+            >
+              here
+            </a>
+            .
+          </div>
+        ) : (
+          <></>
         )}
+      </div>
 
-        <SideDialog open={open} setOpen={setOpen} data={clickedRow} />
-      </Layout>
-    </>
+      {Object.keys(searchSelected).length !== 0 && (
+        <SideDialog
+          open={searchOpen}
+          setOpen={setSearchOpen}
+          data={searchSelected}
+        />
+      )}
+
+      <SideDialog open={open} setOpen={setOpen} data={clickedRow} />
+    </Layout>
   );
 };
 

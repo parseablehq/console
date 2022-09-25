@@ -163,7 +163,7 @@ export default function Filters({
           {!!availableTags?.length && (
             <>
               <p className="text-label mt-4 ml-1" htmlFor="">
-                Filter
+                Filter Tags
               </p>
               <PillFilterList
                 x={availableTags || []}
@@ -191,7 +191,7 @@ export default function Filters({
           {!!availableMeta?.length && (
             <>
               <p className="text-label mt-4 ml-1" htmlFor="">
-                Filter
+                Filter Metadata
               </p>
               <PillFilterList
                 x={availableMeta || []}
@@ -222,7 +222,7 @@ export default function Filters({
             {filter.map((val) => {
               if (val.type === "Column") {
                 return (
-                  <span className="my-2">
+                  <span className="my-1">
                     <Pill
                       text={`${val.column} ${
                         val.contains ? "Contain" : "Not contain"

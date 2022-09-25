@@ -16,7 +16,7 @@ const DateSearchField = ({
   setSearchOpen,
   setSearchQuery,
 }) => (
-  <div>
+  <div className="flex-1">
     <label htmlFor="location" className="text-label ml-3">
       Search
     </label>
@@ -37,8 +37,8 @@ const DateSearchField = ({
           setSearchOpen(true);
         }}
       >
-        <div className="relative mt-1">
-          <div className="relative cursor-default w-96">
+        <div className="relative mt-1 flex-1">
+          <div className="relative cursor-default">
             <Combobox.Input
               className="input rounded-l-none placeholder-iconGrey"
               // displayValue={(data) => 'Search'}
