@@ -102,7 +102,7 @@ const HelpDialog = ({ isOpen, setIsOpen }) => {
                   </a>
 
                   <a
-                    href="https://www.parseable.io/docs"
+                    href="https://www.parseable.io/docs/introduction"
                     target="_blank"
                     rel="noreferrer"
                     style={{

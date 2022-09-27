@@ -7,7 +7,6 @@ import React, { useState } from "react";
 
 import Dialogue from "./Dialogue";
 import Logo from "../../assets/images/Group 295.svg";
-import StreamIcon from "../../assets/images/Icon awesome-stream (1).svg";
 import UserIcon from "../../assets/images/Icon feather-user.svg";
 import { useNavigate } from "react-router-dom";
 
@@ -34,11 +33,7 @@ const Navbar = ({ setSidebarOpen }) => {
           <div className="flex-1 flex">
             <img alt="" className="w-32" src={Logo} />
           </div>
-          <div className="ml-4 flex items-center md:ml-6">
-            <button className="flex space-x-4 text-white font-medium h-full border-b-4 pl-7 pr-8 items-center  justify-center  border-white">
-              <img alt="" src={StreamIcon} className="w-6" />
-              <p>Streams</p>
-            </button>
+          <div className="ml-4 flex items-center md:ml-6"> 
             <button
               onClick={() => setIsHelpDialogueOpen(true)}
               className={

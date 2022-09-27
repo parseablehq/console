@@ -64,8 +64,8 @@ const Table = ({
         </thead>
         {logQueries.isLoading &&
         (!logQueries.data ||
-          !logQueries.data?.data ||
-          logQueries.data?.data?.length === 0) ? (
+          !logQueries.data?.pages ||
+          logQueries.data?.pages?.length === 0) ? (
           <tbody>
             <tr align={"center"}>
               <td
@@ -108,9 +108,6 @@ const Table = ({
                           className="cursor-pointer hover:bg-slate-100 hover:shadow"
                           key={index}
                         >
-                          {console.log(
-                            filterCheck(data)
-                          )}
                           {selectedLogSchema.map((schema) => (
                             <td className="truncate text-ellipsis overflow-hidden max-w-200 sm:max-w-xs md:max-w-sm lg:max-w-sm  xl:max-w-md px-3 py-4 text-xs md:text-sm text-gray-700">
                               {data[schema] || ""}

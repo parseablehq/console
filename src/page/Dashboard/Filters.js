@@ -19,14 +19,14 @@ export default function Filters({
   removeFilter,
 }) {
   const [columnValue, setColumnValue] = useState();
-  const [operator, setOperator] = useState({ name: "Contain" });
+  const [operator, setOperator] = useState({ name: "Contains" });
   const [queryValue, setQueryValue] = useState();
   const [filter, setFilters] = useState([]);
 
   useEffect(() => {
     setFilters([]);
     setColumnValue();
-    setOperator({ name: "Contain" });
+    setOperator({ name: "Contains" });
     setQueryValue();
   }, [schema]);
 
@@ -54,63 +54,21 @@ export default function Filters({
 
   return (
     <Popover className="relative ml-3">
-      <label className="text-label ml-1" htmlFor="">
-        Filter
-      </label>
+      <label className="text-label ml-1" htmlFor=""></label>
       <div className=" w-full mt-1">
-        <Popover.Button className={"input w-[23rem] text-left"}>
-          <>
-            {filter?.length ? (
-              <div className="flex">
-                {filter.slice(0, 3).map((val) => {
-                  if (val.type === "Column") {
-                    return (
-                      <Pill
-                        equal
-                        text={`${val.column} ${
-                          val.contains ? "Contain" : "Not contain"
-                        } ${val.query}`}
-                        onClose={() => {
-                          removeGlobalFilter(
-                            val.column,
-                            val.contains,
-                            val.query
-                          );
-                        }}
-                      />
-                    );
-                  } else {
-                    return (
-                      <Pill
-                        equal
-                        text={val.value}
-                        onClose={() => {
-                          if (val.type === "Tag") {
-                            removeTag(val.value);
-                          } else {
-                            removeMeta(val.value);
-                          }
-                          removeTagOrMeta(val.type, val.value);
-                        }}
-                      />
-                    );
-                  }
-                })}
-                {filter.length > 3 ? (
-                  <Pill text={`+${filter.length - 3}`} />
-                ) : null}
-              </div>
-            ) : (
-              "Filter"
-            )}
-          </>
+        <Popover.Button className={"input w-36 text-left flex"}>
+          
+          <span className={"block mr-1"}>Filter</span>{filter.length ? <Pill text={`${filter.length}`} /> : null}
         </Popover.Button>
       </div>
       <Popover.Panel className="absolute mt-1 flex flex-col right-0 w-[48rem] min-h-[23rem] overflow-auto rounded-md bg-gray-50 py-1 border border-1 border-gray-500">
         <div className="flex flex-col mx-4 my-2">
           <div className="flex">
             <SearchableDropdown
-              data={schema?.fields.filter(field => field.name !== "p_metadata" && field.name !== "p_tags")}
+              data={schema?.fields.filter(
+                (field) =>
+                  field.name !== "p_metadata" && field.name !== "p_tags"
+              )}
               label={"Column Filters"}
               setValue={setColumnValue}
               value={columnValue}
@@ -120,7 +78,7 @@ export default function Filters({
               <SearchableDropdown
                 setValue={setOperator}
                 value={operator}
-                data={[{ name: "Contain" }, { name: "Not contain" }]}
+                data={[{ name: "Contains" }, { name: "Doesn't Contain" }]}
               />
             </div>
             <div className="ml-2">
@@ -139,18 +97,18 @@ export default function Filters({
                     {
                       type: "Column",
                       query: queryValue,
-                      contains: operator.name === "Contain",
+                      contains: operator.name === "Contains",
                       column: columnValue.name,
                     },
                   ]);
 
                   addFilter({
                     query: queryValue,
-                    contains: operator.name === "Contain",
+                    contains: operator.name === "Contains",
                     column: columnValue.name,
                   });
                   setQueryValue();
-                  setOperator({ name: "Contain" });
+                  setOperator({ name: "Contains" });
                   setColumnValue();
                 }}
                 disabled={!(queryValue && operator && columnValue)}
@@ -225,7 +183,7 @@ export default function Filters({
                   <span className="my-1">
                     <Pill
                       text={`${val.column} ${
-                        val.contains ? "Contain" : "Not contain"
+                        val.contains ? "Contains" : "Doesn't Contain"
                       } ${val.query}`}
                       onClose={() => {
                         removeGlobalFilter(val.column, val.contains, val.query);

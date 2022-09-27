@@ -136,7 +136,6 @@ const Dashboard = () => {
       return field.name;
     }),
     () => {
-      console.log(startTime, endTime);
       if (range < 7) {
         const rangeVal = getRange();
         setStartTime(rangeVal[rangeArr[range]][0]);
@@ -278,7 +277,7 @@ const Dashboard = () => {
             removeFilter={removeFilter}
           />
         </div>
-        <div className="overflow-x-scroll min-w-0">
+        <div className="overflow-x-auto min-w-0">
           <Table
             selectedLogSchema={selectedLogSchema}
             logQueries={logQueries}
@@ -293,7 +292,8 @@ const Dashboard = () => {
           />
         </div>
 
-        {logStream.isError || !logStream?.data?.data.length ? (
+        {!logStream.isLoading &&
+        (logStream.isError || !logStream?.data?.data.length) ? (
           <div
             style={{ transform: "translateX(-50%) translateY(-50%)" }}
             className="absolute -z-10 font-semibold text-gray-500 left-1/2 top-80"

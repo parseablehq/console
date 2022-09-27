@@ -12,16 +12,16 @@ const Field = ({
   const [isOpen, setIsOpen] = useState(false);
   return (
     <div className="flex flex-col flex-1">
-      <div className="mt-4 flex">
+      <div className="mt-4 flex mb-2">
         <button
           onClick={() => setIsOpen(!isOpen)}
           className={classNames(
             "text-sm flex mx-2 flex-1 transition-width font-light text-left hover:bg-primary-400 text-gray-300",
             {
-              "border-secondary border-l-2 bg-primary-400 flex-row items-center px-4 py-2 w-48":
+              "border-secondary border-l-2 bg-primary-400 flex-row items-center px-2 py-1  min-w-[12rem]":
                 isOpen,
             },
-            { "flex-col justify-center items-center py-1 px-2 rounded": !isOpen }
+            { "flex-col justify-center items-center px-1 rounded": !isOpen }
           )}
         >
           <TableIcon strokeWidth={0.1} fill={"#eaeaea"} className={classNames(" h-8 w-8 block")} />

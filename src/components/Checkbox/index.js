@@ -2,7 +2,7 @@ import React from "react";
 
 const Checkbox = ({ name, selected, onClick }) => {
   return (
-    <div className="mx-2 my-1 flex">
+    <div className="mx-2 flex">
       <label className="px-5 w-full py-2 hover:bg-primary-400 rounded cursor-pointer">
         <input
           onChange={onClick}
