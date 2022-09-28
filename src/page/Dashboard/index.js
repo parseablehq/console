@@ -62,9 +62,7 @@ let rangeArr = [
 const Dashboard = () => {
   const [open, setOpen] = useState(false);
   const [clickedRow, setClickedRow] = useState({});
-  const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchSelected, setSearchSelected] = useState({});
   const [interval, setInterval] = useState(null);
   const [range, setRange] = useState(0);
   const [selectedLogSchema, setSelectedLogSchema] = useState([]);
@@ -136,7 +134,7 @@ const Dashboard = () => {
       return field.name;
     }),
     () => {
-      if (range < 7) {
+      if (range < 7 && interval) {
         const rangeVal = getRange();
         setStartTime(rangeVal[rangeArr[range]][0]);
         setEndTime(rangeVal[rangeArr[range]][1]);
@@ -251,9 +249,6 @@ const Dashboard = () => {
             endTime={endTime}
             setRange={setRange}
             getRange={getRange}
-            searchSelected={searchSelected}
-            setSearchSelected={setSearchSelected}
-            setSearchOpen={setSearchOpen}
             setSearchQuery={setSearchQuery}
             logQueries={logQueries}
           />
@@ -314,14 +309,6 @@ const Dashboard = () => {
           <></>
         )}
       </div>
-
-      {Object.keys(searchSelected).length !== 0 && (
-        <SideDialog
-          open={searchOpen}
-          setOpen={setSearchOpen}
-          data={searchSelected}
-        />
-      )}
 
       <SideDialog open={open} setOpen={setOpen} data={clickedRow} />
     </Layout>

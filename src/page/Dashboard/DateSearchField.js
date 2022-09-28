@@ -1,5 +1,4 @@
 import Calendar from "./DateRangeSeletor";
-import { Combobox } from "@headlessui/react";
 import React from "react";
 import { SearchIcon } from "@heroicons/react/solid";
 
@@ -11,9 +10,6 @@ const DateSearchField = ({
   endTime,
   setRange,
   getRange,
-  searchSelected,
-  setSearchSelected,
-  setSearchOpen,
   setSearchQuery,
 }) => (
   <div className="flex-1">
@@ -30,32 +26,22 @@ const DateSearchField = ({
         setRange={setRange}
         getRange={getRange}
       />
-      <Combobox
-        value={searchSelected}
-        onChange={function (e) {
-          setSearchSelected(e);
-          setSearchOpen(true);
-        }}
-      >
-        <div className="relative mt-1 flex-1">
-          <div className="relative cursor-default">
-            <Combobox.Input
-              className="input rounded-l-none placeholder-iconGrey"
-              // displayValue={(data) => 'Search'}
-              placeholder="Search"
-              onChange={function (e) {
-                setSearchQuery(e.target.value);
-              }}
-            />
-            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
-              <SearchIcon
-                className="h-5 w-5 text-iconGrey"
-                aria-hidden="true"
-              />
-            </Combobox.Button>
-          </div>
+
+      <div className="relative mt-1 flex-1">
+        <div className="relative cursor-default">
+          <input
+            className="input rounded-l-none placeholder-iconGrey"
+            // displayValue={(data) => 'Search'}
+            placeholder="Search"
+            onChange={function (e) {
+              setSearchQuery(e.target.value);
+            }}
+          />
+          <button className="absolute inset-y-0 right-0 flex items-center pr-2">
+            <SearchIcon className="h-5 w-5 text-iconGrey" aria-hidden="true" />
+          </button>
         </div>
-      </Combobox>
+      </div>
     </div>
   </div>
 );

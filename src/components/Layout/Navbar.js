@@ -18,7 +18,7 @@ const Navbar = ({ setSidebarOpen }) => {
   return (
     <>
       <Dialogue isOpen={isHelpDialogueOpen} setIsOpen={setIsHelpDialogueOpen} />
-      <div className=" top-0 z-10 px-10 flex-shrink-0 flex h-16 bg-bluePrimary border-b-2 border-gray-500 shadow">
+      <div className=" top-0 z-10 px-5 flex-shrink-0 flex h-16 bg-bluePrimary border-b-2 border-gray-500 shadow">
         <button
           type="button"
           className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-bluePrimary md:hidden"
@@ -29,7 +29,7 @@ const Navbar = ({ setSidebarOpen }) => {
           <span className="sr-only">Open sidebar</span>
           <MenuAlt2Icon className="h-6 w-6" aria-hidden="true" />
         </button>
-        <div className="flex-1 px-4 flex justify-between">
+        <div className="flex-1 flex justify-between">
           <div className="flex-1 flex">
             <img alt="" className="w-32" src={Logo} />
           </div>
@@ -40,8 +40,8 @@ const Navbar = ({ setSidebarOpen }) => {
                 "flex text-gray-400 py-5 px-7 text-sm border border-l-0 border-t-0 border-b-0 border-r-1 border-gray-400 custom-focus"
               }
             >
-              <QuestionMarkCircleIcon className="h-5 w-5 my-auto mr-2" />
-              <span className={"block mb-1"}>Help</span>
+              <QuestionMarkCircleIcon strokeWidth={1} className="h-5" />
+              <span className={"block ml-1"}>Help</span>
             </button>
             <div className="flex  mx-8">
               <img alt="" className="w-3" src={UserIcon} />

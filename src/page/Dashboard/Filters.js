@@ -1,3 +1,6 @@
+import {
+  AdjustmentsIcon,
+} from "@heroicons/react/outline";
 import Button from "../../components/Button";
 import Pill from "../../components/Pill";
 import { PillFilterList } from "./../../components/PillFilterList/index";
@@ -20,14 +23,14 @@ export default function Filters({
 }) {
   const [columnValue, setColumnValue] = useState();
   const [operator, setOperator] = useState({ name: "Contains" });
-  const [queryValue, setQueryValue] = useState();
+  const [queryValue, setQueryValue] = useState("");
   const [filter, setFilters] = useState([]);
 
   useEffect(() => {
     setFilters([]);
     setColumnValue();
     setOperator({ name: "Contains" });
-    setQueryValue();
+    setQueryValue("");
   }, [schema]);
 
   function removeTagOrMeta(type, val) {
@@ -59,6 +62,8 @@ export default function Filters({
         <Popover.Button className={"input w-36 text-left flex"}>
           
           <span className={"block mr-1"}>Filter</span>{filter.length ? <Pill text={`${filter.length}`} /> : null}
+
+          <AdjustmentsIcon className="h-5 ml-auto text-gray-500" />
         </Popover.Button>
       </div>
       <Popover.Panel className="absolute mt-1 flex flex-col right-0 w-[48rem] min-h-[23rem] overflow-auto rounded-md bg-gray-50 py-1 border border-1 border-gray-500">
@@ -107,9 +112,8 @@ export default function Filters({
                     contains: operator.name === "Contains",
                     column: columnValue.name,
                   });
-                  setQueryValue();
+                  setQueryValue("");
                   setOperator({ name: "Contains" });
-                  setColumnValue();
                 }}
                 disabled={!(queryValue && operator && columnValue)}
               >
@@ -183,7 +187,7 @@ export default function Filters({
                   <span className="my-1">
                     <Pill
                       text={`${val.column} ${
-                        val.contains ? "Contains" : "Doesn't Contain"
+                        val.contains ? "contains" : "doesn't contain"
                       } ${val.query}`}
                       onClose={() => {
                         removeGlobalFilter(val.column, val.contains, val.query);
