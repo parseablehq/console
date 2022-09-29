@@ -1,12 +1,11 @@
-import {
-  AdjustmentsIcon,
-} from "@heroicons/react/outline";
+import { AdjustmentsIcon } from "@heroicons/react/outline";
 import Button from "../../components/Button";
 import Pill from "../../components/Pill";
 import { PillFilterList } from "./../../components/PillFilterList/index";
 import { Popover } from "@headlessui/react";
 import React from "react";
 import SearchableDropdown from "../../components/SearchableDropdown";
+import Searchbar from "./Searchbar";
 import { useEffect } from "react";
 import { useState } from "react";
 
@@ -56,14 +55,15 @@ export default function Filters({
   }
 
   return (
-    <Popover className="relative ml-3">
+    <Popover className="relative ml-3 flex-1">
       <label className="text-label ml-1" htmlFor=""></label>
-      <div className=" w-full mt-1">
-        <Popover.Button className={"input w-36 text-left flex"}>
-          
-          <span className={"block mr-1"}>Filter</span>{filter.length ? <Pill text={`${filter.length}`} /> : null}
+      <div className="flex mt-1">
+        <Searchbar />
+        <Popover.Button className={"input rounded-l-none w-min text-left flex"}>
+          <span className={"block mr-1"}>Filter</span>
+          {filter.length ? <Pill text={`${filter.length}`} /> : null}
 
-          <AdjustmentsIcon className="h-5 ml-auto text-gray-500" />
+          <AdjustmentsIcon className="h-5 ml-2 text-gray-500" />
         </Popover.Button>
       </div>
       <Popover.Panel className="absolute mt-1 flex flex-col right-0 w-[48rem] min-h-[23rem] overflow-auto rounded-md bg-gray-50 py-1 border border-1 border-gray-500">

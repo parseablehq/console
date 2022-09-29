@@ -4,7 +4,7 @@
 
 @layer components {
   .focus {
-    @apply focus:ring-secondary focus:border-secondary focus:ring-1 focus:outline-0;
+    @apply focus:ring-secondary focus:border-secondary focus:ring-0 focus:outline-0;
   }
 
   .text-input {

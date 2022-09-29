@@ -251,9 +251,6 @@ const Dashboard = () => {
             getRange={getRange}
             setSearchQuery={setSearchQuery}
             logQueries={logQueries}
-          />
-          <RefreshInterval
-            range={range}
             interval={interval}
             setInterval={setInterval}
           />

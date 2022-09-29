@@ -1,5 +1,5 @@
 .react-datepicker__day--in-range {
-  @apply bg-bluePrimary;
+  @apply bg-primary-200;
   opacity: 0.8;
 }
 
@@ -34,7 +34,7 @@
 
 .custom-date-picker-day-start {
   opacity: 1;
-  @apply bg-bluePrimary rounded-l-lg;
+  @apply bg-primary-200 rounded-l-lg;
 }
 
 .react-datepicker__day-name,
@@ -48,15 +48,20 @@
 
 .react-datepicker__day--in-selecting-range {
   color: #a1a1a1;
-  @apply bg-bluePrimary;
+  @apply bg-primary-200;
 }
 
 .custom-date-picker-day-end {
   opacity: 1;
-  @apply bg-bluePrimary rounded-r-lg;
+  @apply bg-primary-200 rounded-r-lg;
+}
+
+.custom-date-picker-day-same {
+  opacity: 1;
+  @apply bg-primary-200 rounded-lg;
 }
 
 .react-datepicker__day--in-selecting-range:not(.react-datepicker__day--in-range, .react-datepicker__month-text--in-range, .react-datepicker__quarter-text--in-range, .react-datepicker__year-text--in-range) {
-  @apply bg-bluePrimary;
+  @apply bg-primary-200;
   color: #eaeaea;
 }

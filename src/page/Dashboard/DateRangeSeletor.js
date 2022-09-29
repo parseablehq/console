@@ -127,7 +127,7 @@ const DateRangeSelector = ({
                     setIsOpen(false);
                     getDate(index);
                   }}
-                  className={`w-40 hover:bg-primary-200 text-left px-3 hover:border-primary-200 hover:text-gray-100 py-2 border border-gray-200 text-sm text-gray-600 font-medium`}
+                  className={`w-40 hover:bg-primary-200 text-left px-3 hover:border-primary-200 hover:text-gray-100 py-2 border border-gray-200 text-sm text-gray-600`}
                 >
                   {item}
                 </button>
@@ -189,23 +189,23 @@ const DateRangeSelector = ({
                 </div>
               )}
               <div className="mt-auto mb-2 flex">
-                <div className="mr-auto mt-2 font-semibold text-xs">
+                <div className="mr-auto mt-2  font-semibold text-xs">
                   GMT {moment().format("Z")}
                 </div>
                 <button
                   onClick={function () {
                     setIsOpen(false);
                   }}
-                  className="ml-auto block mr-2 custom-focus btn text-sm font-semibold text-gray-600 border-gray-400 border-2 p-1 rounded px-3 "
+                  className="ml-auto block mr-2 focus btn text-sm text-gray-600 border-gray-400 border-2 p-1 rounded px-3 "
                 >
-                  close
+                  Close
                 </button>
                 <button
                   disabled={!checkValidDate()}
                   onClick={submitCal}
-                  className="block custom-focus btn text-sm font-semibold text-white border-primary-200 disabled:border-blue-200 disabled:bg-blue-200 border-2 p-1 bg-primary-200 rounded px-3 "
+                  className="block focus btn text-sm text-white border-primary-200 disabled:border-blue-200 disabled:bg-blue-200 border-2 p-1 bg-primary-200 rounded px-3 "
                 >
-                  apply
+                  Apply
                 </button>
               </div>
             </div>

@@ -37,7 +37,7 @@ const Navbar = ({ setSidebarOpen }) => {
             <button
               onClick={() => setIsHelpDialogueOpen(true)}
               className={
-                "flex text-gray-400 py-5 px-7 text-sm border border-l-0 border-t-0 border-b-0 border-r-1 border-gray-400 custom-focus"
+                "flex text-gray-400 py-5 px-7 text-sm border border-l-0 border-t-0 border-b-0 border-r-1 border-gray-400 focus"
               }
             >
               <QuestionMarkCircleIcon strokeWidth={1} className="h-5" />

@@ -64,7 +64,7 @@ const HelpDialog = ({ isOpen, setIsOpen }) => {
                     style={{
                       boxShadow: "0px 2px 10px 3px rgba(0, 0, 0, 0.075)",
                     }}
-                    className="w-56 py-12 px-14 rounded-lg custom-focus"
+                    className="w-56 py-12 px-14 rounded-lg focus"
                   >
                     <img
                       src={SlackIcon}
@@ -86,7 +86,7 @@ const HelpDialog = ({ isOpen, setIsOpen }) => {
                     style={{
                       boxShadow: "0px 2px 10px 3px rgba(0, 0, 0, 0.075)",
                     }}
-                    className="w-56 py-12 px-14 rounded-lg custom-focus"
+                    className="w-56 py-12 px-14 rounded-lg focus"
                   >
                     <img
                       src={GitHubIcon}
@@ -108,7 +108,7 @@ const HelpDialog = ({ isOpen, setIsOpen }) => {
                     style={{
                       boxShadow: "0px 2px 10px 3px rgba(0, 0, 0, 0.075)",
                     }}
-                    className="w-56 py-12 px-14 rounded-lg custom-focus"
+                    className="w-56 py-12 px-14 rounded-lg focus"
                   >
                     <img
                       src={DocumentationIcon}
