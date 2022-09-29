@@ -1,5 +1,6 @@
 import Dropdown from "../../components/Dropdown";
 import React from "react";
+import { RefreshIcon } from "@heroicons/react/solid";
 
 const RefreshInterval = ({ range, interval, setInterval }) => {
   const refreshIntervalArray = [
@@ -40,7 +41,8 @@ const RefreshInterval = ({ range, interval, setInterval }) => {
         data={refreshIntervalArray}
         value={interval}
         setValue={setInterval}
-        name={"Refresh Interval"}
+        customStyle={"rounded-l-none"}
+        Icon={RefreshIcon}
       />
     </div>
   );

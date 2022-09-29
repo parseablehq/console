@@ -1,6 +1,7 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { QUERY, QUERY_URL } from "./constants";
+
 import { post } from "./index";
-import { QUERY_URL, QUERY } from "./constants";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 const queryLogs = (
   streamName,

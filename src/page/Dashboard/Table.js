@@ -20,7 +20,33 @@ const Table = ({
   setOpen,
   setClickedRow,
   addAvailableTags,
+  addAvailableMeta,
+  selectedMeta,
+  selectedFilters,
 }) => {
+  function filterCheck(data) {
+    if (!selectedFilters.length) {
+      return true;
+    }
+    
+    for (const filter of selectedFilters) {
+      const column = filter.column;
+      const query =
+        typeof filter.query === "number"
+          ? filter.query.toString()
+          : filter.query;
+      const dataField =
+        typeof data[column] === "number"
+          ? data[column].toString()
+          : data[column];
+      let fieldContains = dataField.toLowerCase().includes(query.toLowerCase());
+      if (fieldContains !== filter.contains) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   return (
     <>
       <table className="divide-y min-w-full divide-gray-300">
@@ -38,8 +64,8 @@ const Table = ({
         </thead>
         {logQueries.isLoading &&
         (!logQueries.data ||
-          !logQueries.data?.data ||
-          logQueries.data?.data?.length === 0) ? (
+          !logQueries.data?.pages ||
+          logQueries.data?.pages?.length === 0) ? (
           <tbody>
             <tr align={"center"}>
               <td
@@ -67,6 +93,8 @@ const Table = ({
                   page?.data?.map &&
                   page?.data?.map(
                     (data, index) =>
+                      filterCheck(data) &&
+                      hasSubArray(data.p_metadata?.split("^"), selectedMeta) &&
                       hasSubArray(data.p_tags?.split("^"), selectedTags) &&
                       (searchQuery === "" ||
                         JSON.stringify(data)
@@ -85,8 +113,13 @@ const Table = ({
                               {data[schema] || ""}
                             </td>
                           ))}
+
                           {data.p_tags?.split("^").forEach((tag) => {
-                            addAvailableTags(tag);
+                            tag && addAvailableTags(tag);
+                          })}
+
+                          {data.p_metadata?.split("^").forEach((tag) => {
+                            addAvailableMeta(tag);
                           })}
                         </tr>
                       )

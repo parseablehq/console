@@ -3,34 +3,34 @@ import { Listbox } from "@headlessui/react";
 import React from "react";
 import { SelectorIcon } from "@heroicons/react/solid";
 
-const Dropdown = ({ name, disabled, value, setValue }) => {
+const Dropdown = ({ name, disabled, value, setValue, customStyle, Icon }) => {
   const data = [
     {
-      name: "1 sec",
+      name: "1s",
       value: 1,
     },
     {
-      name: "2 sec",
+      name: "2s",
       value: 2,
     },
     {
-      name: "5 sec",
+      name: "5s",
       value: 5,
     },
     {
-      name: "10 sec",
+      name: "10s",
       value: 10,
     },
     {
-      name: "20 sec",
+      name: "20s",
       value: 20,
     },
     {
-      name: "1 min",
+      name: "1m",
       value: 60,
     },
     {
-      name: "None",
+      name: "Off",
       value: null,
     },
   ];
@@ -42,21 +42,33 @@ const Dropdown = ({ name, disabled, value, setValue }) => {
       </label>
       <Listbox
         as="div"
-        value={value}
+        value={disabled ? null : value}
         onChange={setValue}
-        className="relative text-left ml-3 w-28"
+        className="relative text-left"
       >
         <Listbox.Button
           disabled={disabled}
-          className={"input flex disabled:text-gray-300 mt-1 text-left"}
+          className={`${customStyle} input flex ${
+            disabled && "text-gray-400"
+          } mt-1 text-left`}
         >
           <div>
-            {disabled ? "None" : data.find((obj) => obj.value === value).name}
+            {disabled ? "Off" : data.find((obj) => obj.value === value).name}
           </div>
-          <SelectorIcon
-            className="h-5 w-5 text-gray-500 ml-auto"
-            aria-hidden="true"
-          />
+          {!Icon ? (
+            <SelectorIcon
+              className={`h-5 w-5 ${
+                disabled ? "text-gray-300" : "text-gray-500"
+              } ml-2`}
+              aria-hidden="true"
+            />
+          ) : (
+            <Icon
+              className={`h-5 w-5 ${
+                disabled ? "text-gray-300" : "text-gray-500"
+              } ml-2`}
+            />
+          )}
         </Listbox.Button>
         <Listbox.Options
           className={
@@ -71,7 +83,7 @@ const Dropdown = ({ name, disabled, value, setValue }) => {
                   active={active}
                   selected={selected}
                   // onClick={() => setValue(obj.value)}
-                  className={`block custom-focus cursor-pointer hover:bg-bluePrimary hover:text-white text-sm font-semibold select-none py-2 px-4 text-gray-700`}
+                  className={`block focus cursor-pointer hover:bg-bluePrimary hover:text-white text-sm font-semibold select-none py-2 px-4 text-gray-700`}
                 />
               )}
             </Listbox.Option>

@@ -4,7 +4,7 @@ import { Combobox } from "@headlessui/react";
 import DropdownButton from "../DropdownButton";
 import { SelectorIcon } from "@heroicons/react/solid";
 
-const SearchableDropdown = ({ data, setValue, value, label }) => {
+const SearchableDropdown = ({ data, setValue, value, label, defaultValue }) => {
   const [query, setQuery] = useState("");
 
   const filteredData =
@@ -28,7 +28,7 @@ const SearchableDropdown = ({ data, setValue, value, label }) => {
               setQuery(event.target.value);
             }}
             displayValue={function (val) {
-              return data.length && val ? val.name : "No data found";
+              return data && data.length && val ? val.name : defaultValue || "No data found";
             }}
           />
           <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">

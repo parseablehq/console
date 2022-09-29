@@ -6,6 +6,9 @@ module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      transitionProperty: {
+        width: "width",
+      },
       fontFamily: {
         sans: ["Inter var", ...defaultTheme.fontFamily.sans],
       },
@@ -33,7 +36,8 @@ module.exports = {
         primary: {
           DEFAULT: "#1A237E",
           200: "#4192DF",
-          400: "#1A237E",
+          400: "#1F288E",
+          500: "#1A237E",
           700: "#10143E",
         },
         secondary: {

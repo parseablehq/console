@@ -96,7 +96,7 @@ const DateRangeSelector = ({
           setIsOpen(!isOpen);
         }}
         className={
-          "input rounded-r-none flex border-r-0 disabled:text-gray-300 mt-1 h-[2.5rem] text-left w-80"
+          "input rounded-r-none flex border-r-0 disabled:text-gray-300 mt-1 h-[2.4rem] text-left w-80"
         }
       >
         {range === 7 ? (
@@ -118,8 +118,8 @@ const DateRangeSelector = ({
             "absolute z-50 left-0 mt-2 w-[28rem] origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
           }
         >
-          <div className="flex my-2 w-full border border-grey-200">
-            <div className="flex flex-col ">
+          <div className="flex w-full">
+            <div className="flex my-2 flex-col ">
               {rangeArr.map((item, index) => (
                 <button
                   key={index}
@@ -127,13 +127,13 @@ const DateRangeSelector = ({
                     setIsOpen(false);
                     getDate(index);
                   }}
-                  className={`w-40 hover:bg-bluePrimary text-left px-3 hover:border-bluePrimary hover:text-gray-100 py-2 border border-gray-200 text-sm text-gray-600 font-medium`}
+                  className={`w-40 hover:bg-primary-200 text-left px-3 hover:border-primary-200 hover:text-gray-100 py-2 ${index !==0 ? "border-t" : ""} border-gray-200 text-sm text-gray-600`}
                 >
                   {item}
                 </button>
               ))}
             </div>
-            <div className="flex flex-grow-1 w-full flex-col mx-4">
+            <div className="flex flex-grow-1 w-full py-1 flex-col px-4 border-l border-grey-200">
               <div className="mt-2 relative">
                 <form onSubmit={handleFromDateSubmit}>
                   <label className="text-label" htmlFor="">
@@ -174,7 +174,7 @@ const DateRangeSelector = ({
                 </form>
               </div>
               <div className="ml-auto">
-                <div className="mt-3 px-2 pt-2 rounded-md py-1 bg-bluePrimary">
+                <div className="mt-3 px-2 pt-2 rounded-md py-1 bg-primary-200">
                   <DatePicker
                     setStartDate={setFromInput}
                     setEndDate={setToInput}
@@ -189,23 +189,23 @@ const DateRangeSelector = ({
                 </div>
               )}
               <div className="mt-auto mb-2 flex">
-                <div className="mr-auto mt-2 font-semibold text-xs">
+                <div className="mr-auto mt-2  font-semibold text-xs">
                   GMT {moment().format("Z")}
                 </div>
                 <button
                   onClick={function () {
                     setIsOpen(false);
                   }}
-                  className="ml-auto block mr-2 custom-focus btn text-sm font-semibold text-gray-600 border-gray-400 border-2 p-1 rounded px-3 "
+                  className="ml-auto block mr-2 focus btn text-sm text-gray-600 border-gray-400 border-2 p-1 rounded px-3 "
                 >
-                  close
+                  Close
                 </button>
                 <button
                   disabled={!checkValidDate()}
                   onClick={submitCal}
-                  className="block custom-focus btn text-sm font-semibold text-white border-bluePrimary disabled:border-blue-400 disabled:bg-blue-400 border-2 p-1 bg-bluePrimary rounded px-3 "
+                  className="block focus btn text-sm text-white border-primary-200 disabled:border-blue-200 disabled:bg-blue-200 border-2 p-1 bg-primary-200 rounded px-3 "
                 >
-                  apply
+                  Apply
                 </button>
               </div>
             </div>
