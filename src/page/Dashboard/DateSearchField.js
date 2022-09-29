@@ -16,7 +16,7 @@ const DateSearchField = ({
   <div className="flex">
     <div>
       <label htmlFor="location" className="text-label ml-3">
-        Search
+        Date Filter
       </label>
       <div className="flex ml-3">
         <Calendar
