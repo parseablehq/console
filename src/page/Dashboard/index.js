@@ -11,7 +11,6 @@ import DateSearchField from "./DateSearchField";
 import Field from "./FieldBox";
 import Filters from "./Filters";
 import Layout from "../../components/Layout";
-import RefreshInterval from "./RefreshInterval";
 import SearchableDropdown from "../../components/SearchableDropdown";
 import SideDialog from "../../components/SideDialog";
 import Table from "./Table";
@@ -249,7 +248,6 @@ const Dashboard = () => {
             endTime={endTime}
             setRange={setRange}
             getRange={getRange}
-            setSearchQuery={setSearchQuery}
             logQueries={logQueries}
             interval={interval}
             setInterval={setInterval}
@@ -267,6 +265,7 @@ const Dashboard = () => {
             addMeta={addMeta}
             addFilter={addFilter}
             removeFilter={removeFilter}
+            setSearchQuery={setSearchQuery}
           />
         </div>
         <div className="overflow-x-auto min-w-0">

@@ -1,7 +1,7 @@
 import React from "react";
 import { SearchIcon } from "@heroicons/react/solid";
 
-function Searchbar(setSearchQuery) {
+function Searchbar({ setSearchQuery }) {
   return (
     <div className="relative cursor-default">
       <div className="flex flex-col">
