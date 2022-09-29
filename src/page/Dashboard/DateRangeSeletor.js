@@ -118,8 +118,8 @@ const DateRangeSelector = ({
             "absolute z-50 left-0 mt-2 w-[28rem] origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
           }
         >
-          <div className="flex my-2 w-full">
-            <div className="flex flex-col ">
+          <div className="flex w-full">
+            <div className="flex my-2 flex-col ">
               {rangeArr.map((item, index) => (
                 <button
                   key={index}
@@ -127,13 +127,13 @@ const DateRangeSelector = ({
                     setIsOpen(false);
                     getDate(index);
                   }}
-                  className={`w-40 hover:bg-primary-200 text-left px-3 hover:border-primary-200 hover:text-gray-100 py-2 border border-gray-200 text-sm text-gray-600`}
+                  className={`w-40 hover:bg-primary-200 text-left px-3 hover:border-primary-200 hover:text-gray-100 py-2 ${index !==0 ? "border-t" : ""} border-gray-200 text-sm text-gray-600`}
                 >
                   {item}
                 </button>
               ))}
             </div>
-            <div className="flex flex-grow-1 w-full flex-col px-4 border border-grey-200 border-l-0 border-r-0">
+            <div className="flex flex-grow-1 w-full py-1 flex-col px-4 border-l border-grey-200">
               <div className="mt-2 relative">
                 <form onSubmit={handleFromDateSubmit}>
                   <label className="text-label" htmlFor="">

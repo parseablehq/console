@@ -56,7 +56,7 @@ export default function Filters({
 
   return (
     <Popover className="relative ml-3 flex-1">
-      <label className="text-label ml-1" htmlFor=""></label>
+      <label className="text-label" htmlFor="">Search & Filter</label>
       <div className="flex mt-1">
         <Searchbar />
         <Popover.Button className={"input rounded-l-none w-min text-left flex"}>
