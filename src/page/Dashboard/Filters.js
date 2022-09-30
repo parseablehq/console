@@ -19,6 +19,7 @@ export default function Filters({
   addMeta,
   addFilter,
   removeFilter,
+  setSearchQuery,
 }) {
   const [columnValue, setColumnValue] = useState();
   const [operator, setOperator] = useState({ name: "Contains" });
@@ -56,9 +57,11 @@ export default function Filters({
 
   return (
     <Popover className="relative ml-3 flex-1">
-      <label className="text-label" htmlFor="">Search & Filter</label>
+      <label className="text-label" htmlFor="">
+        Search & Filter
+      </label>
       <div className="flex mt-1">
-        <Searchbar />
+        <Searchbar setSearchQuery={setSearchQuery}/>
         <Popover.Button className={"input rounded-l-none w-min text-left flex"}>
           <span className={"block mr-1"}>Filter</span>
           {filter.length ? <Pill text={`${filter.length}`} /> : null}
