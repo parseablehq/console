@@ -109,7 +109,7 @@ const Dashboard = () => {
 
   const logStreamSchema = useGetLogStreamSchema(selectedLogStream?.name, {
     retry: false,
-    enabled: !!(selectedLogStream?.name != null),
+    enabled: Boolean(selectedLogStream?.name != null),
     refetchOnWindowFocus: false,
     onSuccess: (data) => {
       const allFields = data.data.fields.map((field) => {
@@ -141,11 +141,9 @@ const Dashboard = () => {
     {
       retry: false,
       enabled:
-        !!(
-          logStreamSchema?.data?.data?.fields?.map((field) => {
+        Boolean(logStreamSchema?.data?.data?.fields?.map((field) => {
             return field.name;
-          })?.length !== 0
-        ) && !!(selectedLogStream?.name != null),
+          })?.length !== 0) && Boolean(selectedLogStream?.name != null),
       refetchOnWindowFocus: false,
       refetchInterval:
         interval === null || range === 7 ? false : interval * 1000,
