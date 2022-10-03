@@ -10,7 +10,6 @@ import {
 import DateSearchField from "./DateSearchField";
 import Field from "./FieldBox";
 import Filters from "./Filters";
-import Layout from "../../components/Layout";
 import SearchableDropdown from "../../components/SearchableDropdown";
 import SideDialog from "../../components/SideDialog";
 import Table from "./Table";
@@ -153,10 +152,10 @@ const Dashboard = () => {
     }
   );
 
-  function getData(logQueries) {
+  function getData(logQueriesData) {
     let dataSet = [];
-    logQueries?.data?.pages?.forEach &&
-      logQueries?.data?.pages?.data?.forEach((element) => {
+    logQueriesData?.data?.pages?.forEach &&
+      logQueriesData?.data?.pages?.data?.forEach((element) => {
         dataSet = [...dataSet, element];
       });
 
@@ -216,11 +215,7 @@ const Dashboard = () => {
   }
 
   return (
-    <Layout
-      labels={
-        logQueries?.data?.data?.length > 0 && logQueries?.data?.data[0]?.labels
-      }
-    >
+    <>
       <div className="bg-primary">
         <div className="sticky top-0 h-screen">
           <Field
@@ -307,7 +302,7 @@ const Dashboard = () => {
       </div>
 
       <SideDialog open={open} setOpen={setOpen} data={clickedRow} />
-    </Layout>
+    </>
   );
 };
 
