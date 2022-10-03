@@ -27,7 +27,7 @@ const Calendar = ({ setStartDate, setEndDate, start, end }) => {
   
   return (
     <DatePicker
-      selectsRange={true}
+      selectsRange
       startDate={startDate}
       endDate={endDate}
       filterDate={function (day) {
