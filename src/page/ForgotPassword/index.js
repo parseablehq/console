@@ -22,7 +22,7 @@ const ForgotPassword = () => {
               <div className="w-9 h-9 bg-bluePrimary rounded-full flex justify-center items-center text-white font-bold text-lg">
                 1
               </div>
-              <div className="w-px h-12 bg-gray-300"></div>
+              <div className="w-px h-12 bg-gray-300" />
             </div>
             <div>
               <div className="mt-2 text-bluePrimary font-bold text-sm">
@@ -31,7 +31,7 @@ const ForgotPassword = () => {
               <div className="mt-2 text-gray-700 text-xs">
                 Small description of the step above to be added
               </div>
-              <div className="mt-2 w-full h-px bg-gray-300"></div>
+              <div className="mt-2 w-full h-px bg-gray-300" />
             </div>
           </div>
           <div className="flex space-x-3">
@@ -39,7 +39,7 @@ const ForgotPassword = () => {
               <div className="w-9 h-9 bg-bluePrimary rounded-full flex justify-center items-center text-white font-bold text-lg">
                 2
               </div>
-              <div className="w-px h-12 bg-gray-300"></div>
+              <div className="w-px h-12 bg-gray-300" />
             </div>
             <div>
               <div className="mt-2 text-bluePrimary font-bold text-sm">
@@ -48,7 +48,7 @@ const ForgotPassword = () => {
               <div className="mt-2 text-gray-700 text-xs">
                 Small description of the step above to be added
               </div>
-              <div className="mt-2 w-full h-px bg-gray-300"></div>
+              <div className="mt-2 w-full h-px bg-gray-300" />
             </div>
           </div>
           <div className="flex space-x-3">

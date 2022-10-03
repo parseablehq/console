@@ -121,7 +121,7 @@ const Sidebar = ({ setSidebarOpen, sidebarOpen, labels }) => {
                 </Disclosure>
               </Dialog.Panel>
             </Transition.Child>
-            <div className="flex-shrink-0 w-14" aria-hidden="true"></div>
+            <div className="flex-shrink-0 w-14" aria-hidden="true" />
           </div>
         </Dialog>
       </Transition.Root>

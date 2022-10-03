@@ -70,7 +70,7 @@ export default function SideDialog({ open, setOpen, data }) {
                             </div>
                           ))}
                         </div>
-                        <div className="border-t mt-3 border-gray-300"></div>
+                        <div className="border-t mt-3 border-gray-300" />
                         <div className="border-y border-gray-300 grid md:grid-cols-2">
                           {data.p_metadata?.split("^").map((field) => (
                             <div className="ml-2 py-3 border-gray-300">
