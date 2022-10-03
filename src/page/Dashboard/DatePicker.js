@@ -24,7 +24,7 @@ const Calendar = ({ setStartDate, setEndDate, start, end }) => {
       />
     </button>
   ));
-  console.log(startDate);
+  
   return (
     <DatePicker
       selectsRange={true}
