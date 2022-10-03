@@ -98,7 +98,9 @@ const Login = () => {
             </button>
             {logStream.isError && (
               <p className="text-red-600 text-center mt-1">
-                {"logStream.error"}
+                {logStream.error.request.status === 401
+                  ? "Invalid credential"
+                  : "Request failed"}
               </p>
             )}
           </form>

@@ -21,7 +21,6 @@ const queryLogs = (
       dateStream = logSchema[index];
     }
   }
-
   return post(
     QUERY_URL,
     {

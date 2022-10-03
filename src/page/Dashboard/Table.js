@@ -28,7 +28,7 @@ const Table = ({
     if (!selectedFilters.length) {
       return true;
     }
-    
+
     for (const filter of selectedFilters) {
       const column = filter.column;
       const query =
@@ -74,7 +74,7 @@ const Table = ({
               >
                 <BeatLoader
                   color={"#1A237E"}
-                  loading={logQueries.isLoading}
+                  loading={logQueries.isFetching}
                   cssOverride={{
                     display: "block",
                     margin: "0 auto",
@@ -88,6 +88,8 @@ const Table = ({
         ) : (
           <tbody className="divide-y divide-gray-200 bg-white">
             {logQueries?.data?.pages?.map &&
+            logQueries.data.pages.length &&
+            logQueries.data.pages[0].data.length ? (
               logQueries.data.pages.map(
                 (page) =>
                   page?.data?.map &&
@@ -124,7 +126,17 @@ const Table = ({
                         </tr>
                       )
                   )
-              )}
+              )
+            ) : (
+              <tr align={"center"}>
+                <td
+                  colSpan={selectedLogSchema.length}
+                  className="py-4 justify-center font-medium text-gray-700"
+                >
+                  No data found
+                </td>
+              </tr>
+            )}
             <tr align={"center"}>
               <td
                 colSpan={selectedLogSchema.length}
