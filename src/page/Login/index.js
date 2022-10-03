@@ -27,7 +27,7 @@ const Login = () => {
     }
   };
 
-  const loginHandler = async (e) => {
+  const loginHandler = (e) => {
     e.preventDefault();
     if (isClientMode) {
       localStorage.setItem("CLIENT_URL", url);
