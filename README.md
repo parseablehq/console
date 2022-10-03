@@ -30,6 +30,14 @@ It ingests log data via HTTP POST calls and exposes a query API to search and an
 
 ## Getting Started
 
+1. Clone the repository.
+2. Run `npm install` to install all the dependencies.
+3. Run `npm run client` to start the console.
+4. Open `http://localhost:3000` in your browser.
+5. You can see the console running in your browser now :)
+6. For dashboard Access Enter the below credentials.
+
+
 ## Live Demo 
 
 <a href="https://demo.parseable.io">Click Here for Live Demo Parseable </a>
