@@ -5,7 +5,7 @@ const PublicLayout = ({ children }) => {
   const auth = localStorage.getItem("auth");
 
   if (!auth) return <Navigate to="/" />;
-  console.log(auth);
+
   return (
     <div>
       <div>{children}</div>
