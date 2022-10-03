@@ -152,10 +152,10 @@ const Dashboard = () => {
     }
   );
 
-  function getData(logQueries) {
+  function getData(logQueriesData) {
     let dataSet = [];
-    logQueries?.data?.pages?.forEach &&
-      logQueries?.data?.pages?.data?.forEach((element) => {
+    logQueriesData?.data?.pages?.forEach &&
+      logQueriesData?.data?.pages?.data?.forEach((element) => {
         dataSet = [...dataSet, element];
       });
 
