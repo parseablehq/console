@@ -73,7 +73,7 @@ export default function Filters({
         <div className="flex flex-col mx-4 my-2"> 
           <div className="flex"> 
             <SearchableDropdown 
-              data={schema?.fields.filter( 
+              data={schema?.fields?.filter( 
                 (field) => 
                   field.name !== "p_metadata" && field.name !== "p_tags" 
               )} 

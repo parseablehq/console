@@ -112,15 +112,19 @@ const Dashboard = () => {
     enabled: Boolean(selectedLogStream?.name != null),
     refetchOnWindowFocus: false,
     onSuccess: (data) => {
-      const allFields = data.data.fields.map((field) => {
-        return field.name;
-      });
+      if (data.data.fields) {
+        const allFields = data.data.fields.map((field) => {
+          return field.name;
+        });
 
-      setSelectedLogSchema([
-        ...allFields.filter(
-          (field) => field !== "p_metadata" && field !== "p_tags"
-        ),
-      ]);
+        setSelectedLogSchema([
+          ...allFields.filter(
+            (field) => field !== "p_metadata" && field !== "p_tags"
+          ),
+        ]);
+      } else {
+        setSelectedLogSchema([]);
+      }
     },
   });
 
@@ -275,6 +279,11 @@ const Dashboard = () => {
             addAvailableMeta={addAvailableMeta}
             selectedMeta={selectedMeta}
             selectedFilters={selectedFilters}
+            hideError={
+              logStreamSchema.isError ||
+              logStream.isError ||
+              !logStreamSchema?.data?.data
+            }
           />
         </div>
 
@@ -302,8 +311,7 @@ const Dashboard = () => {
 
         {!logStreamSchema.isLoading &&
         !logStreamSchema.isFetching &&
-        logStreamSchema.error &&
-        !logStreamSchema?.data?.data.length ? (
+        (logStreamSchema.isError || !logStreamSchema?.data?.data) ? (
           <div
             style={{ transform: "translateX(-50%) translateY(-50%)" }}
             className="absolute font-semibold text-gray-500 left-1/2 top-80"

@@ -23,6 +23,7 @@ const Table = ({
   addAvailableMeta,
   selectedMeta,
   selectedFilters,
+  hideError,
 }) => {
   function filterCheck(data) {
     if (!selectedFilters.length) {
@@ -127,6 +128,8 @@ const Table = ({
                       )
                   )
               )
+            ) : hideError ? (
+              <></>
             ) : (
               <tr align={"center"}>
                 <td
