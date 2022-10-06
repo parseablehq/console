@@ -112,15 +112,19 @@ const Dashboard = () => {
     enabled: Boolean(selectedLogStream?.name != null),
     refetchOnWindowFocus: false,
     onSuccess: (data) => {
-      const allFields = data.data.fields.map((field) => {
-        return field.name;
-      });
+      if (data.data.fields) {
+        const allFields = data.data.fields.map((field) => {
+          return field.name;
+        });
 
-      setSelectedLogSchema([
-        ...allFields.filter(
-          (field) => field !== "p_metadata" && field !== "p_tags"
-        ),
-      ]);
+        setSelectedLogSchema([
+          ...allFields.filter(
+            (field) => field !== "p_metadata" && field !== "p_tags"
+          ),
+        ]);
+      } else {
+        setSelectedLogSchema([]);
+      }
     },
   });
 
@@ -141,9 +145,11 @@ const Dashboard = () => {
     {
       retry: false,
       enabled:
-        Boolean(logStreamSchema?.data?.data?.fields?.map((field) => {
+        Boolean(
+          logStreamSchema?.data?.data?.fields?.map((field) => {
             return field.name;
-          })?.length !== 0) && Boolean(selectedLogStream?.name != null),
+          })?.length !== 0
+        ) && Boolean(selectedLogStream?.name != null),
       refetchOnWindowFocus: false,
       refetchInterval:
         interval === null || range === 7 ? false : interval * 1000,
@@ -273,6 +279,11 @@ const Dashboard = () => {
             addAvailableMeta={addAvailableMeta}
             selectedMeta={selectedMeta}
             selectedFilters={selectedFilters}
+            hideError={
+              logStreamSchema.isError ||
+              logStream.isError ||
+              !logStreamSchema?.data?.data
+            }
           />
         </div>
 
@@ -280,7 +291,7 @@ const Dashboard = () => {
         (logStream.isError || !logStream?.data?.data.length) ? (
           <div
             style={{ transform: "translateX(-50%) translateY(-50%)" }}
-            className="absolute -z-10 font-semibold text-gray-500 left-1/2 top-80"
+            className="absolute font-semibold text-gray-500 left-1/2 top-80"
           >
             Please create a log stream first to search logs. Refer to the
             documentation{" "}
@@ -292,6 +303,30 @@ const Dashboard = () => {
             >
               here
             </a>
+            .
+          </div>
+        ) : (
+          <></>
+        )}
+
+        {!logStreamSchema.isLoading &&
+        !logStreamSchema.isFetching &&
+        (logStreamSchema.isError || !logStreamSchema?.data?.data) ? (
+          <div
+            style={{ transform: "translateX(-50%) translateY(-50%)" }}
+            className="absolute font-semibold text-gray-500 left-1/2 top-80"
+          >
+            <p>
+              No schema for the stream found. Refer to the documentation{" "}
+              <a
+                rel="noreferrer"
+                target={"_blank"}
+                className="text-blue-500 hover:underline"
+                href="https://www.parseable.io/docs/introduction"
+              >
+                here
+              </a>
+            </p>
             .
           </div>
         ) : (
