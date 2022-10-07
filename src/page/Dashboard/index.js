@@ -299,7 +299,7 @@ const Dashboard = () => {
               rel="noreferrer"
               target={"_blank"}
               className="text-blue-500 hover:underline"
-              href="https://www.parseable.io/docs/intro"
+              href="https://www.parseable.io/docs/introduction"
             >
               here
             </a>
@@ -317,12 +317,12 @@ const Dashboard = () => {
             className="absolute font-semibold text-gray-500 left-1/2 top-80"
           >
             <p>
-              No schema for the stream found. Refer to the documentation{" "}
+              No events found, please send data to this stream before query. Refer to the documentation{" "}
               <a
                 rel="noreferrer"
                 target={"_blank"}
                 className="text-blue-500 hover:underline"
-                href="https://www.parseable.io/docs/introduction"
+                href="https://www.parseable.io/docs/category/log-ingestion"
               >
                 here
               </a>
