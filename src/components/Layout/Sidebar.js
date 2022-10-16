@@ -105,13 +105,13 @@ const Sidebar = ({ setSidebarOpen, sidebarOpen, labels }) => {
                         <div className="flex mt-4 flex-col space-y-3 pb-4 pl-4 pr-10">
                           {labels
                             ? labels.split(",").map((label, index) => (
-                                <div
+                                <button
                                   onClick={() => labelClickHandler(label)}
                                   key={index}
                                   className="cursor-pointer text-white font-light w-full border py-1  flex justify-center items-center border-white rounded-lg"
                                 >
                                   {label}
-                                </div>
+                                </button>
                               ))
                             : null}
                         </div>
