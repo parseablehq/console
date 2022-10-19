@@ -33,12 +33,10 @@ const Navbar = ({ setSidebarOpen }) => {
           <div className="flex-1 flex">
             <img alt="" className="w-32" src={Logo} />
           </div>
-          <div className="ml-4 flex items-center md:ml-6"> 
+          <div className="ml-4 flex items-center md:ml-6">
             <button
               onClick={() => setIsHelpDialogueOpen(true)}
-              className={
-                "flex text-gray-400 py-5 text-sm focus"
-              }
+              className={"flex text-gray-400 py-5 text-sm focus"}
             >
               <QuestionMarkCircleIcon strokeWidth={1} className="h-5" />
               <span className={"block ml-1"}>Help</span>
@@ -53,7 +51,7 @@ const Navbar = ({ setSidebarOpen }) => {
             </div>
             <div>
               <LogoutIcon
-                className="text-gray-400 w-5"
+                className="text-gray-400 w-5 cursor-pointer"
                 onClick={() => {
                   localStorage.removeItem("auth");
                   navigate("/");
