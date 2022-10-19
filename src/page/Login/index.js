@@ -104,12 +104,12 @@ const Login = () => {
               </p>
             )}
           </form>
-          <div
+          <button
             onClick={() => navigate("/forgot-password")}
             className="cursor-pointer mt-3 text-bluePrimary text-center underline text-sm"
           >
             Forgot password?
-          </div>
+          </button>
         </div>
       </div>
     </div>
