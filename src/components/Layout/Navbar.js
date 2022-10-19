@@ -51,7 +51,7 @@ const Navbar = ({ setSidebarOpen }) => {
             </div>
             <div>
               <LogoutIcon
-                className="text-gray-400 w-5 cursor-pointer"
+                className="text-gray-400 w-5 cursor-pointer hover:text-gray-500 scale-100 hover:scale-110 transition-all duration-200"
                 onClick={() => {
                   localStorage.removeItem("auth");
                   navigate("/");
