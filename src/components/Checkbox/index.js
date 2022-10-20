@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from 'prop-types';
 
 const Checkbox = ({ name, selected, onClick }) => {
   return (
@@ -17,3 +18,14 @@ const Checkbox = ({ name, selected, onClick }) => {
 };
 
 export default Checkbox;
+
+Checkbox.propTypes = {
+  name: PropTypes.string,
+  selected: PropTypes.bool,
+  onClick: PropTypes.func.isRequired,
+};
+
+Checkbox.defaultProps = {
+  name: null,
+  selected: false,
+};

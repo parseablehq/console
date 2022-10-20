@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import PropTypes from 'prop-types';
 
 import PillFilter from "../PillFilter";
 import className from "classnames";
@@ -38,17 +39,17 @@ export function PillFilterList({ x, onAdd, onRemove, values }) {
           "max-h-[5rem] overflow-hidden": !selectedShowMore,
         })}
       >
-        {x.map((x) => (
+        {x.map((item) => (
           <PillFilter
-            text={x}
-            selected={selected.includes(x)}
+            text={item}
+            selected={selected.includes(item)}
             onClick={() => {
-              if (selected.includes(x)) {
-                onRemove(x)
-                setSelected([...selected.filter((val) => val !== x)]);
+              if (selected.includes(item)) {
+                onRemove(item)
+                setSelected([...selected.filter((val) => val !== item)]);
               } else {
-                onAdd(x)
-                setSelected([...selected, x]);
+                onAdd(item)
+                setSelected([...selected, item]);
               }
             }}
           />
@@ -65,3 +66,15 @@ export function PillFilterList({ x, onAdd, onRemove, values }) {
     </>
   );
 }
+
+PillFilterList.propTypes = {
+  x: PropTypes.arrayOf(PropTypes.string),
+  onAdd: PropTypes.func.isRequired,
+  onRemove: PropTypes.func.isRequired,
+  values: PropTypes.arrayOf(PropTypes.string),
+};
+
+PillFilterList.defaultProps = {
+  x: [],
+  values: [],
+};

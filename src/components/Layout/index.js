@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from 'prop-types';
 
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
@@ -20,3 +21,13 @@ export default function Layout({ children, labels }) {
     </>
   );
 }
+
+Layout.propTypes = {
+  children: PropTypes.node,
+  labels: PropTypes.string,
+};
+
+Layout.defaultProps = {
+  children: null,
+  labels: null,
+};

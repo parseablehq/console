@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from 'prop-types';
 import classNames from "classnames";
 
 const Button = ({ children, disabled, onClick }) => {
@@ -16,3 +17,15 @@ const Button = ({ children, disabled, onClick }) => {
 };
 
 export default Button;
+
+Button.propTypes = {
+  children: PropTypes.node,
+  disabled: PropTypes.bool,
+  onClick: PropTypes.func.isRequired,
+};
+
+Button.defaultProps = {
+  children: null,
+  disabled: false,
+};
+

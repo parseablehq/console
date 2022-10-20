@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from 'prop-types';
 import className from "classnames";
 
 const PillFilter = ({ text, onClick, selected }) => {
@@ -17,3 +18,14 @@ const PillFilter = ({ text, onClick, selected }) => {
 };
 
 export default PillFilter;
+
+PillFilter.propTypes = {
+  text: PropTypes.string,
+  onClick: PropTypes.func.isRequired,
+  selected: PropTypes.bool,
+};
+
+PillFilter.defaultProps = {
+  text: null,
+  selected: false,
+};

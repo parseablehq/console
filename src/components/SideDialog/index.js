@@ -1,5 +1,6 @@
 import { Dialog, Transition } from "@headlessui/react";
 import React, { Fragment } from "react";
+import PropTypes from 'prop-types';
 
 import { XIcon } from "@heroicons/react/outline";
 import moment from "moment";
@@ -111,3 +112,18 @@ export default function SideDialog({ open, setOpen, data }) {
     </Transition.Root>
   );
 }
+
+SideDialog.propTypes = {
+  open: PropTypes.bool,
+  setOpen: PropTypes.func.isRequired,
+  data: PropTypes.shape({
+    time: PropTypes.string,
+    p_tags: PropTypes.string,
+    p_metadata: PropTypes.string,
+  })
+};
+
+SideDialog.defaultProps = {
+  open: false,
+  data: {},
+};

@@ -4,6 +4,7 @@ import {
   QuestionMarkCircleIcon,
 } from "@heroicons/react/outline";
 import React, { useState } from "react";
+import PropTypes from 'prop-types';
 
 import Dialogue from "./Dialogue";
 import Logo from "../../assets/images/Group 295.svg";
@@ -66,3 +67,11 @@ const Navbar = ({ setSidebarOpen }) => {
 };
 
 export default Navbar;
+
+Navbar.propTypes = {
+  setSidebarOpen: PropTypes.func,
+};
+
+Navbar.defaultProps = {
+  setSidebarOpen: () => null,
+};
