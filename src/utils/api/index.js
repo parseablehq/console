@@ -8,9 +8,8 @@ export const getServerURL = () => {
         .charAt(localStorage.getItem("CLIENT_URL").length - 1) !== "/"
     ) {
       return `${localStorage.getItem("CLIENT_URL")}/`;
-    } else {
-      return `${localStorage.getItem("CLIENT_URL")}`;
     }
+    return `${localStorage.getItem("CLIENT_URL")}`;
   } else {
     return "/";
   }
