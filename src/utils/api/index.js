@@ -2,7 +2,14 @@ import axios from "axios";
 
 export const getServerURL = () => {
   if (process.env.REACT_APP_ENV === "client") {
-    return `${localStorage.getItem("CLIENT_URL")}/`;
+    if (
+      localStorage
+        .getItem("CLIENT_URL")
+        .charAt(localStorage.getItem("CLIENT_URL").length - 1) !== "/"
+    ) {
+      return `${localStorage.getItem("CLIENT_URL")}/`;
+    }
+    return `${localStorage.getItem("CLIENT_URL")}`;
   } else {
     return "/";
   }
