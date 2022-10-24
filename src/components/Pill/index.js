@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from 'prop-types';
 import { XCircleIcon } from "@heroicons/react/solid";
 
 const Pill = ({ text, onClose, equal }) => { 
@@ -16,3 +17,15 @@ const Pill = ({ text, onClose, equal }) => {
 };
 
 export default Pill;
+
+Pill.propTypes = {
+  text: PropTypes.string,
+  onClose: PropTypes.func,
+  equal: PropTypes.bool,
+};
+
+Pill.defaultProps = {
+  text: null,
+  onClose: null,
+  equal: false,
+};

@@ -1,5 +1,6 @@
 import { CheckIcon } from "@heroicons/react/solid";
 import React from "react";
+import PropTypes from 'prop-types';
 import classNames from "classnames";
 
 const Button = ({ text, active, selected }) => {
@@ -20,3 +21,15 @@ const Button = ({ text, active, selected }) => {
 };
 
 export default Button;
+
+Button.propTypes = {
+  text: PropTypes.string,
+  active: PropTypes.bool,
+  selected: PropTypes.bool,
+};
+
+Button.defaultProps = {
+  text: null,
+  active: false,
+  selected: false,
+};

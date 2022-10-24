@@ -1,6 +1,7 @@
 import Button from "../DropdownButton";
 import { Listbox } from "@headlessui/react";
 import React from "react";
+import PropTypes from 'prop-types';
 import { SelectorIcon } from "@heroicons/react/solid";
 
 const Dropdown = ({ name, disabled, value, setValue, customStyle, Icon }) => {
@@ -95,3 +96,20 @@ const Dropdown = ({ name, disabled, value, setValue, customStyle, Icon }) => {
 };
 
 export default Dropdown;
+
+Dropdown.propTypes = {
+  name: PropTypes.string,
+  disabled: PropTypes.bool,
+  value: PropTypes.string,
+  setValue: PropTypes.func.isRequired,
+  customStyle: PropTypes.string,
+  Icon: PropTypes.elementType,
+};
+
+Dropdown.defaultProps = {
+  name: null,
+  disabled: false,
+  value: null,
+  customStyle: '',
+  Icon: null,
+};

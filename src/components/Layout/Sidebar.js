@@ -1,6 +1,7 @@
 import { ChevronDownIcon, XIcon } from "@heroicons/react/outline";
 import { Dialog, Disclosure, Transition } from "@headlessui/react";
 import React, { Fragment } from "react";
+import PropTypes from 'prop-types';
 
 import Logo from "../../assets/images/Group 295.svg";
 
@@ -130,3 +131,15 @@ const Sidebar = ({ setSidebarOpen, sidebarOpen, labels }) => {
 };
 
 export default Sidebar;
+
+Sidebar.propTypes = {
+  setSidebarOpen: PropTypes.func.isRequired,
+  sidebarOpen: PropTypes.bool,
+  labels: PropTypes.string,
+};
+
+Sidebar.defaultProps = {
+  sidebarOpen: false,
+  labels: null,
+};
+

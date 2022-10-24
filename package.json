@@ -38,6 +38,16 @@
     "extends": [
       "react-app",
       "react-app/jest"
+    ],
+    "overrides": [
+      {
+        "files": [ "src/components/*/*.js" ],
+        "rules": {
+          "react/prop-types": "error",
+          "react/require-default-props": "error",
+          "react/default-props-match-prop-types": "error"
+        }
+      }
     ]
   },
   "browserslist": {

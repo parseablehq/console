@@ -3,6 +3,7 @@ import { ChevronDownIcon } from "@heroicons/react/outline";
 import { Listbox } from "@headlessui/react";
 import Pill from "../Pill";
 import React from "react";
+import PropTypes from 'prop-types';
 
 const MultipleSelectDropdown = ({
   name,
@@ -58,3 +59,17 @@ const MultipleSelectDropdown = ({
 );
 
 export default MultipleSelectDropdown;
+
+MultipleSelectDropdown.propTypes = {
+  name: PropTypes.string,
+  values: PropTypes.arrayOf(PropTypes.string),
+  setSelectedValues: PropTypes.func.isRequired,
+  data: PropTypes.arrayOf(PropTypes.string),
+  removeValue: PropTypes.func.isRequired,
+};
+
+MultipleSelectDropdown.defaultProps = {
+  name: null,
+  values: [],
+  data: [],
+};

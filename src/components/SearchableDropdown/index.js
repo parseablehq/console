@@ -1,4 +1,5 @@
 import React, { memo, useState } from "react";
+import PropTypes from 'prop-types';
 
 import { Combobox } from "@headlessui/react";
 import DropdownButton from "../DropdownButton";
@@ -65,3 +66,22 @@ const SearchableDropdown = ({ data, setValue, value, label, defaultValue }) => {
 };
 
 export default memo(SearchableDropdown);
+
+SearchableDropdown.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.shape({
+    name: PropTypes.string,
+  })),
+  value: PropTypes.shape({
+    name: PropTypes.string,
+  }),
+  setValue: PropTypes.func.isRequired,
+  label: PropTypes.string,
+  defaultValue: PropTypes.string,
+};
+
+SearchableDropdown.defaultProps = {
+  data: [],
+  value: null,
+  label: null,
+  defaultValue: null,
+};

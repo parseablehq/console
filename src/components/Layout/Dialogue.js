@@ -1,5 +1,6 @@
 import { Dialog, Transition } from "@headlessui/react";
 import React, { Fragment } from "react";
+import PropTypes from 'prop-types';
 
 import DocumentationIcon from "../../assets/images/documentation_icon.png";
 import GitHubIcon from "../../assets/images/github_icon.png";
@@ -133,3 +134,12 @@ const HelpDialog = ({ isOpen, setIsOpen }) => {
 };
 
 export default HelpDialog;
+
+HelpDialog.propTypes = {
+  isOpen: PropTypes.bool,
+  setIsOpen: PropTypes.func.isRequired,
+};
+
+HelpDialog.defaultProps = {
+  isOpen: false,
+};
