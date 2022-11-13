@@ -33,7 +33,7 @@ const Table = ({
 
     for (const filter of selectedFilters) {
       const column = filter.column;
-     if (filter.column !== "datetime") {
+     if (filter.column !== "datetime" || filter.column !== "status") {
         const query =
           typeof filter.query === "number"
             ? filter.query.toString()
@@ -48,24 +48,26 @@ const Table = ({
        console.log(dataField.toLowerCase().includes(query.toLowerCase()));
        switch (filter.operator) {
          case "contains":
-            if (fieldContains === filter.contains) {
-            return true;
+           if (!fieldContains) {
+             return false;
             }
            break;
-         case "notContain":
-            if (fieldContains !== filter.notContain) {
-            return false;
+         case "Doesn't Contain":
+           if (fieldContains) {
+             return false;
             }
            break;
-         case "exactly":
-           if (fieldContains === filter.exactly) {
-             return true;
+         case "Exactly match":
+           if (dataField.toLowerCase() !== query.toLowerCase()) {
+             return false;
             }
            break;
          default:
            break;
         }
-      
+      //  if (fieldContains !== filter.contains) {
+      //       return false;
+      //       }
        
       } 
      else {
