@@ -64,7 +64,7 @@ const Table = ({
         
           switch (filter.operator) {
           
-             case "equals":
+             case "Equel to":
               if (fieldContains !== query) {
                 return false;
               }
@@ -91,7 +91,7 @@ const Table = ({
               break;
           
             default:
-              return false;
+              break;
           }
      
           // Do Number Stuff
