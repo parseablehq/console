@@ -63,34 +63,35 @@ const Table = ({
         case "number":
         
           switch (filter.operator) {
-            case "Greater Than":
-              if ((fieldContains > query)) {
-                return true;
+          
+             case "equals":
+              if (dataField !== query) {
+                return false;
               }
               break;
-            case "Less Than":
-              if ((fieldContains < query)) {
-                return true;
+            case "Less than":
+              if (dataField >= query) {
+                return false;
               }
               break;
-            case "Greater Than or equel to":
-              if ((fieldContains >= query)) {
-                return true;
+            case "Greater than":
+              if (dataField <= query) {
+                return false;
               }
               break;
-            case "Less Than or equel to":
-              if ((fieldContains <= query)) {
-                return true;
+            case "Less than or equal to":
+              if (dataField > query) {
+                return false;
               }
               break;
-            case "Equel to":
-              if ((fieldContains === query)) {
-                return true;
+            case "Greater than or equal to":
+              if (dataField < query) {
+                return false;
               }
               break;
-         
+          
             default:
-              break;
+              return false;
           }
      
           // Do Number Stuff

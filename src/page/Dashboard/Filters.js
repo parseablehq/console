@@ -103,7 +103,7 @@ export default function Filters({
                     : columnValue?.name === "host" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly" }]
                     : columnValue?.name === "method" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly" }]
                     : columnValue?.name === "referrer" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly" }]
-                    : columnValue?.name === "status" ? [{ name: "Greater Than" },{ name: "Less Than" }, { name: "Greater Than or equel to" }, { name: "Less than or equel to" }, { name: "Equel to" }]
+                    : columnValue?.name === "status" ? [{ name: "Greater than" },{ name: "Less than" }, { name: "Greater than or equel to" }, { name: "Less than or equel to" }, { name: "Equel to" }]
                     : columnValue?.name === "user-identifier" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly" }]
                     : [{ name: "Contains" }, { name: "Doesn't Contain" }]  
               
