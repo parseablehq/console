@@ -1,5 +1,6 @@
 import BeatLoader from "react-spinners/BeatLoader";
 import React from "react";
+import moment from "moment";
 
 function hasSubArray(master, sub) {
   master.sort();
@@ -32,17 +33,57 @@ const Table = ({
 
     for (const filter of selectedFilters) {
       const column = filter.column;
-      const query =
-        typeof filter.query === "number"
-          ? filter.query.toString()
-          : filter.query;
-      const dataField =
-        typeof data[column] === "number"
-          ? data[column].toString()
-          : data[column];
-      let fieldContains = dataField.toLowerCase().includes(query.toLowerCase());
-      if (fieldContains !== filter.contains) {
-        return false;
+     if (filter.column !== "datetime") {
+        const query =
+          typeof filter.query === "number"
+            ? filter.query.toString()
+            : filter.query;
+        const dataField =
+          typeof data[column] === "number"
+            ? data[column].toString()
+            : data[column];
+        let fieldContains = dataField
+          .toLowerCase()
+          .includes(query.toLowerCase());
+       console.log(dataField.toLowerCase().includes(query.toLowerCase()));
+       switch (filter.operator) {
+         case "contains":
+            if (fieldContains === filter.contains) {
+            return true;
+            }
+           break;
+         case "notContain":
+            if (fieldContains !== filter.notContain) {
+            return false;
+            }
+           break;
+         case "exactly":
+           if (fieldContains === filter.exactly) {
+             return true;
+            }
+           break;
+         default:
+           break;
+        }
+      
+       
+      } 
+     else {
+        console.log(filter);
+        console.log(data);
+        if (filter.after === true) {
+          var isafter = moment(data.datetime).isAfter(filter.query);
+          console.log(moment(data.datetime).isAfter(filter.query));
+          if (isafter === false) {
+            return false;
+          }
+        } else {
+          var isBefore = moment(data.datetime).isBefore(filter.query);
+          console.log(moment(data.datetime).isBefore(filter.query));
+          if (isBefore === false) {
+            return false;
+          }
+        }
       }
     }
     return true;
