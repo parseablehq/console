@@ -43,8 +43,8 @@ export default function Filters({
     ]);
   }
 
-  function removeGlobalFilter(column, contains, query,after) {
-    removeFilter(column, contains, query, after);
+  function removeGlobalFilter(column, contains, query, after, before, greaterThan, lessThan, greaterThanEqual, notContain, exactly, exactDay) {
+    removeFilter(column, contains, query, after, before, greaterThan, lessThan, greaterThanEqual, notContain, exactly, exactDay);
     setFilters([
       ...filter.filter(
         (item) =>
@@ -52,7 +52,14 @@ export default function Filters({
             item.column === column &&
             item.contains === contains &&
             item.query === query &&
-            item.after === after
+            item.after === after &&
+            item.before === before &&
+            item.greaterThan === greaterThan &&
+            item.lessThan === lessThan &&
+            item.greaterThanEqual === greaterThanEqual &&
+            item.notContain === notContain &&
+            item.exactly === exactly &&
+            item.exactDay === exactDay
           )
       ),
     ]);
@@ -96,7 +103,7 @@ export default function Filters({
                     : columnValue?.name === "host" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly match" }]
                     : columnValue?.name === "method" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly match" }]
                     : columnValue?.name === "referrer" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly match" }]
-                    : columnValue?.name === "status" ? [{ name: "Greater Than" }, { name: "Greater Than or equel to" }, { name: "Less than or equel to" }, { name: "Exactly" }]
+                    : columnValue?.name === "status" ? [{ name: "Greater Than" },{ name: "Less Than" }, { name: "Greater Than or equel to" }, { name: "Less than or equel to" }, { name: "Exactly" }]
                     : columnValue?.name === "user-identifier" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly match" }]
                     : [{ name: "Contains" }, { name: "Doesn't Contain" }]  
               
@@ -235,13 +242,30 @@ export default function Filters({
                     <Pill
                       text={`${val.column} ${
                         val.contains ? "contains"
-                        : val.greaterThan ? "Greaterthan"
-                          : val.after ? "After"
-                          : "doesn't contain"
+                        : val.notContain ? "doesn't contain"
+                          : val.greaterThan ? "greater than"
+                            : val.greaterThanEqual ? "greater than or equal to"
+                              : val.lessThanEqual ? "less than or equal to"
+                                : val.exactly ? "exactly match"
+                                  : val.after ? "after"
+                                    : val.before ? "before"
+                                      : val.exactDay ? "exact day"
+                                        : val.lessThan ? "less than"
+                                          : ""
+          
                       } ${val.query}`}
                       onClose={() => {
-                        removeGlobalFilter(val.column, val.contains, val.query, val.after);
-                       
+                        removeGlobalFilter(val.column,
+                          val.contains,
+                          val.query,
+                          val.after,
+                          val.before,
+                          val.greaterThan,
+                          val.lessThan,
+                          val.greaterThanEqual,
+                          val.notContain,
+                          val.exactly,
+                          val.exactDay);
 
                       }}
                     />
