@@ -99,12 +99,12 @@ export default function Filters({
                 data={
                   columnValue?.name === "datetime"
                     ? [{ name: "after" }, { name: "before" }, { name: "exact day" }]
-                    : columnValue?.name === "id" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly match" }]
-                    : columnValue?.name === "host" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly match" }]
-                    : columnValue?.name === "method" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly match" }]
-                    : columnValue?.name === "referrer" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly match" }]
-                    : columnValue?.name === "status" ? [{ name: "Greater Than" },{ name: "Less Than" }, { name: "Greater Than or equel to" }, { name: "Less than or equel to" }, { name: "Exactly" }]
-                    : columnValue?.name === "user-identifier" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly match" }]
+                    : columnValue?.name === "id" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly" }]
+                    : columnValue?.name === "host" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly" }]
+                    : columnValue?.name === "method" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly" }]
+                    : columnValue?.name === "referrer" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly" }]
+                    : columnValue?.name === "status" ? [{ name: "Greater than" },{ name: "Less than" }, { name: "Greater than or equel to" }, { name: "Less than or equel to" }, { name: "Equel to" }]
+                    : columnValue?.name === "user-identifier" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly" }]
                     : [{ name: "Contains" }, { name: "Doesn't Contain" }]  
               
                 }
@@ -141,7 +141,7 @@ export default function Filters({
                       greaterThan: operator.name === "Greater Than",
                       greaterThanEqual: operator.name === "Greater Than or equel to",
                       lessThanEqual: operator.name === "Less than or equel to",
-                      exactly: operator.name === "Exactly match",
+                      exactly: operator.name === "Exactly",
                       after: operator.name === "after",
                       before: operator.name === "before",
                       exactDay: operator.name === "exact day",
@@ -158,7 +158,7 @@ export default function Filters({
                       greaterThan: operator.name === "Greater Than",
                       greaterThanEqual: operator.name === "Greater Than or equel to",
                       lessThanEqual: operator.name === "Less than or equel to",
-                      exactly: operator.name === "Exactly match",
+                      exactly: operator.name === "Exactly",
                       before: operator.name === "before",
                       exactDay: operator.name === "exact day",
                       lessThan: operator.name === "Less than",
@@ -246,7 +246,7 @@ export default function Filters({
                           : val.greaterThan ? "greater than"
                             : val.greaterThanEqual ? "greater than or equal to"
                               : val.lessThanEqual ? "less than or equal to"
-                                : val.exactly ? "exactly match"
+                                : val.exactly ? "exactly"
                                   : val.after ? "after"
                                     : val.before ? "before"
                                       : val.exactDay ? "exact day"
