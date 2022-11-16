@@ -35,73 +35,138 @@ for (const filter of selectedFilters) {
 
       const isDate = moment(data[column], true).isValid();
       const isNumber = !isNaN(data[column]);
+
+      let query = filter.query;
+      const dataField = data[column];
+        // console.log(dataField.includes(query));
+        
       // const isString = typeof data[column] === "string";
 
       let FieldType;
       // We check for number first because numbers are valid dates
       // then we check for Date, because Date is also a string
-      if(isNumber) {
+      if (isNumber) {
         FieldType = "number";
-      } else if(isDate) {
+      } else if (isDate) {
         FieldType = "date";
       } else {
         FieldType = "string";
       }
 
-  switch (FieldType) {
-         case "string":
-  const query =
-          typeof filter.query === "number"
-            ? filter.query.toString()
-            : filter.query;
-       console.log(dataField.toLowerCase().includes(query.toLowerCase()));
-      switch (filter.operator) {
-        case "contains":
-          if (fieldContains === filter.contains) {
-            return true;
-           
-          }
-          break;
-        case "notContain":
-          if (fieldContains !== filter.notContain) {
-            return false;
-         case "Doesn't Contain":
-          if (fieldContains) {
-            return false;
-          }
-          break;
-        case "exactly":
-          if (fieldContains === filter.exactly) {
-            return true;
-          }
-          break;
-         
-        case "Exactly match":
-          if (dataField.toLowerCase() !== query.toLowerCase()) {
-            return false;
-          }
-          break;
-        default:
-          return true
-      }
+      switch (FieldType) {
+        
+        case "number":
+          query = parseInt(query)
           
+          switch (filter.operator) {
+            case "Equel to":
+              console.log(dataField, query);
+              if (dataField !== query) {
+                return false;
+              }
+              break;
+              case "Less than":
+                if (dataField > query) {
+                  return false;
+                }
+                break;
+            case "Greater than":
+              if (dataField < query) {
+                return false;
+              }
+              break;
+            case "Less than or equal to":
+              if (dataField <= query) {
+                return false;
+              }
+              break;
+              case "Greater than or equal to":
+              if (dataField >= query) {
+                return false;
+              }
+              break;
+              
+            default:
+              break;
+            }
+            
+            // Do Number Stuff
+            // greater than. lesss than, equal, etc etc
+          break;
+          
+          case "date":
+          //   console.log(filter);
+          // console.log(data);
+          
+          const date = moment(dataField);
+          const queryDate = moment(query);
+          switch (filter.operator) {
+            case "exact day":
+              console.log(date, queryDate, filter);
+              if (!date.isSame(queryDate, 'day')) {
+                return false;
+              }
+              break;
+            case "is not":
+              if (date.isSame(queryDate)) {
+                  return false;
+                }
+                break;
+            case "before":
+              if (!date.isBefore(queryDate)) {
+                return false;
+              }
+              break;
+            case "after":
+              if (!date.isAfter(queryDate)) {
+                return false;
+              }
+              break;
+            default:
+              break;
+            }
+            
+            // Do Date Stuff
+            // after, before, exact day
+            break;
+            
+        case "string":
+          
+          query.toLowerCase().toString();
+          dataField.toLowerCase().toString();
+          console.log(filter);
+          let fieldContains = dataField
+            .includes(query);
+          
+          switch (filter.operator) {
+            case "Contains":
+              if (!fieldContains) {
+                return false;
+              }
+              break;
+              case "Doesn't Contain":
+              if (fieldContains) {
+                return false;
+              }
+              break;
+            case "Exactly":
+              if (dataField.toLowerCase() !== query.toLowerCase()) {
+                return false;
+              }
+              break;
+            default:
+              break;
+          }
           // Do String Stuff
           // contains, exact, not contains, etc etc
           break;
-        case "date":
-          // Do Date Stuff
-          // after, before, exact day
+        
+        
+        default:
           break;
-        case "number":
-          // Do Number Stuff
-          // greater than. lesss than, equal, etc etc
-          break;
-       
-        default: 
-          break;
-      }
+      }
+    
 }
-
     return true;
   }
   return (

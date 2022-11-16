@@ -115,7 +115,7 @@ export default function Filters({
                 value={queryValue}
                 onChange={(e) => setQueryValue( e.target.value )}
                 type={
-                  columnValue?.name === "datetime" ? "datetime-local"
+                  columnValue?.name === "datetime" ? "date"
                     : columnValue?.name === "host" ? "text"
                       : columnValue?.name === "id" ? "text"
                         : columnValue?.name === "referrer" ? "text"
