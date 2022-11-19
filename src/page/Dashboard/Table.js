@@ -1,5 +1,6 @@
 import BeatLoader from "react-spinners/BeatLoader";
 import React from "react";
+import moment from "moment";
 
 function hasSubArray(master, sub) {
   master.sort();
@@ -29,25 +30,139 @@ const Table = ({
     if (!selectedFilters.length) {
       return true;
     }
-
-    for (const filter of selectedFilters) {
+for (const filter of selectedFilters) {
       const column = filter.column;
-      const query =
-        typeof filter.query === "number"
-          ? filter.query.toString()
-          : filter.query;
-      const dataField =
-        typeof data[column] === "number"
-          ? data[column].toString()
-          : data[column];
-      let fieldContains = dataField.toLowerCase().includes(query.toLowerCase());
-      if (fieldContains !== filter.contains) {
-        return false;
+
+      const isDate = moment(data[column], true).isValid();
+      const isNumber = !isNaN(data[column]);
+
+      let query = filter.query;
+      const dataField = data[column];
+        
+
+      let FieldType;
+      // We check for number first because numbers are valid dates
+      // then we check for Date, because Date is also a string
+      if (isNumber) {
+        FieldType = "number";
+      } else if (isDate) {
+        FieldType = "date";
+      } else {
+        FieldType = "string";
       }
-    }
+
+      switch (FieldType) {
+        
+        case "number":
+          query = parseInt(query)
+          
+          switch (filter.operator) {
+            case "Equel to":
+              if (dataField !== query) {
+                return false;
+              }
+              break;
+              case "Less than":
+                console.log(dataField, query);
+                if (dataField > query) {
+                  return false;
+                }
+                break;
+            case "Greater than":
+              if (dataField < query) {
+                return false;
+              }
+              break;
+            case "Less than or equal to":
+              if (dataField >= query) {
+                return false;
+              }
+              break;
+              case "Greater than or equal to":
+              if (dataField <= query) {
+                return false;
+              }
+              break;
+              
+            default:
+              break;
+            }
+            
+            // greater than. lesss than, equal, etc etc
+          break;
+          
+          case "date":
+
+          
+          const date = moment(dataField);
+          const queryDate = moment(query);
+          switch (filter.operator) {
+            case "exact day":
+              console.log(date, queryDate, filter);
+              if (!date.isSame(queryDate, 'day')) {
+                return false;
+              }
+              break;
+            case "is not":
+              if (date.isSame(queryDate)) {
+                  return false;
+                }
+                break;
+            case "before":
+              if (!date.isBefore(queryDate)) {
+                return false;
+              }
+              break;
+            case "after":
+              if (!date.isAfter(queryDate)) {
+                return false;
+              }
+              break;
+            default:
+              break;
+            }
+            
+            // after, before, exact day
+            break;
+            
+        case "string":
+          
+          query.toLowerCase().toString();
+          dataField.toLowerCase().toString();
+          console.log(filter);
+          let fieldContains = dataField
+            .includes(query);
+          
+          switch (filter.operator) {
+            case "Contains":
+              if (!fieldContains) {
+                return false;
+              }
+              break;
+              case "Doesn't Contain":
+              if (fieldContains) {
+                return false;
+              }
+              break;
+            case "Exactly":
+              if (dataField.toLowerCase() !== query.toLowerCase()) {
+                return false;
+              }
+              break;
+            default:
+              break;
+          }
+          // contains, exact, not contains, etc etc
+          break;
+        
+        
+        default:
+          break;
+      }
+    
+}
     return true;
   }
-
   return (
     <>
       <table className="divide-y min-w-full divide-gray-300">
