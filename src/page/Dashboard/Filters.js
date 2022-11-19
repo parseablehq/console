@@ -43,8 +43,8 @@ export default function Filters({
     ]);
   }
 
-  function removeGlobalFilter(column, contains, query, after, before, greaterThan, lessThan, greaterThanEqual, notContain, exactly, exactDay) {
-    removeFilter(column, contains, query, after, before, greaterThan, lessThan, greaterThanEqual, notContain, exactly, exactDay);
+  function removeGlobalFilter(column, contains, query, after, before, greaterThan, lessThan, greaterThanEqual,lessThanEqual, notContain, exactly, exactDay, equalTo) {
+    removeFilter(column, contains, query, after, before, greaterThan, lessThan, greaterThanEqual, lessThanEqual, notContain, exactly, exactDay, lessThan);
     setFilters([
       ...filter.filter(
         (item) =>
@@ -57,9 +57,11 @@ export default function Filters({
             item.greaterThan === greaterThan &&
             item.lessThan === lessThan &&
             item.greaterThanEqual === greaterThanEqual &&
+            item.lessThanEqual === lessThanEqual &&
             item.notContain === notContain &&
             item.exactly === exactly &&
-            item.exactDay === exactDay
+            item.exactDay === exactDay &&
+            item.equalTo === equalTo
           )
       ),
     ]);
@@ -103,7 +105,7 @@ export default function Filters({
                     : columnValue?.name === "host" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly" }]
                     : columnValue?.name === "method" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly" }]
                     : columnValue?.name === "referrer" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly" }]
-                    : columnValue?.name === "status" ? [{ name: "Greater than" },{ name: "Less than" }, { name: "Greater than or equel to" }, { name: "Less than or equel to" }, { name: "Equel to" }]
+                    : columnValue?.name === "status" ? [{ name: "Equel to" },{ name: "Greater than" },{ name: "Less than" }, { name: "Greater than or equal to" }, { name: "Less than or equal to" }]
                     : columnValue?.name === "user-identifier" ? [{ name: "Contains" }, { name: "Doesn't Contain" },{ name: "Exactly" }]
                     : [{ name: "Contains" }, { name: "Doesn't Contain" }]  
               
@@ -138,14 +140,15 @@ export default function Filters({
                       operator: operator.name,
                       contains: operator.name === "Contains",
                       notContain: operator.name === "Doesn't Contain",
-                      greaterThan: operator.name === "Greater Than",
-                      greaterThanEqual: operator.name === "Greater Than or equel to",
-                      lessThanEqual: operator.name === "Less than or equel to",
+                      greaterThan: operator.name === "Greater than",
+                      greaterThanEqual: operator.name === "Greater than or equal to",
+                      lessThanEqual: operator.name === "Less than or equal to",
                       exactly: operator.name === "Exactly",
                       after: operator.name === "after",
                       before: operator.name === "before",
                       exactDay: operator.name === "exact day",
                       lessThan: operator.name === "Less than",
+                      equalTo: operator.name === "Equel to",
                       column: columnValue.name,
                     },
                   ]);
@@ -155,14 +158,15 @@ export default function Filters({
                       operator: operator.name,
                       contains: operator.name === "Contains",
                       notContain: operator.name === "Doesn't Contain",
-                      greaterThan: operator.name === "Greater Than",
-                      greaterThanEqual: operator.name === "Greater Than or equel to",
-                      lessThanEqual: operator.name === "Less than or equel to",
+                      greaterThan: operator.name === "Greater than",
+                      greaterThanEqual: operator.name === "Greater than or equal to",
+                      lessThanEqual: operator.name === "Less than or equal to",
                       exactly: operator.name === "Exactly",
                       before: operator.name === "before",
                       exactDay: operator.name === "exact day",
                       lessThan: operator.name === "Less than",
                       after: operator.name === "after",
+                      equalTo: operator.name === "Equel to", 
                       column: columnValue.name,
                     
                   });
@@ -243,19 +247,21 @@ export default function Filters({
                       text={`${val.column} ${
                         val.contains ? "contains"
                         : val.notContain ? "doesn't contain"
-                          : val.greaterThan ? "greater than"
-                            : val.greaterThanEqual ? "greater than or equal to"
-                              : val.lessThanEqual ? "less than or equal to"
+                          : val.greaterThan ? "Greater than"
+                            : val.greaterThanEqual ? "Greater than or equal to"
+                              : val.lessThanEqual ? "Less than or equal to"
                                 : val.exactly ? "exactly"
                                   : val.after ? "after"
                                     : val.before ? "before"
                                       : val.exactDay ? "exact day"
                                         : val.lessThan ? "less than"
-                                          : ""
+                                          : val.equalTo ? "Equel to"
+                                            : ""
           
                       } ${val.query}`}
                       onClose={() => {
-                        removeGlobalFilter(val.column,
+                        removeGlobalFilter(
+                          val.column,
                           val.contains,
                           val.query,
                           val.after,
@@ -263,9 +269,11 @@ export default function Filters({
                           val.greaterThan,
                           val.lessThan,
                           val.greaterThanEqual,
+                          val.lessThanEqual,
                           val.notContain,
                           val.exactly,
-                          val.exactDay);
+                          val.exactDay,
+                          val.equalTo);
 
                       }}
                     />

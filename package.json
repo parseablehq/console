@@ -41,7 +41,9 @@
     ],
     "overrides": [
       {
-        "files": [ "src/components/*/*.js" ],
+        "files": [
+          "src/components/*/*.js"
+        ],
         "rules": {
           "react/prop-types": "error",
           "react/require-default-props": "error",

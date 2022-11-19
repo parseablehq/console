@@ -38,9 +38,7 @@ for (const filter of selectedFilters) {
 
       let query = filter.query;
       const dataField = data[column];
-        // console.log(dataField.includes(query));
         
-      // const isString = typeof data[column] === "string";
 
       let FieldType;
       // We check for number first because numbers are valid dates
@@ -60,12 +58,12 @@ for (const filter of selectedFilters) {
           
           switch (filter.operator) {
             case "Equel to":
-              console.log(dataField, query);
               if (dataField !== query) {
                 return false;
               }
               break;
               case "Less than":
+                console.log(dataField, query);
                 if (dataField > query) {
                   return false;
                 }
@@ -76,12 +74,12 @@ for (const filter of selectedFilters) {
               }
               break;
             case "Less than or equal to":
-              if (dataField <= query) {
+              if (dataField >= query) {
                 return false;
               }
               break;
               case "Greater than or equal to":
-              if (dataField >= query) {
+              if (dataField <= query) {
                 return false;
               }
               break;
