@@ -88,13 +88,11 @@ for (const filter of selectedFilters) {
               break;
             }
             
-            // Do Number Stuff
             // greater than. lesss than, equal, etc etc
           break;
           
           case "date":
-          //   console.log(filter);
-          // console.log(data);
+
           
           const date = moment(dataField);
           const queryDate = moment(query);
@@ -124,7 +122,6 @@ for (const filter of selectedFilters) {
               break;
             }
             
-            // Do Date Stuff
             // after, before, exact day
             break;
             
@@ -155,7 +152,6 @@ for (const filter of selectedFilters) {
             default:
               break;
           }
-          // Do String Stuff
           // contains, exact, not contains, etc etc
           break;
         
