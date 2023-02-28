@@ -2,7 +2,7 @@
   <span">
     <img src="https://raw.githubusercontent.com/parseablehq/.github/main/images/logo.svg#gh-light-mode-only" alt="Parseable" width="500" height="100" />
     <img src="https://raw.githubusercontent.com/parseablehq/.github/main/images/logo-dark.png#gh-dark-mode-only" alt="Parseable" width="500" height="100" />
-  </a> 
+  </a>
 </p>
 
 <p align="center">
@@ -24,10 +24,6 @@ Parseable is a cloud native, log storage and analysis platform. Parseable is ind
 
 It ingests log data via HTTP POST calls and exposes a query API to search and analyze logs. It is compatible with logging agents like FluentBit, LogStash, FileBeat among others.
 
-<img src="https://raw.githubusercontent.com/parseablehq/.github/main/images/parseable.png" />
-
-
-
 ## Getting Started
 
 1. Clone the repository.
@@ -37,8 +33,7 @@ It ingests log data via HTTP POST calls and exposes a query API to search and an
 5. You can see the console running in your browser now :)
 6. For dashboard Access Enter the below credentials.
 
-
-## Live Demo 
+## Live Demo
 
 <a href="https://demo.parseable.io">Click Here for Live Demo Parseable </a>
 
@@ -51,19 +46,19 @@ Access the Parseable dashboard to verify the log data is present
 </tr>
 <tr>
     <td>Username</td>
-    <td>parseable</td>
+    <td>admin</td>
 </tr>
 <tr>
     <td>Password</td>
-    <td>parseable</td>
+    <td>admin</td>
 </tr>
 </table>
 
 For complete Parseable API documentation, refer to [Parseable API workspace on Postman](https://www.postman.com/parseable/workspace/parseable/overview).
 
-:exclamation: Please do not store any sensitive data on this server as the data is openly accessible. We'll delete the data on this server periodically.
+:warning: Please do not store any sensitive data on this server as the data is openly accessible. We'll delete the data on this server periodically.
 
-## Contributing 
+## Contributing
 
 Refer to the contributing guide [here](https://www.parseable.io/docs/contributing).
 
@@ -75,8 +70,8 @@ You may obtain a copy of the License at
 
 [https://www.gnu.org/licenses/agpl-3.0.txt](https://www.gnu.org/licenses/agpl-3.0.txt)
 
+## Our Contributors
 
-## Our Contributers
- <a href="https://github.com/parseablehq/console">
+  <a href="https://github.com/parseablehq/console">
   <img src="https://contrib.rocks/image?repo=parseablehq/console" />
 </a>
