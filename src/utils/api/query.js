@@ -9,24 +9,12 @@ const queryLogs = (
   endTime,
   signal,
   pageParam,
-  logSchema,
 ) => {
-  let dateStream = null;
 
-  for (let index in logSchema) {
-    if (
-      logSchema[index].includes("date") ||
-      logSchema[index].includes("time")
-    ) {
-      dateStream = logSchema[index];
-    }
-  }
   return post(
     QUERY_URL,
     {
-      query: `select * from ${streamName} ${
-        dateStream !== null ? `order by ${dateStream} desc` : ""
-      }limit 10${pageParam === 1 ? "" : ` offset ${(pageParam - 1) * 10}`}`,
+      query: `select * from ${streamName} order by p_timestamp desc limit 1000${pageParam === 1 ? "" : ` offset ${(pageParam - 1) * 10}`}`,
       startTime: startTime,
       endTime: endTime,
     },
