@@ -25,7 +25,7 @@ const queryLogs = (
     QUERY_URL,
     {
       query: `select * from ${streamName} ${
-        dateStream !== null ? `order by ${dateStream} ` : ""
+        dateStream !== null ? `order by ${dateStream} desc` : ""
       }limit 10${pageParam === 1 ? "" : ` offset ${(pageParam - 1) * 10}`}`,
       startTime: startTime,
       endTime: endTime,
