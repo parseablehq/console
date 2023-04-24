@@ -36,14 +36,14 @@ function getRange() {
   return {
     "Past 10 Minutes": [
       getCurrentTime().subtract(10, "minutes"),
-      getCurrentTime(),
+      getCurrentTime().add(1, "minutes"),
     ],
-    "Past 1 Hour": [getCurrentTime().subtract(60, "minutes"), getCurrentTime()],
-    "Past 5 Hours": [getCurrentTime().subtract(5, "hours"), getCurrentTime()],
-    "Past 24 Hours": [getCurrentTime().subtract(24, "hours"), getCurrentTime()],
-    "Past 3 Days": [getCurrentTime().subtract(3, "days"), getCurrentTime()],
-    "Past 7 Days": [getCurrentTime().subtract(7, "days"), getCurrentTime()],
-    "Past 2 Months": [getCurrentTime().subtract(2, "months"), getCurrentTime()],
+    "Past 1 Hour": [getCurrentTime().subtract(60, "minutes"), getCurrentTime().add(1, "minutes")],
+    "Past 5 Hours": [getCurrentTime().subtract(5, "hours"), getCurrentTime().add(1, "minutes")],
+    "Past 24 Hours": [getCurrentTime().subtract(24, "hours"), getCurrentTime().add(1, "minutes")],
+    "Past 3 Days": [getCurrentTime().subtract(3, "days"), getCurrentTime().add(1, "minutes")],
+    "Past 7 Days": [getCurrentTime().subtract(7, "days"), getCurrentTime().add(1, "minutes")],
+    "Past 2 Months": [getCurrentTime().subtract(2, "months"), getCurrentTime().add(1, "minutes")],
   };
 }
 
@@ -288,7 +288,7 @@ const Dashboard = () => {
         </div>
 
         {!logStream.isLoading &&
-        (logStream.isError || !logStream?.data?.data.length) ? (
+          (logStream.isError || !logStream?.data?.data.length) ? (
           <div
             style={{ transform: "translateX(-50%) translateY(-50%)" }}
             className="absolute font-semibold text-gray-500 left-1/2 top-80"
@@ -310,8 +310,8 @@ const Dashboard = () => {
         )}
 
         {!logStreamSchema.isLoading &&
-        !logStreamSchema.isFetching &&
-        (logStreamSchema.isError || !logStreamSchema?.data?.data) ? (
+          !logStreamSchema.isFetching &&
+          (logStreamSchema.isError || !logStreamSchema?.data?.data) ? (
           <div
             style={{ transform: "translateX(-50%) translateY(-50%)" }}
             className="absolute font-semibold text-gray-500 left-1/2 top-80"
