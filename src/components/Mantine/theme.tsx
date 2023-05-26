@@ -24,9 +24,9 @@ export const theme: MantineThemeOverride = {
 	},
 	primaryColor: 'brandPrimary',
 	other: {
-		sizing: sizing,
-		heights: heights,
-		widths: widths,
+		sizing,
+		heights,
+		widths,
 		fontWeights: {
 			thin: 100,
 			extraLight: 200,
