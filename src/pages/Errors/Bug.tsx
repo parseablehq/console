@@ -1,6 +1,6 @@
-import bugError from '@/assets/images/bug_error.png';
+import bugError from '@/assets/images/bug_error.webp';
 import { HOME_ROUTE } from '@/constants/routes';
-import FullPageLayout from '@/layouts/FullPage';
+import FullPageLayout from '@/layouts/FullPageLayout';
 import type { ImageProps } from '@mantine/core';
 import { Box, Button, Center, Group, Image, Text, Title } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';

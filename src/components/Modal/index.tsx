@@ -11,7 +11,7 @@ const Modal: FC<MantineModalProps> = (props) => {
 		<MantineModal
 			{...rest}
 			overlayProps={{
-				color: colors.gray[2],
+				color: colors.dimmed[0],
 				opacity: 0.55,
 				blur: 3,
 			}}>

@@ -27,18 +27,18 @@ const SignOut: FC = () => {
 	);
 };
 
-const Home: FC = () => {
-	useDocumentTitle('Parseable | Home');
+const Dashboard: FC = () => {
+	useDocumentTitle('Parseable | Dashboard');
 
 	return (
 		<Center
 			style={{
 				flex: 1,
 			}}>
-			<Text mr="lg">HOME</Text>
+			<Text mr="lg">Dashboard</Text>
 			<SignOut />
 		</Center>
 	);
 };
 
-export default Home;
+export default Dashboard;
