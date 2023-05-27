@@ -5,24 +5,27 @@ import { lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import SuspensePage from './SuspensePage';
 import PrivateRoute from './PrivateRoute';
-import FullPageLayout from '@/layouts/FullPage';
+import FullPageLayout from '@/layouts/FullPageLayout';
+import MainLayout from '@/layouts/MainLayout';
 
 const Login = lazy(() => import('@/pages/Login'));
-const Home = lazy(() => import('@/pages/Home'));
+const Home = lazy(() => import('@/pages/Dashboard'));
 
 const AppRouter: FC = () => {
 	return (
 		<FullPageLayout>
 			<Routes>
 				<Route element={<PrivateRoute />}>
-					<Route
-						path={HOME_ROUTE}
-						element={
-							<SuspensePage>
-								<Home />
-							</SuspensePage>
-						}
-					/>
+					<Route element={<MainLayout />}>
+						<Route
+							path={HOME_ROUTE}
+							element={
+								<SuspensePage>
+									<Home />
+								</SuspensePage>
+							}
+						/>
+					</Route>
 				</Route>
 				<Route
 					path={LOGIN_ROUTE}

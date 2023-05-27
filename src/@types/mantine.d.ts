@@ -1,7 +1,7 @@
 import type { Tuple, DefaultMantineColor } from '@mantine/core';
-import type { widths, heights, sizing } from './sizing';
+import type { widths, heights, sizing } from '../components/Mantine/sizing';
 
-export const CustomColorsName = ['white', 'brandPrimary', 'brandSecondary', 'error'] as const;
+export const CustomColorsName = ['white', 'brandPrimary', 'brandSecondary', 'error', 'dimmed'] as const;
 
 const CustomFontWeights = [
 	'thin',
