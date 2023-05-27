@@ -40,7 +40,7 @@ export const useLoginStyle = createStyles((theme) => {
 			background: colors.brandSecondary[1],
 			width: widths.full,
 
-			['&:hover']: {
+			'&:hover': {
 				background: colors.brandSecondary[0],
 			},
 		},
