@@ -27,7 +27,7 @@ const SignOut: FC = () => {
 	);
 };
 
-const Dashboard: FC = () => {
+const Logs: FC = () => {
 	useDocumentTitle('Parseable | Dashboard');
 
 	return (
@@ -41,4 +41,4 @@ const Dashboard: FC = () => {
 	);
 };
 
-export default Dashboard;
+export default Logs;

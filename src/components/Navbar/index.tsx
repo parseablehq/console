@@ -1,12 +1,12 @@
-import { DASHBOARD_ROUTE } from '@/constants/routes';
+import { LOGS_ROUTE } from '@/constants/routes';
 import useMountedState from '@/hooks/useMountedState';
 import type { NavbarProps as MantineNavbarProps } from '@mantine/core';
 import { Navbar as MantineNavbar, Tooltip, UnstyledButton } from '@mantine/core';
-import { IconLayoutDashboard } from '@tabler/icons-react';
+import { IconFileReport } from '@tabler/icons-react';
 import type { FC } from 'react';
 import { useNavbarStyles } from './styles';
 
-const links = [{ icon: IconLayoutDashboard, label: 'Dashboard', pathname: DASHBOARD_ROUTE }];
+const links = [{ icon: IconFileReport, label: 'Logs', pathname: LOGS_ROUTE }];
 
 type Link = (typeof links)[number];
 

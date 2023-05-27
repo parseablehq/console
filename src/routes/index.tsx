@@ -1,4 +1,4 @@
-import { ALL_ROUTE, DASHBOARD_ROUTE, HOME_ROUTE, LOGIN_ROUTE } from '@/constants/routes';
+import { ALL_ROUTE, LOGS_ROUTE, HOME_ROUTE, LOGIN_ROUTE } from '@/constants/routes';
 import NotFound from '@/pages/Errors/NotFound';
 import type { FC } from 'react';
 import { lazy } from 'react';
@@ -10,7 +10,7 @@ import MainLayout from '@/layouts/MainLayout';
 
 const Login = lazy(() => import('@/pages/Login'));
 const Home = lazy(() => import('@/pages/Home'));
-const Dashboard = lazy(() => import('@/pages/Dashboard'));
+const Logs = lazy(() => import('@/pages/Logs'));
 
 const AppRouter: FC = () => {
 	return (
@@ -27,10 +27,10 @@ const AppRouter: FC = () => {
 							}
 						/>
 						<Route
-							path={DASHBOARD_ROUTE}
+							path={LOGS_ROUTE}
 							element={
 								<SuspensePage>
-									<Dashboard />
+									<Logs />
 								</SuspensePage>
 							}
 						/>
