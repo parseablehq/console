@@ -5,6 +5,7 @@ import { Navbar as MantineNavbar, Tooltip, UnstyledButton } from '@mantine/core'
 import { IconFileReport } from '@tabler/icons-react';
 import type { FC } from 'react';
 import { useNavbarStyles } from './styles';
+import { useNavigate } from 'react-router-dom';
 
 const links = [{ icon: IconFileReport, label: 'Logs', pathname: LOGS_ROUTE }];
 
@@ -14,9 +15,13 @@ type NavbarProps = Omit<MantineNavbarProps, 'children'>;
 
 const Navbar: FC<NavbarProps> = (props) => {
 	const [active, setActive] = useMountedState(links[0].label);
+	const nav = useNavigate();
 
 	const onLinkSelect = (link: Link) => {
 		setActive(link.label);
+		nav({
+			pathname: link.pathname,
+		});
 	};
 
 	const { classes } = useNavbarStyles();
