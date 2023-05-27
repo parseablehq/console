@@ -1,4 +1,4 @@
-import { ALL_ROUTE, HOME_ROUTE, LOGIN_ROUTE } from '@/constants/routes';
+import { ALL_ROUTE, DASHBOARD_ROUTE, HOME_ROUTE, LOGIN_ROUTE } from '@/constants/routes';
 import NotFound from '@/pages/Errors/NotFound';
 import type { FC } from 'react';
 import { lazy } from 'react';
@@ -9,7 +9,8 @@ import FullPageLayout from '@/layouts/FullPageLayout';
 import MainLayout from '@/layouts/MainLayout';
 
 const Login = lazy(() => import('@/pages/Login'));
-const Home = lazy(() => import('@/pages/Dashboard'));
+const Home = lazy(() => import('@/pages/Home'));
+const Dashboard = lazy(() => import('@/pages/Dashboard'));
 
 const AppRouter: FC = () => {
 	return (
@@ -22,6 +23,14 @@ const AppRouter: FC = () => {
 							element={
 								<SuspensePage>
 									<Home />
+								</SuspensePage>
+							}
+						/>
+						<Route
+							path={DASHBOARD_ROUTE}
+							element={
+								<SuspensePage>
+									<Dashboard />
 								</SuspensePage>
 							}
 						/>

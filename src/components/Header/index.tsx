@@ -5,12 +5,13 @@ import slackLogo from '@/assets/images/slack-logo.webp';
 import { HOME_ROUTE, LOGIN_ROUTE } from '@/constants/routes';
 import { HEADER_HEIGHT } from '@/constants/theme';
 import type { BoxProps, HeaderProps as MantineHeaderProps, UnstyledButtonProps } from '@mantine/core';
-import { Anchor, Box, Card, Image, Header as MantineHeader, Modal, Text, UnstyledButton } from '@mantine/core';
+import { Anchor, Box, Card, Image, Header as MantineHeader, Text, UnstyledButton } from '@mantine/core';
 import { useDisclosure, useLocalStorage } from '@mantine/hooks';
 import { IconHelpCircle, IconLogout, IconUser } from '@tabler/icons-react';
 import { FC, Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useHeaderStyles from './styles';
+import Modal from '../Modal';
 
 type HeaderProps = Omit<MantineHeaderProps, 'children' | 'height' | 'className'>;
 

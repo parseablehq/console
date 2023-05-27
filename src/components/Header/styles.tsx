@@ -14,6 +14,7 @@ const useHeaderStyles = createStyles((theme) => {
 			alignItems: 'center',
 			justifyContent: 'space-between',
 			paddingLeft: spacing.lg,
+			border: 'none',
 		},
 
 		actionsContainer: {
@@ -32,11 +33,11 @@ const useHeaderStyles = createStyles((theme) => {
 		},
 
 		actionBtnIcon: {
-			color: colors.dimmed[0],
+			color: colors.gray[3],
 		},
 
 		actionBtnText: {
-			color: colors.dimmed[0],
+			color: colors.gray[3],
 			fontSize: fontSizes.sm,
 		},
 
@@ -105,11 +106,11 @@ const useHeaderStyles = createStyles((theme) => {
 		},
 
 		userIcon: {
-			color: colors.dimmed[0],
+			color: colors.gray[3],
 		},
 
 		userText: {
-			color: colors.dimmed[0],
+			color: colors.gray[3],
 			fontSize: fontSizes.sm,
 		},
 	};

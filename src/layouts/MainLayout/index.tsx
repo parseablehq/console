@@ -1,20 +1,19 @@
 import Header from '@/components/Header';
-import { AppShell, Navbar } from '@mantine/core';
+import Navbar from '@/components/Navbar';
+import { AppShell } from '@mantine/core';
 import type { FC } from 'react';
 import { Outlet } from 'react-router-dom';
 
 const MainLayout: FC = () => {
 	return (
 		<AppShell
-			padding="md"
-			navbar={
-				<Navbar width={{ base: 300 }} p="xs">
-					{/* Navbar content */}
-				</Navbar>
-			}
+			padding={0}
+			navbar={<Navbar width={{ base: 60 }} />}
 			header={<Header p="xs" />}
-			styles={(theme) => ({
-				main: { backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0] },
+			styles={() => ({
+				main: {
+					display: 'flex',
+				},
 			})}>
 			<Outlet />
 		</AppShell>
