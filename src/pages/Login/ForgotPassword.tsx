@@ -3,7 +3,7 @@ import Modal from '@/components/Modal';
 import { Box, Divider, Image, Space, Text, UnstyledButton } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { FC, Fragment } from 'react';
-import { useForgetPassStyle } from './styles';
+import { useForgetPassStyles } from './styles';
 
 const steps = [
 	{
@@ -23,7 +23,7 @@ const steps = [
 const ForgotPassword: FC = () => {
 	const [opened, { open, close }] = useDisclosure(false);
 
-	const { classes } = useForgetPassStyle();
+	const { classes } = useForgetPassStyles();
 
 	const { forgetPassBtnText, titleStyle, descriptionStyle } = classes;
 
@@ -59,7 +59,7 @@ type StepProps = {
 
 const Step: FC<StepProps> = (props) => {
 	const { number, title, description, isLast } = props;
-	const { classes } = useForgetPassStyle();
+	const { classes } = useForgetPassStyles();
 
 	const { stepContainer, stepNumberContainer, stepNumber, stepVerticalLine, stepTitle, stepDescription } = classes;
 

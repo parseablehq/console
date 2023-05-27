@@ -1,6 +1,6 @@
 import { createStyles } from '@mantine/core';
 
-const useHeaderStyles = createStyles((theme) => {
+export const useHeaderStyles = createStyles((theme) => {
 	const { primaryColor, colors, spacing, fontSizes, radius, shadows } = theme;
 	const { fontWeights, widths, heights } = theme.other;
 
@@ -115,5 +115,3 @@ const useHeaderStyles = createStyles((theme) => {
 		},
 	};
 });
-
-export default useHeaderStyles;

@@ -1,7 +1,7 @@
 import loginBg from '@/assets/images/login-bg.svg';
 import { createStyles } from '@mantine/core';
 
-export const useLoginStyle = createStyles((theme) => {
+export const useLoginStyles = createStyles((theme) => {
 	const { colors, other, spacing, radius, shadows, primaryColor, fontSizes } = theme;
 
 	const { fontWeights, widths } = other;
@@ -63,7 +63,7 @@ export const useLoginStyle = createStyles((theme) => {
 	};
 });
 
-export const useForgetPassStyle = createStyles((theme) => {
+export const useForgetPassStyles = createStyles((theme) => {
 	const { colors, primaryColor, fontSizes, spacing } = theme;
 
 	const { fontWeights, sizing, widths } = theme.other;

@@ -10,7 +10,7 @@ import { useDisclosure, useLocalStorage } from '@mantine/hooks';
 import { IconHelpCircle, IconLogout, IconUser } from '@tabler/icons-react';
 import { FC, Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import useHeaderStyles from './styles';
+import { useHeaderStyles } from './styles';
 import Modal from '../Modal';
 
 type HeaderProps = Omit<MantineHeaderProps, 'children' | 'height' | 'className'>;

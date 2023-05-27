@@ -4,7 +4,7 @@ import type { NavbarProps as MantineNavbarProps } from '@mantine/core';
 import { Navbar as MantineNavbar, Tooltip, UnstyledButton } from '@mantine/core';
 import { IconLayoutDashboard } from '@tabler/icons-react';
 import type { FC } from 'react';
-import useNavbarStyle from './styles';
+import { useNavbarStyles } from './styles';
 
 const links = [{ icon: IconLayoutDashboard, label: 'Dashboard', pathname: DASHBOARD_ROUTE }];
 
@@ -19,7 +19,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 		setActive(link.label);
 	};
 
-	const { classes } = useNavbarStyle();
+	const { classes } = useNavbarStyles();
 	const { container } = classes;
 
 	return (
@@ -51,7 +51,7 @@ type NavbarLinkProps = {
 const NavbarLink: FC<NavbarLinkProps> = (props) => {
 	const { link, isActive, setActive } = props;
 
-	const { classes, cx } = useNavbarStyle();
+	const { classes, cx } = useNavbarStyles();
 	const { linkBtnStyle, linkBtnActiveStyle } = classes;
 
 	return (

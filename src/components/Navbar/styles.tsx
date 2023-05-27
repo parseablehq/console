@@ -1,6 +1,6 @@
 import { createStyles } from '@mantine/core';
 
-const useNavbarStyle = createStyles((theme) => {
+export const useNavbarStyles = createStyles((theme) => {
 	const { colors, primaryColor, spacing } = theme;
 	const { widths, heights } = theme.other;
 	const pColor = colors[primaryColor][2];
@@ -60,5 +60,3 @@ const useNavbarStyle = createStyles((theme) => {
 		},
 	};
 });
-
-export default useNavbarStyle;

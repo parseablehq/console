@@ -3,7 +3,7 @@ import { Box, Button, Center, Group, Text, Title } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { ComponentPropsWithoutRef, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useErrorPageStyles from './styles';
+import { useErrorPageStyles } from './styles';
 
 const Illustration: FC<ComponentPropsWithoutRef<'svg'>> = (props) => {
 	return (

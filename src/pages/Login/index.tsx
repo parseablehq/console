@@ -5,14 +5,14 @@ import { Box, Button, Image, PasswordInput, Text, TextInput, Transition } from '
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC } from 'react';
 import ForgotPassword from './ForgotPassword';
-import { useLoginStyle } from './styles';
+import { useLoginStyles } from './styles';
 
 const Login: FC = () => {
 	useDocumentTitle('Parseable | Login');
 
 	const { getInputProps, isValid, loading, handleSubmit, error } = useLoginForm();
 
-	const { classes } = useLoginStyle();
+	const { classes } = useLoginStyles();
 	const { container, formContainer, titleStyle, descriptionStyle, formInput, loginBtnStyle, errorStyle } = classes;
 
 	return (
