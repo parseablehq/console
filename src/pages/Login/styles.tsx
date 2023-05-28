@@ -1,7 +1,7 @@
 import loginBg from '@/assets/images/login-bg.svg';
 import { createStyles } from '@mantine/core';
 
-export const useLoginStyle = createStyles((theme) => {
+export const useLoginStyles = createStyles((theme) => {
 	const { colors, other, spacing, radius, shadows, primaryColor, fontSizes } = theme;
 
 	const { fontWeights, widths } = other;
@@ -54,7 +54,7 @@ export const useLoginStyle = createStyles((theme) => {
 		descriptionStyle: {
 			textAlign: 'center',
 			fontSize: fontSizes.sm,
-			color: colors.gray[9],
+			color: colors.dimmed[0],
 		},
 
 		errorStyle: {
@@ -63,7 +63,7 @@ export const useLoginStyle = createStyles((theme) => {
 	};
 });
 
-export const useForgetPassStyle = createStyles((theme) => {
+export const useForgetPassStyles = createStyles((theme) => {
 	const { colors, primaryColor, fontSizes, spacing } = theme;
 
 	const { fontWeights, sizing, widths } = theme.other;
@@ -81,13 +81,13 @@ export const useForgetPassStyle = createStyles((theme) => {
 			color: pColor,
 			textAlign: 'center',
 			fontSize: fontSizes.sm,
-			fontWeight: fontWeights.semibold,
+			fontWeight: fontWeights.bold,
 		},
 
 		descriptionStyle: {
 			textAlign: 'center',
 			fontSize: fontSizes.sm,
-			color: colors.gray[9],
+			color: colors.dimmed[0],
 		},
 
 		stepContainer: {
@@ -118,7 +118,7 @@ export const useForgetPassStyle = createStyles((theme) => {
 		stepVerticalLine: {
 			width: widths.px,
 			flexGrow: 1,
-			background: colors.gray[4],
+			background: colors.dimmed[0],
 		},
 
 		stepTitle: {
@@ -129,7 +129,7 @@ export const useForgetPassStyle = createStyles((theme) => {
 
 		stepDescription: {
 			marginTop: spacing.xs,
-			color: colors.gray[8],
+			color: colors.dimmed[0],
 			fontSize: fontSizes.xs,
 			fontWeight: fontWeights.medium,
 		},

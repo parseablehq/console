@@ -1,6 +1,6 @@
 import { createStyles } from '@mantine/core';
 
-const useErrorPageStyles = createStyles((theme) => {
+export const useErrorPageStyles = createStyles((theme) => {
 	const { colors, primaryColor, spacing } = theme;
 
 	const pColor = colors[primaryColor][2];
@@ -37,5 +37,3 @@ const useErrorPageStyles = createStyles((theme) => {
 		},
 	};
 });
-
-export default useErrorPageStyles;
