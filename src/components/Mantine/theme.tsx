@@ -1,4 +1,4 @@
-import type { CSSObject, MantineThemeOverride } from '@mantine/core';
+import type { CSSObject, MantineTheme, MantineThemeOverride } from '@mantine/core';
 import { heights, widths, sizing } from './sizing';
 
 const globalStyles = (): CSSObject => {
@@ -38,6 +38,27 @@ export const theme: MantineThemeOverride = {
 			bold: 700,
 			extrabold: 800,
 			black: 900,
+		},
+	},
+	components: {
+		Modal: {
+			defaultProps: ({ colors }: MantineTheme) => ({
+				withinPortal: true,
+				overlayProps: {
+					color: colors.gray[3],
+					opacity: 0.55,
+					blur: 3,
+				},
+			}),
+		},
+		Highlight: {
+			defaultProps: ({ colors, other }: MantineTheme) => ({
+				highlightStyles: {
+					color: colors.dark,
+					background: colors.yellow[3],
+					fontWeight: other.fontWeights.bold,
+				},
+			}),
 		},
 	},
 };

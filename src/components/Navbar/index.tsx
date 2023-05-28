@@ -1,6 +1,6 @@
 import { LOGS_ROUTE } from '@/constants/routes';
 import useMountedState from '@/hooks/useMountedState';
-import type { NavbarProps as MantineNavbarProps } from '@mantine/core';
+import { NavbarProps as MantineNavbarProps, px } from '@mantine/core';
 import { Navbar as MantineNavbar, Tooltip, UnstyledButton } from '@mantine/core';
 import { IconFileReport } from '@tabler/icons-react';
 import type { FC } from 'react';
@@ -62,7 +62,7 @@ const NavbarLink: FC<NavbarLinkProps> = (props) => {
 	return (
 		<Tooltip label={link.label} position="right" withArrow transitionProps={{ duration: 0 }} key={link.label}>
 			<UnstyledButton onClick={setActive} className={cx(linkBtnStyle, { [linkBtnActiveStyle]: isActive })}>
-				<link.icon size="1.4rem" stroke={1.7} />
+				<link.icon size={px('1.4rem')} stroke={1.7} />
 			</UnstyledButton>
 		</Tooltip>
 	);
