@@ -1,7 +1,7 @@
 import { LOGS_ROUTE } from '@/constants/routes';
 import useMountedState from '@/hooks/useMountedState';
-import { NavbarProps as MantineNavbarProps, px } from '@mantine/core';
-import { Navbar as MantineNavbar, Tooltip, UnstyledButton } from '@mantine/core';
+import type { NavbarProps as MantineNavbarProps } from '@mantine/core';
+import { Navbar as MantineNavbar, Tooltip, UnstyledButton, px } from '@mantine/core';
 import { IconFileReport } from '@tabler/icons-react';
 import type { FC } from 'react';
 import { useNavbarStyles } from './styles';
