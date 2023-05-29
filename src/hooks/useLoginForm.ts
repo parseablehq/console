@@ -14,8 +14,19 @@ export const useLoginForm = () => {
 
 	const [loading, setLoading] = useMountedState(false);
 	const [error, setError] = useMountedState<string | null>(null);
-	const [credentials, setCredentials] = useLocalStorage({ key: 'credentials', getInitialValueInEffect: false });
-	const [, setUsername] = useLocalStorage({ key: 'username' });
+	const [credentials, setCredentials] = useLocalStorage({
+		key: 'credentials',
+		getInitialValueInEffect: false,
+		serialize: (value) => {
+			return value;
+		},
+	});
+	const [, setUsername] = useLocalStorage({
+		key: 'username',
+		serialize: (value) => {
+			return value;
+		},
+	});
 	const nav = useNavigate();
 	const location = useLocation();
 
@@ -28,7 +39,6 @@ export const useLoginForm = () => {
 				{ replace: true },
 			);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const form = useForm({

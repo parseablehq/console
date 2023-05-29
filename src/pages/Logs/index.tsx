@@ -1,43 +1,39 @@
-import { LOGIN_ROUTE } from '@/constants/routes';
-import { Button, Center, Text } from '@mantine/core';
-import { useDocumentTitle, useLocalStorage } from '@mantine/hooks';
-import type { FC } from 'react';
-import { useNavigate } from 'react-router-dom';
-
-const SignOut: FC = () => {
-	const nav = useNavigate();
-	const [, , removeCredentials] = useLocalStorage({ key: 'credentials' });
-	const [, , removeUsername] = useLocalStorage({ key: 'username' });
-
-	const onSignOut = () => {
-		removeCredentials();
-		removeUsername();
-		nav(
-			{
-				pathname: LOGIN_ROUTE,
-			},
-			{ replace: true },
-		);
-	};
-
-	return (
-		<Button onClick={onSignOut} color="blue">
-			Sign out
-		</Button>
-	);
-};
+import { Box, Center, Text } from '@mantine/core';
+import { useDocumentTitle } from '@mantine/hooks';
+import { FC, useEffect } from 'react';
+import LogStreamList from './LogStreamList';
+import { useLogsStyles } from './styles';
+import { useLogsPageContext } from './Context';
+import useMountedState from '@/hooks/useMountedState';
 
 const Logs: FC = () => {
 	useDocumentTitle('Parseable | Dashboard');
 
+	const { classes } = useLogsStyles();
+	const { container } = classes;
+
+	const {
+		state: { subSelectedStream },
+	} = useLogsPageContext();
+
+	const [selectedStream, setSelectedStream] = useMountedState('');
+
+	useEffect(() => {
+		const listener = subSelectedStream.subscribe(setSelectedStream);
+
+		return () => listener();
+	}, []);
+
 	return (
-		<Center
-			style={{
-				flex: 1,
-			}}>
-			<Text mr="lg">Dashboard</Text>
-			<SignOut />
-		</Center>
+		<Box className={container}>
+			<LogStreamList />
+			<Center
+				style={{
+					flex: 1,
+				}}>
+				<Text>{selectedStream}</Text>
+			</Center>
+		</Box>
 	);
 };
 

@@ -18,6 +18,8 @@ module.exports = {
 	rules: {
 		'react-refresh/only-export-components': 'warn',
 		'react/react-in-jsx-scope': 0,
+		'react-refresh/only-export-components': 0,
+		'react-hooks/exhaustive-deps': 0,
 	},
 	settings: {
 		react: {

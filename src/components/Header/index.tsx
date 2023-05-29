@@ -5,13 +5,12 @@ import slackLogo from '@/assets/images/slack-logo.webp';
 import { HOME_ROUTE, LOGIN_ROUTE } from '@/constants/routes';
 import { HEADER_HEIGHT } from '@/constants/theme';
 import type { BoxProps, HeaderProps as MantineHeaderProps, UnstyledButtonProps } from '@mantine/core';
-import { Anchor, Box, Card, Image, Header as MantineHeader, Text, UnstyledButton } from '@mantine/core';
+import { Anchor, Box, Card, Image, Header as MantineHeader, Text, UnstyledButton, Modal, px } from '@mantine/core';
 import { useDisclosure, useLocalStorage } from '@mantine/hooks';
 import { IconHelpCircle, IconLogout, IconUser } from '@tabler/icons-react';
 import { FC, Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useHeaderStyles } from './styles';
-import Modal from '../Modal';
 
 type HeaderProps = Omit<MantineHeaderProps, 'children' | 'height' | 'className'>;
 
@@ -63,12 +62,12 @@ const Help: FC<UnstyledButtonProps> = (props) => {
 	return (
 		<Fragment>
 			<UnstyledButton {...props} className={actionBtn} onClick={open} color="brandSecondary.1" variant="filled">
-				<IconHelpCircle size="1.1rem" className={actionBtnIcon} />
+				<IconHelpCircle size={px('1.1rem')} className={actionBtnIcon} />
 				<Text ml="xs" className={actionBtnText}>
 					Help
 				</Text>
 			</UnstyledButton>
-			<Modal opened={opened} onClose={close} withCloseButton={false} size="sm" centered>
+			<Modal withinPortal opened={opened} onClose={close} withCloseButton={false} size="sm" centered>
 				<Text className={helpTitle}>Need any help?</Text>
 				<Text className={helpDescription}>Here you can find useful resources and information.</Text>
 				<Box>
@@ -112,7 +111,7 @@ const User: FC<BoxProps> = (props) => {
 
 	return (
 		<Box className={userContainer} {...props}>
-			<IconUser size="1.1rem" className={userIcon} />
+			<IconUser size={px('1.1rem')} className={userIcon} />
 			<Text ml="xs" className={userText}>
 				{username}
 			</Text>
@@ -141,7 +140,7 @@ const SignOut: FC<UnstyledButtonProps> = (props) => {
 
 	return (
 		<UnstyledButton {...props} onClick={onSignOut} className={actionBtn}>
-			<IconLogout size="1.2rem" className={actionBtnIcon} />
+			<IconLogout size={px('1.2rem')} className={actionBtnIcon} />
 		</UnstyledButton>
 	);
 };

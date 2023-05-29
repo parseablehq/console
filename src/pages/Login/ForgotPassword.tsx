@@ -1,6 +1,5 @@
 import logo from '@/assets/images/brand/logo.svg';
-import Modal from '@/components/Modal';
-import { Box, Divider, Image, Space, Text, UnstyledButton } from '@mantine/core';
+import { Box, Divider, Image, Space, Text, UnstyledButton, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { FC, Fragment } from 'react';
 import { useForgetPassStyles } from './styles';
