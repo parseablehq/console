@@ -1,8 +1,8 @@
 import useMountedState from '@/hooks/useMountedState';
 import { Box, Chip, CloseButton, Divider, Drawer, Text, px } from '@mantine/core';
 import { Prism } from '@mantine/prism';
-import { FC, Fragment, useMemo } from 'react';
-import { useEffect } from 'react';
+import type { FC } from 'react';
+import { useEffect, Fragment, useMemo } from 'react';
 import { useLogsPageContext } from './Context';
 import { useViewLogStyles } from './styles';
 import dayjs from 'dayjs';
