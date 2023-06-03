@@ -1,4 +1,4 @@
-import { Box, Divider, TextInput, Tooltip, Highlight, UnstyledButton, ScrollArea, px } from '@mantine/core';
+import { Box, Divider, TextInput, Tooltip, Highlight, UnstyledButton, ScrollArea, px, Center } from '@mantine/core';
 import type { UnstyledButtonProps } from '@mantine/core';
 import type { ComponentPropsWithRef, ChangeEvent, FC } from 'react';
 import { useMemo, useEffect } from 'react';
@@ -11,7 +11,6 @@ import EmptyBox from '@/components/Empty';
 import { useLogsPageContext } from './Context';
 import { useDisclosure } from '@mantine/hooks';
 import { RetryBtn } from '@/components/Button/Retry';
-import { Center } from '@mantine/core';
 
 const LogStreamList: FC = () => {
 	const {
