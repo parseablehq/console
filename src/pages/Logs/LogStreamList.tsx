@@ -1,26 +1,17 @@
-import {
-	Box,
-	Divider,
-	TextInput,
-	Tooltip,
-	Highlight,
-	UnstyledButton,
-	ScrollArea,
-	px,
-	Button,
-	Center,
-} from '@mantine/core';
+import { Box, Divider, TextInput, Tooltip, Highlight, UnstyledButton, ScrollArea, px } from '@mantine/core';
 import type { UnstyledButtonProps } from '@mantine/core';
 import type { ComponentPropsWithRef, ChangeEvent, FC } from 'react';
 import { useMemo, useEffect } from 'react';
 import { useLogStreamListStyles } from './styles';
 import useMountedState from '@/hooks/useMountedState';
-import { IconChevronLeft, IconChevronRight, IconReload, IconSearch } from '@tabler/icons-react';
+import { IconChevronLeft, IconChevronRight, IconSearch } from '@tabler/icons-react';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import Loading from '@/components/Loading';
 import EmptyBox from '@/components/Empty';
 import { useLogsPageContext } from './Context';
 import { useDisclosure } from '@mantine/hooks';
+import { RetryBtn } from '@/components/Button/Retry';
+import { Center } from '@mantine/core';
 
 const LogStreamList: FC = () => {
 	const {
@@ -46,10 +37,8 @@ const LogStreamList: FC = () => {
 	}, [error]);
 
 	useEffect(() => {
-		if (streams) {
-			// TODO: Undo later
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			subSelectedStream.set(streams.at(-1)!.name);
+		if (streams && !!streams.length) {
+			subSelectedStream.set(streams[0].name);
 		}
 	}, [streams]);
 
@@ -76,6 +65,7 @@ const LogStreamList: FC = () => {
 		streamListContainer,
 		chevronBtn,
 		chevronBtnClose,
+		retryContainer,
 	} = classes;
 
 	return (
@@ -117,29 +107,14 @@ const LogStreamList: FC = () => {
 						/>
 					))}
 
-				{error && <Retry onClick={getData} />}
+				{error && (
+					<Center className={retryContainer}>
+						<RetryBtn onClick={getData} />
+					</Center>
+				)}
 			</Box>
 			<CollapseBtn className={cx(chevronBtn, { [chevronBtnClose]: !opened })} onClick={toggle} opened={opened} />
 		</Box>
-	);
-};
-
-type RetryProps = {
-	onClick: () => void;
-};
-
-const Retry: FC<RetryProps> = (props) => {
-	const { onClick } = props;
-
-	const { classes } = useLogStreamListStyles();
-	const { retryContainer, retryBtn } = classes;
-
-	return (
-		<Center className={retryContainer}>
-			<Button className={retryBtn} rightIcon={<IconReload size={px('0.8rem')} />} onClick={onClick}>
-				Reload
-			</Button>
-		</Center>
 	);
 };
 

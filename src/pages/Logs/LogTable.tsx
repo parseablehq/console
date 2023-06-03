@@ -13,6 +13,7 @@ import ErrorText from '@/components/Text/ErrorText';
 import { IconDotsVertical } from '@tabler/icons-react';
 import { Field } from '@/@types/parseable/dataType';
 import EmptyBox from '@/components/Empty';
+import { RetryBtn } from '@/components/Button/Retry';
 
 const skipFields = ['p_metadata', 'p_tags'];
 
@@ -38,6 +39,13 @@ const LogTable: FC = () => {
 
 	const toggleColumn = (columnName: string, value: boolean) => {
 		setColumnToggles(new Map(columnToggles.set(columnName, value)));
+	};
+
+	const onRetry = () => {
+		resetData();
+		resetLogsData();
+		getDataSchema(subSelectedStream.get());
+		setColumnToggles(new Map());
 	};
 
 	useEffect(() => {
@@ -79,10 +87,9 @@ const LogTable: FC = () => {
 		return null;
 	}, [logsSchema, columnToggles]);
 
-	const { classes, theme } = useLogTableStyles();
+	const { classes } = useLogTableStyles();
 
-	const { container, tableContainer, tableStyle, theadStyle } = classes;
-	const { heights } = theme.other;
+	const { container, tableContainer, tableStyle, theadStyle, errorContainer } = classes;
 
 	return (
 		<Box className={container}>
@@ -129,8 +136,9 @@ const LogTable: FC = () => {
 					<Loading visible variant="oval" position="absolute" />
 				)
 			) : (
-				<Center h={heights.full}>
+				<Center className={errorContainer}>
 					<ErrorText>{logStreamError || logStreamSchemaError || logsError}</ErrorText>
+					{(logsError || logStreamSchemaError) && <RetryBtn onClick={onRetry} mt="md" />}
 				</Center>
 			)}
 		</Box>

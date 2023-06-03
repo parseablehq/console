@@ -122,10 +122,6 @@ export const useLogStreamListStyles = createStyles((theme) => {
 			height: heights.full,
 			width: widths.full,
 		},
-
-		retryBtn: {
-			backgroundColor: pColor,
-		},
 	};
 });
 
@@ -208,9 +204,16 @@ export const useLogTableStyles = createStyles((theme) => {
 
 		thColumnMenuDropdown: {
 			maxHeight: heights[96],
-
 			overflowX: 'hidden',
 			overflowY: 'scroll',
+		},
+
+		errorContainer: {
+			display: 'flex',
+			flexDirection: 'column',
+			alignItems: 'center',
+			justifyContent: 'center',
+			height: heights.full,
 		},
 	};
 });
