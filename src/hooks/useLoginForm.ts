@@ -43,8 +43,8 @@ export const useLoginForm = () => {
 
 	const form = useForm({
 		initialValues: {
-			username: import.meta.env.VITE_PARSEABLE_USER ?? '',
-			password: import.meta.env.VITE_PARSEABLE_PASS ?? '',
+			username: '',
+			password: '',
 		},
 		validate: {
 			username: (value) => (value ? null : ''),

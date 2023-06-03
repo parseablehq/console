@@ -20,8 +20,8 @@ export const getQueryLogs = (logsQuery: LogsQuery) => {
 		QUERY_URL,
 		{
 			query,
-			startTime: startTime,
-			endTime: endTime,
+			startTime,
+			endTime,
 		},
 		{},
 	);
