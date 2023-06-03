@@ -48,22 +48,20 @@ const ViewLog: FC = () => {
 			<Header timeStamp={log?.p_timestamp ?? ''} onClose={onClose} />
 
 			{!!log && (
-				<Fragment>
-					<Box className={container}>
-						<DataChip title="Meta Data" dataList={p_metadata} />
-						<DataChip title="Tags" dataList={p_tags} />
-						<Divider label={'Logger Message'} variant="dashed" labelPosition="center" my="lg" />
-						<Prism
-							copyLabel="Copy"
-							language="json"
-							withLineNumbers
-							style={{
-								maxWidth: '100%',
-							}}>
-							{JSON.stringify(log, null, 2)}
-						</Prism>
-					</Box>
-				</Fragment>
+				<Box className={container}>
+					<DataChip title="Meta Data" dataList={p_metadata} />
+					<DataChip title="Tags" dataList={p_tags} />
+					<Divider label={'Logger Message'} variant="dashed" labelPosition="center" my="lg" />
+					<Prism
+						copyLabel="Copy"
+						language="json"
+						withLineNumbers
+						style={{
+							maxWidth: '100%',
+						}}>
+						{JSON.stringify(log, null, 2)}
+					</Prism>
+				</Box>
 			)}
 		</Drawer>
 	);
