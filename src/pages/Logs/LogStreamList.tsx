@@ -1,24 +1,33 @@
-import { Box, Divider, TextInput, Tooltip, Highlight, UnstyledButton, Center, ScrollArea, px } from '@mantine/core';
+import {
+	Box,
+	Divider,
+	TextInput,
+	Tooltip,
+	Highlight,
+	UnstyledButton,
+	ScrollArea,
+	px,
+	Button,
+	Center,
+} from '@mantine/core';
 import type { UnstyledButtonProps } from '@mantine/core';
 import type { ComponentPropsWithRef, ChangeEvent, FC } from 'react';
 import { useMemo, useEffect } from 'react';
 import { useLogStreamListStyles } from './styles';
 import useMountedState from '@/hooks/useMountedState';
-import { IconChevronLeft, IconChevronRight, IconSearch } from '@tabler/icons-react';
+import { IconChevronLeft, IconChevronRight, IconReload, IconSearch } from '@tabler/icons-react';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import Loading from '@/components/Loading';
 import EmptyBox from '@/components/Empty';
-import ErrorText from '@/components/Text/ErrorText';
-import { heights } from '@/components/Mantine/sizing';
 import { useLogsPageContext } from './Context';
 import { useDisclosure } from '@mantine/hooks';
 
 const LogStreamList: FC = () => {
 	const {
-		state: { subSelectedStream },
+		state: { subSelectedStream, subLogStreamError },
 	} = useLogsPageContext();
 
-	const { data: streams, loading, error } = useGetLogStreamList();
+	const { data: streams, loading, error, getData } = useGetLogStreamList();
 	const [selectedStream, setSelectedStream] = useMountedState('');
 
 	const [search, setSearch] = useMountedState('');
@@ -33,8 +42,14 @@ const LogStreamList: FC = () => {
 	}, [streams, search]);
 
 	useEffect(() => {
+		subLogStreamError.set(error);
+	}, [error]);
+
+	useEffect(() => {
 		if (streams) {
-			subSelectedStream.set(streams[0].name);
+			// TODO: Undo later
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			subSelectedStream.set(streams.at(-1)!.name);
 		}
 	}, [streams]);
 
@@ -55,7 +70,6 @@ const LogStreamList: FC = () => {
 	const { classes, cx } = useLogStreamListStyles();
 	const {
 		container,
-		containerClose,
 		streamContainer,
 		streamContainerClose,
 		searchInputStyle,
@@ -65,7 +79,7 @@ const LogStreamList: FC = () => {
 	} = classes;
 
 	return (
-		<Box className={cx(container, { [containerClose]: !opened })}>
+		<Box className={container}>
 			<Box className={cx(streamContainer, { [streamContainerClose]: !opened })}>
 				<Loading visible={loading} variant="oval" position="absolute" zIndex={1} />
 				<TextInput
@@ -103,14 +117,29 @@ const LogStreamList: FC = () => {
 						/>
 					))}
 
-				{error && (
-					<Center h={heights.full}>
-						<ErrorText>{error}</ErrorText>
-					</Center>
-				)}
+				{error && <Retry onClick={getData} />}
 			</Box>
 			<CollapseBtn className={cx(chevronBtn, { [chevronBtnClose]: !opened })} onClick={toggle} opened={opened} />
 		</Box>
+	);
+};
+
+type RetryProps = {
+	onClick: () => void;
+};
+
+const Retry: FC<RetryProps> = (props) => {
+	const { onClick } = props;
+
+	const { classes } = useLogStreamListStyles();
+	const { retryContainer, retryBtn } = classes;
+
+	return (
+		<Center className={retryContainer}>
+			<Button className={retryBtn} rightIcon={<IconReload size={px('0.8rem')} />} onClick={onClick}>
+				Reload
+			</Button>
+		</Center>
 	);
 };
 

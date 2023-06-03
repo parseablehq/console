@@ -14,7 +14,6 @@ export const useHeaderStyles = createStyles((theme) => {
 			alignItems: 'center',
 			justifyContent: 'space-between',
 			paddingLeft: spacing.lg,
-			border: 'none',
 		},
 
 		actionsContainer: {

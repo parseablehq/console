@@ -1,3 +1,4 @@
+import { LogsData } from '@/@types/parseable/api/stream';
 import useSubscribeState, { SubData } from '@/hooks/useSubscribeState';
 import { FC, ReactNode, createContext, useContext } from 'react';
 
@@ -7,6 +8,8 @@ const { Provider } = Context;
 
 interface LogsPageContextState {
 	subSelectedStream: SubData<string>;
+	subLogStreamError: SubData<string | null>;
+	subViewLog: SubData<LogsData[number] | null>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -23,9 +26,13 @@ interface LogsPageProviderProps {
 
 const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 	const subSelectedStream = useSubscribeState('');
+	const subLogStreamError = useSubscribeState<string | null>(null);
+	const subViewLog = useSubscribeState<LogsData[number] | null>(null);
 
 	const state: LogsPageContextState = {
 		subSelectedStream,
+		subLogStreamError,
+		subViewLog,
 	};
 
 	const methods: LogsPageContextMethods = {};

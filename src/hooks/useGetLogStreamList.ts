@@ -24,9 +24,11 @@ export const useGetLogStreamList = () => {
 					break;
 				}
 				default: {
-					setError('Something went wrong!.');
+					setError('Failed to get log streams');
 				}
 			}
+		} catch {
+			setError('Failed to get log streams');
 		} finally {
 			setLoading(false);
 		}
@@ -36,5 +38,5 @@ export const useGetLogStreamList = () => {
 		getData();
 	}, []);
 
-	return { data, error, loading };
+	return { data, error, loading, getData };
 };
