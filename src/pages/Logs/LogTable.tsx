@@ -92,25 +92,22 @@ const LogTable: FC = () => {
 						<Fragment>
 							<ScrollArea className={tableContainer} type="never">
 								<Table className={tableStyle}>
-									{logsSchema && !!logsSchema.fields.length && (
-										<Thead className={theadStyle}>
-											{renderTh}
-											<ThColumnMenu
-												logSchemaFields={logsSchema.fields}
-												columnToggles={columnToggles}
-												toggleColumn={toggleColumn}
-												isColumnActive={isColumnActive}
-											/>
-										</Thead>
-									)}
-									{!!logsSchema && !!logs && (
-										<Tbody>
-											<LogRow logData={logs.data} logsSchema={logsSchema.fields} isColumnActive={isColumnActive} />
-										</Tbody>
-									)}
+									<Thead className={theadStyle}>
+										{renderTh}
+										<ThColumnMenu
+											logSchemaFields={logsSchema.fields}
+											columnToggles={columnToggles}
+											toggleColumn={toggleColumn}
+											isColumnActive={isColumnActive}
+										/>
+									</Thead>
+									<Tbody>
+										<LogRow logData={logs.data} logsSchema={logsSchema.fields} isColumnActive={isColumnActive} />
+									</Tbody>
 								</Table>
 							</ScrollArea>
-							{logs && logs.totalPages > 1 && (
+
+							{logs.totalPages > 1 && (
 								<Pagination
 									mt="md"
 									total={logs.totalPages}
