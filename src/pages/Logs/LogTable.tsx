@@ -105,10 +105,7 @@ const LogTable: FC = () => {
 									)}
 									{!!logsSchema && !!logs && (
 										<Tbody>
-											<LogRow
-												logData={logs.data}
-												logsSchema={logsSchema.fields}
-												isColumnActive={isColumnActive}></LogRow>
+											<LogRow logData={logs.data} logsSchema={logsSchema.fields} isColumnActive={isColumnActive} />
 										</Tbody>
 									)}
 								</Table>
