@@ -115,6 +115,7 @@ const LogTable: FC = () => {
 							</ScrollArea>
 
 							{logs.totalPages > 1 && (
+								<Center>
 								<Pagination
 									mt="md"
 									total={logs.totalPages}
@@ -127,6 +128,7 @@ const LogTable: FC = () => {
 										});
 									}}
 								/>
+								</Center>
 							)}
 						</Fragment>
 					) : (

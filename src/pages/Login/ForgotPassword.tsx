@@ -31,7 +31,7 @@ const ForgotPassword: FC = () => {
 			<UnstyledButton onClick={open}>
 				<Text className={forgetPassBtnText}>Forgot password?</Text>
 			</UnstyledButton>
-			<Modal opened={opened} onClose={close} withCloseButton={false} size="sm" centered>
+			<Modal opened={opened} onClose={close} size="sm" centered>
 				<Image maw={130} mx="auto" src={logo} alt="Parseable Logo" />
 				<Space h="xl" />
 				<Text className={titleStyle}>How to reset your password</Text>
