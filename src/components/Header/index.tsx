@@ -19,7 +19,7 @@ const Header: FC<HeaderProps> = (props) => {
 	const { container, actionsContainer } = classes;
 
 	return (
-		<MantineHeader {...props} className={container} height={HEADER_HEIGHT} px="xl">
+		<MantineHeader {...props} className={container} height={HEADER_HEIGHT} px="xl" withBorder={false}>
 			<Link to={HOME_ROUTE} style={{ height: 25 }}>
 				<Image maw={HEADER_HEIGHT * 2.5} mx="auto" src={logoInvert} alt="Parseable Logo" />
 			</Link>

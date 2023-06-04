@@ -1,6 +1,6 @@
 import Header from '@/components/Header';
 import Navbar from '@/components/Navbar';
-import { APP_MIN_WIDTH, NAVBAR_WIDTH } from '@/constants/theme';
+import { NAVBAR_WIDTH } from '@/constants/theme';
 import { AppShell } from '@mantine/core';
 import type { FC } from 'react';
 import { Outlet } from 'react-router-dom';
@@ -14,7 +14,6 @@ const MainLayout: FC = () => {
 			styles={() => ({
 				main: {
 					display: 'flex',
-					minWidth: APP_MIN_WIDTH,
 				},
 			})}>
 			<Outlet />

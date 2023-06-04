@@ -12,7 +12,6 @@ export const useNavbarStyles = createStyles((theme) => {
 			background: pColor,
 			paddingTop: spacing.lg,
 			flexDirection: 'column',
-			border: 'none',
 			alignItems: 'center',
 		},
 

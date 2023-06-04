@@ -1,4 +1,4 @@
-import { Box, Divider, TextInput, Tooltip, Highlight, UnstyledButton, Center, ScrollArea, px } from '@mantine/core';
+import { Box, Divider, TextInput, Tooltip, Highlight, UnstyledButton, ScrollArea, px, Center } from '@mantine/core';
 import type { UnstyledButtonProps } from '@mantine/core';
 import type { ComponentPropsWithRef, ChangeEvent, FC } from 'react';
 import { useMemo, useEffect } from 'react';
@@ -8,17 +8,16 @@ import { IconChevronLeft, IconChevronRight, IconSearch } from '@tabler/icons-rea
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import Loading from '@/components/Loading';
 import EmptyBox from '@/components/Empty';
-import ErrorText from '@/components/Text/ErrorText';
-import { heights } from '@/components/Mantine/sizing';
 import { useLogsPageContext } from './Context';
 import { useDisclosure } from '@mantine/hooks';
+import { RetryBtn } from '@/components/Button/Retry';
 
 const LogStreamList: FC = () => {
 	const {
-		state: { subSelectedStream },
+		state: { subSelectedStream, subLogStreamError },
 	} = useLogsPageContext();
 
-	const { data: streams, loading, error } = useGetLogStreamList();
+	const { data: streams, loading, error, getData } = useGetLogStreamList();
 	const [selectedStream, setSelectedStream] = useMountedState('');
 
 	const [search, setSearch] = useMountedState('');
@@ -33,7 +32,11 @@ const LogStreamList: FC = () => {
 	}, [streams, search]);
 
 	useEffect(() => {
-		if (streams) {
+		subLogStreamError.set(error);
+	}, [error]);
+
+	useEffect(() => {
+		if (streams && !!streams.length) {
 			subSelectedStream.set(streams[0].name);
 		}
 	}, [streams]);
@@ -55,17 +58,17 @@ const LogStreamList: FC = () => {
 	const { classes, cx } = useLogStreamListStyles();
 	const {
 		container,
-		containerClose,
 		streamContainer,
 		streamContainerClose,
 		searchInputStyle,
 		streamListContainer,
 		chevronBtn,
 		chevronBtnClose,
+		retryContainer,
 	} = classes;
 
 	return (
-		<Box className={cx(container, { [containerClose]: !opened })}>
+		<Box className={container}>
 			<Box className={cx(streamContainer, { [streamContainerClose]: !opened })}>
 				<Loading visible={loading} variant="oval" position="absolute" zIndex={1} />
 				<TextInput
@@ -104,8 +107,8 @@ const LogStreamList: FC = () => {
 					))}
 
 				{error && (
-					<Center h={heights.full}>
-						<ErrorText>{error}</ErrorText>
+					<Center className={retryContainer}>
+						<RetryBtn onClick={getData} />
 					</Center>
 				)}
 			</Box>
