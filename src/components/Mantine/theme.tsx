@@ -119,7 +119,7 @@ export const theme: MantineThemeOverride = {
 						fontSize: fontSizes.sm,
 						fontWeight: fontWeights.semibold,
 						padding: spacing.sm,
-						textAlign: 'center',
+						textAlign: 'left',
 						width: '100%',
 					},
 

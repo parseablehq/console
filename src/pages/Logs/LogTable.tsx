@@ -115,18 +115,20 @@ const LogTable: FC = () => {
 							</ScrollArea>
 
 							{logs.totalPages > 1 && (
-								<Pagination
-									mt="md"
-									total={logs.totalPages}
-									value={logs.page}
-									onChange={(value) => {
-										getQueryData({
-											startTime: dayjs('2023-05-01T20:59:59.999Z').toDate(),
-											streamName: subSelectedStream.get(),
-											page: value,
-										});
-									}}
-								/>
+								<Center>
+									<Pagination
+										mt="md"
+										total={logs.totalPages}
+										value={logs.page}
+										onChange={(value) => {
+											getQueryData({
+												startTime: dayjs('2023-05-01T20:59:59.999Z').toDate(),
+												streamName: subSelectedStream.get(),
+												page: value,
+											});
+										}}
+									/>
+								</Center>
 							)}
 						</Fragment>
 					) : (
