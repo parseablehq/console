@@ -14,7 +14,7 @@ import { RetryBtn } from '@/components/Button/Retry';
 
 const LogStreamList: FC = () => {
 	const {
-		state: { subSelectedStream, subLogStreamError },
+		state: { subLogQuery, subLogStreamError },
 	} = useLogsPageContext();
 
 	const { data: streams, loading, error, getData } = useGetLogStreamList();
@@ -37,18 +37,25 @@ const LogStreamList: FC = () => {
 
 	useEffect(() => {
 		if (streams && !!streams.length) {
-			subSelectedStream.set(streams[0].name);
+			subLogQuery.set((state) => {
+				state.streamName = streams[0].name;
+			});
 		}
 	}, [streams]);
 
 	useEffect(() => {
-		const listener = subSelectedStream.subscribe(setSelectedStream);
+		const listener = subLogQuery.subscribe((state) => {
+			setSelectedStream(state.streamName);
+		});
 
 		return () => listener();
 	}, []);
 
 	const onStreamSelect = (streamName: string) => {
-		subSelectedStream.set(streamName);
+		subLogQuery.set((state) => {
+			state.streamName = streamName;
+			state.page = 1;
+		});
 	};
 
 	const onSearch = (e: ChangeEvent<HTMLInputElement>) => {

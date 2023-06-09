@@ -9,14 +9,14 @@ interface LoadingProps {
 
 const Loading: FC<LoadingProps & LoadingOverlayProps> = (props) => {
 	const { visible, variant, position, ...restProps } = props;
-	const { colors, primaryColor, radius, spacing } = useMantineTheme();
+	const { colors, primaryColor, defaultRadius, radius, spacing } = useMantineTheme();
 
 	return (
 		<LoadingOverlay
 			style={{
 				position,
 				height: '100%',
-				borderRadius: radius.md,
+				borderRadius: radius[defaultRadius as string],
 				padding: spacing.lg,
 			}}
 			loaderProps={{

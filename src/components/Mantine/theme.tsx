@@ -6,7 +6,7 @@ const globalStyles = (): CSSObject => {
 		'#root': {
 			overflow: 'auto',
 			display: 'block',
-			width: widths.full,
+			width: widths.screen,
 			height: heights.screen,
 		},
 	};
@@ -17,6 +17,7 @@ export const theme: MantineThemeOverride = {
 	fontFamily:
 		'Inter var,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji',
 	colors: {
+		black: ['#000000'],
 		white: ['#FFFFFF'],
 		brandPrimary: ['#4192DF', '#1F288E', '#1A237E', '#10143E'],
 		brandSecondary: ['#F6BA74', '#F29C38', '#C27D2D'],
@@ -24,6 +25,9 @@ export const theme: MantineThemeOverride = {
 		dimmed: ['#868e96'],
 	},
 	primaryColor: 'brandPrimary',
+	spacing: {
+		xxs: '0.2rem',
+	},
 	other: {
 		sizing,
 		heights,
@@ -40,6 +44,7 @@ export const theme: MantineThemeOverride = {
 			black: 900,
 		},
 	},
+	defaultRadius: 'md',
 	components: {
 		Pagination: {
 			styles: ({ colors }) => {
@@ -97,43 +102,47 @@ export const theme: MantineThemeOverride = {
 			}),
 		},
 		Table: {
-			styles: ({ spacing, radius, colors, fontSizes, other: { fontWeights } }) => ({
-				root: {
-					borderRadius: radius.md,
-					background: colors.white,
-					borderCollapse: 'separate',
-					borderSpacing: 0,
-					padding: `${spacing.md} ${spacing.sm}`,
-					height: 20,
+			styles: ({ spacing, radius, defaultRadius: _defaultRadius, colors, fontSizes, other: { fontWeights } }) => {
+				const defaultRadius = radius[_defaultRadius as string];
 
-					'& tr th': {
-						background: colors.gray[2],
-						borderBottom: 'none !important',
-						padding: '0 !important',
-						overflow: 'hidden',
-						whiteSpace: 'nowrap',
-					},
+				return {
+					root: {
+						borderRadius: defaultRadius,
+						background: colors.white,
+						borderCollapse: 'separate',
+						borderSpacing: 0,
+						padding: `${spacing.md} ${spacing.sm}`,
+						height: 20,
 
-					'& tr th span': {
-						display: 'inline-block',
-						fontSize: fontSizes.sm,
-						fontWeight: fontWeights.semibold,
-						padding: spacing.sm,
-						textAlign: 'left',
-						width: '100%',
-					},
+						'& tr th': {
+							background: colors.gray[2],
+							borderBottom: 'none !important',
+							padding: '0 !important',
+							overflow: 'hidden',
+							whiteSpace: 'nowrap',
+						},
 
-					'& tr th:first-of-type': {
-						borderTopLeftRadius: radius.sm,
-						borderBottomLeftRadius: radius.sm,
-					},
+						'& tr th span': {
+							display: 'inline-block',
+							fontSize: fontSizes.sm,
+							fontWeight: fontWeights.semibold,
+							padding: spacing.sm,
+							textAlign: 'left',
+							width: '100%',
+						},
 
-					'& tr th:last-of-type': {
-						borderTopRightRadius: radius.sm,
-						borderBottomRightRadius: radius.sm,
+						'& tr th:first-of-type': {
+							borderTopLeftRadius: defaultRadius,
+							borderBottomLeftRadius: defaultRadius,
+						},
+
+						'& tr th:last-of-type': {
+							borderTopRightRadius: defaultRadius,
+							borderBottomRightRadius: defaultRadius,
+						},
 					},
-				},
-			}),
+				};
+			},
 		},
 		Drawer: {
 			defaultProps: ({ colors }) => {
@@ -165,6 +174,17 @@ export const theme: MantineThemeOverride = {
 					fontWeight: other.fontWeights.bold,
 				},
 			}),
+		},
+		DateTimePicker: {
+			styles: ({ colors }) => {
+				return {
+					day: {
+						'&[data-selected]': {
+							background: colors.brandSecondary[1],
+						},
+					},
+				};
+			},
 		},
 	},
 };

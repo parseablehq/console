@@ -18,6 +18,7 @@ export const useLogStreamListStyles = createStyles((theme) => {
 
 	const pColor = colors[primaryColor][1];
 	const containerWidth = widths[64];
+	const defaultRadius = radius[theme.defaultRadius as string];
 
 	return {
 		container: {
@@ -25,6 +26,7 @@ export const useLogStreamListStyles = createStyles((theme) => {
 			left: NAVBAR_WIDTH,
 			height: '100%',
 			display: 'flex',
+			zIndex: 2,
 		},
 
 		streamContainer: {
@@ -56,8 +58,8 @@ export const useLogStreamListStyles = createStyles((theme) => {
 			display: 'flex',
 			justifyItems: 'center',
 			alignItems: 'center',
-			borderTopRightRadius: radius.md,
-			borderBottomRightRadius: radius.md,
+			borderTopRightRadius: defaultRadius,
+			borderBottomRightRadius: defaultRadius,
 			borderRightWidth: widths.px,
 			borderTopWidth: widths.px,
 			borderBottomWidth: widths.px,
@@ -87,8 +89,8 @@ export const useLogStreamListStyles = createStyles((theme) => {
 			width: widths.full,
 			overflow: 'hidden',
 			display: 'block',
-			borderTopRightRadius: radius.md,
-			borderBottomRightRadius: radius.md,
+			borderTopRightRadius: defaultRadius,
+			borderBottomRightRadius: defaultRadius,
 			color: colors.gray[7],
 			padding: `0 ${spacing.md}`,
 			marginRight: spacing.md,
@@ -129,6 +131,8 @@ export const useLogTableStyles = createStyles((theme) => {
 	const { spacing, other, radius, shadows, colors } = theme;
 	const { heights, widths } = other;
 
+	const defaultRadius = radius[theme.defaultRadius as string];
+
 	return {
 		container: {
 			position: 'relative',
@@ -142,8 +146,8 @@ export const useLogTableStyles = createStyles((theme) => {
 
 		tableContainer: {
 			position: 'relative',
-			boxShadow: shadows.xs,
-			borderRadius: radius.md,
+			boxShadow: shadows.sm,
+			borderRadius: defaultRadius,
 			overflow: 'scroll',
 		},
 
@@ -161,7 +165,7 @@ export const useLogTableStyles = createStyles((theme) => {
 
 			'& th:last-of-type': {
 				position: 'sticky',
-				boxShadow: shadows.xl,
+				boxShadow: shadows.sm,
 				right: 0,
 			},
 		},
@@ -190,7 +194,7 @@ export const useLogTableStyles = createStyles((theme) => {
 			position: 'sticky',
 			right: 0,
 			background: colors.white[0],
-			boxShadow: shadows.xl,
+			boxShadow: shadows.sm,
 
 			'tr:hover &': {
 				background: colors.gray[1],
@@ -208,12 +212,44 @@ export const useLogTableStyles = createStyles((theme) => {
 			overflowY: 'scroll',
 		},
 
+		footerContainer: {
+			paddingTop: spacing.md,
+			display: 'flex',
+			flexDirection: 'row',
+			justifyContent: 'space-between',
+		},
+
 		errorContainer: {
 			display: 'flex',
 			flexDirection: 'column',
 			alignItems: 'center',
 			justifyContent: 'center',
 			height: heights.full,
+		},
+
+		limitContainer: {
+			marginLeft: 'auto',
+		},
+
+		limitBtn: {
+			display: 'flex',
+			flexDirection: 'row',
+			alignItems: 'center',
+			justifyContent: 'center',
+			cursor: 'pointer',
+			background: colors.white[0],
+			boxShadow: shadows.sm,
+			padding: `0.2rem ${spacing.xs}`,
+			border: `${widths.px} ${colors.gray[1]} solid`,
+			borderRadius: defaultRadius,
+
+			'&:hover': {
+				background: colors.gray[0],
+			},
+		},
+
+		limitBtnText: {
+			marginRight: spacing.md,
 		},
 	};
 });
@@ -251,6 +287,132 @@ export const useViewLogStyles = createStyles((theme) => {
 		dataChipContainer: {
 			display: 'flex',
 			flexWrap: 'wrap',
+		},
+	};
+});
+
+export const useLogQueryStyles = createStyles((theme) => {
+	const { spacing, shadows, radius, colors, fontSizes } = theme;
+	const { sizing, widths, fontWeights } = theme.other;
+	const defaultRadius = radius[theme.defaultRadius as string];
+
+	return {
+		container: {
+			display: 'flex',
+			padding: spacing.xs,
+			boxShadow: shadows.sm,
+			marginBottom: spacing.md,
+			borderRadius: defaultRadius,
+		},
+
+		labelStyle: {
+			fontSize: fontSizes.xs,
+			fontWeight: fontWeights.semibold,
+		},
+
+		timeFilterContainer: {
+			alignSelf: 'end',
+		},
+
+		timeFilterInnerContainer: {
+			display: 'flex',
+			paddingTop: spacing.xxs,
+		},
+
+		intervalBtn: {
+			display: 'flex',
+			justifyContent: 'center',
+			alignItems: 'center',
+			borderTopLeftRadius: 0,
+			borderBottomLeftRadius: 0,
+			background: colors.brandSecondary[1],
+			color: colors.white[0],
+			paddingLeft: spacing.xs,
+			paddingRight: spacing.xs,
+			minWidth: widths[20],
+			border: `${sizing.px} ${colors.gray[2]} solid`,
+			borderLeft: 'none',
+
+			'&:hover': {
+				background: colors.brandSecondary[2],
+			},
+		},
+
+		timeRangeBTn: {
+			borderTopRightRadius: 0,
+			borderBottomRightRadius: 0,
+			color: colors.black[0],
+			border: `${sizing.px} ${colors.gray[2]} solid`,
+			minWidth: widths[20],
+			background: colors.gray[0],
+			fontWeight: fontWeights.medium,
+			fontSize: fontSizes.xs,
+
+			'&:hover': {
+				background: colors.gray[1],
+			},
+		},
+
+		timeRangeContainer: {
+			display: 'flex',
+		},
+
+		fixedRangeContainer: {
+			display: 'flex',
+			flexDirection: 'column',
+			background: colors.gray[0],
+		},
+
+		fixedRangeBtn: {
+			color: colors.black,
+			padding: spacing.sm,
+			fontSize: fontSizes.sm,
+
+			'&:hover': {
+				background: colors.gray[1],
+			},
+
+			'&:first-of-type': {
+				borderTopLeftRadius: defaultRadius,
+			},
+
+			'&:last-of-type': {
+				borderBottomLeftRadius: defaultRadius,
+			},
+		},
+
+		fixedRangeBtnSelected: {
+			background: colors.brandSecondary[1],
+			fontWeight: fontWeights.semibold,
+			color: colors.white[0],
+
+			'&:hover': {
+				background: colors.brandSecondary[1],
+			},
+		},
+
+		customRangeContainer: {
+			padding: `${spacing.xs} ${spacing.lg}`,
+			minWidth: widths[80],
+			flex: 1,
+			display: 'flex',
+			flexDirection: 'column',
+			justifyContent: 'stretch',
+		},
+
+		customTimeRangeFooter: {
+			display: 'flex',
+			marginTop: 'auto',
+			justifyContent: 'end',
+			alignItems: 'center',
+		},
+
+		customTimeRangeApplyBtn: {
+			background: colors.brandSecondary[1],
+
+			'&:hover': {
+				background: colors.brandSecondary[2],
+			},
 		},
 	};
 });

@@ -1,10 +1,11 @@
 import { createStyles } from '@mantine/core';
 
 export const useNavbarStyles = createStyles((theme) => {
-	const { colors, primaryColor, spacing } = theme;
+	const { colors, primaryColor, spacing, radius } = theme;
 	const { widths, heights } = theme.other;
 	const pColor = colors[primaryColor][2];
 	const sColor = colors.brandSecondary[2];
+	const defaultRadius = radius[theme.defaultRadius as string];
 
 	return {
 		container: {
@@ -18,7 +19,7 @@ export const useNavbarStyles = createStyles((theme) => {
 		linkBtnStyle: {
 			width: widths[10],
 			height: heights[10],
-			borderRadius: theme.radius.md,
+			borderRadius: defaultRadius,
 			display: 'flex',
 			alignItems: 'center',
 			justifyContent: 'center',
