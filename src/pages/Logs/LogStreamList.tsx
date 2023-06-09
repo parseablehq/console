@@ -8,13 +8,14 @@ import { IconChevronLeft, IconChevronRight, IconSearch } from '@tabler/icons-rea
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import Loading from '@/components/Loading';
 import EmptyBox from '@/components/Empty';
-import { useLogsPageContext } from './Context';
+import { DEFAULT_FIXED_DURATIONS, useLogsPageContext } from './Context';
 import { useDisclosure } from '@mantine/hooks';
 import { RetryBtn } from '@/components/Button/Retry';
+import dayjs from 'dayjs';
 
 const LogStreamList: FC = () => {
 	const {
-		state: { subLogQuery, subLogStreamError },
+		state: { subLogQuery, subLogStreamError, subLogSelectedTimeRange },
 	} = useLogsPageContext();
 
 	const { data: streams, loading, error, getData } = useGetLogStreamList();
@@ -52,10 +53,15 @@ const LogStreamList: FC = () => {
 	}, []);
 
 	const onStreamSelect = (streamName: string) => {
+		const now = dayjs();
+
 		subLogQuery.set((state) => {
 			state.streamName = streamName;
 			state.page = 1;
+			state.startTime = now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate();
+			state.endTime = now.toDate();
 		});
+		subLogSelectedTimeRange.set(DEFAULT_FIXED_DURATIONS.name);
 	};
 
 	const onSearch = (e: ChangeEvent<HTMLInputElement>) => {

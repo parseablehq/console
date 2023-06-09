@@ -64,7 +64,7 @@ export const FIXED_DURATIONS = [
 	},
 ];
 
-const DEFAULT_FIXED_DURATIONS = FIXED_DURATIONS[0];
+export const DEFAULT_FIXED_DURATIONS = FIXED_DURATIONS[0];
 
 const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 	const subLogQuery = useSubscribeState<LogsQuery>({
