@@ -198,7 +198,9 @@ const CustomTimeRange: FC = () => {
 				maxDate={new Date()}
 				value={selectedRange.startTime}
 				onChange={(date) => {
-					date && onRangeSelect('startTime', date);
+					if (date) {
+						onRangeSelect('startTime', date);
+					}
 				}}
 				valueFormat="DD-MM-YY HH:mm"
 				label="From"
@@ -209,7 +211,9 @@ const CustomTimeRange: FC = () => {
 				maxDate={new Date()}
 				value={selectedRange.endTime}
 				onChange={(date) => {
-					date && onRangeSelect('endTime', date);
+					if (date) {
+						onRangeSelect('endTime', date);
+					}
 				}}
 				valueFormat="DD-MM-YY HH:mm"
 				label="To"
