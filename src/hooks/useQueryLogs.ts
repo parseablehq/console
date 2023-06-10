@@ -27,6 +27,7 @@ export const useQueryLogs = () => {
 			]);
 
 			const data = logsQueryRes.data;
+			const totalCountData = logsQueryTotalCountRes.data;
 
 			if (logsQueryRes.status === StatusCodes.OK && logsQueryTotalCountRes.status === StatusCodes.OK) {
 				const totalCount = logsQueryTotalCountRes.data[0].totalCount;
@@ -41,7 +42,10 @@ export const useQueryLogs = () => {
 				return;
 			}
 
-			if (typeof data === 'string' && data.includes('Stream is not initialized yet')) {
+			if (
+				(typeof data === 'string' && data.includes('Stream is not initialized yet')) ||
+				(typeof totalCountData === 'string' && totalCountData.includes('create_physical_expr'))
+			) {
 				setData({
 					data: [],
 					totalCount: 0,

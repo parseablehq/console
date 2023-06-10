@@ -6,6 +6,7 @@ export const useHeaderStyles = createStyles((theme) => {
 
 	const pColor = colors[primaryColor][2];
 	const sColor = colors.brandSecondary[2];
+	const defaultRadius = radius[theme.defaultRadius as string];
 
 	return {
 		container: {
@@ -55,7 +56,7 @@ export const useHeaderStyles = createStyles((theme) => {
 
 			'&::after': {
 				content: '""',
-				borderRadius: radius.lg,
+				borderRadius: defaultRadius,
 				display: 'block',
 				backgroundColor: sColor,
 				width: widths[14],

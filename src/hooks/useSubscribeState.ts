@@ -1,9 +1,10 @@
 import { useCallback, useRef } from 'react';
+import { produce } from 'immer';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface SubData<T = any> {
 	get: () => T;
-	set: (value: T | ((prevState: T) => T)) => void;
+	set: (value: T | ((prevState: T) => void)) => void;
 	subscribe: (callback: (data: T) => void) => () => void;
 }
 
@@ -18,7 +19,7 @@ const useSubscribeState = <T = any>(initialState: T): SubData<T> => {
 	const set = useCallback<SubData['set']>((value) => {
 		let state: T;
 		if (typeof value === 'function') {
-			state = value(store.current);
+			state = produce<T>(store.current, value);
 		} else {
 			state = value;
 		}

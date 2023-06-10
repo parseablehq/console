@@ -8,6 +8,8 @@ export const useLoginStyles = createStyles((theme) => {
 
 	const pColor = colors[primaryColor][2];
 
+	const defaultRadius = radius[theme.defaultRadius as string];
+
 	return {
 		container: {
 			position: 'relative',
@@ -24,7 +26,7 @@ export const useLoginStyles = createStyles((theme) => {
 			position: 'relative',
 			background: colors.white,
 			padding: spacing.xl,
-			borderRadius: radius.sm,
+			borderRadius: defaultRadius,
 			boxShadow: shadows.sm,
 			width: widths[96],
 			display: 'flex',

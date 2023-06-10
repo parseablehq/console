@@ -29,15 +29,19 @@ const LogRow: FC<LogRowProps> = (props) => {
 
 	return (
 		<Fragment>
-			{logData.map((log) => {
+			{logData.map((log, logIndex) => {
 				return (
-					// Using  p_timestamp as a key since it's guaranteed felid and unique
-					<tr key={log.p_timestamp} className={trStyle} onClick={() => onShow(log)}>
-						{logsSchema.map((logSchema) => {
+					/*
+					 TODO: It seems like p_timestamp is not unique so i cant be used as a key
+					 And there is no way to tell if a user will add a unique id field
+					 Hopefully there will be a plan to add a p_id filed internally
+					 For now index is a better option for uniqueness, if you have a better way to handle this let us know
+					*/
+					<tr key={logIndex} className={trStyle} onClick={() => onShow(log)}>
+						{logsSchema.map((logSchema, logSchemaIndex) => {
 							if (!isColumnActive(logSchema.name) || skipFields.includes(logSchema.name)) return null;
 
-							// Using logSchema name and  p_timestamp as a key since it's guaranteed felid and unique
-							return <td key={`${logSchema.name}-${log.p_timestamp}`}>{parseLogData(log[logSchema.name])}</td>;
+							return <td key={`${logSchema.name}-${logSchemaIndex}`}>{parseLogData(log[logSchema.name])}</td>;
 						})}
 						<TdArrow />
 					</tr>
