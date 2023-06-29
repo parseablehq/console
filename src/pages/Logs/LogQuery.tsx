@@ -1,28 +1,126 @@
-import { Box, Button, Menu, Text, UnstyledButton, px } from '@mantine/core';
-import type { FC } from 'react';
-import { Fragment, useEffect, useMemo } from 'react';
-import { useLogQueryStyles } from './styles';
 import useMountedState from '@/hooks/useMountedState';
-import ms from 'ms';
-import { FIXED_DURATIONS, REFRESH_INTERVALS, useLogsPageContext } from './Context';
-import { IconClock, IconRefresh, IconRefreshOff } from '@tabler/icons-react';
-import dayjs from 'dayjs';
+import { Box, Button, Center, Menu, Text, TextInput, UnstyledButton, px } from '@mantine/core';
 import { DateTimePicker } from '@mantine/dates';
+import { IconClock, IconRefresh, IconRefreshOff, IconSearch, IconSelector } from '@tabler/icons-react';
+import dayjs from 'dayjs';
+import ms from 'ms';
+import type { ChangeEvent, FC, KeyboardEvent } from 'react';
+import { Fragment, useEffect, useMemo } from 'react';
+import { FIXED_DURATIONS, REFRESH_INTERVALS, SEARCH_TYPES, SearchTypes, useLogsPageContext } from './Context';
+import { useLogQueryStyles } from './styles';
 
 const LogQuery: FC = () => {
 	const { classes } = useLogQueryStyles();
-	const { container, timeFilterContainer, timeFilterInnerContainer, labelStyle } = classes;
+	const { container, innerContainer, labelStyle } = classes;
 
 	return (
 		<Box className={container}>
-			<Box className={timeFilterContainer}>
+			<Box>
+				<Text className={labelStyle}>Search</Text>
+				<Box className={innerContainer}>
+					<Search />
+				</Box>
+			</Box>
+			<Box>
 				<Text className={labelStyle}>Time Range</Text>
-				<Box className={timeFilterInnerContainer}>
+				<Box className={innerContainer}>
 					<TimeRange />
 					<RefreshInterval />
 				</Box>
 			</Box>
 		</Box>
+	);
+};
+
+const Search: FC = () => {
+	const {
+		state: { subLogQuery },
+	} = useLogsPageContext();
+
+	const [searchValue, setSearchValue] = useMountedState(subLogQuery.get().searchText);
+	const { classes } = useLogQueryStyles();
+
+	const { searchContainer, searchInput } = classes;
+
+	const onSearchValueChange = (event: ChangeEvent<HTMLInputElement>) => {
+		setSearchValue(event.currentTarget.value);
+	};
+
+	const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+		if (event.key === 'Enter') {
+			if (subLogQuery.get().searchText !== searchValue) {
+				const trimmedValue = event.currentTarget.value.trim();
+				subLogQuery.set((query) => {
+					query.searchText = trimmedValue;
+				});
+				setSearchValue(trimmedValue);
+			}
+		}
+	};
+
+	return (
+		<Box className={searchContainer}>
+			{/* TODO: Disabled for now, need to find a proper way to handle SQL search */}
+			{/* <SearchTypeSelector /> */}
+			<TextInput
+				className={searchInput}
+				value={searchValue}
+				onKeyDown={handleKeyDown}
+				onChange={onSearchValueChange}
+				placeholder="Search"
+				icon={<IconSearch size={px('1.2rem')} stroke={1.5} />}
+			/>
+		</Box>
+	);
+};
+
+export const SearchTypeSelector: FC = () => {
+	const {
+		state: { subLogSearchType },
+	} = useLogsPageContext();
+	const [selectedSearchType, setSelectedSearchType] = useMountedState(subLogSearchType.get());
+
+	useEffect(() => {
+		const listener = subLogSearchType.subscribe((state) => {
+			setSelectedSearchType(state);
+		});
+
+		return () => listener();
+	}, []);
+
+	const onSelect = (sType: SearchTypes) => {
+		subLogSearchType.set(sType);
+	};
+
+	const { classes, cx } = useLogQueryStyles();
+
+	const { searchTypeBtn, searchTypeActive } = classes;
+
+	return (
+		<Menu withArrow withinPortal shadow="md">
+			<Center>
+				<Menu.Target>
+					<Button className={searchTypeBtn}>
+						<Text mr="xs">{selectedSearchType}</Text>
+						<IconSelector size={px('1.2rem')} stroke={1.5} />
+					</Button>
+				</Menu.Target>
+			</Center>
+			<Menu.Dropdown>
+				{SEARCH_TYPES.map((sType) => {
+					return (
+						<Menu.Item
+							className={cx([], {
+								[searchTypeActive]: selectedSearchType === sType,
+							})}
+							key={sType}
+							onClick={() => onSelect(sType)}>
+							<Text>{sType}</Text>
+						</Menu.Item>
+					);
+				})}
+			</Menu.Dropdown>
+		</Menu>
 	);
 };
 
@@ -53,7 +151,7 @@ const RefreshInterval: FC = () => {
 	return (
 		<Menu withArrow>
 			<Menu.Target>
-				<Button className={intervalBtn} rightIcon={<Icon size={px('1.2rem')} />}>
+				<Button className={intervalBtn} rightIcon={<Icon size={px('1.2rem')} stroke={1.5} />}>
 					<Text>{selectedInterval ? ms(selectedInterval) : 'Off'}</Text>
 				</Button>
 			</Menu.Target>
@@ -119,7 +217,7 @@ const TimeRange: FC = () => {
 	return (
 		<Menu withArrow position="top-start">
 			<Menu.Target>
-				<Button className={timeRangeBTn} leftIcon={<IconClock size={px('1.2rem')} />}>
+				<Button className={timeRangeBTn} leftIcon={<IconClock size={px('1.2rem')} stroke={1.5} />}>
 					<Text>{selectedRange}</Text>
 				</Button>
 			</Menu.Target>

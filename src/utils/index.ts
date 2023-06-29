@@ -1,3 +1,4 @@
+import { Field } from '@/@types/parseable/dataType';
 import dayjs from 'dayjs';
 
 export const wait = (sec = 1) => new Promise<void>((res) => setTimeout(res, sec * 1000));
@@ -18,7 +19,7 @@ export const scrollTo = (opts?: ScrollToOptions) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const parseLogData = (value?: any) => {
 	if (typeof value === 'string' && dayjs(value).isValid()) {
-		return dayjs(value).format('DD/MM/YYYY HH:mm:ss');
+		return dayjs(value).utc(true).format('DD/MM/YYYY HH:mm:ss');
 	}
 
 	if (value) {
@@ -26,4 +27,48 @@ export const parseLogData = (value?: any) => {
 	}
 
 	return 'N/A';
+};
+
+export const whereFields = (fields: Field[], search: string): string => {
+	if (!search) {
+		return '';
+	}
+
+	const whereFields = [];
+
+	/*
+	 Skipping fields with given matches cause backend/datafusion is not escaping 
+		those characters.
+	 */
+
+	const skipFieldsContaining = /("|'|\?|<|>|=)/g;
+
+	for (const field of fields) {
+		const fieldName = JSON.stringify(field.name);
+
+		if (skipFieldsContaining.test(field.name)) {
+			continue;
+		}
+
+		switch (field.data_type) {
+			case 'Utf8':
+			case 'LargeUtf8': {
+				whereFields.push(`${fieldName} ILIKE '%${search}%'`);
+				continue;
+			}
+			case 'Int8':
+			case 'Int16':
+			case 'Int32':
+			case 'Int64': {
+				whereFields.push(`CAST("${field.name}" AS TEXT) ILIKE '%${search}%'`);
+				continue;
+			}
+		}
+	}
+
+	if (whereFields.length) {
+		return `WHERE (${whereFields.join(' OR ')})`;
+	}
+
+	return '';
 };

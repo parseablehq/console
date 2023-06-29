@@ -1,4 +1,5 @@
 export type LogsQuery = {
+	searchText: string;
 	streamName: string;
 	startTime: Date;
 	endTime: Date;

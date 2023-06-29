@@ -15,6 +15,7 @@ import { Field } from '@/@types/parseable/dataType';
 import EmptyBox from '@/components/Empty';
 import { RetryBtn } from '@/components/Button/Retry';
 import LogQuery from './LogQuery';
+import { whereFields } from '@/utils';
 
 const skipFields = ['p_metadata', 'p_tags'];
 
@@ -45,21 +46,34 @@ const LogTable: FC = () => {
 	const onRetry = () => {
 		resetData();
 		resetLogsData();
-		getDataSchema(subLogQuery.get().streamName);
+
+		const query = subLogQuery.get();
+		const { streamName, searchText } = query;
+		getDataSchema(streamName);
+
 		setColumnToggles(new Map());
+		if (logsSchema) {
+			const fields = logsSchema.fields;
+			const where = whereFields(fields, searchText);
+
+			getQueryData(query, where);
+		}
 	};
 
 	useEffect(() => {
 		const streamErrorListener = subLogStreamError.subscribe(setLogStreamError);
 		const logQueryListener = subLogQuery.subscribe((query) => {
-			getQueryData(query);
+			const fields = logsSchema?.fields ?? [];
+			const where = whereFields(fields, query.searchText);
+
+			getQueryData(query, where);
 		});
 
 		return () => {
 			streamErrorListener();
 			logQueryListener();
 		};
-	}, []);
+	}, [logsSchema]);
 
 	useEffect(() => {
 		const listener = subLogQuery.subscribe((query) => {
@@ -118,7 +132,7 @@ const LogTable: FC = () => {
 							<Box className={footerContainer}>
 								{logs.totalPages > 1 && (
 									<Pagination
-										boundaries={0}
+										withEdges
 										total={logs.totalPages}
 										value={logs.page}
 										onChange={(value) => {
@@ -203,10 +217,12 @@ const LimitControl: FC = () => {
 	};
 
 	const onSelect = (value: number) => {
-		subLogQuery.set((state) => {
-			state.limit = value;
-			state.page = 1;
-		});
+		if (subLogQuery.get().limit !== value) {
+			subLogQuery.set((state) => {
+				state.limit = value;
+				state.page = 1;
+			});
+		}
 	};
 
 	useEffect(() => {
@@ -217,8 +233,8 @@ const LimitControl: FC = () => {
 		return () => listener();
 	}, []);
 
-	const { classes } = useLogTableStyles();
-	const { limitContainer, limitBtn, limitBtnText } = classes;
+	const { classes, cx } = useLogTableStyles();
+	const { limitContainer, limitBtn, limitBtnText, limitActive } = classes;
 
 	return (
 		<Box className={limitContainer}>
@@ -233,11 +249,16 @@ const LimitControl: FC = () => {
 				</Center>
 				<Menu.Dropdown>
 					{LOG_QUERY_LIMITS.map((limit) => {
-						if (selectedLimit === limit) return null;
-
 						return (
-							<Menu.Item key={limit} onClick={() => onSelect(limit)}>
-								<Text>{limit}</Text>
+							<Menu.Item
+								className={cx([], {
+									[limitActive]: selectedLimit === limit,
+								})}
+								key={limit}
+								onClick={() => onSelect(limit)}>
+								<Center>
+									<Text>{limit}</Text>
+								</Center>
 							</Menu.Item>
 						);
 					})}

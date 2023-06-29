@@ -28,7 +28,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 	const { container } = classes;
 
 	return (
-		<MantineNavbar {...props} withBorder={false}>
+		<MantineNavbar {...props} withBorder={false} zIndex={1}>
 			<MantineNavbar.Section grow className={container}>
 				{links.map((link) => {
 					return (
