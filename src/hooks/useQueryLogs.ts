@@ -14,7 +14,7 @@ export const useQueryLogs = () => {
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(true);
 
-	const getQueryData = async (logsQuery: LogsQuery) => {
+	const getQueryData = async (logsQuery: LogsQuery, where = '') => {
 		const { limit = 30, page = 1 } = logsQuery;
 
 		try {
@@ -22,15 +22,15 @@ export const useQueryLogs = () => {
 			setError(null);
 
 			const [logsQueryRes, logsQueryTotalCountRes] = await Promise.all([
-				getQueryLogs(logsQuery),
-				getQueryLogsTotalCount(logsQuery),
+				getQueryLogs(logsQuery, where),
+				getQueryLogsTotalCount(logsQuery, where),
 			]);
 
 			const data = logsQueryRes.data;
 			const totalCountData = logsQueryTotalCountRes.data;
 
 			if (logsQueryRes.status === StatusCodes.OK && logsQueryTotalCountRes.status === StatusCodes.OK) {
-				const totalCount = logsQueryTotalCountRes.data[0].totalCount;
+				const totalCount = totalCountData[0]?.totalCount ?? 0;
 				const totalPages = Math.ceil(totalCount / limit);
 
 				setData({

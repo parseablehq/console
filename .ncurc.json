@@ -1,4 +1,4 @@
 {
-  "interactive": true,
-  "reject": ["/faker/", "/mantine/"]
+	"interactive": true,
+	"reject": ["/faker/"]
 }

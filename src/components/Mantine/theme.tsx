@@ -186,5 +186,19 @@ export const theme: MantineThemeOverride = {
 				};
 			},
 		},
+		Select: {
+			styles: ({ colors }) => {
+				return {
+					item: {
+						'&[data-selected]': {
+							'&, &:hover': {
+								background: colors.brandSecondary[1],
+								color: colors.white[0],
+							},
+						},
+					},
+				};
+			},
+		},
 	},
 };

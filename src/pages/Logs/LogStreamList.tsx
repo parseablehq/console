@@ -53,15 +53,19 @@ const LogStreamList: FC = () => {
 	}, []);
 
 	const onStreamSelect = (streamName: string) => {
-		const now = dayjs();
+		if (subLogQuery.get().streamName !== streamName) {
+			const now = dayjs();
 
-		subLogQuery.set((state) => {
-			state.streamName = streamName;
-			state.page = 1;
-			state.startTime = now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate();
-			state.endTime = now.toDate();
-		});
-		subLogSelectedTimeRange.set(DEFAULT_FIXED_DURATIONS.name);
+			subLogQuery.set((state) => {
+				state.searchText = '';
+				state.streamName = streamName;
+				state.page = 1;
+				state.startTime = now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate();
+				state.endTime = now.toDate();
+			});
+
+			subLogSelectedTimeRange.set(DEFAULT_FIXED_DURATIONS.name);
+		}
 	};
 
 	const onSearch = (e: ChangeEvent<HTMLInputElement>) => {

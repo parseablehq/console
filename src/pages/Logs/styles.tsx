@@ -1,11 +1,12 @@
 import { HEADER_HEIGHT, NAVBAR_WIDTH } from '@/constants/theme';
 import { createStyles, px } from '@mantine/core';
 
-export const useLogsStyles = createStyles(() => {
+export const useLogsStyles = createStyles((theme) => {
+	const { widths } = theme.other;
 	return {
 		container: {
 			flex: 1,
-			width: '100%',
+			width: `calc(${widths.full} - ${NAVBAR_WIDTH}px)`,
 			display: 'flex',
 			position: 'relative',
 		},
@@ -23,7 +24,7 @@ export const useLogStreamListStyles = createStyles((theme) => {
 	return {
 		container: {
 			position: 'sticky',
-			left: NAVBAR_WIDTH,
+			left: 0,
 			height: '100%',
 			display: 'flex',
 			zIndex: 2,
@@ -129,7 +130,7 @@ export const useLogStreamListStyles = createStyles((theme) => {
 
 export const useLogTableStyles = createStyles((theme) => {
 	const { spacing, other, radius, shadows, colors } = theme;
-	const { heights, widths } = other;
+	const { heights, widths, fontWeights } = other;
 
 	const defaultRadius = radius[theme.defaultRadius as string];
 
@@ -251,6 +252,16 @@ export const useLogTableStyles = createStyles((theme) => {
 		limitBtnText: {
 			marginRight: spacing.md,
 		},
+
+		limitActive: {
+			background: colors.brandSecondary[1],
+			fontWeight: fontWeights.medium,
+			color: colors.white[0],
+
+			'&:hover': {
+				background: colors.brandSecondary[1],
+			},
+		},
 	};
 });
 
@@ -310,13 +321,10 @@ export const useLogQueryStyles = createStyles((theme) => {
 			fontWeight: fontWeights.semibold,
 		},
 
-		timeFilterContainer: {
-			alignSelf: 'end',
-		},
-
-		timeFilterInnerContainer: {
+		innerContainer: {
 			display: 'flex',
 			paddingTop: spacing.xxs,
+			marginRight: spacing.md,
 		},
 
 		intervalBtn: {
@@ -412,6 +420,45 @@ export const useLogQueryStyles = createStyles((theme) => {
 
 			'&:hover': {
 				background: colors.brandSecondary[2],
+			},
+		},
+
+		searchContainer: {
+			display: 'flex',
+		},
+
+		searchTypeBtn: {
+			border: `${sizing.px} ${colors.gray[2]} solid`,
+			borderTopRightRadius: 0,
+			borderBottomRightRadius: 0,
+			background: colors.brandSecondary[1],
+			color: colors.white[0],
+			borderRight: 'none',
+			fontWeight: fontWeights.semibold,
+			paddingRight: spacing.sm,
+
+			'&:hover': {
+				background: colors.brandSecondary[2],
+			},
+		},
+
+		searchTypeActive: {
+			background: colors.brandSecondary[1],
+			fontWeight: fontWeights.medium,
+			color: colors.white[0],
+
+			'&:hover': {
+				background: colors.brandSecondary[1],
+			},
+		},
+
+		searchInput: {
+			width: '100%',
+			flex: 1,
+
+			'& input': {
+				background: colors.gray[0],
+				border: `${sizing.px} ${colors.gray[2]} solid`,
 			},
 		},
 	};

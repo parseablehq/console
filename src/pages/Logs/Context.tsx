@@ -9,26 +9,6 @@ const Context = createContext({});
 
 const { Provider } = Context;
 
-interface LogsPageContextState {
-	subLogStreamError: SubData<string | null>;
-	subViewLog: SubData<LogsData[number] | null>;
-	subLogQuery: SubData<LogsQuery>;
-	subRefreshInterval: SubData<number | null>;
-	subLogSelectedTimeRange: SubData<string>;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface LogsPageContextMethods {}
-
-interface LogsPageContextValue {
-	state: LogsPageContextState;
-	methods: LogsPageContextMethods;
-}
-
-interface LogsPageProviderProps {
-	children: ReactNode;
-}
-
 const now = dayjs();
 
 export const LOG_QUERY_LIMITS = [30, 50, 100, 150, 200];
@@ -62,12 +42,38 @@ export const FIXED_DURATIONS = [
 		name: 'Past 2 Months',
 		milliseconds: dayjs.duration({ months: 2 }).asMilliseconds(),
 	},
-];
+] as const;
 
 export const DEFAULT_FIXED_DURATIONS = FIXED_DURATIONS[0];
 
+export const SEARCH_TYPES = ['TEXT', 'SQL'] as const;
+
+export type SearchTypes = (typeof SEARCH_TYPES)[number];
+
+interface LogsPageContextState {
+	subLogStreamError: SubData<string | null>;
+	subViewLog: SubData<LogsData[number] | null>;
+	subLogQuery: SubData<LogsQuery>;
+	subRefreshInterval: SubData<number | null>;
+	subLogSelectedTimeRange: SubData<string>;
+	subLogSearchType: SubData<SearchTypes>;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface LogsPageContextMethods {}
+
+interface LogsPageContextValue {
+	state: LogsPageContextState;
+	methods: LogsPageContextMethods;
+}
+
+interface LogsPageProviderProps {
+	children: ReactNode;
+}
+
 const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 	const subLogQuery = useSubscribeState<LogsQuery>({
+		searchText: '',
 		startTime: now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate(),
 		endTime: now.toDate(),
 		streamName: '',
@@ -75,6 +81,7 @@ const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 		page: 1,
 	});
 	const subLogSelectedTimeRange = useSubscribeState<string>(DEFAULT_FIXED_DURATIONS.name);
+	const subLogSearchType = useSubscribeState<SearchTypes>(SEARCH_TYPES[0]);
 	const subLogStreamError = useSubscribeState<string | null>(null);
 	const subRefreshInterval = useSubscribeState<number | null>(null);
 	const subViewLog = useSubscribeState<LogsData[number] | null>(null);
@@ -85,6 +92,7 @@ const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 		subLogQuery,
 		subRefreshInterval,
 		subLogSelectedTimeRange,
+		subLogSearchType,
 	};
 
 	const methods: LogsPageContextMethods = {};
