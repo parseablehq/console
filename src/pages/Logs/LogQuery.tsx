@@ -34,10 +34,10 @@ const LogQuery: FC = () => {
 
 const Search: FC = () => {
 	const {
-		state: { subLogQuery },
+		state: { subLogSearch },
 	} = useLogsPageContext();
 
-	const [searchValue, setSearchValue] = useMountedState(subLogQuery.get().searchText);
+	const [searchValue, setSearchValue] = useMountedState(subLogSearch.get().search);
 	const { classes } = useLogQueryStyles();
 
 	const { searchContainer, searchInput } = classes;
@@ -48,10 +48,10 @@ const Search: FC = () => {
 
 	const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
 		if (event.key === 'Enter') {
-			if (subLogQuery.get().searchText !== searchValue) {
+			if (subLogSearch.get().search !== searchValue) {
 				const trimmedValue = event.currentTarget.value.trim();
-				subLogQuery.set((query) => {
-					query.searchText = trimmedValue;
+				subLogSearch.set((query) => {
+					query.search = trimmedValue;
 				});
 				setSearchValue(trimmedValue);
 			}
@@ -200,7 +200,6 @@ const TimeRange: FC = () => {
 		subLogQuery.set((query) => {
 			query.startTime = now.subtract(duration.milliseconds, 'milliseconds').toDate();
 			query.endTime = now.toDate();
-			query.page = 1;
 		});
 	};
 
@@ -268,7 +267,6 @@ const CustomTimeRange: FC = () => {
 		subLogQuery.set((query) => {
 			query.startTime = selectedRange.startTime;
 			query.endTime = selectedRange.endTime;
-			query.page = 1;
 		});
 		const startTime = dayjs(selectedRange.startTime).format('DD-MM-YY HH:mm');
 		const endTime = dayjs(selectedRange.endTime).format('DD-MM-YY HH:mm');

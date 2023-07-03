@@ -1,57 +1,76 @@
-import { LogsData } from '@/@types/parseable/api/stream';
-import { getQueryLogs, getQueryLogsTotalCount } from '@/api/query';
+import { Log, LogsData } from '@/@types/parseable/api/query';
+import { getQueryLogs } from '@/api/query';
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
-import { LogsQuery } from '@/@types/parseable/api/query';
+import { LogsQuery, LogsSearch } from '@/@types/parseable/api/query';
+import { useEffect, useMemo, useRef, useTransition } from 'react';
+import { LOG_QUERY_LIMITS } from '@/pages/Logs/Context';
 
 export const useQueryLogs = () => {
-	const [data, setData] = useMountedState<{
-		totalCount: number;
-		totalPages: number;
-		data: LogsData;
-		page: number;
-	} | null>(null);
+	// data ref will always have the unfiltered data.
+	// Only mutate it when data is fetched, otherwise read only
+
+	const _dataRef = useRef<Log[] | null>(null);
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(true);
+	const [pageLogData, setPageLogData] = useMountedState<LogsData | null>(null);
+	const [querySearch, setQuerySearch] = useMountedState<LogsSearch>({ search: '' });
+	const [isPending, startTransition] = useTransition();
 
-	const getQueryData = async (logsQuery: LogsQuery, where = '') => {
-		const { limit = 30, page = 1 } = logsQuery;
+	const data: Log[] | null = useMemo(() => {
+		if (_dataRef.current) {
+			const logs = _dataRef.current;
+			return logs.filter((log) => {
+				return Object.values(log).find((x) => {
+					return x?.toString().includes(querySearch.search);
+				});
+			});
+		}
 
+		return null;
+	}, [_dataRef.current, querySearch]);
+
+	const goToPage = (page = 1, limit: number = LOG_QUERY_LIMITS[0]) => {
+		const firstPageIndex = (page - 1) * limit;
+		const lastPageIndex = firstPageIndex + limit;
+
+		if (data) {
+			const totalCount = data.length;
+			const totalPages = Math.ceil(totalCount / limit);
+			startTransition(() => {
+				setPageLogData({
+					data: data.slice(firstPageIndex, lastPageIndex),
+					limit: limit,
+					page: page,
+					totalCount,
+					totalPages,
+				});
+			});
+		}
+	};
+
+	const setPageLimit = (limit: number) => {
+		goToPage(1, limit);
+	};
+
+	useEffect(() => {
+		if (data) {
+			goToPage();
+		}
+	}, [data]);
+
+	const getQueryData = async (logsQuery: LogsQuery) => {
 		try {
 			setLoading(true);
 			setError(null);
 
-			const [logsQueryRes, logsQueryTotalCountRes] = await Promise.all([
-				getQueryLogs(logsQuery, where),
-				getQueryLogsTotalCount(logsQuery, where),
-			]);
+			const logsQueryRes = await getQueryLogs(logsQuery);
 
 			const data = logsQueryRes.data;
-			const totalCountData = logsQueryTotalCountRes.data;
 
-			if (logsQueryRes.status === StatusCodes.OK && logsQueryTotalCountRes.status === StatusCodes.OK) {
-				const totalCount = totalCountData[0]?.totalCount ?? 0;
-				const totalPages = Math.ceil(totalCount / limit);
+			if (logsQueryRes.status === StatusCodes.OK) {
+				_dataRef.current = data;
 
-				setData({
-					data,
-					totalCount,
-					totalPages,
-					page,
-				});
-				return;
-			}
-
-			if (
-				(typeof data === 'string' && data.includes('Stream is not initialized yet')) ||
-				(typeof totalCountData === 'string' && totalCountData.includes('create_physical_expr'))
-			) {
-				setData({
-					data: [],
-					totalCount: 0,
-					totalPages: 0,
-					page,
-				});
 				return;
 			}
 
@@ -64,8 +83,19 @@ export const useQueryLogs = () => {
 	};
 
 	const resetData = () => {
-		setData(null);
+		_dataRef.current = null;
+		setPageLogData(null);
 	};
 
-	return { data, error, loading, getQueryData, resetData };
+	return {
+		data,
+		pageLogData,
+		setQuerySearch,
+		error,
+		loading: loading || isPending,
+		getQueryData,
+		resetData,
+		goToPage,
+		setPageLimit,
+	};
 };

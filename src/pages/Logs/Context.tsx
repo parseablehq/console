@@ -1,5 +1,4 @@
-import type { LogsQuery } from '@/@types/parseable/api/query';
-import type { LogsData } from '@/@types/parseable/api/stream';
+import type { LogsQuery, LogsSearch, Log } from '@/@types/parseable/api/query';
 import useSubscribeState, { SubData } from '@/hooks/useSubscribeState';
 import dayjs from 'dayjs';
 import type { FC } from 'react';
@@ -52,8 +51,9 @@ export type SearchTypes = (typeof SEARCH_TYPES)[number];
 
 interface LogsPageContextState {
 	subLogStreamError: SubData<string | null>;
-	subViewLog: SubData<LogsData[number] | null>;
+	subViewLog: SubData<Log | null>;
 	subLogQuery: SubData<LogsQuery>;
+	subLogSearch: SubData<LogsSearch>;
 	subRefreshInterval: SubData<number | null>;
 	subLogSelectedTimeRange: SubData<string>;
 	subLogSearchType: SubData<SearchTypes>;
@@ -73,23 +73,24 @@ interface LogsPageProviderProps {
 
 const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 	const subLogQuery = useSubscribeState<LogsQuery>({
-		searchText: '',
 		startTime: now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate(),
 		endTime: now.toDate(),
 		streamName: '',
-		limit: LOG_QUERY_LIMITS[0],
-		page: 1,
+	});
+	const subLogSearch = useSubscribeState<LogsSearch>({
+		search: '',
 	});
 	const subLogSelectedTimeRange = useSubscribeState<string>(DEFAULT_FIXED_DURATIONS.name);
 	const subLogSearchType = useSubscribeState<SearchTypes>(SEARCH_TYPES[0]);
 	const subLogStreamError = useSubscribeState<string | null>(null);
 	const subRefreshInterval = useSubscribeState<number | null>(null);
-	const subViewLog = useSubscribeState<LogsData[number] | null>(null);
+	const subViewLog = useSubscribeState<Log | null>(null);
 
 	const state: LogsPageContextState = {
 		subLogStreamError,
 		subViewLog,
 		subLogQuery,
+		subLogSearch,
 		subRefreshInterval,
 		subLogSelectedTimeRange,
 		subLogSearchType,
