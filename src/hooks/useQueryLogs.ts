@@ -40,8 +40,8 @@ export const useQueryLogs = () => {
 			startTransition(() => {
 				setPageLogData({
 					data: data.slice(firstPageIndex, lastPageIndex),
-					limit: limit,
-					page: page,
+					limit,
+					page,
 					totalCount,
 					totalPages,
 				});
