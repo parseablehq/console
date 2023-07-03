@@ -3,6 +3,7 @@ import LogsPageProvider from '@/pages/Logs/Context';
 import type { FC } from 'react';
 import { lazy } from 'react';
 import SuspensePage from './SuspensePage';
+import QueryPageProvider from '@/pages/Query/Context';
 
 export const HomeElement: FC = () => <Home />;
 
@@ -24,6 +25,18 @@ export const LogsElement: FC = () => {
 			<LogsPageProvider>
 				<Logs />
 			</LogsPageProvider>
+		</SuspensePage>
+	);
+};
+
+const Query = lazy(() => import('@/pages/Query'));
+
+export const QueryElement: FC = () => {
+	return (
+		<SuspensePage>
+			<QueryPageProvider>
+				<Query />
+			</QueryPageProvider>
 		</SuspensePage>
 	);
 };

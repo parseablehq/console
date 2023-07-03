@@ -1,13 +1,13 @@
-import { LOGS_ROUTE } from '@/constants/routes';
+import { LOGS_ROUTE, QUERY_ROUTE } from '@/constants/routes';
 import useMountedState from '@/hooks/useMountedState';
 import type { NavbarProps as MantineNavbarProps } from '@mantine/core';
 import { Navbar as MantineNavbar, Tooltip, UnstyledButton, px } from '@mantine/core';
-import { IconFileReport } from '@tabler/icons-react';
+import { IconFileReport, IconCodeCircle2} from '@tabler/icons-react';
 import type { FC } from 'react';
 import { useNavbarStyles } from './styles';
 import { useNavigate } from 'react-router-dom';
 
-const links = [{ icon: IconFileReport, label: 'Logs', pathname: LOGS_ROUTE }];
+const links = [{ icon: IconFileReport, label: 'Logs', pathname: LOGS_ROUTE }, { icon: IconCodeCircle2, label: 'Query', pathname: QUERY_ROUTE }];
 
 type Link = (typeof links)[number];
 

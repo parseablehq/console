@@ -20,6 +20,7 @@
 		"@mantine/hooks": "^6.0.15",
 		"@mantine/notifications": "^6.0.15",
 		"@mantine/prism": "^6.0.15",
+		"@monaco-editor/react": "^4.5.1",
 		"@tabler/icons-react": "^2.23.0",
 		"axios": "^1.4.0",
 		"dayjs": "^1.11.8",
@@ -29,6 +30,7 @@
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"react-error-boundary": "^4.0.10",
+		"react-resizable-panels": "^0.0.53",
 		"react-router-dom": "^6.14.0"
 	},
 	"devDependencies": {
