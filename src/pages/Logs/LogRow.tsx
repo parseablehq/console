@@ -1,15 +1,16 @@
-import { LogStreamData, LogsData } from '@/@types/parseable/api/stream';
+import { LogStreamData } from '@/@types/parseable/api/stream';
 import { parseLogData } from '@/utils';
 import { Box, px } from '@mantine/core';
 import { IconArrowNarrowRight } from '@tabler/icons-react';
 import { FC, Fragment } from 'react';
 import { useLogsPageContext } from './Context';
 import { useLogTableStyles } from './styles';
+import { Log } from '@/@types/parseable/api/query';
 
 const skipFields = ['p_metadata', 'p_tags'];
 
 type LogRowProps = {
-	logData: LogsData;
+	logData: Log[];
 	logsSchema: LogStreamData;
 	isColumnActive: (columnName: string) => boolean;
 };
@@ -20,7 +21,7 @@ const LogRow: FC<LogRowProps> = (props) => {
 		state: { subViewLog },
 	} = useLogsPageContext();
 
-	const onShow = (log: LogsData[number]) => {
+	const onShow = (log: Log) => {
 		subViewLog.set(log);
 	};
 

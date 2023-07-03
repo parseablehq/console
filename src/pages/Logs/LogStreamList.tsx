@@ -57,9 +57,7 @@ const LogStreamList: FC = () => {
 			const now = dayjs();
 
 			subLogQuery.set((state) => {
-				state.searchText = '';
 				state.streamName = streamName;
-				state.page = 1;
 				state.startTime = now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate();
 				state.endTime = now.toDate();
 			});

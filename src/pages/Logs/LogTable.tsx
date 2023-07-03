@@ -15,19 +15,33 @@ import { Field } from '@/@types/parseable/dataType';
 import EmptyBox from '@/components/Empty';
 import { RetryBtn } from '@/components/Button/Retry';
 import LogQuery from './LogQuery';
-import { whereFields } from '@/utils';
 
 const skipFields = ['p_metadata', 'p_tags'];
 
 const LogTable: FC = () => {
 	const {
-		state: { subLogStreamError, subLogQuery },
+		state: { subLogStreamError, subLogQuery, subLogSearch },
 	} = useLogsPageContext();
 
 	const [logStreamError, setLogStreamError] = useMountedState<string | null>(null);
 	const [columnToggles, setColumnToggles] = useMountedState<Map<string, boolean>>(new Map());
-	const { data: logsSchema, getDataSchema, resetData, loading, error: logStreamSchemaError } = useGetLogStreamSchema();
-	const { data: logs, getQueryData, loading: logsLoading, error: logsError, resetData: resetLogsData } = useQueryLogs();
+	const {
+		data: logsSchema,
+		getDataSchema,
+		resetData: resetStreamData,
+		loading,
+		error: logStreamSchemaError,
+	} = useGetLogStreamSchema();
+	const {
+		pageLogData,
+		setQuerySearch,
+		getQueryData,
+		goToPage,
+		setPageLimit,
+		loading: logsLoading,
+		error: logsError,
+		resetData: resetLogsData,
+	} = useQueryLogs();
 
 	const isColumnActive = useCallback(
 		(columnName: string) => {
@@ -44,50 +58,39 @@ const LogTable: FC = () => {
 	};
 
 	const onRetry = () => {
-		resetData();
-		resetLogsData();
-
 		const query = subLogQuery.get();
-		const { streamName, searchText } = query;
-		getDataSchema(streamName);
 
-		setColumnToggles(new Map());
 		if (logsSchema) {
-			const fields = logsSchema.fields;
-			const where = whereFields(fields, searchText);
-
-			getQueryData(query, where);
+			resetStreamData();
+			resetLogsData();
 		}
+
+		getDataSchema(query.streamName);
+		getQueryData(query);
+		setColumnToggles(new Map());
 	};
 
 	useEffect(() => {
 		const streamErrorListener = subLogStreamError.subscribe(setLogStreamError);
+		const logSearchListener = subLogSearch.subscribe(setQuerySearch);
 		const logQueryListener = subLogQuery.subscribe((query) => {
-			const fields = logsSchema?.fields ?? [];
-			const where = whereFields(fields, query.searchText);
+			if (query.streamName) {
+				if (logsSchema) {
+					resetStreamData();
+					resetLogsData();
+				}
 
-			getQueryData(query, where);
+				getDataSchema(query.streamName);
+				getQueryData(query);
+				setColumnToggles(new Map());
+			}
 		});
 
 		return () => {
 			streamErrorListener();
 			logQueryListener();
+			logSearchListener();
 		};
-	}, [logsSchema]);
-
-	useEffect(() => {
-		const listener = subLogQuery.subscribe((query) => {
-			if (query.streamName) {
-				if (logsSchema) {
-					resetData();
-					resetLogsData();
-				}
-				getDataSchema(query.streamName);
-				setColumnToggles(new Map());
-			}
-		});
-
-		return () => listener();
 	}, [logsSchema]);
 
 	const renderTh = useMemo(() => {
@@ -108,10 +111,10 @@ const LogTable: FC = () => {
 
 	return (
 		<Box className={container}>
-			{!!logs && <LogQuery />}
+			{!!pageLogData && <LogQuery />}
 			{!(logStreamError || logStreamSchemaError || logsError) ? (
-				!loading && !logsLoading && !!logsSchema && !!logs ? (
-					!!logsSchema.fields.length && !!logs.data.length ? (
+				!loading && !logsLoading && !!logsSchema && !!pageLogData ? (
+					!!logsSchema.fields.length && !!pageLogData.data.length ? (
 						<Fragment>
 							<ScrollArea className={tableContainer} type="never">
 								<Table className={tableStyle}>
@@ -125,24 +128,22 @@ const LogTable: FC = () => {
 										/>
 									</Thead>
 									<Tbody>
-										<LogRow logData={logs.data} logsSchema={logsSchema.fields} isColumnActive={isColumnActive} />
+										<LogRow logData={pageLogData.data} logsSchema={logsSchema.fields} isColumnActive={isColumnActive} />
 									</Tbody>
 								</Table>
 							</ScrollArea>
 							<Box className={footerContainer}>
-								{logs.totalPages > 1 && (
+								{pageLogData.totalPages > 1 && (
 									<Pagination
 										withEdges
-										total={logs.totalPages}
-										value={logs.page}
-										onChange={(value) => {
-											subLogQuery.set((state) => {
-												state.page = value;
-											});
+										total={pageLogData.totalPages}
+										value={pageLogData.page}
+										onChange={(page) => {
+											goToPage(page, pageLogData.limit);
 										}}
 									/>
 								)}
-								<LimitControl />
+								<LimitControl value={pageLogData.limit} onChange={setPageLimit} />
 							</Box>
 						</Fragment>
 					) : (
@@ -205,33 +206,25 @@ const ThColumnMenu: FC<ThColumnMenuProps> = (props) => {
 	);
 };
 
-const LimitControl: FC = () => {
-	const {
-		state: { subLogQuery },
-	} = useLogsPageContext();
-	const [selectedLimit, setSelectedLimit] = useMountedState(subLogQuery.get().limit);
+type LimitControlProps = {
+	value: number;
+	onChange: (limit: number) => void;
+};
+
+const LimitControl: FC<LimitControlProps> = (props) => {
+	const { value, onChange } = props;
+
 	const [opened, setOpened] = useMountedState(false);
 
 	const toggle = () => {
 		setOpened(!opened);
 	};
 
-	const onSelect = (value: number) => {
-		if (subLogQuery.get().limit !== value) {
-			subLogQuery.set((state) => {
-				state.limit = value;
-				state.page = 1;
-			});
+	const onSelect = (limit: number) => {
+		if (value !== limit) {
+			onChange(limit);
 		}
 	};
-
-	useEffect(() => {
-		const listener = subLogQuery.subscribe((query) => {
-			setSelectedLimit(query.limit);
-		});
-
-		return () => listener();
-	}, []);
 
 	const { classes, cx } = useLogTableStyles();
 	const { limitContainer, limitBtn, limitBtnText, limitActive } = classes;
@@ -242,7 +235,7 @@ const LimitControl: FC = () => {
 				<Center>
 					<Menu.Target>
 						<Box onClick={toggle} className={limitBtn}>
-							<Text className={limitBtnText}>{selectedLimit}</Text>
+							<Text className={limitBtnText}>{value}</Text>
 							<IconSelector size={px('1rem')} />
 						</Box>
 					</Menu.Target>
@@ -252,7 +245,7 @@ const LimitControl: FC = () => {
 						return (
 							<Menu.Item
 								className={cx([], {
-									[limitActive]: selectedLimit === limit,
+									[limitActive]: value === limit,
 								})}
 								key={limit}
 								onClick={() => onSelect(limit)}>
