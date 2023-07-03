@@ -1,8 +1,7 @@
-import { Log, LogsData } from '@/@types/parseable/api/query';
+import type { Log, LogsData, LogsQuery, LogsSearch } from '@/@types/parseable/api/query';
 import { getQueryLogs } from '@/api/query';
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
-import { LogsQuery, LogsSearch } from '@/@types/parseable/api/query';
 import { useEffect, useMemo, useRef, useTransition } from 'react';
 import { LOG_QUERY_LIMITS } from '@/pages/Logs/Context';
 
