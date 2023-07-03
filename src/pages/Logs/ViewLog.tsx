@@ -78,13 +78,7 @@ const Header: FC<HeaderProps> = (props) => {
 
 	const { headerContainer, headerTimeStampTitle, headerTimeStamp } = classes;
 
-	const timeStamp = useMemo(
-		() =>
-			dayjs(props.timeStamp + '+00:00')
-				.utc()
-				.format('DD/MM/YYYY (hh:mm:ss A) z'),
-		[],
-	);
+	const timeStamp = useMemo(() => dayjs(`${props.timeStamp}+00:00`).utc().format('DD/MM/YYYY (hh:mm:ss A) z'), []);
 
 	return (
 		<Box className={headerContainer}>
