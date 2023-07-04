@@ -4,10 +4,12 @@ import { useQueryPageContext } from './Context';
 import { Box, Button } from '@mantine/core';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import { ErrorMarker, errChecker } from "./ErrorMarker";
+import { notifications } from '@mantine/notifications';
+import { IconCheck, IconFileAlert  } from '@tabler/icons-react';
 
 const QueryCodeEditor: FC = () => {
   const { state: { query, result, subLogQuery } } = useQueryPageContext();
-  const { data: queryResult, getQueryData , error} = useQueryResult();
+  const { data: queryResult, getQueryData , error } = useQueryResult();
   const editorRef = React.useRef<any>();
   const monacoRef = React.useRef<any>();
   query.set(`SELECT * FROM ${subLogQuery.get().streamName} LIMIT 10;`);
@@ -27,17 +29,47 @@ const QueryCodeEditor: FC = () => {
     editorRef.current = editor;
     monacoRef.current = monaco;
   }
-  const runQuery = () => {
+  const runQuery = () => { 
+    notifications.show({
+      id: 'load-data',
+      loading: true,
+      color: '#545BEB',
+      title: 'Running Query',
+      message: 'Data will be loaded.',
+      autoClose: false,
+      withCloseButton: false,
+    });
     const parsedQuery=query.get().replace(/(\r\n|\n|\r)/gm, "")
     getQueryData(subLogQuery.get(), parsedQuery);
+
   }
   useEffect(() => {
-    result.set(JSON.stringify(queryResult?.data));
-  }, [queryResult]);
+
+    if(queryResult){
+      result.set(JSON.stringify(queryResult?.data, null, 2));
+      notifications.update({
+        id: 'load-data',
+        color: 'green',
+        title: 'Data was loaded',
+        message: 'Successfully Loaded!!',
+        icon: <IconCheck size="1rem" />,
+        autoClose: 1000,
+      });
+    }
+    if(error){
+      notifications.update({
+        id: 'load-data',
+        color: 'red',
+        title: 'Error Occured',
+        message: 'Error Occured, please check your query and try again',
+        icon: <IconFileAlert  size="1rem" />,
+        autoClose: 2000,
+      });
+      result.set(error);
+    }
+  }, [queryResult , error]);
 
   return (
-    <>
-
     <Box style={{ height: "100%", textAlign: "right" }} >
       <Editor
         height={"calc(100% - 40px)"}
@@ -56,10 +88,8 @@ const QueryCodeEditor: FC = () => {
           glyphMargin: true,
         }}
       />
-        <Button variant='default' style={{ background: "#545BEB", color: "white", height: "40px" }} onClick={runQuery}>Run Query</Button>
+        <Button variant='default' style={{ background: "#545BEB", color: "white", height: "40px" ,marginRight:"5px"}} onClick={runQuery}>Run Query</Button>
       </Box>
-    </>
-
   );
 };
 
