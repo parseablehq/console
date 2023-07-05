@@ -9,31 +9,37 @@ import { IconCheck, IconFileAlert  } from '@tabler/icons-react';
 import { useQueryStyles } from './styles';
 
 const QueryCodeEditor: FC = () => {
-  const { state: { query, result, subLogQuery } } = useQueryPageContext();
-  const { data: queryResult, getQueryData , error } = useQueryResult();
+  const { state: {result, subLogQuery } } = useQueryPageContext();
+  const { data: queryResult, getQueryData , error,resetData } = useQueryResult();
   const editorRef = React.useRef<any>();
   const monacoRef = React.useRef<any>();
 	const { classes } = useQueryStyles();
 	const { runQueryBtn } = classes;
-
-  query.set(`SELECT * FROM ${subLogQuery.get().streamName} LIMIT 10;`);
+  const [query, setQuery] = React.useState<string>(`SELECT * FROM ${subLogQuery.get().streamName} LIMIT 100`);
 
   const handleEditorChange = (code: any) => {
-    query.set(code);
+    setQuery(code);
     errChecker(code,subLogQuery.get().streamName);
     monacoRef.current?.editor.setModelMarkers(
       editorRef.current?.getModel(),
       "owner",
       ErrorMarker
     );
-    
   };
+
+  useEffect(() => { 
+    if (subLogQuery.get().streamName) {
+      setQuery(`SELECT * FROM ${subLogQuery.get().streamName} LIMIT 100;`);
+      result.set("");
+    }
+  } , [subLogQuery.get().streamName]);
 
   function handleEditorDidMount(editor:any, monaco:any) {
     editorRef.current = editor;
     monacoRef.current = monaco;
   }
-  const runQuery = () => { 
+  const runQuery = () => {
+    resetData();
     notifications.show({
       id: 'load-data',
       loading: true,
@@ -43,23 +49,12 @@ const QueryCodeEditor: FC = () => {
       autoClose: false,
       withCloseButton: false,
     });
-    const parsedQuery=query.get().replace(/(\r\n|\n|\r)/gm, "")
+    const parsedQuery=query.replace(/(\r\n|\n|\r)/gm, "")
+    console.log(parsedQuery);
     getQueryData(subLogQuery.get(), parsedQuery);
 
   }
   useEffect(() => {
-
-    if(queryResult){
-      result.set(JSON.stringify(queryResult?.data, null, 2));
-      notifications.update({
-        id: 'load-data',
-        color: 'green',
-        title: 'Data was loaded',
-        message: 'Successfully Loaded!!',
-        icon: <IconCheck size="1rem" />,
-        autoClose: 1000,
-      });
-    }
     if(error){
       notifications.update({
         id: 'load-data',
@@ -70,7 +65,21 @@ const QueryCodeEditor: FC = () => {
         autoClose: 2000,
       });
       result.set(error);
+      return;
     }
+    if(queryResult){
+      result.set(JSON.stringify(queryResult?.data, null, 2));
+      notifications.update({
+        id: 'load-data',
+        color: 'green',
+        title: 'Data was loaded',
+        message: 'Successfully Loaded!!',
+        icon: <IconCheck size="1rem" />,
+        autoClose: 1000,
+      });
+      return;
+    }
+
   }, [queryResult , error]);
 
   return (
@@ -78,7 +87,7 @@ const QueryCodeEditor: FC = () => {
       <Editor
         height={"calc(100% - 40px)"}
         defaultLanguage="sql"
-        value={query.get()}
+        value={query}
         onChange={handleEditorChange}
         onMount={handleEditorDidMount}
         options={{

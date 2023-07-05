@@ -11,7 +11,7 @@ const { Provider } = Context;
 const now = dayjs();
 
 export const LOG_QUERY_LIMITS = [30, 50, 100, 150, 200];
-
+export const REFRESH_INTERVALS = [1000, 2000, 5000, 10000, 20000, 60000];
 export const FIXED_DURATIONS = [
 	{
 		name: 'Past 10 Minutes',
@@ -47,13 +47,11 @@ export const DEFAULT_FIXED_DURATIONS = FIXED_DURATIONS[0];
 
 export const defaultQueryResult = ``
 
-export const defaultQueryEditor= `SELECT * FROM frontend LIMIT 10 OFFSET 0;`
-
 interface QueryPageContextState {
-    query: SubData<string>;
     result: SubData<string>;
     subLogQuery: SubData<LogsQuery>;
-	
+	subRefreshInterval: SubData<number | null>;
+	subLogSelectedTimeRange: SubData<string>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -69,18 +67,20 @@ interface QueryPageProviderProps {
 }
 
 const QueryPageProvider: FC<QueryPageProviderProps> = ({ children }) => {
-    const query = useSubscribeState<string>(defaultQueryEditor);
     const result = useSubscribeState<string>(defaultQueryResult);
     const subLogQuery = useSubscribeState<LogsQuery>({
 		startTime: now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate(),
 		endTime: now.toDate(),
 		streamName: '',
 	});
+	const subRefreshInterval = useSubscribeState<number | null>(null);
+	const subLogSelectedTimeRange = useSubscribeState<string>(DEFAULT_FIXED_DURATIONS.name);
 
 	const state: QueryPageContextState = {
-		query,
 		result,
-        subLogQuery
+        subLogQuery,
+		subRefreshInterval,
+		subLogSelectedTimeRange,
 	};
 
 	const methods: QueryPageContextMethods = {};

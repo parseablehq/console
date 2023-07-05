@@ -9,7 +9,6 @@ import { useParams } from "react-router-dom";
 import QuerySchemaList from './QuerySchemaList';
 import { useQueryPageContext, DEFAULT_FIXED_DURATIONS } from './Context';
 import dayjs from 'dayjs';
-
 const Logs: FC = () => {
 	useDocumentTitle('Parseable | Query');
 	const { state: { subLogQuery } } = useQueryPageContext();
@@ -50,7 +49,7 @@ const Logs: FC = () => {
 				<Panel >
 					<PanelGroup direction="vertical">
 						<Panel defaultSize={20}>
-						<QueryCodeEditor />
+							<QueryCodeEditor />
 						</Panel>
 						<PanelResizeHandle style={{
 							height: "10px",
@@ -70,9 +69,10 @@ const Logs: FC = () => {
 							<QueryResultEditor />
 						</Panel>
 					</PanelGroup>
-					
+
 				</Panel>
 			</PanelGroup>
+
 
 		</Box>
 	);

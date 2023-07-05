@@ -2,7 +2,7 @@ import React, { FC, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useQueryPageContext } from './Context';
 import useMountedState from '@/hooks/useMountedState';
-import { Box, Button } from '@mantine/core';
+import { Box, Button ,px} from '@mantine/core';
 import { IconCopy, IconSearch, IconCheck } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { useQueryStyles } from './styles';
@@ -60,8 +60,8 @@ const QueryResultEditor: FC = () => {
     return (
 
         <Box style={{ height: "100%", textAlign: "right" }} >
-            <Button variant='default' leftIcon={<IconCopy size="1rem" />} className={actionBtn} onClick={runCopy} >Copy</Button>
-            <Button variant='default' leftIcon={<IconSearch size="1rem" />} onClick={runFind}  className={actionBtn} >Find</Button>
+            <Button variant='default' leftIcon={<IconCopy size={px('1.2rem')} stroke={1.5} />} className={actionBtn} onClick={runCopy} >Copy</Button>
+            <Button variant='default' leftIcon={<IconSearch size={px('1.2rem')} stroke={1.5} />} onClick={runFind}  className={actionBtn} >Find</Button>
             <Editor
                 height={"calc(100% - 25px)"}
                 defaultLanguage="json"

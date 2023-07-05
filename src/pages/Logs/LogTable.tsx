@@ -118,18 +118,6 @@ const LogTable: FC = () => {
 						<Fragment>
 							<ScrollArea 
 							className={tableContainer}
-							styles={(theme) => ({
-								scrollbar: {
-								  '&[data-orientation="vertical"] .mantine-ScrollArea-thumb': {
-									backgroundColor: theme.colors.brandPrimary[0],
-									zIndex:1
-								  },
-								  '&[data-orientation="horizontal"] .mantine-ScrollArea-thumb': {
-									backgroundColor: theme.colors.brandPrimary[0],
-								  },
-								},
-							  })}
-					  
 							 type="always">
 								<Table className={tableStyle}>
 									<Thead className={theadStyle}>

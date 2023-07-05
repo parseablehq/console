@@ -51,10 +51,10 @@ export const theme: MantineThemeOverride = {
 				return {
 					control: {
 						'&[data-active=true]': {
-							background: colors.brandSecondary[1],
+							background: colors.brandPrimary[0],
 
 							':hover': {
-								background: colors.brandSecondary[1],
+								color: colors.brandSecondary[0],
 							},
 						},
 					},
@@ -63,7 +63,8 @@ export const theme: MantineThemeOverride = {
 		},
 		Checkbox: {
 			styles: ({ colors }) => {
-				const pColor = colors.brandSecondary[1];
+				const pColor = colors.brandPrimary[0];
+				const sColor = colors.brandSecondary[0];
 
 				return {
 					labelWrapper: {
@@ -71,11 +72,14 @@ export const theme: MantineThemeOverride = {
 					},
 					label: {
 						cursor: 'pointer',
+						':hover': {
+							color: sColor,
+						},
 					},
 					input: {
 						cursor: 'pointer',
 						':hover': {
-							borderColor: pColor,
+							borderColor: sColor,
 						},
 
 						'&:checked': {
@@ -91,7 +95,7 @@ export const theme: MantineThemeOverride = {
 				scrollbar: {
 					[`&[data-orientation="vertical"] .mantine-ScrollArea-thumb, 
 					&[data-orientation="horizontal"] .mantine-ScrollArea-thumb`]: {
-						backgroundColor: colors.brandPrimary[2],
+						backgroundColor: colors.brandPrimary[0],
 					},
 				},
 
@@ -179,9 +183,17 @@ export const theme: MantineThemeOverride = {
 			styles: ({ colors }) => {
 				return {
 					day: {
-						'&[data-selected]': {
-							background: colors.brandSecondary[1],
+						'&:hover': {
+							color: colors.brandSecondary[0],
 						},
+						'&[data-selected]': {
+							background: colors.brandPrimary[0],
+							'&:hover': {
+								color: colors.white[0],
+								background: colors.brandSecondary[0],
+							},
+						},
+
 					},
 				};
 			},
@@ -192,7 +204,7 @@ export const theme: MantineThemeOverride = {
 					item: {
 						'&[data-selected]': {
 							'&, &:hover': {
-								background: colors.brandSecondary[1],
+								background: colors.brandSecondary[0],
 								color: colors.white[0],
 							},
 						},

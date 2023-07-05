@@ -1,4 +1,4 @@
-import { LogsData } from '@/@types/parseable/api/stream';
+import { LogStreamData } from '@/@types/parseable/api/stream';
 import { getQueryResult } from '@/api/query';
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
@@ -6,7 +6,7 @@ import { LogsQuery } from '@/@types/parseable/api/query';
 
 export const useQueryResult = () => {
     const [data, setData] = useMountedState<{
-        data: LogsData;
+        data: LogStreamData;
     } | null>(null);
     const [error, setError] = useMountedState<string | null>(null);
     const [loading, setLoading] = useMountedState<boolean>(true);
@@ -37,9 +37,9 @@ export const useQueryResult = () => {
                 return;
             }
 
-            setError('Failed to query log');
-        } catch {
-            setError('Failed to query log');
+            setError(logsQueryRes.data);
+        } catch(error: any) {
+            setError(error.message);
         } finally {
             setLoading(false);
         }

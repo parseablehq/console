@@ -10,14 +10,13 @@ const QuerySchemaList: FC = () => {
 	const { state: { subLogQuery } } = useQueryPageContext();
 
 	useEffect(() => {
-
 		if (subLogQuery.get().streamName) {
 			if (querySchema) {
 				resetData();
 			}
 			getDataSchema(subLogQuery.get().streamName);
 		}
-	}, []);
+	}, [subLogQuery.get()]);
 
 	const renderList = querySchema?.fields.map((field, index) => {
 		if(typeof field.data_type === "string")
