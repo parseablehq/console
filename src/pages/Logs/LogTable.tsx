@@ -107,7 +107,7 @@ const LogTable: FC = () => {
 
 	const { classes } = useLogTableStyles();
 
-	const { container, tableContainer, tableStyle, theadStyle, errorContainer, footerContainer } = classes;
+	const { container, tableContainer, tableStyle, theadStyle, errorContainer, footerContainer ,paginationRow} = classes;
 
 	return (
 		<Box className={container}>
@@ -116,7 +116,21 @@ const LogTable: FC = () => {
 				!loading && !logsLoading && !!logsSchema && !!pageLogData ? (
 					!!logsSchema.fields.length && !!pageLogData.data.length ? (
 						<Fragment>
-							<ScrollArea className={tableContainer} type="never">
+							<ScrollArea 
+							className={tableContainer}
+							styles={(theme) => ({
+								scrollbar: {
+								  '&[data-orientation="vertical"] .mantine-ScrollArea-thumb': {
+									backgroundColor: theme.colors.brandPrimary[0],
+									zIndex:1
+								  },
+								  '&[data-orientation="horizontal"] .mantine-ScrollArea-thumb': {
+									backgroundColor: theme.colors.brandPrimary[0],
+								  },
+								},
+							  })}
+					  
+							 type="always">
 								<Table className={tableStyle}>
 									<Thead className={theadStyle}>
 										{renderTh}
@@ -141,6 +155,7 @@ const LogTable: FC = () => {
 										onChange={(page) => {
 											goToPage(page, pageLogData.limit);
 										}}
+										className={paginationRow}
 									/>
 								)}
 								<LimitControl value={pageLogData.limit} onChange={setPageLimit} />
@@ -226,8 +241,8 @@ const LimitControl: FC<LimitControlProps> = (props) => {
 		}
 	};
 
-	const { classes, cx } = useLogTableStyles();
-	const { limitContainer, limitBtn, limitBtnText, limitActive } = classes;
+	const { classes } = useLogTableStyles();
+	const { limitContainer, limitBtn, limitBtnText, limitActive,limitOption } = classes;
 
 	return (
 		<Box className={limitContainer}>
@@ -244,9 +259,7 @@ const LimitControl: FC<LimitControlProps> = (props) => {
 					{LOG_QUERY_LIMITS.map((limit) => {
 						return (
 							<Menu.Item
-								className={cx([], {
-									[limitActive]: value === limit,
-								})}
+								className={limit===value?limitActive: limitOption}
 								key={limit}
 								onClick={() => onSelect(limit)}>
 								<Center>

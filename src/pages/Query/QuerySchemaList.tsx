@@ -1,7 +1,7 @@
 import { FC, useEffect } from 'react';
 import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useQueryPageContext } from './Context';
-import { Table,ScrollArea, Box, Title } from '@mantine/core';
+import { Table, Box, Title } from '@mantine/core';
 
 
 
@@ -39,13 +39,12 @@ const QuerySchemaList: FC = () => {
 
 	return (
 
-		<Box sx={{ padding: 5 }}>
+		<Box sx={{ padding: 5 ,height:"100%",overflow:"auto"}}>
 			<Title order={4}> Schema for {subLogQuery.get().streamName}</Title >
 
 			{!(logStreamSchemaError) ? (
 				!loading && !!querySchema ? (
 					!!querySchema.fields.length ? (
-						<ScrollArea>
 						<Table >
 						  <thead>
 							<tr>
@@ -55,7 +54,6 @@ const QuerySchemaList: FC = () => {
 						  </thead>
 						  <tbody>{renderList}</tbody>
 						</Table>
-					  </ScrollArea>
 					) : (
 						<p>No Data</p>
 					)

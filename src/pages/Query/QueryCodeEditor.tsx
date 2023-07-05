@@ -6,12 +6,16 @@ import { useQueryResult } from '@/hooks/useQueryResult';
 import { ErrorMarker, errChecker } from "./ErrorMarker";
 import { notifications } from '@mantine/notifications';
 import { IconCheck, IconFileAlert  } from '@tabler/icons-react';
+import { useQueryStyles } from './styles';
 
 const QueryCodeEditor: FC = () => {
   const { state: { query, result, subLogQuery } } = useQueryPageContext();
   const { data: queryResult, getQueryData , error } = useQueryResult();
   const editorRef = React.useRef<any>();
   const monacoRef = React.useRef<any>();
+	const { classes } = useQueryStyles();
+	const { runQueryBtn } = classes;
+
   query.set(`SELECT * FROM ${subLogQuery.get().streamName} LIMIT 10;`);
 
   const handleEditorChange = (code: any) => {
@@ -88,7 +92,7 @@ const QueryCodeEditor: FC = () => {
           glyphMargin: true,
         }}
       />
-        <Button variant='default' style={{ background: "#545BEB", color: "white", height: "40px" ,marginRight:"5px"}} onClick={runQuery}>Run Query</Button>
+        <Button variant='default' className={runQueryBtn} onClick={runQuery}>Run Query</Button>
       </Box>
   );
 };

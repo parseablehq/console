@@ -19,8 +19,8 @@ export const theme: MantineThemeOverride = {
 	colors: {
 		black: ['#000000'],
 		white: ['#FFFFFF'],
-		brandPrimary: ['#4192DF', '#1F288E', '#1A237E', '#10143E'],
-		brandSecondary: ['#F6BA74', '#F29C38', '#C27D2D'],
+		brandPrimary: ['#545BEB', '#1F288E', '#1A237E', '#10143E'],
+		brandSecondary: ['#FC466B', '#F29C38', '#C27D2D'],
 		error: ['#8F0F27'],
 		dimmed: ['#868e96'],
 	},

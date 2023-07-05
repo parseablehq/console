@@ -1,16 +1,16 @@
 import { createStyles } from '@mantine/core';
 
 export const useHeaderStyles = createStyles((theme) => {
-	const { primaryColor, colors, spacing, fontSizes, radius, shadows } = theme;
+	const {colors, spacing, fontSizes, radius, shadows } = theme;
 	const { fontWeights, widths, heights } = theme.other;
 
-	const pColor = colors[primaryColor][2];
-	const sColor = colors.brandSecondary[2];
+	const white = colors.white[0];
+	const sColor = colors.brandSecondary[0];
 	const defaultRadius = radius[theme.defaultRadius as string];
 
 	return {
 		container: {
-			background: pColor,
+			background: white,
 			display: 'flex',
 			alignItems: 'center',
 			justifyContent: 'space-between',
@@ -32,19 +32,14 @@ export const useHeaderStyles = createStyles((theme) => {
 			},
 		},
 
-		actionBtnIcon: {
-			color: colors.gray[3],
-		},
-
-		actionBtnText: {
-			color: colors.gray[3],
+		actionBtnText: {		
 			fontSize: fontSizes.sm,
 		},
 
 		helpTitle: {
 			fontSize: fontSizes.md,
 			textAlign: 'center',
-			color: pColor,
+			color: white,
 			fontWeight: fontWeights.bold,
 		},
 
@@ -86,7 +81,7 @@ export const useHeaderStyles = createStyles((theme) => {
 			'&::after': {
 				content: '""',
 				display: 'block',
-				backgroundColor: pColor,
+				backgroundColor: white,
 				width: widths[14],
 				height: heights['0.5'],
 				marginTop: spacing.xs,
@@ -104,13 +99,7 @@ export const useHeaderStyles = createStyles((theme) => {
 			alignItems: 'center',
 			justifyContent: 'center',
 		},
-
-		userIcon: {
-			color: colors.gray[3],
-		},
-
 		userText: {
-			color: colors.gray[3],
 			fontSize: fontSizes.sm,
 		},
 	};

@@ -72,12 +72,9 @@ const QueryPageProvider: FC<QueryPageProviderProps> = ({ children }) => {
     const query = useSubscribeState<string>(defaultQueryEditor);
     const result = useSubscribeState<string>(defaultQueryResult);
     const subLogQuery = useSubscribeState<LogsQuery>({
-		searchText: '',
 		startTime: now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate(),
 		endTime: now.toDate(),
 		streamName: '',
-		limit: LOG_QUERY_LIMITS[0],
-		page: 1,
 	});
 
 	const state: QueryPageContextState = {

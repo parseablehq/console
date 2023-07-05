@@ -19,7 +19,7 @@ const Header: FC<HeaderProps> = (props) => {
 	const { container, actionsContainer } = classes;
 
 	return (
-		<MantineHeader {...props} className={container} height={HEADER_HEIGHT} px="xl" withBorder={false}>
+		<MantineHeader {...props} className={container} height={HEADER_HEIGHT} px="xl" withBorder={true}>
 			<Link to={HOME_ROUTE} style={{ height: 25 }}>
 				<Image maw={HEADER_HEIGHT * 2.5} mx="auto" src={logoInvert} alt="Parseable Logo" />
 			</Link>
@@ -57,12 +57,12 @@ const Help: FC<UnstyledButtonProps> = (props) => {
 	const [opened, { close, open }] = useDisclosure();
 
 	const { classes } = useHeaderStyles();
-	const { actionBtn, actionBtnIcon, actionBtnText, helpTitle, helpDescription } = classes;
+	const { actionBtn, actionBtnText, helpTitle, helpDescription } = classes;
 
 	return (
 		<Fragment>
-			<UnstyledButton {...props} className={actionBtn} onClick={open} color="brandSecondary.1" variant="filled">
-				<IconHelpCircle size={px('1.1rem')} className={actionBtnIcon} />
+			<UnstyledButton {...props} className={actionBtn} onClick={open} variant="filled">
+				<IconHelpCircle size={px('1.1rem')} />
 				<Text ml="xs" className={actionBtnText}>
 					Help
 				</Text>
@@ -107,11 +107,11 @@ const User: FC<BoxProps> = (props) => {
 	const [username] = useLocalStorage({ key: 'username', getInitialValueInEffect: false });
 
 	const { classes } = useHeaderStyles();
-	const { userContainer, userIcon, userText } = classes;
+	const { userContainer, userText } = classes;
 
 	return (
 		<Box className={userContainer} {...props}>
-			<IconUser size={px('1.1rem')} className={userIcon} />
+			<IconUser size={px('1.1rem')} />
 			<Text ml="xs" className={userText}>
 				{username}
 			</Text>
@@ -136,11 +136,11 @@ const SignOut: FC<UnstyledButtonProps> = (props) => {
 	};
 
 	const { classes } = useHeaderStyles();
-	const { actionBtn, actionBtnIcon } = classes;
+	const { actionBtn } = classes;
 
 	return (
 		<UnstyledButton {...props} onClick={onSignOut} className={actionBtn}>
-			<IconLogout size={px('1.2rem')} className={actionBtnIcon} />
+			<IconLogout size={px('1.2rem')}  />
 		</UnstyledButton>
 	);
 };

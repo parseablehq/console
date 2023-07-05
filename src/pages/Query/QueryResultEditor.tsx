@@ -5,6 +5,7 @@ import useMountedState from '@/hooks/useMountedState';
 import { Box, Button } from '@mantine/core';
 import { IconCopy, IconSearch, IconCheck } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
+import { useQueryStyles } from './styles';
 
 
 const QueryResultEditor: FC = () => {
@@ -12,6 +13,8 @@ const QueryResultEditor: FC = () => {
     const [resultValue, setResultValue] = useMountedState<string>(result.get());
     const editorRef = React.useRef<any>();
     const monacoRef = React.useRef<any>();
+    const { classes } = useQueryStyles();
+	const { actionBtn } = classes;
 
     useEffect(() => {
         const resultValueListener = result.subscribe(setResultValue);
@@ -57,8 +60,8 @@ const QueryResultEditor: FC = () => {
     return (
 
         <Box style={{ height: "100%", textAlign: "right" }} >
-            <Button variant='default' leftIcon={<IconCopy size="1rem" />} onClick={runCopy} style={{ height: "25px", marginRight: "5px" }} >Copy</Button>
-            <Button variant='default' leftIcon={<IconSearch size="1rem" />} onClick={runFind} style={{ height: "25px", marginRight: "5px" }} >Find</Button>
+            <Button variant='default' leftIcon={<IconCopy size="1rem" />} className={actionBtn} onClick={runCopy} >Copy</Button>
+            <Button variant='default' leftIcon={<IconSearch size="1rem" />} onClick={runFind}  className={actionBtn} >Find</Button>
             <Editor
                 height={"calc(100% - 25px)"}
                 defaultLanguage="json"
