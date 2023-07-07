@@ -27,11 +27,19 @@ It ingests log data via HTTP POST calls and exposes a query API to search and an
 ## Getting Started
 
 1. Clone the repository.
-2. Run `npm install` to install all the dependencies.
-3. Run `npm run client` to start the console.
-4. Open `http://localhost:3000` in your browser.
-5. You can see the console running in your browser now :)
-6. For dashboard Access Enter the below credentials.
+2. Create `.env.development.local` and copy the content of `.env.example` into it (Fill in the values).
+3. Run `pnpm install` to install all the dependencies.
+4. Run `pnpm dev` to start the console.
+5. Open `http://localhost:3001` in your browser.
+
+To test production build
+
+1. Create `.env.test.local` and copy the content of `.env.example` into it (Fill in the values).
+2. Run `pnpm build:test` to create a release build in test mode.
+3. Run `pnpm start` to start the console.
+4. Open `http://localhost:3002` in your browser.
+
+You should set VITE_PARSEABLE_URL if parseable server is running on a different url.
 
 ## Live Demo
 
