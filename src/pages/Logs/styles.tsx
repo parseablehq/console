@@ -157,17 +157,17 @@ export const useLogTableStyles = createStyles((theme) => {
 		},
 
 		paginationRow: {
-			[".mantine-Pagination-control"]: {
+			".mantine-Pagination-control": {
 				'&:hover': {
 
 					color: sColor,
 					
 				},
-				['&:data-active=true']: {
+				'&:data-active=true': {
 					color: pColor
 				}
 			},
-			[".mantine-Pagination-control[data-active=true]"]: {
+			".mantine-Pagination-control[data-active=true]": {
 				background: pColor,
 				'&:hover': {
 					backgroundColor: sColor,
