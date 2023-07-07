@@ -28,10 +28,10 @@ export const useNavbarStyles = createStyles((theme) => {
 		selectStreambtn:{
 			'.mantine-Select-item[data-selected="true"]':{
 				background:pColor,
-				["&:hover"]:{background:sColor,color:white}
+				"&:hover":{background:sColor,color:white}
 			},
 			'.mantine-Select-item':{
-				["&:hover"]:{color:sColor}
+				"&:hover":{color:sColor}
 				
 			}
 
