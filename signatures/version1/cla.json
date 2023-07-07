@@ -7,6 +7,14 @@
       "created_at": "2023-05-26T15:34:15Z",
       "repoId": 523035254,
       "pullRequestNo": 62
+    },
+    {
+      "name": "kartik-gupta-ij",
+      "id": 84975264,
+      "comment_id": 1625309802,
+      "created_at": "2023-07-07T12:02:14Z",
+      "repoId": 523035254,
+      "pullRequestNo": 70
     }
   ]
 }
