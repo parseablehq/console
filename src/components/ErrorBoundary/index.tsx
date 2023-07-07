@@ -15,8 +15,8 @@ type ErrorHandlerFn = (error: Error, info: { componentStack: string }) => void;
 const ErrorBoundary: FC<ErrorBoundaryProps> = ({ children }) => {
 	const errorHandler: ErrorHandlerFn = (error, info) => {
 		// TODO: Send Errors to parseable maybe ?
-		console.log(error);
-		console.log(info);
+		
+		
 	};
 
 	return (
