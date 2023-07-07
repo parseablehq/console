@@ -75,7 +75,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 	  
 
 	return (
-		<MantineNavbar {...props} withBorder={true} zIndex={1}>
+		<MantineNavbar {...props} withBorder zIndex={1}>
 			<MantineNavbar.Section grow className={container}>
 				<NavLink label="Streams" icon={<IconDatabase size="1rem" stroke={1.5} />} component="a" sx={{ paddingLeft: 0 }} />
 				<Select
