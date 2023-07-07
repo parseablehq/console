@@ -43,7 +43,7 @@ const QuerySchemaList: FC = () => {
 
 			{!(logStreamSchemaError) ? (
 				!loading && Boolean(querySchema) ? (
-					Boolean(querySchema.fields.length) ? (
+					(querySchema.fields.length) ? (
 						<Table >
 						  <thead>
 							<tr>
