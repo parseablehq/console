@@ -45,7 +45,7 @@ export const FIXED_DURATIONS = [
 
 export const DEFAULT_FIXED_DURATIONS = FIXED_DURATIONS[0];
 
-export const defaultQueryResult = ``
+export const defaultQueryResult = ""
 
 interface QueryPageContextState {
     result: SubData<string>;
