@@ -143,6 +143,16 @@ export const useLogTableStyles = createStyles((theme) => {
 			display: 'flex',
 			flexDirection: 'column',
 			overflow: 'hidden',
+			// padding: px(spacing.sm),
+		},
+
+		innerContainer: {
+			position: 'relative',
+			flex: 1,
+			maxHeight: `calc(${heights.screen} - ${2*HEADER_HEIGHT}px)`,
+			display: 'flex',
+			flexDirection: 'column',
+			overflow: 'hidden',
 			padding: px(spacing.sm),
 		},
 
@@ -330,7 +340,7 @@ export const useViewLogStyles = createStyles((theme) => {
 });
 
 export const useLogQueryStyles = createStyles((theme) => {
-	const { spacing, shadows, radius, colors, fontSizes } = theme;
+	const { spacing, radius, colors, fontSizes } = theme;
 	const { sizing, widths, fontWeights } = theme.other;
 	const defaultRadius = radius[theme.defaultRadius as string];
 	const pColor = colors.brandPrimary[0];
@@ -339,9 +349,12 @@ export const useLogQueryStyles = createStyles((theme) => {
 		container: {
 			display: 'flex',
 			padding: spacing.xs,
-			boxShadow: shadows.sm,
-			marginBottom: spacing.md,
-			borderRadius: defaultRadius,
+			// boxShadow: shadows.sm,
+			// marginBottom: spacing.md,
+			// borderRadius: defaultRadius,
+			borderBottom: `${sizing.px} ${colors.gray[2]} solid`,
+			justifyContent: 'space-between',
+			alignItems: 'center',
 		},
 
 		labelStyle: {

@@ -49,8 +49,7 @@ const QueryCodeEditor: FC = () => {
       autoClose: false,
       withCloseButton: false,
     });
-    const parsedQuery=query.replace(/(\r\n|\n|\r)/gm, "")
-    console.log(parsedQuery);
+    const parsedQuery=query.replace(/(\r\n|\n|\r)/gm, "");
     getQueryData(subLogQuery.get(), parsedQuery);
 
   }

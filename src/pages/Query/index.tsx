@@ -9,12 +9,13 @@ import { useParams } from "react-router-dom";
 import QuerySchemaList from './QuerySchemaList';
 import { useQueryPageContext, DEFAULT_FIXED_DURATIONS } from './Context';
 import dayjs from 'dayjs';
+import LogQuery from './LogQuery';
 const Logs: FC = () => {
 	useDocumentTitle('Parseable | Query');
 	const { state: { subLogQuery } } = useQueryPageContext();
 	const { streamName } = useParams();
 	const { classes } = useQueryStyles();
-	const { container } = classes;
+	const { container,innerContainer1 } = classes;
 
 	if (subLogQuery.get().streamName !== streamName) {
 		const now = dayjs();
@@ -29,6 +30,8 @@ const Logs: FC = () => {
 
 	return (
 		<Box className={container}>
+			<Box className={innerContainer1}>
+			<LogQuery />
 			<PanelGroup direction="horizontal">
 				<Panel defaultSize={20} >
 					<QuerySchemaList />
@@ -72,7 +75,7 @@ const Logs: FC = () => {
 
 				</Panel>
 			</PanelGroup>
-
+			</Box>
 
 		</Box>
 	);

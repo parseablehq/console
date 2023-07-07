@@ -3,7 +3,7 @@ import { Tbody, Th, Thead } from '@/components/Table';
 import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useQueryLogs } from '@/hooks/useQueryLogs';
 import { Box, Center, Checkbox, Menu, Pagination, ScrollArea, Table, px, ActionIcon, Text } from '@mantine/core';
-import { Fragment, useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import type { FC } from 'react';
 import { LOG_QUERY_LIMITS, useLogsPageContext } from './Context';
 import LogRow from './LogRow';
@@ -107,7 +107,7 @@ const LogTable: FC = () => {
 
 	const { classes } = useLogTableStyles();
 
-	const { container, tableContainer, tableStyle, theadStyle, errorContainer, footerContainer ,paginationRow} = classes;
+	const { container,innerContainer, tableContainer, tableStyle, theadStyle, errorContainer, footerContainer ,paginationRow} = classes;
 
 	return (
 		<Box className={container}>
@@ -115,7 +115,7 @@ const LogTable: FC = () => {
 			{!(logStreamError || logStreamSchemaError || logsError) ? (
 				!loading && !logsLoading && !!logsSchema && !!pageLogData ? (
 					!!logsSchema.fields.length && !!pageLogData.data.length ? (
-						<Fragment>
+						<Box className={innerContainer }>
 							<ScrollArea 
 							className={tableContainer}
 							 type="always">
@@ -148,7 +148,7 @@ const LogTable: FC = () => {
 								)}
 								<LimitControl value={pageLogData.limit} onChange={setPageLimit} />
 							</Box>
-						</Fragment>
+						</Box>
 					) : (
 						<EmptyBox message="No Data Available" />
 					)
