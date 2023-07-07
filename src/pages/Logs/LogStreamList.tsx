@@ -37,7 +37,7 @@ const LogStreamList: FC = () => {
 	}, [error]);
 
 	useEffect(() => {
-		if (streams && !!streams.length) {
+		if (streams && Boolean(streams.length)) {
 			subLogQuery.set((state) => {
 				state.streamName = streams[0].name;
 			});

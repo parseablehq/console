@@ -42,8 +42,8 @@ const QuerySchemaList: FC = () => {
 			<Title order={4}> Schema for {subLogQuery.get().streamName}</Title >
 
 			{!(logStreamSchemaError) ? (
-				!loading && !!querySchema ? (
-					(querySchema.fields.length) ? (
+				!loading && Boolean(querySchema) ? (
+					Boolean(querySchema.fields.length) ? (
 						<Table >
 						  <thead>
 							<tr>

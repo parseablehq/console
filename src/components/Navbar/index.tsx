@@ -28,7 +28,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 			setActiveStream(streamName);
 			setSearchValue(streamName);
 		}
-		else if (streams && !!streams.length) {
+		else if (streams && Boolean(streams.length)) {
 			navigate(`/${streams[0].name}/logs`);
 		}
 	}, [streams]);
@@ -50,7 +50,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 				withCloseButton: false,
 			  })
 			};
-		if(streams && !!streams.length){
+		if(streams && Boolean(streams.length)){
 			notifications.update({
 			  id: 'load-data',
 			  color: 'green',

@@ -111,10 +111,10 @@ const LogTable: FC = () => {
 
 	return (
 		<Box className={container}>
-			{!!pageLogData && <LogQuery />}
+			{Boolean(pageLogData) && <LogQuery />}
 			{!(logStreamError || logStreamSchemaError || logsError) ? (
-				!loading && !logsLoading && !!logsSchema && !!pageLogData ? (
-					!!logsSchema.fields.length && !!pageLogData.data.length ? (
+				!loading && !logsLoading && Boolean(logsSchema) && Boolean(pageLogData) ? (
+					Boolean(logsSchema.fields.length) && Boolean(pageLogData.data.length) ? (
 						<Box className={innerContainer }>
 							<ScrollArea 
 							className={tableContainer}
