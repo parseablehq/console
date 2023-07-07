@@ -44,10 +44,10 @@ const ViewLog: FC = () => {
 	}, [log]);
 
 	return (
-		<Drawer opened={!!log} onClose={onClose} position="right" size="lg" withCloseButton={false} padding={0}>
+		<Drawer opened={Boolean(log)} onClose={onClose} position="right" size="lg" withCloseButton={false} padding={0}>
 			<Header timeStamp={log?.p_timestamp ?? ''} onClose={onClose} />
 
-			{!!log && (
+			{Boolean(log) && (
 				<Box className={container}>
 					<DataChip title="Meta Data" dataList={p_metadata} />
 					<DataChip title="Tags" dataList={p_tags} />
