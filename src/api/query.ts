@@ -17,3 +17,18 @@ export const getQueryLogs = (logsQuery: LogsQuery) => {
 		{},
 	);
 };
+
+export const getQueryResult = (logsQuery: LogsQuery, query = '') => {
+	const { startTime, endTime} = logsQuery;
+
+
+	return Axios().post(
+		LOG_QUERY_URL,
+		{
+			query,
+			startTime,
+			endTime,
+		},
+		{},
+	);
+};

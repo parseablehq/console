@@ -17,7 +17,7 @@ export const useLogStreamListStyles = createStyles((theme) => {
 	const { colors, spacing, radius, primaryColor, fontSizes } = theme;
 	const { widths, heights, fontWeights } = theme.other;
 
-	const pColor = colors[primaryColor][1];
+	const pColor = colors.brandPrimary[0];
 	const containerWidth = widths[64];
 	const defaultRadius = radius[theme.defaultRadius as string];
 
@@ -43,7 +43,6 @@ export const useLogStreamListStyles = createStyles((theme) => {
 			borderRightWidth: widths.px,
 			borderColor: colors.gray[1],
 			borderRightStyle: 'solid',
-			overflowY: 'scroll',
 		},
 
 		streamContainerClose: {
@@ -131,6 +130,8 @@ export const useLogStreamListStyles = createStyles((theme) => {
 export const useLogTableStyles = createStyles((theme) => {
 	const { spacing, other, radius, shadows, colors } = theme;
 	const { heights, widths, fontWeights } = other;
+	const pColor = colors.brandPrimary[0];
+	const sColor = colors.brandSecondary[0];
 
 	const defaultRadius = radius[theme.defaultRadius as string];
 
@@ -142,14 +143,43 @@ export const useLogTableStyles = createStyles((theme) => {
 			display: 'flex',
 			flexDirection: 'column',
 			overflow: 'hidden',
+			// padding: px(spacing.sm),
+		},
+
+		innerContainer: {
+			position: 'relative',
+			flex: 1,
+			maxHeight: `calc(${heights.screen} - ${2*HEADER_HEIGHT}px)`,
+			display: 'flex',
+			flexDirection: 'column',
+			overflow: 'hidden',
 			padding: px(spacing.sm),
+		},
+
+		paginationRow: {
+			[".mantine-Pagination-control"]: {
+				'&:hover': {
+
+					color: sColor,
+					
+				},
+				['&:data-active=true']: {
+					color: pColor
+				}
+			},
+			[".mantine-Pagination-control[data-active=true]"]: {
+				background: pColor,
+				'&:hover': {
+					backgroundColor: sColor,
+					color: colors.white[0],
+				},
+			}
 		},
 
 		tableContainer: {
 			position: 'relative',
 			boxShadow: shadows.sm,
 			borderRadius: defaultRadius,
-			overflow: 'scroll',
 		},
 
 		tableStyle: {
@@ -254,21 +284,28 @@ export const useLogTableStyles = createStyles((theme) => {
 		},
 
 		limitActive: {
-			background: colors.brandSecondary[1],
+			background: pColor,
 			fontWeight: fontWeights.medium,
 			color: colors.white[0],
 
 			'&:hover': {
-				background: colors.brandSecondary[1],
+				background: sColor,
+			},
+		},
+		limitOption: {
+			fontWeight: fontWeights.medium,
+
+			'&:hover': {
+				color: sColor
 			},
 		},
 	};
 });
 
 export const useViewLogStyles = createStyles((theme) => {
-	const { spacing, other, colors, primaryColor, fontSizes } = theme;
+	const { spacing, other, colors, fontSizes } = theme;
 	const { fontWeights } = other;
-	const pColor = colors[primaryColor][1];
+	const pColor = colors.brandPrimary[0];
 
 	return {
 		container: {
@@ -303,17 +340,21 @@ export const useViewLogStyles = createStyles((theme) => {
 });
 
 export const useLogQueryStyles = createStyles((theme) => {
-	const { spacing, shadows, radius, colors, fontSizes } = theme;
+	const { spacing, radius, colors, fontSizes } = theme;
 	const { sizing, widths, fontWeights } = theme.other;
 	const defaultRadius = radius[theme.defaultRadius as string];
-
+	const pColor = colors.brandPrimary[0];
+	const sColor = colors.brandSecondary[0];
 	return {
 		container: {
 			display: 'flex',
 			padding: spacing.xs,
-			boxShadow: shadows.sm,
-			marginBottom: spacing.md,
-			borderRadius: defaultRadius,
+			// boxShadow: shadows.sm,
+			// marginBottom: spacing.md,
+			// borderRadius: defaultRadius,
+			borderBottom: `${sizing.px} ${colors.gray[2]} solid`,
+			justifyContent: 'space-between',
+			alignItems: 'center',
 		},
 
 		labelStyle: {
@@ -333,7 +374,7 @@ export const useLogQueryStyles = createStyles((theme) => {
 			alignItems: 'center',
 			borderTopLeftRadius: 0,
 			borderBottomLeftRadius: 0,
-			background: colors.brandSecondary[1],
+			background: pColor,
 			color: colors.white[0],
 			paddingLeft: spacing.xs,
 			paddingRight: spacing.xs,
@@ -342,7 +383,7 @@ export const useLogQueryStyles = createStyles((theme) => {
 			borderLeft: 'none',
 
 			'&:hover': {
-				background: colors.brandSecondary[2],
+				background: sColor,
 			},
 		},
 
@@ -390,12 +431,12 @@ export const useLogQueryStyles = createStyles((theme) => {
 		},
 
 		fixedRangeBtnSelected: {
-			background: colors.brandSecondary[1],
+			background: pColor,
 			fontWeight: fontWeights.semibold,
 			color: colors.white[0],
 
 			'&:hover': {
-				background: colors.brandSecondary[1],
+				background: sColor,
 			},
 		},
 
@@ -416,10 +457,9 @@ export const useLogQueryStyles = createStyles((theme) => {
 		},
 
 		customTimeRangeApplyBtn: {
-			background: colors.brandSecondary[1],
-
+			background: pColor,
 			'&:hover': {
-				background: colors.brandSecondary[2],
+				background: sColor,
 			},
 		},
 
@@ -431,24 +471,23 @@ export const useLogQueryStyles = createStyles((theme) => {
 			border: `${sizing.px} ${colors.gray[2]} solid`,
 			borderTopRightRadius: 0,
 			borderBottomRightRadius: 0,
-			background: colors.brandSecondary[1],
+			background: pColor,
 			color: colors.white[0],
 			borderRight: 'none',
 			fontWeight: fontWeights.semibold,
 			paddingRight: spacing.sm,
-
 			'&:hover': {
-				background: colors.brandSecondary[2],
+				background: pColor,
 			},
 		},
 
 		searchTypeActive: {
-			background: colors.brandSecondary[1],
+			background: pColor,
 			fontWeight: fontWeights.medium,
 			color: colors.white[0],
 
 			'&:hover': {
-				background: colors.brandSecondary[1],
+				background: sColor,
 			},
 		},
 

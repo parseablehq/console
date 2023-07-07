@@ -1,12 +1,12 @@
 import useMountedState from '@/hooks/useMountedState';
-import { Box, Breadcrumbs, Button, Center, Menu, Text, TextInput, UnstyledButton, px } from '@mantine/core';
+import { Box, Breadcrumbs, Button, Menu, Text,  UnstyledButton, px } from '@mantine/core';
 import { DateTimePicker } from '@mantine/dates';
-import { IconClock, IconRefresh, IconRefreshOff, IconSearch, IconSelector } from '@tabler/icons-react';
+import { IconClock, IconRefresh, IconRefreshOff } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import ms from 'ms';
-import type { ChangeEvent, FC, KeyboardEvent } from 'react';
+import type { FC } from 'react';
 import { Fragment, useEffect, useMemo } from 'react';
-import { FIXED_DURATIONS, REFRESH_INTERVALS, SEARCH_TYPES, SearchTypes, useLogsPageContext } from './Context';
+import { FIXED_DURATIONS, REFRESH_INTERVALS, useQueryPageContext } from './Context';
 import { useLogQueryStyles } from './styles';
 
 const LogQuery: FC = () => {
@@ -14,29 +14,20 @@ const LogQuery: FC = () => {
 	const { container, innerContainer, labelStyle } = classes;
 	const {
 		state: { subLogQuery },
-	} = useLogsPageContext();
+	} = useQueryPageContext();
 
 	return (
 		<Box className={container}>
 			<Box>
-				
+
 				<Box className={innerContainer}>
 					<Breadcrumbs separator=">">
-					{/* Home > Streams > Stream-name > logs */}
-				<Text >Home</Text>
-				<Text >Streams </Text>
-				<Text >{subLogQuery.get().streamName} </Text>
-				<Text >Logs </Text>
-
-
-					
+						{/* Home > Streams > Stream-name > logs */}
+						<Text >Home</Text>
+						<Text >Streams </Text>
+						<Text >{subLogQuery.get().streamName} </Text>
+						<Text >Query </Text>
 					</Breadcrumbs>
-				</Box>
-			</Box>
-			<Box>
-				<Text className={labelStyle}>Search</Text>
-				<Box className={innerContainer}>
-					<Search />
 				</Box>
 			</Box>
 			<Box>
@@ -50,102 +41,13 @@ const LogQuery: FC = () => {
 	);
 };
 
-const Search: FC = () => {
-	const {
-		state: { subLogSearch },
-	} = useLogsPageContext();
 
-	const [searchValue, setSearchValue] = useMountedState(subLogSearch.get().search);
-	const { classes } = useLogQueryStyles();
 
-	const { searchContainer, searchInput } = classes;
-
-	const onSearchValueChange = (event: ChangeEvent<HTMLInputElement>) => {
-		setSearchValue(event.currentTarget.value);
-	};
-
-	const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-		if (event.key === 'Enter') {
-			if (subLogSearch.get().search !== searchValue) {
-				const trimmedValue = event.currentTarget.value.trim();
-				subLogSearch.set((query) => {
-					query.search = trimmedValue;
-				});
-				setSearchValue(trimmedValue);
-			}
-		}
-	};
-
-	return (
-		<Box className={searchContainer}>
-			{/* TODO: Disabled for now, need to find a proper way to handle SQL search */}
-			{/* <SearchTypeSelector /> */}
-			<TextInput
-				className={searchInput}
-				value={searchValue}
-				onKeyDown={handleKeyDown}
-				onChange={onSearchValueChange}
-				placeholder="Search"
-				icon={<IconSearch size={px('1.2rem')} stroke={1.5} />}
-			/>
-		</Box>
-	);
-};
-
-export const SearchTypeSelector: FC = () => {
-	const {
-		state: { subLogSearchType },
-	} = useLogsPageContext();
-	const [selectedSearchType, setSelectedSearchType] = useMountedState(subLogSearchType.get());
-
-	useEffect(() => {
-		const listener = subLogSearchType.subscribe((state) => {
-			setSelectedSearchType(state);
-		});
-
-		return () => listener();
-	}, []);
-
-	const onSelect = (sType: SearchTypes) => {
-		subLogSearchType.set(sType);
-	};
-
-	const { classes, cx } = useLogQueryStyles();
-
-	const { searchTypeBtn, searchTypeActive } = classes;
-
-	return (
-		<Menu withArrow withinPortal shadow="md">
-			<Center>
-				<Menu.Target>
-					<Button className={searchTypeBtn}>
-						<Text mr="xs">{selectedSearchType}</Text>
-						<IconSelector size={px('1.2rem')} stroke={1.5} />
-					</Button>
-				</Menu.Target>
-			</Center>
-			<Menu.Dropdown>
-				{SEARCH_TYPES.map((sType) => {
-					return (
-						<Menu.Item
-							className={cx([], {
-								[searchTypeActive]: selectedSearchType === sType,
-							})}
-							key={sType}
-							onClick={() => onSelect(sType)}>
-							<Text>{sType}</Text>
-						</Menu.Item>
-					);
-				})}
-			</Menu.Dropdown>
-		</Menu>
-	);
-};
 
 const RefreshInterval: FC = () => {
 	const {
 		state: { subRefreshInterval },
-	} = useLogsPageContext();
+	} = useQueryPageContext();
 
 	const [selectedInterval, setSelectedInterval] = useMountedState<number | null>(subRefreshInterval.get());
 
@@ -199,7 +101,7 @@ type FixedDurations = (typeof FIXED_DURATIONS)[number];
 const TimeRange: FC = () => {
 	const {
 		state: { subLogQuery, subLogSelectedTimeRange },
-	} = useLogsPageContext();
+	} = useQueryPageContext();
 
 	const [selectedRange, setSelectedRange] = useMountedState<string>(subLogSelectedTimeRange.get());
 
@@ -267,7 +169,7 @@ const TimeRange: FC = () => {
 const CustomTimeRange: FC = () => {
 	const {
 		state: { subLogQuery, subLogSelectedTimeRange },
-	} = useLogsPageContext();
+	} = useQueryPageContext();
 
 	const [selectedRange, setSelectedRange] = useMountedState({
 		startTime: subLogQuery.get().startTime,
