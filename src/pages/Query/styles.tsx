@@ -158,12 +158,6 @@ export const useLogQueryStyles = createStyles((theme) => {
 			alignItems: 'center',
 			
 		},
-
-		labelStyle: {
-			fontSize: fontSizes.xs,
-			fontWeight: fontWeights.semibold,
-		},
-
 		innerContainer: {
 			display: 'flex',
 			paddingTop: spacing.xxs,
