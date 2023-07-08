@@ -45,10 +45,6 @@ export const useQueryStyles = createStyles((theme) => {
 			paddingTop: spacing.xxs,
 			marginRight: spacing.md,
 		},
-		labelStyle: {
-			fontSize: fontSizes.xs,
-			fontWeight: fontWeights.semibold,
-		},
 		intervalBtn: {
 			display: 'flex',
 			justifyContent: 'center',
