@@ -126,13 +126,12 @@ export const theme: MantineThemeOverride = {
 							whiteSpace: 'nowrap',
 						},
 
-						'& tr th span': {
+						'& tr th .label': {
 							display: 'inline-block',
 							fontSize: fontSizes.sm,
 							fontWeight: fontWeights.semibold,
 							padding: spacing.sm,
 							textAlign: 'left',
-							width: '100%',
 						},
 
 						'& tr th:first-of-type': {
@@ -193,7 +192,6 @@ export const theme: MantineThemeOverride = {
 								background: colors.brandSecondary[0],
 							},
 						},
-
 					},
 				};
 			},

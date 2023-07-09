@@ -79,6 +79,7 @@ const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 	});
 	const subLogSearch = useSubscribeState<LogsSearch>({
 		search: '',
+		filters: {},
 	});
 	const subLogSelectedTimeRange = useSubscribeState<string>(DEFAULT_FIXED_DURATIONS.name);
 	const subLogSearchType = useSubscribeState<SearchTypes>(SEARCH_TYPES[0]);

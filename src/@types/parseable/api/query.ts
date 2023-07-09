@@ -6,6 +6,7 @@ export type LogsQuery = {
 
 export type LogsSearch = {
 	search: string;
+	filters: Record<string, string[]>;
 };
 
 export type LogsData = {

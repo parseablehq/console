@@ -149,7 +149,7 @@ export const useLogTableStyles = createStyles((theme) => {
 		innerContainer: {
 			position: 'relative',
 			flex: 1,
-			maxHeight: `calc(${heights.screen} - ${2*HEADER_HEIGHT}px)`,
+			maxHeight: `calc(${heights.screen} - ${2 * HEADER_HEIGHT}px)`,
 			display: 'flex',
 			flexDirection: 'column',
 			overflow: 'hidden',
@@ -157,23 +157,21 @@ export const useLogTableStyles = createStyles((theme) => {
 		},
 
 		paginationRow: {
-			".mantine-Pagination-control": {
+			'.mantine-Pagination-control': {
 				'&:hover': {
-
 					color: sColor,
-					
 				},
 				'&:data-active=true': {
-					color: pColor
-				}
+					color: pColor,
+				},
 			},
-			".mantine-Pagination-control[data-active=true]": {
+			'.mantine-Pagination-control[data-active=true]': {
 				background: pColor,
 				'&:hover': {
 					backgroundColor: sColor,
 					color: colors.white[0],
 				},
-			}
+			},
 		},
 
 		tableContainer: {
@@ -296,7 +294,7 @@ export const useLogTableStyles = createStyles((theme) => {
 			fontWeight: fontWeights.medium,
 
 			'&:hover': {
-				color: sColor
+				color: sColor,
 			},
 		},
 	};
@@ -498,6 +496,66 @@ export const useLogQueryStyles = createStyles((theme) => {
 			'& input': {
 				background: colors.gray[0],
 				border: `${sizing.px} ${colors.gray[2]} solid`,
+			},
+		},
+	};
+});
+
+export const useTableColumnStyle = createStyles((theme) => {
+	const { spacing, colors, fontSizes, other, primaryColor } = theme;
+	const { fontWeights, widths } = other;
+
+	const pColor = colors[primaryColor];
+
+	return {
+		labelBtn: {
+			width: widths.full,
+			display: 'flex',
+			alignItems: 'center',
+			paddingLeft: spacing.xs,
+			paddingRight: spacing.xs,
+
+			'&:hover': {
+				background: colors.gray[1],
+			},
+		},
+
+		labelIcon: {
+			marginRight: 'auto',
+		},
+
+		labelIconActive: {
+			color: pColor[0],
+		},
+
+		searchInputStyle: {
+			marginBottom: spacing.xs,
+		},
+
+		checkBoxStyle: {
+			height: 35,
+			paddingTop: spacing.xs,
+			paddingBottom: spacing.xxs,
+			fontWeight: fontWeights.medium,
+			overflow: 'hidden',
+			whiteSpace: 'nowrap',
+
+			'& .mantine-Checkbox-label': {
+				fontSize: fontSizes.sm,
+			},
+
+			'&:hover': {
+				background: colors.gray[1],
+			},
+		},
+
+		applyBtn: {
+			marginTop: spacing.xs,
+			width: widths.full,
+			background: pColor[0],
+
+			'&:hover': {
+				background: pColor[1],
 			},
 		},
 	};
