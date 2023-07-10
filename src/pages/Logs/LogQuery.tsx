@@ -11,7 +11,7 @@ import { useLogQueryStyles } from './styles';
 
 const LogQuery: FC = () => {
 	const { classes } = useLogQueryStyles();
-	const { container, innerContainer, labelStyle } = classes;
+	const { container, innerContainer } = classes;
 	const {
 		state: { subLogQuery },
 	} = useLogsPageContext();
@@ -34,13 +34,11 @@ const LogQuery: FC = () => {
 				</Box>
 			</Box>
 			<Box>
-				<Text className={labelStyle}>Search</Text>
 				<Box className={innerContainer}>
 					<Search />
 				</Box>
 			</Box>
 			<Box>
-				<Text className={labelStyle}>Time Range</Text>
 				<Box className={innerContainer}>
 					<TimeRange />
 					<RefreshInterval />
