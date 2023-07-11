@@ -36,6 +36,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 	const handleChange = (value: string) => {
 		setActiveStream(value);
 		setSearchValue(value);
+		navigate(`/${value}/logs`);
 	};
 
 	useEffect(() => {
