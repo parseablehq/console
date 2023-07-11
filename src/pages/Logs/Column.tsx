@@ -62,7 +62,7 @@ const Column: FC<Column> = (props) => {
 		applyFilter(columnName, selectedFilters);
 	};
 
-	const filterActive = useMemo(() => !!appliedFilter(columnName)?.length, [selectedFilters]);
+	const filterActive = useMemo(() => Boolean(appliedFilter(columnName)?.length), [selectedFilters]);
 	const canApply = useMemo(() => !compare(selectedFilters, appliedFilter(columnName)), [selectedFilters]);
 
 	const { classes, cx } = useTableColumnStyle();
