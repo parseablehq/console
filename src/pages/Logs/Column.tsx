@@ -94,24 +94,20 @@ const Column: FC<Column> = (props) => {
 						/>
 						{isPending ? (
 							<Loading visible position="relative" variant="oval" my="xl" />
-						) : (
+						) : columnValues?.length ? (
 							<Fragment>
-								{columnValues?.length ? (
-									<Fragment>
-										<CheckboxVirtualList
-											columnName={columnName}
-											list={columnValues}
-											selectedFilters={selectedFilters}
-											setFilters={setFilters}
-										/>
-										<Button className={applyBtn} onClick={onApply} disabled={!canApply}>
-											Apply
-										</Button>
-									</Fragment>
-								) : (
-									<EmptyBox mb="lg" />
-								)}
+								<CheckboxVirtualList
+									columnName={columnName}
+									list={columnValues}
+									selectedFilters={selectedFilters}
+									setFilters={setFilters}
+								/>
+								<Button className={applyBtn} onClick={onApply} disabled={!canApply}>
+									Apply
+								</Button>
 							</Fragment>
+						) : (
+							<EmptyBox mb="lg" />
 						)}
 					</Box>
 				</Popover.Dropdown>
