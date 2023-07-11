@@ -117,7 +117,7 @@ const LogTable: FC = () => {
 				return (
 					<Column
 						key={field.name}
-						label={field.name}
+						columnName={field.name}
 						appliedFilter={appliedFilter}
 						applyFilter={applyFilter}
 						getColumnFilters={getColumnFilters}

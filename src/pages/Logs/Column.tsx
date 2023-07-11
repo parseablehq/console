@@ -13,20 +13,20 @@ import { parseLogData } from '@/utils';
 import { useDisclosure } from '@mantine/hooks';
 
 type Column = {
-	label: string;
+	columnName: string;
 	getColumnFilters: (columnName: string) => Log[number][] | null;
 	appliedFilter: (columnName: string) => string[];
 	applyFilter: (columnName: string, value: string[]) => void;
 };
 
 const Column: FC<Column> = (props) => {
-	const { label, getColumnFilters, appliedFilter, applyFilter } = props;
+	const { columnName, getColumnFilters, appliedFilter, applyFilter } = props;
 
 	// columnValues ref will always have the unfiltered data.
 	const _columnValuesRef = useRef<Log[number][] | null>(null);
 
 	const [columnValues, setColumnValues] = useMountedState<Log[number][] | null>(null);
-	const [selectedFilters, setSelectedFilters] = useMountedState<string[]>(appliedFilter(label));
+	const [selectedFilters, setSelectedFilters] = useMountedState<string[]>(appliedFilter(columnName));
 	const [isPending, startTransition] = useTransition();
 
 	const onSearch = (e: ChangeEvent<HTMLInputElement>) => {
@@ -37,7 +37,7 @@ const Column: FC<Column> = (props) => {
 
 			if (values && search) {
 				return values.filter((x) => {
-					return parseLogData(x)?.toString().includes(search);
+					return parseLogData(x, columnName)?.toString().includes(search);
 				});
 			}
 
@@ -51,7 +51,7 @@ const Column: FC<Column> = (props) => {
 
 	const onOpen = useCallback(() => {
 		if (!_columnValuesRef.current) {
-			_columnValuesRef.current = getColumnFilters(label);
+			_columnValuesRef.current = getColumnFilters(columnName);
 			startTransition(() => {
 				setColumnValues(_columnValuesRef.current);
 			});
@@ -59,11 +59,11 @@ const Column: FC<Column> = (props) => {
 	}, []);
 
 	const onApply = () => {
-		applyFilter(label, selectedFilters);
+		applyFilter(columnName, selectedFilters);
 	};
 
-	const filterActive = useMemo(() => !!appliedFilter(label)?.length, [selectedFilters]);
-	const canApply = useMemo(() => !compare(selectedFilters, appliedFilter(label)), [selectedFilters]);
+	const filterActive = useMemo(() => !!appliedFilter(columnName)?.length, [selectedFilters]);
+	const canApply = useMemo(() => !compare(selectedFilters, appliedFilter(columnName)), [selectedFilters]);
 
 	const { classes, cx } = useTableColumnStyle();
 	const { labelBtn, applyBtn, labelIcon, labelIconActive, searchInputStyle } = classes;
@@ -73,7 +73,7 @@ const Column: FC<Column> = (props) => {
 			<Popover position="bottom" withArrow withinPortal shadow="md" zIndex={1} onOpen={onOpen}>
 				<Popover.Target>
 					<UnstyledButton className={labelBtn}>
-						<span className="label">{label}</span>
+						<span className="label">{columnName}</span>
 						<IconFilter
 							stroke={filterActive ? 3 : 1.8}
 							size={px('1rem')}
@@ -99,6 +99,7 @@ const Column: FC<Column> = (props) => {
 								{columnValues?.length ? (
 									<Fragment>
 										<CheckboxVirtualList
+											columnName={columnName}
 											list={columnValues}
 											selectedFilters={selectedFilters}
 											setFilters={setFilters}
@@ -120,13 +121,14 @@ const Column: FC<Column> = (props) => {
 };
 
 type CheckboxVirtualListProps = {
+	columnName: string;
 	list: Log[number][];
 	selectedFilters: string[];
 	setFilters: (value: string[]) => void;
 };
 
 const CheckboxVirtualList: FC<CheckboxVirtualListProps> = (props) => {
-	const { list, selectedFilters, setFilters } = props;
+	const { list, selectedFilters, setFilters, columnName } = props;
 
 	return (
 		<Checkbox.Group value={selectedFilters} onChange={setFilters}>
@@ -134,7 +136,7 @@ const CheckboxVirtualList: FC<CheckboxVirtualListProps> = (props) => {
 				{({ index }) => {
 					const label = list[index]?.toString() || '';
 
-					return <CheckboxRow key={index} value={label} label={label} />;
+					return <CheckboxRow key={index} value={label} label={label} columnName={columnName} />;
 				}}
 			</List>
 		</Checkbox.Group>
@@ -144,10 +146,11 @@ const CheckboxVirtualList: FC<CheckboxVirtualListProps> = (props) => {
 type CheckboxRowProps = {
 	label: string;
 	value: string;
+	columnName: string;
 };
 
 const CheckboxRow: FC<CheckboxRowProps> = (props) => {
-	const { value, label } = props;
+	const { value, label, columnName } = props;
 	const [opened, { open, close }] = useDisclosure(false);
 	const { classes } = useTableColumnStyle();
 	const { checkBoxStyle } = classes;
@@ -161,7 +164,7 @@ const CheckboxRow: FC<CheckboxRowProps> = (props) => {
 				maxWidth: 250,
 			}}>
 			<div onMouseOver={open} onMouseOut={close}>
-				<Checkbox value={value} label={parseLogData(label)} className={checkBoxStyle} />
+				<Checkbox value={value} label={parseLogData(label, columnName)} className={checkBoxStyle} />
 			</div>
 		</Tooltip>
 	);
