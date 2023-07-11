@@ -40,7 +40,7 @@ export const useQueryLogs = () => {
 
 				if (searchText) {
 					for (const key in log) {
-						const logValue = parseLogData(log[key]);
+						const logValue = parseLogData(log[key], key);
 						if (logValue?.toString().toLowerCase().includes(searchText)) {
 							temp.push(log);
 							continue mainLoop;

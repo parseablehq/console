@@ -42,7 +42,9 @@ const LogRow: FC<LogRowProps> = (props) => {
 						{logsSchema.map((logSchema, logSchemaIndex) => {
 							if (!isColumnActive(logSchema.name) || skipFields.includes(logSchema.name)) return null;
 
-							return <td key={`${logSchema.name}-${logSchemaIndex}`}>{parseLogData(log[logSchema.name])}</td>;
+							return (
+								<td key={`${logSchema.name}-${logSchemaIndex}`}>{parseLogData(log[logSchema.name], logSchema.name)}</td>
+							);
 						})}
 						<TdArrow />
 					</tr>

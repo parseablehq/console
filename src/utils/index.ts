@@ -16,8 +16,10 @@ export const scrollTo = (opts?: ScrollToOptions) => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const parseLogData = (value?: any) => {
-	if (typeof value === 'string' && dayjs(value).isValid()) {
+export const parseLogData = (value?: any, columnName?: string) => {
+	const dateColumnNames = ['date', 'datetime', 'time', 'timestamp', 'p_timestamp'];
+
+	if (columnName && dateColumnNames.includes(columnName) && dayjs(value).isValid()) {
 		return dayjs(value).utc(true).format('DD/MM/YYYY HH:mm:ss');
 	}
 
