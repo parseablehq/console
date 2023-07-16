@@ -1,35 +1,32 @@
 import useMountedState from '@/hooks/useMountedState';
-import { Box, Breadcrumbs, Button, Center, Menu, Text, TextInput, UnstyledButton, px } from '@mantine/core';
+import { Box, Breadcrumbs, Button, Menu, Text, TextInput, UnstyledButton, px } from '@mantine/core';
 import { DateTimePicker } from '@mantine/dates';
-import { IconClock, IconRefresh, IconRefreshOff, IconSearch, IconSelector } from '@tabler/icons-react';
+import { IconClock, IconRefresh, IconRefreshOff, IconSearch } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import ms from 'ms';
 import type { ChangeEvent, FC, KeyboardEvent } from 'react';
 import { Fragment, useEffect, useMemo } from 'react';
-import { FIXED_DURATIONS, REFRESH_INTERVALS, SEARCH_TYPES, SearchTypes, useLogsPageContext } from './Context';
+import { FIXED_DURATIONS, REFRESH_INTERVALS, useHeaderContext } from '@/layouts/MainLayout/Context';
 import { useLogQueryStyles } from './styles';
 
-const LogQuery: FC = () => {
+const SubHeader: FC = () => {
 	const { classes } = useLogQueryStyles();
-	const { container, innerContainer } = classes;
+	const { container, innerContainer, homeIcon, activeBtn } = classes;
 	const {
 		state: { subLogQuery },
-	} = useLogsPageContext();
+	} = useHeaderContext();
 
 	return (
 		<Box className={container}>
 			<Box>
-				
 				<Box className={innerContainer}>
 					<Breadcrumbs separator=">">
-					{/* Home > Streams > Stream-name > logs */}
-				<Text >Home</Text>
-				<Text >Streams </Text>
-				<Text >{subLogQuery.get().streamName} </Text>
-				<Text >Logs </Text>
-
-
-					
+						<svg className={ homeIcon} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+							<path d="M9.99998 19V14H14V19C14 19.55 14.45 20 15 20H18C18.55 20 19 19.55 19 19V12H20.7C21.16 12 21.38 11.43 21.03 11.13L12.67 3.6C12.29 3.26 11.71 3.26 11.33 3.6L2.96998 11.13C2.62998 11.43 2.83998 12 3.29998 12H4.99998V19C4.99998 19.55 5.44998 20 5.99998 20H8.99998C9.54998 20 9.99998 19.55 9.99998 19Z" fill="#211F1F" />
+						</svg>
+						<Text >Streams </Text>
+						<Text >{subLogQuery.get().streamName}</Text>
+						<Text className={activeBtn}>Logs </Text>
 					</Breadcrumbs>
 				</Box>
 			</Box>
@@ -51,11 +48,19 @@ const LogQuery: FC = () => {
 const Search: FC = () => {
 	const {
 		state: { subLogSearch },
-	} = useLogsPageContext();
+	} = useHeaderContext();
 
-	const [searchValue, setSearchValue] = useMountedState(subLogSearch.get().search);
+	const [searchValue, setSearchValue] = useMountedState("");
 	const { classes } = useLogQueryStyles();
 
+	useEffect(() => {
+		const listener = subLogSearch.subscribe((interval) => {
+			setSearchValue(interval.search);
+		});
+		return () => {
+			listener();
+		};
+	}, []);
 	const { searchContainer, searchInput } = classes;
 
 	const onSearchValueChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -90,60 +95,10 @@ const Search: FC = () => {
 	);
 };
 
-export const SearchTypeSelector: FC = () => {
-	const {
-		state: { subLogSearchType },
-	} = useLogsPageContext();
-	const [selectedSearchType, setSelectedSearchType] = useMountedState(subLogSearchType.get());
-
-	useEffect(() => {
-		const listener = subLogSearchType.subscribe((state) => {
-			setSelectedSearchType(state);
-		});
-
-		return () => listener();
-	}, []);
-
-	const onSelect = (sType: SearchTypes) => {
-		subLogSearchType.set(sType);
-	};
-
-	const { classes, cx } = useLogQueryStyles();
-
-	const { searchTypeBtn, searchTypeActive } = classes;
-
-	return (
-		<Menu withArrow withinPortal shadow="md">
-			<Center>
-				<Menu.Target>
-					<Button className={searchTypeBtn}>
-						<Text mr="xs">{selectedSearchType}</Text>
-						<IconSelector size={px('1.2rem')} stroke={1.5} />
-					</Button>
-				</Menu.Target>
-			</Center>
-			<Menu.Dropdown>
-				{SEARCH_TYPES.map((sType) => {
-					return (
-						<Menu.Item
-							className={cx([], {
-								[searchTypeActive]: selectedSearchType === sType,
-							})}
-							key={sType}
-							onClick={() => onSelect(sType)}>
-							<Text>{sType}</Text>
-						</Menu.Item>
-					);
-				})}
-			</Menu.Dropdown>
-		</Menu>
-	);
-};
-
 const RefreshInterval: FC = () => {
 	const {
 		state: { subRefreshInterval },
-	} = useLogsPageContext();
+	} = useHeaderContext();
 
 	const [selectedInterval, setSelectedInterval] = useMountedState<number | null>(subRefreshInterval.get());
 
@@ -197,7 +152,7 @@ type FixedDurations = (typeof FIXED_DURATIONS)[number];
 const TimeRange: FC = () => {
 	const {
 		state: { subLogQuery, subLogSelectedTimeRange },
-	} = useLogsPageContext();
+	} = useHeaderContext();
 
 	const [selectedRange, setSelectedRange] = useMountedState<string>(subLogSelectedTimeRange.get());
 
@@ -265,7 +220,7 @@ const TimeRange: FC = () => {
 const CustomTimeRange: FC = () => {
 	const {
 		state: { subLogQuery, subLogSelectedTimeRange },
-	} = useLogsPageContext();
+	} = useHeaderContext();
 
 	const [selectedRange, setSelectedRange] = useMountedState({
 		startTime: subLogQuery.get().startTime,
@@ -344,4 +299,4 @@ const CustomTimeRange: FC = () => {
 	);
 };
 
-export default LogQuery;
+export default SubHeader;

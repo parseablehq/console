@@ -15,12 +15,13 @@ const globalStyles = (): CSSObject => {
 export const theme: MantineThemeOverride = {
 	globalStyles,
 	fontFamily:
-		'Inter var,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji',
+		'Inter ,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji',
 	colors: {
 		black: ['#000000'],
 		white: ['#FFFFFF'],
 		brandPrimary: ['#545BEB', '#1F288E', '#1A237E', '#10143E'],
 		brandSecondary: ['#FC466B', '#F29C38', '#C27D2D'],
+		gray: ['#F1F1F1', '#E0E0E0', '#D4D4D4', '#828282', '#4F4F4F', '#777777' , '#211F1F'],
 		error: ['#8F0F27'],
 		dimmed: ['#868e96'],
 	},

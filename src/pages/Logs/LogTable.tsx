@@ -14,16 +14,20 @@ import { IconDotsVertical, IconSelector } from '@tabler/icons-react';
 import { Field } from '@/@types/parseable/dataType';
 import EmptyBox from '@/components/Empty';
 import { RetryBtn } from '@/components/Button/Retry';
-import LogQuery from './LogQuery';
 import Column from './Column';
 import FilterPills from './FilterPills';
+import { useHeaderContext } from '@/layouts/MainLayout/Context';
 
 const skipFields = ['p_metadata', 'p_tags'];
 
 const LogTable: FC = () => {
 	const {
-		state: { subLogStreamError, subLogQuery, subLogSearch },
+		state: { subLogStreamError },
 	} = useLogsPageContext();
+	const {
+		state: { subLogSearch ,subLogQuery },
+	}= useHeaderContext();
+
 
 	const [logStreamError, setLogStreamError] = useMountedState<string | null>(null);
 	const [columnToggles, setColumnToggles] = useMountedState<Map<string, boolean>>(new Map());
@@ -110,6 +114,19 @@ const LogTable: FC = () => {
 		};
 	}, [logsSchema]);
 
+	useEffect(() => {
+		const query = subLogQuery.get();
+
+		if (query.streamName) {
+			if (logsSchema) {
+				resetStreamData();
+				resetLogsData
+			}
+			getDataSchema(query.streamName);
+			getQueryData(query);
+			setColumnToggles(new Map());
+		}
+	}, [subLogQuery]);
 	const renderTh = useMemo(() => {
 		if (logsSchema) {
 			return logsSchema.fields.map((field) => {
@@ -144,41 +161,40 @@ const LogTable: FC = () => {
 
 	return (
 		<Box className={container}>
-			{Boolean(pageLogData) && <LogQuery />}
 			<FilterPills />
 			{!(logStreamError || logStreamSchemaError || logsError) ? (
 				!loading && !logsLoading && Boolean(logsSchema) && Boolean(pageLogData) ? (
-					Boolean(logsSchema.fields.length) && Boolean(pageLogData.data.length) ? (
+					Boolean(logsSchema?.fields.length) && Boolean(pageLogData?.data.length) ? (
 						<Box className={innerContainer}>
 							<ScrollArea className={tableContainer} type="always">
 								<Table className={tableStyle}>
 									<Thead className={theadStyle}>
 										{renderTh}
 										<ThColumnMenu
-											logSchemaFields={logsSchema.fields}
+											logSchemaFields={logsSchema?.fields || []}
 											columnToggles={columnToggles}
 											toggleColumn={toggleColumn}
 											isColumnActive={isColumnActive}
 										/>
 									</Thead>
 									<Tbody>
-										<LogRow logData={pageLogData.data} logsSchema={logsSchema.fields} isColumnActive={isColumnActive} />
+										<LogRow logData={pageLogData?.data || []} logsSchema={logsSchema?.fields || []} isColumnActive={isColumnActive} />
 									</Tbody>
 								</Table>
 							</ScrollArea>
 							<Box className={footerContainer}>
-								{pageLogData.totalPages > 1 && (
+								{(pageLogData?.totalPages || 0) > 1 && (
 									<Pagination
 										withEdges
-										total={pageLogData.totalPages}
-										value={pageLogData.page}
+										total={pageLogData?.totalPages || 0}
+										value={pageLogData?.page || 0}
 										onChange={(page) => {
-											goToPage(page, pageLogData.limit);
+											goToPage(page, pageLogData?.limit || 0);
 										}}
 										className={paginationRow}
 									/>
 								)}
-								<LimitControl value={pageLogData.limit} onChange={setPageLimit} />
+								<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
 							</Box>
 						</Box>
 					) : (

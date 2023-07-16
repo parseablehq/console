@@ -1,7 +1,7 @@
 import { ActionIcon, Badge, Group, rem } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import { useEffect, type FC, Fragment, useMemo } from 'react';
-import { useLogsPageContext } from './Context';
+import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import useMountedState from '@/hooks/useMountedState';
 
 type RemoveButton = {
@@ -20,7 +20,7 @@ const RemoveButton: FC<RemoveButton> = (props) => {
 const FilterPills: FC = () => {
 	const {
 		state: { subLogSearch },
-	} = useLogsPageContext();
+	} = useHeaderContext();
 	const [search, setSearch] = useMountedState(subLogSearch.get());
 
 	useEffect(() => {
