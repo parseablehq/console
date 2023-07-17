@@ -1,13 +1,12 @@
-import { HEADER_HEIGHT ,NAVBAR_WIDTH} from '@/constants/theme';
+import { HEADER_HEIGHT, NAVBAR_WIDTH } from '@/constants/theme';
 
 import { createStyles } from '@mantine/core';
 
 export const useQueryStyles = createStyles((theme) => {
-	const { colors ,spacing,fontSizes,radius } = theme;
-	const { heights,widths,fontWeights ,sizing} = theme.other;
+	const { colors, spacing } = theme;
+	const { heights, widths, } = theme.other;
 	const sColor = colors.brandSecondary[0];
-	const pColor =colors.brandPrimary[0];
-	const defaultRadius = radius[theme.defaultRadius as string];
+	const pColor = colors.brandPrimary[0];
 
 	return {
 		container: {
@@ -16,7 +15,7 @@ export const useQueryStyles = createStyles((theme) => {
 			display: 'flex',
 			position: 'relative',
 		},
-		innerContainer1:{
+		innerContainer1: {
 			position: 'relative',
 			flex: 1,
 			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT}px)`,
@@ -26,15 +25,15 @@ export const useQueryStyles = createStyles((theme) => {
 			// padding: px(spacing.sm),
 		},
 		runQueryBtn: {
-			background: pColor, 
-			color: "white", 
-			height: "40px", 
+			background: pColor,
+			color: "white",
+			height: "40px",
 			marginRight: "5px",
 			'&:hover': {
 				background: sColor,
 			},
 		},
-		actionBtn:{
+		actionBtn: {
 			'&:hover': {
 				color: sColor,
 			},
@@ -45,256 +44,72 @@ export const useQueryStyles = createStyles((theme) => {
 			paddingTop: spacing.xxs,
 			marginRight: spacing.md,
 		},
-		intervalBtn: {
-			display: 'flex',
-			justifyContent: 'center',
-			alignItems: 'center',
-			borderTopLeftRadius: 0,
-			borderBottomLeftRadius: 0,
-			background: pColor,
-			color: colors.white[0],
-			paddingLeft: spacing.xs,
-			paddingRight: spacing.xs,
-			minWidth: widths[20],
-			border: `${sizing.px} ${colors.gray[2]} solid`,
-			borderLeft: 'none',
+	};
+});
 
+export const useQueryCodeEditorStyles = createStyles((theme) => {
+	const { colors, spacing, fontFamily, fontSizes } = theme;
+	const { fontWeights } = theme.other;
+	const sColor = colors.brandSecondary[0];
+	const pColor = colors.brandPrimary[0];
+
+	return {
+		container: {
+			display: "flex",
+			borderBottom: `solid 1px ${colors.gray[2]}`,
+			alignItems: "center",
+			height: "55px",
+			padding: `${spacing.xs} ${spacing.md}` ,
+		},
+		runQueryBtn: {
+			color: pColor,
+			border: "none",
+			height: "40px",
+			marginLeft: "auto",
 			'&:hover': {
-				background: sColor,
+				color: sColor,
 			},
 		},
-		timeRangeBTn: {
-			borderTopRightRadius: 0,
-			borderBottomRightRadius: 0,
-			color: colors.black[0],
-			border: `${sizing.px} ${colors.gray[2]} solid`,
-			minWidth: widths[20],
-			background: colors.gray[0],
-			fontWeight: fontWeights.medium,
-			fontSize: fontSizes.xs,
+		textContext: {
+			marginRight: spacing.md,
+			fontSize: fontSizes.md,
+			fontFamily: fontFamily,
+			fontWeight: fontWeights.bold,
+		}
 
-			'&:hover': {
-				background: colors.gray[1],
-			},
-		},
-		timeRangeContainer: {
-			display: 'flex',
-		},
-		fixedRangeContainer: {
-			display: 'flex',
-			flexDirection: 'column',
-			background: colors.gray[0],
-		},
-		
-		fixedRangeBtn: {
-			color: colors.black,
-			padding: spacing.sm,
-			fontSize: fontSizes.sm,
-
-			'&:hover': {
-				background: colors.gray[1],
-			},
-
-			'&:first-of-type': {
-				borderTopLeftRadius: defaultRadius,
-			},
-
-			'&:last-of-type': {
-				borderBottomLeftRadius: defaultRadius,
-			},
-		},
-
-		fixedRangeBtnSelected: {
-			background: pColor,
-			fontWeight: fontWeights.semibold,
-			color: colors.white[0],
-
-			'&:hover': {
-				background: sColor,
-			},
-		},
-
-		customRangeContainer: {
-			padding: `${spacing.xs} ${spacing.lg}`,
-			minWidth: widths[80],
-			flex: 1,
-			display: 'flex',
-			flexDirection: 'column',
-			justifyContent: 'stretch',
-		},
-
-		customTimeRangeFooter: {
-			display: 'flex',
-			marginTop: 'auto',
-			justifyContent: 'end',
-			alignItems: 'center',
-		},
-
-		customTimeRangeApplyBtn: {
-			background: pColor,
-			'&:hover': {
-				background: sColor,
-			},
-		},
 	};
 });
 
 
-export const useLogQueryStyles = createStyles((theme) => {
-	const { spacing, radius, colors, fontSizes } = theme;
-	const { sizing, widths, fontWeights } = theme.other;
-	const defaultRadius = radius[theme.defaultRadius as string];
-	const pColor = colors.brandPrimary[0];
+export const useQueryResultEditorStyles = createStyles((theme) => {
+	const { colors, spacing ,fontFamily,fontSizes} = theme;
+	const { fontWeights } = theme.other;
 	const sColor = colors.brandSecondary[0];
+
+
 	return {
 		container: {
-			display: 'flex',
-			padding: spacing.xs,
-			// boxShadow: shadows.sm,
-			// marginBottom: spacing.md,
-			// borderRadius: defaultRadius,
-			borderBottom: `${sizing.px} ${colors.gray[2]} solid`,
-			justifyContent: 'space-between',
-			alignItems: 'center',
-			
+			display: "flex",
+			alignItems: "center",
+			borderBottom: `solid 1px ${colors.gray[2]}`,
+			height: "55px",
+		padding: `${spacing.xs} ${spacing.md}` ,
 		},
-		innerContainer: {
-			display: 'flex',
-			paddingTop: spacing.xxs,
+		actionBtn: {
+	
+			'&:hover': {
+				color: sColor,
+			},
+			height: "34px",
+			marginInlineEnd: spacing.xs,
+			color: colors.gray[5],
+			borderColor:colors.gray[5]
+		},
+		textContext: {
 			marginRight: spacing.md,
-		},
-
-		intervalBtn: {
-			display: 'flex',
-			justifyContent: 'center',
-			alignItems: 'center',
-			borderTopLeftRadius: 0,
-			borderBottomLeftRadius: 0,
-			background: pColor,
-			color: colors.white[0],
-			paddingLeft: spacing.xs,
-			paddingRight: spacing.xs,
-			minWidth: widths[20],
-			border: `${sizing.px} ${colors.gray[2]} solid`,
-			borderLeft: 'none',
-
-			'&:hover': {
-				background: sColor,
-			},
-		},
-
-		timeRangeBTn: {
-			borderTopRightRadius: 0,
-			borderBottomRightRadius: 0,
-			color: colors.black[0],
-			border: `${sizing.px} ${colors.gray[2]} solid`,
-			minWidth: widths[20],
-			background: colors.gray[0],
-			fontWeight: fontWeights.medium,
-			fontSize: fontSizes.xs,
-
-			'&:hover': {
-				background: colors.gray[1],
-			},
-		},
-
-		timeRangeContainer: {
-			display: 'flex',
-		},
-
-		fixedRangeContainer: {
-			display: 'flex',
-			flexDirection: 'column',
-			background: colors.gray[0],
-		},
-
-		fixedRangeBtn: {
-			color: colors.black,
-			padding: spacing.sm,
-			fontSize: fontSizes.sm,
-
-			'&:hover': {
-				background: colors.gray[1],
-			},
-
-			'&:first-of-type': {
-				borderTopLeftRadius: defaultRadius,
-			},
-
-			'&:last-of-type': {
-				borderBottomLeftRadius: defaultRadius,
-			},
-		},
-
-		fixedRangeBtnSelected: {
-			background: pColor,
-			fontWeight: fontWeights.semibold,
-			color: colors.white[0],
-
-			'&:hover': {
-				background: sColor,
-			},
-		},
-
-		customRangeContainer: {
-			padding: `${spacing.xs} ${spacing.lg}`,
-			minWidth: widths[80],
-			flex: 1,
-			display: 'flex',
-			flexDirection: 'column',
-			justifyContent: 'stretch',
-		},
-
-		customTimeRangeFooter: {
-			display: 'flex',
-			marginTop: 'auto',
-			justifyContent: 'end',
-			alignItems: 'center',
-		},
-
-		customTimeRangeApplyBtn: {
-			background: pColor,
-			'&:hover': {
-				background: sColor,
-			},
-		},
-
-		searchContainer: {
-			display: 'flex',
-		},
-
-		searchTypeBtn: {
-			border: `${sizing.px} ${colors.gray[2]} solid`,
-			borderTopRightRadius: 0,
-			borderBottomRightRadius: 0,
-			background: pColor,
-			color: colors.white[0],
-			borderRight: 'none',
-			fontWeight: fontWeights.semibold,
-			paddingRight: spacing.sm,
-			'&:hover': {
-				background: pColor,
-			},
-		},
-
-		searchTypeActive: {
-			background: pColor,
-			fontWeight: fontWeights.medium,
-			color: colors.white[0],
-
-			'&:hover': {
-				background: sColor,
-			},
-		},
-
-		searchInput: {
-			width: '100%',
-			flex: 1,
-
-			'& input': {
-				background: colors.gray[0],
-				border: `${sizing.px} ${colors.gray[2]} solid`,
-			},
-		},
+			fontSize: fontSizes.md,
+			fontFamily: fontFamily,
+			fontWeight: fontWeights.bold,
+		}
 	};
 });

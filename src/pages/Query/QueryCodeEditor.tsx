@@ -1,20 +1,23 @@
 import React ,{ FC, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useQueryPageContext } from './Context';
-import { Box, Button } from '@mantine/core';
+import { useHeaderContext } from '@/layouts/MainLayout/Context';
+import { Box, Button ,Text } from '@mantine/core';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import { ErrorMarker, errChecker } from "./ErrorMarker";
 import { notifications } from '@mantine/notifications';
-import { IconCheck, IconFileAlert  } from '@tabler/icons-react';
-import { useQueryStyles } from './styles';
+import { IconPlayerPlayFilled, IconCheck, IconFileAlert  } from '@tabler/icons-react';
+import { useQueryCodeEditorStyles } from './styles';
+
 
 const QueryCodeEditor: FC = () => {
-  const { state: {result, subLogQuery } } = useQueryPageContext();
+  const { state: {subLogQuery } } = useHeaderContext();
+  const { state: {result } } = useQueryPageContext();
+
   const { data: queryResult, getQueryData , error,resetData } = useQueryResult();
   const editorRef = React.useRef<any>();
   const monacoRef = React.useRef<any>();
-	const { classes } = useQueryStyles();
-	const { runQueryBtn } = classes;
+
   const [query, setQuery] = React.useState<string>(`SELECT * FROM ${subLogQuery.get().streamName} LIMIT 100`);
 
   const handleEditorChange = (code: any) => {
@@ -81,10 +84,20 @@ const QueryCodeEditor: FC = () => {
 
   }, [queryResult , error]);
 
+  const { classes } = useQueryCodeEditorStyles();
+	const { container,runQueryBtn,textContext } = classes;
+
   return (
-    <Box style={{ height: "100%", textAlign: "right" }} >
+    <Box style={{ height: "100%" }} >
+      <Box className={container} >
+        <Text className={textContext}>Query</Text>
+        
+        <Button  variant='default' className={runQueryBtn} onClick={runQuery}><IconPlayerPlayFilled/></Button>
+        
+      </Box>
+      <Box sx={{marginTop:"5px", height:"calc(100% - 60px)"}}>
       <Editor
-        height={"calc(100% - 40px)"}
+        height={"100%"}
         defaultLanguage="sql"
         value={query}
         onChange={handleEditorChange}
@@ -100,7 +113,7 @@ const QueryCodeEditor: FC = () => {
           glyphMargin: true,
         }}
       />
-        <Button variant='default' className={runQueryBtn} onClick={runQuery}>Run Query</Button>
+      </Box>
       </Box>
   );
 };

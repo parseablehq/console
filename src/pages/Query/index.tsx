@@ -5,53 +5,20 @@ import { useQueryStyles } from './styles';
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import QueryCodeEditor from './QueryCodeEditor';
 import QueryResultEditor from './QueryResultEditor';
-import { useParams } from "react-router-dom";
-import QuerySchemaList from './QuerySchemaList';
-import { useQueryPageContext, DEFAULT_FIXED_DURATIONS } from './Context';
-import dayjs from 'dayjs';
-import LogQuery from './LogQuery';
+// import QuerySchemaList from './QuerySchemaList';
+
 const Logs: FC = () => {
 	useDocumentTitle('Parseable | Query');
-	const { state: { subLogQuery } } = useQueryPageContext();
-	const { streamName } = useParams();
+
 	const { classes } = useQueryStyles();
 	const { container,innerContainer1 } = classes;
 
-	if (subLogQuery.get().streamName !== streamName) {
-		const now = dayjs();
-
-		subLogQuery.set((state) => {
-			state.streamName = streamName || '';
-			state.startTime = now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate();
-			state.endTime = now.toDate();
-		});
-
-	}
 
 	return (
 		<Box className={container}>
 			<Box className={innerContainer1}>
-			<LogQuery />
-			<PanelGroup direction="horizontal">
-				<Panel defaultSize={20} >
-					<QuerySchemaList />
-				</Panel>
-				<PanelResizeHandle style={{
-					width: "10px",
-					background: "#CCCCCC",
-				}}>
-					<Box sx={{
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "center",
-						height: "100%",
-					}}>
-						&#8942;
-					</Box>
-				</PanelResizeHandle>
-				<Panel >
 					<PanelGroup direction="vertical">
-						<Panel defaultSize={20}>
+						<Panel defaultSize={30}>
 							<QueryCodeEditor />
 						</Panel>
 						<PanelResizeHandle style={{
@@ -68,13 +35,11 @@ const Logs: FC = () => {
 								&#8230;
 							</Box>
 						</PanelResizeHandle>
-						<Panel defaultSize={80}>
+						<Panel defaultSize={70}>
 							<QueryResultEditor />
 						</Panel>
 					</PanelGroup>
 
-				</Panel>
-			</PanelGroup>
 			</Box>
 
 		</Box>
