@@ -70,7 +70,6 @@ const Navbar: FC<NavbarProps> = (props) => {
 		if (streamName) {
 			setActiveStream(streamName);
 			setSearchValue(streamName);
-			if (streamName !== subLogQuery.get().streamName) {
 				const now = dayjs();
 				subLogQuery.set((state) => {
 					state.streamName = streamName || '';
@@ -78,7 +77,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 					state.endTime = now.toDate();
 				});
 				subLogSelectedTimeRange.set(DEFAULT_FIXED_DURATIONS.name);
-			}
+				subRefreshInterval.set(null);
 		}
 		else if (streams && Boolean(streams.length)) {
 			navigate(`/${streams[0].name}/logs`);

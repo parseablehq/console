@@ -8,17 +8,18 @@ import { ErrorMarker, errChecker } from "./ErrorMarker";
 import { notifications } from '@mantine/notifications';
 import { IconPlayerPlayFilled, IconCheck, IconFileAlert  } from '@tabler/icons-react';
 import { useQueryCodeEditorStyles } from './styles';
+import useMountedState from '@/hooks/useMountedState';
 
 
 const QueryCodeEditor: FC = () => {
-  const { state: {subLogQuery } } = useHeaderContext();
+  const { state: {subLogQuery ,subRefreshInterval } } = useHeaderContext();
   const { state: {result } } = useQueryPageContext();
 
   const { data: queryResult, getQueryData , error,resetData } = useQueryResult();
   const editorRef = React.useRef<any>();
   const monacoRef = React.useRef<any>();
 
-  const [query, setQuery] = React.useState<string>(`SELECT * FROM ${subLogQuery.get().streamName} LIMIT 100`);
+  const [query, setQuery] = useMountedState<string>(`SELECT * FROM ${subLogQuery.get().streamName} LIMIT 100`);
 
   const handleEditorChange = (code: any) => {
     setQuery(code);
@@ -37,6 +38,16 @@ const QueryCodeEditor: FC = () => {
     }
   } , [subLogQuery.get().streamName]);
 
+  // useEffect(() => {
+  //   if (subRefreshInterval.get()) {
+  //     const interval = setInterval(() => {
+  //       runQuery();
+  //     }, subRefreshInterval.get() as number);
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [subRefreshInterval.get(),query,subLogQuery.get().streamName]);
+
+
   function handleEditorDidMount(editor:any, monaco:any) {
     editorRef.current = editor;
     monacoRef.current = monaco;
@@ -54,7 +65,6 @@ const QueryCodeEditor: FC = () => {
     });
     const parsedQuery=query.replace(/(\r\n|\n|\r)/gm, "");
     getQueryData(subLogQuery.get(), parsedQuery);
-
   }
   useEffect(() => {
     if(error){
@@ -79,6 +89,7 @@ const QueryCodeEditor: FC = () => {
         icon: <IconCheck size="1rem" />,
         autoClose: 1000,
       });
+      console.log(queryResult);
       return;
     }
 
