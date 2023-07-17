@@ -15,12 +15,13 @@ const globalStyles = (): CSSObject => {
 export const theme: MantineThemeOverride = {
 	globalStyles,
 	fontFamily:
-		'Inter var,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji',
+		'Inter ,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji',
 	colors: {
 		black: ['#000000'],
 		white: ['#FFFFFF'],
 		brandPrimary: ['#545BEB', '#1F288E', '#1A237E', '#10143E'],
 		brandSecondary: ['#FC466B', '#F29C38', '#C27D2D'],
+		gray: ['#F1F1F1', '#E0E0E0', '#D4D4D4', '#828282', '#4F4F4F', '#777777' , '#211F1F'],
 		error: ['#8F0F27'],
 		dimmed: ['#868e96'],
 	},
@@ -106,43 +107,34 @@ export const theme: MantineThemeOverride = {
 			}),
 		},
 		Table: {
-			styles: ({ spacing, radius, defaultRadius: _defaultRadius, colors, fontSizes, other: { fontWeights } }) => {
-				const defaultRadius = radius[_defaultRadius as string];
+			styles: ({ defaultRadius: _defaultRadius, colors, fontSizes, other: { fontWeights } }) => {
 
 				return {
 					root: {
-						borderRadius: defaultRadius,
 						background: colors.white,
 						borderCollapse: 'separate',
 						borderSpacing: 0,
-						padding: `${spacing.md} ${spacing.sm}`,
-						height: 20,
-
+						padding:0,
+						height: 20,	
 						'& tr th': {
-							background: colors.gray[2],
-							borderBottom: 'none !important',
-							padding: '0 !important',
+							background: theme.colors?.white,
+							border:"none !important",
 							overflow: 'hidden',
 							whiteSpace: 'nowrap',
+							textAlign: 'left',
+							padding: 0,
+						
 						},
 
 						'& tr th .label': {
-							display: 'inline-block',
-							fontSize: fontSizes.sm,
+							display: 'flex',
+							alignItems: 'center',
+							fontSize: fontSizes.md,
 							fontWeight: fontWeights.semibold,
-							padding: spacing.sm,
+							height: '100%',
 							textAlign: 'left',
 						},
 
-						'& tr th:first-of-type': {
-							borderTopLeftRadius: defaultRadius,
-							borderBottomLeftRadius: defaultRadius,
-						},
-
-						'& tr th:last-of-type': {
-							borderTopRightRadius: defaultRadius,
-							borderBottomRightRadius: defaultRadius,
-						},
 					},
 				};
 			},

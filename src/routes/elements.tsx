@@ -4,6 +4,8 @@ import type { FC } from 'react';
 import { lazy } from 'react';
 import SuspensePage from './SuspensePage';
 import QueryPageProvider from '@/pages/Query/Context';
+import MainLayoutPageProvider from '@/layouts/MainLayout/Context';
+import MainLayout from '@/layouts/MainLayout';
 
 export const HomeElement: FC = () => <Home />;
 
@@ -40,3 +42,14 @@ export const QueryElement: FC = () => {
 		</SuspensePage>
 	);
 };
+
+
+
+export const MainLayoutElement: FC = () => {
+	return (
+
+			<MainLayoutPageProvider >
+				<MainLayout />
+			</MainLayoutPageProvider>
+	);
+}
