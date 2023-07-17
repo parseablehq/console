@@ -142,10 +142,10 @@ const Navbar: FC<NavbarProps> = (props) => {
 
 
 	return (
-		<MantineNavbar {...props} withBorder zIndex={1} hiddenBreakpoint="xl" hidden={isSubNavbarOpen}>
+		<MantineNavbar {...props} withBorder zIndex={1} hiddenBreakpoint={window.outerWidth+20} hidden={isSubNavbarOpen}>
 			<MantineNavbar.Section grow className={container}>
 				<NavLink label="Streams" icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-					<path d="M19 5C19 7.21 14.97 9 10 9C5.03 9 1 7.21 1 5M19 5C19 2.79 14.97 1 10 1C5.03 1 1 2.79 1 5M19 5V10M1 5V10M19 10C19 12.21 14.97 14 10 14C5.03 14 1 12.21 1 10M19 10V15C19 17.21 14.97 19 10 19C5.03 19 1 17.21 1 15V10" stroke="#211F1F" stroke-linecap="round" stroke-linejoin="round" />
+					<path d="M19 5C19 7.21 14.97 9 10 9C5.03 9 1 7.21 1 5M19 5C19 2.79 14.97 1 10 1C5.03 1 1 2.79 1 5M19 5V10M1 5V10M19 10C19 12.21 14.97 14 10 14C5.03 14 1 12.21 1 10M19 10V15C19 17.21 14.97 19 10 19C5.03 19 1 17.21 1 15V10" stroke="#211F1F" strokeLinecap="round" strokeLinejoin='round'/>
 				</svg>
 				} className={streamsBtn}   />
 				<Select
