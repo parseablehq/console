@@ -6,7 +6,7 @@ import docImage from '@/assets/images/doc.webp';
 import githubLogo from '@/assets/images/github-logo.webp';
 import slackLogo from '@/assets/images/slack-logo.webp';
 import { useNavbarStyles } from './styles';
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import { notifications } from '@mantine/notifications';
 import { useNavigate } from 'react-router-dom';
@@ -43,6 +43,8 @@ const Navbar: FC<NavbarProps> = (props) => {
 	} = useHeaderContext();
 	const [isSubNavbarOpen, setIsSubNavbarOpen] = useMountedState(false);
 	const [opened, { close, open }] = useDisclosure();
+	let location = useLocation()
+
 	useEffect(() => {
 		const listener = subNavbarTogle.subscribe(setIsSubNavbarOpen);
 		return () => {
@@ -81,7 +83,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 		else if (streams && Boolean(streams.length)) {
 			navigate(`/${streams[0].name}/logs`);
 		}
-	}, [streams]);
+	}, [streams ,location]);
 
 	const handleChange = (value: string) => {
 		setActiveStream(value);

@@ -49,7 +49,6 @@ export const useNavbarStyles = createStyles((theme) => {
 				border: `${sizing.px} ${colors.gray[2]} solid`,
 				borderRadius: defaultRadius,
 				padding: 24,
-				width: "230px",
 			},
 			'.mantine-Select-item[data-selected="true"]': {
 				background: pColor,

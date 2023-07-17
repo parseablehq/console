@@ -74,7 +74,7 @@ export const useLogTableStyles = createStyles((theme) => {
 		theadStyle: {
 			position: 'sticky',
 			zIndex: 1,
-			padding: 0,
+			top: 0,
 			'& th:last-of-type': {
 				position: 'sticky',
 				boxShadow: shadows.sm,
