@@ -1,7 +1,10 @@
 import type { NavbarProps as MantineNavbarProps } from '@mantine/core';
-import { Navbar as MantineNavbar, NavLink, Select } from '@mantine/core';
-import { IconNews, IconCodeCircle2, IconCheck, IconFileAlert, IconReload, IconHelpCircle, IconLogout, IconUser } from '@tabler/icons-react';
+import { Navbar as MantineNavbar, NavLink, Select ,Anchor,Card, Box, Modal ,Text ,Image} from '@mantine/core';
+import { IconNews, IconCodeCircle2, IconCheck,  IconFileAlert, IconReload, IconHelpCircle, IconLogout, IconUser } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
+import docImage from '@/assets/images/doc.webp';
+import githubLogo from '@/assets/images/github-logo.webp';
+import slackLogo from '@/assets/images/slack-logo.webp';
 import { useNavbarStyles } from './styles';
 import { useParams } from "react-router-dom";
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
@@ -10,6 +13,9 @@ import { useNavigate } from 'react-router-dom';
 import { DEFAULT_FIXED_DURATIONS, useHeaderContext } from '@/layouts/MainLayout/Context';
 import useMountedState from '@/hooks/useMountedState';
 import dayjs from 'dayjs';
+import { useDisclosure, useLocalStorage } from '@mantine/hooks';
+import { LOGIN_ROUTE } from '@/constants/routes';
+
 
 const links = [
 	{ icon: IconNews, label: 'Logs', pathname: "/logs" },
@@ -19,17 +25,24 @@ const links = [
 type NavbarProps = Omit<MantineNavbarProps, 'children'>;
 
 const Navbar: FC<NavbarProps> = (props) => {
+	const [username] = useLocalStorage({ key: 'username', getInitialValueInEffect: false });
 	const navigate = useNavigate();
 	const { data: streams, loading, error, getData } = useGetLogStreamList();
 	const [activeStream, setActiveStream] = useState("");
 	const [searchValue, setSearchValue] = useState("");
 	const { classes } = useNavbarStyles();
-	const { container, linkBtnActive, linkBtn, selectStreambtn ,streamsBtn ,lowerContainer} = classes;
+	const { container, linkBtnActive, linkBtn,
+		 selectStreambtn ,streamsBtn ,lowerContainer ,
+		  actionBtn, helpTitle, helpDescription ,userBtn} = classes;
 	const { streamName } = useParams();
+	const nav = useNavigate();
+	const [, , removeCredentials] = useLocalStorage({ key: 'credentials' });
+	const [, , removeUsername] = useLocalStorage({ key: 'username' });
 	const {
 		state: { subNavbarTogle },
 	} = useHeaderContext();
 	const [isSubNavbarOpen, setIsSubNavbarOpen] = useMountedState(false);
+	const [opened, { close, open }] = useDisclosure();
 	useEffect(() => {
 		const listener = subNavbarTogle.subscribe(setIsSubNavbarOpen);
 		return () => {
@@ -37,6 +50,17 @@ const Navbar: FC<NavbarProps> = (props) => {
 		};
 	}, []);
 
+
+	const onSignOut = () => {
+		removeCredentials();
+		removeUsername();
+		nav(
+			{
+				pathname: LOGIN_ROUTE,
+			},
+			{ replace: true },
+		);
+	};
 
 	const { state: { subLogQuery, subLogSelectedTimeRange, subLogSearch, subRefreshInterval } } = useHeaderContext();
 
@@ -152,11 +176,67 @@ const Navbar: FC<NavbarProps> = (props) => {
 				{error && <NavLink label="Retry" icon={<IconReload size="1rem" stroke={1.5} />} component="button" onClick={getData} sx={{ paddingLeft: 0 }} />}
 			</MantineNavbar.Section>
 			<MantineNavbar.Section className={lowerContainer}>
-				<NavLink label="Help" icon={<IconHelpCircle size="1rem" stroke={1.5} />} component="a"  />
-				<NavLink label="admin" icon={<IconUser size="1rem" stroke={1.5} />} component="a"  />
-				<NavLink label="Log out" icon={<IconLogout size="1rem" stroke={1.5} />} component="a"  />
+				<NavLink label={username} icon={<IconUser size="1.5rem" stroke={1.5} />}  className={userBtn} component="a"  />
+				<NavLink label="Help" icon={<IconHelpCircle size="1.5rem" stroke={1.5} />} className={actionBtn} component="a" onClick={open} />
+				<NavLink label="Log out" icon={<IconLogout size="1.5rem" stroke={1.5} />} className={actionBtn} component="a" onClick={onSignOut} />
 			</MantineNavbar.Section>
+			<Modal withinPortal opened={opened} onClose={close} withCloseButton={false} size="sm" centered>
+				<Text className={helpTitle}>Need any help?</Text>
+				<Text className={helpDescription}>Here you can find useful resources and information.</Text>
+				<Box>
+					{helpResources.map((data) => (
+						<HelpCard key={data.title} data={data} />
+					))}
+				</Box>
+			</Modal>
 		</MantineNavbar>
+	);
+};
+
+
+const helpResources = [
+	{
+		image: slackLogo,
+		title: 'Slack',
+		description: 'Connect with us',
+		href: 'https://launchpass.com/parseable',
+	},
+	{
+		image: githubLogo,
+		title: 'GitHub',
+		description: 'Find resources',
+		href: 'https://github.com/parseablehq/parseable',
+	},
+	{
+		image: docImage,
+		title: 'Documentation',
+		description: 'Learn more',
+		href: 'https://www.parseable.io/docs/introduction',
+	},
+];
+
+type HelpCardProps = {
+	data: (typeof helpResources)[number];
+};
+
+
+
+const HelpCard: FC<HelpCardProps> = (props) => {
+	const { data } = props;
+
+	const { classes } = useNavbarStyles();
+	const { helpCard, helpCardTitle, helpCardDescription } = classes;
+
+	return (
+		<Anchor underline={false} href={data.href} target="_blank">
+			<Card className={helpCard}>
+				<Box>
+					<Text className={helpCardTitle}>{data.title}</Text>
+					<Text className={helpCardDescription}>{data.description}</Text>
+				</Box>
+				<Image maw={45} src={data.image} alt={data.title} />
+			</Card>
+		</Anchor>
 	);
 };
 

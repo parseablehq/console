@@ -1,7 +1,8 @@
 import { createStyles } from '@mantine/core';
+import { heights, widths } from '../Mantine/sizing';
 
 export const useNavbarStyles = createStyles((theme) => {
-	const { colors, radius, fontSizes, } = theme;
+	const { colors, radius, fontSizes, shadows ,spacing} = theme;
 	const { fontWeights, sizing } = theme.other;
 	const white = colors.white[0];
 	const sColor = colors.brandSecondary[0];
@@ -62,6 +63,88 @@ export const useNavbarStyles = createStyles((theme) => {
 		}
 		,lowerContainer: {
 			marginBottom:"84px"
+		},
+		actionBtn: {
+			paddingLeft:"24px", 
+			height:"56px",
+			color: theme.colors.gray[6],
+			'&:hover *': {
+				color: sColor,
+			}
+		},
+
+		userBtn: {		
+			paddingLeft:"24px", 
+			height:"56px",
+			color: theme.colors.gray[6],
+			background: theme.colors.gray[0],	
+		},
+
+		helpTitle: {
+			fontSize: fontSizes.md,
+			textAlign: 'center',
+			color: white,
+			fontWeight: fontWeights.bold,
+		},
+
+		helpDescription: {
+			fontSize: fontSizes.sm,
+			textAlign: 'center',
+			color: colors.dimmed[0],
+			marginTop: spacing.xs,
+
+			'&::after': {
+				content: '""',
+				borderRadius: defaultRadius,
+				display: 'block',
+				backgroundColor: sColor,
+				width: widths[14],
+				height: heights['0.5'],
+				marginTop: theme.spacing.sm,
+				marginLeft: 'auto',
+				marginRight: 'auto',
+			},
+		},
+
+		helpCard: {
+			display: 'flex',
+			alignItems: 'center',
+			justifyContent: 'space-between',
+			boxShadow: shadows.sm,
+			marginTop: spacing.sm,
+			transition: 'transform .2s ease-in-out',
+
+			'&:hover': {
+				transform: 'scale(1.05)',
+			},
+		},
+
+		helpCardTitle: {
+			fontWeight: fontWeights.semibold,
+
+			'&::after': {
+				content: '""',
+				display: 'block',
+				backgroundColor: white,
+				width: widths[14],
+				height: heights['0.5'],
+				marginTop: spacing.xs,
+				marginBottom: spacing.xs,
+			},
+		},
+
+		helpCardDescription: {
+			color: colors.dimmed[0],
+			fontSize: fontSizes.sm,
+		},
+
+		userContainer: {
+			display: 'flex',
+			alignItems: 'center',
+			justifyContent: 'center',
+		},
+		userText: {
+			fontSize: fontSizes.sm,
 		},
 	};
 });
