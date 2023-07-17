@@ -50,7 +50,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 		return () => {
 			listener();
 		};
-	}, []);
+	}, [subNavbarTogle.get()]);
 
 
 	const onSignOut = () => {
