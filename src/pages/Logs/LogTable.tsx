@@ -183,6 +183,7 @@ const LogTable: FC = () => {
 								</Table>
 							</ScrollArea>
 							<Box className={footerContainer}>
+							<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
 								{(pageLogData?.totalPages || 0) > 1 && (
 									<Pagination
 										withEdges
@@ -194,7 +195,7 @@ const LogTable: FC = () => {
 										className={paginationRow}
 									/>
 								)}
-								<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
+								
 							</Box>
 						</Box>
 					) : (

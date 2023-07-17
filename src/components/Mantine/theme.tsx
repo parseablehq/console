@@ -107,43 +107,34 @@ export const theme: MantineThemeOverride = {
 			}),
 		},
 		Table: {
-			styles: ({ spacing, radius, defaultRadius: _defaultRadius, colors, fontSizes, other: { fontWeights } }) => {
-				const defaultRadius = radius[_defaultRadius as string];
+			styles: ({ defaultRadius: _defaultRadius, colors, fontSizes, other: { fontWeights } }) => {
 
 				return {
 					root: {
-						borderRadius: defaultRadius,
 						background: colors.white,
 						borderCollapse: 'separate',
 						borderSpacing: 0,
-						padding: `${spacing.md} ${spacing.sm}`,
-						height: 20,
-
+						padding:0,
+						height: 20,	
 						'& tr th': {
-							background: colors.gray[2],
-							borderBottom: 'none !important',
-							padding: '0 !important',
+							background: theme.colors?.white,
+							border:"none !important",
 							overflow: 'hidden',
 							whiteSpace: 'nowrap',
+							textAlign: 'left',
+							padding: 0,
+						
 						},
 
 						'& tr th .label': {
-							display: 'inline-block',
-							fontSize: fontSizes.sm,
+							display: 'flex',
+							alignItems: 'center',
+							fontSize: fontSizes.md,
 							fontWeight: fontWeights.semibold,
-							padding: spacing.sm,
+							height: '100%',
 							textAlign: 'left',
 						},
 
-						'& tr th:first-of-type': {
-							borderTopLeftRadius: defaultRadius,
-							borderBottomLeftRadius: defaultRadius,
-						},
-
-						'& tr th:last-of-type': {
-							borderTopRightRadius: defaultRadius,
-							borderBottomRightRadius: defaultRadius,
-						},
 					},
 				};
 			},
