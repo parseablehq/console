@@ -1,13 +1,13 @@
 import { FC, useEffect } from 'react';
 import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
-import { useQueryPageContext } from './Context';
+import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Table, Box, Title } from '@mantine/core';
 
 
 
 const QuerySchemaList: FC = () => {
 	const { data: querySchema, getDataSchema, resetData, loading, error: logStreamSchemaError } = useGetLogStreamSchema();
-	const { state: { subLogQuery } } = useQueryPageContext();
+	const { state: { subLogQuery } } = useHeaderContext();
 
 	useEffect(() => {
 		if (subLogQuery.get().streamName) {
@@ -43,7 +43,7 @@ const QuerySchemaList: FC = () => {
 
 			{!(logStreamSchemaError) ? (
 				!loading && Boolean(querySchema) ? (
-					(querySchema.fields.length) ? (
+					(querySchema?.fields.length) ? (
 						<Table >
 						  <thead>
 							<tr>

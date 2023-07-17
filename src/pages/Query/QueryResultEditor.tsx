@@ -2,10 +2,10 @@ import React, { FC, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useQueryPageContext } from './Context';
 import useMountedState from '@/hooks/useMountedState';
-import { Box, Button ,px} from '@mantine/core';
+import { Box, Button, Text, px } from '@mantine/core';
 import { IconCopy, IconSearch, IconCheck } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
-import { useQueryStyles } from './styles';
+import { useQueryResultEditorStyles } from './styles';
 
 
 const QueryResultEditor: FC = () => {
@@ -13,8 +13,7 @@ const QueryResultEditor: FC = () => {
     const [resultValue, setResultValue] = useMountedState<string>(result.get());
     const editorRef = React.useRef<any>();
     const monacoRef = React.useRef<any>();
-    const { classes } = useQueryStyles();
-	const { actionBtn } = classes;
+
 
     useEffect(() => {
         const resultValueListener = result.subscribe(setResultValue);
@@ -56,14 +55,21 @@ const QueryResultEditor: FC = () => {
             autoClose: 1000,
         })
     }
-
+    const { classes } = useQueryResultEditorStyles();
+    const { actionBtn, container, textContext } = classes;
     return (
 
-        <Box style={{ height: "100%", textAlign: "right" }} >
-            <Button variant='default' leftIcon={<IconCopy size={px('1.2rem')} stroke={1.5} />} className={actionBtn} onClick={runCopy} >Copy</Button>
-            <Button variant='default' leftIcon={<IconSearch size={px('1.2rem')} stroke={1.5} />} onClick={runFind}  className={actionBtn} >Find</Button>
-            <Editor
-                height={"calc(100% - 25px)"}
+        <Box  style={{ height: "100%" }}>
+            <Box className={container}>
+                <Text className={textContext}>Result</Text>
+                <Box style={{ height: "100%", width:"100%", textAlign: "right" }} >
+                <Button variant='default' leftIcon={<IconCopy size={px('1.2rem')} stroke={1.5} />} className={actionBtn} onClick={runCopy} >Copy</Button>
+                <Button variant='default' leftIcon={<IconSearch size={px('1.2rem')} stroke={1.5} />} onClick={runFind} className={actionBtn} >Find</Button>
+                </Box>
+            </Box>
+      <Box sx={{marginTop:"5px", height:"calc(100% - 60px)"}}>
+      <Editor
+                height={"100%"}
                 defaultLanguage="json"
                 value={formatJSON(resultValue)}
                 onMount={handleEditorDidMount}
@@ -79,6 +85,7 @@ const QueryResultEditor: FC = () => {
                     wordBasedSuggestions: true,
                 }}
             />
+            </Box>
         </Box>
     );
 };
