@@ -48,7 +48,6 @@ export const useNavbarStyles = createStyles((theme) => {
 			'& input': {
 				border: `${sizing.px} ${colors.gray[2]} solid`,
 				borderRadius: defaultRadius,
-				padding: 24,
 			},
 			'.mantine-Select-item[data-selected="true"]': {
 				background: pColor,
@@ -61,7 +60,7 @@ export const useNavbarStyles = createStyles((theme) => {
 
 		}
 		,lowerContainer: {
-			marginBottom:"84px"
+			marginBottom:"50px"
 		},
 		actionBtn: {
 			paddingLeft:"24px", 
@@ -76,7 +75,6 @@ export const useNavbarStyles = createStyles((theme) => {
 			paddingLeft:"24px", 
 			height:"56px",
 			color: theme.colors.gray[6],
-			background: theme.colors.gray[0],	
 		},
 
 		helpTitle: {
