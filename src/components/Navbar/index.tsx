@@ -80,8 +80,8 @@ const Navbar: FC<NavbarProps> = (props) => {
 				});
 				subLogSelectedTimeRange.set(DEFAULT_FIXED_DURATIONS.name);
 				subLogSearch.set((state) => {
-					state.search = '',
-						state.filters = {}
+					state.search = '';
+					state.filters = {};
 				});
 				subRefreshInterval.set(null);
 				setCurrentPage(location.pathname);
