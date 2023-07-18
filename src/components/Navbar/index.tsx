@@ -31,6 +31,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 	const [activeStream, setActiveStream] = useState("");
 	const [searchValue, setSearchValue] = useState("");
 	const { classes } = useNavbarStyles();
+	const [currentPage, setCurrentPage] = useState("/logs");
 	const { container, linkBtnActive, linkBtn,
 		selectStreambtn, streamsBtn, lowerContainer,
 		actionBtn, helpTitle, helpDescription, userBtn } = classes;
@@ -70,14 +71,21 @@ const Navbar: FC<NavbarProps> = (props) => {
 		if (streamName) {
 			setActiveStream(streamName);
 			setSearchValue(streamName);
-			const now = dayjs();
-			subLogQuery.set((state) => {
-				state.streamName = streamName || '';
-				state.startTime = now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate();
-				state.endTime = now.toDate();
-			});
-			subLogSelectedTimeRange.set(DEFAULT_FIXED_DURATIONS.name);
-			subRefreshInterval.set(null);
+			if (currentPage !== location.pathname) {
+				const now = dayjs();
+				subLogQuery.set((state) => {
+					state.streamName = streamName || '';
+					state.startTime = now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate();
+					state.endTime = now.toDate();
+				});
+				subLogSelectedTimeRange.set(DEFAULT_FIXED_DURATIONS.name);
+				subLogSearch.set((state) => {
+					state.search = '',
+						state.filters = {}
+				});
+				subRefreshInterval.set(null);
+				setCurrentPage(location.pathname);
+			}
 		}
 		else if (streams && Boolean(streams.length)) {
 			navigate(`/${streams[0].name}/logs`);
@@ -88,20 +96,6 @@ const Navbar: FC<NavbarProps> = (props) => {
 		setActiveStream(value);
 		setSearchValue(value);
 		navigate(`/${value}/logs`);
-		if (value !== subLogQuery.get().streamName) {
-			const now = dayjs();
-			subLogQuery.set((state) => {
-				state.streamName = value || '';
-				state.startTime = now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate();
-				state.endTime = now.toDate();
-			});
-			subLogSelectedTimeRange.set(DEFAULT_FIXED_DURATIONS.name);
-			subLogSearch.set((state) => {
-				state.search = '',
-					state.filters = {}
-			});
-			subRefreshInterval.set(null);
-		}
 	};
 
 	useEffect(() => {
@@ -167,7 +161,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 							label={link.label}
 							icon={<link.icon size="1rem" stroke={1.5} />}
 							sx={{ paddingLeft: 53 }}
-							onClick={() => navigate(`/${activeStream}${link.pathname}`)}
+							onClick={() => { navigate(`/${activeStream}${link.pathname}`);  }}
 							key={link.label}
 							className={link.pathname ? window.location.pathname.includes(link.pathname) ? linkBtnActive : linkBtn : linkBtn}
 						/>
