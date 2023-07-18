@@ -1,6 +1,6 @@
 import type { NavbarProps as MantineNavbarProps } from '@mantine/core';
-import { Navbar as MantineNavbar, NavLink, Select ,Anchor,Card, Box, Modal ,Text ,Image} from '@mantine/core';
-import { IconNews, IconCodeCircle2, IconCheck,  IconFileAlert, IconReload, IconHelpCircle, IconLogout, IconUser } from '@tabler/icons-react';
+import { Navbar as MantineNavbar, NavLink, Select, Anchor, Card, Box, Modal, Text, Image } from '@mantine/core';
+import { IconNews, IconCodeCircle2, IconCheck, IconFileAlert, IconReload, IconHelpCircle, IconLogout, IconUser } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
 import docImage from '@/assets/images/doc.webp';
 import githubLogo from '@/assets/images/github-logo.webp';
@@ -31,9 +31,10 @@ const Navbar: FC<NavbarProps> = (props) => {
 	const [activeStream, setActiveStream] = useState("");
 	const [searchValue, setSearchValue] = useState("");
 	const { classes } = useNavbarStyles();
+	const [currentPage, setCurrentPage] = useState("/logs");
 	const { container, linkBtnActive, linkBtn,
-		 selectStreambtn ,streamsBtn ,lowerContainer ,
-		  actionBtn, helpTitle, helpDescription ,userBtn} = classes;
+		selectStreambtn, streamsBtn, lowerContainer,
+		actionBtn, helpTitle, helpDescription, userBtn } = classes;
 	const { streamName } = useParams();
 	const nav = useNavigate();
 	const [, , removeCredentials] = useLocalStorage({ key: 'credentials' });
@@ -70,7 +71,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 		if (streamName) {
 			setActiveStream(streamName);
 			setSearchValue(streamName);
-			if (streamName !== subLogQuery.get().streamName) {
+			if (currentPage !== location.pathname) {
 				const now = dayjs();
 				subLogQuery.set((state) => {
 					state.streamName = streamName || '';
@@ -78,31 +79,23 @@ const Navbar: FC<NavbarProps> = (props) => {
 					state.endTime = now.toDate();
 				});
 				subLogSelectedTimeRange.set(DEFAULT_FIXED_DURATIONS.name);
+				subLogSearch.set((state) => {
+					state.search = '';
+					state.filters = {};
+				});
+				subRefreshInterval.set(null);
+				setCurrentPage(location.pathname);
 			}
 		}
 		else if (streams && Boolean(streams.length)) {
 			navigate(`/${streams[0].name}/logs`);
 		}
-	}, [streams ,location]);
+	}, [streams, location]);
 
 	const handleChange = (value: string) => {
 		setActiveStream(value);
 		setSearchValue(value);
 		navigate(`/${value}/logs`);
-		if (value !== subLogQuery.get().streamName) {
-			const now = dayjs();
-			subLogQuery.set((state) => {
-				state.streamName = value || '';
-				state.startTime = now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate();
-				state.endTime = now.toDate();
-			});
-			subLogSelectedTimeRange.set(DEFAULT_FIXED_DURATIONS.name);
-			subLogSearch.set((state) => {
-				state.search = '',
-					state.filters = {}
-			});
-			subRefreshInterval.set(null);
-		}
 	};
 
 	useEffect(() => {
@@ -142,12 +135,12 @@ const Navbar: FC<NavbarProps> = (props) => {
 
 
 	return (
-		<MantineNavbar {...props} withBorder zIndex={1} hiddenBreakpoint={window.outerWidth+20} hidden={isSubNavbarOpen}>
+		<MantineNavbar {...props} withBorder zIndex={1} hiddenBreakpoint={window.outerWidth + 20} hidden={isSubNavbarOpen}>
 			<MantineNavbar.Section grow className={container}>
 				<NavLink label="Streams" icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-					<path d="M19 5C19 7.21 14.97 9 10 9C5.03 9 1 7.21 1 5M19 5C19 2.79 14.97 1 10 1C5.03 1 1 2.79 1 5M19 5V10M1 5V10M19 10C19 12.21 14.97 14 10 14C5.03 14 1 12.21 1 10M19 10V15C19 17.21 14.97 19 10 19C5.03 19 1 17.21 1 15V10" stroke="#211F1F" strokeLinecap="round" strokeLinejoin='round'/>
+					<path d="M19 5C19 7.21 14.97 9 10 9C5.03 9 1 7.21 1 5M19 5C19 2.79 14.97 1 10 1C5.03 1 1 2.79 1 5M19 5V10M1 5V10M19 10C19 12.21 14.97 14 10 14C5.03 14 1 12.21 1 10M19 10V15C19 17.21 14.97 19 10 19C5.03 19 1 17.21 1 15V10" stroke="#211F1F" strokeLinecap="round" strokeLinejoin='round' />
 				</svg>
-				} className={streamsBtn}   />
+				} className={streamsBtn} />
 				<Select
 					placeholder="Pick one"
 					onChange={(value) => handleChange(value || "")}
@@ -168,7 +161,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 							label={link.label}
 							icon={<link.icon size="1rem" stroke={1.5} />}
 							sx={{ paddingLeft: 53 }}
-							onClick={() => navigate(`/${activeStream}${link.pathname}`)}
+							onClick={() => { navigate(`/${activeStream}${link.pathname}`);  }}
 							key={link.label}
 							className={link.pathname ? window.location.pathname.includes(link.pathname) ? linkBtnActive : linkBtn : linkBtn}
 						/>
@@ -178,7 +171,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 				{error && <NavLink label="Retry" icon={<IconReload size="1rem" stroke={1.5} />} component="button" onClick={getData} sx={{ paddingLeft: 0 }} />}
 			</MantineNavbar.Section>
 			<MantineNavbar.Section className={lowerContainer}>
-				<NavLink label={username} icon={<IconUser size="1.5rem" stroke={1.5} />}  className={userBtn} component="a"  />
+				<NavLink label={username} icon={<IconUser size="1.5rem" stroke={1.5} />} className={userBtn} component="a" />
 				<NavLink label="Help" icon={<IconHelpCircle size="1.5rem" stroke={1.5} />} className={actionBtn} component="a" onClick={open} />
 				<NavLink label="Log out" icon={<IconLogout size="1.5rem" stroke={1.5} />} className={actionBtn} component="a" onClick={onSignOut} />
 			</MantineNavbar.Section>
