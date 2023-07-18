@@ -64,7 +64,9 @@ const Column: FC<Column> = (props) => {
 
 	const filterActive = useMemo(() => Boolean(appliedFilter(columnName)?.length), [selectedFilters]);
 	const canApply = useMemo(() => !compare(selectedFilters, appliedFilter(columnName)), [selectedFilters]);
-
+	function capitalizeFirstLetter(word:string) {
+		return word.charAt(0).toUpperCase() + word.slice(1);
+	}
 	const { classes, cx } = useTableColumnStyle();
 	const { labelBtn, applyBtn, labelIcon, labelIconActive, searchInputStyle } = classes;
 
@@ -73,7 +75,7 @@ const Column: FC<Column> = (props) => {
 			<Popover position="bottom" withArrow withinPortal shadow="md" zIndex={1} onOpen={onOpen}>
 				<Popover.Target>
 					<UnstyledButton className={labelBtn}>
-						<span className="label">{columnName}</span>
+						<span className="label">{capitalizeFirstLetter(columnName)}</span>
 						<IconFilter
 							stroke={filterActive ? 3 : 1.8}
 							size={px('1rem')}
@@ -158,6 +160,8 @@ const CheckboxRow: FC<CheckboxRowProps> = (props) => {
 			style={{
 				whiteSpace: 'pre-wrap',
 				maxWidth: 250,
+				color:"black",
+				backgroundColor:"white"
 			}}>
 			<div onMouseOver={open} onMouseOut={close}>
 				<Checkbox value={value} label={parseLogData(label, columnName)} className={checkBoxStyle} />

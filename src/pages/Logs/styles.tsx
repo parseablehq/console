@@ -258,6 +258,7 @@ export const useTableColumnStyle = createStyles((theme) => {
 
 		labelIcon: {
 			color: colors.gray[5],
+			marginLeft:spacing.xs
 		},
 
 		labelIconActive: {
