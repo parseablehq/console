@@ -1,28 +1,28 @@
-import React ,{ FC, useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useQueryPageContext } from './Context';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Box, Button ,Text } from '@mantine/core';
+import { Box, Button, Text } from '@mantine/core';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import { ErrorMarker, errChecker } from "./ErrorMarker";
 import { notifications } from '@mantine/notifications';
-import { IconPlayerPlayFilled, IconCheck, IconFileAlert  } from '@tabler/icons-react';
+import { IconPlayerPlayFilled, IconCheck, IconFileAlert, IconEyeClosed, IconEye } from '@tabler/icons-react';
+import useMountedState from '@/hooks/useMountedState';
 import { useQueryCodeEditorStyles } from './styles';
 
-
 const QueryCodeEditor: FC = () => {
-  const { state: {subLogQuery } } = useHeaderContext();
-  const { state: {result } } = useQueryPageContext();
+  const { state: { subLogQuery } } = useHeaderContext();
+  const { state: { result, subSchemaToggle } } = useQueryPageContext();
 
-  const { data: queryResult, getQueryData , error,resetData } = useQueryResult();
+  const { data: queryResult, getQueryData, error, resetData } = useQueryResult();
   const editorRef = React.useRef<any>();
   const monacoRef = React.useRef<any>();
-
+  const [isSchemaOpen, setIsSchemaOpen] = useMountedState(false);
   const [query, setQuery] = React.useState<string>(`SELECT * FROM ${subLogQuery.get().streamName} LIMIT 100`);
 
   const handleEditorChange = (code: any) => {
     setQuery(code);
-    errChecker(code,subLogQuery.get().streamName);
+    errChecker(code, subLogQuery.get().streamName);
     monacoRef.current?.editor.setModelMarkers(
       editorRef.current?.getModel(),
       "owner",
@@ -30,14 +30,21 @@ const QueryCodeEditor: FC = () => {
     );
   };
 
-  useEffect(() => { 
+  useEffect(() => {
+    const listener = subSchemaToggle.subscribe(setIsSchemaOpen);
+    return () => {
+      listener();
+    };
+  }, [subSchemaToggle.get()]);
+
+  useEffect(() => {
     if (subLogQuery.get().streamName) {
       setQuery(`SELECT * FROM ${subLogQuery.get().streamName} LIMIT 100;`);
       result.set("");
     }
-  } , [subLogQuery.get().streamName]);
+  }, [subLogQuery.get().streamName]);
 
-  function handleEditorDidMount(editor:any, monaco:any) {
+  function handleEditorDidMount(editor: any, monaco: any) {
     editorRef.current = editor;
     monacoRef.current = monaco;
   }
@@ -52,24 +59,24 @@ const QueryCodeEditor: FC = () => {
       autoClose: false,
       withCloseButton: false,
     });
-    const parsedQuery=query.replace(/(\r\n|\n|\r)/gm, "");
+    const parsedQuery = query.replace(/(\r\n|\n|\r)/gm, "");
     getQueryData(subLogQuery.get(), parsedQuery);
 
   }
   useEffect(() => {
-    if(error){
+    if (error) {
       notifications.update({
         id: 'load-data',
         color: 'red',
         title: 'Error Occured',
         message: 'Error Occured, please check your query and try again',
-        icon: <IconFileAlert  size="1rem" />,
+        icon: <IconFileAlert size="1rem" />,
         autoClose: 2000,
       });
       result.set(error);
       return;
     }
-    if(queryResult){
+    if (queryResult) {
       result.set(JSON.stringify(queryResult?.data, null, 2));
       notifications.update({
         id: 'load-data',
@@ -82,39 +89,42 @@ const QueryCodeEditor: FC = () => {
       return;
     }
 
-  }, [queryResult , error]);
+  }, [queryResult, error]);
 
   const { classes } = useQueryCodeEditorStyles();
-	const { container,runQueryBtn,textContext } = classes;
+  const { container, runQueryBtn, textContext } = classes;
 
   return (
     <Box style={{ height: "100%" }} >
       <Box className={container} >
         <Text className={textContext}>Query</Text>
-        
-        <Button  variant='default' className={runQueryBtn} onClick={runQuery}><IconPlayerPlayFilled/></Button>
-        
+        <Box style={{ height: "100%", width: "100%", textAlign: "right" }} >
+          <Button variant='default' className={runQueryBtn} onClick={() => subSchemaToggle.set(!isSchemaOpen)}>{isSchemaOpen ?  <IconEye />: <IconEyeClosed />}</Button>
+          <Button variant='default' className={runQueryBtn} onClick={runQuery}><IconPlayerPlayFilled /></Button>
+        </Box>
+
+
       </Box>
-      <Box sx={{marginTop:"5px", height:"calc(100% - 60px)"}}>
-      <Editor
-        height={"100%"}
-        defaultLanguage="sql"
-        value={query}
-        onChange={handleEditorChange}
-        onMount={handleEditorDidMount}
-        options={{
-          scrollBeyondLastLine: false,
-          readOnly: false,
-          fontSize: 12,
-          wordWrap: "on",
-          minimap: { enabled: false },
-          automaticLayout: true,
-          mouseWheelZoom: true,
-          glyphMargin: true,
-        }}
-      />
+      <Box sx={{ marginTop: "5px", height: "calc(100% - 60px)" }}>
+        <Editor
+          height={"100%"}
+          defaultLanguage="sql"
+          value={query}
+          onChange={handleEditorChange}
+          onMount={handleEditorDidMount}
+          options={{
+            scrollBeyondLastLine: false,
+            readOnly: false,
+            fontSize: 12,
+            wordWrap: "on",
+            minimap: { enabled: false },
+            automaticLayout: true,
+            mouseWheelZoom: true,
+            glyphMargin: true,
+          }}
+        />
       </Box>
-      </Box>
+    </Box>
   );
 };
 

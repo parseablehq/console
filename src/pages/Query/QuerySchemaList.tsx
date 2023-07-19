@@ -1,13 +1,15 @@
 import { FC, useEffect } from 'react';
 import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Table, Box, Title } from '@mantine/core';
-
-
+import { Table, Box, Title, Button } from '@mantine/core';
+import {  IconSquareRoundedXFilled } from '@tabler/icons-react';
+import {  useQuerySchemaListStyles } from './styles';
+import { useQueryPageContext } from './Context';
 
 const QuerySchemaList: FC = () => {
 	const { data: querySchema, getDataSchema, resetData, loading, error: logStreamSchemaError } = useGetLogStreamSchema();
 	const { state: { subLogQuery } } = useHeaderContext();
+	const { state: { subSchemaToggle } } = useQueryPageContext();
 
 	useEffect(() => {
 		if (subLogQuery.get().streamName) {
@@ -36,11 +38,16 @@ const QuerySchemaList: FC = () => {
 		}
 	});
 
+const {classes} = useQuerySchemaListStyles();
+	const {actionBtn ,container}=classes;
+
 	return (
-
-		<Box sx={{ padding: 5 ,height:"100%",overflow:"auto"}}>
+<Box  style={{ height: "100%" }}>
+		<Box className={container}>
 			<Title order={4}> Schema for {subLogQuery.get().streamName}</Title >
-
+			<Button variant='default'  className={actionBtn} onClick={()=> subSchemaToggle.set((state)=>!state) }><IconSquareRoundedXFilled/></Button>
+		</Box>
+			
 			{!(logStreamSchemaError) ? (
 				!loading && Boolean(querySchema) ? (
 					(querySchema?.fields.length) ? (
