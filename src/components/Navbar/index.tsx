@@ -171,9 +171,9 @@ const Navbar: FC<NavbarProps> = (props) => {
 				{error && <NavLink label="Retry" icon={<IconReload size="1rem" stroke={1.5} />} component="button" onClick={getData} sx={{ paddingLeft: 0 }} />}
 			</MantineNavbar.Section>
 			<MantineNavbar.Section className={lowerContainer}>
-				<NavLink label={username} icon={<IconUser size="1.5rem" stroke={1.5} />} className={userBtn} component="a" />
-				<NavLink label="Help" icon={<IconHelpCircle size="1.5rem" stroke={1.5} />} className={actionBtn} component="a" onClick={open} />
-				<NavLink label="Log out" icon={<IconLogout size="1.5rem" stroke={1.5} />} className={actionBtn} component="a" onClick={onSignOut} />
+				<NavLink label={username} icon={<IconUser size="1.3rem" stroke={1.3} />} className={userBtn} component="a" />
+				<NavLink label="Help" icon={<IconHelpCircle size="1.3rem" stroke={1.3} />} className={actionBtn} component="a" onClick={open} />
+				<NavLink label="Log out" icon={<IconLogout size="1.3rem" stroke={1.3} />} className={actionBtn} component="a" onClick={onSignOut} />
 			</MantineNavbar.Section>
 			<Modal withinPortal opened={opened} onClose={close} withCloseButton={false} size="sm" centered>
 				<Text className={helpTitle}>Need any help?</Text>

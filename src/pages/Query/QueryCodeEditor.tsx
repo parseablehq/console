@@ -2,7 +2,7 @@ import React, { FC, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useQueryPageContext } from './Context';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Box, Button, Text } from '@mantine/core';
+import { Box, Button, Text ,px} from '@mantine/core';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import { ErrorMarker, errChecker } from "./ErrorMarker";
 import { notifications } from '@mantine/notifications';
@@ -11,7 +11,7 @@ import useMountedState from '@/hooks/useMountedState';
 import { useQueryCodeEditorStyles } from './styles';
 
 const QueryCodeEditor: FC = () => {
-  const { state: { subLogQuery } } = useHeaderContext();
+  const { state: { subLogQuery,subRefreshInterval  } } = useHeaderContext();
   const { state: { result, subSchemaToggle } } = useQueryPageContext();
 
   const { data: queryResult, getQueryData, error, resetData } = useQueryResult();
@@ -19,6 +19,7 @@ const QueryCodeEditor: FC = () => {
   const monacoRef = React.useRef<any>();
   const [isSchemaOpen, setIsSchemaOpen] = useMountedState(false);
   const [query, setQuery] = React.useState<string>(`SELECT * FROM ${subLogQuery.get().streamName} LIMIT 100`);
+  const [refreshInterval, setRefreshInterval] = useMountedState<number | null>(null);
 
   const handleEditorChange = (code: any) => {
     setQuery(code);
@@ -31,9 +32,21 @@ const QueryCodeEditor: FC = () => {
   };
 
   useEffect(() => {
+    console.log(subRefreshInterval.get());
+    if (subRefreshInterval.get()) {
+      const interval = setInterval(() => {
+        runQuery();
+      }, subRefreshInterval.get() as number);
+      return () => clearInterval(interval);
+    }
+  }, [refreshInterval,query]);
+  
+  useEffect(() => {
     const listener = subSchemaToggle.subscribe(setIsSchemaOpen);
+    const refreshIntervalListener = subRefreshInterval.subscribe(setRefreshInterval);
     return () => {
       listener();
+      refreshIntervalListener();
     };
   }, [subSchemaToggle.get()]);
 
@@ -99,8 +112,8 @@ const QueryCodeEditor: FC = () => {
       <Box className={container} >
         <Text className={textContext}>Query</Text>
         <Box style={{ height: "100%", width: "100%", textAlign: "right" }} >
-          <Button variant='default' className={runQueryBtn} onClick={() => subSchemaToggle.set(!isSchemaOpen)}>{isSchemaOpen ?  <IconEye />: <IconEyeClosed />}</Button>
-          <Button variant='default' className={runQueryBtn} onClick={runQuery}><IconPlayerPlayFilled /></Button>
+          <Button variant='default' className={runQueryBtn} onClick={() => subSchemaToggle.set(!isSchemaOpen)}>{isSchemaOpen ?  <IconEye size={px('1.2rem')} stroke={1.5}/>: <IconEyeClosed size={px('1.2rem')} stroke={1.5}/>}</Button>
+          <Button variant='default' className={runQueryBtn} onClick={runQuery}><IconPlayerPlayFilled size={px('1.2rem')} stroke={1.5}/></Button>
         </Box>
 
 

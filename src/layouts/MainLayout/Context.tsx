@@ -9,7 +9,7 @@ const Context = createContext({});
 const { Provider } = Context;
 
 const now = dayjs();
-export const REFRESH_INTERVALS = [1000, 2000, 5000, 10000, 20000, 60000];
+export const REFRESH_INTERVALS = [10000, 30000, 60000, 300000, 600000, 1200000];
 export const FIXED_DURATIONS = [
 	{
 		name: 'Past 10 Minutes',

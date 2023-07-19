@@ -64,7 +64,7 @@ export const useNavbarStyles = createStyles((theme) => {
 		},
 		actionBtn: {
 			paddingLeft:"24px", 
-			height:"56px",
+			height:"40px",
 			color: theme.colors.gray[6],
 			'&:hover *': {
 				color: sColor,
@@ -73,7 +73,7 @@ export const useNavbarStyles = createStyles((theme) => {
 
 		userBtn: {		
 			paddingLeft:"24px", 
-			height:"56px",
+			height:"40px",
 			color: theme.colors.gray[6],
 		},
 

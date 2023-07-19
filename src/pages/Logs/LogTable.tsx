@@ -25,10 +25,10 @@ const LogTable: FC = () => {
 		state: { subLogStreamError },
 	} = useLogsPageContext();
 	const {
-		state: { subLogSearch ,subLogQuery },
+		state: { subLogSearch ,subLogQuery , subRefreshInterval},
 	}= useHeaderContext();
 
-
+	const [refreshInterval, setRefreshInterval] = useMountedState<number | null>(null);
 	const [logStreamError, setLogStreamError] = useMountedState<string | null>(null);
 	const [columnToggles, setColumnToggles] = useMountedState<Map<string, boolean>>(new Map());
 	const {
@@ -94,6 +94,7 @@ const LogTable: FC = () => {
 	useEffect(() => {
 		const streamErrorListener = subLogStreamError.subscribe(setLogStreamError);
 		const logSearchListener = subLogSearch.subscribe(setQuerySearch);
+		const refreshIntervalListener = subRefreshInterval.subscribe(setRefreshInterval);
 		const logQueryListener = subLogQuery.subscribe((query) => {
 			if (query.streamName) {
 				if (logsSchema) {
@@ -109,10 +110,29 @@ const LogTable: FC = () => {
 
 		return () => {
 			streamErrorListener();
+			refreshIntervalListener();
 			logQueryListener();
 			logSearchListener();
 		};
 	}, [logsSchema]);
+
+	useEffect(() => {
+		if (subRefreshInterval.get()) {
+		  const interval = setInterval(() => {
+			const query = subLogQuery.get();
+			if (query.streamName) {
+				if (logsSchema) {
+					resetStreamData();
+					resetLogsData
+				}
+				getDataSchema(query.streamName);
+				getQueryData(query);
+				setColumnToggles(new Map());
+			}
+		  }, subRefreshInterval.get() as number);
+		  return () => clearInterval(interval);
+		}
+	  }, [refreshInterval]);
 
 	useEffect(() => {
 		const query = subLogQuery.get();

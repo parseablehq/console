@@ -71,15 +71,14 @@ export const useLogQueryStyles = createStyles((theme) => {
 			display: 'flex',
 			justifyContent: 'center',
 			alignItems: 'center',
-			
-			background: pColor,
-			color: colors.white[0],
+			background: colors.white[0],
+			color: colors.black[0],
 			minWidth: widths[20],
 			border: `${sizing.px} ${colors.gray[2]} solid`,
 			padding: `${spacing.xs} ${spacing.sm}`,
 			marginRight: spacing.xs,
 			'&:hover': {
-				background: sColor,
+				background: colors.gray[1],
 			},
 		},
 

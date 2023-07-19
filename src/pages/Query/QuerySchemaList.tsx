@@ -39,12 +39,12 @@ const QuerySchemaList: FC = () => {
 	});
 
 const {classes} = useQuerySchemaListStyles();
-	const {actionBtn ,container}=classes;
+	const {actionBtn ,container ,textContext ,theadSt ,tbodySt ,innercontainer}=classes;
 
 	return (
-<Box  style={{ height: "100%" }}>
-		<Box className={container}>
-			<Title order={4}> Schema for {subLogQuery.get().streamName}</Title >
+<Box  className={container}>
+		<Box className={innercontainer}>
+			<Title className={textContext}> Schema for {subLogQuery.get().streamName}</Title >
 			<Button variant='default'  className={actionBtn} onClick={()=> subSchemaToggle.set((state)=>!state) }><IconSquareRoundedXFilled/></Button>
 		</Box>
 			
@@ -52,13 +52,13 @@ const {classes} = useQuerySchemaListStyles();
 				!loading && Boolean(querySchema) ? (
 					(querySchema?.fields.length) ? (
 						<Table >
-						  <thead>
+						  <thead className={theadSt}>
 							<tr>
 							  <th>Feild</th>
 							  <th>Type</th>
 							</tr>
 						  </thead>
-						  <tbody>{renderList}</tbody>
+						  <tbody className={tbodySt}>{renderList}</tbody>
 						</Table>
 					) : (
 						<p>No Data</p>

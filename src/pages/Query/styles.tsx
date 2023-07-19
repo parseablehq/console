@@ -64,17 +64,19 @@ export const useQueryCodeEditorStyles = createStyles((theme) => {
 		},
 		runQueryBtn: {
 			color: pColor,
-			border: "none",
-			height: "40px",
+			borderColor: colors.gray[2],
+			height: "34px",
 			'&:hover': {
 				color: sColor,
 			},
+			marginInlineEnd: spacing.xs,
+			
 		},
 		textContext: {
 			marginRight: spacing.md,
 			fontSize: fontSizes.md,
 			fontFamily: fontFamily,
-			fontWeight: fontWeights.bold,
+			fontWeight: fontWeights.semibold,
 		}
 
 	};
@@ -103,13 +105,13 @@ export const useQueryResultEditorStyles = createStyles((theme) => {
 			height: "34px",
 			marginInlineEnd: spacing.xs,
 			color: colors.gray[5],
-			borderColor:colors.gray[5]
+			borderColor:colors.gray[2]
 		},
 		textContext: {
 			marginRight: spacing.md,
 			fontSize: fontSizes.md,
 			fontFamily: fontFamily,
-			fontWeight: fontWeights.bold,
+			fontWeight: fontWeights.semibold,
 		}
 	};
 });
@@ -122,6 +124,11 @@ export const useQuerySchemaListStyles = createStyles((theme) => {
 
 	return {
 		container: {
+			maxWidth: "500px",
+			height: "100%",
+			overflow: "auto",
+		},
+		innercontainer: {
 			display: "flex",
 			alignItems: "center",
 			borderBottom: `solid 1px ${colors.gray[2]}`,
@@ -143,7 +150,26 @@ export const useQuerySchemaListStyles = createStyles((theme) => {
 			marginRight: spacing.md,
 			fontSize: fontSizes.md,
 			fontFamily: fontFamily,
-			fontWeight: fontWeights.bold,
+			fontWeight: fontWeights.semibold,
+		},
+		theadSt:{
+			"& tr>th":{
+				backgroundColor:colors.gray[0],
+				fontSize: fontSizes.md,
+				fontFamily: fontFamily,
+				fontWeight: fontWeights.semibold,
+				color:colors.gray[3],
+				height: "34px"
+			}
+		},
+		tbodySt:{
+			"& tr>td":{
+				fontSize: fontSizes.md,
+				fontFamily: fontFamily,
+				borderTop:`solid 1px ${colors.gray[2]} !important`,
+				color:colors.gray[6],
+				height: "34px"
+			}
 		}
 	};
 });

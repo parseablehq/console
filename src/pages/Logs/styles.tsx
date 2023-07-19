@@ -90,7 +90,7 @@ export const useLogTableStyles = createStyles((theme) => {
 			},
 
 			'& td': {
-				height: heights[14],
+				height: heights[10],
 				textAlign: 'left',
 				verticalAlign: 'middle',
 				border:"none !important",
@@ -106,7 +106,7 @@ export const useLogTableStyles = createStyles((theme) => {
 			},
 
 			'& td': {
-				height: heights[14],
+				height: heights[10],
 				textAlign: 'left',
 				verticalAlign: 'middle',
 				border:"none !important",

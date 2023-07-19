@@ -63,8 +63,8 @@ const QueryResultEditor: FC = () => {
             <Box className={container}>
                 <Text className={textContext}>Result</Text>
                 <Box style={{ height: "100%", width:"100%", textAlign: "right" }} >
-                <Button variant='default' leftIcon={<IconCopy size={px('1.2rem')} stroke={1.5} />} className={actionBtn} onClick={runCopy} >Copy</Button>
-                <Button variant='default' leftIcon={<IconSearch size={px('1.2rem')} stroke={1.5} />} onClick={runFind} className={actionBtn} >Find</Button>
+                <Button variant='default'  className={actionBtn} onClick={runCopy} ><IconCopy size={px('1.2rem')} stroke={1.5} /></Button>
+                <Button variant='default'  onClick={runFind} className={actionBtn} ><IconSearch size={px('1.2rem')} stroke={1.5} /></Button>
                 </Box>
             </Box>
       <Box sx={{marginTop:"5px", height:"calc(100% - 60px)"}}>
