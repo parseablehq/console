@@ -34,7 +34,7 @@ export const useQueryLogs = () => {
 					});
 
 					if (!isFiltered) {
-						continue mainLoop;
+						continue;
 					}
 				}
 
