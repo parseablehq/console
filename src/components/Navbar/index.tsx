@@ -1,6 +1,6 @@
 import type { NavbarProps as MantineNavbarProps } from '@mantine/core';
 import { Navbar as MantineNavbar, NavLink, Select, Anchor, Card, Box, Modal, Text, Image } from '@mantine/core';
-import { IconNews, IconCodeCircle2, IconCheck, IconFileAlert, IconReload, IconHelpCircle, IconLogout, IconUser } from '@tabler/icons-react';
+import { IconColumns , IconZoomCode,IconReportAnalytics , IconCheck, IconFileAlert, IconReload, IconHelpCircle, IconLogout, IconUser } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
 import docImage from '@/assets/images/doc.webp';
 import githubLogo from '@/assets/images/github-logo.webp';
@@ -18,8 +18,9 @@ import { LOGIN_ROUTE } from '@/constants/routes';
 
 
 const links = [
-	{ icon: IconNews, label: 'Logs', pathname: "/logs" },
-	{ icon: IconCodeCircle2, label: 'Query', pathname: "/query" },
+	{ icon: IconColumns , label: 'Logs', pathname: "/logs" },
+	{ icon: IconZoomCode , label: 'Query', pathname: "/query" },
+	{ icon: IconReportAnalytics , label: 'Stats', pathname: "/metrics"}
 ];
 
 type NavbarProps = Omit<MantineNavbarProps, 'children'>;
@@ -159,7 +160,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 					return (
 						<NavLink
 							label={link.label}
-							icon={<link.icon size="1rem" stroke={1.5} />}
+							icon={<link.icon size="1.3rem" stroke={1.5} />}
 							sx={{ paddingLeft: 53 }}
 							onClick={() => { navigate(`/${activeStream}${link.pathname}`);  }}
 							key={link.label}

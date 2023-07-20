@@ -66,6 +66,8 @@ export const useQueryCodeEditorStyles = createStyles((theme) => {
 			color: pColor,
 			borderColor: colors.gray[2],
 			height: "34px",
+			width: "40px",
+			padding: "0px",
 			'&:hover': {
 				color: sColor,
 			},
@@ -103,6 +105,8 @@ export const useQueryResultEditorStyles = createStyles((theme) => {
 				color: sColor,
 			},
 			height: "34px",
+			width: "40px",
+			padding: "0px",
 			marginInlineEnd: spacing.xs,
 			color: colors.gray[5],
 			borderColor:colors.gray[2]
@@ -140,8 +144,10 @@ export const useQuerySchemaListStyles = createStyles((theme) => {
 
 		actionBtn: {
 			color: colors.gray[3],
+			height: "34px",
+			width: "40px",
+			padding: "0px",
 			border: "none ",
-			height: "40px",
 			'&:hover': {
 				color: sColor,
 			},

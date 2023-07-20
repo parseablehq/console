@@ -24,7 +24,10 @@ export const useHeaderStyles = createStyles((theme) => {
 			alignItems: 'self-end',
 			width: NAVBAR_WIDTH,
 			justifyContent: "space-between",
-			padding: spacing.md,
+			// padding: spacing.md,
+		},
+		imageSty:{
+			marginLeft: spacing.md,
 		},
 		burgerIcon: {
 			size:"24px",
@@ -77,6 +80,16 @@ export const useLogQueryStyles = createStyles((theme) => {
 			border: `${sizing.px} ${colors.gray[2]} solid`,
 			padding: `${spacing.xs} ${spacing.sm}`,
 			marginRight: spacing.xs,
+			'&:hover': {
+				background: colors.gray[1],
+			},
+		},
+		refreshNowBtn: {
+			background: colors.white[0],
+			padding:0,
+			width: "36px",
+			color: colors.black[0],
+			border: `${sizing.px} ${colors.gray[2]} solid`,
 			'&:hover': {
 				background: colors.gray[1],
 			},
@@ -160,6 +173,7 @@ export const useLogQueryStyles = createStyles((theme) => {
 
 		searchContainer: {
 			display: 'flex',
+			paddingRight: spacing.sm,
 		},
 
 		searchTypeBtn: {

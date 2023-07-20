@@ -2,16 +2,17 @@ import React, { FC, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useQueryPageContext } from './Context';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Box, Button, Text ,px} from '@mantine/core';
+import { Box, Button, Text, px } from '@mantine/core';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import { ErrorMarker, errChecker } from "./ErrorMarker";
 import { notifications } from '@mantine/notifications';
-import { IconPlayerPlayFilled, IconCheck, IconFileAlert, IconEyeClosed, IconEye } from '@tabler/icons-react';
+import { IconPlayerPlayFilled, IconCheck, IconFileAlert, IconFileInfo } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
 import { useQueryCodeEditorStyles } from './styles';
+import dayjs from 'dayjs';
 
 const QueryCodeEditor: FC = () => {
-  const { state: { subLogQuery,subRefreshInterval  } } = useHeaderContext();
+  const { state: { subLogQuery, subRefreshInterval ,subLogSelectedTimeRange} } = useHeaderContext();
   const { state: { result, subSchemaToggle } } = useQueryPageContext();
 
   const { data: queryResult, getQueryData, error, resetData } = useQueryResult();
@@ -32,15 +33,14 @@ const QueryCodeEditor: FC = () => {
   };
 
   useEffect(() => {
-    console.log(subRefreshInterval.get());
     if (subRefreshInterval.get()) {
       const interval = setInterval(() => {
         runQuery();
       }, subRefreshInterval.get() as number);
       return () => clearInterval(interval);
     }
-  }, [refreshInterval,query]);
-  
+  }, [refreshInterval, query]);
+
   useEffect(() => {
     const listener = subSchemaToggle.subscribe(setIsSchemaOpen);
     const refreshIntervalListener = subRefreshInterval.subscribe(setRefreshInterval);
@@ -72,6 +72,14 @@ const QueryCodeEditor: FC = () => {
       autoClose: false,
       withCloseButton: false,
     });
+    if(subLogSelectedTimeRange.get().includes('Past')){
+      const now =dayjs();
+      const timeDiff=subLogQuery.get().endTime.getTime()-subLogQuery.get().startTime.getTime();
+      subLogQuery.set((state) => {
+        state.startTime = now.subtract(timeDiff).toDate();
+        state.endTime = now.toDate();
+      });
+    }
     const parsedQuery = query.replace(/(\r\n|\n|\r)/gm, "");
     getQueryData(subLogQuery.get(), parsedQuery);
 
@@ -112,8 +120,8 @@ const QueryCodeEditor: FC = () => {
       <Box className={container} >
         <Text className={textContext}>Query</Text>
         <Box style={{ height: "100%", width: "100%", textAlign: "right" }} >
-          <Button variant='default' className={runQueryBtn} onClick={() => subSchemaToggle.set(!isSchemaOpen)}>{isSchemaOpen ?  <IconEye size={px('1.2rem')} stroke={1.5}/>: <IconEyeClosed size={px('1.2rem')} stroke={1.5}/>}</Button>
-          <Button variant='default' className={runQueryBtn} onClick={runQuery}><IconPlayerPlayFilled size={px('1.2rem')} stroke={1.5}/></Button>
+          <Button variant='default' className={runQueryBtn} onClick={() => subSchemaToggle.set(!isSchemaOpen)}><IconFileInfo size={px('1.2rem')} stroke={1.5} /></Button>
+          <Button variant='default' className={runQueryBtn} onClick={runQuery}><IconPlayerPlayFilled size={px('1.2rem')} stroke={1.5} /></Button>
         </Box>
 
 

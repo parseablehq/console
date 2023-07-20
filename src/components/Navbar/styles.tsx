@@ -23,7 +23,8 @@ export const useNavbarStyles = createStyles((theme) => {
 			lineHeight: "normal",
 		},
 		streamsBtn: {
-			padding:"24px 24px 14px 24px", ":hover": { background: "white" }
+			padding:"24px 24px 14px 24px", ":hover": { background: "white" },
+			cursor: 'default'
 
 		},
 		linkBtnActive: {
@@ -72,9 +73,13 @@ export const useNavbarStyles = createStyles((theme) => {
 		},
 
 		userBtn: {		
+			cursor: 'default',
 			paddingLeft:"24px", 
 			height:"40px",
 			color: theme.colors.gray[6],
+			'&:hover ': {
+				background: white,
+			}
 		},
 
 		helpTitle: {
