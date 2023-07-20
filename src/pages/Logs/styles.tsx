@@ -46,7 +46,6 @@ export const useLogTableStyles = createStyles((theme) => {
 			border: `solid 1px ${colors.gray[2]}`,
 			fontSize: fontSizes.sm,
 			'&:hover': {
-
 					color: sColor,
 				},
 				'&:data-active=true': {

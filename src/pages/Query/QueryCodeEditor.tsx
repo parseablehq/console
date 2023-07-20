@@ -116,11 +116,13 @@ const QueryCodeEditor: FC = () => {
   const { container, runQueryBtn, textContext, actionBtn } = classes;
 
 
+
   return (
     <Box style={{ height: "100%" }} >
       <Box className={container} >
         <Text className={textContext}>Query</Text>
         <Box style={{ height: "100%", width: "100%", textAlign: "right" }} >
+
           <Button variant='default' className={actionBtn} onClick={() => subSchemaToggle.set(!isSchemaOpen)}><IconFileInfo size={px('1.2rem')} stroke={1.5} /></Button>
           <Button variant='default' className={runQueryBtn} onClick={runQuery}><IconPlayerPlayFilled size={px('1.2rem')} stroke={1.5} /></Button>
         </Box>

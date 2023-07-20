@@ -72,7 +72,6 @@ export const useQueryCodeEditorStyles = createStyles((theme) => {
 				color: sColor,
 			},
 			marginInlineEnd: spacing.xs,
-			
 		},
 		actionBtn: {
 	
