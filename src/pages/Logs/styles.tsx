@@ -43,6 +43,8 @@ export const useLogTableStyles = createStyles((theme) => {
 
 		paginationRow: {
 			'.mantine-Pagination-control': {
+			border: `solid 1px ${colors.gray[2]}`,
+
 				'&:hover': {
 					color: sColor,
 				},
@@ -60,8 +62,7 @@ export const useLogTableStyles = createStyles((theme) => {
 		},
 
 		tableContainer: {
-			position: 'relative',
-			boxShadow: shadows.sm,
+			position: 'relative'
 		},
 
 		tableStyle: {
@@ -148,6 +149,7 @@ export const useLogTableStyles = createStyles((theme) => {
 			flexDirection: 'row',
 			justifyContent: 'space-between',
 			background: colors.gray[0],
+			borderTop: `${widths.px} ${colors.gray[1]} solid`,
 		},
 
 		errorContainer: {
@@ -169,7 +171,6 @@ export const useLogTableStyles = createStyles((theme) => {
 			justifyContent: 'center',
 			cursor: 'pointer',
 			background: colors.white[0],
-			boxShadow: shadows.sm,
 			padding: `0.2rem ${spacing.xs}`,
 			border: `${widths.px} ${colors.gray[1]} solid`,
 			borderRadius: defaultRadius,
@@ -179,7 +180,7 @@ export const useLogTableStyles = createStyles((theme) => {
 		},
 
 		limitBtnText: {
-			marginRight: spacing.md,
+		
 		},
 
 		limitActive: {

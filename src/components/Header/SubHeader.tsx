@@ -1,7 +1,7 @@
 import useMountedState from '@/hooks/useMountedState';
 import { Box, Breadcrumbs, Button, Menu, Text, TextInput, UnstyledButton, px } from '@mantine/core';
 import { DateTimePicker } from '@mantine/dates';
-import { IconClock, IconReload , IconRefreshOff, IconSearch } from '@tabler/icons-react';
+import { IconClock,IconRefresh, IconReload , IconRefreshOff, IconSearch } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import ms from 'ms';
 import type { ChangeEvent, FC, KeyboardEvent } from 'react';
@@ -43,9 +43,10 @@ const SubHeader: FC = () => {
 			<Box>
 				<Box className={innerContainer}>
 					{useMatch("/:streamName/logs") && <Search />}
+					{useMatch("/:streamName/logs") && <RefreshNow />}
+
 					<TimeRange />
 					<RefreshInterval />
-					{useMatch("/:streamName/logs") && <RefreshNow />}
 				</Box>
 			</Box>
 		</Box>

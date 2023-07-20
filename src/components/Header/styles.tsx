@@ -59,7 +59,6 @@ export const useLogQueryStyles = createStyles((theme) => {
 		innerContainer: {
 			display: 'flex',
 			paddingTop: spacing.xxs,
-			marginRight: spacing.md,
 		},
 		homeIcon: {
 			size:"24px",
@@ -87,6 +86,7 @@ export const useLogQueryStyles = createStyles((theme) => {
 		refreshNowBtn: {
 			background: colors.white[0],
 			padding:0,
+			marginRight: spacing.xs,
 			width: "36px",
 			color: colors.black[0],
 			border: `${sizing.px} ${colors.gray[2]} solid`,

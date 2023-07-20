@@ -66,7 +66,7 @@ export const useQueryCodeEditorStyles = createStyles((theme) => {
 			color: pColor,
 			borderColor: colors.gray[2],
 			height: "34px",
-			width: "40px",
+			width: "34px",
 			padding: "0px",
 			'&:hover': {
 				color: sColor,
@@ -105,7 +105,7 @@ export const useQueryResultEditorStyles = createStyles((theme) => {
 				color: sColor,
 			},
 			height: "34px",
-			width: "40px",
+			width: "34px",
 			padding: "0px",
 			marginInlineEnd: spacing.xs,
 			color: colors.gray[5],
@@ -145,9 +145,9 @@ export const useQuerySchemaListStyles = createStyles((theme) => {
 		actionBtn: {
 			color: colors.gray[3],
 			height: "34px",
-			width: "40px",
+			width: "34px",
 			padding: "0px",
-			border: "none ",
+			borderColor:colors.gray[2],
 			'&:hover': {
 				color: sColor,
 			},
@@ -176,6 +176,11 @@ export const useQuerySchemaListStyles = createStyles((theme) => {
 				color:colors.gray[6],
 				height: "34px"
 			}
+		},
+		scrollAreaSt:{
+			maxWidth: "500px",
+			height: "calc(100% - 55px)",
+			overflow: "auto",
 		}
 	};
 });

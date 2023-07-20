@@ -106,9 +106,9 @@ const DataChip: FC<DataChipProps> = (props) => {
 		<Fragment>
 			<Divider label={title} variant="dashed" labelPosition="center" my="lg" />
 			<Box className={dataChipContainer}>
-				{[...dataList, ...dataList, ...dataList, ...dataList, ...dataList].map((data) => {
+				{[...dataList].map((data,i) => {
 					return (
-						<Chip checked={false} key={data} variant="filled" mb="xs">
+						<Chip checked={false} key={data+i} variant="filled" mb="xs">
 							{data}
 						</Chip>
 					);

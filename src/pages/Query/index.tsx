@@ -20,7 +20,6 @@ const Logs: FC = () => {
 	useEffect(() => {
 		const listener = subSchemaToggle.subscribe(setIsSchemaOpen);
 		return () => {
-		console.log(isSchemaOpen)	
 		  listener();
 		};
 	  }, [subSchemaToggle.get()]);

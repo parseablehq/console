@@ -1,8 +1,8 @@
 import { FC, useEffect } from 'react';
 import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Table, Box, Title, Button } from '@mantine/core';
-import {  IconSquareRoundedXFilled } from '@tabler/icons-react';
+import { Table, Box, Title, Button, ScrollArea } from '@mantine/core';
+import {  IconX  } from '@tabler/icons-react';
 import {  useQuerySchemaListStyles } from './styles';
 import { useQueryPageContext } from './Context';
 
@@ -39,18 +39,19 @@ const QuerySchemaList: FC = () => {
 	});
 
 const {classes} = useQuerySchemaListStyles();
-	const {actionBtn ,container ,textContext ,theadSt ,tbodySt ,innercontainer}=classes;
+	const {actionBtn ,container ,textContext ,theadSt ,tbodySt ,innercontainer,scrollAreaSt}=classes;
 
 	return (
 <Box  className={container}>
 		<Box className={innercontainer}>
 			<Title className={textContext}> Schema for {subLogQuery.get().streamName}</Title >
-			<Button variant='default'  className={actionBtn} onClick={()=> subSchemaToggle.set((state)=>!state) }><IconSquareRoundedXFilled/></Button>
+			<Button variant='default'  className={actionBtn} onClick={()=> subSchemaToggle.set((state)=>!state) }><IconX /></Button>
 		</Box>
 			
 			{!(logStreamSchemaError) ? (
 				!loading && Boolean(querySchema) ? (
 					(querySchema?.fields.length) ? (
+					<ScrollArea type='always' className={scrollAreaSt}>
 						<Table >
 						  <thead className={theadSt}>
 							<tr>
@@ -60,6 +61,7 @@ const {classes} = useQuerySchemaListStyles();
 						  </thead>
 						  <tbody className={tbodySt}>{renderList}</tbody>
 						</Table>
+						</ScrollArea>
 					) : (
 						<p>No Data</p>
 					)
