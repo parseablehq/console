@@ -59,6 +59,7 @@ export const useLogQueryStyles = createStyles((theme) => {
 		innerContainer: {
 			display: 'flex',
 			paddingTop: spacing.xxs,
+			color: colors.gray[6],
 		},
 		homeIcon: {
 			size:"24px",
@@ -74,7 +75,7 @@ export const useLogQueryStyles = createStyles((theme) => {
 			justifyContent: 'center',
 			alignItems: 'center',
 			background: colors.white[0],
-			color: colors.black[0],
+			color: theme.colors.gray[6],
 			minWidth: widths[20],
 			border: `${sizing.px} ${colors.gray[2]} solid`,
 			padding: `${spacing.xs} ${spacing.sm}`,
@@ -88,7 +89,7 @@ export const useLogQueryStyles = createStyles((theme) => {
 			padding:0,
 			marginRight: spacing.xs,
 			width: "36px",
-			color: colors.black[0],
+			color: theme.colors.gray[6],
 			border: `${sizing.px} ${colors.gray[2]} solid`,
 			'&:hover': {
 				background: colors.gray[1],
@@ -96,15 +97,12 @@ export const useLogQueryStyles = createStyles((theme) => {
 		},
 
 		timeRangeBTn: {
-			color: colors.black[0],
+			color: colors.gray[6],
 			border: `${sizing.px} ${colors.gray[2]} solid`,
 			minWidth: widths[20],
 			padding: `${spacing.xs} ${spacing.sm}`,
 			marginRight: spacing.xs,
 			background: colors.white[0],
-			fontWeight: fontWeights.medium,
-			fontSize: fontSizes.xs,
-
 			'&:hover': {
 				background: colors.gray[1],
 			},
