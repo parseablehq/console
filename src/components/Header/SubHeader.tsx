@@ -1,7 +1,7 @@
 import useMountedState from '@/hooks/useMountedState';
 import { Box, Breadcrumbs, Button, Menu, Text, TextInput, UnstyledButton, px } from '@mantine/core';
 import { DateTimePicker } from '@mantine/dates';
-import { IconClock, IconRefresh, IconRefreshOff, IconSearch } from '@tabler/icons-react';
+import { IconClock,IconRefresh, IconReload , IconRefreshOff, IconSearch } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import ms from 'ms';
 import type { ChangeEvent, FC, KeyboardEvent } from 'react';
@@ -35,18 +35,16 @@ const SubHeader: FC = () => {
 						</svg>
 						<Text >Streams </Text>
 						<Text >{streamName}</Text>
-						<Text className={activeBtn}> {useMatch("/:streamName/logs")? "Logs": "Query" } </Text>
+						<Text className={activeBtn}> {useMatch("/:streamName/logs") ? "Logs" : "Query"} </Text>
 					</Breadcrumbs>
 				</Box>
 			</Box>
-			<Box>
-				{useMatch("/:streamName/logs")
-					&& <Box className={innerContainer}>
-						<Search />
-					</Box>}
-			</Box>
+
 			<Box>
 				<Box className={innerContainer}>
+					{useMatch("/:streamName/logs") && <Search />}
+					{useMatch("/:streamName/logs") && <RefreshNow />}
+
 					<TimeRange />
 					<RefreshInterval />
 				</Box>
@@ -102,6 +100,33 @@ const Search: FC = () => {
 				icon={<IconSearch size={px('1.2rem')} stroke={1.5} />}
 			/>
 		</Box>
+	);
+};
+
+const RefreshNow: FC = () => {
+	const {
+		state: { subLogQuery, subLogSelectedTimeRange },
+	} = useHeaderContext();
+
+
+	const onRefresh = () => {
+		if (subLogSelectedTimeRange.get().includes('Past')) {
+			const now = dayjs();
+			const timeDiff = subLogQuery.get().endTime.getTime() - subLogQuery.get().startTime.getTime();
+			subLogQuery.set((state) => {
+				state.startTime = now.subtract(timeDiff).toDate();
+				state.endTime = now.toDate();
+			});
+		}
+	};
+	const { classes } = useLogQueryStyles();
+	const { refreshNowBtn } = classes;
+
+	return (
+
+		<Button className={refreshNowBtn} onClick={onRefresh}>
+			<IconReload  size={px('1.2rem')} stroke={1.5} />
+		</Button>
 	);
 };
 
@@ -195,7 +220,7 @@ const TimeRange: FC = () => {
 	} = classes;
 
 	return (
-		<Menu withArrow position="top-start">
+		<Menu withArrow position="top">
 			<Menu.Target>
 				<Button className={timeRangeBTn} leftIcon={<IconClock size={px('1.2rem')} stroke={1.5} />}>
 					<Text>{selectedRange}</Text>

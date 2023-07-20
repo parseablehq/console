@@ -12,6 +12,7 @@ export const defaultQueryResult = ""
 
 interface QueryPageContextState {
     result: SubData<string>;
+	subSchemaToggle: SubData<boolean>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -28,9 +29,11 @@ interface QueryPageProviderProps {
 
 const QueryPageProvider: FC<QueryPageProviderProps> = ({ children }) => {
     const result = useSubscribeState<string>(defaultQueryResult);
+	const subSchemaToggle = useSubscribeState<boolean>(false);
 
 	const state: QueryPageContextState = {
 		result,
+		subSchemaToggle
 	};
 
 	const methods: QueryPageContextMethods = {};

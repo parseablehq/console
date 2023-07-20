@@ -24,7 +24,10 @@ export const useHeaderStyles = createStyles((theme) => {
 			alignItems: 'self-end',
 			width: NAVBAR_WIDTH,
 			justifyContent: "space-between",
-			padding: spacing.md,
+			// padding: spacing.md,
+		},
+		imageSty:{
+			marginLeft: spacing.md,
 		},
 		burgerIcon: {
 			size:"24px",
@@ -56,7 +59,6 @@ export const useLogQueryStyles = createStyles((theme) => {
 		innerContainer: {
 			display: 'flex',
 			paddingTop: spacing.xxs,
-			marginRight: spacing.md,
 		},
 		homeIcon: {
 			size:"24px",
@@ -71,15 +73,25 @@ export const useLogQueryStyles = createStyles((theme) => {
 			display: 'flex',
 			justifyContent: 'center',
 			alignItems: 'center',
-			
-			background: pColor,
-			color: colors.white[0],
+			background: colors.white[0],
+			color: colors.black[0],
 			minWidth: widths[20],
 			border: `${sizing.px} ${colors.gray[2]} solid`,
 			padding: `${spacing.xs} ${spacing.sm}`,
 			marginRight: spacing.xs,
 			'&:hover': {
-				background: sColor,
+				background: colors.gray[1],
+			},
+		},
+		refreshNowBtn: {
+			background: colors.white[0],
+			padding:0,
+			marginRight: spacing.xs,
+			width: "36px",
+			color: colors.black[0],
+			border: `${sizing.px} ${colors.gray[2]} solid`,
+			'&:hover': {
+				background: colors.gray[1],
 			},
 		},
 
@@ -161,6 +173,7 @@ export const useLogQueryStyles = createStyles((theme) => {
 
 		searchContainer: {
 			display: 'flex',
+			paddingRight: spacing.sm,
 		},
 
 		searchTypeBtn: {

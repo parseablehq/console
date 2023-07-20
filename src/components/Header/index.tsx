@@ -14,7 +14,7 @@ type HeaderProps = Omit<MantineHeaderProps, 'children' | 'height' | 'className'>
 
 const Header: FC<HeaderProps> = (props) => {
 	const { classes } = useHeaderStyles();
-	const { container, logoContainer, burgerIcon ,navContainer} = classes;
+	const { container, logoContainer, burgerIcon ,navContainer, imageSty} = classes;
 	const {
 		state: { subNavbarTogle },
 	} = useHeaderContext();
@@ -30,7 +30,7 @@ const Header: FC<HeaderProps> = (props) => {
 		<MantineHeader {...props} className={container} height={HEADER_HEIGHT} p={0} withBorder>
 			<Box className={logoContainer}>
 				<Link to={HOME_ROUTE} style={{ height: 25 }}>
-					<Image maw={HEADER_HEIGHT * 2.5} mx="auto" src={logoInvert} alt="Parseable Logo" />
+					<Image className={imageSty} height={26} src={logoInvert} alt="Parseable Logo" />
 				</Link>
 				<Burger
 					className={burgerIcon}

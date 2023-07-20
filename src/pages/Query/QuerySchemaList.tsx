@@ -1,13 +1,15 @@
 import { FC, useEffect } from 'react';
 import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Table, Box, Title } from '@mantine/core';
-
-
+import { Table, Box, Title, Button, ScrollArea } from '@mantine/core';
+import {  IconX  } from '@tabler/icons-react';
+import {  useQuerySchemaListStyles } from './styles';
+import { useQueryPageContext } from './Context';
 
 const QuerySchemaList: FC = () => {
 	const { data: querySchema, getDataSchema, resetData, loading, error: logStreamSchemaError } = useGetLogStreamSchema();
 	const { state: { subLogQuery } } = useHeaderContext();
+	const { state: { subSchemaToggle } } = useQueryPageContext();
 
 	useEffect(() => {
 		if (subLogQuery.get().streamName) {
@@ -36,23 +38,30 @@ const QuerySchemaList: FC = () => {
 		}
 	});
 
+const {classes} = useQuerySchemaListStyles();
+	const {actionBtn ,container ,textContext ,theadSt ,tbodySt ,innercontainer,scrollAreaSt}=classes;
+
 	return (
-
-		<Box sx={{ padding: 5 ,height:"100%",overflow:"auto"}}>
-			<Title order={4}> Schema for {subLogQuery.get().streamName}</Title >
-
+<Box  className={container}>
+		<Box className={innercontainer}>
+			<Title className={textContext}> Schema for {subLogQuery.get().streamName}</Title >
+			<Button variant='default'  className={actionBtn} onClick={()=> subSchemaToggle.set((state)=>!state) }><IconX /></Button>
+		</Box>
+			
 			{!(logStreamSchemaError) ? (
 				!loading && Boolean(querySchema) ? (
 					(querySchema?.fields.length) ? (
+					<ScrollArea type='always' className={scrollAreaSt}>
 						<Table >
-						  <thead>
+						  <thead className={theadSt}>
 							<tr>
 							  <th>Feild</th>
 							  <th>Type</th>
 							</tr>
 						  </thead>
-						  <tbody>{renderList}</tbody>
+						  <tbody className={tbodySt}>{renderList}</tbody>
 						</Table>
+						</ScrollArea>
 					) : (
 						<p>No Data</p>
 					)

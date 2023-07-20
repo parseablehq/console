@@ -27,7 +27,7 @@ export function errChecker(code: string, streamName: string) {
         let wordsArray=wordsString.split(' ');
         wordsArray.map((word:string, i:any) => {
             if (word.toLowerCase() === 'from' && wordsArray[i + 1]) {   
-                if(wordsArray[i+1]!==streamName){
+                if(wordsArray[i+1]!==streamName && wordsArray[i+1]!==`${streamName};`){
                     ErrorMarker.push({
                         startLineNumber: j+1,
                         endLineNumber: j+1,
