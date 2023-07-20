@@ -74,6 +74,18 @@ export const useQueryCodeEditorStyles = createStyles((theme) => {
 			marginInlineEnd: spacing.xs,
 			
 		},
+		actionBtn: {
+	
+			'&:hover': {
+				color: sColor,
+			},
+			height: "34px",
+			width: "34px",
+			padding: "0px",
+			marginInlineEnd: spacing.xs,
+			color: colors.gray[5],
+			borderColor:colors.gray[2]
+		},
 		textContext: {
 			marginRight: spacing.md,
 			fontSize: fontSizes.md,

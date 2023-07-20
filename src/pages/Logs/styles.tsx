@@ -14,8 +14,8 @@ export const useLogsStyles = createStyles((theme) => {
 });
 
 export const useLogTableStyles = createStyles((theme) => {
-	const { spacing, other, radius, shadows, colors } = theme;
-	const { heights, widths, fontWeights } = other;
+	const { spacing, other, radius, shadows, colors ,fontSizes} = theme;
+	const { heights, widths, fontWeights ,} = other;
 	const pColor = colors.brandPrimary[0];
 	const sColor = colors.brandSecondary[0];
 
@@ -44,8 +44,9 @@ export const useLogTableStyles = createStyles((theme) => {
 		paginationRow: {
 			'.mantine-Pagination-control': {
 			border: `solid 1px ${colors.gray[2]}`,
+			fontSize: fontSizes.sm,
+			'&:hover': {
 
-				'&:hover': {
 					color: sColor,
 				},
 				'&:data-active=true': {
@@ -170,6 +171,7 @@ export const useLogTableStyles = createStyles((theme) => {
 			alignItems: 'center',
 			justifyContent: 'center',
 			cursor: 'pointer',
+			fontSize: fontSizes.sm,
 			background: colors.white[0],
 			padding: `0.2rem ${spacing.xs}`,
 			border: `${widths.px} ${colors.gray[1]} solid`,
@@ -193,7 +195,7 @@ export const useLogTableStyles = createStyles((theme) => {
 			},
 		},
 		limitOption: {
-			fontWeight: fontWeights.medium,
+			fontWeight: fontWeights.normal,
 
 			'&:hover': {
 				color: sColor,

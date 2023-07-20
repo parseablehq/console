@@ -24,7 +24,8 @@ export const useNavbarStyles = createStyles((theme) => {
 		},
 		streamsBtn: {
 			padding:"24px 24px 14px 24px", ":hover": { background: "white" },
-			cursor: 'default'
+			cursor: 'default',
+			color: theme.colors.gray[6],
 
 		},
 		linkBtnActive: {
@@ -35,7 +36,7 @@ export const useNavbarStyles = createStyles((theme) => {
 			fontWeight: fontWeights.bold,
 		},
 		linkBtn: {
-			color: theme.colors.gray[5],
+			color: theme.colors.gray[6],
 			'&:hover *': {
 				color: sColor,
 			},

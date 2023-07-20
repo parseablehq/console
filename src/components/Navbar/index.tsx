@@ -160,7 +160,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 					return (
 						<NavLink
 							label={link.label}
-							icon={<link.icon size="1.3rem" stroke={1.5} />}
+							icon={<link.icon size="1.3rem" stroke={1.2} />}
 							sx={{ paddingLeft: 53 }}
 							onClick={() => { navigate(`/${activeStream}${link.pathname}`);  }}
 							key={link.label}
