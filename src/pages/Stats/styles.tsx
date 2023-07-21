@@ -28,16 +28,15 @@ export const useStatusStyles = createStyles((theme) => {
 			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT}px)`,
 			display: 'flex',
 			flexDirection: 'column',
-			overflow: 'hidden'
+			overflow: 'hidden',
 		},
 		headContainer: {
-			display: "flex",
-			justifyContent: "space-between",
-			padding:spacing.md,
-			height:"55px",
-			alignItems:"center",
+			display: 'flex',
+			justifyContent: 'space-between',
+			padding: spacing.md,
+			height: '55px',
+			alignItems: 'center',
 			borderBottom: `${widths.px} ${colors.gray[1]} solid`,
-
 		},
 
 		statusText: {
@@ -46,10 +45,10 @@ export const useStatusStyles = createStyles((theme) => {
 			color: colors.gray[6],
 		},
 		statusTextResult: {
-			color: "#00CC14"
+			color: '#00CC14',
 		},
 		genterateContiner: {
-			marginRight:spacing.sm
+			marginRight: spacing.sm,
 		},
 		genterateText: {
 			fontSize: fontSizes.xs,
@@ -60,9 +59,6 @@ export const useStatusStyles = createStyles((theme) => {
 			fontSize: fontSizes.xs,
 			color: colors.gray[6],
 		},
-
-
-
 	};
 });
 export const useAlertsStyles = createStyles((theme) => {
@@ -81,16 +77,15 @@ export const useAlertsStyles = createStyles((theme) => {
 			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT}px)`,
 			display: 'flex',
 			flexDirection: 'column',
-			overflow: 'hidden'
+			overflow: 'hidden',
 		},
 		headContainer: {
-			display: "flex",
-			justifyContent: "space-between",
-			padding:spacing.md,
-			height:"55px",
-			alignItems:"center",
+			display: 'flex',
+			justifyContent: 'space-between',
+			padding: spacing.md,
+			height: '55px',
+			alignItems: 'center',
 			borderBottom: `${widths.px} ${colors.gray[1]} solid`,
-
 		},
 
 		statusText: {
@@ -99,10 +94,10 @@ export const useAlertsStyles = createStyles((theme) => {
 			color: colors.gray[6],
 		},
 		statusTextResult: {
-			color: "#00CC14"
+			color: '#00CC14',
 		},
 		genterateContiner: {
-			marginRight:spacing.sm
+			marginRight: spacing.sm,
 		},
 		genterateText: {
 			fontSize: fontSizes.xs,
@@ -113,15 +108,12 @@ export const useAlertsStyles = createStyles((theme) => {
 			fontSize: fontSizes.xs,
 			color: colors.gray[6],
 		},
-
-
-
 	};
 });
 
 export const useLogTableStyles = createStyles((theme) => {
-	const { spacing, other, radius, shadows, colors ,fontSizes} = theme;
-	const { heights, widths, fontWeights ,} = other;
+	const { spacing, other, radius, shadows, colors, fontSizes } = theme;
+	const { heights, widths, fontWeights } = other;
 	const pColor = colors.brandPrimary[0];
 	const sColor = colors.brandSecondary[0];
 
@@ -149,9 +141,9 @@ export const useLogTableStyles = createStyles((theme) => {
 
 		paginationRow: {
 			'.mantine-Pagination-control': {
-			border: `solid 1px ${colors.gray[2]}`,
-			fontSize: fontSizes.sm,
-			'&:hover': {
+				border: `solid 1px ${colors.gray[2]}`,
+				fontSize: fontSizes.sm,
+				'&:hover': {
 					color: sColor,
 				},
 				'&:data-active=true': {
@@ -168,7 +160,7 @@ export const useLogTableStyles = createStyles((theme) => {
 		},
 
 		tableContainer: {
-			position: 'relative'
+			position: 'relative',
 		},
 
 		tableStyle: {
@@ -200,11 +192,10 @@ export const useLogTableStyles = createStyles((theme) => {
 				height: heights[10],
 				textAlign: 'left',
 				verticalAlign: 'middle',
-				border:"none !important",
-
+				border: 'none !important',
 			},
 		},
-		trEvenStyle:{
+		trEvenStyle: {
 			cursor: 'pointer',
 			background: colors.gray[0],
 
@@ -216,8 +207,7 @@ export const useLogTableStyles = createStyles((theme) => {
 				height: heights[10],
 				textAlign: 'left',
 				verticalAlign: 'middle',
-				border:"none !important",
-
+				border: 'none !important',
 			},
 		},
 
@@ -230,7 +220,7 @@ export const useLogTableStyles = createStyles((theme) => {
 		tdArrow: {
 			position: 'sticky',
 			right: 0,
-			background:"inherit",
+			background: 'inherit',
 			boxShadow: shadows.sm,
 
 			'tr:hover &': {
@@ -266,9 +256,7 @@ export const useLogTableStyles = createStyles((theme) => {
 			height: heights.full,
 		},
 
-		limitContainer: {
-			
-		},
+		limitContainer: {},
 
 		limitBtn: {
 			display: 'flex',
@@ -286,9 +274,7 @@ export const useLogTableStyles = createStyles((theme) => {
 			},
 		},
 
-		limitBtnText: {
-		
-		},
+		limitBtnText: {},
 
 		limitActive: {
 			background: pColor,
@@ -345,7 +331,6 @@ export const useViewLogStyles = createStyles((theme) => {
 	};
 });
 
-
 export const useTableColumnStyle = createStyles((theme) => {
 	const { spacing, colors, fontSizes, other, primaryColor } = theme;
 	const { fontWeights, widths } = other;
@@ -358,7 +343,7 @@ export const useTableColumnStyle = createStyles((theme) => {
 			display: 'flex',
 			alignItems: 'center',
 			textAlign: 'left',
-			height: "100%",
+			height: '100%',
 			'&:hover': {
 				background: colors.gray[1],
 			},
@@ -366,7 +351,7 @@ export const useTableColumnStyle = createStyles((theme) => {
 
 		labelIcon: {
 			color: colors.gray[5],
-			marginLeft:spacing.xs
+			marginLeft: spacing.xs,
 		},
 
 		labelIconActive: {

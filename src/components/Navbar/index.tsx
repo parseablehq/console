@@ -1,12 +1,22 @@
 import type { NavbarProps as MantineNavbarProps } from '@mantine/core';
 import { Navbar as MantineNavbar, NavLink, Select, Anchor, Card, Box, Modal, Text, Image } from '@mantine/core';
-import { IconColumns , IconZoomCode,IconReportAnalytics , IconCheck, IconFileAlert, IconReload, IconHelpCircle, IconLogout, IconUser } from '@tabler/icons-react';
+import {
+	IconColumns,
+	IconZoomCode,
+	IconReportAnalytics,
+	IconCheck,
+	IconFileAlert,
+	IconReload,
+	IconHelpCircle,
+	IconLogout,
+	IconUser,
+} from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
 import docImage from '@/assets/images/doc.webp';
 import githubLogo from '@/assets/images/github-logo.webp';
 import slackLogo from '@/assets/images/slack-logo.webp';
 import { useNavbarStyles } from './styles';
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams } from 'react-router-dom';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import { notifications } from '@mantine/notifications';
 import { useNavigate } from 'react-router-dom';
@@ -16,11 +26,10 @@ import dayjs from 'dayjs';
 import { useDisclosure, useLocalStorage } from '@mantine/hooks';
 import { LOGIN_ROUTE } from '@/constants/routes';
 
-
 const links = [
-	{ icon: IconColumns , label: 'Logs', pathname: "/logs" },
-	{ icon: IconZoomCode , label: 'Query', pathname: "/query" },
-	{ icon: IconReportAnalytics , label: 'Stats', pathname: "/stats"}
+	{ icon: IconColumns, label: 'Logs', pathname: '/logs' },
+	{ icon: IconZoomCode, label: 'Query', pathname: '/query' },
+	{ icon: IconReportAnalytics, label: 'Stats', pathname: '/stats' },
 ];
 
 type NavbarProps = Omit<MantineNavbarProps, 'children'>;
@@ -29,13 +38,22 @@ const Navbar: FC<NavbarProps> = (props) => {
 	const [username] = useLocalStorage({ key: 'username', getInitialValueInEffect: false });
 	const navigate = useNavigate();
 	const { data: streams, loading, error, getData } = useGetLogStreamList();
-	const [activeStream, setActiveStream] = useState("");
-	const [searchValue, setSearchValue] = useState("");
+	const [activeStream, setActiveStream] = useState('');
+	const [searchValue, setSearchValue] = useState('');
 	const { classes } = useNavbarStyles();
-	const [currentPage, setCurrentPage] = useState("/logs");
-	const { container, linkBtnActive, linkBtn,
-		selectStreambtn, streamsBtn, lowerContainer,
-		actionBtn, helpTitle, helpDescription, userBtn } = classes;
+	const [currentPage, setCurrentPage] = useState('/logs');
+	const {
+		container,
+		linkBtnActive,
+		linkBtn,
+		selectStreambtn,
+		streamsBtn,
+		lowerContainer,
+		actionBtn,
+		helpTitle,
+		helpDescription,
+		userBtn,
+	} = classes;
 	const { streamName } = useParams();
 	const nav = useNavigate();
 	const [, , removeCredentials] = useLocalStorage({ key: 'credentials' });
@@ -45,7 +63,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 	} = useHeaderContext();
 	const [isSubNavbarOpen, setIsSubNavbarOpen] = useMountedState(false);
 	const [opened, { close, open }] = useDisclosure();
-	let location = useLocation()
+	let location = useLocation();
 
 	useEffect(() => {
 		const listener = subNavbarTogle.subscribe(setIsSubNavbarOpen);
@@ -53,7 +71,6 @@ const Navbar: FC<NavbarProps> = (props) => {
 			listener();
 		};
 	}, [subNavbarTogle.get()]);
-
 
 	const onSignOut = () => {
 		removeCredentials();
@@ -66,7 +83,9 @@ const Navbar: FC<NavbarProps> = (props) => {
 		);
 	};
 
-	const { state: { subLogQuery, subLogSelectedTimeRange, subLogSearch, subRefreshInterval } } = useHeaderContext();
+	const {
+		state: { subLogQuery, subLogSelectedTimeRange, subLogSearch, subRefreshInterval },
+	} = useHeaderContext();
 
 	useEffect(() => {
 		if (streamName) {
@@ -87,8 +106,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 				subRefreshInterval.set(null);
 				setCurrentPage(location.pathname);
 			}
-		}
-		else if (streams && Boolean(streams.length)) {
+		} else if (streams && Boolean(streams.length)) {
 			navigate(`/${streams[0].name}/logs`);
 		}
 	}, [streams, location]);
@@ -109,8 +127,8 @@ const Navbar: FC<NavbarProps> = (props) => {
 				message: 'Streams will be loaded.',
 				autoClose: false,
 				withCloseButton: false,
-			})
-		};
+			});
+		}
 		if (streams && Boolean(streams.length)) {
 			notifications.update({
 				id: 'load-data',
@@ -131,26 +149,34 @@ const Navbar: FC<NavbarProps> = (props) => {
 				autoClose: 2000,
 			});
 		}
-
 	}, [streams, error, loading]);
-
 
 	return (
 		<MantineNavbar {...props} withBorder zIndex={1} hiddenBreakpoint={window.outerWidth + 20} hidden={isSubNavbarOpen}>
 			<MantineNavbar.Section grow className={container}>
-				<NavLink label="Streams" icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-					<path d="M19 5C19 7.21 14.97 9 10 9C5.03 9 1 7.21 1 5M19 5C19 2.79 14.97 1 10 1C5.03 1 1 2.79 1 5M19 5V10M1 5V10M19 10C19 12.21 14.97 14 10 14C5.03 14 1 12.21 1 10M19 10V15C19 17.21 14.97 19 10 19C5.03 19 1 17.21 1 15V10" stroke="#211F1F" strokeLinecap="round" strokeLinejoin='round' />
-				</svg>
-				} className={streamsBtn} />
+				<NavLink
+					label="Streams"
+					icon={
+						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+							<path
+								d="M19 5C19 7.21 14.97 9 10 9C5.03 9 1 7.21 1 5M19 5C19 2.79 14.97 1 10 1C5.03 1 1 2.79 1 5M19 5V10M1 5V10M19 10C19 12.21 14.97 14 10 14C5.03 14 1 12.21 1 10M19 10V15C19 17.21 14.97 19 10 19C5.03 19 1 17.21 1 15V10"
+								stroke="#211F1F"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							/>
+						</svg>
+					}
+					className={streamsBtn}
+				/>
 				<Select
 					placeholder="Pick one"
-					onChange={(value) => handleChange(value || "")}
+					onChange={(value) => handleChange(value || '')}
 					nothingFound="No options"
 					value={activeStream}
 					searchValue={searchValue}
 					onSearchChange={(value) => setSearchValue(value)}
 					onDropdownClose={() => setSearchValue(activeStream)}
-					onDropdownOpen={() => setSearchValue("")}
+					onDropdownOpen={() => setSearchValue('')}
 					data={streams?.map((stream) => ({ value: stream.name, label: stream.name })) ?? []}
 					searchable
 					required
@@ -162,19 +188,43 @@ const Navbar: FC<NavbarProps> = (props) => {
 							label={link.label}
 							icon={<link.icon size="1.3rem" stroke={1.2} />}
 							sx={{ paddingLeft: 53 }}
-							onClick={() => { navigate(`/${activeStream}${link.pathname}`);  }}
+							onClick={() => {
+								navigate(`/${activeStream}${link.pathname}`);
+							}}
 							key={link.label}
-							className={link.pathname ? window.location.pathname.includes(link.pathname) ? linkBtnActive : linkBtn : linkBtn}
+							className={
+								link.pathname ? (window.location.pathname.includes(link.pathname) ? linkBtnActive : linkBtn) : linkBtn
+							}
 						/>
-					)
+					);
 				})}
 				{error && <div>{error}</div>}
-				{error && <NavLink label="Retry" icon={<IconReload size="1rem" stroke={1.5} />} component="button" onClick={getData} sx={{ paddingLeft: 0 }} />}
+				{error && (
+					<NavLink
+						label="Retry"
+						icon={<IconReload size="1rem" stroke={1.5} />}
+						component="button"
+						onClick={getData}
+						sx={{ paddingLeft: 0 }}
+					/>
+				)}
 			</MantineNavbar.Section>
 			<MantineNavbar.Section className={lowerContainer}>
 				<NavLink label={username} icon={<IconUser size="1.3rem" stroke={1.3} />} className={userBtn} component="a" />
-				<NavLink label="Help" icon={<IconHelpCircle size="1.3rem" stroke={1.3} />} className={actionBtn} component="a" onClick={open} />
-				<NavLink label="Log out" icon={<IconLogout size="1.3rem" stroke={1.3} />} className={actionBtn} component="a" onClick={onSignOut} />
+				<NavLink
+					label="Help"
+					icon={<IconHelpCircle size="1.3rem" stroke={1.3} />}
+					className={actionBtn}
+					component="a"
+					onClick={open}
+				/>
+				<NavLink
+					label="Log out"
+					icon={<IconLogout size="1.3rem" stroke={1.3} />}
+					className={actionBtn}
+					component="a"
+					onClick={onSignOut}
+				/>
 			</MantineNavbar.Section>
 			<Modal withinPortal opened={opened} onClose={close} withCloseButton={false} size="sm" centered>
 				<Text className={helpTitle}>Need any help?</Text>
@@ -188,7 +238,6 @@ const Navbar: FC<NavbarProps> = (props) => {
 		</MantineNavbar>
 	);
 };
-
 
 const helpResources = [
 	{
@@ -214,8 +263,6 @@ const helpResources = [
 type HelpCardProps = {
 	data: (typeof helpResources)[number];
 };
-
-
 
 const HelpCard: FC<HelpCardProps> = (props) => {
 	const { data } = props;

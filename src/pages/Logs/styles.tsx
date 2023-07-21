@@ -14,8 +14,8 @@ export const useLogsStyles = createStyles((theme) => {
 });
 
 export const useLogTableStyles = createStyles((theme) => {
-	const { spacing, other, radius, shadows, colors ,fontSizes} = theme;
-	const { heights, widths, fontWeights ,} = other;
+	const { spacing, other, radius, shadows, colors, fontSizes } = theme;
+	const { heights, widths, fontWeights } = other;
 	const pColor = colors.brandPrimary[0];
 	const sColor = colors.brandSecondary[0];
 
@@ -43,9 +43,9 @@ export const useLogTableStyles = createStyles((theme) => {
 
 		paginationRow: {
 			'.mantine-Pagination-control': {
-			border: `solid 1px ${colors.gray[2]}`,
-			fontSize: fontSizes.sm,
-			'&:hover': {
+				border: `solid 1px ${colors.gray[2]}`,
+				fontSize: fontSizes.sm,
+				'&:hover': {
 					color: sColor,
 				},
 				'&:data-active=true': {
@@ -62,7 +62,7 @@ export const useLogTableStyles = createStyles((theme) => {
 		},
 
 		tableContainer: {
-			position: 'relative'
+			position: 'relative',
 		},
 
 		tableStyle: {
@@ -94,11 +94,10 @@ export const useLogTableStyles = createStyles((theme) => {
 				height: heights[10],
 				textAlign: 'left',
 				verticalAlign: 'middle',
-				border:"none !important",
-
+				border: 'none !important',
 			},
 		},
-		trEvenStyle:{
+		trEvenStyle: {
 			cursor: 'pointer',
 			background: colors.gray[0],
 
@@ -110,8 +109,7 @@ export const useLogTableStyles = createStyles((theme) => {
 				height: heights[10],
 				textAlign: 'left',
 				verticalAlign: 'middle',
-				border:"none !important",
-
+				border: 'none !important',
 			},
 		},
 
@@ -124,7 +122,7 @@ export const useLogTableStyles = createStyles((theme) => {
 		tdArrow: {
 			position: 'sticky',
 			right: 0,
-			background:"inherit",
+			background: 'inherit',
 			boxShadow: shadows.sm,
 
 			'tr:hover &': {
@@ -160,9 +158,7 @@ export const useLogTableStyles = createStyles((theme) => {
 			height: heights.full,
 		},
 
-		limitContainer: {
-			
-		},
+		limitContainer: {},
 
 		limitBtn: {
 			display: 'flex',
@@ -180,9 +176,7 @@ export const useLogTableStyles = createStyles((theme) => {
 			},
 		},
 
-		limitBtnText: {
-		
-		},
+		limitBtnText: {},
 
 		limitActive: {
 			background: pColor,
@@ -239,7 +233,6 @@ export const useViewLogStyles = createStyles((theme) => {
 	};
 });
 
-
 export const useTableColumnStyle = createStyles((theme) => {
 	const { spacing, colors, fontSizes, other, primaryColor } = theme;
 	const { fontWeights, widths } = other;
@@ -252,7 +245,7 @@ export const useTableColumnStyle = createStyles((theme) => {
 			display: 'flex',
 			alignItems: 'center',
 			textAlign: 'left',
-			height: "100%",
+			height: '100%',
 			'&:hover': {
 				background: colors.gray[1],
 			},
@@ -260,7 +253,7 @@ export const useTableColumnStyle = createStyles((theme) => {
 
 		labelIcon: {
 			color: colors.gray[5],
-			marginLeft:spacing.xs
+			marginLeft: spacing.xs,
 		},
 
 		labelIconActive: {

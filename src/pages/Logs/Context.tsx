@@ -1,4 +1,4 @@
-import type {Log } from '@/@types/parseable/api/query';
+import type { Log } from '@/@types/parseable/api/query';
 import useSubscribeState, { SubData } from '@/hooks/useSubscribeState';
 import type { FC } from 'react';
 import { ReactNode, createContext, useContext } from 'react';
@@ -8,7 +8,6 @@ const Context = createContext({});
 const { Provider } = Context;
 
 export const LOG_QUERY_LIMITS = [30, 50, 100, 150, 200];
-
 
 interface LogsPageContextState {
 	subLogStreamError: SubData<string | null>;

@@ -64,7 +64,7 @@ const Column: FC<Column> = (props) => {
 
 	const filterActive = useMemo(() => Boolean(appliedFilter(columnName)?.length), [selectedFilters]);
 	const canApply = useMemo(() => !compare(selectedFilters, appliedFilter(columnName)), [selectedFilters]);
-	function capitalizeFirstLetter(word:string) {
+	function capitalizeFirstLetter(word: string) {
 		return word.charAt(0).toUpperCase() + word.slice(1);
 	}
 	const { classes, cx } = useTableColumnStyle();
@@ -160,8 +160,8 @@ const CheckboxRow: FC<CheckboxRowProps> = (props) => {
 			style={{
 				whiteSpace: 'pre-wrap',
 				maxWidth: 250,
-				color:"black",
-				backgroundColor:"white"
+				color: 'black',
+				backgroundColor: 'white',
 			}}>
 			<div onMouseOver={open} onMouseOut={close}>
 				<Checkbox value={value} label={parseLogData(label, columnName)} className={checkBoxStyle} />

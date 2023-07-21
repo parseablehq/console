@@ -1,5 +1,5 @@
 import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
-import {  getLogStreamRetention } from '@/api/logStream';
+import { getLogStreamRetention } from '@/api/logStream';
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
 
@@ -8,7 +8,7 @@ export const useGetLogStreamRetention = () => {
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
 
-	const getLogRetention= async (streamName: string) => {
+	const getLogRetention = async (streamName: string) => {
 		try {
 			setLoading(true);
 			setError(null);

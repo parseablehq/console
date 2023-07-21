@@ -3,8 +3,7 @@ import { createStyles } from '@mantine/core';
 
 export const useHeaderStyles = createStyles((theme) => {
 	const { colors, spacing, fontSizes } = theme;
-	const { fontWeights} = theme.other;
-
+	const { fontWeights } = theme.other;
 
 	return {
 		container: {
@@ -15,7 +14,7 @@ export const useHeaderStyles = createStyles((theme) => {
 			fontFamily: theme.fontFamily,
 			fontSize: fontSizes.md,
 			fontWeight: fontWeights.normal,
-			lineHeight: "normal",
+			lineHeight: 'normal',
 			height: HEADER_HEIGHT,
 			width: '100%',
 		},
@@ -23,24 +22,22 @@ export const useHeaderStyles = createStyles((theme) => {
 			display: 'flex',
 			alignItems: 'self-end',
 			width: NAVBAR_WIDTH,
-			justifyContent: "space-between",
+			justifyContent: 'space-between',
 			// padding: spacing.md,
 		},
-		imageSty:{
+		imageSty: {
 			marginLeft: spacing.md,
 		},
 		burgerIcon: {
-			size:"24px",
+			size: '24px',
 			color: theme.colors.gray[7],
 		},
 		navContainer: {
 			width: `calc(100% - ${NAVBAR_WIDTH}px)`,
-			justifyContent: "space-between",
+			justifyContent: 'space-between',
 		},
-
 	};
 });
-
 
 export const useLogQueryStyles = createStyles((theme) => {
 	const { spacing, radius, colors, fontSizes } = theme;
@@ -62,12 +59,12 @@ export const useLogQueryStyles = createStyles((theme) => {
 			color: colors.gray[6],
 		},
 		homeIcon: {
-			size:"24px",
+			size: '24px',
 			strokeWidth: 1.0,
 		},
-		activeBtn:{
+		activeBtn: {
 			color: colors.brandPrimary[0],
-			textDecoration: "underline",
+			textDecoration: 'underline',
 		},
 
 		intervalBtn: {
@@ -86,9 +83,9 @@ export const useLogQueryStyles = createStyles((theme) => {
 		},
 		refreshNowBtn: {
 			background: colors.white[0],
-			padding:0,
+			padding: 0,
 			marginRight: spacing.xs,
-			width: "36px",
+			width: '36px',
 			color: theme.colors.gray[6],
 			border: `${sizing.px} ${colors.gray[2]} solid`,
 			'&:hover': {

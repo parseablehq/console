@@ -5,49 +5,44 @@ import useMountedState from './useMountedState';
 import { LogsQuery } from '@/@types/parseable/api/query';
 
 export const useQueryResult = () => {
-    const [data, setData] = useMountedState<{
-        data: LogStreamData;
-    } | null>(null);
-    const [error, setError] = useMountedState<string | null>(null);
-    const [loading, setLoading] = useMountedState<boolean>(true);
+	const [data, setData] = useMountedState<{
+		data: LogStreamData;
+	} | null>(null);
+	const [error, setError] = useMountedState<string | null>(null);
+	const [loading, setLoading] = useMountedState<boolean>(true);
 
-    const getQueryData = async (logsQuery: LogsQuery, query = '') => {
-        try {
-            setLoading(true);
-            setError(null);
+	const getQueryData = async (logsQuery: LogsQuery, query = '') => {
+		try {
+			setLoading(true);
+			setError(null);
 
-            const [logsQueryRes] = await Promise.all([
-                getQueryResult(logsQuery, query)
-            ]);
+			const [logsQueryRes] = await Promise.all([getQueryResult(logsQuery, query)]);
 
-            const data = logsQueryRes.data;
+			const data = logsQueryRes.data;
 
-            if (logsQueryRes.status === StatusCodes.OK) {
+			if (logsQueryRes.status === StatusCodes.OK) {
+				setData({ data });
+				return;
+			}
 
-                setData({ data });
-                return;
-            }
+			if (typeof data === 'string' && data.includes('Stream is not initialized yet')) {
+				setData({
+					data: [],
+				});
+				return;
+			}
 
-            if (
-                typeof data === 'string' && data.includes('Stream is not initialized yet')
-            ) {
-                setData({
-                    data: [],
-                });
-                return;
-            }
+			setError(logsQueryRes.data);
+		} catch (error: any) {
+			setError(error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
 
-            setError(logsQueryRes.data);
-        } catch(error: any) {
-            setError(error.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+	const resetData = () => {
+		setData(null);
+	};
 
-    const resetData = () => {
-        setData(null);
-    };
-
-    return { data, error, loading, getQueryData, resetData };
+	return { data, error, loading, getQueryData, resetData };
 };

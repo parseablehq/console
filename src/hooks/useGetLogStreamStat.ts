@@ -8,7 +8,7 @@ export const useGetLogStreamStat = () => {
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
 
-	const getLogStat= async (streamName: string) => {
+	const getLogStat = async (streamName: string) => {
 		try {
 			setLoading(true);
 			setError(null);
