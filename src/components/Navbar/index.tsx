@@ -20,7 +20,7 @@ import { LOGIN_ROUTE } from '@/constants/routes';
 const links = [
 	{ icon: IconColumns , label: 'Logs', pathname: "/logs" },
 	{ icon: IconZoomCode , label: 'Query', pathname: "/query" },
-	{ icon: IconReportAnalytics , label: 'Stats', pathname: "/metrics"}
+	{ icon: IconReportAnalytics , label: 'Stats', pathname: "/stats"}
 ];
 
 type NavbarProps = Omit<MantineNavbarProps, 'children'>;

@@ -53,3 +53,13 @@ export const MainLayoutElement: FC = () => {
 			</MainLayoutPageProvider>
 	);
 }
+
+const Stats = lazy(() => import('@/pages/Stats'));
+
+export const StatsElement: FC = () => {
+	return (
+		<SuspensePage>
+			<Stats />
+		</SuspensePage>
+	);
+}
