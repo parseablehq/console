@@ -1,4 +1,4 @@
-import type { Log, LogsData, LogsQuery, LogsSearch } from '@/@types/parseable/api/query';
+import { SortOrder, type Log, type LogsData, type LogsQuery, type LogsSearch } from '@/@types/parseable/api/query';
 import { getQueryLogs } from '@/api/query';
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
@@ -15,14 +15,21 @@ export const useQueryLogs = () => {
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(true);
 	const [pageLogData, setPageLogData] = useMountedState<LogsData | null>(null);
-	const [querySearch, setQuerySearch] = useMountedState<LogsSearch>({ search: '', filters: {} });
+	const [querySearch, setQuerySearch] = useMountedState<LogsSearch>({ 
+		search: '', 
+		filters: {}, 
+		sort: { 
+			field: 'p_timestamp', 
+			order: SortOrder.DESCENDING 
+		} 
+	});
 	const [isPending, startTransition] = useTransition();
 
 	const data: Log[] | null = useMemo(() => {
 		if (_dataRef.current) {
 			const logs = _dataRef.current;
 			const temp = [];
-			const { search, filters } = querySearch;
+			const { search, filters, sort } = querySearch;
 			const searchText = search.trim().toLowerCase();
 			const filteredKeys = Object.keys(filters);
 
@@ -50,6 +57,18 @@ export const useQueryLogs = () => {
 					temp.push(log);
 				}
 			}
+
+			const { field, order } = sort;
+
+			temp.sort(({[field]: aData}, {[field]: bData}) => {
+				let res = 0
+				if (aData === bData) res = 0;
+				else if (aData == null) res = -1;
+				else if (bData == null) res = 1;
+				else res = aData > bData ? 1 : -1;
+
+				return res*order;
+			})
 
 			return temp;
 		}
@@ -139,6 +158,7 @@ export const useQueryLogs = () => {
 		pageLogData,
 		setQuerySearch,
 		getColumnFilters,
+		sort: querySearch.sort,
 		error,
 		loading: loading || isPending,
 		getQueryData,

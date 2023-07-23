@@ -1,7 +1,7 @@
-import type { Log } from '@/@types/parseable/api/query';
+import { Log, SortOrder } from '@/@types/parseable/api/query';
 import { Box, Checkbox, Popover, Text, TextInput, Tooltip, UnstyledButton, px } from '@mantine/core';
 import { type ChangeEvent, type FC, Fragment, useTransition, useRef, useCallback, useMemo } from 'react';
-import { IconFilter, IconSearch } from '@tabler/icons-react';
+import { IconFilter, IconSearch, IconSortAscending, IconSortDescending } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
 import { useTableColumnStyle } from './styles';
 import EmptyBox from '@/components/Empty';
@@ -17,10 +17,12 @@ type Column = {
 	getColumnFilters: (columnName: string) => Log[number][] | null;
 	appliedFilter: (columnName: string) => string[];
 	applyFilter: (columnName: string, value: string[]) => void;
+	setSorting: (order: SortOrder | null) => void;
+	fieldSortOrder: SortOrder | null
 };
 
 const Column: FC<Column> = (props) => {
-	const { columnName, getColumnFilters, appliedFilter, applyFilter } = props;
+	const { columnName, getColumnFilters, appliedFilter, applyFilter, setSorting, fieldSortOrder } = props;
 
 	// columnValues ref will always have the unfiltered data.
 	const _columnValuesRef = useRef<Log[number][] | null>(null);
@@ -87,6 +89,7 @@ const Column: FC<Column> = (props) => {
 				</Popover.Target>
 				<Popover.Dropdown>
 					<Box>
+						<SortWidget setSortOrder={setSorting} fieldSortOrder={fieldSortOrder}/>
 						<Text mb="xs">Filter by values:</Text>
 						<TextInput
 							className={searchInputStyle}
@@ -169,5 +172,39 @@ const CheckboxRow: FC<CheckboxRowProps> = (props) => {
 		</Tooltip>
 	);
 };
+
+type SortWidgetProps = {
+	setSortOrder: (order: SortOrder | null) => void;
+	fieldSortOrder: SortOrder | null;
+}
+
+const SortWidget: FC<SortWidgetProps> = (props) => {
+	const { setSortOrder, fieldSortOrder } = props;
+
+	return <>
+		<IconSortAscending
+			cursor={'pointer'}
+			onClick={() => 
+				setSortOrder(
+					fieldSortOrder === SortOrder.ASCENDING ? 
+						null 
+							: 
+						SortOrder.ASCENDING
+				)} 
+			stroke={fieldSortOrder === SortOrder.ASCENDING ? 2 : 1} 
+		/>
+		<IconSortDescending
+			cursor={'pointer'} 
+			onClick={() => 
+				setSortOrder(
+					fieldSortOrder === SortOrder.DESCENDING ? 
+						null 
+							: 
+						SortOrder.DESCENDING
+				)} 
+			stroke={fieldSortOrder === SortOrder.DESCENDING ? 2 : 1}
+		/>
+	</>
+}
 
 export default Column;
