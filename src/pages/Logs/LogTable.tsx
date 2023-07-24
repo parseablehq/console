@@ -81,6 +81,9 @@ const LogTable: FC = () => {
 		setColumnToggles(new Map(columnToggles.set(columnName, value)));
 	};
 
+	/**
+	 * Function to get a setter to set sort order on a given field
+	 */
 	const sortingSetter = (columName: string) => {
 		return (order: SortOrder | null) => {
 			setQuerySearch((prev) => {

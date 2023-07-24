@@ -63,8 +63,8 @@ export const useQueryLogs = () => {
 			temp.sort(({[field]: aData}, {[field]: bData}) => {
 				let res = 0
 				if (aData === bData) res = 0;
-				else if (aData == null) res = -1;
-				else if (bData == null) res = 1;
+				else if (aData === null) res = -1;
+				else if (bData === null) res = 1;
 				else res = aData > bData ? 1 : -1;
 
 				return res*order;

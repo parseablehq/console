@@ -12,6 +12,47 @@ import compare from 'just-compare';
 import { parseLogData } from '@/utils';
 import { useDisclosure } from '@mantine/hooks';
 
+type SortWidgetProps = {
+	setSortOrder: (order: SortOrder | null) => void;
+	fieldSortOrder: SortOrder | null;
+}
+
+/**
+ * Component that allows selecting sorting by a given field
+ */
+const SortWidget: FC<SortWidgetProps> = (props) => {
+	const { setSortOrder, fieldSortOrder } = props;
+	const toggleAscending = () => {
+		setSortOrder(
+			fieldSortOrder === SortOrder.ASCENDING ?
+				null
+					:
+				SortOrder.ASCENDING
+		)
+	}
+	const toggleDescending = () => {
+		setSortOrder(
+			fieldSortOrder === SortOrder.DESCENDING ?
+				null
+					:
+				SortOrder.DESCENDING
+		)
+	}
+
+	return <>
+		<IconSortAscending
+			cursor={'pointer'}
+			onClick={toggleAscending}
+			stroke={fieldSortOrder === SortOrder.ASCENDING ? 2 : 1}
+		/>
+		<IconSortDescending
+			cursor={'pointer'}
+			onClick={toggleDescending}
+			stroke={fieldSortOrder === SortOrder.DESCENDING ? 2 : 1}
+		/>
+	</>
+}
+
 type Column = {
 	columnName: string;
 	getColumnFilters: (columnName: string) => Log[number][] | null;
@@ -172,39 +213,5 @@ const CheckboxRow: FC<CheckboxRowProps> = (props) => {
 		</Tooltip>
 	);
 };
-
-type SortWidgetProps = {
-	setSortOrder: (order: SortOrder | null) => void;
-	fieldSortOrder: SortOrder | null;
-}
-
-const SortWidget: FC<SortWidgetProps> = (props) => {
-	const { setSortOrder, fieldSortOrder } = props;
-
-	return <>
-		<IconSortAscending
-			cursor={'pointer'}
-			onClick={() => 
-				setSortOrder(
-					fieldSortOrder === SortOrder.ASCENDING ? 
-						null 
-							: 
-						SortOrder.ASCENDING
-				)} 
-			stroke={fieldSortOrder === SortOrder.ASCENDING ? 2 : 1} 
-		/>
-		<IconSortDescending
-			cursor={'pointer'} 
-			onClick={() => 
-				setSortOrder(
-					fieldSortOrder === SortOrder.DESCENDING ? 
-						null 
-							: 
-						SortOrder.DESCENDING
-				)} 
-			stroke={fieldSortOrder === SortOrder.DESCENDING ? 2 : 1}
-		/>
-	</>
-}
 
 export default Column;
