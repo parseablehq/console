@@ -2,7 +2,7 @@ import { createStyles } from '@mantine/core';
 import { heights, widths } from '../Mantine/sizing';
 
 export const useNavbarStyles = createStyles((theme) => {
-	const { colors, radius, fontSizes, shadows ,spacing} = theme;
+	const { colors, radius, fontSizes, shadows, spacing } = theme;
 	const { fontWeights, sizing } = theme.other;
 	const white = colors.white[0];
 	const sColor = colors.brandSecondary[0];
@@ -20,11 +20,12 @@ export const useNavbarStyles = createStyles((theme) => {
 			fontFamily: theme.fontFamily,
 			fontSize: fontSizes.md,
 			fontWeight: fontWeights.normal,
-			lineHeight: "normal",
+			lineHeight: 'normal',
 		},
 		streamsBtn: {
-			padding:"24px 24px 14px 24px", ":hover": { background: "white" },
-		  cursor: 'default',
+			padding: '24px 24px 14px 24px',
+			':hover': { background: 'white' },
+			cursor: 'default',
 			color: theme.colors.gray[6],
 		},
 		linkBtnActive: {
@@ -42,9 +43,9 @@ export const useNavbarStyles = createStyles((theme) => {
 		},
 		selectStreambtn: {
 			'.mantine-Input-rightSection ': {
-				"& svg": {
+				'& svg': {
 					stroke: colors.gray[2],
-				}
+				},
 			},
 			'& input': {
 				border: `${sizing.px} ${colors.gray[2]} solid`,
@@ -52,34 +53,33 @@ export const useNavbarStyles = createStyles((theme) => {
 			},
 			'.mantine-Select-item[data-selected="true"]': {
 				background: pColor,
-				"&:hover": { background: sColor, color: white }
+				'&:hover': { background: sColor, color: white },
 			},
 			'.mantine-Select-item': {
-				"&:hover": { color: sColor }
+				'&:hover': { color: sColor },
 			},
-			margin: "0 24px 0 24px"
-
-		}
-		,lowerContainer: {
-			marginBottom:"50px"
+			margin: '0 24px 0 24px',
+		},
+		lowerContainer: {
+			marginBottom: '50px',
 		},
 		actionBtn: {
-			paddingLeft:"24px", 
-			height:"40px",
+			paddingLeft: '24px',
+			height: '40px',
 			color: theme.colors.gray[6],
 			'&:hover *': {
 				color: sColor,
-			}
+			},
 		},
 
-		userBtn: {		
+		userBtn: {
 			cursor: 'default',
-			paddingLeft:"24px", 
-			height:"40px",
+			paddingLeft: '24px',
+			height: '40px',
 			color: theme.colors.gray[6],
 			'&:hover ': {
 				background: white,
-			}
+			},
 		},
 
 		helpTitle: {

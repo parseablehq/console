@@ -26,8 +26,8 @@ const LogTable: FC = () => {
 		state: { subLogStreamError },
 	} = useLogsPageContext();
 	const {
-		state: { subLogSearch ,subLogQuery , subRefreshInterval ,subLogSelectedTimeRange},
-	}= useHeaderContext();
+		state: { subLogSearch, subLogQuery, subRefreshInterval, subLogSelectedTimeRange },
+	} = useHeaderContext();
 
 	const [refreshInterval, setRefreshInterval] = useMountedState<number | null>(null);
 	const [logStreamError, setLogStreamError] = useMountedState<string | null>(null);
@@ -119,19 +119,19 @@ const LogTable: FC = () => {
 
 	useEffect(() => {
 		if (subRefreshInterval.get()) {
-		  const interval = setInterval(() => {
-			if(subLogSelectedTimeRange.get().includes('Past')){
-				const now =dayjs();
-				const timeDiff=subLogQuery.get().endTime.getTime()-subLogQuery.get().startTime.getTime();
-				subLogQuery.set((state) => {
-				  state.startTime = now.subtract(timeDiff).toDate();
-				  state.endTime = now.toDate();
-				});
-			  }
-		  }, subRefreshInterval.get() as number);
-		  return () => clearInterval(interval);
+			const interval = setInterval(() => {
+				if (subLogSelectedTimeRange.get().includes('Past')) {
+					const now = dayjs();
+					const timeDiff = subLogQuery.get().endTime.getTime() - subLogQuery.get().startTime.getTime();
+					subLogQuery.set((state) => {
+						state.startTime = now.subtract(timeDiff).toDate();
+						state.endTime = now.toDate();
+					});
+				}
+			}, subRefreshInterval.get() as number);
+			return () => clearInterval(interval);
 		}
-	  }, [refreshInterval]);
+	}, [refreshInterval]);
 
 	useEffect(() => {
 		const query = subLogQuery.get();
@@ -139,7 +139,7 @@ const LogTable: FC = () => {
 		if (query.streamName) {
 			if (logsSchema) {
 				resetStreamData();
-				resetLogsData
+				resetLogsData;
 			}
 			getDataSchema(query.streamName);
 			getQueryData(query);
@@ -197,12 +197,16 @@ const LogTable: FC = () => {
 										/>
 									</Thead>
 									<Tbody>
-										<LogRow logData={pageLogData?.data || []} logsSchema={logsSchema?.fields || []} isColumnActive={isColumnActive} />
+										<LogRow
+											logData={pageLogData?.data || []}
+											logsSchema={logsSchema?.fields || []}
+											isColumnActive={isColumnActive}
+										/>
 									</Tbody>
 								</Table>
 							</ScrollArea>
 							<Box className={footerContainer}>
-							<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
+								<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
 								{(pageLogData?.totalPages || 0) > 1 && (
 									<Pagination
 										withEdges
@@ -214,7 +218,6 @@ const LogTable: FC = () => {
 										className={paginationRow}
 									/>
 								)}
-								
 							</Box>
 						</Box>
 					) : (

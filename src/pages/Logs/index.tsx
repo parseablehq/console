@@ -5,13 +5,11 @@ import LogTable from './LogTable';
 import { useLogsStyles } from './styles';
 import ViewLog from './ViewLog';
 
-
 const Logs: FC = () => {
 	useDocumentTitle('Parseable | Dashboard');
 
 	const { classes } = useLogsStyles();
 	const { container } = classes;
-
 
 	return (
 		<Box className={container}>

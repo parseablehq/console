@@ -1,7 +1,7 @@
 import useMountedState from '@/hooks/useMountedState';
 import { Box, Breadcrumbs, Button, Menu, Text, TextInput, UnstyledButton, px } from '@mantine/core';
 import { DateTimePicker } from '@mantine/dates';
-import { IconClock,IconRefresh, IconReload , IconRefreshOff, IconSearch } from '@tabler/icons-react';
+import { IconClock, IconRefresh, IconReload, IconRefreshOff, IconSearch } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import ms from 'ms';
 import type { ChangeEvent, FC, KeyboardEvent } from 'react';
@@ -17,7 +17,6 @@ const SubHeader: FC = () => {
 	} = useHeaderContext();
 	const [streamName, setStreamName] = useMountedState(subLogQuery.get().streamName);
 
-
 	useEffect(() => {
 		const listener = subLogQuery.subscribe((state) => {
 			setStreamName(state.streamName);
@@ -30,23 +29,45 @@ const SubHeader: FC = () => {
 			<Box>
 				<Box className={innerContainer}>
 					<Breadcrumbs separator=">">
-						<svg className={homeIcon} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-							<path d="M9.99998 19V14H14V19C14 19.55 14.45 20 15 20H18C18.55 20 19 19.55 19 19V12H20.7C21.16 12 21.38 11.43 21.03 11.13L12.67 3.6C12.29 3.26 11.71 3.26 11.33 3.6L2.96998 11.13C2.62998 11.43 2.83998 12 3.29998 12H4.99998V19C4.99998 19.55 5.44998 20 5.99998 20H8.99998C9.54998 20 9.99998 19.55 9.99998 19Z" fill="#211F1F" />
+						<svg
+							className={homeIcon}
+							xmlns="http://www.w3.org/2000/svg"
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none">
+							<path
+								d="M9.99998 19V14H14V19C14 19.55 14.45 20 15 20H18C18.55 20 19 19.55 19 19V12H20.7C21.16 12 21.38 11.43 21.03 11.13L12.67 3.6C12.29 3.26 11.71 3.26 11.33 3.6L2.96998 11.13C2.62998 11.43 2.83998 12 3.29998 12H4.99998V19C4.99998 19.55 5.44998 20 5.99998 20H8.99998C9.54998 20 9.99998 19.55 9.99998 19Z"
+								fill="#211F1F"
+							/>
 						</svg>
-						<Text >Streams </Text>
-						<Text >{streamName}</Text>
-						<Text className={activeBtn}> {useMatch("/:streamName/logs") ? "Logs" : "Query"} </Text>
+						<Text>Streams </Text>
+						<Text>{streamName}</Text>
+						{useMatch('/:streamName/stats') && <Text className={activeBtn}>Stats </Text>}
+
+						{useMatch('/:streamName/logs') && <Text className={activeBtn}>Logs </Text>}
+
+						{useMatch('/:streamName/query') && <Text className={activeBtn}>Query </Text>}
 					</Breadcrumbs>
 				</Box>
 			</Box>
 
 			<Box>
 				<Box className={innerContainer}>
-					{useMatch("/:streamName/logs") && <Search />}
-					{useMatch("/:streamName/logs") && <RefreshNow />}
+					{useMatch('/:streamName/stats') && <RefreshNow />}
 
-					<TimeRange />
-					<RefreshInterval />
+					{useMatch('/:streamName/logs') && <>
+						<Search />
+						<RefreshNow />
+						<TimeRange />
+						<RefreshInterval />
+					</>}
+
+					{useMatch('/:streamName/query') && <>
+						<TimeRange />
+						<RefreshInterval />
+					</>}
+
 				</Box>
 			</Box>
 		</Box>
@@ -58,7 +79,7 @@ const Search: FC = () => {
 		state: { subLogSearch },
 	} = useHeaderContext();
 
-	const [searchValue, setSearchValue] = useMountedState("");
+	const [searchValue, setSearchValue] = useMountedState('');
 	const { classes } = useLogQueryStyles();
 
 	useEffect(() => {
@@ -108,7 +129,6 @@ const RefreshNow: FC = () => {
 		state: { subLogQuery, subLogSelectedTimeRange },
 	} = useHeaderContext();
 
-
 	const onRefresh = () => {
 		if (subLogSelectedTimeRange.get().includes('Past')) {
 			const now = dayjs();
@@ -123,9 +143,8 @@ const RefreshNow: FC = () => {
 	const { refreshNowBtn } = classes;
 
 	return (
-
 		<Button className={refreshNowBtn} onClick={onRefresh}>
-			<IconReload  size={px('1.2rem')} stroke={1.5} />
+			<IconReload size={px('1.2rem')} stroke={1.5} />
 		</Button>
 	);
 };

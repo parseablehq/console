@@ -26,7 +26,7 @@ const LogRow: FC<LogRowProps> = (props) => {
 	};
 
 	const { classes } = useLogTableStyles();
-	const { trStyle,trEvenStyle } = classes;
+	const { trStyle, trEvenStyle } = classes;
 
 	return (
 		<Fragment>
@@ -38,7 +38,7 @@ const LogRow: FC<LogRowProps> = (props) => {
 					 Hopefully there will be a plan to add a p_id filed internally
 					 For now index is a better option for uniqueness, if you have a better way to handle this let us know
 					*/
-					<tr key={logIndex} className={logIndex%2?trStyle:trEvenStyle} onClick={() => onShow(log)}>
+					<tr key={logIndex} className={logIndex % 2 ? trStyle : trEvenStyle} onClick={() => onShow(log)}>
 						{logsSchema.map((logSchema, logSchemaIndex) => {
 							if (!isColumnActive(logSchema.name) || skipFields.includes(logSchema.name)) return null;
 

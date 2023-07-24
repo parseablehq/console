@@ -7,14 +7,14 @@ import { FC, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useHeaderStyles } from './styles';
 import SubHeader from './SubHeader';
-import {useHeaderContext} from '@/layouts/MainLayout/Context';
+import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import useMountedState from '@/hooks/useMountedState';
 
 type HeaderProps = Omit<MantineHeaderProps, 'children' | 'height' | 'className'>;
 
 const Header: FC<HeaderProps> = (props) => {
 	const { classes } = useHeaderStyles();
-	const { container, logoContainer, burgerIcon ,navContainer, imageSty} = classes;
+	const { container, logoContainer, burgerIcon, navContainer, imageSty } = classes;
 	const {
 		state: { subNavbarTogle },
 	} = useHeaderContext();
@@ -35,17 +35,15 @@ const Header: FC<HeaderProps> = (props) => {
 				<Burger
 					className={burgerIcon}
 					opened={isSubNavbarOpen}
-					onClick={() =>subNavbarTogle.set((state) => !state)}
-					size={"sm"}
+					onClick={() => subNavbarTogle.set((state) => !state)}
+					size={'sm'}
 				/>
 			</Box>
-		<Box className={navContainer}>
-			<SubHeader/>
-		</Box>
-
+			<Box className={navContainer}>
+				<SubHeader />
+			</Box>
 		</MantineHeader>
 	);
 };
-
 
 export default Header;

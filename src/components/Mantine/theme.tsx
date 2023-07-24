@@ -21,7 +21,7 @@ export const theme: MantineThemeOverride = {
 		white: ['#FFFFFF'],
 		brandPrimary: ['#545BEB', '#1F288E', '#1A237E', '#10143E'],
 		brandSecondary: ['#FC466B', '#F29C38', '#C27D2D'],
-		gray: ['#F1F1F1', '#E0E0E0', '#D4D4D4', '#828282', '#4F4F4F', '#777777' , '#211F1F'],
+		gray: ['#F1F1F1', '#E0E0E0', '#D4D4D4', '#828282', '#4F4F4F', '#777777', '#211F1F'],
 		error: ['#8F0F27'],
 		dimmed: ['#868e96'],
 	},
@@ -108,22 +108,20 @@ export const theme: MantineThemeOverride = {
 		},
 		Table: {
 			styles: ({ defaultRadius: _defaultRadius, colors, fontSizes, other: { fontWeights } }) => {
-
 				return {
 					root: {
 						background: colors.white,
 						borderCollapse: 'separate',
 						borderSpacing: 0,
-						padding:0,
-						height: 20,	
+						padding: 0,
+						height: 20,
 						'& tr th': {
 							background: theme.colors?.white,
-							border:"none !important",
+							border: 'none !important',
 							overflow: 'hidden',
 							whiteSpace: 'nowrap',
 							textAlign: 'left',
 							padding: 0,
-						
 						},
 
 						'& tr th .label': {
@@ -134,7 +132,6 @@ export const theme: MantineThemeOverride = {
 							height: '100%',
 							textAlign: 'left',
 						},
-
 					},
 				};
 			},
