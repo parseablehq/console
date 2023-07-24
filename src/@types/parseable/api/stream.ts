@@ -19,3 +19,11 @@ export type LogStreamStat = {
 	stream: string;
 	time: string;
 };
+
+export type action = {
+	description: string;
+	action: string;
+	duration: string;
+};
+
+export type LogStreamRetention = Array<action>;

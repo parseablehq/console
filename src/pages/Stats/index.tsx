@@ -12,8 +12,9 @@ const Stats: FC = () => {
 	const { container } = classes;
 	return (
 		<Box className={container}>
-			{/* <Alerts/> */}
+
 			<Status />
+						{/* <Alerts/> */}
 		</Box>
 	);
 };

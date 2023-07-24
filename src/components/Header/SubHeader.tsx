@@ -43,18 +43,31 @@ const SubHeader: FC = () => {
 						</svg>
 						<Text>Streams </Text>
 						<Text>{streamName}</Text>
-						<Text className={activeBtn}> {useMatch('/:streamName/logs') ? 'Logs' : 'Query'} </Text>
+						{useMatch('/:streamName/stats') && <Text className={activeBtn}>Stats </Text>}
+
+						{useMatch('/:streamName/logs') && <Text className={activeBtn}>Logs </Text>}
+
+						{useMatch('/:streamName/query') && <Text className={activeBtn}>Query </Text>}
 					</Breadcrumbs>
 				</Box>
 			</Box>
 
 			<Box>
 				<Box className={innerContainer}>
-					{useMatch('/:streamName/logs') && <Search />}
-					{useMatch('/:streamName/logs') && <RefreshNow />}
+					{useMatch('/:streamName/stats') && <RefreshNow />}
 
-					<TimeRange />
-					<RefreshInterval />
+					{useMatch('/:streamName/logs') && <>
+						<Search />
+						<RefreshNow />
+						<TimeRange />
+						<RefreshInterval />
+					</>}
+
+					{useMatch('/:streamName/query') && <>
+						<TimeRange />
+						<RefreshInterval />
+					</>}
+
 				</Box>
 			</Box>
 		</Box>
