@@ -1,4 +1,4 @@
-import type { LogsQuery, LogsSearch } from '@/@types/parseable/api/query';
+import { SortOrder, type LogsQuery, type LogsSearch } from '@/@types/parseable/api/query';
 import useSubscribeState, { SubData } from '@/hooks/useSubscribeState';
 import dayjs from 'dayjs';
 import type { FC } from 'react';
@@ -72,6 +72,10 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 	const subLogSearch = useSubscribeState<LogsSearch>({
 		search: '',
 		filters: {},
+		sort: {
+			field: 'p_timestamp',
+			order: SortOrder.DESCENDING
+		}
 	});
 	const subLogSelectedTimeRange = useSubscribeState<string>(DEFAULT_FIXED_DURATIONS.name);
 	const subRefreshInterval = useSubscribeState<number | null>(null);

@@ -84,16 +84,18 @@ const LogTable: FC = () => {
 	const sortingSetter = (columName: string) => {
 		return (order: SortOrder | null) => {
 			setQuerySearch((prev) => {
-				if (order === null) {
-					prev.sort.field = 'p_timestamp';
-					prev.sort.order = -1;
-				} else {
-					prev.sort.field = columName;
-					prev.sort.order = order;
+				const sort = {
+					field: 'p_timestamp',
+					order: SortOrder.DESCENDING
+				}
+				if (order !== null) {
+					sort.field = columName;
+					sort.order = order;
 				}
 
 				return {
-					...prev
+					...prev,
+					sort
 				}
 			})
 		}
