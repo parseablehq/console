@@ -18,11 +18,16 @@ const Alerts: FC = () => {
 	const [Alert, setAlert] = useMountedState({name: "Loading...."});
 
 	useEffect(() => {
-		getLogAlert(subLogQuery.get().streamName);
+		const subQueryListener = subLogQuery.subscribe((state) => {
+			if (data) {
+				resetData();
+			}
+			getLogAlert(state.streamName);
+		});
 		return () => {
-			resetData();
+			subQueryListener();
 		};
-	}, [subLogQuery]);
+	}, [data]);
 	
 
 	const { classes } = useAlertsStyles();
@@ -37,7 +42,7 @@ const Alerts: FC = () => {
 				{!loading
 					? error
 						? 'ERROR'
-						: data
+						: (data && data.alerts.length > 0)
 						? data.alerts.map((item: any,index:number) => {
 								return (
 									<Box className={alertContainer} key={item.name + index}>
@@ -52,7 +57,8 @@ const Alerts: FC = () => {
 									</Box>
 								);
 						  })
-						: 'Not found'
+						: <Text m={"lg"}>No Alert set for {subLogQuery.get().streamName}</Text>
+						
 					: 'Loading'}
 			</Box>
 			<Modal size="auto" opened={opened} onClose={close} title={Alert.name} scrollAreaComponent={ScrollArea.Autosize}>

@@ -140,7 +140,7 @@ const Status: FC = () => {
 				</Text>
 
 				<Box className={genterateContiner}>
-					<Text className={genterateText}>Genterated at : <span className={genterateTextResult}>{!loadingStat
+					<Text className={genterateText}>Generated at : <span className={genterateTextResult}>{!loadingStat
 							? errorStat
 								? 'ERROR'
 								: dataStat

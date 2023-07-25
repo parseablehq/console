@@ -17,16 +17,22 @@ const QuerySchemaList: FC = () => {
 
 
 	useEffect(() => {
+		const subSchemaToggleListener = subSchemaToggle.subscribe((state) => {
+			if (state) {
+				getDataSchema(subLogQuery.get().streamName);
+			}
+		});
 		const subQueryListener = subLogQuery.subscribe((state) => {
 			if (querySchema) {
 				resetData();
 			}
-			getDataSchema(subLogQuery.get().streamName);
+			getDataSchema(state.streamName);
 		});
 		return () => {
 			subQueryListener();
+			subSchemaToggleListener();
 		};
-	}, [subSchemaToggle.get()]);
+	}, [querySchema]);
 
 
 	const renderList = querySchema?.fields.map((field, index) => {
@@ -66,7 +72,7 @@ const QuerySchemaList: FC = () => {
 							<Table>
 								<thead className={theadSt}>
 									<tr>
-										<th>Feild</th>
+										<th>Field</th>
 										<th>Type</th>
 									</tr>
 								</thead>
