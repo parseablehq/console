@@ -1,7 +1,7 @@
-import type { Log } from '@/@types/parseable/api/query';
+import { Log, SortOrder } from '@/@types/parseable/api/query';
 import { Box, Checkbox, Popover, Text, TextInput, Tooltip, UnstyledButton, px } from '@mantine/core';
 import { type ChangeEvent, type FC, Fragment, useTransition, useRef, useCallback, useMemo } from 'react';
-import { IconFilter, IconSearch } from '@tabler/icons-react';
+import { IconFilter, IconSearch, IconSortAscending, IconSortDescending } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
 import { useTableColumnStyle } from './styles';
 import EmptyBox from '@/components/Empty';
@@ -12,15 +12,58 @@ import compare from 'just-compare';
 import { parseLogData } from '@/utils';
 import { useDisclosure } from '@mantine/hooks';
 
+type SortWidgetProps = {
+	setSortOrder: (order: SortOrder | null) => void;
+	fieldSortOrder: SortOrder | null;
+}
+
+/**
+ * Component that allows selecting sorting by a given field
+ */
+const SortWidget: FC<SortWidgetProps> = (props) => {
+	const { setSortOrder, fieldSortOrder } = props;
+	const toggleAscending = () => {
+		setSortOrder(
+			fieldSortOrder === SortOrder.ASCENDING ?
+				null
+					:
+				SortOrder.ASCENDING
+		)
+	}
+	const toggleDescending = () => {
+		setSortOrder(
+			fieldSortOrder === SortOrder.DESCENDING ?
+				null
+					:
+				SortOrder.DESCENDING
+		)
+	}
+
+	return <>
+		<IconSortAscending
+			cursor={'pointer'}
+			onClick={toggleAscending}
+			stroke={fieldSortOrder === SortOrder.ASCENDING ? 2 : 1}
+		/>
+		<IconSortDescending
+			cursor={'pointer'}
+			onClick={toggleDescending}
+			stroke={fieldSortOrder === SortOrder.DESCENDING ? 2 : 1}
+		/>
+	</>
+}
+
 type Column = {
 	columnName: string;
 	getColumnFilters: (columnName: string) => Log[number][] | null;
 	appliedFilter: (columnName: string) => string[];
 	applyFilter: (columnName: string, value: string[]) => void;
+	setSorting: (order: SortOrder | null) => void;
+	fieldSortOrder: SortOrder | null
 };
 
 const Column: FC<Column> = (props) => {
-	const { columnName, getColumnFilters, appliedFilter, applyFilter } = props;
+	const { columnName, getColumnFilters, appliedFilter, applyFilter, setSorting, fieldSortOrder } = props;
 
 	// columnValues ref will always have the unfiltered data.
 	const _columnValuesRef = useRef<Log[number][] | null>(null);
@@ -87,6 +130,7 @@ const Column: FC<Column> = (props) => {
 				</Popover.Target>
 				<Popover.Dropdown>
 					<Box>
+						<SortWidget setSortOrder={setSorting} fieldSortOrder={fieldSortOrder}/>
 						<Text mb="xs">Filter by values:</Text>
 						<TextInput
 							className={searchInputStyle}

@@ -4,9 +4,18 @@ export type LogsQuery = {
 	endTime: Date;
 };
 
+export enum SortOrder {
+	ASCENDING = 1,
+	DESCENDING = -1
+}
+
 export type LogsSearch = {
 	search: string;
 	filters: Record<string, string[]>;
+	sort: {
+		field: string,
+		order: SortOrder
+	}
 };
 
 export type LogsData = {

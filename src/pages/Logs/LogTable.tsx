@@ -18,6 +18,7 @@ import Column from './Column';
 import FilterPills from './FilterPills';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import dayjs from 'dayjs';
+import { SortOrder } from '@/@types/parseable/api/query';
 
 const skipFields = ['p_metadata', 'p_tags'];
 
@@ -50,6 +51,7 @@ const LogTable: FC = () => {
 		loading: logsLoading,
 		error: logsError,
 		resetData: resetLogsData,
+		sort
 	} = useQueryLogs();
 
 	const appliedFilter = (key: string) => {
@@ -78,6 +80,29 @@ const LogTable: FC = () => {
 	const toggleColumn = (columnName: string, value: boolean) => {
 		setColumnToggles(new Map(columnToggles.set(columnName, value)));
 	};
+
+	/**
+	 * Function to get a setter to set sort order on a given field
+	 */
+	const sortingSetter = (columName: string) => {
+		return (order: SortOrder | null) => {
+			setQuerySearch((prev) => {
+				const sort = {
+					field: 'p_timestamp',
+					order: SortOrder.DESCENDING
+				}
+				if (order !== null) {
+					sort.field = columName;
+					sort.order = order;
+				}
+
+				return {
+					...prev,
+					sort
+				}
+			})
+		}
+	}
 
 	const onRetry = () => {
 		const query = subLogQuery.get();
@@ -157,13 +182,15 @@ const LogTable: FC = () => {
 						appliedFilter={appliedFilter}
 						applyFilter={applyFilter}
 						getColumnFilters={getColumnFilters}
+						setSorting={sortingSetter(field.name)}
+						fieldSortOrder={sort.field === field.name ? sort.order : null}
 					/>
 				);
 			});
 		}
 
 		return null;
-	}, [logsSchema, columnToggles, logs]);
+	}, [logsSchema, columnToggles, logs, sort]);
 
 	const { classes } = useLogTableStyles();
 
