@@ -1,22 +1,21 @@
-import { HEADER_HEIGHT, NAVBAR_WIDTH } from '@/constants/theme';
+import {  NAVBAR_WIDTH } from '@/constants/theme';
 import { createStyles } from '@mantine/core';
 export const useStatsStyles = createStyles((theme) => {
-	const { widths ,heights} = theme.other;
+	const { widths } = theme.other;
 	return {
 		container: {
+			flex: 1,
 			width: `calc(${widths.full} - ${NAVBAR_WIDTH}px)`,
+			// display: 'flex',
+			position: 'relative',
 		},
 	};
 });
 
 export const useStatusStyles = createStyles((theme) => {
-	const { colors, other, spacing, radius, shadows, primaryColor, fontSizes } = theme;
+	const { colors, other, spacing,fontSizes } = theme;
 
 	const { fontWeights, widths } = other;
-
-	const pColor = colors[primaryColor][2];
-
-	const defaultRadius = radius[theme.defaultRadius as string];
 
 	return {
 		container: {
@@ -61,7 +60,7 @@ export const useStatusStyles = createStyles((theme) => {
 	};
 });
 export const useStatCardStyles = createStyles((theme) => {
-	const { colors, other, spacing, radius, shadows, primaryColor, fontSizes } = theme;
+	const { colors, other, spacing, radius, primaryColor, fontSizes } = theme;
 
 	const { fontWeights, widths } = other;
 
@@ -107,13 +106,9 @@ export const useStatCardStyles = createStyles((theme) => {
 });
 
 export const useAlertsStyles = createStyles((theme) => {
-	const { colors, other, spacing, radius, shadows, primaryColor, fontSizes } = theme;
+	const { colors, other, spacing, fontSizes } = theme;
 
-	const { fontWeights, widths, heights ,sizing} = other;
-
-	const pColor = colors[primaryColor][2];
-
-	const defaultRadius = radius[theme.defaultRadius as string];
+	const { fontWeights, widths ,sizing} = other;
 
 	return {
 		container: {

@@ -234,10 +234,11 @@ export const useViewLogStyles = createStyles((theme) => {
 });
 
 export const useTableColumnStyle = createStyles((theme) => {
-	const { spacing, colors, fontSizes, other, primaryColor } = theme;
+	const { spacing, colors, fontSizes, other } = theme;
 	const { fontWeights, widths } = other;
 
-	const pColor = colors[primaryColor];
+	const pColor = colors.brandPrimary[0];
+	const sColor = colors.brandSecondary[0];
 
 	return {
 		labelBtn: {
@@ -263,12 +264,21 @@ export const useTableColumnStyle = createStyles((theme) => {
 		searchInputStyle: {
 			marginBottom: spacing.xs,
 		},
+		filterText:{
+			display: 'flex',
+			alignItems: 'center',
+			color: colors.gray[6],
+			padding: 0,
+			fontSize: fontSizes.sm,
+			fontWeight: fontWeights.normal,
+			cursor: 'default',
+		},
 
 		checkBoxStyle: {
 			height: 35,
 			paddingTop: spacing.xs,
 			paddingBottom: spacing.xxs,
-			fontWeight: fontWeights.medium,
+			fontWeight: fontWeights.normal,
 			overflow: 'hidden',
 			whiteSpace: 'nowrap',
 
@@ -277,18 +287,43 @@ export const useTableColumnStyle = createStyles((theme) => {
 			},
 
 			'&:hover': {
-				background: colors.gray[1],
+				background: colors.gray[0],
+				color: sColor,
 			},
 		},
 
 		applyBtn: {
 			marginTop: spacing.xs,
 			width: widths.full,
-			background: pColor[0],
+			background: pColor,
 
 			'&:hover': {
 				background: pColor[1],
 			},
 		},
+		sortBtn: {
+			display: 'flex',
+			alignItems: 'center',
+			color: colors.gray[6],
+			padding: 0,
+			fontSize: fontSizes.sm,
+			fontWeight: fontWeights.normal,
+			'&:hover': {
+				color: sColor,
+			},
+			
+		},
+		sortBtnActive: {
+			display: 'flex',
+			alignItems: 'center',
+			color: pColor,
+			padding: 0,
+			fontSize: fontSizes.sm,
+			fontWeight: fontWeights.semibold,
+			'&:hover': {
+				color: sColor,
+			},
+			
+		}
 	};
 });

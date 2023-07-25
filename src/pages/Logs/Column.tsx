@@ -1,7 +1,7 @@
 import { Log, SortOrder } from '@/@types/parseable/api/query';
-import { Box, Checkbox, Popover, Text, TextInput, Tooltip, UnstyledButton, px } from '@mantine/core';
+import { Box, Checkbox, Popover, TextInput, Tooltip, UnstyledButton, px } from '@mantine/core';
 import { type ChangeEvent, type FC, Fragment, useTransition, useRef, useCallback, useMemo } from 'react';
-import { IconFilter, IconSearch, IconSortAscending, IconSortDescending } from '@tabler/icons-react';
+import { IconDotsVertical, IconFilter, IconSearch, IconSortAscending, IconSortDescending } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
 import { useTableColumnStyle } from './styles';
 import EmptyBox from '@/components/Empty';
@@ -15,7 +15,7 @@ import { useDisclosure } from '@mantine/hooks';
 type SortWidgetProps = {
 	setSortOrder: (order: SortOrder | null) => void;
 	fieldSortOrder: SortOrder | null;
-}
+};
 
 /**
  * Component that allows selecting sorting by a given field
@@ -23,35 +23,40 @@ type SortWidgetProps = {
 const SortWidget: FC<SortWidgetProps> = (props) => {
 	const { setSortOrder, fieldSortOrder } = props;
 	const toggleAscending = () => {
-		setSortOrder(
-			fieldSortOrder === SortOrder.ASCENDING ?
-				null
-					:
-				SortOrder.ASCENDING
-		)
-	}
+		setSortOrder(fieldSortOrder === SortOrder.ASCENDING ? null : SortOrder.ASCENDING);
+	};
 	const toggleDescending = () => {
-		setSortOrder(
-			fieldSortOrder === SortOrder.DESCENDING ?
-				null
-					:
-				SortOrder.DESCENDING
-		)
-	}
+		setSortOrder(fieldSortOrder === SortOrder.DESCENDING ? null : SortOrder.DESCENDING);
+	};
+	const { classes } = useTableColumnStyle();
+	const { sortBtn ,sortBtnActive} = classes;
 
-	return <>
-		<IconSortAscending
-			cursor={'pointer'}
-			onClick={toggleAscending}
-			stroke={fieldSortOrder === SortOrder.ASCENDING ? 2 : 1}
-		/>
-		<IconSortDescending
-			cursor={'pointer'}
-			onClick={toggleDescending}
-			stroke={fieldSortOrder === SortOrder.DESCENDING ? 2 : 1}
-		/>
-	</>
-}
+	return (
+		<Box>
+			<Button
+				className={fieldSortOrder === SortOrder.ASCENDING ? sortBtnActive : sortBtn}
+				onClick={toggleAscending}
+				leftIcon={
+					<IconSortAscending
+					stroke={ fieldSortOrder === SortOrder.ASCENDING ? 2 : 1}
+					/>
+				}>
+				Sort by Ascending order
+			</Button>
+			<Button
+				className={fieldSortOrder === SortOrder.DESCENDING ? sortBtnActive : sortBtn}
+				onClick={toggleDescending}
+				leftIcon={
+					<IconSortDescending
+					
+						stroke={fieldSortOrder === SortOrder.DESCENDING ? 2 : 1}
+					/>
+				}>
+				Sort by Descending order
+			</Button>
+		</Box>
+	);
+};
 
 type Column = {
 	columnName: string;
@@ -59,7 +64,7 @@ type Column = {
 	appliedFilter: (columnName: string) => string[];
 	applyFilter: (columnName: string, value: string[]) => void;
 	setSorting: (order: SortOrder | null) => void;
-	fieldSortOrder: SortOrder | null
+	fieldSortOrder: SortOrder | null;
 };
 
 const Column: FC<Column> = (props) => {
@@ -111,7 +116,7 @@ const Column: FC<Column> = (props) => {
 		return word.charAt(0).toUpperCase() + word.slice(1);
 	}
 	const { classes, cx } = useTableColumnStyle();
-	const { labelBtn, applyBtn, labelIcon, labelIconActive, searchInputStyle } = classes;
+	const { labelBtn, applyBtn, labelIcon, labelIconActive, searchInputStyle,filterText } = classes;
 
 	return (
 		<th>
@@ -119,7 +124,7 @@ const Column: FC<Column> = (props) => {
 				<Popover.Target>
 					<UnstyledButton className={labelBtn}>
 						<span className="label">{capitalizeFirstLetter(columnName)}</span>
-						<IconFilter
+						<IconDotsVertical
 							stroke={filterActive ? 3 : 1.8}
 							size={px('1rem')}
 							className={cx(labelIcon, {
@@ -130,8 +135,9 @@ const Column: FC<Column> = (props) => {
 				</Popover.Target>
 				<Popover.Dropdown>
 					<Box>
-						<SortWidget setSortOrder={setSorting} fieldSortOrder={fieldSortOrder}/>
-						<Text mb="xs">Filter by values:</Text>
+						<SortWidget setSortOrder={setSorting} fieldSortOrder={fieldSortOrder} />
+						<Button className={filterText} leftIcon={<IconFilter stroke={1} />} >Filter by values:</Button>
+						
 						<TextInput
 							className={searchInputStyle}
 							placeholder="Search"
