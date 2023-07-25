@@ -54,7 +54,7 @@ export const useStatusStyles = createStyles((theme) => {
 			display: 'flex',
 			flexDirection: 'row',
 			padding: spacing.md,
-			borderBottom: `${widths.px} ${colors.gray[1]} solid`,
+			paddingBottom: 0,
 			justifyContent: 'space-between',
 		},
 	};
@@ -106,18 +106,30 @@ export const useStatCardStyles = createStyles((theme) => {
 });
 
 export const useAlertsStyles = createStyles((theme) => {
-	const { colors, other, spacing, fontSizes } = theme;
+	const { colors, other, spacing, fontSizes,radius } = theme;
 
 	const { fontWeights, widths ,sizing} = other;
+	const defaultRadius = radius[theme.defaultRadius as string];
+
 
 	return {
 		container: {
-			height: '50%',
+			overflow: 'auto',
+			borderRadius: defaultRadius,
+			margin: spacing.md,
+			border: `${widths.px} ${colors.gray[1]} solid`,
+		
 		},
 		headContainer: {
 			padding: spacing.md,
+			width: '100%',
 			height: '55px',
+			top: 0,
+			position: "sticky",
+			backgroundColor: colors.white,
+			zIndex: 1,
 			borderBottom: `${widths.px} ${colors.gray[1]} solid`,
+			
 		},
 		alertsText: {
 			fontSize: fontSizes.md,
