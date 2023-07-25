@@ -94,7 +94,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 		if (streamName) {
 			setActiveStream(streamName);
 			setSearchValue(streamName);
-			if (currentPage !== location.pathname) {
+			
 				const now = dayjs();
 				subLogQuery.set((state) => {
 					state.streamName = streamName || '';
@@ -107,8 +107,6 @@ const Navbar: FC<NavbarProps> = (props) => {
 					state.filters = {};
 				});
 				subRefreshInterval.set(null);
-				setCurrentPage(location.pathname);
-			}
 		} else if (streams && Boolean(streams.length)) {
 			navigate(`/${streams[0].name}/query`);
 		}
@@ -117,7 +115,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 	const handleChange = (value: string) => {
 		setActiveStream(value);
 		setSearchValue(value);
-		navigate(`/${value}/logs`);
+		navigate(`/${value}${currentPage}`);
 	};
 
 	useEffect(() => {
@@ -184,6 +182,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 							sx={{ paddingLeft: 53 }}
 							onClick={() => {
 								navigate(`/${activeStream}${link.pathname}`);
+								setCurrentPage(link.pathname);
 							}}
 							key={link.label}
 							className={
