@@ -44,9 +44,16 @@ const QueryCodeEditor: FC = () => {
 	useEffect(() => {
 		const listener = subSchemaToggle.subscribe(setIsSchemaOpen);
 		const refreshIntervalListener = subRefreshInterval.subscribe(setRefreshInterval);
+		const subQueryListener = subLogQuery.subscribe((state) => {
+			if (state.streamName) {
+				setQuery(`SELECT * FROM ${state.streamName} LIMIT 100;`);
+				result.set('');
+			}
+		});
 		return () => {
 			listener();
 			refreshIntervalListener();
+			subQueryListener();
 		};
 	}, [subSchemaToggle.get()]);
 

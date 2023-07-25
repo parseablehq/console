@@ -15,14 +15,19 @@ const QuerySchemaList: FC = () => {
 		state: { subSchemaToggle },
 	} = useQueryPageContext();
 
+
 	useEffect(() => {
-		if (subLogQuery.get().streamName) {
+		const subQueryListener = subLogQuery.subscribe((state) => {
 			if (querySchema) {
 				resetData();
 			}
 			getDataSchema(subLogQuery.get().streamName);
-		}
-	}, [subLogQuery.get()]);
+		});
+		return () => {
+			subQueryListener();
+		};
+	}, [subSchemaToggle.get()]);
+
 
 	const renderList = querySchema?.fields.map((field, index) => {
 		if (typeof field.data_type === 'string')
