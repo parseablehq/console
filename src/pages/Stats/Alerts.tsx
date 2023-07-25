@@ -28,6 +28,12 @@ const Alerts: FC = () => {
 			subQueryListener();
 		};
 	}, [data]);
+	useEffect(() => {
+			if (data) {
+				resetData();
+			}
+			getLogAlert(subLogQuery.get().streamName);
+	}, []);
 	
 
 	const { classes } = useAlertsStyles();
