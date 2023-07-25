@@ -246,7 +246,7 @@ const StatCard: FC<statCardProps> = (props) => {
 		<Box className={statCard}>
 			<Box className={statCardDescription}>
 				<Tooltip withArrow label={data.description}>
-					<IconInfoCircle className={statCardDescriptionIcon} />
+					<IconInfoCircle className={statCardDescriptionIcon} size="1.5rem" stroke={1.3} />
 				</Tooltip>
 			</Box>
 			<ThemeIcon radius={80} className={statCardIcon} size={80}>
