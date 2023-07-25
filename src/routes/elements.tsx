@@ -60,3 +60,12 @@ export const StatsElement: FC = () => {
 		</SuspensePage>
 	);
 };
+const Config = lazy(() => import('@/pages/Config'));
+
+export const ConfigElement: FC = () => {
+	return (
+		<SuspensePage>
+			<Config />
+		</SuspensePage>
+	);
+};

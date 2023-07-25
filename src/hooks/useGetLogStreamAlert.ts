@@ -1,10 +1,9 @@
-import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
 import { getLogStreamAlerts } from '@/api/logStream';
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
 
 export const useGetLogStreamAlert = () => {
-	const [data, setData] = useMountedState<LogStreamSchemaData | null>(null);
+	const [data, setData] = useMountedState<any | null>(null);
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
 

@@ -6,7 +6,7 @@ import { FC, useEffect } from 'react';
 import { useStatCardStyles, useStatusStyles } from './styles';
 import { Box, Text, ThemeIcon, Tooltip, px } from '@mantine/core';
 import dayjs from 'dayjs';
-import { IconBrandDeezer, IconInfoCircle, IconTimelineEventText } from '@tabler/icons-react';
+import { IconClockStop, IconDatabase, IconInfoCircle, IconTimelineEventText, IconTransferIn, IconWindowMinimize } from '@tabler/icons-react';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import useMountedState from '@/hooks/useMountedState';
 function convert(val: number) {
@@ -140,16 +140,15 @@ const Status: FC = () => {
 				</Text>
 
 				<Box className={genterateContiner}>
-					<Text className={genterateText}>Genterated at :</Text>
-					<Text className={genterateTextResult}>
-						{!loadingStat
+					<Text className={genterateText}>Genterated at : <span className={genterateTextResult}>{!loadingStat
 							? errorStat
 								? 'ERROR'
 								: dataStat
 									? dayjs(dataStat?.time).format('DD-MM-YY HH:mm')
 									: 'Not found'
 							: 'Loading'}
-					</Text>
+							</span> 	
+							</Text>
 				</Box>
 			</Box>
 			<Box className={StatsContainer}>
@@ -169,7 +168,7 @@ const Status: FC = () => {
 				/>
 				<StatCard
 					data={{
-						Icon: IconBrandDeezer,
+						Icon: IconTransferIn,
 						value: !loadingStat
 							? !errorStat
 								? dataStat?.ingestion?.size
@@ -183,7 +182,7 @@ const Status: FC = () => {
 				/>
 				<StatCard
 					data={{
-						Icon: IconTimelineEventText,
+						Icon: IconDatabase,
 						value: !loadingStat
 							? !errorStat
 								? dataStat?.storage?.size
@@ -197,7 +196,7 @@ const Status: FC = () => {
 				/>
 				<StatCard
 					data={{
-						Icon: IconBrandDeezer,
+						Icon: IconWindowMinimize,
 						value: !loadingStat
 							? !errorStat
 								? dataStat?.ingestion?.size
@@ -210,13 +209,13 @@ const Status: FC = () => {
 								: 'ERROR'
 							: 'Loading...',
 						description: 'Compression percentage= storage used  / size of events *100 ',
-						title: 'Compression %',
+						title: 'Compression ',
 					}}
 				/>
 
 				<StatCard
 					data={{
-						Icon: IconTimelineEventText,
+						Icon: IconClockStop,
 						value: !loadingRetention
 							? !errorRetention
 								? dataRetention && dataRetention[0] && dataRetention[0].duration
