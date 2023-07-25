@@ -10,6 +10,10 @@ import {
 	IconHelpCircle,
 	IconLogout,
 	IconUser,
+	IconTransferIn,
+	IconBinaryTree2,
+	IconTableShortcut,
+	IconSettings,
 } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
 import docImage from '@/assets/images/doc.webp';
@@ -27,9 +31,10 @@ import { useDisclosure, useLocalStorage } from '@mantine/hooks';
 import { LOGIN_ROUTE } from '@/constants/routes';
 
 const links = [
-	{ icon: IconColumns, label: 'Logs', pathname: '/logs' },
 	{ icon: IconZoomCode, label: 'Query', pathname: '/query' },
+	{ icon: IconTableShortcut, label: 'Logs', pathname: '/logs' },
 	{ icon: IconReportAnalytics, label: 'Stats', pathname: '/stats' },
+	{ icon: IconSettings, label: 'Config', pathname: '/config' },
 ];
 
 type NavbarProps = Omit<MantineNavbarProps, 'children'>;
@@ -107,7 +112,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 				setCurrentPage(location.pathname);
 			}
 		} else if (streams && Boolean(streams.length)) {
-			navigate(`/${streams[0].name}/logs`);
+			navigate(`/${streams[0].name}/query`);
 		}
 	}, [streams, location]);
 
@@ -156,16 +161,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 			<MantineNavbar.Section grow className={container}>
 				<NavLink
 					label="Streams"
-					icon={
-						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-							<path
-								d="M19 5C19 7.21 14.97 9 10 9C5.03 9 1 7.21 1 5M19 5C19 2.79 14.97 1 10 1C5.03 1 1 2.79 1 5M19 5V10M1 5V10M19 10C19 12.21 14.97 14 10 14C5.03 14 1 12.21 1 10M19 10V15C19 17.21 14.97 19 10 19C5.03 19 1 17.21 1 15V10"
-								stroke="#211F1F"
-								strokeLinecap="round"
-								strokeLinejoin="round"
-							/>
-						</svg>
-					}
+					icon={<IconBinaryTree2 size="1.5rem" stroke={1.3} />}
 					className={streamsBtn}
 				/>
 				<Select

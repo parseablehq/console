@@ -4,3 +4,4 @@ export const LOGIN_ROUTE = '/login';
 export const ALL_ROUTE = '*';
 export const QUERY_ROUTE = '/:streamName/query';
 export const STATS_ROUTE = '/:streamName/stats';
+export const CONFIG_ROUTE = '/:streamName/config';

@@ -14,7 +14,7 @@ const Stats: FC = () => {
 		<Box className={container}>
 
 			<Status />
-						{/* <Alerts/> */}
+			<Alerts/>
 		</Box>
 	);
 };
