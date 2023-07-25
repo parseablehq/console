@@ -1,7 +1,6 @@
 import type { NavbarProps as MantineNavbarProps } from '@mantine/core';
 import { Navbar as MantineNavbar, NavLink, Select, Anchor, Card, Box, Modal, Text, Image } from '@mantine/core';
 import {
-	IconColumns,
 	IconZoomCode,
 	IconReportAnalytics,
 	IconCheck,
@@ -10,7 +9,6 @@ import {
 	IconHelpCircle,
 	IconLogout,
 	IconUser,
-	IconTransferIn,
 	IconBinaryTree2,
 	IconTableShortcut,
 	IconSettings,
