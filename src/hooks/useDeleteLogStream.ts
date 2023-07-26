@@ -1,20 +1,17 @@
-import { LogStreamData } from '@/@types/parseable/api/stream';
-
-import { getLogStreamList } from '@/api/logStream';
+import { deleteLogStream } from '@/api/logStream';
 import { StatusCodes } from 'http-status-codes';
-import { useEffect } from 'react';
 import useMountedState from './useMountedState';
 
-export const useGetLogStreamList = () => {
-	const [data, setData] = useMountedState<LogStreamData | null>(null);
+export const useDeleteLogStream = () => {
+	const [data, setData] = useMountedState<any | null>(null);
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
 
-	const getData = async () => {
+	const deleteLogStreamFun = async (streamName: string) => {
 		try {
 			setLoading(true);
 			setError(null);
-			const res = await getLogStreamList();
+			const res = await deleteLogStream(streamName);
 
 			switch (res.status) {
 				case StatusCodes.OK: {
@@ -24,22 +21,19 @@ export const useGetLogStreamList = () => {
 					break;
 				}
 				default: {
-					setError('Failed to get log streams');
+					setError('Failed to get ALert');
 				}
 			}
 		} catch {
-			setError('Failed to get log streams');
+			setError('Failed to get ALert');
 		} finally {
 			setLoading(false);
 		}
 	};
+
 	const resetData = () => {
 		setData(null);
 	};
 
-	useEffect(() => {
-		getData();
-	}, []);
-
-	return { data, error, loading, getData ,resetData};
+	return { data, error, loading, deleteLogStreamFun, resetData };
 };

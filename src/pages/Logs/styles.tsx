@@ -208,7 +208,11 @@ export const useViewLogStyles = createStyles((theme) => {
 		},
 
 		headerContainer: {
+			position: 'sticky',
+			top: 0,
+			zIndex: 10,
 			background: pColor,
+			padding: spacing.md,
 			display: 'flex',
 			alignItems: 'center',
 			justifyContent: 'space-between',

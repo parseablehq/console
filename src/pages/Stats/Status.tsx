@@ -109,7 +109,7 @@ const Status: FC = () => {
 			setStatus(`Not Recieved any events in ${FIXED_DURATIONS[statusFIXEDDURATIONS-1].name}`);
 			return;
 		}
-		if(queryResult?.data[0]["COUNT(UInt8(1))"]===0){
+		if(queryResult?.data[0] && queryResult?.data[0]["COUNT(UInt8(1))"]&&queryResult?.data[0]["COUNT(UInt8(1))"]===0){
 			setStatus("Loading...");
 			if(FIXED_DURATIONS.length-1>statusFIXEDDURATIONS){
 				setStatusFIXEDDURATIONS(statusFIXEDDURATIONS+1);
@@ -119,6 +119,10 @@ const Status: FC = () => {
 			else{
 				setStatus(`Not Recieved any events in ${FIXED_DURATIONS[statusFIXEDDURATIONS].name}`);
 			}
+		}
+		else{
+			setStatus(`Not Recieved any events in ${FIXED_DURATIONS[statusFIXEDDURATIONS].name}`);
+			return;
 		}
 	}, [queryResult, errorQueryResult]);
 	const { classes } = useStatusStyles();
@@ -173,7 +177,7 @@ const Status: FC = () => {
 							? !errorStat
 								? dataStat?.ingestion?.size
 									? formatBytes(dataStat.ingestion.size.split(' ')[0])
-									: 'NotFound'
+									: '0'
 								: 'ERROR'
 							: 'Loading...',
 						description: 'Size of events received',
@@ -187,7 +191,7 @@ const Status: FC = () => {
 							? !errorStat
 								? dataStat?.storage?.size
 									? formatBytes(dataStat.storage.size.split(' ')[0])
-									: 'NotFound'
+									: '0'
 								: 'ERROR'
 							: 'Loading...',
 						description: 'Amount of storage used by stream',

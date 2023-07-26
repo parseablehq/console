@@ -8,7 +8,7 @@ export const useQueryResult = () => {
 		data: any;
 	} | null>(null);
 	const [error, setError] = useMountedState<string | null>(null);
-	const [loading, setLoading] = useMountedState<boolean>(true);
+	const [loading, setLoading] = useMountedState<boolean>(false);
 
 	const getQueryData = async (logsQuery: LogsQuery, query = '') => {
 		try {
