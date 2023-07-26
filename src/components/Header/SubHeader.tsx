@@ -11,7 +11,7 @@ import { useLogQueryStyles } from './styles';
 import { useMatch } from 'react-router-dom';
 const SubHeader: FC = () => {
 	const { classes } = useLogQueryStyles();
-	const { container, innerContainer, homeIcon, activeBtn } = classes;
+	const { container, innerContainer, homeIcon } = classes;
 	const {
 		state: { subLogQuery },
 	} = useHeaderContext();
@@ -43,11 +43,13 @@ const SubHeader: FC = () => {
 						</svg>
 						<Text>Streams </Text>
 						<Text>{streamName}</Text>
-						{useMatch('/:streamName/stats') && <Text className={activeBtn}>Stats </Text>}
+						{useMatch('/:streamName/stats') && <Text >Stats </Text>}
 
-						{useMatch('/:streamName/logs') && <Text className={activeBtn}>Logs </Text>}
+						{useMatch('/:streamName/logs') && <Text >Logs </Text>}
 
-						{useMatch('/:streamName/query') && <Text className={activeBtn}>Query </Text>}
+						{useMatch('/:streamName/query') && <Text >Query </Text>}
+
+						{useMatch('/:streamName/config') && <Text >Config </Text>}
 					</Breadcrumbs>
 				</Box>
 			</Box>

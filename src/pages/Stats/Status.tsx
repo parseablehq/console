@@ -204,15 +204,15 @@ const Status: FC = () => {
 						value: !loadingStat
 							? !errorStat
 								? dataStat?.ingestion?.size
-									? `${(
+									? `${(100-
 										(parseInt(dataStat.storage.size.split(' ')[0]) /
 											parseInt(dataStat.ingestion.size.split(' ')[0])) *
-										100
+										100 
 									).toPrecision(4)} %`
 									: 'NotFound'
 								: 'ERROR'
 							: 'Loading...',
-						description: 'Compression percentage= storage used  / size of events *100 ',
+						description: 'Compression percentage= 100 - storage used  / size of events *100',
 						title: 'Compression ',
 					}}
 				/>
