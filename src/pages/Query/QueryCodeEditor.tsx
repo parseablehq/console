@@ -25,6 +25,7 @@ const QueryCodeEditor: FC = () => {
 	const [isSchemaOpen, setIsSchemaOpen] = useMountedState(false);
 	const [query, setQuery] = React.useState<string>(`SELECT * FROM ${subLogQuery.get().streamName} LIMIT 100`);
 	const [refreshInterval, setRefreshInterval] = useMountedState<number | null>(null);
+	const [currentStreamName, setCurrentStreamName] = useMountedState<string>('');
 
 	const handleEditorChange = (code: any) => {
 		setQuery(code);
@@ -45,8 +46,10 @@ const QueryCodeEditor: FC = () => {
 		const listener = subSchemaToggle.subscribe(setIsSchemaOpen);
 		const refreshIntervalListener = subRefreshInterval.subscribe(setRefreshInterval);
 		const subQueryListener = subLogQuery.subscribe((state) => {
-			if (state.streamName) {
-				setQuery(`SELECT * FROM ${state.streamName} LIMIT 100;`);
+			if (state.streamName!==currentStreamName) {
+				setCurrentStreamName(state.streamName);
+				setQuery(`SELECT * FROM ${state.streamName} LIMIT 100  ; `);
+				console.log(['state.streamName',state.streamName,currentStreamName]);
 				result.set('');
 			}
 		});
@@ -55,14 +58,8 @@ const QueryCodeEditor: FC = () => {
 			refreshIntervalListener();
 			subQueryListener();
 		};
-	}, [subSchemaToggle.get()]);
+	}, [currentStreamName]);
 
-	useEffect(() => {
-		if (subLogQuery.get().streamName) {
-			setQuery(`SELECT * FROM ${subLogQuery.get().streamName} LIMIT 100;`);
-			result.set('');
-		}
-	}, [subLogQuery.get().streamName]);
 
 	function handleEditorDidMount(editor: any, monaco: any) {
 		editorRef.current = editor;

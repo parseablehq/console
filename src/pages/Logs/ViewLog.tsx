@@ -1,5 +1,5 @@
 import useMountedState from '@/hooks/useMountedState';
-import { Box, Chip, CloseButton, Divider, Drawer, Text, px } from '@mantine/core';
+import { Box, Chip, CloseButton, Divider, Drawer, ScrollArea, Text, px } from '@mantine/core';
 import { Prism } from '@mantine/prism';
 import type { FC } from 'react';
 import { useEffect, Fragment, useMemo } from 'react';
@@ -52,15 +52,17 @@ const ViewLog: FC = () => {
 					<DataChip title="Meta Data" dataList={p_metadata} />
 					<DataChip title="Tags" dataList={p_tags} />
 					<Divider label={'Logger Message'} variant="dashed" labelPosition="center" my="lg" />
+					
 					<Prism
 						copyLabel="Copy"
 						language="json"
 						withLineNumbers
-						style={{
-							maxWidth: '100%',
-						}}>
+						sx={{overflow: 'auto' }}
+						scrollAreaComponent={ScrollArea}
+						>
 						{JSON.stringify(log, null, 2)}
 					</Prism>
+					
 				</Box>
 			)}
 		</Drawer>

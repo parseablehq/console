@@ -13,7 +13,7 @@ export const useQueryLogs = () => {
 	const _dataRef = useRef<Log[] | null>(null);
 
 	const [error, setError] = useMountedState<string | null>(null);
-	const [loading, setLoading] = useMountedState<boolean>(true);
+	const [loading, setLoading] = useMountedState<boolean>(false);
 	const [pageLogData, setPageLogData] = useMountedState<LogsData | null>(null);
 	const [querySearch, setQuerySearch] = useMountedState<LogsSearch>({ 
 		search: '', 

@@ -1,5 +1,5 @@
 import type { NavbarProps as MantineNavbarProps } from '@mantine/core';
-import { Navbar as MantineNavbar, NavLink, Select, Anchor, Card, Box, Modal, Text, Image } from '@mantine/core';
+import { Navbar as MantineNavbar, NavLink, Select, Anchor, Card, Box, Modal, Text, Image, Button, TextInput } from '@mantine/core';
 import {
 	IconZoomCode,
 	IconReportAnalytics,
@@ -12,6 +12,7 @@ import {
 	IconBinaryTree2,
 	IconTableShortcut,
 	IconSettings,
+	IconTrash,
 } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
 import docImage from '@/assets/images/doc.webp';
@@ -27,6 +28,7 @@ import useMountedState from '@/hooks/useMountedState';
 import dayjs from 'dayjs';
 import { useDisclosure, useLocalStorage } from '@mantine/hooks';
 import { LOGIN_ROUTE } from '@/constants/routes';
+import { useDeleteLogStream } from '@/hooks/useDeleteLogStream';
 
 const links = [
 	{ icon: IconZoomCode, label: 'Query', pathname: '/query' },
@@ -40,11 +42,13 @@ type NavbarProps = Omit<MantineNavbarProps, 'children'>;
 const Navbar: FC<NavbarProps> = (props) => {
 	const [username] = useLocalStorage({ key: 'username', getInitialValueInEffect: false });
 	const navigate = useNavigate();
-	const { data: streams, loading, error, getData } = useGetLogStreamList();
+	const { data: streams, loading, error, getData, resetData:resetStreamArray} = useGetLogStreamList();
 	const [activeStream, setActiveStream] = useState('');
 	const [searchValue, setSearchValue] = useState('');
 	const { classes } = useNavbarStyles();
 	const [currentPage, setCurrentPage] = useState('/logs');
+	const [opened, { open, close }] = useDisclosure(false);
+	const [ deleteStream, setDeleteStream] = useState('');
 	const {
 		container,
 		linkBtnActive,
@@ -65,8 +69,9 @@ const Navbar: FC<NavbarProps> = (props) => {
 		state: { subNavbarTogle },
 	} = useHeaderContext();
 	const [isSubNavbarOpen, setIsSubNavbarOpen] = useMountedState(false);
-	const [opened, { close, open }] = useDisclosure();
+	const [openedDelete, { close:closeDelete, open:openDelete}] = useDisclosure();
 	let location = useLocation();
+	const {data:deleteData, loading:deleteLoading, error:deleteError, deleteLogStreamFun , resetData: resetDatalogStraeam} = useDeleteLogStream();
 
 	useEffect(() => {
 		const listener = subNavbarTogle.subscribe(setIsSubNavbarOpen);
@@ -151,6 +156,59 @@ const Navbar: FC<NavbarProps> = (props) => {
 			});
 		}
 	}, [streams, error, loading]);
+	const handleCloseDelete = () => {
+		closeDelete();
+		setDeleteStream('');
+	};
+	const handleDelete = () => {
+		deleteLogStreamFun(deleteStream||"");
+		closeDelete();
+	};
+
+	useEffect(() => {
+		if (deleteLoading) {
+			notifications.show({
+				id: 'delete-data',
+				loading: true,
+				color: '#545BEB',
+				title: 'Deleting Stream',
+				message: 'Stream will be deleted.',
+				autoClose: false,
+				withCloseButton: false,
+
+			});
+			return;
+		}
+		if (deleteData && !deleteLoading) {
+			notifications.update({
+				id: 'delete-data',
+				color: 'green',
+				title: 'Stream was deleted',
+				message: 'Successfully Deleted!!',
+				icon: <IconCheck size="1rem" />,
+				autoClose: 1000,
+			});
+			resetDatalogStraeam();
+			resetStreamArray();
+			getData();
+			return;
+		}
+		if (deleteError) {
+			notifications.update({
+				id: 'delete-data',
+				color: 'red',
+				title: 'Error Occured',
+				message: 'Error Occured while deleting stream',
+				icon: <IconFileAlert size="1rem" />,
+				autoClose: 2000,
+			});
+			return;
+		}
+		if(streams && streams.length!==0 && deleteStream===streamName){
+			navigate(`/${streams[0].name}/query`);
+		}
+
+	}, [deleteData, deleteError, deleteLoading,streams]);
 
 	return (
 		<MantineNavbar {...props} withBorder zIndex={1} hiddenBreakpoint={window.outerWidth + 20} hidden={isSubNavbarOpen}>
@@ -190,7 +248,14 @@ const Navbar: FC<NavbarProps> = (props) => {
 							}
 						/>
 					);
-				})}
+						})}
+				<NavLink
+				label={"Delete"}
+				icon={<IconTrash size="1.3rem" stroke={1.2} />}
+				sx={{ paddingLeft: 53 }}
+				onClick={openDelete}
+				className={ linkBtn}
+			/>
 				{error && <div>{error}</div>}
 				{error && (
 					<NavLink
@@ -219,6 +284,30 @@ const Navbar: FC<NavbarProps> = (props) => {
 					onClick={onSignOut}
 				/>
 			</MantineNavbar.Section>
+			<Modal withinPortal size="md" opened={openedDelete} onClose={handleCloseDelete} title={"Delete Stream"}centered>
+				<Text>Are you sure you want to delete this stream?</Text>
+				<TextInput
+				 type="text" 
+				onChange={(e) => {
+					console.log(e.target.value);
+					setDeleteStream(e.target.value);
+				}
+				}
+				 placeholder= {`Type the name of the stream to confirm. i.e: ${streamName}`} />
+				
+				<Box mt={10} display="flex" sx={{justifyContent:"end"}}>
+				<Button variant="filled" color='red' sx={{margin:"12px"}} disabled={deleteStream===streamName?false:true}
+					onClick={handleDelete}
+					>
+						Delete
+					</Button>
+					<Button onClick={handleCloseDelete} variant='filled' color='green'sx={{margin:"12px"}}>
+						Cancel
+					</Button>
+
+				</Box>
+
+			</Modal>
 			<Modal withinPortal opened={opened} onClose={close} withCloseButton={false} size="sm" centered>
 				<Text className={helpTitle}>Need any help?</Text>
 				<Text className={helpDescription}>Here you can find useful resources and information.</Text>

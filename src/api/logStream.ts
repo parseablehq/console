@@ -1,10 +1,11 @@
 import { Axios } from './axios';
 import {
+	DELETE_STREAMS_URL,
 	LOG_STREAMS_SCHEMA_URL,
 	LOG_STREAM_LIST_URL,
-	STATS_STREAMS_ALERTS_URL,
-	STATS_STREAMS_RETRNTION_URL,
-	STATS_STREAMS_STATS_URL,
+	LOG_STREAMS_ALERTS_URL,
+	LOG_STREAMS_RETRNTION_URL,
+	LOG_STREAMS_STATS_URL,
 } from './constants';
 import { LogStreamData, LogStreamSchemaData } from '@/@types/parseable/api/stream';
 
@@ -17,13 +18,25 @@ export const getLogStreamSchema = (streamName: string) => {
 };
 
 export const getLogStreamAlerts = (streamName: string) => {
-	return Axios().get(STATS_STREAMS_ALERTS_URL(streamName));
+	return Axios().get(LOG_STREAMS_ALERTS_URL(streamName));
+};
+
+export const putLogStreamAlerts = (streamName: string, data: any) => {
+	return Axios().put(LOG_STREAMS_ALERTS_URL(streamName), data);
 };
 
 export const getLogStreamRetention = (streamName: string) => {
-	return Axios().get(STATS_STREAMS_RETRNTION_URL(streamName));
+	return Axios().get(LOG_STREAMS_RETRNTION_URL(streamName));
+};
+
+export const putLogStreamRetention = (streamName: string, data: any) => {
+	return Axios().put(LOG_STREAMS_RETRNTION_URL(streamName), data);
 };
 
 export const getLogStreamStats = (streamName: string) => {
-	return Axios().get(STATS_STREAMS_STATS_URL(streamName));
+	return Axios().get(LOG_STREAMS_STATS_URL(streamName));
 };
+
+export const deleteLogStream = (streamName: string) => {
+	return Axios().delete(DELETE_STREAMS_URL(streamName));
+}
