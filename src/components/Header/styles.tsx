@@ -20,7 +20,7 @@ export const useHeaderStyles = createStyles((theme) => {
 		},
 		logoContainer: {
 			display: 'flex',
-			justifyContent: 'space-between',
+			justifyContent: 'center',
 			alignItems: 'center',
 			padding: spacing.md,
 			paddingRight:0,
