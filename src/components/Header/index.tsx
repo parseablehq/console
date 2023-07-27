@@ -29,14 +29,14 @@ const Header: FC<HeaderProps> = (props) => {
 	return (
 		<MantineHeader {...props} className={container} height={HEADER_HEIGHT} p={0} withBorder>
 			<Box className={logoContainer}>
-				<Link to={HOME_ROUTE} style={{ height: 25 }}>
-					<Image className={imageSty} height={26} src={logoInvert} alt="Parseable Logo" />
+				<Link to={HOME_ROUTE} >
+					<Image className={imageSty} src={logoInvert} height={24} alt="Parseable Logo" />
 				</Link>
 				<Burger
 					className={burgerIcon}
 					opened={isSubNavbarOpen}
 					onClick={() => subNavbarTogle.set((state) => !state)}
-					size={'sm'}
+					size={24}
 				/>
 			</Box>
 			<Box className={navContainer}>

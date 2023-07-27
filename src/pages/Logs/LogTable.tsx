@@ -248,7 +248,7 @@ const LogTable: FC = () => {
 							</Box>
 						</Box>
 					) : (
-						<EmptyBox message="No Data Available" />
+					<EmptyBox message="No Data Available" />	
 					)
 				) : (
 					<Loading visible variant="oval" position="absolute" zIndex={0} />

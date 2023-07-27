@@ -20,17 +20,20 @@ export const useHeaderStyles = createStyles((theme) => {
 		},
 		logoContainer: {
 			display: 'flex',
-			alignItems: 'self-end',
-			width: NAVBAR_WIDTH,
 			justifyContent: 'space-between',
-			// padding: spacing.md,
+			alignItems: 'center',
+			padding: spacing.md,
+			paddingRight:0,
+			width: NAVBAR_WIDTH,
+			height: "24px",
+
 		},
 		imageSty: {
-			marginLeft: spacing.md,
+
 		},
 		burgerIcon: {
-			size: '24px',
-			color: theme.colors.gray[7],
+			
+			
 		},
 		navContainer: {
 			width: `calc(100% - ${NAVBAR_WIDTH}px)`,
@@ -55,16 +58,10 @@ export const useLogQueryStyles = createStyles((theme) => {
 
 		innerContainer: {
 			display: 'flex',
-			paddingTop: spacing.xxs,
 			color: colors.gray[6],
 		},
 		homeIcon: {
 			size: '24px',
-			strokeWidth: 1.0,
-		},
-		activeBtn: {
-			color: colors.brandPrimary[0],
-			textDecoration: 'underline',
 		},
 
 		intervalBtn: {

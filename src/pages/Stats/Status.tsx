@@ -38,6 +38,7 @@ const Status: FC = () => {
 	useDocumentTitle('Parseable | Login');
 	const [statusFIXEDDURATIONS, setStatusFIXEDDURATIONS] = useMountedState(0);
 	const [status, setStatus] = useMountedState("Loading....");
+	const [statusSuccess, setStatusSuccess] = useMountedState(true);
 	FIXED_DURATIONS
 	const {
 		state: { subLogQuery },
@@ -103,10 +104,12 @@ const Status: FC = () => {
 	useEffect(() => {
 		if (queryResult?.data[0] && queryResult?.data[0]["COUNT(UInt8(1))"]) {
 			setStatus(`${queryResult?.data[0]["COUNT(UInt8(1))"]} events in ${FIXED_DURATIONS[statusFIXEDDURATIONS].name}`);
+			setStatusSuccess(true);
 			return;
 		}
 		if (errorQueryResult) {
 			setStatus(`Not Recieved any events in ${FIXED_DURATIONS[statusFIXEDDURATIONS-1].name}`);
+			setStatusSuccess(false);
 			return;
 		}
 		if(queryResult?.data[0] && queryResult?.data[0]["COUNT(UInt8(1))"]&&queryResult?.data[0]["COUNT(UInt8(1))"]===0){
@@ -118,10 +121,12 @@ const Status: FC = () => {
 			}
 			else{
 				setStatus(`Not Recieved any events in ${FIXED_DURATIONS[statusFIXEDDURATIONS].name}`);
+				setStatusSuccess(false);
 			}
 		}
 		else{
-			setStatus(`Not Recieved any events in ${FIXED_DURATIONS[statusFIXEDDURATIONS].name}`);
+			setStatus(`Not Recieved any events`);
+			setStatusSuccess(false);
 			return;
 		}
 	}, [queryResult, errorQueryResult]);
@@ -135,12 +140,13 @@ const Status: FC = () => {
 		genterateText,
 		genterateTextResult,
 		StatsContainer,
+		statusTextFailed,
 	} = classes;
 	return (
 		<Box className={container}>
 			<Box className={headContainer}>
 				<Text className={statusText}>
-					Status: <span className={statusTextResult}> {status}</span>
+					Status: <span className={statusSuccess?statusTextResult:statusTextFailed}> {status}</span>
 				</Text>
 
 				<Box className={genterateContiner}>
@@ -163,7 +169,7 @@ const Status: FC = () => {
 							? !errorStat
 								? dataStat?.ingestion?.count
 									? convert(dataStat.ingestion.count)
-									: 'NotFound'
+									: '0'
 								: 'ERROR'
 							: 'Loading...',
 						description: `No of events received: ${dataStat?.ingestion.count}`,
@@ -204,15 +210,15 @@ const Status: FC = () => {
 						value: !loadingStat
 							? !errorStat
 								? dataStat?.ingestion?.size
-									? `${(
+									? `${(100-
 										(parseInt(dataStat.storage.size.split(' ')[0]) /
 											parseInt(dataStat.ingestion.size.split(' ')[0])) *
-										100
+										100 
 									).toPrecision(4)} %`
 									: 'NotFound'
 								: 'ERROR'
 							: 'Loading...',
-						description: 'Compression percentage= storage used  / size of events *100 ',
+						description: 'Compression percentage= 100 - storage used  / size of events *100',
 						title: 'Compression ',
 					}}
 				/>

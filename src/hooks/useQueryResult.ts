@@ -26,7 +26,7 @@ export const useQueryResult = () => {
 
 			if (typeof data === 'string' && data.includes('Stream is not initialized yet')) {
 				setData({
-					data: [],
+					data: [data],
 				});
 				return;
 			}

@@ -49,6 +49,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 	const [currentPage, setCurrentPage] = useState('/logs');
 	const [opened, { open, close }] = useDisclosure(false);
 	const [ deleteStream, setDeleteStream] = useState('');
+	const [disableLink, setDisableLink] = useState(false);
 	const {
 		container,
 		linkBtnActive,
@@ -71,7 +72,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 	const [isSubNavbarOpen, setIsSubNavbarOpen] = useMountedState(false);
 	const [openedDelete, { close:closeDelete, open:openDelete}] = useDisclosure();
 	let location = useLocation();
-	const {data:deleteData, loading:deleteLoading, error:deleteError, deleteLogStreamFun , resetData: resetDatalogStraeam} = useDeleteLogStream();
+	const {data:deleteData, loading:deleteLoading, error:deleteError, deleteLogStreamFun , resetData: resetDeleteStraeam} = useDeleteLogStream();
 
 	useEffect(() => {
 		const listener = subNavbarTogle.subscribe(setIsSubNavbarOpen);
@@ -96,10 +97,27 @@ const Navbar: FC<NavbarProps> = (props) => {
 	} = useHeaderContext();
 
 	useEffect(() => {
-		if (streamName) {
+		if(streams && streams.length!==0 && !streams.find((stream)=>stream.name===streamName)&& streamName && streamName===deleteStream){
+			
+			navigate(`/${streams[0].name}/query`);
+			return;
+		}
+		else if(streamName&&streams && streams.length!==0 && !streams.find((stream)=>stream.name===streamName) ){
+			notifications.show({
+				id: 'error-data',
+				color: 'red',
+				title: 'Error Occured',
+				message: `${streamName} stream not found`,
+				icon: <IconFileAlert size="1rem" />,
+				autoClose: 5000,
+			});
+			
+			navigate(`/${streams[0].name}/query`);
+			return;
+		}
+		else if (streamName && streams?.length!==0 && streams?.find((stream)=>stream.name===streamName)) {
 			setActiveStream(streamName);
 			setSearchValue(streamName);
-			
 				const now = dayjs();
 				subLogQuery.set((state) => {
 					state.streamName = streamName || '';
@@ -155,6 +173,20 @@ const Navbar: FC<NavbarProps> = (props) => {
 				autoClose: 2000,
 			});
 		}
+		if(streams && streams.length===0){
+			notifications.update({
+				id: 'load-data',
+				color: 'red',
+				title: 'No Streams',
+				message: 'No Streams Found in your account',
+				icon: <IconFileAlert size="1rem" />,
+				autoClose: 2000,
+			});
+			setActiveStream('');
+			setSearchValue('');
+			setDisableLink(true);
+			navigate(`/`);
+		}
 	}, [streams, error, loading]);
 	const handleCloseDelete = () => {
 		closeDelete();
@@ -188,7 +220,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 				icon: <IconCheck size="1rem" />,
 				autoClose: 1000,
 			});
-			resetDatalogStraeam();
+			resetDeleteStraeam();
 			resetStreamArray();
 			getData();
 			return;
@@ -238,6 +270,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 							label={link.label}
 							icon={<link.icon size="1.3rem" stroke={1.2} />}
 							sx={{ paddingLeft: 53 }}
+							disabled={disableLink}
 							onClick={() => {
 								navigate(`/${activeStream}${link.pathname}`);
 								setCurrentPage(link.pathname);
@@ -255,6 +288,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 				sx={{ paddingLeft: 53 }}
 				onClick={openDelete}
 				className={ linkBtn}
+				disabled={disableLink}
 			/>
 				{error && <div>{error}</div>}
 				{error && (
