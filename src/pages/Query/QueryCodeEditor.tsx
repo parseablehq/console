@@ -2,7 +2,7 @@ import React, { FC, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useQueryPageContext } from './Context';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Box, Button, Text, px } from '@mantine/core';
+import { Box, Button, Text, Tooltip, px } from '@mantine/core';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import { ErrorMarker, errChecker } from './ErrorMarker';
 import { notifications } from '@mantine/notifications';
@@ -64,6 +64,12 @@ const QueryCodeEditor: FC = () => {
 	function handleEditorDidMount(editor: any, monaco: any) {
 		editorRef.current = editor;
 		monacoRef.current = monaco;
+		editor.addCommand(
+			monaco.KeyMod.CtrlCmd + monaco.KeyCode.Enter,
+			async () => {
+				runQuery();
+			},
+		  );
 	}
 	const runQuery = () => {
 		resetData();
@@ -122,12 +128,18 @@ const QueryCodeEditor: FC = () => {
 			<Box className={container}>
 				<Text className={textContext}>Query</Text>
 				<Box style={{ height: '100%', width: '100%', textAlign: 'right' }}>
-					<Button variant="default" className={actionBtn} onClick={() => subSchemaToggle.set(!isSchemaOpen)}>
+				<Tooltip label={`View Schema for ${subLogQuery.get().streamName}`} sx={{color:"white",backgroundColor:"black"}}withArrow position="right">
+					<Button variant="default" className={actionBtn} 
+					aria-label='Schema'
+					onClick={() => subSchemaToggle.set(!isSchemaOpen)}>
 						<IconFileInfo size={px('1.2rem')} stroke={1.5} />
 					</Button>
+				</Tooltip>
+					<Tooltip label={"Click to Run Query or ctrl + enter "} sx={{color:"white",backgroundColor:"black"}}withArrow position="right">
 					<Button variant="default" className={runQueryBtn} onClick={runQuery}>
 						<IconPlayerPlayFilled size={px('1.2rem')} stroke={1.5} />
 					</Button>
+					</Tooltip>
 				</Box>
 			</Box>
 			<Box sx={{ marginTop: '5px', height: 'calc(100% - 60px)' }}>

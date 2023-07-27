@@ -37,6 +37,9 @@ export const useStatusStyles = createStyles((theme) => {
 		statusTextResult: {
 			color: '#00CC14',
 		},
+		statusTextFailed:{
+			color: '#FF0000',
+		},
 		genterateContiner: {
 			marginRight: spacing.sm,
 		},

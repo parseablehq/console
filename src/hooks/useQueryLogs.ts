@@ -139,7 +139,11 @@ export const useQueryLogs = () => {
 
 				return;
 			}
-
+			if (typeof data === 'string' && data.includes('Stream is not initialized yet')) {
+				_dataRef.current = [];
+				return;
+			}
+			console.log(logsQueryRes);
 			setError('Failed to query log');
 		} catch {
 			setError('Failed to query log');
