@@ -120,12 +120,12 @@ const Status: FC = () => {
 				return;
 			}
 			else{
-				setStatus(`Not Recieved any events in ${FIXED_DURATIONS[statusFIXEDDURATIONS].name}`);
+				setStatus(`No events received ${FIXED_DURATIONS[statusFIXEDDURATIONS].name}`);
 				setStatusSuccess(false);
 			}
 		}
 		else{
-			setStatus(`Not Recieved any events`);
+			setStatus(`No events received`);
 			setStatusSuccess(false);
 			return;
 		}
@@ -146,18 +146,18 @@ const Status: FC = () => {
 		<Box className={container}>
 			<Box className={headContainer}>
 				<Text className={statusText}>
-					Status: <span className={statusSuccess?statusTextResult:statusTextFailed}> {status}</span>
+					<span className={statusSuccess?statusTextResult:statusTextFailed}> {status}</span>
 				</Text>
 
 				<Box className={genterateContiner}>
-					<Text className={genterateText}>Generated at : <span className={genterateTextResult}>{!loadingStat
+					<Text className={genterateText}>Generated at <span className={genterateTextResult}>[{!loadingStat
 							? errorStat
 								? 'ERROR'
 								: dataStat
-									? dayjs(dataStat?.time).format('DD-MM-YY HH:mm')
+									? dayjs(dataStat?.time).format('HH:mm DD-MM-YYYY')
 									: 'Not found'
-							: 'Loading'}
-							</span> 	
+							: 'Loading'}]
+							</span>
 							</Text>
 				</Box>
 			</Box>
@@ -172,7 +172,7 @@ const Status: FC = () => {
 									: '0'
 								: 'ERROR'
 							: 'Loading...',
-						description: `No of events received: ${dataStat?.ingestion.count}`,
+						description: `Total events received ${dataStat?.ingestion.count}`,
 						title: 'Events',
 					}}
 				/>
@@ -186,7 +186,7 @@ const Status: FC = () => {
 									: '0'
 								: 'ERROR'
 							: 'Loading...',
-						description: 'Size of events received',
+						description: `Total ingested events size ${dataStat?.ingestion.size}`,
 						title: 'Ingestion',
 					}}
 				/>
@@ -200,7 +200,7 @@ const Status: FC = () => {
 									: '0'
 								: 'ERROR'
 							: 'Loading...',
-						description: 'Amount of storage used by stream',
+						description: `Total storage on backend (after compression) ${dataStat?.storage.size}`,
 						title: 'Storage',
 					}}
 				/>
@@ -218,7 +218,7 @@ const Status: FC = () => {
 									: 'NotFound'
 								: 'ERROR'
 							: 'Loading...',
-						description: 'Compression percentage= 100 - storage used  / size of events *100',
+						description: 'Compression percentage. Calculated as (events size / storage used) * 100',
 						title: 'Compression ',
 					}}
 				/>
@@ -233,7 +233,7 @@ const Status: FC = () => {
 									: 'Not Set'
 								: 'ERROR'
 							: 'Loading...',
-						description: 'description',
+						description: 'Retention period for events in the stream',
 						title: 'Retention',
 					}}
 				/>

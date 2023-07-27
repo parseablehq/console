@@ -246,7 +246,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 		<MantineNavbar {...props} withBorder zIndex={1} hiddenBreakpoint={window.outerWidth + 20} hidden={isSubNavbarOpen}>
 			<MantineNavbar.Section grow className={container}>
 				<NavLink
-					label="Streams"
+					label="Log Streams"
 					icon={<IconBinaryTree2 size="1.5rem" stroke={1.3} />}
 					className={streamsBtn}
 				/>
