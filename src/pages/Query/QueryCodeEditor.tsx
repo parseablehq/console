@@ -92,7 +92,7 @@ useEffect(() => {
 			endTime :subLogQuery.get().endTime,
 			streamName : currentStreamName
 		}
-		if (subLogSelectedTimeRange.get().includes('last')) {
+		if (subLogSelectedTimeRange.get().state==='fixed') {
 			const now = dayjs();
 			const timeDiff = subLogQuery.get().endTime.getTime() - subLogQuery.get().startTime.getTime();
 			LogQuery ={

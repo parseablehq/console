@@ -136,7 +136,10 @@ const Navbar: FC<NavbarProps> = (props) => {
 			state.startTime = now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate();
 			state.endTime = now.toDate();
 		});
-		subLogSelectedTimeRange.set(DEFAULT_FIXED_DURATIONS.name);
+		subLogSelectedTimeRange.set((state) => {
+			state.state = 'fixed';
+			state.value = DEFAULT_FIXED_DURATIONS.name;
+			});
 		subLogSearch.set((state) => {
 			state.search = '';
 			state.filters = {};

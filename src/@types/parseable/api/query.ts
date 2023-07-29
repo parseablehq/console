@@ -32,3 +32,8 @@ export type Log = {
 	p_tags: string;
 	[key: string]: string | number | null | Date;
 };
+
+export type LogSelectedTimeRange = {
+	state : "fixed"| "custom";
+	value : string;
+};

@@ -11,7 +11,7 @@ const RefreshNow: FC = () => {
 	} = useHeaderContext();
 
 	const onRefresh = () => {
-		if (subLogSelectedTimeRange.get().includes('last')) {
+		if (subLogSelectedTimeRange.get().state==='fixed') {
 			const now = dayjs();
 			const timeDiff = subLogQuery.get().endTime.getTime() - subLogQuery.get().startTime.getTime();
 			subLogQuery.set((state) => {

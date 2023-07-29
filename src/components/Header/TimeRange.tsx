@@ -15,18 +15,21 @@ const TimeRange: FC = () => {
 		state: { subLogQuery, subLogSelectedTimeRange },
 	} = useHeaderContext();
 
-	const [selectedRange, setSelectedRange] = useMountedState<string>(subLogSelectedTimeRange.get());
+	const [selectedRange, setSelectedRange] = useMountedState<string>(subLogSelectedTimeRange.get().value);
 
 	useEffect(() => {
 		const listener = subLogSelectedTimeRange.subscribe((state) => {
-			setSelectedRange(state);
+			setSelectedRange(state.value);
 		});
 
 		return () => listener();
 	}, []);
 
 	const onDurationSelect = (duration: FixedDurations) => {
-		subLogSelectedTimeRange.set(duration.name);
+		subLogSelectedTimeRange.set((state)=>{
+			state.value = duration.name;
+			state.state = 'fixed';
+		});
 		const now = dayjs();
 
 		subLogQuery.set((query) => {
@@ -102,7 +105,10 @@ const CustomTimeRange: FC = () => {
 		});
 		const startTime = dayjs(selectedRange.startTime).format('DD-MM-YY HH:mm');
 		const endTime = dayjs(selectedRange.endTime).format('DD-MM-YY HH:mm');
-		subLogSelectedTimeRange.set(`${startTime} - ${endTime}`);
+		subLogSelectedTimeRange.set((state)=>{
+			state.state = 'custom';
+			state.value = `${startTime} - ${endTime}`;
+		});
 	};
 
 	const { classes } = useLogQueryStyles();
