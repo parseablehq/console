@@ -1,7 +1,6 @@
 import { useGetLogStreamRetention } from '@/hooks/useGetLogStreamRetention';
 import { useGetLogStreamStat } from '@/hooks/useGetLogStreamStat';
 import { FIXED_DURATIONS, useHeaderContext } from '@/layouts/MainLayout/Context';
-import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect } from 'react';
 import { useStatCardStyles, useStatusStyles } from './styles';
 import { Box, Text, ThemeIcon, Tooltip, px } from '@mantine/core';
@@ -43,7 +42,6 @@ function formatBytes(a: any, b = 1) {
 }
 
 const Status: FC = () => {
-	useDocumentTitle('Parseable | Login');
 	const [statusFIXEDDURATIONS, setStatusFIXEDDURATIONS] = useMountedState(0);
 	const [status, setStatus] = useMountedState('Loading....');
 	const [statusSuccess, setStatusSuccess] = useMountedState(true);
@@ -86,8 +84,8 @@ const Status: FC = () => {
 				resetDataRetention();
 				resetStat();
 				resetqueryResult();
-				getLogRetention(subLogQuery.get().streamName);
-				getLogStat(subLogQuery.get().streamName);
+				getLogRetention(query.streamName);
+				getLogStat(query.streamName);
 				getStatus();
 			}
 		});
@@ -95,7 +93,7 @@ const Status: FC = () => {
 		return () => {
 			logQueryListener();
 		};
-	}, [subLogQuery]);
+	}, []);
 
 	const getStatus = async () => {
 
