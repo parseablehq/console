@@ -1,4 +1,4 @@
-import { SortOrder, type LogsQuery, type LogsSearch } from '@/@types/parseable/api/query';
+import { SortOrder, type LogsQuery, type LogsSearch, type LogSelectedTimeRange } from '@/@types/parseable/api/query';
 import useSubscribeState, { SubData } from '@/hooks/useSubscribeState';
 import dayjs from 'dayjs';
 import type { FC } from 'react';
@@ -47,7 +47,7 @@ interface HeaderContextState {
 	subLogQuery: SubData<LogsQuery>;
 	subLogSearch: SubData<LogsSearch>;
 	subRefreshInterval: SubData<number | null>;
-	subLogSelectedTimeRange: SubData<string>;
+	subLogSelectedTimeRange: SubData<LogSelectedTimeRange>;
 	subNavbarTogle: SubData<boolean>;
 }
 
@@ -77,7 +77,10 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 			order: SortOrder.DESCENDING
 		}
 	});
-	const subLogSelectedTimeRange = useSubscribeState<string>(DEFAULT_FIXED_DURATIONS.name);
+	const subLogSelectedTimeRange = useSubscribeState<LogSelectedTimeRange>({
+		state: "fixed",
+		value: DEFAULT_FIXED_DURATIONS.name,
+	});
 	const subRefreshInterval = useSubscribeState<number | null>(null);
 	const subNavbarTogle = useSubscribeState<boolean>(false);
 

@@ -1,48 +1,22 @@
-import logoInvert from '@/assets/images/brand/logo-invert.svg';
-import { HOME_ROUTE } from '@/constants/routes';
-import { HEADER_HEIGHT } from '@/constants/theme';
 import type { HeaderProps as MantineHeaderProps } from '@mantine/core';
-import { Box, Image, Header as MantineHeader } from '@mantine/core';
 import { FC } from 'react';
-import { Link } from 'react-router-dom';
-import { useHeaderStyles } from './styles';
-import SubHeader from './SubHeader';
-// import { useHeaderContext } from '@/layouts/MainLayout/Context';
-// import useMountedState from '@/hooks/useMountedState';
+import { Route, Routes } from 'react-router-dom';
+import HeaderLayout from './Layout';
+import { ConfigHeader, LogsHeader, QueryHeader, StatsHeader } from './SubHeader';
+import { CONFIG_ROUTE, LOGS_ROUTE, QUERY_ROUTE, STATS_ROUTE } from '@/constants/routes';
 
 type HeaderProps = Omit<MantineHeaderProps, 'children' | 'height' | 'className'>;
 
 const Header: FC<HeaderProps> = (props) => {
-	const { classes } = useHeaderStyles();
-	const { container, logoContainer, navContainer, imageSty } = classes;
-	// const {
-	// 	state: { subNavbarTogle },
-	// } = useHeaderContext();
-	// const [isSubNavbarOpen, setIsSubNavbarOpen] = useMountedState(false);
-	// useEffect(() => {
-	// 	const listener = subNavbarTogle.subscribe(setIsSubNavbarOpen);
-	// 	return () => {
-	// 		listener();
-	// 	};
-	// }, []);
-
 	return (
-		<MantineHeader {...props} className={container} height={HEADER_HEIGHT} p={0} withBorder>
-			<Box className={logoContainer}>
-				<Link to={HOME_ROUTE}>
-					<Image className={imageSty} src={logoInvert} height={24} alt="Parseable Logo" />
-				</Link>
-				{/* <Burger
-					className={burgerIcon}
-					opened={isSubNavbarOpen}
-					onClick={() => subNavbarTogle.set((state) => !state)}
-					size={24}
-				/> */}
-			</Box>
-			<Box className={navContainer}>
-				<SubHeader />
-			</Box>
-		</MantineHeader>
+		<Routes>
+			<Route element={<HeaderLayout {...props} />}>
+				<Route path={LOGS_ROUTE} element={<LogsHeader />} />
+				<Route path={QUERY_ROUTE} element={<QueryHeader />} />
+				<Route path={STATS_ROUTE} element={<StatsHeader />} />
+				<Route path={CONFIG_ROUTE} element={<ConfigHeader />} />
+			</Route>
+		</Routes>
 	);
 };
 
