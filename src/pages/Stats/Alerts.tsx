@@ -1,7 +1,7 @@
 import { useGetLogStreamAlert } from '@/hooks/useGetLogStreamAlert';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Box, Button, Modal, ScrollArea, Text, px } from '@mantine/core';
-import { useDisclosure, useDocumentTitle } from '@mantine/hooks';
+import { useDisclosure } from '@mantine/hooks';
 import { FC, useEffect, useRef } from 'react';
 import { useAlertsStyles } from './styles';
 import { IconArrowsMaximize } from '@tabler/icons-react';
@@ -10,7 +10,7 @@ import useMountedState from '@/hooks/useMountedState';
 import { heights } from '@/components/Mantine/sizing';
 
 const Alerts: FC = () => {
-	useDocumentTitle('Parseable | Login');
+
 	const {
 		state: { subLogQuery },
 	} = useHeaderContext();
@@ -22,21 +22,18 @@ const Alerts: FC = () => {
 
 	useEffect(() => {
 		const subQueryListener = subLogQuery.subscribe((state) => {
-			if (data) {
-				resetData();
-			}
-			getLogAlert(state.streamName);
+			if (state.streamName) {
+				if (data) {
+					resetData();
+				}
+				getLogAlert(state.streamName);
+			}		
 		});
 		return () => {
 			subQueryListener();
 		};
 	}, [data]);
-	useEffect(() => {
-		if (data) {
-			resetData();
-		}
-		getLogAlert(subLogQuery.get().streamName);
-	}, []);
+
 
 	useEffect(() => {
 		setEditorHeight(AlertsWrapper.current?.offsetTop ? AlertsWrapper.current?.offsetTop + 15 : 0);

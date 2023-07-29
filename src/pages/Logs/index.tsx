@@ -6,7 +6,7 @@ import { useLogsStyles } from './styles';
 import ViewLog from './ViewLog';
 
 const Logs: FC = () => {
-	useDocumentTitle('Parseable | Dashboard');
+	useDocumentTitle('Parseable | Logs');
 
 	const { classes } = useLogsStyles();
 	const { container } = classes;
