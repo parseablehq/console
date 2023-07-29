@@ -6,7 +6,14 @@ import { FC, useEffect } from 'react';
 import { useStatCardStyles, useStatusStyles } from './styles';
 import { Box, Text, ThemeIcon, Tooltip, px } from '@mantine/core';
 import dayjs from 'dayjs';
-import { IconClockStop, IconDatabase, IconInfoCircle, IconTimelineEventText, IconTransferIn, IconWindowMinimize } from '@tabler/icons-react';
+import {
+	IconClockStop,
+	IconDatabase,
+	IconInfoCircle,
+	IconTimelineEventText,
+	IconTransferIn,
+	IconWindowMinimize,
+} from '@tabler/icons-react';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import useMountedState from '@/hooks/useMountedState';
 function convert(val: number) {
@@ -30,16 +37,17 @@ function formatBytes(a: any, b = 1) {
 	if (!+a) return '0 Bytes';
 	const c = 0 > b ? 0 : b,
 		d = Math.floor(Math.log(a) / Math.log(1024));
-	return `${parseFloat((a / Math.pow(1024, d)).toFixed(c))} ${['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'][d]
-		}`;
+	return `${parseFloat((a / Math.pow(1024, d)).toFixed(c))} ${
+		['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'][d]
+	}`;
 }
 
 const Status: FC = () => {
 	useDocumentTitle('Parseable | Login');
 	const [statusFIXEDDURATIONS, setStatusFIXEDDURATIONS] = useMountedState(0);
-	const [status, setStatus] = useMountedState("Loading....");
+	const [status, setStatus] = useMountedState('Loading....');
 	const [statusSuccess, setStatusSuccess] = useMountedState(true);
-	FIXED_DURATIONS
+	FIXED_DURATIONS;
 	const {
 		state: { subLogQuery },
 	} = useHeaderContext();
@@ -60,9 +68,11 @@ const Status: FC = () => {
 		resetData: resetStat,
 	} = useGetLogStreamStat();
 	useEffect(() => {
-		getLogRetention(subLogQuery.get().streamName);
-		getLogStat(subLogQuery.get().streamName);
-		getStatus();
+		if (subLogQuery.get().streamName) {
+			getLogRetention(subLogQuery.get().streamName);
+			getLogStat(subLogQuery.get().streamName);
+			getStatus();
+		}
 		return () => {
 			resetDataRetention();
 			resetStat();
@@ -72,59 +82,54 @@ const Status: FC = () => {
 	useEffect(() => {
 		const logQueryListener = subLogQuery.subscribe((query) => {
 			if (query.streamName) {
-				if (dataRetention) {
-					resetDataRetention();
-					resetStat();
-					resetqueryResult();
-					setStatusFIXEDDURATIONS(0);
-
-				}
-				getStatus();
+				setStatusFIXEDDURATIONS(0);
+				resetDataRetention();
+				resetStat();
+				resetqueryResult();
 				getLogRetention(subLogQuery.get().streamName);
 				getLogStat(subLogQuery.get().streamName);
+				getStatus();
 			}
 		});
 
 		return () => {
 			logQueryListener();
 		};
-	}, [dataRetention]);
+	}, [subLogQuery]);
 
 	const getStatus = async () => {
+
 		const now = dayjs();
-		const LogQuery =
-		{
+		const LogQuery = {
 			streamName: subLogQuery.get().streamName,
 			startTime: now.subtract(FIXED_DURATIONS[statusFIXEDDURATIONS].milliseconds, 'milliseconds').toDate(),
-			endTime: now.toDate()
-		}
+			endTime: now.toDate(),
+		};
 		getQueryData(LogQuery, `SELECT count(*) FROM ${subLogQuery.get().streamName} ;`);
-	}
+	};
 
 	useEffect(() => {
-		if (queryResult?.data[0] && queryResult?.data[0]["COUNT(UInt8(1))"]) {
-			setStatus(`${queryResult?.data[0]["COUNT(UInt8(1))"]} events in ${FIXED_DURATIONS[statusFIXEDDURATIONS].name}`);
+		if (queryResult?.data[0] && queryResult?.data[0]['COUNT(UInt8(1))']) {
+			setStatus(`${queryResult?.data[0]['COUNT(UInt8(1))']} events in ${FIXED_DURATIONS[statusFIXEDDURATIONS].name}`);
 			setStatusSuccess(true);
 			return;
 		}
 		if (errorQueryResult) {
-			setStatus(`Not Recieved any events in ${FIXED_DURATIONS[statusFIXEDDURATIONS-1].name}`);
+			setStatus(`Not Recieved any events in ${FIXED_DURATIONS[statusFIXEDDURATIONS - 1].name}`);
 			setStatusSuccess(false);
 			return;
 		}
-		if(queryResult?.data[0] && queryResult?.data[0]["COUNT(UInt8(1))"]&&queryResult?.data[0]["COUNT(UInt8(1))"]===0){
-			setStatus("Loading...");
-			if(FIXED_DURATIONS.length-1>statusFIXEDDURATIONS){
-				setStatusFIXEDDURATIONS(statusFIXEDDURATIONS+1);
+		if (queryResult?.data[0] && queryResult?.data[0]['COUNT(UInt8(1))'] === 0) {
+			setStatus('Loading...');
+			if (FIXED_DURATIONS.length - 1 > statusFIXEDDURATIONS) {
+				setStatusFIXEDDURATIONS(statusFIXEDDURATIONS + 1);
 				getStatus();
 				return;
-			}
-			else{
+			} else {
 				setStatus(`No events received ${FIXED_DURATIONS[statusFIXEDDURATIONS].name}`);
 				setStatusSuccess(false);
 			}
-		}
-		else{
+		} else {
 			setStatus(`No events received`);
 			setStatusSuccess(false);
 			return;
@@ -146,19 +151,24 @@ const Status: FC = () => {
 		<Box className={container}>
 			<Box className={headContainer}>
 				<Text className={statusText}>
-					<span className={statusSuccess?statusTextResult:statusTextFailed}> {status}</span>
+					<span className={statusSuccess ? statusTextResult : statusTextFailed}> {status}</span>
 				</Text>
 
 				<Box className={genterateContiner}>
-					<Text className={genterateText}>Generated at <span className={genterateTextResult}>[{!loadingStat
-							? errorStat
-								? 'ERROR'
-								: dataStat
+					<Text className={genterateText}>
+						Generated at{' '}
+						<span className={genterateTextResult}>
+							[
+							{!loadingStat
+								? errorStat
+									? 'ERROR'
+									: dataStat
 									? dayjs(dataStat?.time).format('HH:mm DD-MM-YYYY')
 									: 'Not found'
-							: 'Loading'}]
-							</span>
-							</Text>
+								: 'Loading'}
+							]
+						</span>
+					</Text>
 				</Box>
 			</Box>
 			<Box className={StatsContainer}>
@@ -210,11 +220,12 @@ const Status: FC = () => {
 						value: !loadingStat
 							? !errorStat
 								? dataStat?.ingestion?.size
-									? `${(100-
-										(parseInt(dataStat.storage.size.split(' ')[0]) /
-											parseInt(dataStat.ingestion.size.split(' ')[0])) *
-										100 
-									).toPrecision(4)} %`
+									? `${(
+											100 -
+											(parseInt(dataStat.storage.size.split(' ')[0]) /
+												parseInt(dataStat.ingestion.size.split(' ')[0])) *
+												100
+									  ).toPrecision(4)} %`
 									: 'NotFound'
 								: 'ERROR'
 							: 'Loading...',

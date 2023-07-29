@@ -22,21 +22,18 @@ const Alerts: FC = () => {
 
 	useEffect(() => {
 		const subQueryListener = subLogQuery.subscribe((state) => {
-			if (data) {
-				resetData();
-			}
-			getLogAlert(state.streamName);
+			if (state.streamName) {
+				if (data) {
+					resetData();
+				}
+				getLogAlert(state.streamName);
+			}		
 		});
 		return () => {
 			subQueryListener();
 		};
 	}, [data]);
-	useEffect(() => {
-		if (data) {
-			resetData();
-		}
-		getLogAlert(subLogQuery.get().streamName);
-	}, []);
+
 
 	useEffect(() => {
 		setEditorHeight(AlertsWrapper.current?.offsetTop ? AlertsWrapper.current?.offsetTop + 15 : 0);

@@ -132,7 +132,7 @@ const RefreshNow: FC = () => {
 	} = useHeaderContext();
 
 	const onRefresh = () => {
-		if (subLogSelectedTimeRange.get().includes('Past')) {
+		if (subLogSelectedTimeRange.get().includes('last')) {
 			const now = dayjs();
 			const timeDiff = subLogQuery.get().endTime.getTime() - subLogQuery.get().startTime.getTime();
 			subLogQuery.set((state) => {

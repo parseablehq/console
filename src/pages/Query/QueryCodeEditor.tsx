@@ -23,9 +23,9 @@ const QueryCodeEditor: FC = () => {
 	const editorRef = React.useRef<any>();
 	const monacoRef = React.useRef<any>();
 	const [isSchemaOpen, setIsSchemaOpen] = useMountedState(false);
-	const [query, setQuery] = React.useState<string>(`SELECT * FROM ${subLogQuery.get().streamName} LIMIT 100`);
 	const [refreshInterval, setRefreshInterval] = useMountedState<number | null>(null);
-	const [currentStreamName, setCurrentStreamName] = useMountedState<string>('');
+	const [currentStreamName, setCurrentStreamName] = useMountedState<string>("");
+	const [query, setQuery] = useMountedState<string>("");
 
 	const handleEditorChange = (code: any) => {
 		setQuery(code);
@@ -36,7 +36,7 @@ const QueryCodeEditor: FC = () => {
 	useEffect(() => {
 		if (subRefreshInterval.get()) {
 			const interval = setInterval(() => {
-				runQuery();
+				runQuery(query);
 			}, subRefreshInterval.get() as number);
 			return () => clearInterval(interval);
 		}
@@ -46,11 +46,12 @@ const QueryCodeEditor: FC = () => {
 		const listener = subSchemaToggle.subscribe(setIsSchemaOpen);
 		const refreshIntervalListener = subRefreshInterval.subscribe(setRefreshInterval);
 		const subQueryListener = subLogQuery.subscribe((state) => {
-			if (state.streamName!==currentStreamName) {
+			if (state.streamName) {
+				if (state.streamName !== currentStreamName) {
+					setQuery(`SELECT count(*) FROM ${state.streamName} ;`);
+					result.set('');
+				}
 				setCurrentStreamName(state.streamName);
-				setQuery(`SELECT * FROM ${state.streamName} LIMIT 100  ; `);
-				console.log(['state.streamName',state.streamName,currentStreamName]);
-				result.set('');
 			}
 		});
 		return () => {
@@ -58,20 +59,24 @@ const QueryCodeEditor: FC = () => {
 			refreshIntervalListener();
 			subQueryListener();
 		};
-	}, [currentStreamName]);
+	}, [subLogQuery.get(), subSchemaToggle.get(), subRefreshInterval.get()]);
+
+useEffect(() => {
+	if(subLogQuery.get().streamName){
+		setQuery(`SELECT * FROM ${subLogQuery.get().streamName} LIMIT 100  ; `);
+		setCurrentStreamName(subLogQuery.get().streamName);
+	}
+}, []);
 
 
 	function handleEditorDidMount(editor: any, monaco: any) {
 		editorRef.current = editor;
 		monacoRef.current = monaco;
-		editor.addCommand(
-			monaco.KeyMod.CtrlCmd + monaco.KeyCode.Enter,
-			async () => {
-				runQuery();
-			},
-		  );
+		editor.addCommand(monaco.KeyMod.CtrlCmd + monaco.KeyCode.Enter, async () => {
+			runQuery(editor.getValue());
+		});
 	}
-	const runQuery = () => {
+	const runQuery = (query:string) => {
 		resetData();
 		notifications.show({
 			id: 'load-data',
@@ -82,16 +87,22 @@ const QueryCodeEditor: FC = () => {
 			autoClose: false,
 			withCloseButton: false,
 		});
-		if (subLogSelectedTimeRange.get().includes('Past')) {
+		let LogQuery ={
+			startTime : subLogQuery.get().startTime,
+			endTime :subLogQuery.get().endTime,
+			streamName : currentStreamName
+		}
+		if (subLogSelectedTimeRange.get().includes('last')) {
 			const now = dayjs();
 			const timeDiff = subLogQuery.get().endTime.getTime() - subLogQuery.get().startTime.getTime();
-			subLogQuery.set((state) => {
-				state.startTime = now.subtract(timeDiff).toDate();
-				state.endTime = now.toDate();
-			});
+			LogQuery ={
+				startTime : now.subtract(timeDiff).toDate(),
+				endTime :now.toDate(),
+				streamName : currentStreamName
+			}
 		}
 		const parsedQuery = query.replace(/(\r\n|\n|\r)/gm, '');
-		getQueryData(subLogQuery.get(), parsedQuery);
+		getQueryData(LogQuery, parsedQuery);
 	};
 	useEffect(() => {
 		if (error) {
@@ -128,17 +139,27 @@ const QueryCodeEditor: FC = () => {
 			<Box className={container}>
 				<Text className={textContext}>Query</Text>
 				<Box style={{ height: '100%', width: '100%', textAlign: 'right' }}>
-				<Tooltip label={`View Schema for ${subLogQuery.get().streamName}`} sx={{color:"white",backgroundColor:"black"}}withArrow position="right">
-					<Button variant="default" className={actionBtn} 
-					aria-label='Schema'
-					onClick={() => subSchemaToggle.set(!isSchemaOpen)}>
-						<IconFileInfo size={px('1.2rem')} stroke={1.5} />
-					</Button>
-				</Tooltip>
-					<Tooltip label={"Click to Run Query or ctrl + enter "} sx={{color:"white",backgroundColor:"black"}}withArrow position="right">
-					<Button variant="default" className={runQueryBtn} onClick={runQuery}>
-						<IconPlayerPlayFilled size={px('1.2rem')} stroke={1.5} />
-					</Button>
+					<Tooltip
+						label={`View Schema for ${subLogQuery.get().streamName}`}
+						sx={{ color: 'white', backgroundColor: 'black' }}
+						withArrow
+						position="right">
+						<Button
+							variant="default"
+							className={actionBtn}
+							aria-label="Schema"
+							onClick={() => subSchemaToggle.set(!isSchemaOpen)}>
+							<IconFileInfo size={px('1.2rem')} stroke={1.5} />
+						</Button>
+					</Tooltip>
+					<Tooltip
+						label={'Click to Run Query or ctrl + enter '}
+						sx={{ color: 'white', backgroundColor: 'black' }}
+						withArrow
+						position="right">
+						<Button variant="default" className={runQueryBtn} onClick={()=>{runQuery(query)}}>
+							<IconPlayerPlayFilled size={px('1.2rem')} stroke={1.5} />
+						</Button>
 					</Tooltip>
 				</Box>
 			</Box>

@@ -143,7 +143,6 @@ export const useQueryLogs = () => {
 				_dataRef.current = [];
 				return;
 			}
-			console.log(logsQueryRes);
 			setError('Failed to query log');
 		} catch {
 			setError('Failed to query log');
