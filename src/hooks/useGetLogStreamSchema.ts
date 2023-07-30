@@ -38,10 +38,10 @@ export const useGetLogStreamSchema = () => {
 	};
 
 	const reorderSchemaFields = (destination: number, source: number) => {
-		setData(prev => {
+		setData((prev) => {
 			if (prev != null) {
 				if (destination >= prev.fields.length || source >= prev.fields.length) {
-					setError("Unable to reorder fields");
+					setError('Unable to reorder fields');
 					return prev;
 				}
 				if (destination === source) return prev;
@@ -54,16 +54,16 @@ export const useGetLogStreamSchema = () => {
 					newFields[i] = prev.fields[i + offset];
 				}
 				newFields[destination] = prev.fields[source];
-				debugger;
+
 				return {
 					...prev,
-					fields: newFields
-				}
+					fields: newFields,
+				};
 			}
 
-			return null
-		})
-	}
+			return null;
+		});
+	};
 
 	return { data, error, loading, getDataSchema, resetData, reorderSchemaFields };
 };

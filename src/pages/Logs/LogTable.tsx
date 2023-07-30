@@ -53,7 +53,7 @@ const LogTable: FC = () => {
 		loading: logsLoading,
 		error: logsError,
 		resetData: resetLogsData,
-		sort
+		sort,
 	} = useQueryLogs();
 
 	const appliedFilter = (key: string) => {
@@ -91,8 +91,8 @@ const LogTable: FC = () => {
 			setQuerySearch((prev) => {
 				const sort = {
 					field: 'p_timestamp',
-					order: SortOrder.DESCENDING
-				}
+					order: SortOrder.DESCENDING,
+				};
 				if (order !== null) {
 					sort.field = columName;
 					sort.order = order;
@@ -100,11 +100,11 @@ const LogTable: FC = () => {
 
 				return {
 					...prev,
-					sort
-				}
-			})
-		}
-	}
+					sort,
+				};
+			});
+		};
+	};
 
 	const onRetry = () => {
 		const query = subLogQuery.get();
@@ -251,7 +251,7 @@ const LogTable: FC = () => {
 							</Box>
 						</Box>
 					) : (
-					<EmptyBox message="No Data Available" />	
+						<EmptyBox message="No Data Available" />
 					)
 				) : (
 					<Loading visible variant="oval" position="absolute" zIndex={0} />
@@ -266,6 +266,43 @@ const LogTable: FC = () => {
 	);
 };
 
+type ThColumnMenuItemProps = {
+	field: Field;
+	index: number;
+	toggleColumn: (columnName: string, value: boolean) => void;
+	isColumnActive: (columnName: string) => boolean;
+};
+
+const ThColumnMenuItem: FC<ThColumnMenuItemProps> = (props) => {
+	const { field, index, toggleColumn, isColumnActive } = props;
+	const { classes } = useLogTableStyles();
+	if (skipFields.includes(field.name)) return null;
+
+	return (
+		<Draggable key={field.name} index={index} draggableId={field.name}>
+			{(provided) => (
+				<Menu.Item
+					className={classes.thColumnMenuDraggable}
+					style={{ cursor: 'default' }}
+					ref={provided.innerRef}
+					{...provided.draggableProps}>
+					<div style={{ display: 'flex' }}>
+						<div className={classes.thColumnMenuDragHandle} {...provided.dragHandleProps}>
+							<IconGripVertical size="1.05rem" stroke={1.5} />
+						</div>
+						<Checkbox
+							color="red"
+							label={field.name}
+							checked={isColumnActive(field.name)}
+							onChange={(event) => toggleColumn(field.name, event.currentTarget.checked)}
+						/>
+					</div>
+				</Menu.Item>
+			)}
+		</Draggable>
+	);
+};
+
 type ThColumnMenuProps = {
 	logSchemaFields: Array<Field>;
 	columnToggles: Map<string, boolean>;
@@ -277,7 +314,7 @@ type ThColumnMenuProps = {
 const ThColumnMenu: FC<ThColumnMenuProps> = (props) => {
 	const { logSchemaFields, isColumnActive, toggleColumn, reorderColumn } = props;
 
-	const { classes, cx } = useLogTableStyles();
+	const { classes } = useLogTableStyles();
 	const { thColumnMenuBtn, thColumnMenuDropdown } = classes;
 
 	return (
@@ -289,48 +326,29 @@ const ThColumnMenu: FC<ThColumnMenuProps> = (props) => {
 							<IconDotsVertical size={px('1.2rem')} />
 						</ActionIcon>
 					</Menu.Target>
-				</Center>    
-	<DragDropContext
-      onDragEnd={({ destination, source }) => {
-		// debugger;
-        reorderColumn(destination?.index || 0, source.index)
-      }}
-    >
-			<Menu.Dropdown className={thColumnMenuDropdown}>
-		<Droppable droppableId="dnd-list" direction="vertical">
-	{(provided) => (
-					<div {...provided.droppableProps} ref={provided.innerRef}>
-					{logSchemaFields.map((field, index) => {
-						if (skipFields.includes(field.name)) return null;
-
-						return (
-							<Draggable
-								key={field.name}
-								index={index}
-								draggableId={field.name}
-							>
-								{(provided) => 
-									<Menu.Item className={classes.thColumnMenuDraggable} style={{ cursor: 'default' }} ref={provided.innerRef} {...provided.draggableProps}>
-										<div style={{display:'flex'}}>
-									    <div className={classes.thColumnMenuDragHandle} {...provided.dragHandleProps}>
-              								<IconGripVertical size="1.05rem" stroke={1.5} />
-            							</div>
-										<Checkbox
-											color="red"
-											label={field.name}
-											checked={isColumnActive(field.name)}
-											onChange={(event) => toggleColumn(field.name, event.currentTarget.checked)}
-										/>
-										</div>
-									</Menu.Item>
-								}
-							</Draggable>
-						);
-					})}
-					{provided.placeholder}
-					</div>
-					)}
-  </Droppable>
+				</Center>
+				<DragDropContext
+					onDragEnd={({ destination, source }) => {
+						reorderColumn(destination?.index || 0, source.index);
+					}}>
+					<Menu.Dropdown className={thColumnMenuDropdown}>
+						<Droppable droppableId="dnd-list" direction="vertical">
+							{(provided) => (
+								<div {...provided.droppableProps} ref={provided.innerRef}>
+									{logSchemaFields.map((field, index) => {
+										return (
+											<ThColumnMenuItem
+												field={field}
+												index={index}
+												toggleColumn={toggleColumn}
+												isColumnActive={isColumnActive}
+											/>
+										);
+									})}
+									{provided.placeholder}
+								</div>
+							)}
+						</Droppable>
 					</Menu.Dropdown>
 				</DragDropContext>
 			</Menu>
