@@ -141,6 +141,20 @@ export const useLogTableStyles = createStyles((theme) => {
 			overflowY: 'scroll',
 		},
 
+		thColumnMenuDragHandle: {
+			...theme.fn.focusStyles(),
+			display: 'flex',
+			alignItems: 'center',
+			justifyContent: 'center',
+			height: '100%',
+			color: theme.colorScheme === 'dark' ? theme.colors.dark[1] : theme.colors.gray[6],
+			paddingRight: theme.spacing.md,
+		},
+
+		thColumnMenuDraggable: {
+			display: 'flex',
+		},
+
 		footerContainer: {
 			padding: spacing.md,
 			display: 'flex',
