@@ -10,7 +10,8 @@ import LogRow from './LogRow';
 import { useLogTableStyles } from './styles';
 import useMountedState from '@/hooks/useMountedState';
 import ErrorText from '@/components/Text/ErrorText';
-import { IconDotsVertical, IconSelector } from '@tabler/icons-react';
+import { IconDotsVertical, IconSelector, IconGripVertical } from '@tabler/icons-react';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Field } from '@/@types/parseable/dataType';
 import EmptyBox from '@/components/Empty';
 import { RetryBtn } from '@/components/Button/Retry';
@@ -36,6 +37,7 @@ const LogTable: FC = () => {
 	const {
 		data: logsSchema,
 		getDataSchema,
+		reorderSchemaFields,
 		resetData: resetStreamData,
 		loading,
 		error: logStreamSchemaError,
@@ -221,6 +223,7 @@ const LogTable: FC = () => {
 											columnToggles={columnToggles}
 											toggleColumn={toggleColumn}
 											isColumnActive={isColumnActive}
+											reorderColumn={reorderSchemaFields}
 										/>
 									</Thead>
 									<Tbody>
@@ -267,13 +270,14 @@ type ThColumnMenuProps = {
 	logSchemaFields: Array<Field>;
 	columnToggles: Map<string, boolean>;
 	toggleColumn: (columnName: string, value: boolean) => void;
+	reorderColumn: (destination: number, source: number) => void;
 	isColumnActive: (columnName: string) => boolean;
 };
 
 const ThColumnMenu: FC<ThColumnMenuProps> = (props) => {
-	const { logSchemaFields, isColumnActive, toggleColumn } = props;
+	const { logSchemaFields, isColumnActive, toggleColumn, reorderColumn } = props;
 
-	const { classes } = useLogTableStyles();
+	const { classes, cx } = useLogTableStyles();
 	const { thColumnMenuBtn, thColumnMenuDropdown } = classes;
 
 	return (
@@ -285,23 +289,50 @@ const ThColumnMenu: FC<ThColumnMenuProps> = (props) => {
 							<IconDotsVertical size={px('1.2rem')} />
 						</ActionIcon>
 					</Menu.Target>
-				</Center>
-				<Menu.Dropdown className={thColumnMenuDropdown}>
-					{logSchemaFields.map((field) => {
+				</Center>    
+	<DragDropContext
+      onDragEnd={({ destination, source }) => {
+		// debugger;
+        reorderColumn(destination?.index || 0, source.index)
+      }}
+    >
+			<Menu.Dropdown className={thColumnMenuDropdown}>
+		<Droppable droppableId="dnd-list" direction="vertical">
+	{(provided) => (
+					<div {...provided.droppableProps} ref={provided.innerRef}>
+					{logSchemaFields.map((field, index) => {
 						if (skipFields.includes(field.name)) return null;
 
 						return (
-							<Menu.Item key={field.name} style={{ cursor: 'default' }}>
-								<Checkbox
-									color="red"
-									label={field.name}
-									checked={isColumnActive(field.name)}
-									onChange={(event) => toggleColumn(field.name, event.currentTarget.checked)}
-								/>
-							</Menu.Item>
+							<Draggable
+								key={field.name}
+								index={index}
+								draggableId={field.name}
+							>
+								{(provided) => 
+									<Menu.Item className={classes.thColumnMenuDraggable} style={{ cursor: 'default' }} ref={provided.innerRef} {...provided.draggableProps}>
+										<div style={{display:'flex'}}>
+									    <div className={classes.thColumnMenuDragHandle} {...provided.dragHandleProps}>
+              								<IconGripVertical size="1.05rem" stroke={1.5} />
+            							</div>
+										<Checkbox
+											color="red"
+											label={field.name}
+											checked={isColumnActive(field.name)}
+											onChange={(event) => toggleColumn(field.name, event.currentTarget.checked)}
+										/>
+										</div>
+									</Menu.Item>
+								}
+							</Draggable>
 						);
 					})}
-				</Menu.Dropdown>
+					{provided.placeholder}
+					</div>
+					)}
+  </Droppable>
+					</Menu.Dropdown>
+				</DragDropContext>
 			</Menu>
 		</th>
 	);
