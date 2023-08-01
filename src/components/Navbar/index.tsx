@@ -124,7 +124,6 @@ const Navbar: FC<NavbarProps> = (props) => {
 		} else if (streams && Boolean(streams.length)) {
 			handleChange(streams[0].name);
 		}
-		console.log(currentPage);
 	}, [streams]);
 
 	const handleChange = (value: string) => {
