@@ -129,6 +129,15 @@ export const useLogTableStyles = createStyles((theme) => {
 				background: colors.gray[1],
 			},
 		},
+		tdPinned: {
+			position: 'sticky',
+			left: 0,
+			background: 'inherit',
+			boxShadow: shadows.sm,
+			'tr:hover &': {
+				background: colors.gray[1],
+			},
+		},
 
 		thColumnMenuBtn: {
 			width: widths[10],
@@ -147,6 +156,15 @@ export const useLogTableStyles = createStyles((theme) => {
 			alignItems: 'center',
 			justifyContent: 'center',
 			height: '100%',
+			color: theme.colorScheme === 'dark' ? theme.colors.dark[1] : theme.colors.gray[6],
+			paddingRight: theme.spacing.md,
+		},
+		thColumnMenuPinHandle: {
+			display: 'flex',
+			alignItems: 'center',
+			justifyContent: 'flex-end',
+			height: '100%',
+			width: '100%',
 			color: theme.colorScheme === 'dark' ? theme.colors.dark[1] : theme.colors.gray[6],
 			paddingRight: theme.spacing.md,
 		},
@@ -342,6 +360,7 @@ export const useTableColumnStyle = createStyles((theme) => {
 				color: sColor,
 			},
 			
-		}
+		},
+
 	};
 });

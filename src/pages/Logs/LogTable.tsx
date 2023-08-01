@@ -10,7 +10,7 @@ import LogRow from './LogRow';
 import { useLogTableStyles } from './styles';
 import useMountedState from '@/hooks/useMountedState';
 import ErrorText from '@/components/Text/ErrorText';
-import { IconDotsVertical, IconSelector, IconGripVertical } from '@tabler/icons-react';
+import { IconDotsVertical, IconSelector, IconGripVertical, IconPinned } from '@tabler/icons-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Field } from '@/@types/parseable/dataType';
 import EmptyBox from '@/components/Empty';
@@ -34,6 +34,7 @@ const LogTable: FC = () => {
 	const [refreshInterval, setRefreshInterval] = useMountedState<number | null>(null);
 	const [logStreamError, setLogStreamError] = useMountedState<string | null>(null);
 	const [columnToggles, setColumnToggles] = useMountedState<Map<string, boolean>>(new Map());
+	const [columnPinned, setColumnPinned] = useMountedState<Map<string, boolean>>(new Map());
 	const {
 		data: logsSchema,
 		getDataSchema,
@@ -78,6 +79,21 @@ const LogTable: FC = () => {
 		},
 		[columnToggles],
 	);
+
+	const isColumnPinned = useCallback(
+		(columnName: string) => {
+			if (!columnPinned.has(columnName)) return false;
+
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			return columnPinned.get(columnName)!;
+		},
+		[columnPinned],
+	);
+
+	const toggleColumnPinned = (columnName: string, value: boolean) => {
+		
+		setColumnPinned(new Map(columnPinned.set(columnName, value)));
+	};
 
 	const toggleColumn = (columnName: string, value: boolean) => {
 		setColumnToggles(new Map(columnToggles.set(columnName, value)));
@@ -186,6 +202,8 @@ const LogTable: FC = () => {
 						getColumnFilters={getColumnFilters}
 						setSorting={sortingSetter(field.name)}
 						fieldSortOrder={sort.field === field.name ? sort.order : null}
+						isColumnPinned={isColumnPinned}
+						logsSchema={logsSchema}
 					/>
 				);
 			});
@@ -215,7 +233,7 @@ const LogTable: FC = () => {
 					Boolean(logsSchema?.fields.length) && Boolean(pageLogData?.data.length) ? (
 						<Box className={innerContainer}>
 							<ScrollArea className={tableContainer} type="always">
-								<Table className={tableStyle}>
+								<Table className={tableStyle} striped>
 									<Thead className={theadStyle}>
 										{renderTh}
 										<ThColumnMenu
@@ -224,6 +242,8 @@ const LogTable: FC = () => {
 											toggleColumn={toggleColumn}
 											isColumnActive={isColumnActive}
 											reorderColumn={reorderSchemaFields}
+											isColumnPinned={isColumnPinned}
+											toggleColumnPinned={toggleColumnPinned}
 										/>
 									</Thead>
 									<Tbody>
@@ -231,6 +251,7 @@ const LogTable: FC = () => {
 											logData={pageLogData?.data || []}
 											logsSchema={logsSchema?.fields || []}
 											isColumnActive={isColumnActive}
+											isColumnPinned={isColumnPinned}
 										/>
 									</Tbody>
 								</Table>
@@ -269,15 +290,29 @@ const LogTable: FC = () => {
 type ThColumnMenuItemProps = {
 	field: Field;
 	index: number;
+	lastIndex: number;
 	toggleColumn: (columnName: string, value: boolean) => void;
 	isColumnActive: (columnName: string) => boolean;
+	toggleColumnPinned: (columnName: string, value: boolean) => void;
+	isColumnPinned: (columnName: string) => boolean;
+	reOrderColumn: (destination: number, source: number) => void;
 };
 
 const ThColumnMenuItem: FC<ThColumnMenuItemProps> = (props) => {
-	const { field, index, toggleColumn, isColumnActive } = props;
+	const { field, index, toggleColumn, isColumnActive , toggleColumnPinned,isColumnPinned, reOrderColumn, lastIndex} = props;
 	const { classes } = useLogTableStyles();
 	if (skipFields.includes(field.name)) return null;
 
+	const togglePin = () => {
+		if(isColumnPinned(field.name)){
+			reOrderColumn(lastIndex, index);
+		}
+		else{
+			reOrderColumn(0, index);
+		}
+		toggleColumnPinned(field.name, !isColumnPinned(field.name))
+		
+	}
 	return (
 		<Draggable key={field.name} index={index} draggableId={field.name}>
 			{(provided) => (
@@ -296,6 +331,12 @@ const ThColumnMenuItem: FC<ThColumnMenuItemProps> = (props) => {
 							checked={isColumnActive(field.name)}
 							onChange={(event) => toggleColumn(field.name, event.currentTarget.checked)}
 						/>
+						<div className={classes.thColumnMenuPinHandle} >
+							<IconPinned size="1.05rem" stroke={isColumnPinned(field.name) ? 2.5 : 1.5 } 
+								onClick={togglePin}
+							/>
+						</div>
+
 					</div>
 				</Menu.Item>
 			)}
@@ -309,10 +350,12 @@ type ThColumnMenuProps = {
 	toggleColumn: (columnName: string, value: boolean) => void;
 	reorderColumn: (destination: number, source: number) => void;
 	isColumnActive: (columnName: string) => boolean;
+	isColumnPinned: (columnName: string) => boolean;
+	toggleColumnPinned: (columnName: string, value: boolean) => void;
 };
 
 const ThColumnMenu: FC<ThColumnMenuProps> = (props) => {
-	const { logSchemaFields, isColumnActive, toggleColumn, reorderColumn } = props;
+	const { logSchemaFields, isColumnActive, toggleColumn, reorderColumn, isColumnPinned ,toggleColumnPinned} = props;
 
 	const { classes } = useLogTableStyles();
 	const { thColumnMenuBtn, thColumnMenuDropdown } = classes;
@@ -342,6 +385,10 @@ const ThColumnMenu: FC<ThColumnMenuProps> = (props) => {
 												index={index}
 												toggleColumn={toggleColumn}
 												isColumnActive={isColumnActive}
+												isColumnPinned={isColumnPinned}
+												toggleColumnPinned={toggleColumnPinned}
+												reOrderColumn={reorderColumn}
+												lastIndex={logSchemaFields.length - 1}
 											/>
 										);
 									})}

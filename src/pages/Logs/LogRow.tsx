@@ -2,7 +2,7 @@ import { LogStreamData } from '@/@types/parseable/api/stream';
 import { parseLogData } from '@/utils';
 import { Box, px } from '@mantine/core';
 import { IconArrowNarrowRight } from '@tabler/icons-react';
-import { FC, Fragment } from 'react';
+import { FC, Fragment, useEffect, useRef } from 'react';
 import { useLogsPageContext } from './Context';
 import { useLogTableStyles } from './styles';
 import { Log } from '@/@types/parseable/api/query';
@@ -13,10 +13,11 @@ type LogRowProps = {
 	logData: Log[];
 	logsSchema: LogStreamData;
 	isColumnActive: (columnName: string) => boolean;
+	isColumnPinned: (columnName: string) => boolean;
 };
 
 const LogRow: FC<LogRowProps> = (props) => {
-	const { logData, logsSchema, isColumnActive } = props;
+	const { logData, logsSchema, isColumnActive,isColumnPinned } = props;
 	const {
 		state: { subViewLog },
 	} = useLogsPageContext();
@@ -26,7 +27,9 @@ const LogRow: FC<LogRowProps> = (props) => {
 	};
 
 	const { classes } = useLogTableStyles();
-	const { trStyle, trEvenStyle } = classes;
+	const { trStyle } = classes;
+
+
 
 	return (
 		<Fragment>
@@ -38,14 +41,12 @@ const LogRow: FC<LogRowProps> = (props) => {
 					 Hopefully there will be a plan to add a p_id filed internally
 					 For now index is a better option for uniqueness, if you have a better way to handle this let us know
 					*/
-					<tr key={logIndex} className={logIndex % 2 ? trStyle : trEvenStyle} onClick={() => onShow(log)}>
-						{logsSchema.map((logSchema, logSchemaIndex) => {
-							if (!isColumnActive(logSchema.name) || skipFields.includes(logSchema.name)) return null;
-
-							return (
-								<td key={`${logSchema.name}-${logSchemaIndex}`}>{parseLogData(log[logSchema.name], logSchema.name)}</td>
-							);
-						})}
+					<tr key={logIndex} className={trStyle} onClick={() => onShow(log)}>
+						{logsSchema.map((logSchema, logSchemaIndex) => (
+							<TdText log={log} logSchema={logSchema} logSchemaIndex={logSchemaIndex} isColumnActive={isColumnActive} isColumnPinned={isColumnPinned} 
+							logsSchema={logsSchema}
+							/>
+			))}
 						<TdArrow />
 					</tr>
 				);
@@ -66,5 +67,43 @@ const TdArrow: FC = () => {
 		</td>
 	);
 };
+
+
+type TdTextProps = {
+	log: Log;
+	logSchema: any;
+	logSchemaIndex: number;
+	isColumnActive: (columnName: string) => boolean;
+	isColumnPinned: (columnName: string) => boolean;
+	logsSchema: LogStreamData;
+};
+
+const TdText: FC<TdTextProps> = (props) => {
+
+	const { log, logSchema, logSchemaIndex, isColumnActive,isColumnPinned , logsSchema} = props;
+	const ref = useRef<HTMLTableCellElement>(null);
+
+	useEffect(() => {
+		if (ref.current) {
+			ref.current.style.left = `${ref.current.offsetLeft}px`;
+			ref.current.style.position = 'sticky';
+			ref.current.style.backgroundColor = "inherit";
+
+		}
+	}, [ref.current, logsSchema]);
+
+	if (!isColumnActive(logSchema.name) || skipFields.includes(logSchema.name)) return null;
+
+	return (
+		<td key={`${logSchema.name}-${logSchemaIndex}`} 
+		ref={isColumnPinned(logSchema.name) ? ref : null}
+
+		> {parseLogData(log[logSchema.name], logSchema.name)}
+		
+		</td>
+	);
+};
+
+
 
 export default LogRow;

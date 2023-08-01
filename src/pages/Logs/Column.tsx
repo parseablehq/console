@@ -1,6 +1,6 @@
 import { Log, SortOrder } from '@/@types/parseable/api/query';
 import { Box, Checkbox, Popover, TextInput, Tooltip, UnstyledButton, px } from '@mantine/core';
-import { type ChangeEvent, type FC, Fragment, useTransition, useRef, useCallback, useMemo } from 'react';
+import { type ChangeEvent, type FC, Fragment, useTransition, useRef, useCallback, useMemo, useEffect } from 'react';
 import { IconDotsVertical, IconFilter, IconSearch, IconSortAscending, IconSortDescending } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
 import { useTableColumnStyle } from './styles';
@@ -65,10 +65,12 @@ type Column = {
 	applyFilter: (columnName: string, value: string[]) => void;
 	setSorting: (order: SortOrder | null) => void;
 	fieldSortOrder: SortOrder | null;
+	isColumnPinned: (columnName: string) => boolean;
+	logsSchema: any;
 };
 
 const Column: FC<Column> = (props) => {
-	const { columnName, getColumnFilters, appliedFilter, applyFilter, setSorting, fieldSortOrder } = props;
+	const { columnName, getColumnFilters, appliedFilter, applyFilter, setSorting, fieldSortOrder ,isColumnPinned, logsSchema} = props;
 
 	// columnValues ref will always have the unfiltered data.
 	const _columnValuesRef = useRef<Log[number][] | null>(null);
@@ -76,6 +78,8 @@ const Column: FC<Column> = (props) => {
 	const [columnValues, setColumnValues] = useMountedState<Log[number][] | null>(null);
 	const [selectedFilters, setSelectedFilters] = useMountedState<string[]>(appliedFilter(columnName));
 	const [isPending, startTransition] = useTransition();
+	const ref = useRef<HTMLTableCellElement>(null);
+	const [ leftOffset, setLeftOffset ] = useMountedState(0);
 
 	const onSearch = (e: ChangeEvent<HTMLInputElement>) => {
 		const search = e.target.value.trim();
@@ -115,21 +119,33 @@ const Column: FC<Column> = (props) => {
 	function capitalizeFirstLetter(word: string) {
 		return word.charAt(0).toUpperCase() + word.slice(1);
 	}
-	const { classes, cx } = useTableColumnStyle();
-	const { labelBtn, applyBtn, labelIcon, labelIconActive, searchInputStyle,filterText } = classes;
+	useEffect(() => {
+		if (ref.current) {
+			setLeftOffset(ref.current.offsetLeft);	
+		}
+	}, [ref.current, logsSchema,isColumnPinned(columnName)]);
+	const { classes } = useTableColumnStyle();
+	const { labelBtn, applyBtn, labelIcon, searchInputStyle,filterText } = classes;
 
 	return (
-		<th>
+		<th
+			{...(isColumnPinned(columnName) ? { style: { left: `${leftOffset}px`,position:"sticky" } } : {})}
+			ref={isColumnPinned(columnName) ? ref : null}
+		 >
 			<Popover position="bottom" withArrow withinPortal shadow="md" zIndex={1} onOpen={onOpen}>
 				<Popover.Target>
 					<UnstyledButton className={labelBtn}>
 						<span className="label">{capitalizeFirstLetter(columnName)}</span>
 						<IconDotsVertical
-							stroke={filterActive ? 3 : 1.8}
+							stroke={ 1.8}
 							size={px('1rem')}
-							className={cx(labelIcon, {
-								[labelIconActive]: filterActive,
-							})}
+							className={labelIcon}
+						/>
+						<IconFilter
+							stroke={ 1.8}
+							size={px('1rem')}
+							className={labelIcon}
+							display={filterActive ? '' : 'none'}
 						/>
 					</UnstyledButton>
 				</Popover.Target>
