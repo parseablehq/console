@@ -24,7 +24,7 @@ import {
 } from '@tabler/icons-react';
 import { FC, useEffect } from 'react';
 import { useNavbarStyles } from './styles';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import { notifications } from '@mantine/notifications';
 import { useNavigate } from 'react-router-dom';
@@ -48,6 +48,7 @@ type NavbarProps = Omit<MantineNavbarProps, 'children'>;
 const Navbar: FC<NavbarProps> = (props) => {
 	const navigate = useNavigate();
 	const { streamName } = useParams();
+	const location = useLocation();
 	
 	const [username] = useLocalStorage({ key: 'username', getInitialValueInEffect: false });
 	const [, , removeCredentials] = useLocalStorage({ key: 'credentials' });
@@ -65,7 +66,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 
 	const [disableLink, setDisableLink] = useMountedState(false);
 	const [isSubNavbarOpen, setIsSubNavbarOpen] = useMountedState(false);
-	const [opened, { open, close }] = useDisclosure(true);
+	const [opened, { open, close }] = useDisclosure(false);
 	const [openedDelete, { close: closeDelete, open: openDelete }] = useDisclosure();
 
 	const { data: streams, error, getData, resetData: resetStreamArray } = useGetLogStreamList();
@@ -94,6 +95,9 @@ const Navbar: FC<NavbarProps> = (props) => {
 	} = useHeaderContext();
 
 	useEffect(() => {
+		if (location.pathname.split('/')[2]) {
+			setCurrentPage(`/${location.pathname.split('/')[2]}`);
+		}
 		if (streams && streams.length === 0) {
 			setActiveStream('');
 			setSearchValue('');
@@ -204,7 +208,8 @@ const Navbar: FC<NavbarProps> = (props) => {
 								setCurrentPage(link.pathname);
 							}}
 							key={link.label}
-							className={(currentPage === link.pathname && linkBtnActive) || linkBtn}	
+							
+							className={(currentPage === link.pathname && linkBtnActive ) || linkBtn}	
 						/>
 					);
 				})}
