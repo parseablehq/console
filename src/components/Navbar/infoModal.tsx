@@ -1,11 +1,10 @@
-import { Anchor, Box, Card, Image, Modal, Table, Text } from '@mantine/core';
+import {  Anchor, Box, Image, Modal, Table, Text, Tooltip } from '@mantine/core';
 import { FC, useEffect } from 'react';
 import { useInfoModalStyles } from './styles';
 import docImage from '@/assets/images/doc.webp';
 import githubLogo from '@/assets/images/github-logo.webp';
 import slackLogo from '@/assets/images/slack-logo.webp';
 import { useGetAbout } from '@/hooks/useGetAbout';
-
 
 const helpResources = [
 	{
@@ -36,18 +35,16 @@ const HelpCard: FC<HelpCardProps> = (props) => {
 	const { data } = props;
 
 	const { classes } = useInfoModalStyles();
-	const { helpCard, helpCardTitle, helpCardDescription } = classes;
+	const { HelpIconBox, helpToolip } = classes;
 
 	return (
-		<Anchor underline={false} href={data.href} target="_blank">
-			<Card className={helpCard}>
-				<Box>
-					<Text className={helpCardTitle}>{data.title}</Text>
-					<Text className={helpCardDescription}>{data.description}</Text>
-				</Box>
-				<Image maw={45} src={data.image} alt={data.title} />
-			</Card>
-		</Anchor>
+		<Box className={HelpIconBox}>
+			<Anchor underline={false} href={data.href} target="_blank" className={helpToolip}>
+				<Tooltip label={data.description} position="bottom" withArrow>
+					<Image maw={45} src={data.image} alt={data.title} />
+				</Tooltip>
+			</Anchor>
+		</Box>
 	);
 };
 
@@ -75,12 +72,12 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 		container,
 		innerContainer,
 		infoModal,
-		infoModalTitle,
-		infoModalDescription,
 		helpTitle,
 		helpDescription,
 		aboutText,
 		aboutTitle,
+		aboutDescription,
+		helpIconContainer,
 	} = classes;
 
 	return (
@@ -92,24 +89,20 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 			withCloseButton={false}
 			size="xl"
 			centered>
-			<Text className={infoModalTitle} id="info-modal-title">
-				Welcome to Parseable!
-			</Text>
-			<Text className={infoModalDescription} id="info-modal-description">
-				We are a new kind of log management platform that helps you understand your logs in seconds. We are currently in
-				beta and would love your feedback.
-			</Text>
 			<Box className={container}>
 				<Box className={innerContainer}>
+				<Text className={aboutTitle}>About</Text>
 					{error ? (
-						<Text>Error...</Text>
+						<Text className={aboutDescription} >Error...</Text>
 					) : loading ? (
-						<Text>Loading...</Text>
+						<Text className={aboutDescription}>Loading...</Text>
 					) : data ? (
 						<>
-							<Text className={aboutTitle}>Information</Text>
+							<Text className={aboutDescription} id="info-modal-description">
+								Here you can find useful information about your Parseable instance.
+							</Text>
 
-							<Table highlightOnHover withBorder >
+							<Table highlightOnHover withBorder>
 								<tbody className={aboutText}>
 									<tr>
 										<td>Commit</td>
@@ -152,7 +145,7 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 					<Text className={helpTitle}>Need any help?</Text>
 					<Text className={helpDescription}>Here you can find useful resources and information.</Text>
 
-					<Box mt={15}>
+					<Box mt={12} className={helpIconContainer}>
 						{helpResources.map((data) => (
 							<HelpCard key={data.title} data={data} />
 						))}

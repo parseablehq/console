@@ -14,13 +14,13 @@ import {
 	IconReportAnalytics,
 	IconFileAlert,
 	IconReload,
-	IconHelpCircle,
 	IconLogout,
 	IconUser,
 	IconBinaryTree2,
 	IconTableShortcut,
 	IconSettings,
 	IconTrash,
+	IconInfoCircle,
 } from '@tabler/icons-react';
 import { FC, useEffect } from 'react';
 import { useNavbarStyles } from './styles';
@@ -230,8 +230,8 @@ const Navbar: FC<NavbarProps> = (props) => {
 			<MantineNavbar.Section className={lowerContainer}>
 				<NavLink label={username} icon={<IconUser size="1.3rem" stroke={1.3} />} className={userBtn} component="a" />
 				<NavLink
-					label="Help"
-					icon={<IconHelpCircle size="1.3rem" stroke={1.3} />}
+					label="About"
+					icon={<IconInfoCircle size="1.3rem" stroke={1.3} />}
 					className={actionBtn}
 					component="a"
 					onClick={open}

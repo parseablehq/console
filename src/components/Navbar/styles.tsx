@@ -1,5 +1,5 @@
 import { createStyles } from '@mantine/core';
-import { heights, widths } from '../Mantine/sizing';
+import { heights, sizing, widths } from '../Mantine/sizing';
 
 export const useNavbarStyles = createStyles((theme) => {
 	const { colors, radius, fontSizes } = theme;
@@ -92,7 +92,7 @@ export const useNavbarStyles = createStyles((theme) => {
 	};
 });
 
-//infoModal, infoModalTitle, infoModalDescription 
+//infoModal, infoModalTitle, infoModalDescription
 export const useInfoModalStyles = createStyles((theme) => {
 	const { colors, radius, fontSizes, shadows, spacing } = theme;
 	const { fontWeights } = theme.other;
@@ -101,17 +101,13 @@ export const useInfoModalStyles = createStyles((theme) => {
 	const defaultRadius = radius[theme.defaultRadius as string];
 
 	return {
-		container:{
+		container: {
 			height: '100%',
 			width: '100%',
-			display: 'flex',
 			
 		},
 		innerContainer: {
-			height: '100%',
-			width: '50%',
 			padding: spacing.md,
-			
 		},
 		infoModal: {
 			display: 'flex',
@@ -128,14 +124,13 @@ export const useInfoModalStyles = createStyles((theme) => {
 			borderRadius: defaultRadius,
 			boxShadow: shadows.sm,
 		},
-		infoModalTitle: {
+		aboutTitle: {
 			fontSize: fontSizes.md,
 			textAlign: 'center',
 			color: colors.gray[7],
 			fontWeight: fontWeights.bold,
 		},
-
-		infoModalDescription: {
+		aboutDescription: {
 			fontSize: fontSizes.sm,
 			textAlign: 'center',
 			color: colors.dimmed[0],
@@ -151,21 +146,30 @@ export const useInfoModalStyles = createStyles((theme) => {
 				marginTop: theme.spacing.sm,
 				marginLeft: 'auto',
 				marginRight: 'auto',
+				marginBottom: spacing.sm,
 			},
 		},
-
-		aboutTitle: {	
-			fontSize: fontSizes.md,
-			textAlign: 'center',
-			color: colors.gray[7],
-			fontWeight: fontWeights.bold,
-		},
 		aboutText: {
-			"& tr>td:last-of-type":{
-			fontSize: fontSizes.sm,
-			color: colors.dimmed[0],
-			marginTop: spacing.xs,
-			}
+			'& tr': {
+				transition: 'transform .2s ease-in-out',
+				'&: hover': {
+					transform: 'scale(1.05)',
+					" & td "	: {
+						border: `${sizing.px} solid ${colors.gray[2]}`,
+					}
+
+				},
+			},
+		
+
+			'& tr>td:last-of-type': {
+				fontSize: fontSizes.sm,
+				color: colors.dimmed[0],
+				lineHeight: 'normal',
+				'&: hover': {
+					color: sColor,
+				}
+			},
 		},
 		helpTitle: {
 			fontSize: fontSizes.md,
@@ -190,40 +194,31 @@ export const useInfoModalStyles = createStyles((theme) => {
 				marginTop: theme.spacing.sm,
 				marginLeft: 'auto',
 				marginRight: 'auto',
+				marginBottom: '31px',
 			},
 		},
 
-		helpCard: {
-			display: 'flex',
-			alignItems: 'center',
-			justifyContent: 'space-between',
-			boxShadow: shadows.sm,
-			marginTop: spacing.sm,
+		HelpIconBox: {
+			marginLeft: spacing.md,
 			transition: 'transform .2s ease-in-out',
-
 			'&:hover': {
 				transform: 'scale(1.05)',
 			},
 		},
 
-		helpCardTitle: {
-			fontWeight: fontWeights.semibold,
-
-			'&::after': {
-				content: '""',
-				display: 'block',
-				backgroundColor: white,
-				width: widths[14],
-				height: heights['0.5'],
-				marginTop: spacing.xs,
-				marginBottom: spacing.xs,
-			},
+		helpToolip: {
+			"& .mantine-Tooltip-tooltip": {
+				fontWeight: fontWeights.semibold,
+				fontSize: fontSizes.sm,
+				color: colors.gray[7],
+				backgroundColor: colors.black[0],
+			}
 		},
-
-		helpCardDescription: {
-			color: colors.dimmed[0],
-			fontSize: fontSizes.sm,
+		helpIconContainer: {
+			display: 'flex',
+			alignItems: 'center',
+			width: '100%',
+			justifyContent: 'center',
 		},
 	};
-}
-);
+});
