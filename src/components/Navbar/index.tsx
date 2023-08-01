@@ -3,12 +3,9 @@ import {
 	Navbar as MantineNavbar,
 	NavLink,
 	Select,
-	Anchor,
-	Card,
 	Box,
 	Modal,
 	Text,
-	Image,
 	Button,
 	TextInput,
 } from '@mantine/core';
@@ -26,9 +23,6 @@ import {
 	IconTrash,
 } from '@tabler/icons-react';
 import { FC, useEffect } from 'react';
-import docImage from '@/assets/images/doc.webp';
-import githubLogo from '@/assets/images/github-logo.webp';
-import slackLogo from '@/assets/images/slack-logo.webp';
 import { useNavbarStyles } from './styles';
 import { useParams } from 'react-router-dom';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
@@ -40,6 +34,7 @@ import dayjs from 'dayjs';
 import { useDisclosure, useLocalStorage } from '@mantine/hooks';
 import { LOGIN_ROUTE } from '@/constants/routes';
 import { useDeleteLogStream } from '@/hooks/useDeleteLogStream';
+import InfoModal from './infoModal';
 
 const links = [
 	{ icon: IconZoomCode, label: 'Query', pathname: '/query' },
@@ -70,7 +65,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 
 	const [disableLink, setDisableLink] = useMountedState(false);
 	const [isSubNavbarOpen, setIsSubNavbarOpen] = useMountedState(false);
-	const [opened, { open, close }] = useDisclosure(false);
+	const [opened, { open, close }] = useDisclosure(true);
 	const [openedDelete, { close: closeDelete, open: openDelete }] = useDisclosure();
 
 	const { data: streams, error, getData, resetData: resetStreamArray } = useGetLogStreamList();
@@ -177,8 +172,6 @@ const Navbar: FC<NavbarProps> = (props) => {
 		streamsBtn,
 		lowerContainer,
 		actionBtn,
-		helpTitle,
-		helpDescription,
 		userBtn,
 	} = classes;
 	return (
@@ -275,61 +268,11 @@ const Navbar: FC<NavbarProps> = (props) => {
 					</Button>
 				</Box>
 			</Modal>
-			<Modal withinPortal opened={opened} onClose={close} withCloseButton={false} size="sm" centered>
-				<Text className={helpTitle}>Need any help?</Text>
-				<Text className={helpDescription}>Here you can find useful resources and information.</Text>
-				<Box>
-					{helpResources.map((data) => (
-						<HelpCard key={data.title} data={data} />
-					))}
-				</Box>
-			</Modal>
+			<InfoModal opened={opened} close={close}/>
 		</MantineNavbar>
 	);
 };
 
-const helpResources = [
-	{
-		image: slackLogo,
-		title: 'Slack',
-		description: 'Connect with us',
-		href: 'https://launchpass.com/parseable',
-	},
-	{
-		image: githubLogo,
-		title: 'GitHub',
-		description: 'Find resources',
-		href: 'https://github.com/parseablehq/parseable',
-	},
-	{
-		image: docImage,
-		title: 'Documentation',
-		description: 'Learn more',
-		href: 'https://www.parseable.io/docs/introduction',
-	},
-];
 
-type HelpCardProps = {
-	data: (typeof helpResources)[number];
-};
-
-const HelpCard: FC<HelpCardProps> = (props) => {
-	const { data } = props;
-
-	const { classes } = useNavbarStyles();
-	const { helpCard, helpCardTitle, helpCardDescription } = classes;
-
-	return (
-		<Anchor underline={false} href={data.href} target="_blank">
-			<Card className={helpCard}>
-				<Box>
-					<Text className={helpCardTitle}>{data.title}</Text>
-					<Text className={helpCardDescription}>{data.description}</Text>
-				</Box>
-				<Image maw={45} src={data.image} alt={data.title} />
-			</Card>
-		</Anchor>
-	);
-};
 
 export default Navbar;
