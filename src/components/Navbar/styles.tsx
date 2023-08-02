@@ -106,29 +106,15 @@ export const useInfoModalStyles = createStyles((theme) => {
 			width: '100%',
 			
 		},
-		innerContainer: {
-			padding: spacing.md,
-		},
-		infoModal: {
-			display: 'flex',
-			flexDirection: 'column',
-			alignItems: 'center',
-			justifyContent: 'center',
-			background: white,
-			color: theme.colors.gray[7],
-			fontFamily: theme.fontFamily,
-			fontSize: fontSizes.md,
-			fontWeight: fontWeights.normal,
-			lineHeight: 'normal',
-			padding: '24px',
-			borderRadius: defaultRadius,
-			boxShadow: shadows.sm,
-		},
+	
 		aboutTitle: {
 			fontSize: fontSizes.md,
 			textAlign: 'center',
 			color: colors.gray[7],
 			fontWeight: fontWeights.bold,
+		},
+		parseableText: {
+			color: colors.brandSecondary[0],
 		},
 		aboutDescription: {
 			fontSize: fontSizes.sm,
@@ -149,28 +135,64 @@ export const useInfoModalStyles = createStyles((theme) => {
 				marginBottom: spacing.sm,
 			},
 		},
-		aboutText: {
-			'& tr': {
-				transition: 'transform .2s ease-in-out',
-				'&: hover': {
-					transform: 'scale(1.05)',
-					" & td "	: {
-						border: `${sizing.px} solid ${colors.gray[2]}`,
-					}
-
-				},
-			},
+		aboutTextBox: {
+			marginTop: spacing.md,
+			marginBottom: spacing.md,
+			width: '100%',
+			display: 'flex',
+			borderRadius: defaultRadius,
+			border: `${sizing.px} solid ${colors.gray[2]}`,
+			padding: spacing.md,
+			flexDirection: 'column',
+		},
+		aboutTextInnerBox: {
+			display: 'flex',
+			width: '100%',
+			alignItems: 'center',
+			marginTop: spacing.xs,
+			marginBottom: spacing.xs,
+		},
+		aboutTextKey: {
+			fontSize: fontSizes.sm,
+			color: colors.gray[7],
+			lineHeight: 'normal',
+			width: '15%',
+		},
+		aboutTextValue: {
+			fontSize: fontSizes.sm,
+			color: colors.dimmed[0],
+			lineHeight: 'normal',
+			width: '85%',
+		},
+		actionBtn: {
 		
+			color: theme.colors.brandPrimary[0],
+			borderRadius: defaultRadius,
+			border: `${sizing.px} solid ${colors.gray[2]}`,
+			position: 'absolute',
+			right: spacing.xl,
+			transition: 'transform .2s ease-in-out',
 
-			'& tr>td:last-of-type': {
-				fontSize: fontSizes.sm,
-				color: colors.dimmed[0],
-				lineHeight: 'normal',
-				'&: hover': {
-					color: sColor,
-				}
+			'&:hover ': {
+				transform: 'scale(1.03)',
+				color: sColor,
+				backgroundColor: white,
 			},
 		},
+		actionBtnRed: {
+			color: "rgb(224, 49, 49)",
+			borderRadius: defaultRadius,
+			border: `${sizing.px} solid ${colors.gray[2]}`,
+			position: 'absolute',
+			right: spacing.xl,
+			transition: 'transform .2s ease-in-out',
+			'&:hover ': {
+				color: "green",
+				transform: 'scale(1.03)',
+				backgroundColor: white,
+			},
+		},
+
 		helpTitle: {
 			fontSize: fontSizes.md,
 			textAlign: 'center',
@@ -178,42 +200,20 @@ export const useInfoModalStyles = createStyles((theme) => {
 			fontWeight: fontWeights.bold,
 		},
 
-		helpDescription: {
-			fontSize: fontSizes.sm,
-			textAlign: 'center',
-			color: colors.dimmed[0],
-			marginTop: spacing.xs,
-
-			'&::after': {
-				content: '""',
-				borderRadius: defaultRadius,
-				display: 'block',
-				backgroundColor: sColor,
-				width: widths[14],
-				height: heights['0.5'],
-				marginTop: theme.spacing.sm,
-				marginLeft: 'auto',
-				marginRight: 'auto',
-				marginBottom: '31px',
-			},
-		},
-
 		HelpIconBox: {
-			marginLeft: spacing.md,
-			transition: 'transform .2s ease-in-out',
 			'&:hover': {
-				transform: 'scale(1.05)',
+				color: sColor,
+				transform: 'scale(1.4)',
 			},
+			height: '34px',
+			transition: 'transform .2s ease-in-out',
+			width: '34px',
+			padding: '0px',
+			marginInlineEnd: spacing.xs,
+			color: colors.gray[5],
+			borderColor: colors.gray[2],
 		},
 
-		helpToolip: {
-			"& .mantine-Tooltip-tooltip": {
-				fontWeight: fontWeights.semibold,
-				fontSize: fontSizes.sm,
-				color: colors.gray[7],
-				backgroundColor: colors.black[0],
-			}
-		},
 		helpIconContainer: {
 			display: 'flex',
 			alignItems: 'center',

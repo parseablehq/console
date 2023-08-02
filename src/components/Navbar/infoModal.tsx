@@ -1,29 +1,33 @@
-import {  Anchor, Box, Image, Modal, Table, Text, Tooltip } from '@mantine/core';
+import { Box, Button, Modal, Table, Text, Tooltip, px } from '@mantine/core';
 import { FC, useEffect } from 'react';
 import { useInfoModalStyles } from './styles';
-import docImage from '@/assets/images/doc.webp';
-import githubLogo from '@/assets/images/github-logo.webp';
-import slackLogo from '@/assets/images/slack-logo.webp';
 import { useGetAbout } from '@/hooks/useGetAbout';
+import { IconAlertCircle, IconBook2, IconBrandGithub, IconBrandSlack, IconBusinessplan } from '@tabler/icons-react';
 
 const helpResources = [
 	{
-		image: slackLogo,
+		icon: IconBrandSlack,
 		title: 'Slack',
 		description: 'Connect with us',
 		href: 'https://launchpass.com/parseable',
 	},
 	{
-		image: githubLogo,
+		icon: IconBrandGithub,
 		title: 'GitHub',
 		description: 'Find resources',
 		href: 'https://github.com/parseablehq/parseable',
 	},
 	{
-		image: docImage,
+		icon: IconBook2,
 		title: 'Documentation',
 		description: 'Learn more',
 		href: 'https://www.parseable.io/docs/introduction',
+	},
+	{
+		icon: IconBusinessplan,
+		title: 'Get paid support',
+		description: 'Get paid support',
+		href: 'mailto:support@parseable.io', //https://www.parseable.io/pricing
 	},
 ];
 
@@ -35,16 +39,14 @@ const HelpCard: FC<HelpCardProps> = (props) => {
 	const { data } = props;
 
 	const { classes } = useInfoModalStyles();
-	const { HelpIconBox, helpToolip } = classes;
+	const { HelpIconBox } = classes;
 
 	return (
-		<Box className={HelpIconBox}>
-			<Anchor underline={false} href={data.href} target="_blank" className={helpToolip}>
-				<Tooltip label={data.description} position="bottom" withArrow>
-					<Image maw={45} src={data.image} alt={data.title} />
-				</Tooltip>
-			</Anchor>
-		</Box>
+		<Tooltip label={data.description} position="bottom" withArrow sx={{ color: 'white', backgroundColor: 'black' }}>
+			<Button className={HelpIconBox} component={'a'} href={data.href} target="_blank">
+				<data.icon size={px('1.2rem')} stroke={1.5} />
+			</Button>
+		</Tooltip>
 	);
 };
 
@@ -70,19 +72,20 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 	const { classes } = useInfoModalStyles();
 	const {
 		container,
-		innerContainer,
-		infoModal,
-		helpTitle,
-		helpDescription,
-		aboutText,
+		parseableText,
 		aboutTitle,
 		aboutDescription,
+		actionBtn,
 		helpIconContainer,
+		aboutTextBox,
+		aboutTextKey,
+		aboutTextValue,
+		aboutTextInnerBox,
+		actionBtnRed
 	} = classes;
 
 	return (
 		<Modal
-			className={infoModal}
 			opened={opened}
 			onClose={close}
 			withinPortal
@@ -90,68 +93,89 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 			size="xl"
 			centered>
 			<Box className={container}>
-				<Box className={innerContainer}>
-				<Text className={aboutTitle}>About</Text>
+
+					<Text className={aboutTitle}>
+						About <span className={parseableText}>Parseable</span>
+					</Text>
+					<Text className={aboutDescription} id="info-modal-description">
+						Here you can find useful information about your Parseable instance.
+					</Text>
 					{error ? (
-						<Text className={aboutDescription} >Error...</Text>
+						<Text className={aboutDescription}>Error...</Text>
 					) : loading ? (
 						<Text className={aboutDescription}>Loading...</Text>
 					) : data ? (
 						<>
-							<Text className={aboutDescription} id="info-modal-description">
-								Here you can find useful information about your Parseable instance.
-							</Text>
-
-							<Table highlightOnHover withBorder>
-								<tbody className={aboutText}>
-									<tr>
-										<td>Commit</td>
-										<td>{data.commit}</td>
-									</tr>
-									<tr>
-										<td>Deployment Id</td>
-										<td>{data.deploymentId}</td>
-									</tr>
-									<tr>
-										<td>Latest Version</td>
-										<td>{data.latestVersion}</td>
-									</tr>
-									<tr>
-										<td>License</td>
-										<td>{data.license}</td>
-									</tr>
-									<tr>
-										<td>Mode</td>
-										<td>{data.mode}</td>
-									</tr>
-									<tr>
-										<td>Staging</td>
-										<td>{data.staging}</td>
-									</tr>
-									<tr>
-										<td>Store</td>
-										<td>{data.store}</td>
-									</tr>
-									<tr>
-										<td>Version</td>
-										<td>{data.version}</td>
-									</tr>
-								</tbody>
-							</Table>
+							<Box className={aboutTextBox}>
+								<Box className={aboutTextInnerBox}>
+									<Text className={aboutTextKey}> License: </Text>
+									<Text className={aboutTextValue}> {data.license} </Text>
+									<Button
+									variant="outline"
+									component={'a'}
+									href="mailto:support@parseable.io"
+									target="_blank"
+									className={actionBtn}
+									>
+									Upgrade to commercial license
+								</Button>
+								</Box>
+								
+							</Box>
+							<Box className={aboutTextBox}>
+								<Box className={aboutTextInnerBox}>
+									<Text className={aboutTextKey}> Commit: </Text>
+									<Text className={aboutTextValue}> {data.commit} </Text>
+								</Box>
+								<Box className={aboutTextInnerBox}>
+									<Text className={aboutTextKey}> Version: </Text>
+									<Text className={aboutTextValue}> {data.version} </Text>
+									{data.updateAvailable ? (
+										<Button
+										variant="outline"
+										component={'a'}
+										href="https://github.com/parseablehq/parseable/releases/latest"
+										target="_blank"
+										className={actionBtnRed}
+										leftIcon={<IconAlertCircle size={px('1.2rem')} stroke={1.5} />}
+										>
+										Upgrade to latest version {data.latestVersion}
+									</Button> ): null}
+								</Box>
+								
+							</Box>
+							<Box className={aboutTextBox}>
+								<Box className={aboutTextInnerBox}>
+									<Text className={aboutTextKey}> Deployment Id: </Text>
+									<Text className={aboutTextValue}> {data.deploymentId} </Text>
+								</Box>
+								<Box className={aboutTextInnerBox}>
+									<Text className={aboutTextKey}>Mode</Text>
+									<Text className={aboutTextValue}>{data.mode}</Text>
+								</Box>
+								<Box className={aboutTextInnerBox}>
+									<Text className={aboutTextKey}>Staging</Text>
+									<Text className={aboutTextValue}>{data.staging}</Text>
+								</Box>
+								<Box className={aboutTextInnerBox}>
+									<Text className={aboutTextKey}>Store</Text>
+									<Text className={aboutTextValue}>{data.store}</Text>
+								</Box>
+							</Box>
 						</>
 					) : null}
-				</Box>
-				<Box className={innerContainer}>
-					<Text className={helpTitle}>Need any help?</Text>
-					<Text className={helpDescription}>Here you can find useful resources and information.</Text>
+				
+				
+					<Text className={aboutTitle}>Need any help?</Text>
+					<Text className={aboutDescription}>Here you can find useful resources and information.</Text>
 
-					<Box mt={12} className={helpIconContainer}>
+					<Box mt={15} className={helpIconContainer}>
 						{helpResources.map((data) => (
 							<HelpCard key={data.title} data={data} />
 						))}
 					</Box>
 				</Box>
-			</Box>
+			
 		</Modal>
 	);
 };
