@@ -94,7 +94,7 @@ export const useNavbarStyles = createStyles((theme) => {
 
 //infoModal, infoModalTitle, infoModalDescription
 export const useInfoModalStyles = createStyles((theme) => {
-	const { colors, radius, fontSizes, shadows, spacing } = theme;
+	const { colors, radius, fontSizes, spacing } = theme;
 	const { fontWeights } = theme.other;
 	const white = colors.white[0];
 	const sColor = colors.brandSecondary[0];
