@@ -88,3 +88,18 @@ export const ConfigHeader: FC = () => {
 		</Box>
 	);
 };
+
+export const UsersManagementHeader: FC = () => {
+	const { classes } = useLogQueryStyles();
+	const { container, innerContainer } = classes;
+
+	return (
+		<Box className={container}>
+			<Box>
+				<Box className={innerContainer}>
+					<HeaderBreadcrumbs crumbs={[ 'User Management']} />
+				</Box>
+			</Box>
+		</Box>
+	);
+};

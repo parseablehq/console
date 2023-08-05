@@ -1,14 +1,5 @@
 import type { NavbarProps as MantineNavbarProps } from '@mantine/core';
-import {
-	Navbar as MantineNavbar,
-	NavLink,
-	Select,
-	Box,
-	Modal,
-	Text,
-	Button,
-	TextInput,
-} from '@mantine/core';
+import { Navbar as MantineNavbar, NavLink, Select, Box, Modal, Text, Button, TextInput } from '@mantine/core';
 import {
 	IconZoomCode,
 	IconReportAnalytics,
@@ -32,9 +23,10 @@ import { DEFAULT_FIXED_DURATIONS, useHeaderContext } from '@/layouts/MainLayout/
 import useMountedState from '@/hooks/useMountedState';
 import dayjs from 'dayjs';
 import { useDisclosure, useLocalStorage } from '@mantine/hooks';
-import { LOGIN_ROUTE } from '@/constants/routes';
+import { LOGIN_ROUTE, USERS_MANAGEMENT_ROUTE } from '@/constants/routes';
 import { useDeleteLogStream } from '@/hooks/useDeleteLogStream';
 import InfoModal from './infoModal';
+import { useGetUserRole } from '@/hooks/useGetUserRoles';
 
 const links = [
 	{ icon: IconZoomCode, label: 'Query', pathname: '/query' },
@@ -49,12 +41,11 @@ const Navbar: FC<NavbarProps> = (props) => {
 	const navigate = useNavigate();
 	const { streamName } = useParams();
 	const location = useLocation();
-	
+
 	const [username] = useLocalStorage({ key: 'username', getInitialValueInEffect: false });
 	const [, , removeCredentials] = useLocalStorage({ key: 'credentials' });
 	const [, , removeUsername] = useLocalStorage({ key: 'username' });
-	
-	
+
 	const {
 		state: { subNavbarTogle },
 	} = useHeaderContext();
@@ -63,6 +54,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 	const [searchValue, setSearchValue] = useMountedState('');
 	const [currentPage, setCurrentPage] = useMountedState('/query');
 	const [deleteStream, setDeleteStream] = useMountedState('');
+	const [isAdmin, setIsAdmin] = useMountedState(false);
 
 	const [disableLink, setDisableLink] = useMountedState(false);
 	const [isSubNavbarOpen, setIsSubNavbarOpen] = useMountedState(false);
@@ -103,8 +95,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 			setSearchValue('');
 			setDisableLink(true);
 			navigate(`/`);
-		}
-		else if (streamName) {
+		} else if (streamName) {
 			if (streamName === deleteStream && streams) {
 				setDeleteStream('');
 				handleChange(streams[0].name);
@@ -122,14 +113,24 @@ const Navbar: FC<NavbarProps> = (props) => {
 				handleChange(streamName);
 			}
 		} else if (streams && Boolean(streams.length)) {
-			handleChange(streams[0].name);
+			if (location.pathname === USERS_MANAGEMENT_ROUTE) {
+				handleChangeWithoutRiderection(streams[0].name, location.pathname);
+			} else {
+				handleChange(streams[0].name);
+			}
 		}
 	}, [streams]);
 
 	const handleChange = (value: string) => {
+		handleChangeWithoutRiderection(value);
+		navigate(`/${value}${currentPage}`);
+	};
+	const handleChangeWithoutRiderection = (value: string, page: string = currentPage) => {
 		setActiveStream(value);
 		setSearchValue(value);
+		setCurrentPage(page);
 		const now = dayjs();
+
 		subLogQuery.set((state) => {
 			state.streamName = value || '';
 			state.startTime = now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate();
@@ -138,16 +139,14 @@ const Navbar: FC<NavbarProps> = (props) => {
 		subLogSelectedTimeRange.set((state) => {
 			state.state = 'fixed';
 			state.value = DEFAULT_FIXED_DURATIONS.name;
-			});
+		});
 		subLogSearch.set((state) => {
 			state.search = '';
 			state.filters = {};
 		});
 		subRefreshInterval.set(null);
 		setDisableLink(false);
-		navigate(`/${value}${currentPage}`);
 	};
-
 	const handleCloseDelete = () => {
 		closeDelete();
 		setDeleteStream('');
@@ -166,6 +165,22 @@ const Navbar: FC<NavbarProps> = (props) => {
 		}
 	}, [deleteData]);
 
+	//isAdmin
+	const { data: adminData, getRoles, resetData } = useGetUserRole();
+	useEffect(() => {
+		if (username) {
+			getRoles(username);
+		}
+		return () => {
+			resetData();
+		};
+	}, [username]);
+
+	useEffect(() => {
+		if (adminData) {
+			setIsAdmin(true);
+		}
+	}, [adminData]);
 
 	const { classes } = useNavbarStyles();
 	const {
@@ -177,10 +192,24 @@ const Navbar: FC<NavbarProps> = (props) => {
 		lowerContainer,
 		actionBtn,
 		userBtn,
+		userManagementBtn,
+		userManagementBtnActive,
 	} = classes;
 	return (
 		<MantineNavbar {...props} withBorder zIndex={1} hiddenBreakpoint={window.outerWidth + 20} hidden={isSubNavbarOpen}>
 			<MantineNavbar.Section grow className={container}>
+				{isAdmin && (
+					<NavLink
+						pt={24}
+						className={(currentPage === USERS_MANAGEMENT_ROUTE && userManagementBtnActive) || userManagementBtn}
+						label="Users Management"
+						icon={<IconUser size="1.5rem" stroke={1.3} />}
+						onClick={() => {
+							navigate(`/users`);
+							setCurrentPage(USERS_MANAGEMENT_ROUTE);
+						}}
+					/>
+				)}
 				<NavLink label="Log Streams" icon={<IconBinaryTree2 size="1.5rem" stroke={1.3} />} className={streamsBtn} />
 				<Select
 					placeholder="Pick one"
@@ -208,8 +237,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 								setCurrentPage(link.pathname);
 							}}
 							key={link.label}
-							
-							className={(currentPage === link.pathname && linkBtnActive ) || linkBtn}	
+							className={(currentPage === link.pathname && linkBtnActive) || linkBtn}
 						/>
 					);
 				})}
@@ -256,7 +284,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 					onChange={(e) => {
 						setDeleteStream(e.target.value);
 					}}
-					placeholder={`Type the name of the stream to confirm. i.e: ${streamName}`}
+					placeholder={`Type the name of the stream to confirm. i.e: ${activeStream}`}
 				/>
 
 				<Box mt={10} display="flex" sx={{ justifyContent: 'end' }}>
@@ -264,7 +292,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 						variant="filled"
 						color="red"
 						sx={{ margin: '12px' }}
-						disabled={deleteStream === streamName ? false : true}
+						disabled={deleteStream === activeStream ? false : true}
 						onClick={handleDelete}>
 						Delete
 					</Button>
@@ -273,11 +301,9 @@ const Navbar: FC<NavbarProps> = (props) => {
 					</Button>
 				</Box>
 			</Modal>
-			<InfoModal opened={opened} close={close}/>
+			<InfoModal opened={opened} close={close} />
 		</MantineNavbar>
 	);
 };
-
-
 
 export default Navbar;
