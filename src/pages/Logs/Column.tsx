@@ -116,11 +116,11 @@ const Column: FC<Column> = (props) => {
 		return word.charAt(0).toUpperCase() + word.slice(1);
 	}
 	const { classes, cx } = useTableColumnStyle();
-	const { labelBtn, applyBtn, labelIcon, labelIconActive, searchInputStyle,filterText } = classes;
+	const { labelTh, labelBtn, applyBtn, labelIcon, labelIconActive, searchInputStyle,filterText } = classes;
 
 	return (
-		<th>
-			<Popover position="bottom" withArrow withinPortal shadow="md" zIndex={1} onOpen={onOpen}>
+		<th className={labelTh}>
+			<Popover position="bottom" withArrow withinPortal shadow="md" zIndex={2} onOpen={onOpen}>
 				<Popover.Target>
 					<UnstyledButton className={labelBtn}>
 						<span className="label">{capitalizeFirstLetter(columnName)}</span>
