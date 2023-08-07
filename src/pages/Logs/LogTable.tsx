@@ -117,8 +117,7 @@ const LogTable: FC = () => {
 			} else {
 				prev.add(columnName);
 			}
-			console.log(columnName, prev);
-			debugger;
+
 			return new Set(prev);
 		});
 	};
