@@ -5,15 +5,15 @@ export const getUsers = () => {
     return Axios().get(USERS_LIST_URL);
 }
 
-export const createUser = (username: string) => {
-    return Axios().post(USER_URL(username) );
+export const putUser = (username: string, roles?: object[]) => {
+    return Axios().put(USER_URL(username), roles );
 }
 
 export const deleteUser = (username: string) => {
     return Axios().delete(USER_URL(username));
 }
 
-export const updateUserRoles = (username: string, roles: object[]) => {
+export const putUserRoles = (username: string, roles: object[]) => {
     return Axios().put(USER_ROLES_URL(username), roles);
 }
 

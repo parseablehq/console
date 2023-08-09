@@ -6,6 +6,7 @@ import RefreshNow from './RefreshNow';
 import Search from './Search';
 import TimeRange from './TimeRange';
 import { useLogQueryStyles } from './styles';
+import ReloadUser from './ReloadUser';
 
 export const StatsHeader: FC = () => {
 	const { classes } = useLogQueryStyles();
@@ -97,7 +98,12 @@ export const UsersManagementHeader: FC = () => {
 		<Box className={container}>
 			<Box>
 				<Box className={innerContainer}>
-					<HeaderBreadcrumbs crumbs={[ 'User Management']} />
+					<HeaderBreadcrumbs crumbs={['User Management']} />
+				</Box>
+			</Box>
+			<Box>
+				<Box className={innerContainer}>
+					<ReloadUser />
 				</Box>
 			</Box>
 		</Box>

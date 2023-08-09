@@ -58,13 +58,25 @@ export const useUsersStyles = createStyles((theme) => {
 			},
 		},
 		trStyle: {
+			'& tr:nth-of-type(odd)': {
+				backgroundColor: "#ececec !important",
+			},
 			'& td': {
 				height: "100%",
 				textAlign: 'left',
 				verticalAlign: 'middle',
 				border: 'none !important',
 			},
+		
 		},
+		passwordPrims: {
+			
+			"& .mantine-Tooltip-tooltip ":{
+					backgroundColor:colors.gray[5],
+					color:colors.gray[0],
+				}
+			
+		}
 		
 	};
 });

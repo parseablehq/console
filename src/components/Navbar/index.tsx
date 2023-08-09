@@ -12,6 +12,7 @@ import {
 	IconSettings,
 	IconTrash,
 	IconInfoCircle,
+	IconUserCog,
 } from '@tabler/icons-react';
 import { FC, useEffect } from 'react';
 import { useNavbarStyles } from './styles';
@@ -202,8 +203,8 @@ const Navbar: FC<NavbarProps> = (props) => {
 					<NavLink
 						pt={24}
 						className={(currentPage === USERS_MANAGEMENT_ROUTE && userManagementBtnActive) || userManagementBtn}
-						label="Users Management"
-						icon={<IconUser size="1.5rem" stroke={1.3} />}
+						label="Users"
+						icon={<IconUserCog size="1.5rem" stroke={1.3} />}
 						onClick={() => {
 							navigate(`/users`);
 							setCurrentPage(USERS_MANAGEMENT_ROUTE);
