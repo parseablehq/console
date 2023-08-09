@@ -1,10 +1,29 @@
-import { ALL_ROUTE, CONFIG_ROUTE, HOME_ROUTE, LOGIN_ROUTE, LOGS_ROUTE, QUERY_ROUTE, STATS_ROUTE } from '@/constants/routes';
+import {
+	ALL_ROUTE,
+	CONFIG_ROUTE,
+	HOME_ROUTE,
+	LOGIN_ROUTE,
+	LOGS_ROUTE,
+	QUERY_ROUTE,
+	STATS_ROUTE,
+	USERS_MANAGEMENT_ROUTE,
+} from '@/constants/routes';
 import FullPageLayout from '@/layouts/FullPageLayout';
 import NotFound from '@/pages/Errors/NotFound';
 import type { FC } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
-import { HomeElement, LoginElement, LogsElement, QueryElement, MainLayoutElement, StatsElement,ConfigElement } from './elements';
+import {
+	HomeElement,
+	LoginElement,
+	LogsElement,
+	QueryElement,
+	MainLayoutElement,
+	StatsElement,
+	ConfigElement,
+	UsersElement,
+} from './elements';
+import AdminRoute from './AdminRoute';
 
 const AppRouter: FC = () => {
 	return (
@@ -12,6 +31,9 @@ const AppRouter: FC = () => {
 			<Routes>
 				<Route element={<PrivateRoute />}>
 					<Route element={<MainLayoutElement />}>
+						<Route element={<AdminRoute />}>
+							<Route path={USERS_MANAGEMENT_ROUTE} element={<UsersElement/>} />
+						</Route>
 						<Route path={HOME_ROUTE} element={<HomeElement />} />
 						<Route path={LOGS_ROUTE} element={<LogsElement />} />
 						<Route path={QUERY_ROUTE} element={<QueryElement />} />

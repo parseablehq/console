@@ -6,6 +6,9 @@ import RefreshNow from './RefreshNow';
 import Search from './Search';
 import TimeRange from './TimeRange';
 import { useLogQueryStyles } from './styles';
+import ReloadUser from './ReloadUser';
+import DocsUser from './UserDocs';
+import CreateUser from './CreateUser';
 
 export const StatsHeader: FC = () => {
 	const { classes } = useLogQueryStyles();
@@ -83,6 +86,28 @@ export const ConfigHeader: FC = () => {
 			<Box>
 				<Box className={innerContainer}>
 					<HeaderBreadcrumbs crumbs={['Streams', 'streamName', 'Config']} />
+				</Box>
+			</Box>
+		</Box>
+	);
+};
+
+export const UsersManagementHeader: FC = () => {
+	const { classes } = useLogQueryStyles();
+	const { container, innerContainer } = classes;
+
+	return (
+		<Box className={container}>
+			<Box>
+				<Box className={innerContainer}>
+					<HeaderBreadcrumbs crumbs={['User Management']} />
+				</Box>
+			</Box>
+			<Box>
+				<Box className={innerContainer}>
+					<ReloadUser />
+					<DocsUser />
+					<CreateUser />
 				</Box>
 			</Box>
 		</Box>
