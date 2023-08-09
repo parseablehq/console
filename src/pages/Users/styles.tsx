@@ -1,14 +1,13 @@
 import {  NAVBAR_WIDTH } from '@/constants/theme';
 import { createStyles } from '@mantine/core';
 export const useUsersStyles = createStyles((theme) => {
-	const { spacing ,colors,fontSizes} = theme;
-	const { widths ,fontWeights} = theme.other;
+	const { spacing,colors} = theme;
+	const { widths } = theme.other;
 	const sColor = colors.brandSecondary[0];
 	return {
 		container: {
 			flex: 1,
 			width: `calc(${widths.full} - ${NAVBAR_WIDTH}px)`,
-			
 			position: 'relative',
 		},
 		actionBtn: {
@@ -21,20 +20,6 @@ export const useUsersStyles = createStyles((theme) => {
 			marginInlineEnd: spacing.xs,
 			color: colors.gray[5],
 			borderColor: colors.gray[2],
-		},
-		headerContainer: {
-			display: 'flex',
-			borderBottom: `solid 1px ${colors.gray[2]}`,
-			alignItems: 'center',
-			height: '55px',
-			padding: `${spacing.xs} ${spacing.md}`,
-			width: '100%',
-		},
-		textContext: {
-			marginRight: spacing.md,
-			fontSize: fontSizes.md,
-			fontWeight: fontWeights.semibold,
-			whiteSpace: 'nowrap',
 		},
 		tableContainer: {
 			position: 'relative',

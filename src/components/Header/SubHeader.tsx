@@ -7,6 +7,8 @@ import Search from './Search';
 import TimeRange from './TimeRange';
 import { useLogQueryStyles } from './styles';
 import ReloadUser from './ReloadUser';
+import DocsUser from './UserDocs';
+import CreateUser from './CreateUser';
 
 export const StatsHeader: FC = () => {
 	const { classes } = useLogQueryStyles();
@@ -104,6 +106,8 @@ export const UsersManagementHeader: FC = () => {
 			<Box>
 				<Box className={innerContainer}>
 					<ReloadUser />
+					<DocsUser />
+					<CreateUser />
 				</Box>
 			</Box>
 		</Box>

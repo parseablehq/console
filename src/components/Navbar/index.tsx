@@ -199,18 +199,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 	return (
 		<MantineNavbar {...props} withBorder zIndex={1} hiddenBreakpoint={window.outerWidth + 20} hidden={isSubNavbarOpen}>
 			<MantineNavbar.Section grow className={container}>
-				{isAdmin && (
-					<NavLink
-						pt={24}
-						className={(currentPage === USERS_MANAGEMENT_ROUTE && userManagementBtnActive) || userManagementBtn}
-						label="Users"
-						icon={<IconUserCog size="1.5rem" stroke={1.3} />}
-						onClick={() => {
-							navigate(`/users`);
-							setCurrentPage(USERS_MANAGEMENT_ROUTE);
-						}}
-					/>
-				)}
+				
 				<NavLink label="Log Streams" icon={<IconBinaryTree2 size="1.5rem" stroke={1.3} />} className={streamsBtn} />
 				<Select
 					placeholder="Pick one"
@@ -258,6 +247,18 @@ const Navbar: FC<NavbarProps> = (props) => {
 						component="button"
 						onClick={getData}
 						sx={{ paddingLeft: 0 }}
+					/>
+				)}
+				{isAdmin && (
+					<NavLink
+						pt={24}
+						className={(currentPage === USERS_MANAGEMENT_ROUTE && userManagementBtnActive) || userManagementBtn}
+						label="Users"
+						icon={<IconUserCog size="1.5rem" stroke={1.3} />}
+						onClick={() => {
+							navigate(`/users`);
+							setCurrentPage(USERS_MANAGEMENT_ROUTE);
+						}}
 					/>
 				)}
 			</MantineNavbar.Section>

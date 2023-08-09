@@ -49,6 +49,7 @@ interface HeaderContextState {
 	subRefreshInterval: SubData<number | null>;
 	subLogSelectedTimeRange: SubData<LogSelectedTimeRange>;
 	subNavbarTogle: SubData<boolean>;
+	subCreateUserModalTogle: SubData<boolean>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -83,6 +84,7 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 	});
 	const subRefreshInterval = useSubscribeState<number | null>(null);
 	const subNavbarTogle = useSubscribeState<boolean>(false);
+	const subCreateUserModalTogle = useSubscribeState<boolean>(false);
 
 	const state: HeaderContextState = {
 		subLogQuery,
@@ -90,6 +92,7 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 		subRefreshInterval,
 		subLogSelectedTimeRange,
 		subNavbarTogle,
+		subCreateUserModalTogle,
 	};
 
 	const methods: HeaderContextMethods = {};

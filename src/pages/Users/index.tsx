@@ -1,18 +1,31 @@
 import { Box, Button, Modal, ScrollArea, Select, Table, Text, TextInput, Tooltip, px } from '@mantine/core';
-import { useDisclosure, useDocumentTitle } from '@mantine/hooks';
+import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect, useState } from 'react';
-import { IconBook2, IconUserPlus } from '@tabler/icons-react';
+
 import { useGetUsers } from '@/hooks/useGetUsers';
 import { useUsersStyles } from './styles';
 import { usePutUser } from '@/hooks/usePutUser';
 import { Prism } from '@mantine/prism';
 import RoleTd from './row';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
+import { useHeaderContext } from '@/layouts/MainLayout/Context';
 const Users: FC = () => {
 	useDocumentTitle('Parseable | Users');
-	const [opened, { open, close }] = useDisclosure(false);
-	const [createUserInput, setCreateUserInput] = useState<string>('');
+	const {
+		state: { subCreateUserModalTogle },
+	} = useHeaderContext();
 
+
+	useEffect(() => {
+		const listener = subCreateUserModalTogle.subscribe(setModalOpen);
+		return () => {
+			listener();
+		};
+	}, [subCreateUserModalTogle.get()]);
+
+
+	const [modalOpen, setModalOpen] = useState<boolean>(false);
+	const [createUserInput, setCreateUserInput] = useState<string>('');
 	const [tagInput, setTagInput] = useState<string>('');
 	const [selectedPrivilege, setSelectedPrivilege] = useState<string>('');
 	const [SelectedStream, setSelectedStream] = useState<string>('');
@@ -73,7 +86,7 @@ const Users: FC = () => {
 
 	const handleClose = () => {
 		setCreateUserInput('');
-		close();
+		setModalOpen(false);
 		resetCreateUser();
 		setSelectedPrivilege('');
 		setSelectedStream('');
@@ -140,32 +153,6 @@ const Users: FC = () => {
 	const { classes } = useUsersStyles();
 	return (
 		<Box className={classes.container}>
-			<Box className={classes.headerContainer}>
-				<Text className={classes.textContext}> User Managemant </Text>
-				<Box style={{ height: '100%', width: '100%', textAlign: 'right' }}>
-					<Tooltip label={'Docs'} sx={{ color: 'white', backgroundColor: 'black' }} withArrow position="right">
-						<Button
-							variant="default"
-							className={classes.actionBtn}
-							onClick={() => {
-								window.open('https://www.parseable.io/docs/rbac', '_blank');
-							}}>
-							<IconBook2 size={px('1.2rem')} stroke={1.5} />
-						</Button>
-					</Tooltip>
-					<Tooltip
-						label={'Create New User'}
-						sx={{ color: 'white', backgroundColor: 'black' }}
-						withArrow
-						onClick={open}
-						position="right">
-						<Button variant="default" className={classes.actionBtn} aria-label="create user">
-							<IconUserPlus size={px('1.2rem')} stroke={1.5} />
-						</Button>
-					</Tooltip>
-				</Box>
-			</Box>
-
 			<ScrollArea className={classes.tableContainer} type="always">
 				<Table striped highlightOnHover className={classes.tableStyle}>
 					<thead className={classes.theadStyle}>
@@ -180,7 +167,7 @@ const Users: FC = () => {
 				</Table>
 			</ScrollArea>
 			<Modal
-				opened={opened}
+				opened={modalOpen}
 				onClose={handleClose}
 				title="Create User"
 				centered
