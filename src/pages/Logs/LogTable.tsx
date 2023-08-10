@@ -2,7 +2,20 @@ import Loading from '@/components/Loading';
 import { Tbody, Thead } from '@/components/Table';
 import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useQueryLogs } from '@/hooks/useQueryLogs';
-import { Box, Center, Checkbox, Menu, Pagination, ScrollArea, Table, px, ActionIcon, Text, Flex } from '@mantine/core';
+import {
+	Box,
+	Center,
+	Checkbox,
+	Menu,
+	Pagination,
+	ScrollArea,
+	Table,
+	px,
+	ActionIcon,
+	Text,
+	Flex,
+	Button,
+} from '@mantine/core';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { FC } from 'react';
 import { LOG_QUERY_LIMITS, useLogsPageContext } from './Context';
@@ -120,6 +133,11 @@ const LogTable: FC = () => {
 
 			return new Set(prev);
 		});
+	};
+
+	const resetColumns = () => {
+		setPinnedColumns(new Set());
+		setColumnToggles(new Map());
 	};
 
 	const onRetry = () => {
@@ -253,9 +271,12 @@ const LogTable: FC = () => {
 		footerContainer,
 		paginationRow,
 		theadStylePinned,
-		scrollView,
+		pinnedScrollView,
 	} = classes;
 
+	const active = useRef<'left' | 'right'>('left');
+	const leftRef = useRef<HTMLDivElement>(null);
+	const rightRef = useRef<HTMLDivElement>(null);
 	return (
 		<Box className={container}>
 			<FilterPills />
@@ -263,8 +284,26 @@ const LogTable: FC = () => {
 				!loading && !logsLoading && Boolean(logsSchema) && Boolean(pageLogData) ? (
 					Boolean(logsSchema?.fields.length) && Boolean(pageLogData?.data.length) ? (
 						<Box className={innerContainer}>
-							<ScrollArea type="always" className={scrollView}>
-								<Box style={{ display: 'flex', flexDirection: 'row' }}>
+							<Box className={innerContainer} style={{ display: 'flex', flexDirection: 'row' }}>
+								<ScrollArea
+									maw={'50%'}
+									miw={pinnedColumns.size ? '30%' : 0}
+									className={pinnedScrollView}
+									styles={() => ({
+										scrollbar: {
+											'&[data-orientation="vertical"] .mantine-ScrollArea-thumb': {
+												display: 'none',
+											},
+										},
+									})}
+									onMouseEnter={() => {
+										active.current = 'left';
+									}}
+									viewportRef={leftRef}
+									onScrollPositionChange={({ y }) => {
+										if (active.current === 'right') return;
+										rightRef.current!.scrollTop = y;
+									}}>
 									<Box className={pinnedTableContainer}>
 										<Table className={tableStyle}>
 											<Thead className={theadStylePinned}>{renderPinnedTh}</Thead>
@@ -280,8 +319,18 @@ const LogTable: FC = () => {
 												/>
 											</Tbody>
 										</Table>
-										<Box style={{ height: '100%', border: '5px solid #ccc' }} />
 									</Box>
+								</ScrollArea>
+								<Box style={{ height: '100%', border: '5px solid #ccc' }} />
+								<ScrollArea
+									onMouseEnter={() => {
+										active.current = 'right';
+									}}
+									viewportRef={rightRef}
+									onScrollPositionChange={({ y }) => {
+										if (active.current === 'left') return;
+										leftRef.current!.scrollTop = y;
+									}}>
 									<Box className={tableContainer}>
 										<Table className={tableStyle}>
 											<Thead className={theadStyle}>
@@ -294,6 +343,7 @@ const LogTable: FC = () => {
 													reorderColumn={reorderSchemaFields}
 													isColumnPinned={isColumnPinned}
 													toggleColumnPinned={toggleColumnPinned}
+													resetColumns={resetColumns}
 												/>
 											</Thead>
 											<Tbody>
@@ -310,8 +360,8 @@ const LogTable: FC = () => {
 											</Tbody>
 										</Table>
 									</Box>
-								</Box>
-							</ScrollArea>
+								</ScrollArea>
+							</Box>
 							<Box className={footerContainer}>
 								<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
 								{(pageLogData?.totalPages || 0) > 1 && (
@@ -393,16 +443,24 @@ type ThColumnMenuProps = {
 	isColumnActive: (columnName: string) => boolean;
 	isColumnPinned: (columnName: string) => boolean;
 	toggleColumnPinned: (columnName: string) => void;
+	resetColumns: () => void;
 };
 
 const ThColumnMenu: FC<ThColumnMenuProps> = (props) => {
-	const { logSchemaFields, isColumnActive, toggleColumn, reorderColumn, toggleColumnPinned, isColumnPinned } = props;
+	const {
+		logSchemaFields,
+		isColumnActive,
+		toggleColumn,
+		reorderColumn,
+		toggleColumnPinned,
+		isColumnPinned,
+		resetColumns,
+	} = props;
 
 	const { classes } = useLogTableStyles();
-	const { thColumnMenuBtn, thColumnMenuDropdown } = classes;
+	const { thColumnMenuBtn, thColumnMenuDropdown, thColumnMenuResetBtn } = classes;
 
-	const pinnedFields = logSchemaFields.filter(field => isColumnPinned(field.name));
-	const nonPinnedFields = logSchemaFields.filter(field => !isColumnPinned(field.name));
+	const pinnedFields = logSchemaFields.filter((field) => isColumnPinned(field.name));
 
 	return (
 		<th>
@@ -425,6 +483,11 @@ const ThColumnMenu: FC<ThColumnMenuProps> = (props) => {
 						reorderColumn(destIndex, source.index);
 					}}>
 					<Menu.Dropdown className={thColumnMenuDropdown}>
+						<Center>
+							<Button className={thColumnMenuResetBtn} variant="default" onClick={resetColumns}>
+								Reset Columns
+							</Button>
+						</Center>
 						<Droppable droppableId="dnd-list" direction="vertical">
 							{(provided) => (
 								<div {...provided.droppableProps} ref={provided.innerRef}>
@@ -436,11 +499,11 @@ const ThColumnMenu: FC<ThColumnMenuProps> = (props) => {
 												toggleColumn={toggleColumn}
 												isColumnActive={isColumnActive}
 												toggleColumnPinned={(columnName) => {
-													const isPinned = isColumnPinned(columnName)
+													const isPinned = isColumnPinned(columnName);
 													toggleColumnPinned(columnName);
 
 													// Place the field in correct order
-													if (isPinned) reorderColumn(pinnedFields.length-1, index);
+													if (isPinned) reorderColumn(pinnedFields.length - 1, index);
 													else reorderColumn(0, index);
 												}}
 												isColumnPinned={isColumnPinned(field.name)}

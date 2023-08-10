@@ -64,20 +64,9 @@ export const useLogTableStyles = createStyles((theme) => {
 			position: 'relative',
 		},
 
-		pinnedTableContainer: {
-			position: 'sticky',
-			left: 0,
-			zIndex: 2,
-			display: 'flex',
-			flexDirection: 'row',
-			maxWidth: '50vw'
-		},
+		pinnedTableContainer: {},
 
-		scrollView: {
-			'.mantine-ScrollArea-thumb': {
-				zIndex: 2
-			  },
-		},
+		pinnedScrollView: {},
 
 		tableStyle: {
 			whiteSpace: 'nowrap',
@@ -114,7 +103,7 @@ export const useLogTableStyles = createStyles((theme) => {
 				verticalAlign: 'middle',
 				border: 'none !important',
 			},
-			zIndex: 2
+			zIndex: 2,
 		},
 		trEvenStyle: {
 			cursor: 'pointer',
@@ -130,7 +119,7 @@ export const useLogTableStyles = createStyles((theme) => {
 				verticalAlign: 'middle',
 				border: 'none !important',
 			},
-			zIndex: 2
+			zIndex: 2,
 		},
 
 		tdArrowContainer: {
@@ -153,6 +142,10 @@ export const useLogTableStyles = createStyles((theme) => {
 		thColumnMenuBtn: {
 			width: widths[10],
 			height: heights[10],
+		},
+
+		thColumnMenuResetBtn: {
+			margin: spacing.sm,
 		},
 
 		thColumnMenuDropdown: {
@@ -280,7 +273,7 @@ export const useTableColumnStyle = createStyles((theme) => {
 
 	return {
 		labelBtn: {
-			padding: "15px",
+			padding: '15px',
 			width: widths.full,
 			display: 'flex',
 			alignItems: 'center',
@@ -303,7 +296,7 @@ export const useTableColumnStyle = createStyles((theme) => {
 		searchInputStyle: {
 			marginBottom: spacing.xs,
 		},
-		filterText:{
+		filterText: {
 			display: 'flex',
 			alignItems: 'center',
 			color: colors.gray[6],
@@ -350,7 +343,6 @@ export const useTableColumnStyle = createStyles((theme) => {
 			'&:hover': {
 				color: sColor,
 			},
-			
 		},
 		sortBtnActive: {
 			display: 'flex',
@@ -362,7 +354,6 @@ export const useTableColumnStyle = createStyles((theme) => {
 			'&:hover': {
 				color: sColor,
 			},
-			
-		}
+		},
 	};
 });
