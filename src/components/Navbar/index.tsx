@@ -122,9 +122,9 @@ const Navbar: FC<NavbarProps> = (props) => {
 		}
 	}, [streams]);
 
-	const handleChange = (value: string) => {
-		handleChangeWithoutRiderection(value);
-		navigate(`/${value}${currentPage}`);
+	const handleChange = (value: string,page: string = currentPage ) => {
+		handleChangeWithoutRiderection(value,page);
+		navigate(`/${value}${page}`);
 	};
 	const handleChangeWithoutRiderection = (value: string, page: string = currentPage) => {
 		setActiveStream(value);
@@ -223,8 +223,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 							sx={{ paddingLeft: 53 }}
 							disabled={disableLink}
 							onClick={() => {
-								navigate(`/${activeStream}${link.pathname}`);
-								setCurrentPage(link.pathname);
+								handleChange(activeStream,link.pathname);
 							}}
 							key={link.label}
 							className={(currentPage === link.pathname && linkBtnActive) || linkBtn}

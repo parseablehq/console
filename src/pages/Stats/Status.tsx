@@ -103,28 +103,28 @@ const Status: FC = () => {
 			startTime: now.subtract(FIXED_DURATIONS[statusFIXEDDURATIONS].milliseconds, 'milliseconds').toDate(),
 			endTime: now.toDate(),
 		};
-		getQueryData(LogQuery, `SELECT count(*) FROM ${subLogQuery.get().streamName} ;`);
+		getQueryData(LogQuery, `SELECT count(*) as count FROM ${subLogQuery.get().streamName} ;`);
 	};
 
 	useEffect(() => {
-		if (queryResult?.data[0] && queryResult?.data[0]['COUNT(UInt8(1))']) {
-			setStatus(`${queryResult?.data[0]['COUNT(UInt8(1))']} events in ${FIXED_DURATIONS[statusFIXEDDURATIONS].name}`);
+		if (queryResult?.data[0] && queryResult?.data[0]['count']) {
+			setStatus(`${queryResult?.data[0]['count']} events in ${FIXED_DURATIONS[statusFIXEDDURATIONS-1].name}`);
 			setStatusSuccess(true);
 			return;
 		}
 		if (errorQueryResult) {
-			setStatus(`Not Recieved any events in ${FIXED_DURATIONS[statusFIXEDDURATIONS - 1].name}`);
+			setStatus(`Not Recieved any events in ${FIXED_DURATIONS[statusFIXEDDURATIONS - 1].name} and error `);
 			setStatusSuccess(false);
 			return;
 		}
-		if (queryResult?.data[0] && queryResult?.data[0]['COUNT(UInt8(1))'] === 0) {
+		if (queryResult?.data[0] && queryResult?.data[0]['count'] === 0) {
 			setStatus('Loading...');
-			if (FIXED_DURATIONS.length - 1 > statusFIXEDDURATIONS) {
-				setStatusFIXEDDURATIONS(statusFIXEDDURATIONS + 1);
+			if (FIXED_DURATIONS.length  > statusFIXEDDURATIONS) {
 				getStatus();
+				setStatusFIXEDDURATIONS(statusFIXEDDURATIONS + 1);
 				return;
 			} else {
-				setStatus(`No events received ${FIXED_DURATIONS[statusFIXEDDURATIONS].name}`);
+				setStatus(`No events received ${FIXED_DURATIONS[statusFIXEDDURATIONS-1].name}`);
 				setStatusSuccess(false);
 			}
 		} else {
