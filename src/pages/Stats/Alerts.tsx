@@ -34,6 +34,14 @@ const Alerts: FC = () => {
 		};
 	}, [data]);
 
+	useEffect(() => {
+		if(subLogQuery.get().streamName){
+			getLogAlert(subLogQuery.get().streamName);
+		}
+		return () => {
+			resetData();
+		};
+	}, []);
 
 	useEffect(() => {
 		setEditorHeight(AlertsWrapper.current?.offsetTop ? AlertsWrapper.current?.offsetTop + 15 : 0);

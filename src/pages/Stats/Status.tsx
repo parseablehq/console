@@ -103,6 +103,7 @@ const Status: FC = () => {
 			startTime: now.subtract(FIXED_DURATIONS[statusFIXEDDURATIONS].milliseconds, 'milliseconds').toDate(),
 			endTime: now.toDate(),
 		};
+		setStatusFIXEDDURATIONS(statusFIXEDDURATIONS + 1);
 		getQueryData(LogQuery, `SELECT count(*) as count FROM ${subLogQuery.get().streamName} ;`);
 	};
 
@@ -113,7 +114,7 @@ const Status: FC = () => {
 			return;
 		}
 		if (errorQueryResult) {
-			setStatus(`Not Recieved any events in ${FIXED_DURATIONS[statusFIXEDDURATIONS - 1].name} and error `);
+			setStatus(`Not Recieved any events in ${FIXED_DURATIONS[statusFIXEDDURATIONS - 1].name} and error occured`);
 			setStatusSuccess(false);
 			return;
 		}
@@ -121,7 +122,6 @@ const Status: FC = () => {
 			setStatus('Loading...');
 			if (FIXED_DURATIONS.length  > statusFIXEDDURATIONS) {
 				getStatus();
-				setStatusFIXEDDURATIONS(statusFIXEDDURATIONS + 1);
 				return;
 			} else {
 				setStatus(`No events received ${FIXED_DURATIONS[statusFIXEDDURATIONS-1].name}`);
