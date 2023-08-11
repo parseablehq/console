@@ -22,18 +22,19 @@ export const useUsersStyles = createStyles((theme) => {
 			borderColor: colors.gray[2],
 		},
 		tableContainer: {
-			position: 'relative',
-			height: `calc(100% - 55px)`,
+			height: '100%',
 		},
 		tableStyle: {
 			overflow: 'scroll',
 			width: '100%',
+			height: '100%',
 			padding: 0,
 		},
 		theadStyle: {
 			position: 'sticky',
 			zIndex: 1,
 			top: 0,
+			height: '50px',
 			'& tr>th': {
 				height: "100%",
 				textAlign: 'left',
