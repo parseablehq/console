@@ -472,7 +472,7 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 							handleRoleEdit();
 						}}
 						disabled={updateRoleVaildtion()}>
-						Update Role
+						Add Role
 					</Button>
 					<Button onClick={handleCloseRoleEdit} variant="filled" color="red" sx={{ margin: '12px' }}>
 						Cancel
