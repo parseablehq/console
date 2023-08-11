@@ -2,15 +2,28 @@ import Loading from '@/components/Loading';
 import { Tbody, Thead } from '@/components/Table';
 import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useQueryLogs } from '@/hooks/useQueryLogs';
-import { Box, Center, Checkbox, Menu, Pagination, ScrollArea, Table, px, ActionIcon, Text } from '@mantine/core';
-import { useCallback, useEffect, useMemo } from 'react';
+import {
+	Box,
+	Center,
+	Checkbox,
+	Menu,
+	Pagination,
+	ScrollArea,
+	Table,
+	px,
+	ActionIcon,
+	Text,
+	Flex,
+	Button,
+} from '@mantine/core';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { FC } from 'react';
 import { LOG_QUERY_LIMITS, useLogsPageContext } from './Context';
 import LogRow from './LogRow';
 import { useLogTableStyles } from './styles';
 import useMountedState from '@/hooks/useMountedState';
 import ErrorText from '@/components/Text/ErrorText';
-import { IconDotsVertical, IconSelector, IconGripVertical } from '@tabler/icons-react';
+import { IconDotsVertical, IconSelector, IconGripVertical, IconPin, IconPinFilled } from '@tabler/icons-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Field } from '@/@types/parseable/dataType';
 import EmptyBox from '@/components/Empty';
@@ -34,6 +47,8 @@ const LogTable: FC = () => {
 	const [refreshInterval, setRefreshInterval] = useMountedState<number | null>(null);
 	const [logStreamError, setLogStreamError] = useMountedState<string | null>(null);
 	const [columnToggles, setColumnToggles] = useMountedState<Map<string, boolean>>(new Map());
+	const [pinnedColumns, setPinnedColumns] = useMountedState<Set<string>>(new Set());
+
 	const {
 		data: logsSchema,
 		getDataSchema,
@@ -106,6 +121,25 @@ const LogTable: FC = () => {
 		};
 	};
 
+	const isColumnPinned = useCallback((columnName: string) => pinnedColumns.has(columnName), [pinnedColumns]);
+
+	const toggleColumnPinned = (columnName: string) => {
+		setPinnedColumns((prev) => {
+			if (prev.has(columnName)) {
+				prev.delete(columnName);
+			} else {
+				prev.add(columnName);
+			}
+
+			return new Set(prev);
+		});
+	};
+
+	const resetColumns = () => {
+		setPinnedColumns(new Set());
+		setColumnToggles(new Map());
+	};
+
 	const onRetry = () => {
 		const query = subLogQuery.get();
 
@@ -133,6 +167,7 @@ const LogTable: FC = () => {
 				getDataSchema(query.streamName);
 				getQueryData(query);
 				setColumnToggles(new Map());
+				setPinnedColumns(new Set());
 			}
 		});
 
@@ -175,24 +210,53 @@ const LogTable: FC = () => {
 	}, [subLogQuery]);
 	const renderTh = useMemo(() => {
 		if (logsSchema) {
-			return logsSchema.fields.map((field) => {
-				if (!isColumnActive(field.name) || skipFields.includes(field.name)) return null;
-				return (
-					<Column
-						key={field.name}
-						columnName={field.name}
-						appliedFilter={appliedFilter}
-						applyFilter={applyFilter}
-						getColumnFilters={getColumnFilters}
-						setSorting={sortingSetter(field.name)}
-						fieldSortOrder={sort.field === field.name ? sort.order : null}
-					/>
-				);
-			});
+			return logsSchema.fields
+				.filter(
+					(field) =>
+						isColumnActive(field.name) && !isColumnPinned(field.name) && !skipFields.includes(field.name),
+				)
+				.map((field) => {
+					return (
+						<Column
+							key={field.name}
+							columnName={field.name}
+							appliedFilter={appliedFilter}
+							applyFilter={applyFilter}
+							getColumnFilters={getColumnFilters}
+							setSorting={sortingSetter(field.name)}
+							fieldSortOrder={sort.field === field.name ? sort.order : null}
+						/>
+					);
+				});
 		}
 
 		return null;
-	}, [logsSchema, columnToggles, logs, sort]);
+	}, [logsSchema, columnToggles, logs, sort, pinnedColumns]);
+
+	const renderPinnedTh = useMemo(() => {
+		if (logsSchema) {
+			return logsSchema.fields
+				.filter(
+					(field) =>
+						isColumnActive(field.name) && isColumnPinned(field.name) && !skipFields.includes(field.name),
+				)
+				.map((field) => {
+					return (
+						<Column
+							key={field.name}
+							columnName={field.name}
+							appliedFilter={appliedFilter}
+							applyFilter={applyFilter}
+							getColumnFilters={getColumnFilters}
+							setSorting={sortingSetter(field.name)}
+							fieldSortOrder={sort.field === field.name ? sort.order : null}
+						/>
+					);
+				});
+		}
+
+		return null;
+	}, [logsSchema, columnToggles, logs, sort, pinnedColumns]);
 
 	const { classes } = useLogTableStyles();
 
@@ -200,13 +264,19 @@ const LogTable: FC = () => {
 		container,
 		innerContainer,
 		tableContainer,
+		pinnedTableContainer,
 		tableStyle,
 		theadStyle,
 		errorContainer,
 		footerContainer,
 		paginationRow,
+		theadStylePinned,
+		pinnedScrollView,
 	} = classes;
 
+	const active = useRef<'left' | 'right'>('left');
+	const leftRef = useRef<HTMLDivElement>(null);
+	const rightRef = useRef<HTMLDivElement>(null);
 	return (
 		<Box className={container}>
 			<FilterPills />
@@ -214,27 +284,84 @@ const LogTable: FC = () => {
 				!loading && !logsLoading && Boolean(logsSchema) && Boolean(pageLogData) ? (
 					Boolean(logsSchema?.fields.length) && Boolean(pageLogData?.data.length) ? (
 						<Box className={innerContainer}>
-							<ScrollArea className={tableContainer} type="always">
-								<Table className={tableStyle}>
-									<Thead className={theadStyle}>
-										{renderTh}
-										<ThColumnMenu
-											logSchemaFields={logsSchema?.fields || []}
-											columnToggles={columnToggles}
-											toggleColumn={toggleColumn}
-											isColumnActive={isColumnActive}
-											reorderColumn={reorderSchemaFields}
-										/>
-									</Thead>
-									<Tbody>
-										<LogRow
-											logData={pageLogData?.data || []}
-											logsSchema={logsSchema?.fields || []}
-											isColumnActive={isColumnActive}
-										/>
-									</Tbody>
-								</Table>
-							</ScrollArea>
+							<Box className={innerContainer} style={{ display: 'flex', flexDirection: 'row' }}>
+								<ScrollArea
+									maw={'50%'}
+									miw={pinnedColumns.size ? '30%' : 0}
+									className={pinnedScrollView}
+									styles={() => ({
+										scrollbar: {
+											'&[data-orientation="vertical"] .mantine-ScrollArea-thumb': {
+												display: 'none',
+											},
+										},
+									})}
+									onMouseEnter={() => {
+										active.current = 'left';
+									}}
+									viewportRef={leftRef}
+									onScrollPositionChange={({ y }) => {
+										if (active.current === 'right') return;
+										rightRef.current!.scrollTop = y;
+									}}>
+									<Box className={pinnedTableContainer}>
+										<Table className={tableStyle}>
+											<Thead className={theadStylePinned}>{renderPinnedTh}</Thead>
+											<Tbody>
+												<LogRow
+													logData={pageLogData?.data || []}
+													logsSchema={
+														logsSchema?.fields.filter((field) =>
+															isColumnPinned(field.name),
+														) || []
+													}
+													isColumnActive={isColumnActive}
+												/>
+											</Tbody>
+										</Table>
+									</Box>
+								</ScrollArea>
+								<Box style={{ height: '100%', border: '5px solid #ccc' }} />
+								<ScrollArea
+									onMouseEnter={() => {
+										active.current = 'right';
+									}}
+									viewportRef={rightRef}
+									onScrollPositionChange={({ y }) => {
+										if (active.current === 'left') return;
+										leftRef.current!.scrollTop = y;
+									}}>
+									<Box className={tableContainer}>
+										<Table className={tableStyle}>
+											<Thead className={theadStyle}>
+												{renderTh}
+												<ThColumnMenu
+													logSchemaFields={logsSchema?.fields || []}
+													columnToggles={columnToggles}
+													toggleColumn={toggleColumn}
+													isColumnActive={isColumnActive}
+													reorderColumn={reorderSchemaFields}
+													isColumnPinned={isColumnPinned}
+													toggleColumnPinned={toggleColumnPinned}
+													resetColumns={resetColumns}
+												/>
+											</Thead>
+											<Tbody>
+												<LogRow
+													logData={pageLogData?.data || []}
+													logsSchema={
+														logsSchema?.fields.filter(
+															(field) => !isColumnPinned(field.name),
+														) || []
+													}
+													isColumnActive={isColumnActive}
+													rowArrows={true}
+												/>
+											</Tbody>
+										</Table>
+									</Box>
+								</ScrollArea>
+							</Box>
 							<Box className={footerContainer}>
 								<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
 								{(pageLogData?.totalPages || 0) > 1 && (
@@ -271,10 +398,12 @@ type ThColumnMenuItemProps = {
 	index: number;
 	toggleColumn: (columnName: string, value: boolean) => void;
 	isColumnActive: (columnName: string) => boolean;
+	isColumnPinned: boolean;
+	toggleColumnPinned: (columnName: string) => void;
 };
 
 const ThColumnMenuItem: FC<ThColumnMenuItemProps> = (props) => {
-	const { field, index, toggleColumn, isColumnActive } = props;
+	const { field, index, toggleColumn, isColumnActive, toggleColumnPinned, isColumnPinned } = props;
 	const { classes } = useLogTableStyles();
 	if (skipFields.includes(field.name)) return null;
 
@@ -286,17 +415,20 @@ const ThColumnMenuItem: FC<ThColumnMenuItemProps> = (props) => {
 					style={{ cursor: 'default' }}
 					ref={provided.innerRef}
 					{...provided.draggableProps}>
-					<div style={{ display: 'flex' }}>
-						<div className={classes.thColumnMenuDragHandle} {...provided.dragHandleProps}>
+					<Flex>
+						<Box onClick={() => toggleColumnPinned(field.name)}>
+							{isColumnPinned ? <IconPinFilled size="1.05rem" /> : <IconPin size="1.05rem" />}
+						</Box>
+						<Box className={classes.thColumnMenuDragHandle} {...provided.dragHandleProps}>
 							<IconGripVertical size="1.05rem" stroke={1.5} />
-						</div>
+						</Box>
 						<Checkbox
 							color="red"
 							label={field.name}
 							checked={isColumnActive(field.name)}
 							onChange={(event) => toggleColumn(field.name, event.currentTarget.checked)}
 						/>
-					</div>
+					</Flex>
 				</Menu.Item>
 			)}
 		</Draggable>
@@ -309,13 +441,26 @@ type ThColumnMenuProps = {
 	toggleColumn: (columnName: string, value: boolean) => void;
 	reorderColumn: (destination: number, source: number) => void;
 	isColumnActive: (columnName: string) => boolean;
+	isColumnPinned: (columnName: string) => boolean;
+	toggleColumnPinned: (columnName: string) => void;
+	resetColumns: () => void;
 };
 
 const ThColumnMenu: FC<ThColumnMenuProps> = (props) => {
-	const { logSchemaFields, isColumnActive, toggleColumn, reorderColumn } = props;
+	const {
+		logSchemaFields,
+		isColumnActive,
+		toggleColumn,
+		reorderColumn,
+		toggleColumnPinned,
+		isColumnPinned,
+		resetColumns,
+	} = props;
 
 	const { classes } = useLogTableStyles();
-	const { thColumnMenuBtn, thColumnMenuDropdown } = classes;
+	const { thColumnMenuBtn, thColumnMenuDropdown, thColumnMenuResetBtn } = classes;
+
+	const pinnedFields = logSchemaFields.filter((field) => isColumnPinned(field.name));
 
 	return (
 		<th>
@@ -329,9 +474,20 @@ const ThColumnMenu: FC<ThColumnMenuProps> = (props) => {
 				</Center>
 				<DragDropContext
 					onDragEnd={({ destination, source }) => {
-						reorderColumn(destination?.index || 0, source.index);
+						const field = logSchemaFields[source.index];
+						const destIndex = destination?.index || 0;
+
+						// Disallow dragging pinned to unpinned area and vice versa
+						if (isColumnPinned(field.name) && destIndex >= pinnedFields.length) return;
+						if (!isColumnPinned(field.name) && destIndex < pinnedFields.length) return;
+						reorderColumn(destIndex, source.index);
 					}}>
 					<Menu.Dropdown className={thColumnMenuDropdown}>
+						<Center>
+							<Button className={thColumnMenuResetBtn} variant="default" onClick={resetColumns}>
+								Reset Columns
+							</Button>
+						</Center>
 						<Droppable droppableId="dnd-list" direction="vertical">
 							{(provided) => (
 								<div {...provided.droppableProps} ref={provided.innerRef}>
@@ -342,6 +498,15 @@ const ThColumnMenu: FC<ThColumnMenuProps> = (props) => {
 												index={index}
 												toggleColumn={toggleColumn}
 												isColumnActive={isColumnActive}
+												toggleColumnPinned={(columnName) => {
+													const isPinned = isColumnPinned(columnName);
+													toggleColumnPinned(columnName);
+
+													// Place the field in correct order
+													if (isPinned) reorderColumn(pinnedFields.length - 1, index);
+													else reorderColumn(0, index);
+												}}
+												isColumnPinned={isColumnPinned(field.name)}
 											/>
 										);
 									})}

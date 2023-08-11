@@ -29,29 +29,20 @@ const SortWidget: FC<SortWidgetProps> = (props) => {
 		setSortOrder(fieldSortOrder === SortOrder.DESCENDING ? null : SortOrder.DESCENDING);
 	};
 	const { classes } = useTableColumnStyle();
-	const { sortBtn ,sortBtnActive} = classes;
+	const { sortBtn, sortBtnActive } = classes;
 
 	return (
 		<Box>
 			<Button
 				className={fieldSortOrder === SortOrder.ASCENDING ? sortBtnActive : sortBtn}
 				onClick={toggleAscending}
-				leftIcon={
-					<IconSortAscending
-					stroke={ fieldSortOrder === SortOrder.ASCENDING ? 2 : 1}
-					/>
-				}>
+				leftIcon={<IconSortAscending stroke={fieldSortOrder === SortOrder.ASCENDING ? 2 : 1} />}>
 				Sort by Ascending order
 			</Button>
 			<Button
 				className={fieldSortOrder === SortOrder.DESCENDING ? sortBtnActive : sortBtn}
 				onClick={toggleDescending}
-				leftIcon={
-					<IconSortDescending
-					
-						stroke={fieldSortOrder === SortOrder.DESCENDING ? 2 : 1}
-					/>
-				}>
+				leftIcon={<IconSortDescending stroke={fieldSortOrder === SortOrder.DESCENDING ? 2 : 1} />}>
 				Sort by Descending order
 			</Button>
 		</Box>
@@ -116,11 +107,11 @@ const Column: FC<Column> = (props) => {
 		return word.charAt(0).toUpperCase() + word.slice(1);
 	}
 	const { classes, cx } = useTableColumnStyle();
-	const { labelBtn, applyBtn, labelIcon, labelIconActive, searchInputStyle,filterText } = classes;
+	const { labelBtn, applyBtn, labelIcon, labelIconActive, searchInputStyle, filterText } = classes;
 
 	return (
 		<th>
-			<Popover position="bottom" withArrow withinPortal shadow="md" zIndex={1} onOpen={onOpen}>
+			<Popover position="bottom" withArrow withinPortal shadow="md" zIndex={2} onOpen={onOpen}>
 				<Popover.Target>
 					<UnstyledButton className={labelBtn}>
 						<span className="label">{capitalizeFirstLetter(columnName)}</span>
@@ -136,8 +127,10 @@ const Column: FC<Column> = (props) => {
 				<Popover.Dropdown>
 					<Box>
 						<SortWidget setSortOrder={setSorting} fieldSortOrder={fieldSortOrder} />
-						<Button className={filterText} leftIcon={<IconFilter stroke={1} />} >Filter by values:</Button>
-						
+						<Button className={filterText} leftIcon={<IconFilter stroke={1} />}>
+							Filter by values:
+						</Button>
+
 						<TextInput
 							className={searchInputStyle}
 							placeholder="Search"

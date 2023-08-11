@@ -13,10 +13,11 @@ type LogRowProps = {
 	logData: Log[];
 	logsSchema: LogStreamData;
 	isColumnActive: (columnName: string) => boolean;
+	rowArrows?: boolean
 };
 
 const LogRow: FC<LogRowProps> = (props) => {
-	const { logData, logsSchema, isColumnActive } = props;
+	const { logData, logsSchema, isColumnActive, rowArrows } = props;
 	const {
 		state: { subViewLog },
 	} = useLogsPageContext();
@@ -46,7 +47,9 @@ const LogRow: FC<LogRowProps> = (props) => {
 								<td key={`${logSchema.name}-${logSchemaIndex}`}>{parseLogData(log[logSchema.name], logSchema.name)}</td>
 							);
 						})}
-						<TdArrow />
+						{
+							rowArrows && <TdArrow />
+						}
 					</tr>
 				);
 			})}
