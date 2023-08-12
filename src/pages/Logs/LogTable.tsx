@@ -277,6 +277,23 @@ const LogTable: FC = () => {
 	const active = useRef<'left' | 'right'>('left');
 	const leftRef = useRef<HTMLDivElement>(null);
 	const rightRef = useRef<HTMLDivElement>(null);
+	const pinnedContianerRef = useRef<HTMLDivElement>(null);
+	const [pinnedColumnsWidth, setPinnedColumnsWidth] = useMountedState(0);
+
+	useEffect(() => {
+		
+		if(pinnedContianerRef.current?.offsetWidth &&pinnedContianerRef.current?.clientWidth<500 && pinnedColumns.size>0){
+			
+			setPinnedColumnsWidth(pinnedContianerRef.current?.clientWidth );
+		}
+		else if(pinnedContianerRef.current?.offsetWidth &&pinnedContianerRef.current?.clientWidth>500 && pinnedColumns.size>0){
+			setPinnedColumnsWidth(500);
+		}
+		else{
+			setPinnedColumnsWidth(0);
+		}
+	}, [ pinnedContianerRef,pinnedColumns]);
+
 	return (
 		<Box className={container}>
 			<FilterPills />
@@ -286,8 +303,7 @@ const LogTable: FC = () => {
 						<Box className={innerContainer}>
 							<Box className={innerContainer} style={{ display: 'flex', flexDirection: 'row' }}>
 								<ScrollArea
-									maw={'50%'}
-									miw={pinnedColumns.size ? '30%' : 0}
+									w={`${pinnedColumnsWidth}px`}
 									className={pinnedScrollView}
 									styles={() => ({
 										scrollbar: {
@@ -304,7 +320,7 @@ const LogTable: FC = () => {
 										if (active.current === 'right') return;
 										rightRef.current!.scrollTop = y;
 									}}>
-									<Box className={pinnedTableContainer}>
+									<Box  className={pinnedTableContainer} ref={pinnedContianerRef}>
 										<Table className={tableStyle}>
 											<Thead className={theadStylePinned}>{renderPinnedTh}</Thead>
 											<Tbody>
@@ -321,7 +337,7 @@ const LogTable: FC = () => {
 										</Table>
 									</Box>
 								</ScrollArea>
-								<Box style={{ height: '100%', border: '5px solid #ccc' }} />
+								<Box style={{ height: '100%', border: '1px solid #ccc' }} />
 								<ScrollArea
 									onMouseEnter={() => {
 										active.current = 'right';
@@ -496,6 +512,7 @@ const ThColumnMenu: FC<ThColumnMenuProps> = (props) => {
 											<ThColumnMenuItem
 												field={field}
 												index={index}
+												key={field.name}
 												toggleColumn={toggleColumn}
 												isColumnActive={isColumnActive}
 												toggleColumnPinned={(columnName) => {

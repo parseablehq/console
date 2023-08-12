@@ -66,7 +66,12 @@ export const useLogTableStyles = createStyles((theme) => {
 
 		pinnedTableContainer: {},
 
-		pinnedScrollView: {},
+		pinnedScrollView: {
+			overflow: 'unset !important',
+
+			"& .mantine-ScrollArea-root ":{
+			}
+		},
 
 		tableStyle: {
 			whiteSpace: 'nowrap',
