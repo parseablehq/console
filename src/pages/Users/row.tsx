@@ -134,7 +134,11 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 
 	// For Delete Role
 	const handleRoleDelete = () => {
-		const updatedRole = userRole?.filter((role: any, i: number) => i !== deleteRoleIndex);
+		const updatedRole = userRole?.filter((role: any, i: number) => {
+			if (i !== deleteRoleIndex) {
+				return role;
+			}
+		});
 		putRole(Username,updatedRole );
 		closeDeleteRole();
 		setDeleteRoleIndex(0);

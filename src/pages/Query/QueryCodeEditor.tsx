@@ -91,7 +91,8 @@ useEffect(() => {
 		let LogQuery ={
 			startTime : subLogQuery.get().startTime,
 			endTime :subLogQuery.get().endTime,
-			streamName : currentStreamName
+			streamName : currentStreamName,
+			access:[]
 		}
 		if (subLogSelectedTimeRange.get().state==='fixed') {
 			const now = dayjs();
@@ -99,7 +100,8 @@ useEffect(() => {
 			LogQuery ={
 				startTime : now.subtract(timeDiff).toDate(),
 				endTime :now.toDate(),
-				streamName : currentStreamName
+				streamName : currentStreamName,
+				access:[]
 			}
 		}
 		const parsedQuery = query.replace(/(\r\n|\n|\r)/gm, '');
