@@ -69,7 +69,7 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 		startTime: now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate(),
 		endTime: now.toDate(),
 		streamName: '',
-		access:[]
+		access:null
 	});
 	const subLogSearch = useSubscribeState<LogsSearch>({
 		search: '',

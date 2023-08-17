@@ -16,9 +16,10 @@ const AccessSpecificRoute: FC<AccessSpecificRouteProps> = (props) => {
 	} = useHeaderContext();
     
     useEffect(() => {
-        if(!subLogQuery.get().access?.some((access: string) => accessRequired.includes(access)) ){
-            navigate(LOGIN_ROUTE) }
-    }
+        if(subLogQuery.get().access && !subLogQuery.get().access?.some((access: string) => accessRequired.includes(access)) ){
+            navigate(LOGIN_ROUTE) 
+        }
+        }
     , [subLogQuery.get().access])
 
     return <Outlet />;

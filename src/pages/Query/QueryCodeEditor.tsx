@@ -48,9 +48,7 @@ const QueryCodeEditor: FC = () => {
 		const subQueryListener = subLogQuery.subscribe((state) => {
 			if (state.streamName) {
 				if (state.streamName !== currentStreamName) {
-					console.log(state.streamName, currentStreamName);
 					setQuery(`SELECT * FROM ${state.streamName} LIMIT 100  ; `);
-					
 					result.set('');
 				}
 				setCurrentStreamName(state.streamName);

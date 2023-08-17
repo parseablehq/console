@@ -29,6 +29,7 @@ import { useDeleteLogStream } from '@/hooks/useDeleteLogStream';
 import InfoModal from './infoModal';
 import { useGetUserRole } from '@/hooks/useGetUserRoles';
 import {  getStreamsSepcificAccess, getUserSepcificStreams } from './rolesHandler';
+import { LogStreamData } from '@/@types/parseable/api/stream';
 
 const links = [
 	{ icon: IconZoomCode, label: 'Query', pathname: '/query', requiredAccess: ["Query","GetSchema"] },
@@ -56,8 +57,8 @@ const Navbar: FC<NavbarProps> = (props) => {
 	const [searchValue, setSearchValue] = useMountedState('');
 	const [currentPage, setCurrentPage] = useMountedState('/query');
 	const [deleteStream, setDeleteStream] = useMountedState('');
-	const [userSepecficStreams, setUserSepecficStreams] =useMountedState([] as any);
-	const [userSepecficAccess, setUserSepecficAccess] =useMountedState([] as any);
+	const [userSepecficStreams, setUserSepecficStreams] =useMountedState<LogStreamData | null>(null );
+	const [userSepecficAccess, setUserSepecficAccess] =useMountedState<string[] | null>(null);
 
 	const [disableLink, setDisableLink] = useMountedState(false);
 	const [isSubNavbarOpen, setIsSubNavbarOpen] = useMountedState(false);
@@ -133,7 +134,6 @@ const Navbar: FC<NavbarProps> = (props) => {
 		setCurrentPage(page);
 		const now = dayjs();
 		setUserSepecficAccess(getStreamsSepcificAccess(roles, value));
-		console.log("userSepecficAccess",getStreamsSepcificAccess(roles, value));
 		subLogQuery.set((state) => {
 			state.streamName = value || '';
 			state.startTime = now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate();
