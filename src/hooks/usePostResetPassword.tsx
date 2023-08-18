@@ -1,28 +1,28 @@
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
-import { putUser } from '@/api/users';
+import {  postUserResetPassword } from '@/api/users';
 import { notifications } from '@mantine/notifications';
 import { IconCheck, IconFileAlert } from '@tabler/icons-react';
 
-export const usePutUser = () => {
+export const usePostUserResetPassword = () => {
 	const [data, setData] = useMountedState<any | null>(null);
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
 
-	const createUser = async (userName:string,roles?:object[]) => {
+	const resetPasswordUser = async (userName:string) => {
 		try {
 			setLoading(true);
 			notifications.show({
 				id: 'load-data',
 				loading: true,
 				color: '#545BEB',
-				title: 'Creating User',
-				message: 'User will be Created.',
+				title: 'Changing Password',
+				message: 'Password will be Changed.',
 				autoClose: false,
 				withCloseButton: false,
 			});
 			setError(null);
-			const res = await putUser(userName,roles);
+			const res = await postUserResetPassword(userName);
 
 			switch (res.status) {
 				case StatusCodes.OK: {
@@ -30,8 +30,8 @@ export const usePutUser = () => {
 					notifications.update({
 						id: 'load-data',
 						color: 'green',
-						title: 'User was Created',
-						message: 'Successfully created!!',
+						title: 'Password was Changed',
+						message: 'Successfully Changed!!',
 						icon: <IconCheck size="1rem" />,
 						autoClose: 3000,
 					});
@@ -71,6 +71,6 @@ export const usePutUser = () => {
 		setData(null);
 	};
 
-	return { data, error, loading, createUser, resetData };
+	return { data, error, loading, resetPasswordUser, resetData };
 };
 

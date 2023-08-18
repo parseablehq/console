@@ -1,10 +1,10 @@
-import { Box, Button, Modal, ScrollArea, Select, Table, Text, TextInput} from '@mantine/core';
+import { Box, Button, Modal, ScrollArea, Select, Table, Text, TextInput } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect, useState } from 'react';
 
 import { useGetUsers } from '@/hooks/useGetUsers';
 import { useUsersStyles } from './styles';
-import { usePutUser } from '@/hooks/usePutUser';
+import { usePostUser } from '@/hooks/usePostUser';
 import { Prism } from '@mantine/prism';
 import RoleTd from './row';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
@@ -15,14 +15,12 @@ const Users: FC = () => {
 		state: { subCreateUserModalTogle },
 	} = useHeaderContext();
 
-
 	useEffect(() => {
 		const listener = subCreateUserModalTogle.subscribe(setModalOpen);
 		return () => {
 			listener();
 		};
 	}, [subCreateUserModalTogle.get()]);
-
 
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
 	const [createUserInput, setCreateUserInput] = useState<string>('');
@@ -39,7 +37,7 @@ const Users: FC = () => {
 		loading: CreatedUserLoading,
 		createUser,
 		resetData: resetCreateUser,
-	} = usePutUser();
+	} = usePostUser();
 	const { data: users, error: usersError, loading: usersLoading, getUsersList, resetData: usersReset } = useGetUsers();
 
 	const [tableRows, setTableRows] = useState<any>([]);
@@ -102,9 +100,7 @@ const Users: FC = () => {
 			});
 		}
 		if (selectedPrivilege === 'reader' || selectedPrivilege === 'writer') {
-			if (
-				streams?.find((stream) => stream.name === SelectedStream)
-			) {
+			if (streams?.find((stream) => stream.name === SelectedStream)) {
 				if (tagInput !== '' && tagInput !== undefined && selectedPrivilege !== 'writer') {
 					userRole?.push({
 						privilege: selectedPrivilege,
@@ -127,7 +123,7 @@ const Users: FC = () => {
 	};
 
 	const createVaildtion = () => {
-		if (users?.includes(createUserInput) || createUserInput.length <3) {
+		if (users?.includes(createUserInput) || createUserInput.length < 3) {
 			return true;
 		}
 		if (selectedPrivilege !== '') {
@@ -163,7 +159,7 @@ const Users: FC = () => {
 							<th style={{ textAlign: 'center' }}>Reset Password</th>
 						</tr>
 					</thead>
-					<tbody >{tableRows}</tbody>
+					<tbody>{tableRows}</tbody>
 				</Table>
 			</ScrollArea>
 			<Modal
