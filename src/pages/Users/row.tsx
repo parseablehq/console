@@ -1,15 +1,14 @@
 import { useGetUserRole } from '@/hooks/useGetUserRoles';
-import { usePutUser } from '@/hooks/usePutUser';
 import { usePutUserRole } from '@/hooks/usePutUserRole';
 import { ActionIcon, Badge, Box, Button, Modal, Select, Text, TextInput, Tooltip, px, rem } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import {  IconPlus, IconTransform, IconTrash, IconX } from '@tabler/icons-react';
+import { IconPlus, IconTransform, IconTrash, IconX } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
 import { useUsersStyles } from './styles';
 import { Prism } from '@mantine/prism';
 import { useDeleteUser } from '@/hooks/useDeleteUser';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
-
+import { usePostUserResetPassword } from '@/hooks/usePostResetPassword';
 
 interface RoleTdProps {
 	Username: string;
@@ -32,7 +31,7 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 	const [streamSearchValue, setStreamSearchValue] = useState<string>('');
 
 	const { putRole, data: putRoleData, resetData: resetPutRoleData } = usePutUserRole();
-	const { data: CreatedUserResponse, error: CreatedUserError, loading: CreatedUserLoading, createUser } = usePutUser();
+	const { data: newPassword, error: resetPasswordError, loading: resetPasswordLoading, resetPasswordUser ,resetData:resetNewPassword } = usePostUserResetPassword();
 	const {
 		data: userRole,
 		error: userRoleError,
@@ -83,7 +82,7 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 	const getBadge = (role: any, i: number, withAction: boolean) => {
 		if (role.privilege === 'admin' || role.privilege === 'editor') {
 			return (
-				<Badge color="violet" rightSection={withAction ? removeButton(i) : ''} variant={"light"}>
+				<Badge color="violet" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
 					{role.privilege}
 				</Badge>
 			);
@@ -92,20 +91,20 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 		if (role.privilege === 'reader') {
 			if (role.resource?.tag) {
 				return (
-					<Badge color="orange" rightSection={withAction ? removeButton(i) : ''}  variant={"light"}>
+					<Badge color="orange" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
 						{role.privilege} of {role.resource?.stream === '*' ? 'All' : role.resource?.stream} with{' '}
 						{role.resource?.tag}
 					</Badge>
 				);
 			}
 			return (
-				<Badge color="orange" rightSection={withAction ? removeButton(i) : ''}  variant={"light"}>
+				<Badge color="orange" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
 					{role.privilege} of {role.resource?.stream === '*' ? 'All' : role.resource?.stream}
 				</Badge>
 			);
 		}
 		return (
-			<Badge color="blue" rightSection={withAction ? removeButton(i) : ''}  variant={"light"}>
+			<Badge color="blue" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
 				{role.privilege} of {role.resource?.stream === '*' ? 'All' : role.resource?.stream}
 			</Badge>
 		);
@@ -117,7 +116,11 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 			});
 			return Badges;
 		} else {
-			return <Badge color="red"  variant={"light"}>No Role</Badge>;
+			return (
+				<Badge color="red" variant={'light'}>
+					No Role
+				</Badge>
+			);
 		}
 	};
 
@@ -139,7 +142,7 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 				return role;
 			}
 		});
-		putRole(Username,updatedRole );
+		putRole(Username, updatedRole);
 		closeDeleteRole();
 		setDeleteRoleIndex(0);
 	};
@@ -161,7 +164,7 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 				SelectedStream !== '' &&
 				SelectedStream !== undefined
 			) {
-				if (tagInput !== '' && tagInput !== undefined && selectedPrivilege !== 'writer' && tagInput!==null) {
+				if (tagInput !== '' && tagInput !== undefined && selectedPrivilege !== 'writer' && tagInput !== null) {
 					userRole?.push({
 						privilege: selectedPrivilege,
 						resource: {
@@ -197,7 +200,6 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 		setStreamSearchValue('');
 	};
 	const updateRoleVaildtion = () => {
-		
 		if (selectedPrivilege === 'admin' || selectedPrivilege === 'editor') {
 			if (userRole?.find((role: any) => role.privilege === selectedPrivilege)) {
 				return true;
@@ -210,7 +212,9 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 					(role: any) =>
 						role.privilege === selectedPrivilege &&
 						role.resource?.stream === SelectedStream &&
-						( tagInput ? role.resource?.tag === tagInput : (role.resource?.tag === null || role.resource?.tag === undefined )),
+						(tagInput
+							? role.resource?.tag === tagInput
+							: role.resource?.tag === null || role.resource?.tag === undefined),
 				)
 			) {
 				return true;
@@ -247,10 +251,11 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 	const handleCloseResetPassword = () => {
 		close();
 		setUserInput('');
+		resetNewPassword();
 	};
 
 	const handleResetPassword = () => {
-		createUser(UserInput);
+		resetPasswordUser(UserInput);
 	};
 
 	const { classes } = useUsersStyles();
@@ -374,11 +379,11 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 					}}
 				/>
 
-				{CreatedUserError ? (
-					CreatedUserError
-				) : CreatedUserLoading ? (
+				{resetPasswordError ? (
+					resetPasswordError
+				) : resetPasswordLoading ? (
 					'Loading'
-				) : CreatedUserResponse ? (
+				) : newPassword ? (
 					<>
 						<Text m={4} color="red">
 							Password (Warning this is the only time you are able to see Password)
@@ -388,7 +393,7 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 							language="markup"
 							copyLabel="Copy password to clipboard"
 							copiedLabel="Password copied to clipboard">
-							{CreatedUserResponse}
+							{newPassword}
 						</Prism>
 					</>
 				) : (

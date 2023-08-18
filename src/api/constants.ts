@@ -17,3 +17,4 @@ export const ABOUT_URL = `${API_V1}/about`;
 export const USERS_LIST_URL = `${API_V1}/user`;
 export const USER_URL = (username: string) => `${USERS_LIST_URL}/${username}`;
 export const USER_ROLES_URL = (username: string) => `${USER_URL(username)}/role`;
+export const USER_PASSWORD_URL = (username: string) => `${USER_URL(username)}/generate-new-password`;

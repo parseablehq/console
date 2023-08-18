@@ -118,6 +118,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 		} else if (userSepecficStreams && Boolean(userSepecficStreams.length)) {
 			if (location.pathname === USERS_MANAGEMENT_ROUTE) {
 				handleChangeWithoutRiderection(userSepecficStreams[0].name, location.pathname);
+				navigate(`/users`);
 			} else {
 				handleChange(userSepecficStreams[0].name);
 			}
