@@ -2,6 +2,7 @@ export type LogsQuery = {
 	streamName: string;
 	startTime: Date;
 	endTime: Date;
+	access:string[]|null;
 };
 
 export enum SortOrder {

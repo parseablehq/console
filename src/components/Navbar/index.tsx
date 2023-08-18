@@ -28,12 +28,14 @@ import { LOGIN_ROUTE, USERS_MANAGEMENT_ROUTE } from '@/constants/routes';
 import { useDeleteLogStream } from '@/hooks/useDeleteLogStream';
 import InfoModal from './infoModal';
 import { useGetUserRole } from '@/hooks/useGetUserRoles';
+import {  getStreamsSepcificAccess, getUserSepcificStreams } from './rolesHandler';
+import { LogStreamData } from '@/@types/parseable/api/stream';
 
 const links = [
-	{ icon: IconZoomCode, label: 'Query', pathname: '/query' },
-	{ icon: IconTableShortcut, label: 'Logs', pathname: '/logs' },
-	{ icon: IconReportAnalytics, label: 'Stats', pathname: '/stats' },
-	{ icon: IconSettings, label: 'Config', pathname: '/config' },
+	{ icon: IconZoomCode, label: 'Query', pathname: '/query', requiredAccess: ["Query","GetSchema"] },
+	{ icon: IconTableShortcut, label: 'Logs', pathname: '/logs', requiredAccess: ["Query","GetSchema"]},
+	{ icon: IconReportAnalytics, label: 'Stats', pathname: '/stats', requiredAccess: ["GetStats"]},
+	{ icon: IconSettings, label: 'Config', pathname: '/config', requiredAccess: ["PutAlert"]},
 ];
 
 type NavbarProps = Omit<MantineNavbarProps, 'children'>;
@@ -55,7 +57,8 @@ const Navbar: FC<NavbarProps> = (props) => {
 	const [searchValue, setSearchValue] = useMountedState('');
 	const [currentPage, setCurrentPage] = useMountedState('/query');
 	const [deleteStream, setDeleteStream] = useMountedState('');
-	const [isAdmin, setIsAdmin] = useMountedState(false);
+	const [userSepecficStreams, setUserSepecficStreams] =useMountedState<LogStreamData | null>(null );
+	const [userSepecficAccess, setUserSepecficAccess] =useMountedState<string[] | null>(null);
 
 	const [disableLink, setDisableLink] = useMountedState(false);
 	const [isSubNavbarOpen, setIsSubNavbarOpen] = useMountedState(false);
@@ -64,7 +67,6 @@ const Navbar: FC<NavbarProps> = (props) => {
 
 	const { data: streams, error, getData, resetData: resetStreamArray } = useGetLogStreamList();
 	const { data: deleteData, deleteLogStreamFun } = useDeleteLogStream();
-
 	useEffect(() => {
 		const listener = subNavbarTogle.subscribe(setIsSubNavbarOpen);
 		return () => {
@@ -91,16 +93,16 @@ const Navbar: FC<NavbarProps> = (props) => {
 		if (location.pathname.split('/')[2]) {
 			setCurrentPage(`/${location.pathname.split('/')[2]}`);
 		}
-		if (streams && streams.length === 0) {
+		if (userSepecficStreams && userSepecficStreams.length === 0) {
 			setActiveStream('');
 			setSearchValue('');
 			setDisableLink(true);
 			navigate(`/`);
 		} else if (streamName) {
-			if (streamName === deleteStream && streams) {
+			if (streamName === deleteStream && userSepecficStreams) {
 				setDeleteStream('');
-				handleChange(streams[0].name);
-			} else if (streams && !streams.find((stream) => stream.name === streamName)) {
+				handleChange(userSepecficStreams[0].name);
+			} else if (userSepecficStreams && !userSepecficStreams.find((stream : any) => stream.name === streamName)) {
 				notifications.show({
 					id: 'error-data',
 					color: 'red',
@@ -109,18 +111,18 @@ const Navbar: FC<NavbarProps> = (props) => {
 					icon: <IconFileAlert size="1rem" />,
 					autoClose: 5000,
 				});
-				handleChange(streams[0].name);
-			} else if (streams?.find((stream) => stream.name === streamName)) {
+				handleChange(userSepecficStreams[0].name);
+			} else if (userSepecficStreams?.find((stream:any) => stream.name === streamName)) {
 				handleChange(streamName);
 			}
-		} else if (streams && Boolean(streams.length)) {
+		} else if (userSepecficStreams && Boolean(userSepecficStreams.length)) {
 			if (location.pathname === USERS_MANAGEMENT_ROUTE) {
-				handleChangeWithoutRiderection(streams[0].name, location.pathname);
+				handleChangeWithoutRiderection(userSepecficStreams[0].name, location.pathname);
 			} else {
-				handleChange(streams[0].name);
+				handleChange(userSepecficStreams[0].name);
 			}
 		}
-	}, [streams]);
+	}, [userSepecficStreams]);
 
 	const handleChange = (value: string,page: string = currentPage ) => {
 		handleChangeWithoutRiderection(value,page);
@@ -131,11 +133,12 @@ const Navbar: FC<NavbarProps> = (props) => {
 		setSearchValue(value);
 		setCurrentPage(page);
 		const now = dayjs();
-
+		setUserSepecficAccess(getStreamsSepcificAccess(roles, value));
 		subLogQuery.set((state) => {
 			state.streamName = value || '';
 			state.startTime = now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate();
 			state.endTime = now.toDate();
+			state.access= getStreamsSepcificAccess(roles, value);
 		});
 		subLogSelectedTimeRange.set((state) => {
 			state.state = 'fixed';
@@ -167,7 +170,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 	}, [deleteData]);
 
 	//isAdmin
-	const { data: adminData, getRoles, resetData } = useGetUserRole();
+	const { data: roles, getRoles, resetData } = useGetUserRole();
 	useEffect(() => {
 		if (username) {
 			getRoles(username);
@@ -178,10 +181,13 @@ const Navbar: FC<NavbarProps> = (props) => {
 	}, [username]);
 
 	useEffect(() => {
-		if (adminData) {
-			setIsAdmin(true);
+		if(streams && streams.length > 0 && roles && roles.length > 0){
+			const userStreams = getUserSepcificStreams(roles,streams as any);
+			setUserSepecficStreams(userStreams as any); 
 		}
-	}, [adminData]);
+
+	}, [roles, streams]);
+
 
 	const { classes } = useNavbarStyles();
 	const {
@@ -210,12 +216,15 @@ const Navbar: FC<NavbarProps> = (props) => {
 					onSearchChange={(value) => setSearchValue(value)}
 					onDropdownClose={() => setSearchValue(activeStream)}
 					onDropdownOpen={() => setSearchValue('')}
-					data={streams?.map((stream) => ({ value: stream.name, label: stream.name })) ?? []}
+					data={userSepecficStreams?.map((stream:any) => ({ value: stream.name, label: stream.name })) ?? []}
 					searchable
 					required
 					className={selectStreambtn}
 				/>
 				{links.map((link) => {
+					if (link.requiredAccess && !userSepecficAccess?.some((access:string) => link.requiredAccess.includes(access))) {
+						return null;
+					}
 					return (
 						<NavLink
 							label={link.label}
@@ -230,7 +239,8 @@ const Navbar: FC<NavbarProps> = (props) => {
 						/>
 					);
 				})}
-				<NavLink
+				{ !userSepecficAccess?.some((access:string) => ["DeleteStream"].includes(access)) ? null :
+				 <NavLink
 					label={'Delete'}
 					icon={<IconTrash size="1.3rem" stroke={1.2} />}
 					sx={{ paddingLeft: 53 }}
@@ -238,6 +248,8 @@ const Navbar: FC<NavbarProps> = (props) => {
 					className={linkBtn}
 					disabled={disableLink}
 				/>
+				}
+				
 				{error && <div>{error}</div>}
 				{error && (
 					<NavLink
@@ -248,7 +260,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 						sx={{ paddingLeft: 0 }}
 					/>
 				)}
-				{isAdmin && (
+				{ !userSepecficAccess?.some((access:string) => ["ListUser"].includes(access)) ? null :
 					<NavLink
 						pt={24}
 						className={(currentPage === USERS_MANAGEMENT_ROUTE && userManagementBtnActive) || userManagementBtn}
@@ -259,7 +271,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 							setCurrentPage(USERS_MANAGEMENT_ROUTE);
 						}}
 					/>
-				)}
+				}
 			</MantineNavbar.Section>
 			<MantineNavbar.Section className={lowerContainer}>
 				<NavLink label={username} icon={<IconUser size="1.3rem" stroke={1.3} />} className={userBtn} component="a" />

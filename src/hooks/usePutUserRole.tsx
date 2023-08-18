@@ -57,7 +57,7 @@ export const usePutUserRole = () => {
 						id: 'load-data',
 						color: 'red',
 						title: 'Error Occured',
-						message: 'Error Occured while Creating User',
+						message: 'Error Occured while Updating User Roles',
 						icon: <IconFileAlert size="1rem" />,
 						autoClose: 2000,
 					});

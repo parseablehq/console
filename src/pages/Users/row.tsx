@@ -99,7 +99,7 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 				);
 			}
 			return (
-				<Badge color="cyan" rightSection={withAction ? removeButton(i) : ''}  variant={"light"}>
+				<Badge color="orange" rightSection={withAction ? removeButton(i) : ''}  variant={"light"}>
 					{role.privilege} of {role.resource?.stream === '*' ? 'All' : role.resource?.stream}
 				</Badge>
 			);
@@ -134,8 +134,12 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 
 	// For Delete Role
 	const handleRoleDelete = () => {
-		userRole?.splice(deleteRoleIndex, 1);
-		putRole(Username, userRole);
+		const updatedRole = userRole?.filter((role: any, i: number) => {
+			if (i !== deleteRoleIndex) {
+				return role;
+			}
+		});
+		putRole(Username,updatedRole );
 		closeDeleteRole();
 		setDeleteRoleIndex(0);
 	};
@@ -157,7 +161,7 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 				SelectedStream !== '' &&
 				SelectedStream !== undefined
 			) {
-				if (tagInput !== '' && tagInput !== undefined && selectedPrivilege !== 'writer') {
+				if (tagInput !== '' && tagInput !== undefined && selectedPrivilege !== 'writer' && tagInput!==null) {
 					userRole?.push({
 						privilege: selectedPrivilege,
 						resource: {
@@ -206,7 +210,7 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 					(role: any) =>
 						role.privilege === selectedPrivilege &&
 						role.resource?.stream === SelectedStream &&
-						(tagInput ? role.resource?.tag === tagInput : role.resource?.tag === undefined),
+						( tagInput ? role.resource?.tag === tagInput : (role.resource?.tag === null || role.resource?.tag === undefined )),
 				)
 			) {
 				return true;

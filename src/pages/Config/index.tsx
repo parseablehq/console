@@ -14,9 +14,23 @@ const Config: FC = () => {
 	useDocumentTitle('Parseable | Config');
 	const [alertQuery, setAlertQuery] = useMountedState<string>('');
 	const [retentionQuery, setRetentionQuery] = useMountedState<string>('');
-	const {state:{subLogQuery}}=useHeaderContext();
-	const {data :resultAlertsData,error:alertError,loading:alertLoading,putAlertsData,resetData:resetAlertData} = usePutLogStreamAlerts();
-	const {data :resultRetentionData,error:retentionError,loading:retentionLoading,putRetentionData,resetData:resetRetentionData} = usePutLogStreamRetention();
+	const {
+		state: { subLogQuery },
+	} = useHeaderContext();
+	const {
+		data: resultAlertsData,
+		error: alertError,
+		loading: alertLoading,
+		putAlertsData,
+		resetData: resetAlertData,
+	} = usePutLogStreamAlerts();
+	const {
+		data: resultRetentionData,
+		error: retentionError,
+		loading: retentionLoading,
+		putRetentionData,
+		resetData: resetRetentionData,
+	} = usePutLogStreamRetention();
 	const handleAlertQueryEditorChange = (code: any) => {
 		setAlertQuery(code);
 	};
@@ -25,9 +39,9 @@ const Config: FC = () => {
 	};
 
 	const onSubmitAlertQuery = () => {
-		let alertQueryObj={};
-		try {	
-			alertQueryObj=JSON.parse(alertQuery);
+		let alertQueryObj = {};
+		try {
+			alertQueryObj = JSON.parse(alertQuery);
 		} catch (e) {
 			notifications.show({
 				id: 'load-data',
@@ -36,16 +50,16 @@ const Config: FC = () => {
 				title: 'Error Occured',
 				message: `Error Occured, please check your query and try again ${e}`,
 				icon: <IconFileAlert size="1rem" />,
-				autoClose: 3000
+				autoClose: 3000,
 			});
 			return;
 		}
-		putAlertsData(subLogQuery.get().streamName,alertQueryObj);
+		putAlertsData(subLogQuery.get().streamName, alertQueryObj);
 	};
 	const onSubmitRetentionQuery = () => {
-		let retentionQueryObj={};
+		let retentionQueryObj = {};
 		try {
-			retentionQueryObj=JSON.parse(retentionQuery);
+			retentionQueryObj = JSON.parse(retentionQuery);
 		} catch (e) {
 			notifications.show({
 				id: 'load-data',
@@ -54,15 +68,15 @@ const Config: FC = () => {
 				title: 'Error Occured',
 				message: `Error Occured, please check your query and try again ${e}`,
 				icon: <IconFileAlert size="1rem" />,
-				autoClose: 3000
+				autoClose: 3000,
 			});
 			return;
 		}
-		putRetentionData(subLogQuery.get().streamName,retentionQueryObj);
+		putRetentionData(subLogQuery.get().streamName, retentionQueryObj);
 	};
 
 	useEffect(() => {
-		if(alertLoading){
+		if (alertLoading) {
 			notifications.show({
 				id: 'load-data',
 				loading: true,
@@ -73,7 +87,7 @@ const Config: FC = () => {
 				withCloseButton: false,
 			});
 		}
-		if(resultAlertsData){
+		if (resultAlertsData) {
 			notifications.update({
 				id: 'load-data',
 				loading: false,
@@ -81,11 +95,11 @@ const Config: FC = () => {
 				title: 'Success',
 				message: 'Alert Added.',
 				icon: <IconCheck size="1rem" />,
-				autoClose: 1000
+				autoClose: 1000,
 			});
 			resetAlertData();
 		}
-		if(alertError){
+		if (alertError) {
 			notifications.update({
 				id: 'load-data',
 				loading: false,
@@ -93,14 +107,14 @@ const Config: FC = () => {
 				title: 'Error Occured',
 				message: `Error Occured, please check your query and try again ${alertError}`,
 				icon: <IconFileAlert size="1rem" />,
-				autoClose: 3000
+				autoClose: 3000,
 			});
 			resetAlertData();
 		}
-	}	, [resultAlertsData,alertError,alertLoading]);
+	}, [resultAlertsData, alertError, alertLoading]);
 
 	useEffect(() => {
-		if(retentionLoading){
+		if (retentionLoading) {
 			notifications.show({
 				id: 'load-data',
 				loading: true,
@@ -111,7 +125,7 @@ const Config: FC = () => {
 				withCloseButton: false,
 			});
 		}
-		if(resultRetentionData){
+		if (resultRetentionData) {
 			notifications.update({
 				id: 'load-data',
 				loading: false,
@@ -119,11 +133,11 @@ const Config: FC = () => {
 				title: 'Success',
 				message: 'Retention Added.',
 				icon: <IconCheck size="1rem" />,
-				autoClose: 1000
+				autoClose: 1000,
 			});
 			resetRetentionData();
 		}
-		if(retentionError){
+		if (retentionError) {
 			notifications.update({
 				id: 'load-data',
 				loading: false,
@@ -131,74 +145,80 @@ const Config: FC = () => {
 				title: 'Error Occured',
 				message: `Error Occured, please check your query and try again ${retentionError}`,
 				icon: <IconFileAlert size="1rem" />,
-				autoClose: 3000
+				autoClose: 3000,
 			});
 			resetRetentionData();
 		}
-	}	, [resultRetentionData,retentionError,retentionLoading]);
+	}, [resultRetentionData, retentionError, retentionLoading]);
 
-	const {classes}=useConfigStyles();
-	const {container,submitBtn,accordionSt,innerContainer} =classes
+	const { classes } = useConfigStyles();
+	const { container, submitBtn, accordionSt, innerContainer } = classes;
 	return (
 		<Box className={container}>
 			<Box className={innerContainer}>
-				<Accordion defaultValue="" variant="contained" radius="md" w={"90%"} className={accordionSt}>
+				<Accordion defaultValue="" variant="contained" radius="md" w={'90%'} className={accordionSt}>
 					<Accordion.Item value="Alert">
 						<Accordion.Control>Alert</Accordion.Control>
 						<Accordion.Panel>
-							<Box >
-							<Box sx={{  height: '500px'}}>
-								<Editor
-									onChange={handleAlertQueryEditorChange}
-									value={alertQuery}
-									defaultLanguage="json"
-									options={{
-										scrollBeyondLastLine: false,
-										readOnly: false,
-										fontSize: 12,
-										wordWrap: 'on',
-										minimap: { enabled: false },
-										automaticLayout: true,
-										mouseWheelZoom: true,
-										glyphMargin: true,
-									}}
-								/>
-							</Box>
-							<Button className={submitBtn} onClick={onSubmitAlertQuery}>Submit</Button>
-							</Box>
-						</Accordion.Panel>
-					</Accordion.Item>
-				</Accordion>
-			</Box>
-			<Box className={innerContainer}>
-				<Accordion defaultValue="" variant="contained" radius="md" w={"90%"} className={accordionSt}>
-					<Accordion.Item value="Retention">
-						<Accordion.Control>Retention</Accordion.Control>
-						<Accordion.Panel>
-							<Box >
-							<Box sx={{  height: '500px'}}>
-								<Editor
-									onChange={handleRetentionQueryEditorChange}
-									value={retentionQuery}
-									defaultLanguage="json"
-									options={{
-										scrollBeyondLastLine: false,
-										readOnly: false,
-										fontSize: 12,
-										wordWrap: 'on',
-										minimap: { enabled: false },
-										automaticLayout: true,
-										mouseWheelZoom: true,
-										glyphMargin: true,
-									}}
-								/>
-							</Box>
-							<Button className={submitBtn} onClick={onSubmitRetentionQuery}>Submit</Button>
+							<Box>
+								<Box sx={{ height: '500px' }}>
+									<Editor
+										onChange={handleAlertQueryEditorChange}
+										value={alertQuery}
+										defaultLanguage="json"
+										options={{
+											scrollBeyondLastLine: false,
+											readOnly: false,
+											fontSize: 12,
+											wordWrap: 'on',
+											minimap: { enabled: false },
+											automaticLayout: true,
+											mouseWheelZoom: true,
+											glyphMargin: true,
+										}}
+									/>
+								</Box>
+								<Button className={submitBtn} onClick={onSubmitAlertQuery}>
+									Submit
+								</Button>
 							</Box>
 						</Accordion.Panel>
 					</Accordion.Item>
 				</Accordion>
 			</Box>
+			{!subLogQuery.get().access?.some((access: string) => ['PutRetention'].includes(access)) ? null : (
+				<Box className={innerContainer}>
+					<Accordion defaultValue="" variant="contained" radius="md" w={'90%'} className={accordionSt}>
+						<Accordion.Item value="Retention">
+							<Accordion.Control>Retention</Accordion.Control>
+							<Accordion.Panel>
+								<Box>
+									<Box sx={{ height: '500px' }}>
+										<Editor
+											onChange={handleRetentionQueryEditorChange}
+											value={retentionQuery}
+											defaultLanguage="json"
+											options={{
+												scrollBeyondLastLine: false,
+												readOnly: false,
+												fontSize: 12,
+												wordWrap: 'on',
+												minimap: { enabled: false },
+												automaticLayout: true,
+												mouseWheelZoom: true,
+												glyphMargin: true,
+											}}
+										/>
+									</Box>
+									<Button className={submitBtn} onClick={onSubmitRetentionQuery}>
+										Submit
+									</Button>
+								</Box>
+							</Accordion.Panel>
+						</Accordion.Item>
+					</Accordion>
+				</Box>
+			)}
 		</Box>
 	);
 };

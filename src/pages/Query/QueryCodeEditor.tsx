@@ -48,9 +48,7 @@ const QueryCodeEditor: FC = () => {
 		const subQueryListener = subLogQuery.subscribe((state) => {
 			if (state.streamName) {
 				if (state.streamName !== currentStreamName) {
-					console.log(state.streamName, currentStreamName);
 					setQuery(`SELECT * FROM ${state.streamName} LIMIT 100  ; `);
-					
 					result.set('');
 				}
 				setCurrentStreamName(state.streamName);
@@ -91,7 +89,8 @@ useEffect(() => {
 		let LogQuery ={
 			startTime : subLogQuery.get().startTime,
 			endTime :subLogQuery.get().endTime,
-			streamName : currentStreamName
+			streamName : currentStreamName,
+			access:[]
 		}
 		if (subLogSelectedTimeRange.get().state==='fixed') {
 			const now = dayjs();
@@ -99,7 +98,8 @@ useEffect(() => {
 			LogQuery ={
 				startTime : now.subtract(timeDiff).toDate(),
 				endTime :now.toDate(),
-				streamName : currentStreamName
+				streamName : currentStreamName,
+				access:[]
 			}
 		}
 		const parsedQuery = query.replace(/(\r\n|\n|\r)/gm, '');

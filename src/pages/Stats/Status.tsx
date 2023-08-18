@@ -102,6 +102,7 @@ const Status: FC = () => {
 			streamName: subLogQuery.get().streamName,
 			startTime: now.subtract(FIXED_DURATIONS[statusFIXEDDURATIONS].milliseconds, 'milliseconds').toDate(),
 			endTime: now.toDate(),
+			access: [],	
 		};
 		setStatusFIXEDDURATIONS(statusFIXEDDURATIONS + 1);
 		getQueryData(LogQuery, `SELECT count(*) as count FROM ${subLogQuery.get().streamName} ;`);
