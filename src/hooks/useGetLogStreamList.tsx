@@ -6,11 +6,17 @@ import { useEffect } from 'react';
 import useMountedState from './useMountedState';
 import { notifications } from '@mantine/notifications';
 import { IconFileAlert, IconCheck } from '@tabler/icons-react';
+import { useLocalStorage } from '@mantine/hooks';
+import { useNavigate } from 'react-router-dom';
+import { LOGIN_ROUTE } from '@/constants/routes';
 
 export const useGetLogStreamList = () => {
 	const [data, setData] = useMountedState<LogStreamData | null>(null);
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
+	const [, , removeCredentials] = useLocalStorage({ key: 'credentials' });
+	const [, , removeUsername] = useLocalStorage({ key: 'username' });
+	const navigate = useNavigate();
 
 	const getData = async () => {
 		try {
@@ -38,21 +44,43 @@ export const useGetLogStreamList = () => {
 							color: 'green',
 							title: 'Streams was loaded',
 							message: 'Successfully Loaded!!',
-						icon: <IconCheck size="1rem" />,
+							icon: <IconCheck size="1rem" />,
 							autoClose: 1000,
 						});
 					}
 
-					if(streams && streams.length===0){
+					if (streams && streams.length === 0) {
 						notifications.update({
 							id: 'load-data',
 							color: 'red',
 							title: 'No Streams',
 							message: 'No Streams Found in your account',
-						icon: <IconFileAlert size="1rem" />,
+							icon: <IconFileAlert size="1rem" />,
 							autoClose: 2000,
 						});
 					}
+					break;
+				}
+				case StatusCodes.UNAUTHORIZED: {
+					setError('Unauthorized');
+					notifications.update({
+						id: 'load-data',
+						color: 'red',
+						title: 'Error Occured',
+						message: 'Unauthorized',
+						icon: <IconFileAlert size="1rem" />,
+						autoClose: 2000,
+					});
+
+					removeCredentials();
+					removeUsername();
+					navigate(
+						{
+							pathname: LOGIN_ROUTE,
+						},
+						{ replace: true },
+					);
+
 					break;
 				}
 				default: {
@@ -89,5 +117,5 @@ export const useGetLogStreamList = () => {
 		getData();
 	}, []);
 
-	return { data, error, loading, getData ,resetData};
+	return { data, error, loading, getData, resetData };
 };
