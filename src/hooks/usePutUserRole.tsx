@@ -16,7 +16,7 @@ export const usePutUserRole = () => {
 				id: 'load-data',
 				loading: true,
 				color: '#545BEB',
-				title: 'Updating User',
+				title: 'Updating user',
 				message: 'User will be updated soon.',
 				autoClose: false,
 				withCloseButton: false,
@@ -30,8 +30,8 @@ export const usePutUserRole = () => {
 					notifications.update({
 						id: 'load-data',
 						color: 'green',
-						title: 'User was updated',
-						message: 'Successfully updated!!',
+						title: 'Updated user',
+						message: 'Successfully updated',
 					icon: <IconCheck size="1rem" />,
 						autoClose: 3000,
 					});
@@ -44,7 +44,7 @@ export const usePutUserRole = () => {
 					notifications.update({
 						id: 'load-data',
 						color: 'red',
-						title: 'Error Occured',
+						title: 'Error occurred',
 						message: res.data,
 						icon: <IconFileAlert size="1rem" />,
 						autoClose: 2000,
@@ -52,12 +52,12 @@ export const usePutUserRole = () => {
 				}
 			}
 		} catch(error) {
-			setError('Failed to get Create User');
+			setError('Failed to get create user');
 					notifications.update({
 						id: 'load-data',
 						color: 'red',
-						title: 'Error Occured',
-						message: 'Error Occured while Updating User Roles',
+						title: 'Error occurred',
+						message: 'Error occurred while updating user role(s)',
 						icon: <IconFileAlert size="1rem" />,
 						autoClose: 2000,
 					});

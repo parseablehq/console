@@ -27,7 +27,7 @@ const BugPage: FC = () => {
 			<Center className={container}>
 				<Box>
 					<Illustration maw={400} />
-					<Title className={titleStyle}>Oops!!</Title>
+					<Title className={titleStyle}>Oops</Title>
 					<Text color="dimmed" size="lg" align="center" className={descriptionStyle}>
 						Sorry, it seems like something unexpected happened. We now know about this mistake and are working to fix
 						it.

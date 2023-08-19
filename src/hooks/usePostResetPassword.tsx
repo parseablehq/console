@@ -31,7 +31,7 @@ export const usePostUserResetPassword = () => {
 						id: 'load-data',
 						color: 'green',
 						title: 'Password was Changed',
-						message: 'Successfully Changed!!',
+						message: 'Successfully Changed',
 						icon: <IconCheck size="1rem" />,
 						autoClose: 3000,
 					});
@@ -44,7 +44,7 @@ export const usePostUserResetPassword = () => {
 					notifications.update({
 						id: 'load-data',
 						color: 'red',
-						title: 'Error Occured',
+						title: 'Error occurred',
 						message: res.data,
 						icon: <IconFileAlert size="1rem" />,
 						autoClose: 2000,
@@ -52,12 +52,12 @@ export const usePostUserResetPassword = () => {
 				}
 			}
 		} catch(error) {
-			setError('Failed to get Create User');
+			setError('Failed to get create user');
 					notifications.update({
 						id: 'load-data',
 						color: 'red',
-						title: 'Error Occured',
-						message: 'Error Occured while Creating User',
+						title: 'Error occurred',
+						message: 'Error occurred while creating user',
 						icon: <IconFileAlert size="1rem" />,
 						autoClose: 2000,
 					});

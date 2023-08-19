@@ -110,8 +110,8 @@ useEffect(() => {
 			notifications.update({
 				id: 'load-data',
 				color: 'red',
-				title: 'Error Occured',
-				message: 'Error Occured, please check your query and try again',
+				title: 'Error occurred',
+				message: 'Error occurred, please check your query and try again',
 				icon: <IconFileAlert size="1rem" />,
 				autoClose: 2000,
 			});
@@ -124,7 +124,7 @@ useEffect(() => {
 				id: 'load-data',
 				color: 'green',
 				title: 'Data was loaded',
-				message: 'Successfully Loaded!!',
+				message: 'Successfully Loaded',
 				icon: <IconCheck size="1rem" />,
 				autoClose: 1000,
 			});

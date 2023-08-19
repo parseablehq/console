@@ -35,7 +35,7 @@ export const useDeleteLogStream = () => {
 						id: 'delete-data',
 						color: 'green',
 						title: 'Stream was deleted',
-						message: 'Successfully Deleted!!',
+						message: 'Successfully Deleted',
 						icon: <IconCheck size="1rem" />,
 						autoClose: 8000,
 					});
@@ -47,8 +47,8 @@ export const useDeleteLogStream = () => {
 					notifications.update({
 						id: 'delete-data',
 						color: 'red',
-						title: 'Error Occured',
-						message: 'Error Occured while deleting stream',
+						title: 'Error occurred',
+						message: 'Error occurred while deleting stream',
 						icon: <IconFileAlert size="1rem" />,
 						autoClose: 2000,
 					});
@@ -59,8 +59,8 @@ export const useDeleteLogStream = () => {
 			notifications.update({
 				id: 'delete-data',
 				color: 'red',
-				title: 'Error Occured',
-				message: 'Error Occured while deleting stream',
+				title: 'Error occurred',
+				message: 'Error occurred while deleting stream',
 				icon: <IconFileAlert size="1rem" />,
 				autoClose: 2000,
 			});
