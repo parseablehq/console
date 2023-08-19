@@ -165,7 +165,7 @@ const Users: FC = () => {
 			<Modal
 				opened={modalOpen}
 				onClose={handleClose}
-				title="Create User"
+				title="Create user"
 				centered
 				sx={{
 					'& .mantine-Paper-root ': {
@@ -175,16 +175,16 @@ const Users: FC = () => {
 				<Text m={4}>Enter the name of the user</Text>
 				<TextInput
 					type="text"
-					placeholder="Type the name of the User to create"
+					placeholder="Type the name of the user to create"
 					onChange={(e) => {
 						setCreateUserInput(e.target.value);
 					}}
 					value={createUserInput}
 				/>
 
-				<Text m={4}>Select The Privelege</Text>
+				<Text m={4}>Select a privilege to assign</Text>
 				<Select
-					placeholder="Select Privilege"
+					placeholder="Select privilege"
 					data={['admin', 'editor', 'writer', 'reader']}
 					onChange={(value) => {
 						setSelectedPrivilege(value || '');

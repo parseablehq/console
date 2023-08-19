@@ -19,7 +19,7 @@ const CreateUser: FC = () => {
 
 	return (
         <Tooltip
-        label={'Create New User'}
+        label={'Create new user'}
         sx={{ color: 'white', backgroundColor: 'black' }}
         withArrow
         onClick={handleOpen}

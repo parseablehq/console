@@ -6,28 +6,28 @@ import { IconAlertCircle, IconBook2, IconBrandGithub, IconBrandSlack, IconBusine
 
 const helpResources = [
 	{
+		icon: IconBusinessplan,
+		title: 'Production support',
+		description: 'Get production support',
+		href: 'mailto:sales@parseable.io?subject=Production%20Support%20Query', //https://www.parseable.io/pricing
+	},
+	{
 		icon: IconBrandSlack,
 		title: 'Slack',
-		description: 'Connect with us',
+		description: 'Join the Slack community',
 		href: 'https://launchpass.com/parseable',
 	},
 	{
 		icon: IconBrandGithub,
 		title: 'GitHub',
-		description: 'Find resources',
+		description: 'Find resources on GitHub',
 		href: 'https://github.com/parseablehq/parseable',
 	},
 	{
 		icon: IconBook2,
 		title: 'Documentation',
-		description: 'Learn more',
+		description: 'Refer the documentation',
 		href: 'https://www.parseable.io/docs/introduction',
-	},
-	{
-		icon: IconBusinessplan,
-		title: 'Get paid support',
-		description: 'Get paid support',
-		href: 'mailto:support@parseable.io', //https://www.parseable.io/pricing
 	},
 ];
 
@@ -72,7 +72,6 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 	const { classes } = useInfoModalStyles();
 	const {
 		container,
-		parseableText,
 		aboutTitle,
 		aboutDescription,
 		actionBtn,
@@ -94,12 +93,8 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 			centered>
 			<Box className={container}>
 
-					<Text className={aboutTitle}>
-						About <span className={parseableText}>Parseable</span>
-					</Text>
-					<Text className={aboutDescription} id="info-modal-description">
-						Here you can find useful information about your Parseable instance.
-					</Text>
+					<Text className={aboutTitle}>About Parseable</Text>
+					<Text className={aboutDescription} id="info-modal-description">Important info about your Parseable deployment</Text>
 					{error ? (
 						<Text className={aboutDescription}>Error...</Text>
 					) : loading ? (
@@ -113,14 +108,13 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 									<Button
 									variant="outline"
 									component={'a'}
-									href="mailto:support@parseable.io"
+									href="mailto:sales@parseable.io?subject=Production%20Support%20Query"
 									target="_blank"
 									className={actionBtn}
 									>
-									Upgrade to commercial license
+									Upgrade to production support
 								</Button>
 								</Box>
-								
 							</Box>
 							<Box className={aboutTextBox}>
 								<Box className={aboutTextInnerBox}>
@@ -164,16 +158,16 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 							</Box>
 						</>
 					) : null}
-				
-				
-					<Text className={aboutTitle}>Need any help?</Text>
-					<Text className={aboutDescription}>Here you can find useful resources and information.</Text>
+
+					<Text className={aboutTitle}>Need help?</Text>
+					<Text className={aboutDescription}>Ensure uninterrupted deployment</Text>
 
 					<Box mt={15} className={helpIconContainer}>
 						{helpResources.map((data) => (
 							<HelpCard key={data.title} data={data} />
 						))}
 					</Box>
+
 				</Box>
 			
 		</Modal>

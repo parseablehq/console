@@ -106,7 +106,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 				notifications.show({
 					id: 'error-data',
 					color: 'red',
-					title: 'Error Occured',
+					title: 'Error occurred',
 					message: `${streamName} stream not found`,
 					icon: <IconFileAlert size="1rem" />,
 					autoClose: 5000,
@@ -298,7 +298,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 					onChange={(e) => {
 						setDeleteStream(e.target.value);
 					}}
-					placeholder={`Type the name of the stream to confirm. i.e: ${activeStream}`}
+					placeholder={`Type the name of the stream to confirm. i.e. ${activeStream}`}
 				/>
 
 				<Box mt={10} display="flex" sx={{ justifyContent: 'end' }}>

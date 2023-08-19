@@ -47,8 +47,8 @@ const Config: FC = () => {
 				id: 'load-data',
 				loading: false,
 				color: 'red',
-				title: 'Error Occured',
-				message: `Error Occured, please check your query and try again ${e}`,
+				title: 'Error occurred',
+				message: `Error occurred, please check your query and try again ${e}`,
 				icon: <IconFileAlert size="1rem" />,
 				autoClose: 3000,
 			});
@@ -65,8 +65,8 @@ const Config: FC = () => {
 				id: 'load-data',
 				loading: false,
 				color: 'red',
-				title: 'Error Occured',
-				message: `Error Occured, please check your query and try again ${e}`,
+				title: 'Error occurred',
+				message: `Error occurred, please check your query and try again ${e}`,
 				icon: <IconFileAlert size="1rem" />,
 				autoClose: 3000,
 			});
@@ -104,8 +104,8 @@ const Config: FC = () => {
 				id: 'load-data',
 				loading: false,
 				color: 'red',
-				title: 'Error Occured',
-				message: `Error Occured, please check your query and try again ${alertError}`,
+				title: 'Error occurred',
+				message: `Error occurred, please check your query and try again ${alertError}`,
 				icon: <IconFileAlert size="1rem" />,
 				autoClose: 3000,
 			});
@@ -142,8 +142,8 @@ const Config: FC = () => {
 				id: 'load-data',
 				loading: false,
 				color: 'red',
-				title: 'Error Occured',
-				message: `Error Occured, please check your query and try again ${retentionError}`,
+				title: 'Error occurred',
+				message: `Error occurred, please check your query and try again ${retentionError}`,
 				icon: <IconFileAlert size="1rem" />,
 				autoClose: 3000,
 			});

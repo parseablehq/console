@@ -16,8 +16,8 @@ export const useDeleteUser = () => {
 				id: 'load-data',
 				loading: true,
 				color: '#545BEB',
-				title: 'Deleteing User',
-				message: 'User will be Deleted.',
+				title: 'Deleting user',
+				message: 'User will be deleted.',
 				autoClose: false,
 				withCloseButton: false,
 			});
@@ -30,8 +30,8 @@ export const useDeleteUser = () => {
 					notifications.update({
 						id: 'load-data',
 						color: 'green',
-						title: 'User was Deleted',
-						message: 'Successfully Deleted!!',
+						title: 'User was deleted',
+						message: 'Successfully deleted',
 					icon: <IconCheck size="1rem" />,
 						autoClose: 3000,
 					});
@@ -44,20 +44,20 @@ export const useDeleteUser = () => {
 					notifications.update({
 						id: 'load-data',
 						color: 'red',
-						title: 'Error Occured',
-						message: 'Error Occured while Deleting User',
+						title: 'Error occurred',
+						message: 'Error occurred while deleting user',
 						icon: <IconFileAlert size="1rem" />,
 						autoClose: 2000,
 					});
 				}
 			}
 		} catch(error) {
-			setError('Failed to get Delete User');
+			setError('Failed to get delete user');
 					notifications.update({
 						id: 'load-data',
 						color: 'red',
-						title: 'Error Occured',
-						message: 'Error Occured while Deleting User',
+						title: 'Error occurred',
+						message: 'Error occurred while deleting user',
 						icon: <IconFileAlert size="1rem" />,
 						autoClose: 2000,
 					});

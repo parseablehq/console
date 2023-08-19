@@ -43,7 +43,7 @@ export const useGetLogStreamList = () => {
 							id: 'load-data',
 							color: 'green',
 							title: 'Streams was loaded',
-							message: 'Successfully Loaded!!',
+							message: 'Successfully Loaded',
 							icon: <IconCheck size="1rem" />,
 							autoClose: 1000,
 						});
@@ -66,7 +66,7 @@ export const useGetLogStreamList = () => {
 					notifications.update({
 						id: 'load-data',
 						color: 'red',
-						title: 'Error Occured',
+						title: 'Error occurred',
 						message: 'Unauthorized',
 						icon: <IconFileAlert size="1rem" />,
 						autoClose: 2000,
@@ -88,8 +88,8 @@ export const useGetLogStreamList = () => {
 					notifications.update({
 						id: 'load-data',
 						color: 'red',
-						title: 'Error Occured',
-						message: 'Error Occured while fetching streams',
+						title: 'Error occurred',
+						message: 'Error occurred while fetching streams',
 						icon: <IconFileAlert size="1rem" />,
 						autoClose: 2000,
 					});
@@ -100,8 +100,8 @@ export const useGetLogStreamList = () => {
 			notifications.update({
 				id: 'load-data',
 				color: 'red',
-				title: 'Error Occured',
-				message: 'Error Occured while fetching streams',
+				title: 'Error occurred',
+				message: 'Error occurred while fetching streams',
 				icon: <IconFileAlert size="1rem" />,
 				autoClose: 2000,
 			});

@@ -16,8 +16,8 @@ export const usePostUser = () => {
 				id: 'load-data',
 				loading: true,
 				color: '#545BEB',
-				title: 'Creating User',
-				message: 'User will be Created.',
+				title: 'Creating user',
+				message: 'User will be created.',
 				autoClose: false,
 				withCloseButton: false,
 			});
@@ -30,8 +30,8 @@ export const usePostUser = () => {
 					notifications.update({
 						id: 'load-data',
 						color: 'green',
-						title: 'User was Created',
-						message: 'Successfully created!!',
+						title: 'User was created',
+						message: 'Successfully created',
 						icon: <IconCheck size="1rem" />,
 						autoClose: 3000,
 					});
@@ -44,7 +44,7 @@ export const usePostUser = () => {
 					notifications.update({
 						id: 'load-data',
 						color: 'red',
-						title: 'Error Occured',
+						title: 'Error occurred',
 						message: res.data,
 						icon: <IconFileAlert size="1rem" />,
 						autoClose: 2000,
@@ -52,12 +52,12 @@ export const usePostUser = () => {
 				}
 			}
 		} catch(error) {
-			setError('Failed to get Create User');
+			setError('Failed to get create user');
 					notifications.update({
 						id: 'load-data',
 						color: 'red',
-						title: 'Error Occured',
-						message: 'Error Occured while Creating User',
+						title: 'Error occurred',
+						message: 'Error occurred while creating user',
 						icon: <IconFileAlert size="1rem" />,
 						autoClose: 2000,
 					});

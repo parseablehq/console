@@ -309,14 +309,14 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 					</Tooltip>
 				</Box>
 			</td>
-			<Modal withinPortal size="md" opened={openedDelete} onClose={handleCloseDelete} title={'Delete User'} centered>
-				<Text>Are you sure you want to delete this User?</Text>
+			<Modal withinPortal size="md" opened={openedDelete} onClose={handleCloseDelete} title={'Delete user'} centered>
+				<Text>Are you sure you want to delete this user?</Text>
 				<TextInput
 					type="text"
 					onChange={(e) => {
 						setUserInput(e.target.value);
 					}}
-					placeholder={`Please enter the Username to confirm. ie ${Username}`}
+					placeholder={`Please enter the Username to confirm, i.e. ${Username}`}
 				/>
 
 				<Box mt={10} display="flex" sx={{ justifyContent: 'end' }}>
@@ -339,7 +339,7 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 					size="md"
 					opened={openedDeleteRole}
 					onClose={handleCloseRoleDelete}
-					title={'Delete User Role'}
+					title={'Delete user role'}
 					centered>
 					<Text>Are you sure want to delete this role?</Text>
 					<Text my={10}>{getBadge(userRole[deleteRoleIndex], deleteRoleIndex, false)}</Text>
@@ -348,7 +348,7 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 						onChange={(e) => {
 							setUserInput(e.target.value);
 						}}
-						placeholder={`Please enter the Username to confirm. ie ${Username}`}
+						placeholder={`Please enter the Username to confirm, i.e. ${Username}`}
 					/>
 
 					<Box mt={10} display="flex" sx={{ justifyContent: 'end' }}>
@@ -369,11 +369,11 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 				''
 			)}
 
-			<Modal opened={opened} onClose={handleCloseResetPassword} title="Change User Password" centered>
-				<Text m={4}>{`Please enter the Username to confirm. ie ${Username}`}</Text>
+			<Modal opened={opened} onClose={handleCloseResetPassword} title="Change user password" centered>
+				<Text m={4}>{`Please enter the username to confirm, i.e. ${Username}`}</Text>
 				<TextInput
 					type="text"
-					placeholder={`Please enter the Username to confirm. ie ${Username}`}
+					placeholder={`Please enter the username to confirm, i.e. ${Username}`}
 					onChange={(e) => {
 						setUserInput(e.target.value);
 					}}
@@ -417,16 +417,16 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 			<Modal
 				opened={openedEditModal}
 				onClose={handleCloseRoleEdit}
-				title="Edit User role"
+				title="Edit user role"
 				centered
 				sx={{
 					'& .mantine-Paper-root ': {
 						overflowY: 'inherit',
 					},
 				}}>
-				<Text m={4}>Select The Privelege</Text>
+				<Text m={4}>Select a privilege to assign</Text>
 				<Select
-					placeholder="Select Privilege"
+					placeholder="Select privilege"
 					data={['admin', 'editor', 'writer', 'reader']}
 					onChange={(value) => {
 						setSelectedPrivilege(value || '');
