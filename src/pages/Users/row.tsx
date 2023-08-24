@@ -351,22 +351,12 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 					<Button
 						variant="filled"
 						color="gray"
-						sx={(theme) => ({
-							backgroundColor: theme.colors.brandSecondary[0],
-							color: 'white',
-						})}
+						className={classes.modalActionBtn}
 						disabled={UserInput === Username ? false : true}
 						onClick={handleDelete}>
 						Delete
 					</Button>
-					<Button
-						onClick={handleCloseDelete}
-						variant="outline"
-						color="gray"
-						sx={(theme) => ({
-							borderColor: theme.colors.gray[2],
-							color: theme.colors.gray[5],
-						})}>
+					<Button onClick={handleCloseDelete} variant="outline" color="gray" className={classes.modalCancelBtn}>
 						Cancel
 					</Button>
 				</Group>
@@ -397,22 +387,12 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 						<Button
 							variant="filled"
 							color="gray"
-							sx={(theme) => ({
-								backgroundColor: theme.colors.brandSecondary[0],
-								color: 'white',
-							})}
+							className={classes.modalActionBtn}
 							disabled={UserInput === Username ? false : true}
 							onClick={handleRoleDelete}>
 							Delete
 						</Button>
-						<Button
-							onClick={handleCloseRoleDelete}
-							variant="outline"
-							color="gray"
-							sx={(theme) => ({
-								borderColor: theme.colors.gray[2],
-								color: theme.colors.gray[5],
-							})}>
+						<Button onClick={handleCloseRoleDelete} variant="outline" color="gray" className={classes.modalCancelBtn}>
 							Cancel
 						</Button>
 					</Group>
@@ -421,7 +401,12 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 				''
 			)}
 
-			<Modal opened={opened} onClose={handleCloseResetPassword} title="Change user password" centered className={classes.modalStyle}>
+			<Modal
+				opened={opened}
+				onClose={handleCloseResetPassword}
+				title="Change user password"
+				centered
+				className={classes.modalStyle}>
 				<Stack>
 					<TextInput
 						label={"Are you sure you want to reset this user's password?"}
@@ -458,24 +443,15 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 					)}
 				</Stack>
 				<Group position="right" mt={10}>
-
 					<Button
-						variant='filled'
-						color='gray'
-						sx={(theme) => ({
-							backgroundColor: theme.colors.brandSecondary[0],
-							color: "white",
-						})}
+						variant="filled"
+						color="gray"
+						className={classes.modalActionBtn}
 						onClick={handleResetPassword}
 						disabled={UserInput === Username ? false : true}>
 						Reset Password
 					</Button>
-					<Button onClick={handleCloseResetPassword} variant="outline" color='gray' sx={
-						(theme) => ({
-							borderColor: theme.colors.gray[2],
-							color: theme.colors.gray[5],
-						})
-					}>
+					<Button onClick={handleCloseResetPassword} variant="outline" color="gray" className={classes.modalCancelBtn}>
 						Cancel
 					</Button>
 				</Group>
@@ -485,41 +461,39 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 				onClose={handleCloseRoleEdit}
 				title="Edit user role"
 				centered
-				className={classes.modalStyle}
-				>
-					<Stack>
-				<Select
-					placeholder="Select privilege"
-					label="Select a privilege to assign"
-					data={['admin', 'editor', 'writer', 'reader']}
-					onChange={(value) => {
-						setSelectedPrivilege(value || '');
-					}}
-					value={selectedPrivilege}
-					nothingFound="No options"
-					required
-				/>
+				className={classes.modalStyle}>
+				<Stack>
+					<Select
+						placeholder="Select privilege"
+						label="Select a privilege to assign"
+						data={['admin', 'editor', 'writer', 'reader']}
+						onChange={(value) => {
+							setSelectedPrivilege(value || '');
+						}}
+						value={selectedPrivilege}
+						nothingFound="No options"
+						required
+					/>
 
-				{selectedPrivilege === 'reader' || selectedPrivilege === 'writer' ? (
-					<>
-						<Select
-							placeholder="Pick one"
-							label="Select a stream"
-							onChange={(value) => {
-								setSelectedStream(value || '');
-							}}
-							nothingFound="No options"
-							value={SelectedStream}
-							searchValue={streamSearchValue}
-							onSearchChange={(value) => setStreamSearchValue(value)}
-							onDropdownClose={() => setStreamSearchValue(SelectedStream)}
-							onDropdownOpen={() => setStreamSearchValue('')}
-							data={streams?.map((stream) => ({ value: stream.name, label: stream.name })) ?? []}
-							searchable
-							required
-						/>
-						{selectedPrivilege === 'reader' ? (
-							
+					{selectedPrivilege === 'reader' || selectedPrivilege === 'writer' ? (
+						<>
+							<Select
+								placeholder="Pick one"
+								label="Select a stream"
+								onChange={(value) => {
+									setSelectedStream(value || '');
+								}}
+								nothingFound="No options"
+								value={SelectedStream}
+								searchValue={streamSearchValue}
+								onSearchChange={(value) => setStreamSearchValue(value)}
+								onDropdownClose={() => setStreamSearchValue(SelectedStream)}
+								onDropdownOpen={() => setStreamSearchValue('')}
+								data={streams?.map((stream) => ({ value: stream.name, label: stream.name })) ?? []}
+								searchable
+								required
+							/>
+							{selectedPrivilege === 'reader' ? (
 								<TextInput
 									label="Please enter the tag (optional)"
 									type="text"
@@ -528,35 +502,26 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 										setTagInput(e.target.value);
 									}}
 								/>
-							
-						) : (
-							''
-						)}
-					</>
-				) : (
-					''
-				)}
+							) : (
+								''
+							)}
+						</>
+					) : (
+						''
+					)}
 				</Stack>
-				<Group mt={10} position='right'>
+				<Group mt={10} position="right">
 					<Button
-						variant='filled'
-						color='gray'
-						sx={(theme) => ({
-							backgroundColor: theme.colors.brandSecondary[0],
-							color: "white",
-						})}
+						variant="filled"
+						color="gray"
+						className={classes.modalActionBtn}
 						onClick={() => {
 							handleRoleEdit();
 						}}
 						disabled={updateRoleVaildtion()}>
 						Add Role
 					</Button>
-					<Button onClick={handleCloseRoleEdit} variant="outline" color='gray' sx={
-						(theme) => ({
-							borderColor: theme.colors.gray[2],
-							color: theme.colors.gray[5],
-						})
-					}>
+					<Button onClick={handleCloseRoleEdit} variant="outline" color="gray" className={classes.modalCancelBtn}>
 						Cancel
 					</Button>
 				</Group>

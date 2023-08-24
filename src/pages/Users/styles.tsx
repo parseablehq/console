@@ -85,7 +85,16 @@ export const useUsersStyles = createStyles((theme) => {
 		passwordText:{
 			fontWeight:500 ,
 			fontSize: "0.875rem",
+		},
+		modalActionBtn: {
+			backgroundColor: theme.colors.brandSecondary[0],
+			color: "white",
+		},
+		modalCancelBtn: {
+			borderColor: theme.colors.gray[2],
+			color: theme.colors.gray[5]
 		}
+
 	};
 });
 

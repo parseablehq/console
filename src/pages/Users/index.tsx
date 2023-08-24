@@ -179,11 +179,10 @@ const Users: FC = () => {
 						label="Select a privilege to assign"
 						data={['admin', 'editor', 'writer', 'reader']}
 						onChange={(value) => {
-							setSelectedPrivilege(value || '');
+							setSelectedPrivilege(value ?? '');
 						}}
 						value={selectedPrivilege}
 						nothingFound="No options"
-					
 					/>
 
 					{selectedPrivilege === 'reader' || selectedPrivilege === 'writer' ? (
@@ -191,7 +190,7 @@ const Users: FC = () => {
 							<Select
 								placeholder="Pick one"
 								onChange={(value) => {
-									setSelectedStream(value || '');
+									setSelectedStream(value ?? '');
 								}}
 								nothingFound="No options"
 								value={SelectedStream}
@@ -222,25 +221,24 @@ const Users: FC = () => {
 					)}
 
 					{CreatedUserError ? (
-						<Text  className={classes.passwordText} color='red'>
-							{CreatedUserError}	
+						<Text className={classes.passwordText} color="red">
+							{CreatedUserError}
 						</Text>
 					) : CreatedUserLoading ? (
-						<Text className={classes.passwordText} >loading</Text>
+						<Text className={classes.passwordText}>loading</Text>
 					) : CreatedUserResponse ? (
 						<Box>
-							<Text  className={classes.passwordText}>
-								Password 
-							</Text>
+							<Text className={classes.passwordText}>Password</Text>
 							<Prism
 								className={classes.passwordPrims}
 								language="markup"
-							
 								copyLabel="Copy password to clipboard"
 								copiedLabel="Password copied to clipboard">
 								{CreatedUserResponse}
 							</Prism>
-							<Text className={classes.passwordText} color='red'>Warning this is the only time you are able to see Password</Text>
+							<Text className={classes.passwordText} color="red">
+								Warning this is the only time you are able to see Password
+							</Text>
 						</Box>
 					) : (
 						''
@@ -249,26 +247,17 @@ const Users: FC = () => {
 
 				<Group position="right" mt={10}>
 					<Button
-						variant='filled'
-						color='gray'
-						sx={(theme) => ({
-							backgroundColor: theme.colors.brandSecondary[0],
-							color: "white",
-						})}
+						variant="filled"
+						color="gray"
+						className={classes.modalActionBtn}
 						onClick={handleCreateUser}
 						disabled={createVaildtion()}>
 						Create
 					</Button>
-					<Button onClick={handleClose} variant="outline" color='gray' sx={
-						(theme) => ({
-							borderColor: theme.colors.gray[2],
-							color: theme.colors.gray[5],
-						})
-					}>
+					<Button onClick={handleClose} variant="outline" color="gray" className={classes.modalCancelBtn}>
 						Cancel
 					</Button>
 				</Group>
-				
 			</Modal>
 		</Box>
 	);

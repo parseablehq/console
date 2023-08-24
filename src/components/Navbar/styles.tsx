@@ -2,11 +2,11 @@ import { createStyles } from '@mantine/core';
 import { heights, sizing, widths } from '../Mantine/sizing';
 
 export const useNavbarStyles = createStyles((theme) => {
-	const { colors, radius, fontSizes } = theme;
-	const { fontWeights, sizing } = theme.other;
+	const { colors, fontSizes } = theme;
+	const { fontWeights } = theme.other;
 	const white = colors.white[0];
 	const sColor = colors.brandSecondary[0];
-	const defaultRadius = radius[theme.defaultRadius as string];
+
 
 	const pColor = colors.brandPrimary[0];
 
