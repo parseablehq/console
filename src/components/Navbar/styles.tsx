@@ -52,22 +52,6 @@ export const useNavbarStyles = createStyles((theme) => {
 			},
 		},
 		selectStreambtn: {
-			'.mantine-Input-rightSection ': {
-				'& svg': {
-					stroke: colors.gray[2],
-				},
-			},
-			'& input': {
-				border: `${sizing.px} ${colors.gray[2]} solid`,
-				borderRadius: defaultRadius,
-			},
-			'.mantine-Select-item[data-selected="true"]': {
-				background: pColor,
-				'&:hover': { background: sColor, color: white },
-			},
-			'.mantine-Select-item': {
-				'&:hover': { color: sColor },
-			},
 			margin: '0 24px 0 24px',
 		},
 		lowerContainer: {

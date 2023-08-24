@@ -1,8 +1,8 @@
 import {  NAVBAR_WIDTH } from '@/constants/theme';
 import { createStyles } from '@mantine/core';
 export const useUsersStyles = createStyles((theme) => {
-	const { spacing,colors} = theme;
-	const { widths } = theme.other;
+	const { spacing,colors } = theme;
+	const { widths,fontWeights } = theme.other;
 	const sColor = colors.brandSecondary[0];
 	return {
 		container: {
@@ -60,10 +60,32 @@ export const useUsersStyles = createStyles((theme) => {
 			"& .mantine-Tooltip-tooltip ":{
 					backgroundColor:colors.gray[5],
 					color:colors.gray[0],
-				}
+				},
+			"& .mantine-Prism-code ":{
+				backgroundColor:"white !important",
+				border: `1px solid ${colors.gray[2]} !important`,	
+			}
 			
+		},
+		modalStyle: {
+			'& .mantine-Paper-root ': {
+				overflowY: 'inherit',
+			},
+			'& .mantine-Modal-header	':{
+				borderRadius: "8px 8px 0px 0px",
+				backgroundColor: colors.gray[1],
+			},
+			'& .mantine-Modal-title	':{
+				fontWeight: 'bold',
+			},
+			"& .mantine-Modal-body ":{	
+				padding: "1rem",
+			}
+		},
+		passwordText:{
+			fontWeight:500 ,
+			fontSize: "0.875rem",
 		}
-		
 	};
 });
 

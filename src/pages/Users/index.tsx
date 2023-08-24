@@ -1,4 +1,4 @@
-import { Box, Button, Modal, ScrollArea, Select, Table, Text, TextInput } from '@mantine/core';
+import { Box, Button, Group, Modal, ScrollArea, Select, Stack, Table, Text, TextInput } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect, useState } from 'react';
 
@@ -162,110 +162,113 @@ const Users: FC = () => {
 					<tbody>{tableRows}</tbody>
 				</Table>
 			</ScrollArea>
-			<Modal
-				opened={modalOpen}
-				onClose={handleClose}
-				title="Create user"
-				centered
-				sx={{
-					'& .mantine-Paper-root ': {
-						overflowY: 'inherit',
-					},
-				}}>
-				<Text m={4}>Enter the name of the user</Text>
-				<TextInput
-					type="text"
-					placeholder="Type the name of the user to create"
-					onChange={(e) => {
-						setCreateUserInput(e.target.value);
-					}}
-					value={createUserInput}
-				/>
+			<Modal opened={modalOpen} onClose={handleClose} title="Create user" centered className={classes.modalStyle}>
+				<Stack>
+					<TextInput
+						type="text"
+						label="Enter the name of the user"
+						placeholder="Type the name of the user to create"
+						onChange={(e) => {
+							setCreateUserInput(e.target.value);
+						}}
+						value={createUserInput}
+						required
+					/>
+					<Select
+						placeholder="Select privilege"
+						label="Select a privilege to assign"
+						data={['admin', 'editor', 'writer', 'reader']}
+						onChange={(value) => {
+							setSelectedPrivilege(value || '');
+						}}
+						value={selectedPrivilege}
+						nothingFound="No options"
+					
+					/>
 
-				<Text m={4}>Select a privilege to assign</Text>
-				<Select
-					placeholder="Select privilege"
-					data={['admin', 'editor', 'writer', 'reader']}
-					onChange={(value) => {
-						setSelectedPrivilege(value || '');
-					}}
-					value={selectedPrivilege}
-					nothingFound="No options"
-					required
-				/>
-
-				{selectedPrivilege === 'reader' || selectedPrivilege === 'writer' ? (
-					<>
-						<Text m={4}>Select Stream </Text>
-						<Select
-							placeholder="Pick one"
-							onChange={(value) => {
-								setSelectedStream(value || '');
-							}}
-							nothingFound="No options"
-							value={SelectedStream}
-							searchValue={streamSearchValue}
-							onSearchChange={(value) => setStreamSearchValue(value)}
-							onDropdownClose={() => setStreamSearchValue(SelectedStream)}
-							onDropdownOpen={() => setStreamSearchValue('')}
-							data={streams?.map((stream) => ({ value: stream.name, label: stream.name })) ?? []}
-							searchable
-							required
-						/>
-						{selectedPrivilege === 'reader' ? (
-							<>
-								<Text m={4}>Please enter the tag (optional) </Text>
+					{selectedPrivilege === 'reader' || selectedPrivilege === 'writer' ? (
+						<>
+							<Select
+								placeholder="Pick one"
+								onChange={(value) => {
+									setSelectedStream(value || '');
+								}}
+								nothingFound="No options"
+								value={SelectedStream}
+								searchValue={streamSearchValue}
+								onSearchChange={(value) => setStreamSearchValue(value)}
+								onDropdownClose={() => setStreamSearchValue(SelectedStream)}
+								onDropdownOpen={() => setStreamSearchValue('')}
+								data={streams?.map((stream) => ({ value: stream.name, label: stream.name })) ?? []}
+								searchable
+								label="Select a stream to assign"
+								required
+							/>
+							{selectedPrivilege === 'reader' ? (
 								<TextInput
 									type="text"
 									placeholder={`Please enter the Tag.`}
+									label="Tag"
 									onChange={(e) => {
 										setTagInput(e.target.value);
 									}}
 								/>
-							</>
-						) : (
-							''
-						)}
-					</>
-				) : (
-					''
-				)}
+							) : (
+								''
+							)}
+						</>
+					) : (
+						''
+					)}
 
-				{CreatedUserError ? (
-					CreatedUserError
-				) : CreatedUserLoading ? (
-					'Loading'
-				) : CreatedUserResponse ? (
-					<>
-						<Text m={4} color="red">
-							Password (Warning this is the only time you are able to see Password)
+					{CreatedUserError ? (
+						<Text  className={classes.passwordText} color='red'>
+							{CreatedUserError}	
 						</Text>
-						<Prism
-							className={classes.passwordPrims}
-							language="markup"
-							copyLabel="Copy password to clipboard"
-							copiedLabel="Password copied to clipboard">
-							{CreatedUserResponse}
-						</Prism>
-					</>
-				) : (
-					''
-				)}
+					) : CreatedUserLoading ? (
+						<Text className={classes.passwordText} >loading</Text>
+					) : CreatedUserResponse ? (
+						<Box>
+							<Text  className={classes.passwordText}>
+								Password 
+							</Text>
+							<Prism
+								className={classes.passwordPrims}
+								language="markup"
+							
+								copyLabel="Copy password to clipboard"
+								copiedLabel="Password copied to clipboard">
+								{CreatedUserResponse}
+							</Prism>
+							<Text className={classes.passwordText} color='red'>Warning this is the only time you are able to see Password</Text>
+						</Box>
+					) : (
+						''
+					)}
+				</Stack>
 
-				<Box mt={10} display="flex" sx={{ justifyContent: 'end' }}>
+				<Group position="right" mt={10}>
 					<Button
-						variant="filled"
-						color="green"
-						sx={{ margin: '12px' }}
+						variant='filled'
+						color='gray'
+						sx={(theme) => ({
+							backgroundColor: theme.colors.brandSecondary[0],
+							color: "white",
+						})}
 						onClick={handleCreateUser}
-						// if user already exity in list
 						disabled={createVaildtion()}>
 						Create
 					</Button>
-					<Button onClick={handleClose} variant="filled" color="red" sx={{ margin: '12px' }}>
+					<Button onClick={handleClose} variant="outline" color='gray' sx={
+						(theme) => ({
+							borderColor: theme.colors.gray[2],
+							color: theme.colors.gray[5],
+						})
+					}>
 						Cancel
 					</Button>
-				</Box>
+				</Group>
+				
 			</Modal>
 		</Box>
 	);

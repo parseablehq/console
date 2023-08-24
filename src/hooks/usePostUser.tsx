@@ -68,6 +68,7 @@ export const usePostUser = () => {
 	};
 
 	const resetData = () => {
+		setError(null);
 		setData(null);
 	};
 
