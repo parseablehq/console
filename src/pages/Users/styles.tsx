@@ -2,7 +2,7 @@ import {  NAVBAR_WIDTH } from '@/constants/theme';
 import { createStyles } from '@mantine/core';
 export const useUsersStyles = createStyles((theme) => {
 	const { spacing,colors } = theme;
-	const { widths,fontWeights } = theme.other;
+	const { widths } = theme.other;
 	const sColor = colors.brandSecondary[0];
 	return {
 		container: {

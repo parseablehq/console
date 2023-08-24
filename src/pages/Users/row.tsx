@@ -1,6 +1,20 @@
 import { useGetUserRole } from '@/hooks/useGetUserRoles';
 import { usePutUserRole } from '@/hooks/usePutUserRole';
-import { ActionIcon, Badge, Box, Button, Modal, Select, Text, TextInput, Tooltip, px, rem } from '@mantine/core';
+import {
+	ActionIcon,
+	Badge,
+	Box,
+	Button,
+	Group,
+	Modal,
+	Select,
+	Stack,
+	Text,
+	TextInput,
+	Tooltip,
+	px,
+	rem,
+} from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlus, IconTransform, IconTrash, IconX } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
@@ -31,7 +45,13 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 	const [streamSearchValue, setStreamSearchValue] = useState<string>('');
 
 	const { putRole, data: putRoleData, resetData: resetPutRoleData } = usePutUserRole();
-	const { data: newPassword, error: resetPasswordError, loading: resetPasswordLoading, resetPasswordUser ,resetData:resetNewPassword } = usePostUserResetPassword();
+	const {
+		data: newPassword,
+		error: resetPasswordError,
+		loading: resetPasswordLoading,
+		resetPasswordUser,
+		resetData: resetNewPassword,
+	} = usePostUserResetPassword();
 	const {
 		data: userRole,
 		error: userRoleError,
@@ -309,29 +329,47 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 					</Tooltip>
 				</Box>
 			</td>
-			<Modal withinPortal size="md" opened={openedDelete} onClose={handleCloseDelete} title={'Delete user'} centered>
-				<Text>Are you sure you want to delete this user?</Text>
+			<Modal
+				withinPortal
+				size="md"
+				opened={openedDelete}
+				onClose={handleCloseDelete}
+				title={'Delete user'}
+				className={classes.modalStyle}
+				centered>
 				<TextInput
+					label="Are you sure you want to delete this user?"
 					type="text"
 					onChange={(e) => {
 						setUserInput(e.target.value);
 					}}
 					placeholder={`Please enter the Username to confirm, i.e. ${Username}`}
+					required
 				/>
 
-				<Box mt={10} display="flex" sx={{ justifyContent: 'end' }}>
+				<Group position="right" mt={10}>
 					<Button
 						variant="filled"
-						color="red"
-						sx={{ margin: '12px' }}
+						color="gray"
+						sx={(theme) => ({
+							backgroundColor: theme.colors.brandSecondary[0],
+							color: 'white',
+						})}
 						disabled={UserInput === Username ? false : true}
 						onClick={handleDelete}>
 						Delete
 					</Button>
-					<Button onClick={handleCloseDelete} variant="filled" color="green" sx={{ margin: '12px' }}>
+					<Button
+						onClick={handleCloseDelete}
+						variant="outline"
+						color="gray"
+						sx={(theme) => ({
+							borderColor: theme.colors.gray[2],
+							color: theme.colors.gray[5],
+						})}>
 						Cancel
 					</Button>
-				</Box>
+				</Group>
 			</Modal>
 			{userRole && userRole[deleteRoleIndex] ? (
 				<Modal
@@ -340,93 +378,119 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 					opened={openedDeleteRole}
 					onClose={handleCloseRoleDelete}
 					title={'Delete user role'}
-					centered>
-					<Text>Are you sure want to delete this role?</Text>
-					<Text my={10}>{getBadge(userRole[deleteRoleIndex], deleteRoleIndex, false)}</Text>
-					<TextInput
-						type="text"
-						onChange={(e) => {
-							setUserInput(e.target.value);
-						}}
-						placeholder={`Please enter the Username to confirm, i.e. ${Username}`}
-					/>
+					centered
+					className={classes.modalStyle}>
+					<Stack>
+						<Text>{getBadge(userRole[deleteRoleIndex], deleteRoleIndex, false)}</Text>
+						<TextInput
+							label="Are you sure you want to delete this user role?"
+							type="text"
+							onChange={(e) => {
+								setUserInput(e.target.value);
+							}}
+							placeholder={`Please enter the Username to confirm, i.e. ${Username}`}
+							required
+						/>
+					</Stack>
 
-					<Box mt={10} display="flex" sx={{ justifyContent: 'end' }}>
+					<Group position="right" mt={10}>
 						<Button
 							variant="filled"
-							color="red"
-							sx={{ margin: '12px' }}
+							color="gray"
+							sx={(theme) => ({
+								backgroundColor: theme.colors.brandSecondary[0],
+								color: 'white',
+							})}
 							disabled={UserInput === Username ? false : true}
 							onClick={handleRoleDelete}>
 							Delete
 						</Button>
-						<Button onClick={handleCloseRoleDelete} variant="filled" color="green" sx={{ margin: '12px' }}>
+						<Button
+							onClick={handleCloseRoleDelete}
+							variant="outline"
+							color="gray"
+							sx={(theme) => ({
+								borderColor: theme.colors.gray[2],
+								color: theme.colors.gray[5],
+							})}>
 							Cancel
 						</Button>
-					</Box>
+					</Group>
 				</Modal>
 			) : (
 				''
 			)}
 
-			<Modal opened={opened} onClose={handleCloseResetPassword} title="Change user password" centered>
-				<Text m={4}>{`Please enter the username to confirm, i.e. ${Username}`}</Text>
-				<TextInput
-					type="text"
-					placeholder={`Please enter the username to confirm, i.e. ${Username}`}
-					onChange={(e) => {
-						setUserInput(e.target.value);
-					}}
-				/>
+			<Modal opened={opened} onClose={handleCloseResetPassword} title="Change user password" centered className={classes.modalStyle}>
+				<Stack>
+					<TextInput
+						label={"Are you sure you want to reset this user's password?"}
+						type="text"
+						placeholder={`Please enter the username to confirm, i.e. ${Username}`}
+						onChange={(e) => {
+							setUserInput(e.target.value);
+						}}
+						required
+					/>
 
-				{resetPasswordError ? (
-					resetPasswordError
-				) : resetPasswordLoading ? (
-					'Loading'
-				) : newPassword ? (
-					<>
-						<Text m={4} color="red">
-							Password (Warning this is the only time you are able to see Password)
+					{resetPasswordError ? (
+						<Text className={classes.passwordText} color="red">
+							{resetPasswordError}
 						</Text>
-						<Prism
-							className={classes.passwordPrims}
-							language="markup"
-							copyLabel="Copy password to clipboard"
-							copiedLabel="Password copied to clipboard">
-							{newPassword}
-						</Prism>
-					</>
-				) : (
-					''
-				)}
+					) : resetPasswordLoading ? (
+						<Text className={classes.passwordText}>loading</Text>
+					) : newPassword ? (
+						<Box>
+							<Text className={classes.passwordText}>Password</Text>
+							<Prism
+								className={classes.passwordPrims}
+								language="markup"
+								copyLabel="Copy password to clipboard"
+								copiedLabel="Password copied to clipboard">
+								{newPassword}
+							</Prism>
+							<Text className={classes.passwordText} color="red">
+								Warning this is the only time you are able to see Password
+							</Text>
+						</Box>
+					) : (
+						''
+					)}
+				</Stack>
+				<Group position="right" mt={10}>
 
-				<Box mt={10} display="flex" sx={{ justifyContent: 'end' }}>
 					<Button
-						variant="filled"
-						color="green"
-						sx={{ margin: '12px' }}
+						variant='filled'
+						color='gray'
+						sx={(theme) => ({
+							backgroundColor: theme.colors.brandSecondary[0],
+							color: "white",
+						})}
 						onClick={handleResetPassword}
 						disabled={UserInput === Username ? false : true}>
 						Reset Password
 					</Button>
-					<Button onClick={handleCloseResetPassword} variant="filled" color="red" sx={{ margin: '12px' }}>
+					<Button onClick={handleCloseResetPassword} variant="outline" color='gray' sx={
+						(theme) => ({
+							borderColor: theme.colors.gray[2],
+							color: theme.colors.gray[5],
+						})
+					}>
 						Cancel
 					</Button>
-				</Box>
+				</Group>
 			</Modal>
 			<Modal
 				opened={openedEditModal}
 				onClose={handleCloseRoleEdit}
 				title="Edit user role"
 				centered
-				sx={{
-					'& .mantine-Paper-root ': {
-						overflowY: 'inherit',
-					},
-				}}>
-				<Text m={4}>Select a privilege to assign</Text>
+				className={classes.modalStyle}
+				>
+					<Stack>
 				<Select
 					placeholder="Select privilege"
+					label="Select a privilege to assign"
 					data={['admin', 'editor', 'writer', 'reader']}
 					onChange={(value) => {
 						setSelectedPrivilege(value || '');
@@ -438,9 +502,9 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 
 				{selectedPrivilege === 'reader' || selectedPrivilege === 'writer' ? (
 					<>
-						<Text m={4}>Select Stream </Text>
 						<Select
 							placeholder="Pick one"
+							label="Select a stream"
 							onChange={(value) => {
 								setSelectedStream(value || '');
 							}}
@@ -455,16 +519,16 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 							required
 						/>
 						{selectedPrivilege === 'reader' ? (
-							<>
-								<Text m={4}>Please enter the tag (optional) </Text>
+							
 								<TextInput
+									label="Please enter the tag (optional)"
 									type="text"
 									placeholder={`Please enter the Tag.`}
 									onChange={(e) => {
 										setTagInput(e.target.value);
 									}}
 								/>
-							</>
+							
 						) : (
 							''
 						)}
@@ -472,21 +536,30 @@ const RoleTd: FC<RoleTdProps> = (props) => {
 				) : (
 					''
 				)}
-				<Box mt={10} display="flex" sx={{ justifyContent: 'end' }}>
+				</Stack>
+				<Group mt={10} position='right'>
 					<Button
-						variant="filled"
-						color="green"
-						sx={{ margin: '12px' }}
+						variant='filled'
+						color='gray'
+						sx={(theme) => ({
+							backgroundColor: theme.colors.brandSecondary[0],
+							color: "white",
+						})}
 						onClick={() => {
 							handleRoleEdit();
 						}}
 						disabled={updateRoleVaildtion()}>
 						Add Role
 					</Button>
-					<Button onClick={handleCloseRoleEdit} variant="filled" color="red" sx={{ margin: '12px' }}>
+					<Button onClick={handleCloseRoleEdit} variant="outline" color='gray' sx={
+						(theme) => ({
+							borderColor: theme.colors.gray[2],
+							color: theme.colors.gray[5],
+						})
+					}>
 						Cancel
 					</Button>
-				</Box>
+				</Group>
 			</Modal>
 		</tr>
 	);
