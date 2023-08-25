@@ -1,7 +1,7 @@
-import {  NAVBAR_WIDTH } from '@/constants/theme';
+import { NAVBAR_WIDTH } from '@/constants/theme';
 import { createStyles } from '@mantine/core';
 export const useUsersStyles = createStyles((theme) => {
-	const { spacing,colors } = theme;
+	const { spacing, colors } = theme;
 	const { widths } = theme.other;
 	const sColor = colors.brandSecondary[0];
 	return {
@@ -36,7 +36,7 @@ export const useUsersStyles = createStyles((theme) => {
 			top: 0,
 			height: '50px',
 			'& tr>th': {
-				height: "100%",
+				height: '100%',
 				textAlign: 'left',
 				padding: '30px',
 				verticalAlign: 'middle',
@@ -45,56 +45,51 @@ export const useUsersStyles = createStyles((theme) => {
 		},
 		trStyle: {
 			'& tr:nth-of-type(odd)': {
-				backgroundColor: "#ececec !important",
+				backgroundColor: '#ececec !important',
 			},
 			'& td': {
-				height: "100%",
+				height: '100%',
 				textAlign: 'left',
 				verticalAlign: 'middle',
 				border: 'none !important',
 			},
-		
 		},
 		passwordPrims: {
-			
-			"& .mantine-Tooltip-tooltip ":{
-					backgroundColor:colors.gray[5],
-					color:colors.gray[0],
-				},
-			"& .mantine-Prism-code ":{
-				backgroundColor:"white !important",
-				border: `1px solid ${colors.gray[2]} !important`,	
-			}
-			
+			'& .mantine-Tooltip-tooltip ': {
+				backgroundColor: colors.gray[5],
+				color: colors.gray[0],
+			},
+			'& .mantine-Prism-code ': {
+				backgroundColor: 'white !important',
+				border: `1px solid ${colors.gray[2]} !important`,
+			},
 		},
 		modalStyle: {
 			'& .mantine-Paper-root ': {
 				overflowY: 'inherit',
 			},
-			'& .mantine-Modal-header	':{
-				borderRadius: "8px 8px 0px 0px",
+			'& .mantine-Modal-header	': {
+				borderRadius: '8px 8px 0px 0px',
 				backgroundColor: colors.gray[1],
 			},
-			'& .mantine-Modal-title	':{
+			'& .mantine-Modal-title	': {
 				fontWeight: 'bold',
 			},
-			"& .mantine-Modal-body ":{	
-				padding: "1rem",
-			}
+			'& .mantine-Modal-body ': {
+				paddingTop: '1rem !important',
+			},
 		},
-		passwordText:{
-			fontWeight:500 ,
-			fontSize: "0.875rem",
+		passwordText: {
+			fontWeight: 500,
+			fontSize: '0.875rem',
 		},
 		modalActionBtn: {
 			backgroundColor: theme.colors.brandSecondary[0],
-			color: "white",
+			color: 'white',
 		},
 		modalCancelBtn: {
 			borderColor: theme.colors.gray[2],
-			color: theme.colors.gray[5]
-		}
-
+			color: theme.colors.gray[5],
+		},
 	};
 });
-

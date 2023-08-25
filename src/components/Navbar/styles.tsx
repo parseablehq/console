@@ -83,6 +83,29 @@ export const useNavbarStyles = createStyles((theme) => {
 		userText: {
 			fontSize: fontSizes.sm,
 		},
+		modalStyle: {
+			'& .mantine-Paper-root ': {
+				overflowY: 'inherit',
+			},
+			'& .mantine-Modal-header	':{
+				borderRadius: "8px 8px 0px 0px",
+				backgroundColor: colors.gray[1],
+			},
+			'& .mantine-Modal-title	':{
+				fontWeight: 'bold',
+			},
+			"& .mantine-Modal-body ":{	
+				paddingTop: '1rem !important',
+			}
+		},
+		modalActionBtn: {
+			backgroundColor: theme.colors.brandSecondary[0],
+			color: "white",
+		},
+		modalCancelBtn: {
+			borderColor: theme.colors.gray[2],
+			color: theme.colors.gray[5]
+		}
 	};
 });
 
@@ -214,5 +237,6 @@ export const useInfoModalStyles = createStyles((theme) => {
 			width: '100%',
 			justifyContent: 'center',
 		},
+		
 	};
 });
