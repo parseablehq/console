@@ -188,16 +188,39 @@ export const theme: MantineThemeOverride = {
 		Select: {
 			styles: ({ colors }) => {
 				return {
+					rightSection: {
+						'& svg': {
+							stroke: colors.gray[2],
+						},
+					},
+					input: {
+						border: `${sizing.px} ${colors.gray[2]} solid`,
+						borderRadius: 'md',
+					},
 					item: {
 						'&[data-selected]': {
-							'&, &:hover': {
+							background: colors.brandPrimary[0],
+
+							' &:hover': {
 								background: colors.brandSecondary[0],
 								color: colors.white[0],
 							},
 						},
+						'&:hover': { color: colors.brandSecondary[0] },
 					},
+					
 				};
 			},
 		},
+		TextInput:{
+			styles: ({ colors }) => {
+				return {
+					input: {
+						border: `${sizing.px} ${colors.gray[2]} solid`,
+						borderRadius: 'md',
+					},
+				};
+			}
+		}
 	},
 };

@@ -1,5 +1,5 @@
 import type { NavbarProps as MantineNavbarProps } from '@mantine/core';
-import { Navbar as MantineNavbar, NavLink, Select, Box, Modal, Text, Button, TextInput } from '@mantine/core';
+import { Navbar as MantineNavbar, NavLink, Select, Modal, Button, TextInput, Group } from '@mantine/core';
 import {
 	IconZoomCode,
 	IconReportAnalytics,
@@ -202,6 +202,9 @@ const Navbar: FC<NavbarProps> = (props) => {
 		userBtn,
 		userManagementBtn,
 		userManagementBtnActive,
+		modalStyle,
+		modalActionBtn
+		,modalCancelBtn
 	} = classes;
 	return (
 		<MantineNavbar {...props} withBorder zIndex={1} hiddenBreakpoint={window.outerWidth + 20} hidden={isSubNavbarOpen}>
@@ -291,29 +294,29 @@ const Navbar: FC<NavbarProps> = (props) => {
 					onClick={onSignOut}
 				/>
 			</MantineNavbar.Section>
-			<Modal withinPortal size="md" opened={openedDelete} onClose={handleCloseDelete} title={'Delete Stream'} centered>
-				<Text>Are you sure you want to delete this stream?</Text>
+			<Modal withinPortal size="md" opened={openedDelete} onClose={handleCloseDelete} title={'Delete Stream'} centered
+			className={modalStyle} >
 				<TextInput
 					type="text"
+					label="Are you sure you want to delete this stream?"
 					onChange={(e) => {
 						setDeleteStream(e.target.value);
 					}}
 					placeholder={`Type the name of the stream to confirm. i.e. ${activeStream}`}
+					required
 				/>
 
-				<Box mt={10} display="flex" sx={{ justifyContent: 'end' }}>
+				<Group mt={10} position='right'>
 					<Button
-						variant="filled"
-						color="red"
-						sx={{ margin: '12px' }}
+						className={modalActionBtn}
 						disabled={deleteStream === activeStream ? false : true}
 						onClick={handleDelete}>
 						Delete
 					</Button>
-					<Button onClick={handleCloseDelete} variant="filled" color="green" sx={{ margin: '12px' }}>
+					<Button onClick={handleCloseDelete} className={modalCancelBtn}>
 						Cancel
 					</Button>
-				</Box>
+				</Group>
 			</Modal>
 			<InfoModal opened={opened} close={close} />
 		</MantineNavbar>

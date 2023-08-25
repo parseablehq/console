@@ -2,11 +2,11 @@ import { createStyles } from '@mantine/core';
 import { heights, sizing, widths } from '../Mantine/sizing';
 
 export const useNavbarStyles = createStyles((theme) => {
-	const { colors, radius, fontSizes } = theme;
-	const { fontWeights, sizing } = theme.other;
+	const { colors, fontSizes } = theme;
+	const { fontWeights } = theme.other;
 	const white = colors.white[0];
 	const sColor = colors.brandSecondary[0];
-	const defaultRadius = radius[theme.defaultRadius as string];
+
 
 	const pColor = colors.brandPrimary[0];
 
@@ -52,22 +52,6 @@ export const useNavbarStyles = createStyles((theme) => {
 			},
 		},
 		selectStreambtn: {
-			'.mantine-Input-rightSection ': {
-				'& svg': {
-					stroke: colors.gray[2],
-				},
-			},
-			'& input': {
-				border: `${sizing.px} ${colors.gray[2]} solid`,
-				borderRadius: defaultRadius,
-			},
-			'.mantine-Select-item[data-selected="true"]': {
-				background: pColor,
-				'&:hover': { background: sColor, color: white },
-			},
-			'.mantine-Select-item': {
-				'&:hover': { color: sColor },
-			},
 			margin: '0 24px 0 24px',
 		},
 		lowerContainer: {
@@ -99,6 +83,29 @@ export const useNavbarStyles = createStyles((theme) => {
 		userText: {
 			fontSize: fontSizes.sm,
 		},
+		modalStyle: {
+			'& .mantine-Paper-root ': {
+				overflowY: 'inherit',
+			},
+			'& .mantine-Modal-header	':{
+				borderRadius: "8px 8px 0px 0px",
+				backgroundColor: colors.gray[1],
+			},
+			'& .mantine-Modal-title	':{
+				fontWeight: 'bold',
+			},
+			"& .mantine-Modal-body ":{	
+				paddingTop: '1rem !important',
+			}
+		},
+		modalActionBtn: {
+			backgroundColor: theme.colors.brandSecondary[0],
+			color: "white",
+		},
+		modalCancelBtn: {
+			borderColor: theme.colors.gray[2],
+			color: theme.colors.gray[5]
+		}
 	};
 });
 
@@ -230,5 +237,6 @@ export const useInfoModalStyles = createStyles((theme) => {
 			width: '100%',
 			justifyContent: 'center',
 		},
+		
 	};
 });
