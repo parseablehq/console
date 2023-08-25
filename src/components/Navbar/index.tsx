@@ -1,5 +1,5 @@
 import type { NavbarProps as MantineNavbarProps } from '@mantine/core';
-import { Navbar as MantineNavbar, NavLink, Select, Box, Modal, Text, Button, TextInput, Group } from '@mantine/core';
+import { Navbar as MantineNavbar, NavLink, Select, Modal, Button, TextInput, Group } from '@mantine/core';
 import {
 	IconZoomCode,
 	IconReportAnalytics,
