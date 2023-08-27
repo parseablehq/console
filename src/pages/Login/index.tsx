@@ -1,11 +1,12 @@
 import logo from '@/assets/images/brand/logo.svg';
 import Loading from '@/components/Loading';
 import { useLoginForm } from '@/hooks/useLoginForm';
-import { Box, Button, Image, PasswordInput, Text, TextInput, Transition } from '@mantine/core';
+import { Box, Button, Divider, Image, PasswordInput, Text, TextInput, Transition, rem } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC } from 'react';
 import ForgotPassword from './ForgotPassword';
 import { useLoginStyles } from './styles';
+const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 
 const Login: FC = () => {
 	useDocumentTitle('Parseable | Login');
@@ -13,7 +14,7 @@ const Login: FC = () => {
 	const { getInputProps, isValid, loading, handleSubmit, error } = useLoginForm();
 
 	const { classes } = useLoginStyles();
-	const { container, formContainer, titleStyle, descriptionStyle, formInput, loginBtnStyle, errorStyle } = classes;
+	const { container, formContainer, titleStyle, formInput, loginBtnStyle, errorStyle } = classes;
 
 	return (
 		<Transition mounted transition="fade" duration={10000} timingFunction="ease">
@@ -23,11 +24,23 @@ const Login: FC = () => {
 						<Loading visible={loading} variant="oval" position="absolute" />
 						<Image maw={230} mx="auto" src={logo} alt="Parseable Logo" />
 						<Text mt="xl" className={titleStyle}>
-							Welcome!
+							Welcome to Parseable
 						</Text>
-						<Text mt="xs" className={descriptionStyle}>
+
+						<Button
+						mt={rem(10)}
+							component="a"
+							href={`${baseURL}api/v1/o/login?redirect=${window.location.origin}`}
+							variant="outline"
+							color="indigo">
+							Login with OAuth
+						</Button>
+
+						<Divider label=" Or continue with credentials " labelPosition="center" my="md"  sx={{width:"100%"}} />
+
+						{/* <Text mt="xs" className={descriptionStyle}>
 							Add your credentials to login
-						</Text>
+						</Text> */}
 
 						{error && (
 							<Text mt="xs" className={errorStyle}>
@@ -53,6 +66,7 @@ const Login: FC = () => {
 						<Button type="submit" my="xl" className={loginBtnStyle} disabled={!isValid()}>
 							Login
 						</Button>
+
 						<ForgotPassword />
 					</form>
 				</Box>
