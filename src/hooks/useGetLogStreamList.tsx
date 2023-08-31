@@ -9,6 +9,7 @@ import { IconFileAlert, IconCheck } from '@tabler/icons-react';
 import { useLocalStorage } from '@mantine/hooks';
 import { useNavigate } from 'react-router-dom';
 import { LOGIN_ROUTE } from '@/constants/routes';
+import Cookies from 'js-cookie';
 
 export const useGetLogStreamList = () => {
 	const [data, setData] = useMountedState<LogStreamData | null>(null);
@@ -63,6 +64,9 @@ export const useGetLogStreamList = () => {
 				}
 				case StatusCodes.UNAUTHORIZED: {
 					setError('Unauthorized');
+					Cookies.remove('session');
+					Cookies.remove('username');
+					console.log(Cookies.get());
 					notifications.update({
 						id: 'load-data',
 						color: 'red',
