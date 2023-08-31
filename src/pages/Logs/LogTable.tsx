@@ -460,12 +460,11 @@ const LogTable: FC = () => {
 							currentQueryCount?.start === 1,
 
 					)}>
-					{'<    '}Newer
+					Load newer events
 				</Button>
 				{/* {logs && (logs[0]?(logs[0].currentquerycount):"0")} */}
 				<Text>
-					Loaded {(currentQueryCount?.start&& currentQueryCount?.end && !currentQueryCount.hide)?`${currentQueryCount?.start} - ${currentQueryCount?.end} `: " 0 - 0 " } rows out of {totalCount} rows in{' '}
-					{subLogSelectedTimeRange.get().state === 'fixed'? subLogSelectedTimeRange.get().value: "Selected Time Range"}
+					Loaded {(currentQueryCount?.start&& currentQueryCount?.end && !currentQueryCount.hide)?`${currentQueryCount?.end - currentQueryCount?.start} `: "0" } of {totalCount} events
 				</Text>
 				<Button
 					variant={'default'}
@@ -479,8 +478,7 @@ const LogTable: FC = () => {
 							currentQueryCount?.end >= totalCount ||
 							totalCount===0
 					)}>
-					Older
-					{'  >'}
+					Load older events
 				</Button>
 			</Box>
 			<FilterPills />
