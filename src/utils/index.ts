@@ -20,6 +20,10 @@ export const parseLogData = (value?: any, columnName?: string) => {
 	const dateColumnNames = ['date', 'datetime', 'time', 'timestamp', 'p_timestamp'];
 
 	if (columnName && dateColumnNames.includes(columnName) && dayjs(value).isValid()) {
+		if (columnName === 'p_timestamp') {
+			const parsedDate = new Date(dayjs(value).format('YYYY-MM-DD HH:mm +00:00'));
+			return dayjs(parsedDate).utc(true).format('DD/MM/YYYY HH:mm:ss');
+		}
 		return dayjs(value).utc(true).format('DD/MM/YYYY HH:mm:ss');
 	}
 
