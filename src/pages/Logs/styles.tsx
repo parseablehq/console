@@ -39,27 +39,6 @@ export const useLogTableStyles = createStyles((theme) => {
 			flexDirection: 'column',
 			overflow: 'hidden',
 		},
-
-		paginationRow: {
-			'.mantine-Pagination-control': {
-				border: `solid 1px ${colors.gray[2]}`,
-				fontSize: fontSizes.sm,
-				'&:hover': {
-					color: sColor,
-				},
-				'&:data-active=true': {
-					color: pColor,
-				},
-			},
-			'.mantine-Pagination-control[data-active=true]': {
-				background: pColor,
-				'&:hover': {
-					backgroundColor: sColor,
-					color: colors.white[0],
-				},
-			},
-		},
-
 		tableContainer: {
 			position: 'relative',
 		},

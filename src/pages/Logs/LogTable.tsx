@@ -15,6 +15,8 @@ import {
 	Text,
 	Flex,
 	Button,
+	Group,
+	Tooltip,
 } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { FC } from 'react';
@@ -23,7 +25,7 @@ import LogRow from './LogRow';
 import { useLogTableStyles } from './styles';
 import useMountedState from '@/hooks/useMountedState';
 import ErrorText from '@/components/Text/ErrorText';
-import { IconDotsVertical, IconSelector, IconGripVertical, IconPin, IconPinFilled } from '@tabler/icons-react';
+import { IconSelector, IconGripVertical, IconPin, IconPinFilled, IconSettings } from '@tabler/icons-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Field } from '@/@types/parseable/dataType';
 import EmptyBox from '@/components/Empty';
@@ -231,14 +233,14 @@ const LogTable: FC = () => {
 				new Date(dayjs(currentDataResponse.data[0].currentqueryendtime).format('YYYY-MM-DD HH:mm +00:00')),
 			);
 		}
-		if (currentDataResponse?.data[0].totalcurrentcount===0) {
+		if (currentDataResponse?.data[0].totalcurrentcount === 0) {
 			getQueryData(subLogQuery.get());
 			setTotalCount(currentDataResponse?.data[0].totalcurrentcount);
 		}
 	}, [currentDataResponse]);
 
 	useEffect(() => {
-		if (currentStartTime && currentEndTime && currentDataResponse) {
+		if (currentStartTime && currentEndTime) {
 			getQueryData({
 				streamName: subLogQuery.get().streamName,
 				startTime: currentStartTime,
@@ -276,7 +278,11 @@ const LogTable: FC = () => {
 				end: currentQueryCount.end + (logs[0].currentquerycount as number),
 				hide: false,
 			});
-			if( currentQueryCount&& totalCount && currentQueryCount.end + (logs[0].currentquerycount as number)>totalCount){
+			if (
+				currentQueryCount &&
+				totalCount &&
+				currentQueryCount.end + (logs[0].currentquerycount as number) > totalCount
+			) {
 				setTotalCount(currentQueryCount.end + (logs[0].currentquerycount as number));
 			}
 		} else if (
@@ -406,7 +412,6 @@ const LogTable: FC = () => {
 		theadStyle,
 		errorContainer,
 		footerContainer,
-		paginationRow,
 		theadStylePinned,
 		pinnedScrollView,
 	} = classes;
@@ -447,43 +452,17 @@ const LogTable: FC = () => {
 					borderBottom: '1px solid #ccc',
 					gap: '1rem',
 				}}>
-				<Button
-					variant={'default'}
-					onClick={() => {
-						setCurrentEndTime(new Date(dayjs(currentEndTime).add(1, 'minute').toDate()));
-						setCurrentStartTime(currentEndTime);
-						setCurrentAction('newer');
-					}}
-					disabled={Boolean(
-						totalCount === 0 ||
-							(currentEndTime && currentEndTime >= subLogQuery.get().endTime) ||
-							currentQueryCount?.start === 1,
-
-					)}>
-					Load newer events
-				</Button>
-				{/* {logs && (logs[0]?(logs[0].currentquerycount):"0")} */}
 				<Text>
-					Loaded {(currentQueryCount?.start&& currentQueryCount?.end && !currentQueryCount.hide)?`${currentQueryCount?.end - currentQueryCount?.start} `: "0" } of {totalCount} events
+					Loaded{' '}
+					{currentQueryCount?.start && currentQueryCount?.end && !currentQueryCount.hide
+						? `${currentQueryCount?.end - currentQueryCount?.start} `
+						: '0'}{' '}
+					of {totalCount} events
 				</Text>
-				<Button
-					variant={'default'}
-					onClick={() => {
-						setCurrentEndTime(currentStartTime);
-						setCurrentStartTime(new Date(dayjs(currentStartTime).subtract(1, 'minute').toDate()));
-						setCurrentAction('older');
-					}}
-					disabled={Boolean(
-							totalCount && currentQueryCount &&
-							currentQueryCount?.end >= totalCount ||
-							totalCount===0
-					)}>
-					Load older events
-				</Button>
 			</Box>
 			<FilterPills />
 			{!(logStreamError || logStreamSchemaError || logsError || currentDataResponseError) ? (
-				!loading && !logsLoading && Boolean(logsSchema) && Boolean(pageLogData) && !currentDataResponseLoading? (
+				!loading && !logsLoading && Boolean(logsSchema) && Boolean(pageLogData) && !currentDataResponseLoading ? (
 					Boolean(logsSchema?.fields.length) && Boolean(pageLogData?.data.length) ? (
 						<Box className={innerContainer}>
 							<Box className={innerContainer} style={{ display: 'flex', flexDirection: 'row' }}>
@@ -518,7 +497,7 @@ const LogTable: FC = () => {
 										</Table>
 									</Box>
 								</ScrollArea>
-								<Box style={{ height: '100%', border: '1px solid #ccc' }} />
+								{pinnedColumnsWidth > 0 && <Box style={{ height: '100%', borderLeft: '1px solid #ccc' }} />}
 								<ScrollArea
 									onMouseEnter={() => {
 										active.current = 'right';
@@ -556,18 +535,49 @@ const LogTable: FC = () => {
 								</ScrollArea>
 							</Box>
 							<Box className={footerContainer}>
-								<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
+								<Box></Box>
 								{(pageLogData?.totalPages || 0) > 1 && (
-									<Pagination
-										withEdges
+									<Pagination.Root
 										total={pageLogData?.totalPages || 0}
 										value={pageLogData?.page || 0}
 										onChange={(page) => {
 											goToPage(page, pageLogData?.limit || 0);
-										}}
-										className={paginationRow}
-									/>
+										}}>
+										<Group spacing={5} position="center">
+											<Tooltip label="Load newer data">
+												<Pagination.First
+													onClick={() => {
+														setCurrentEndTime(new Date(dayjs(currentEndTime).add(1, 'minute').toDate()));
+														setCurrentStartTime(currentEndTime);
+														setCurrentAction('newer');
+													}}
+													disabled={Boolean(
+														totalCount === 0 ||
+															(currentEndTime && currentEndTime >= subLogQuery.get().endTime) ||
+															currentQueryCount?.start === 1,
+													)}
+												/>
+											</Tooltip>
+											<Pagination.Previous />
+											<Pagination.Items />
+											<Pagination.Next />
+											<Tooltip label="Loader older data">
+												<Pagination.Last
+													onClick={() => {
+														setCurrentEndTime(currentStartTime);
+														setCurrentStartTime(new Date(dayjs(currentStartTime).subtract(1, 'minute').toDate()));
+														setCurrentAction('older');
+													}}
+													disabled={Boolean(
+														(totalCount && currentQueryCount && currentQueryCount?.end >= totalCount) ||
+															totalCount === 0,
+													)}
+												/>
+											</Tooltip>
+										</Group>
+									</Pagination.Root>
 								)}
+								<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
 							</Box>
 						</Box>
 					) : (
@@ -661,7 +671,7 @@ const ThColumnMenu: FC<ThColumnMenuProps> = (props) => {
 				<Center>
 					<Menu.Target>
 						<ActionIcon className={thColumnMenuBtn}>
-							<IconDotsVertical size={px('1.2rem')} />
+							<IconSettings size={px('1.4rem')} />
 						</ActionIcon>
 					</Menu.Target>
 				</Center>
