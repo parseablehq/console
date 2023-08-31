@@ -6,12 +6,7 @@ const instance = axios.create({ baseURL, validateStatus: () => true });
 
 instance.interceptors.request.use(
 	(request) => {
-		// const credentials = localStorage.getItem('credentials');
 
-		// if (credentials) {
-		// 	const Authorization = credentials ? `Basic ${credentials}` : null;
-		// 	request.headers.Authorization = Authorization;
-		// }
 
 		return request;
 	},

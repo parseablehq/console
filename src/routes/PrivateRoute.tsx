@@ -1,5 +1,4 @@
 import { LOGIN_ROUTE } from '@/constants/routes';
-// import { useLocalStorage } from '@mantine/hooks';
 import type { FC } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';

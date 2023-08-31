@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import useMountedState from './useMountedState';
 import { notifications } from '@mantine/notifications';
 import { IconFileAlert, IconCheck } from '@tabler/icons-react';
-import { useLocalStorage } from '@mantine/hooks';
+
 import { useNavigate } from 'react-router-dom';
 import { LOGIN_ROUTE } from '@/constants/routes';
 import Cookies from 'js-cookie';
@@ -15,8 +15,7 @@ export const useGetLogStreamList = () => {
 	const [data, setData] = useMountedState<LogStreamData | null>(null);
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
-	const [, , removeCredentials] = useLocalStorage({ key: 'credentials' });
-	const [, , removeUsername] = useLocalStorage({ key: 'username' });
+
 	const navigate = useNavigate();
 
 	const getData = async () => {
@@ -75,9 +74,6 @@ export const useGetLogStreamList = () => {
 						icon: <IconFileAlert size="1rem" />,
 						autoClose: 2000,
 					});
-
-					removeCredentials();
-					removeUsername();
 					navigate(
 						{
 							pathname: LOGIN_ROUTE,

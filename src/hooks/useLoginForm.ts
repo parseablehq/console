@@ -6,32 +6,21 @@ import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { HOME_ROUTE } from '@/constants/routes';
-import { useId, useLocalStorage } from '@mantine/hooks';
+import { useId } from '@mantine/hooks';
 import { useEffect } from 'react';
+import Cookies from 'js-cookie';
 
 export const useLoginForm = () => {
 	const notificationId = useId();
 
 	const [loading, setLoading] = useMountedState(false);
 	const [error, setError] = useMountedState<string | null>(null);
-	const [credentials, setCredentials] = useLocalStorage({
-		key: 'credentials',
-		getInitialValueInEffect: false,
-		serialize: (value) => {
-			return value;
-		},
-	});
-	const [, setUsername] = useLocalStorage({
-		key: 'username',
-		serialize: (value) => {
-			return value;
-		},
-	});
+	const auth = Cookies.get('session') 
 	const nav = useNavigate();
 	const location = useLocation();
 
 	useEffect(() => {
-		if (credentials) {
+		if (auth) {
 			nav(
 				{
 					pathname: HOME_ROUTE,
@@ -69,15 +58,12 @@ export const useLoginForm = () => {
 
 				switch (res.status) {
 					case StatusCodes.OK: {
-						const credentials = btoa(`${data.username}:${data.password}`);
-						setCredentials(credentials);
-						setUsername(data.username);
-
 						const pathname = location.state?.from?.pathname || HOME_ROUTE;
-
+						console.log(pathname,"pathname");
 						nav({
-							pathname,
-						});
+							pathname:"/"
+						},
+						{ replace: true });
 
 						break;
 					}

@@ -48,8 +48,6 @@ const Navbar: FC<NavbarProps> = (props) => {
 	const location = useLocation();
 
 	const username =  Cookies.get('username') 
-	// const [, , removeCredentials] = useLocalStorage({ key: 'credentials' });
-	// const [, , removeUsername] = useLocalStorage({ key: 'username' });
 
 	const {
 		state: { subNavbarTogle },

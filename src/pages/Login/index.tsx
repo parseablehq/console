@@ -4,7 +4,6 @@ import { useLoginForm } from '@/hooks/useLoginForm';
 import { Box, Button, Divider, Image, PasswordInput, Text, TextInput, Transition, rem } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC } from 'react';
-import ForgotPassword from './ForgotPassword';
 import { useLoginStyles } from './styles';
 const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 
@@ -27,16 +26,7 @@ const Login: FC = () => {
 							Welcome to Parseable
 						</Text>
 
-						<Button
-						mt={rem(10)}
-							component="a"
-							href={`${baseURL}api/v1/o/login?redirect=${window.location.origin}`}
-							variant="outline"
-							color="indigo">
-							Login with OAuth
-						</Button>
-
-						<Divider label=" Or continue with credentials " labelPosition="center" my="md"  sx={{width:"100%"}} />
+						
 
 						{/* <Text mt="xs" className={descriptionStyle}>
 							Add your credentials to login
@@ -67,7 +57,19 @@ const Login: FC = () => {
 							Login
 						</Button>
 
-						<ForgotPassword />
+						{/* <ForgotPassword /> */}
+
+						<Divider label=" Or  " labelPosition="center" my="md"  sx={{width:"100%"}} />
+
+						<Button
+						mt={rem(10)}
+							component="a"
+							href={`${baseURL}api/v1/o/login?redirect=${window.location.origin}`}
+							variant="outline"
+							color="indigo">
+							Login with OAuth
+						</Button>
+
 					</form>
 				</Box>
 			)}

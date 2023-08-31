@@ -1,7 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
 import { getUserRoles } from '@/api/users';
-import { useLocalStorage } from '@mantine/hooks';
 import { useNavigate } from 'react-router-dom';
 import { LOGIN_ROUTE } from '@/constants/routes';
 
@@ -9,8 +8,6 @@ export const useGetUserRole = () => {
 	const [data, setData] = useMountedState<any | null>(null);
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
-	const [, , removeCredentials] = useLocalStorage({ key: 'credentials' });
-	const [, , removeUsername] = useLocalStorage({ key: 'username' });
 	const navigate = useNavigate();
 
 	const getRoles = async (userName:string) => {
@@ -29,8 +26,6 @@ export const useGetUserRole = () => {
 				}
 				case StatusCodes.UNAUTHORIZED: {
 					setError('Unauthorized');
-					removeCredentials();
-					removeUsername();
 					navigate(
 						{
 							pathname: LOGIN_ROUTE,
