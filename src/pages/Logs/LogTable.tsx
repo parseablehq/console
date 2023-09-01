@@ -301,7 +301,7 @@ const LogTable: FC = () => {
 
 			getCurrentDataResponse(
 				{ ...subLogQuery.get(), startTime: subLogQuery.get().startTime, endTime: currentStartTime },
-				`SELECT max(p_timestamp)  as currentQueryEndTime FROM ${subLogQuery.get().streamName}`,
+				`SELECT max(p_timestamp) as currentQueryEndTime FROM ${subLogQuery.get().streamName}`,
 			);
 		} else if (
 			logs?.length === 0 &&
@@ -347,7 +347,7 @@ const LogTable: FC = () => {
 			}
 			getCurrentDataResponse(
 				query,
-				`SELECT max(p_timestamp)  as currentQueryEndTime, count(*) as totalcurrentcount FROM ${
+				`SELECT max(p_timestamp) as currentQueryEndTime, count(*) as totalcurrentcount FROM ${
 					subLogQuery.get().streamName
 				}`,
 			);
@@ -453,11 +453,7 @@ const LogTable: FC = () => {
 					gap: '1rem',
 				}}>
 				<Text>
-					Loaded{' '}
-					{currentQueryCount?.start && currentQueryCount?.end && !currentQueryCount.hide
-						? `${currentQueryCount?.end - currentQueryCount?.start} `
-						: '0'}{' '}
-					of {totalCount} events
+				Loaded {(currentQueryCount?.start&& currentQueryCount?.end && !currentQueryCount.hide)?`${currentQueryCount?.start} - ${currentQueryCount?.end} `: " 0 - 0 " } of {totalCount} events in {subLogSelectedTimeRange.get().state === 'fixed'? subLogSelectedTimeRange.get().value: "selected time range"}
 				</Text>
 			</Box>
 			<FilterPills />
@@ -561,7 +557,7 @@ const LogTable: FC = () => {
 											<Pagination.Previous />
 											<Pagination.Items />
 											<Pagination.Next />
-											<Tooltip label="Loader older data">
+											<Tooltip label="Load older data">
 												<Pagination.Last
 													onClick={() => {
 														setCurrentEndTime(currentStartTime);
