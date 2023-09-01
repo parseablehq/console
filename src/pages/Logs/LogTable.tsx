@@ -15,6 +15,8 @@ import {
 	Text,
 	Flex,
 	Button,
+	Group,
+	Tooltip,
 } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { FC } from 'react';
@@ -23,7 +25,7 @@ import LogRow from './LogRow';
 import { useLogTableStyles } from './styles';
 import useMountedState from '@/hooks/useMountedState';
 import ErrorText from '@/components/Text/ErrorText';
-import { IconDotsVertical, IconSelector, IconGripVertical, IconPin, IconPinFilled } from '@tabler/icons-react';
+import { IconSelector, IconGripVertical, IconPin, IconPinFilled, IconSettings } from '@tabler/icons-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Field } from '@/@types/parseable/dataType';
 import EmptyBox from '@/components/Empty';
@@ -33,6 +35,7 @@ import FilterPills from './FilterPills';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import dayjs from 'dayjs';
 import { SortOrder } from '@/@types/parseable/api/query';
+import { useQueryResult } from '@/hooks/useQueryResult';
 
 const skipFields = ['p_metadata', 'p_tags'];
 
@@ -48,6 +51,22 @@ const LogTable: FC = () => {
 	const [logStreamError, setLogStreamError] = useMountedState<string | null>(null);
 	const [columnToggles, setColumnToggles] = useMountedState<Map<string, boolean>>(new Map());
 	const [pinnedColumns, setPinnedColumns] = useMountedState<Set<string>>(new Set());
+	const [currentStartTime, setCurrentStartTime] = useMountedState<Date | null>(null);
+	const [currentEndTime, setCurrentEndTime] = useMountedState<Date | null>(null);
+	const [currentQueryCount, setCurrentQueryCount] = useMountedState<{
+		start: number;
+		end: number;
+		hide: boolean;
+	} | null>(null);
+	const [totalCount, setTotalCount] = useMountedState<number | null>(null);
+	const [currentAction, setCurrentAction] = useMountedState<'newer' | 'older' | null>(null);
+	const {
+		data: currentDataResponse,
+		getQueryData: getCurrentDataResponse,
+		resetData: resetCurrentDataResponse,
+		error: currentDataResponseError,
+		loading: currentDataResponseLoading,
+	} = useQueryResult();
 
 	const {
 		data: logsSchema,
@@ -147,9 +166,13 @@ const LogTable: FC = () => {
 			resetStreamData();
 			resetLogsData();
 		}
-
+		getCurrentDataResponse(
+			query,
+			`SELECT max(p_timestamp)  as currentQueryEndTime, count(*) as totalcurrentcount FROM ${
+				subLogQuery.get().streamName
+			}`,
+		);
 		getDataSchema(query.streamName);
-		getQueryData(query);
 		setColumnToggles(new Map());
 	};
 
@@ -163,9 +186,18 @@ const LogTable: FC = () => {
 					resetStreamData();
 					resetLogsData();
 				}
-
+				getCurrentDataResponse(
+					query,
+					`SELECT max(p_timestamp)  as currentQueryEndTime, count(*) as totalcurrentcount FROM ${
+						subLogQuery.get().streamName
+					}`,
+				);
+				setTotalCount(null);
+				setCurrentAction(null);
+				setCurrentEndTime(null);
+				setCurrentStartTime(null);
+				setCurrentQueryCount(null);
 				getDataSchema(query.streamName);
-				getQueryData(query);
 				setColumnToggles(new Map());
 				setPinnedColumns(new Set());
 			}
@@ -173,11 +205,121 @@ const LogTable: FC = () => {
 
 		return () => {
 			streamErrorListener();
+			resetCurrentDataResponse();
 			refreshIntervalListener();
 			logQueryListener();
 			logSearchListener();
 		};
 	}, [logsSchema]);
+
+	useEffect(() => {
+		if (currentDataResponse?.data[0].currentqueryendtime && currentDataResponse?.data[0].totalcurrentcount) {
+			setCurrentEndTime(
+				new Date(
+					dayjs(currentDataResponse.data[0].currentqueryendtime).add(1, 'minute').format('YYYY-MM-DD HH:mm +00:00'),
+				),
+			);
+			setCurrentStartTime(
+				new Date(dayjs(currentDataResponse.data[0].currentqueryendtime).format('YYYY-MM-DD HH:mm +00:00')),
+			);
+			setTotalCount(currentDataResponse?.data[0].totalcurrentcount);
+		} else if (currentDataResponse?.data[0].currentqueryendtime && !currentDataResponse?.data[0].totalcurrentcount) {
+			setCurrentEndTime(
+				new Date(
+					dayjs(currentDataResponse.data[0].currentqueryendtime).add(1, 'minute').format('YYYY-MM-DD HH:mm +00:00'),
+				),
+			);
+			setCurrentStartTime(
+				new Date(dayjs(currentDataResponse.data[0].currentqueryendtime).format('YYYY-MM-DD HH:mm +00:00')),
+			);
+		}
+		if (currentDataResponse?.data[0].totalcurrentcount === 0) {
+			getQueryData(subLogQuery.get());
+			setTotalCount(currentDataResponse?.data[0].totalcurrentcount);
+		}
+	}, [currentDataResponse]);
+
+	useEffect(() => {
+		if (currentStartTime && currentEndTime) {
+			getQueryData({
+				streamName: subLogQuery.get().streamName,
+				startTime: currentStartTime,
+				endTime: currentEndTime,
+				access: subLogQuery.get().access,
+			});
+		}
+	}, [currentStartTime, currentEndTime]);
+
+	useEffect(() => {
+		if (logs && logs[0] && logs[0].currentquerycount && !currentQueryCount && currentAction === null) {
+			setCurrentQueryCount({
+				start: 1,
+				end: logs[0].currentquerycount as number,
+				hide: false,
+			});
+		} else if (logs && logs[0] && logs[0].currentquerycount && currentQueryCount && currentAction === 'newer') {
+			if (currentQueryCount.start - (logs[0].currentquerycount as number) >= 1) {
+				setCurrentQueryCount({
+					end: currentQueryCount.start - 1,
+					start: currentQueryCount.start - (logs[0].currentquerycount as number),
+					hide: false,
+				});
+			} else {
+				setCurrentQueryCount({
+					end: logs[0].currentquerycount as number,
+					start: 1,
+					hide: false,
+				});
+				// setTotalCount(totalCount?totalCount:0+(logs[0].currentquerycount as number) -currentQueryCount.start );
+			}
+		} else if (logs && logs[0] && logs[0].currentquerycount && currentQueryCount && currentAction === 'older') {
+			setCurrentQueryCount({
+				start: currentQueryCount.end + 1,
+				end: currentQueryCount.end + (logs[0].currentquerycount as number),
+				hide: false,
+			});
+			if (
+				currentQueryCount &&
+				totalCount &&
+				currentQueryCount.end + (logs[0].currentquerycount as number) > totalCount
+			) {
+				setTotalCount(currentQueryCount.end + (logs[0].currentquerycount as number));
+			}
+		} else if (
+			logs?.length === 0 &&
+			currentQueryCount &&
+			currentStartTime &&
+			currentStartTime >= subLogQuery.get().startTime &&
+			currentAction === 'older'
+		) {
+			resetLogsData();
+			setCurrentQueryCount({
+				start: currentQueryCount?.start,
+				end: currentQueryCount?.end,
+				hide: true,
+			});
+
+			getCurrentDataResponse(
+				{ ...subLogQuery.get(), startTime: subLogQuery.get().startTime, endTime: currentStartTime },
+				`SELECT max(p_timestamp)  as currentQueryEndTime FROM ${subLogQuery.get().streamName}`,
+			);
+		} else if (
+			logs?.length === 0 &&
+			currentQueryCount &&
+			currentEndTime &&
+			currentDataResponse &&
+			currentEndTime >=
+				new Date(
+					dayjs(currentDataResponse.data[0].currentqueryendtime).add(1, 'minute').format('YYYY-MM-DD HH:mm +00:00'),
+				) &&
+			currentAction === 'newer'
+		) {
+			getCurrentDataResponse(
+				{ ...subLogQuery.get(), startTime: currentEndTime, endTime: subLogQuery.get().endTime },
+				`SELECT min(p_timestamp)  as currentQueryEndTime FROM ${subLogQuery.get().streamName}`,
+			);
+		}
+	}, [logs]);
 
 	useEffect(() => {
 		if (subRefreshInterval.get()) {
@@ -203,8 +345,13 @@ const LogTable: FC = () => {
 				resetStreamData();
 				resetLogsData;
 			}
+			getCurrentDataResponse(
+				query,
+				`SELECT max(p_timestamp)  as currentQueryEndTime, count(*) as totalcurrentcount FROM ${
+					subLogQuery.get().streamName
+				}`,
+			);
 			getDataSchema(query.streamName);
-			getQueryData(query);
 			setColumnToggles(new Map());
 		}
 	}, [subLogQuery]);
@@ -212,8 +359,7 @@ const LogTable: FC = () => {
 		if (logsSchema) {
 			return logsSchema.fields
 				.filter(
-					(field) =>
-						isColumnActive(field.name) && !isColumnPinned(field.name) && !skipFields.includes(field.name),
+					(field) => isColumnActive(field.name) && !isColumnPinned(field.name) && !skipFields.includes(field.name),
 				)
 				.map((field) => {
 					return (
@@ -236,10 +382,7 @@ const LogTable: FC = () => {
 	const renderPinnedTh = useMemo(() => {
 		if (logsSchema) {
 			return logsSchema.fields
-				.filter(
-					(field) =>
-						isColumnActive(field.name) && isColumnPinned(field.name) && !skipFields.includes(field.name),
-				)
+				.filter((field) => isColumnActive(field.name) && isColumnPinned(field.name) && !skipFields.includes(field.name))
 				.map((field) => {
 					return (
 						<Column
@@ -269,7 +412,6 @@ const LogTable: FC = () => {
 		theadStyle,
 		errorContainer,
 		footerContainer,
-		paginationRow,
 		theadStylePinned,
 		pinnedScrollView,
 	} = classes;
@@ -281,24 +423,46 @@ const LogTable: FC = () => {
 	const [pinnedColumnsWidth, setPinnedColumnsWidth] = useMountedState(0);
 
 	useEffect(() => {
-		
-		if(pinnedContianerRef.current?.offsetWidth &&pinnedContianerRef.current?.clientWidth<500 && pinnedColumns.size>0){
-			
-			setPinnedColumnsWidth(pinnedContianerRef.current?.clientWidth );
-		}
-		else if(pinnedContianerRef.current?.offsetWidth &&pinnedContianerRef.current?.clientWidth>500 && pinnedColumns.size>0){
+		if (
+			pinnedContianerRef.current?.offsetWidth &&
+			pinnedContianerRef.current?.clientWidth < 500 &&
+			pinnedColumns.size > 0
+		) {
+			setPinnedColumnsWidth(pinnedContianerRef.current?.clientWidth);
+		} else if (
+			pinnedContianerRef.current?.offsetWidth &&
+			pinnedContianerRef.current?.clientWidth > 500 &&
+			pinnedColumns.size > 0
+		) {
 			setPinnedColumnsWidth(500);
-		}
-		else{
+		} else {
 			setPinnedColumnsWidth(0);
 		}
-	}, [ pinnedContianerRef,pinnedColumns]);
+	}, [pinnedContianerRef, pinnedColumns]);
 
 	return (
 		<Box className={container}>
+			<Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+					padding: '0 1rem',
+					height: '3rem',
+					borderBottom: '1px solid #ccc',
+					gap: '1rem',
+				}}>
+				<Text>
+					Loaded{' '}
+					{currentQueryCount?.start && currentQueryCount?.end && !currentQueryCount.hide
+						? `${currentQueryCount?.end - currentQueryCount?.start} `
+						: '0'}{' '}
+					of {totalCount} events
+				</Text>
+			</Box>
 			<FilterPills />
-			{!(logStreamError || logStreamSchemaError || logsError) ? (
-				!loading && !logsLoading && Boolean(logsSchema) && Boolean(pageLogData) ? (
+			{!(logStreamError || logStreamSchemaError || logsError || currentDataResponseError) ? (
+				!loading && !logsLoading && Boolean(logsSchema) && Boolean(pageLogData) && !currentDataResponseLoading ? (
 					Boolean(logsSchema?.fields.length) && Boolean(pageLogData?.data.length) ? (
 						<Box className={innerContainer}>
 							<Box className={innerContainer} style={{ display: 'flex', flexDirection: 'row' }}>
@@ -320,24 +484,20 @@ const LogTable: FC = () => {
 										if (active.current === 'right') return;
 										rightRef.current!.scrollTop = y;
 									}}>
-									<Box  className={pinnedTableContainer} ref={pinnedContianerRef}>
+									<Box className={pinnedTableContainer} ref={pinnedContianerRef}>
 										<Table className={tableStyle}>
 											<Thead className={theadStylePinned}>{renderPinnedTh}</Thead>
 											<Tbody>
 												<LogRow
 													logData={pageLogData?.data || []}
-													logsSchema={
-														logsSchema?.fields.filter((field) =>
-															isColumnPinned(field.name),
-														) || []
-													}
+													logsSchema={logsSchema?.fields.filter((field) => isColumnPinned(field.name)) || []}
 													isColumnActive={isColumnActive}
 												/>
 											</Tbody>
 										</Table>
 									</Box>
 								</ScrollArea>
-								<Box style={{ height: '100%', border: '1px solid #ccc' }} />
+								{pinnedColumnsWidth > 0 && <Box style={{ height: '100%', borderLeft: '1px solid #ccc' }} />}
 								<ScrollArea
 									onMouseEnter={() => {
 										active.current = 'right';
@@ -365,11 +525,7 @@ const LogTable: FC = () => {
 											<Tbody>
 												<LogRow
 													logData={pageLogData?.data || []}
-													logsSchema={
-														logsSchema?.fields.filter(
-															(field) => !isColumnPinned(field.name),
-														) || []
-													}
+													logsSchema={logsSchema?.fields.filter((field) => !isColumnPinned(field.name)) || []}
 													isColumnActive={isColumnActive}
 													rowArrows={true}
 												/>
@@ -379,18 +535,49 @@ const LogTable: FC = () => {
 								</ScrollArea>
 							</Box>
 							<Box className={footerContainer}>
-								<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
+								<Box></Box>
 								{(pageLogData?.totalPages || 0) > 1 && (
-									<Pagination
-										withEdges
+									<Pagination.Root
 										total={pageLogData?.totalPages || 0}
 										value={pageLogData?.page || 0}
 										onChange={(page) => {
 											goToPage(page, pageLogData?.limit || 0);
-										}}
-										className={paginationRow}
-									/>
+										}}>
+										<Group spacing={5} position="center">
+											<Tooltip label="Load newer data">
+												<Pagination.First
+													onClick={() => {
+														setCurrentEndTime(new Date(dayjs(currentEndTime).add(1, 'minute').toDate()));
+														setCurrentStartTime(currentEndTime);
+														setCurrentAction('newer');
+													}}
+													disabled={Boolean(
+														totalCount === 0 ||
+															(currentEndTime && currentEndTime >= subLogQuery.get().endTime) ||
+															currentQueryCount?.start === 1,
+													)}
+												/>
+											</Tooltip>
+											<Pagination.Previous />
+											<Pagination.Items />
+											<Pagination.Next />
+											<Tooltip label="Loader older data">
+												<Pagination.Last
+													onClick={() => {
+														setCurrentEndTime(currentStartTime);
+														setCurrentStartTime(new Date(dayjs(currentStartTime).subtract(1, 'minute').toDate()));
+														setCurrentAction('older');
+													}}
+													disabled={Boolean(
+														(totalCount && currentQueryCount && currentQueryCount?.end >= totalCount) ||
+															totalCount === 0,
+													)}
+												/>
+											</Tooltip>
+										</Group>
+									</Pagination.Root>
 								)}
+								<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
 							</Box>
 						</Box>
 					) : (
@@ -484,7 +671,7 @@ const ThColumnMenu: FC<ThColumnMenuProps> = (props) => {
 				<Center>
 					<Menu.Target>
 						<ActionIcon className={thColumnMenuBtn}>
-							<IconDotsVertical size={px('1.2rem')} />
+							<IconSettings size={px('1.4rem')} />
 						</ActionIcon>
 					</Menu.Target>
 				</Center>
