@@ -1,51 +1,33 @@
-<p align="center">
-  <span">
-    <img src="https://raw.githubusercontent.com/parseablehq/.github/main/images/logo.svg#gh-light-mode-only" alt="Parseable" width="500" height="100" />
-    <img src="https://raw.githubusercontent.com/parseablehq/.github/main/images/logo-dark.png#gh-dark-mode-only" alt="Parseable" width="500" height="100" />
-  </a>
-</p>
+<h2 align="center">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/parseablehq/.github/main/images/logo-dark.png">
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/parseablehq/.github/main/images/logo.svg">
+      <img alt="Parseable Logo" src="https://raw.githubusercontent.com/parseablehq/.github/main/images/logo.svg">
+    </picture>
+    <br>
+    Cloud native log analytics
+</h2>
 
-<p align="center">
-  <a href="https://fossunited.org/" target="_blank"><img src="http://fossunited.org/files/fossunited-badge.svg"></a>
-  <img src="https://img.shields.io/github/commit-activity/m/parseablehq/parseable" alt="commits activity monthly">
-  <a href="https://launchpass.com/parseable" target="_blank"><img src="https://img.shields.io/badge/join%20slack-parseable-brightgreen.svg" alt="join slack"></a>
-  <a href="https://github.com/parseablehq/parseable/stargazers" target="_blank"><img src="https://img.shields.io/github/stars/parseablehq/parseable?style=social" alt="Github stars"></a>
-  <a href="https://twitter.com/parseableio" target="_blank"><img src="https://img.shields.io/twitter/follow/parseableio" alt="Twitter"></a>
-</p>
+<div align="center">
 
-<h4 align="center">
-  <a href="https://www.parseable.io/docs/quick-start" target="_blank">Quick Start</a> |
-  <a href="https://www.parseable.io/docs/introduction" target="_blank">Documentation</a> |
-  <a href="https://demo.parseable.io" target="_blank">Live Demo</a>
-  <br>
-</h4>
+[![Docker Pulls](https://img.shields.io/docker/pulls/parseable/parseable?logo=docker&label=Docker%20Pulls)](https://hub.docker.com/r/parseable/parseable)
+[![Slack](https://img.shields.io/badge/slack-brightgreen.svg?logo=slack&label=Community&style=flat&color=%2373DC8C&)](https://launchpass.com/parseable)
+[![Docs](https://img.shields.io/badge/stable%20docs-parseable.io%2Fdocs-brightgreen?style=flat&color=%2373DC8C&label=Docs)](https://www.parseable.io/docs)
+[![Build](https://img.shields.io/github/checks-status/parseablehq/parseable/main?style=flat&color=%2373DC8C&label=Checks)](https://github.com/parseablehq/parseable/actions)
 
-Parseable is a cloud native, log storage and analysis platform. Parseable is indexing free by design. Written in Rust, Parseable can be deployed on Baremetal, VMs and Kubernetes.
+</div>
 
-It ingests log data via HTTP POST calls and exposes a query API to search and analyze logs. It is compatible with logging agents like FluentBit, LogStash, FileBeat among others.
+[Parseable](https://github.com/parseablehq/parseable) is a cloud native log analytics system. It ingests log data via HTTP POST calls and exposes a query API to search and analyze logs. Parseable is compatible with logging agents like FluentBit, LogStash, FileBeat among others.
 
-## Getting Started
+This repository contains the source code for Parseable Console. Console is the web interface for Parseable. It allows you to view and analyze logs in real time.
 
-1. Clone the repository.
-2. Create `.env.development.local` and copy the content of `.env.example` into it (Fill in the values).
-3. Run `pnpm install` to install all the dependencies.
-4. Run `pnpm dev` to start the console.
-5. Open `http://localhost:3001` in your browser.
+Parseable Console is deeply integrated with Parseable server, and server binary has Console built-in. So, you don't need to build/run the Console separately.
 
-To test production build
+For complete Parseable API documentation, refer to [Parseable API workspace on Postman](https://www.postman.com/parseable/workspace/parseable/overview).
 
-1. Create `.env.test.local` and copy the content of `.env.example` into it (Fill in the values).
-2. Run `pnpm build:test` to create a release build in test mode.
-3. Run `pnpm start` to start the console.
-4. Open `http://localhost:3002` in your browser.
+![Parseable Console](https://raw.githubusercontent.com/parseablehq/.github/main/images/console.png)
 
-You should set VITE_PARSEABLE_URL if parseable server is running on a different url.
-
-## Live Demo
-
-<a href="https://demo.parseable.io">Click Here for Live Demo Parseable </a>
-
-Access the Parseable dashboard to verify the log data is present
+## :eyes: Live Demo
 
 <table>
 <tr>
@@ -62,24 +44,38 @@ Access the Parseable dashboard to verify the log data is present
 </tr>
 </table>
 
-For complete Parseable API documentation, refer to [Parseable API workspace on Postman](https://www.postman.com/parseable/workspace/parseable/overview).
+Please do not store any sensitive data on this server as the data is openly accessible. We'll delete the data on this server periodically.
 
-:warning: Please do not store any sensitive data on this server as the data is openly accessible. We'll delete the data on this server periodically.
+## :trophy: Development and Contributing
 
-## Contributing
+If you're looking to develop or test Parseable Console, you can follow the steps below.
 
-Refer to the contributing guide [here](https://www.parseable.io/docs/contributing).
+1. Clone the repository.
+2. Create `.env.development.local` and copy the content of `.env.example` into it (Fill in the values). By default, the console points to the demo server.
+3. Run `pnpm install` to install all the dependencies.
+4. Run `pnpm dev` to start the console.
+5. Open `http://localhost:3001` in your browser.
 
-## License
+To test production build
+
+1. Run `pnpm build:test` to create a release build in test mode.
+2. Run `pnpm start` to start the console.
+3. Open `http://localhost:3002` in your browser.
+
+Also, please refer to the contributing guide [here](https://www.parseable.io/docs/contributing).
+
+### Our Contributors
+
+<a href="https://github.com/parseablehq/console"><img src="https://contrib.rocks/image?repo=parseablehq/console" /></a>
+
+### Supported by
+
+<a href="https://fossunited.org/" target="_blank"><img src="http://fossunited.org/files/fossunited-badge.svg"></a>
+
+## :spiral-notepad: License
 
 Licensed under the GNU Affero General Public License, Version 3 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
 [https://www.gnu.org/licenses/agpl-3.0.txt](https://www.gnu.org/licenses/agpl-3.0.txt)
-
-## Our Contributors
-
-  <a href="https://github.com/parseablehq/console">
-  <img src="https://contrib.rocks/image?repo=parseablehq/console" />
-</a>
