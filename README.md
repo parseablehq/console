@@ -72,7 +72,7 @@ Also, please refer to the contributing guide [here](https://www.parseable.io/doc
 
 <a href="https://fossunited.org/" target="_blank"><img src="http://fossunited.org/files/fossunited-badge.svg"></a>
 
-## :spiral-notepad: License
+## 📓 License
 
 Licensed under the GNU Affero General Public License, Version 3 (the "License");
 you may not use this file except in compliance with the License.
