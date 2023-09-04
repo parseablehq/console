@@ -6,10 +6,10 @@ import { useGetUsers } from '@/hooks/useGetUsers';
 import { useUsersStyles } from './styles';
 import { usePostUser } from '@/hooks/usePostUser';
 import { Prism } from '@mantine/prism';
-import RoleTd from './row';
+import RoleTd from './Row';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-const Users: FC = () => {
+const Roles: FC = () => {
 	useDocumentTitle('Parseable | Users');
 	const {
 		state: { subCreateUserModalTogle },
@@ -153,8 +153,8 @@ const Users: FC = () => {
 				<Table striped highlightOnHover className={classes.tableStyle}>
 					<thead className={classes.theadStyle}>
 						<tr>
-							<th>Username</th>
 							<th>Role</th>
+							<th>Access</th>
 							<th style={{ textAlign: 'center' }}>Delete</th>
 							<th style={{ textAlign: 'center' }}>Reset Password</th>
 						</tr>
@@ -263,4 +263,4 @@ const Users: FC = () => {
 	);
 };
 
-export default Users;
+export default Roles;
