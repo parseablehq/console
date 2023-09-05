@@ -37,12 +37,11 @@ const Users: FC = () => {
 		resetData: resetCreateUser,
 	} = usePostUser();
 	const { data: users, error: usersError, loading: usersLoading, getUsersList, resetData: usersReset } = useGetUsers();
-	const { data: roles, error: rolesError, loading: rolesLoading, getRolesList, resetData: rolesReset } = useGetRoles();
+	const { data: roles, getRolesList, resetData: rolesReset } = useGetRoles();
 
 	useEffect(() => {
 		getUsersList();
 		getRolesList();
-
 		return () => {
 			usersReset();
 			rolesReset();
@@ -60,14 +59,14 @@ const Users: FC = () => {
 
 			getrows();
 		}
-		if (usersError || rolesError) {
+		if (usersError ) {
 			setTableRows(
 				<tr>
 					<td>error</td>
 				</tr>,
 			);
 		}
-		if (usersLoading || rolesLoading) {
+		if (usersLoading ) {
 			setTableRows(
 				<tr>
 					<td>loading</td>
