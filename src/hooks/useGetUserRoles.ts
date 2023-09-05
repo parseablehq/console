@@ -17,11 +17,11 @@ export const useGetUserRole = () => {
 			const res = await getUserRoles(userName);
 			switch (res.status) {
 				case StatusCodes.OK: {
-					let  result:any[]=[]
-					for (var prop in res.data ) {
-						result=[...result,...res.data[prop]]
-					}
-					setData(result);
+					// let  result:any[]=[]
+					// for (var prop in res.data ) {
+					// 	result=[...result,...res.data[prop]]
+					// }
+					setData(res.data);
 					break;
 				}
 				case StatusCodes.UNAUTHORIZED: {

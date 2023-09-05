@@ -1,14 +1,13 @@
-import { Box, Button, Group, Modal, ScrollArea, Select, Stack, Table, Text, TextInput } from '@mantine/core';
+import { Box, Button, Group, Modal, ScrollArea, Select, Stack, Table, Text, TextInput, px } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect, useState } from 'react';
-
-import { useGetUsers } from '@/hooks/useGetUsers';
 import { useUsersStyles } from './styles';
-import { usePostUser } from '@/hooks/usePostUser';
-import { Prism } from '@mantine/prism';
-import RoleTd from './Row';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
+import { useGetRoles } from '@/hooks/useGetRoles';
+import PrivilegeTR from './PrivilegeTR';
+import { IconUserPlus } from '@tabler/icons-react';
+import { usePutRole } from '@/hooks/usePutRole';
 const Roles: FC = () => {
 	useDocumentTitle('Parseable | Users');
 	const {
@@ -23,7 +22,7 @@ const Roles: FC = () => {
 	}, [subCreateUserModalTogle.get()]);
 
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
-	const [createUserInput, setCreateUserInput] = useState<string>('');
+	const [createRoleInput, setCreateRoleInput] = useState<string>('');
 	const [tagInput, setTagInput] = useState<string>('');
 	const [selectedPrivilege, setSelectedPrivilege] = useState<string>('');
 	const [SelectedStream, setSelectedStream] = useState<string>('');
@@ -31,61 +30,55 @@ const Roles: FC = () => {
 
 	const { data: streams } = useGetLogStreamList();
 
-	const {
-		data: CreatedUserResponse,
-		error: CreatedUserError,
-		loading: CreatedUserLoading,
-		createUser,
-		resetData: resetCreateUser,
-	} = usePostUser();
-	const { data: users, error: usersError, loading: usersLoading, getUsersList, resetData: usersReset } = useGetUsers();
+	const { data: CreatedRoleResponse, putRolePrivilege, resetData: resetCreateRoleData } = usePutRole();
+	const { data: roles, error: rolesError, loading: rolesLoading, getRolesList, resetData: rolesReset } = useGetRoles();
 
 	const [tableRows, setTableRows] = useState<any>([]);
 	useEffect(() => {
-		getUsersList();
+		getRolesList();
 
 		return () => {
-			usersReset();
+			rolesReset();
 		};
 	}, []);
 
 	useEffect(() => {
-		if (users) {
+		if (roles) {
 			const getrows = async () => {
-				let rows = users.map((user: any) => {
-					return <RoleTd key={user} Username={user} getUsersList={getUsersList} />;
+				let rows = roles.map((role: any) => {
+					return <PrivilegeTR key={role} roleName={role} getRolesList={getRolesList} />;
 				});
 				setTableRows(rows);
 			};
 
 			getrows();
 		}
-		if (usersError) {
+		if (rolesError) {
 			setTableRows(
 				<tr>
 					<td>error</td>
 				</tr>,
 			);
 		}
-		if (usersLoading) {
+		if (rolesLoading) {
 			setTableRows(
 				<tr>
 					<td>loading</td>
 				</tr>,
 			);
 		}
-	}, [users, usersError, usersLoading]);
+	}, [roles, rolesError, rolesLoading]);
 
 	useEffect(() => {
-		if (CreatedUserResponse) {
-			getUsersList();
+		if (CreatedRoleResponse) {
+			getRolesList();
 		}
-	}, [CreatedUserResponse]);
+	}, [CreatedRoleResponse]);
 
 	const handleClose = () => {
-		setCreateUserInput('');
+		setCreateRoleInput('');
 		setModalOpen(false);
-		resetCreateUser();
+		resetCreateRoleData();
 		setSelectedPrivilege('');
 		setSelectedStream('');
 		setStreamSearchValue('');
@@ -119,11 +112,12 @@ const Roles: FC = () => {
 				}
 			}
 		}
-		createUser(createUserInput, userRole);
+		putRolePrivilege(createRoleInput, userRole);
+		handleClose();
 	};
 
 	const createVaildtion = () => {
-		if (users?.includes(createUserInput) || createUserInput.length < 3) {
+		if (roles?.includes(createRoleInput) && createRoleInput.length > 0) {
 			return true;
 		}
 		if (selectedPrivilege !== '') {
@@ -149,6 +143,21 @@ const Roles: FC = () => {
 	const { classes } = useUsersStyles();
 	return (
 		<Box className={classes.container}>
+			<Box className={classes.header}>
+				<Text size="xl" weight={500}>
+					Roles
+				</Text>
+				<Button
+					variant="outline"
+					color="gray"
+					className={classes.createBtn}
+					onClick={() => {
+						setModalOpen(true);
+					}}
+					rightIcon={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
+					Create Role
+				</Button>
+			</Box>
 			<ScrollArea className={classes.tableContainer} type="always">
 				<Table striped highlightOnHover className={classes.tableStyle}>
 					<thead className={classes.theadStyle}>
@@ -156,7 +165,6 @@ const Roles: FC = () => {
 							<th>Role</th>
 							<th>Access</th>
 							<th style={{ textAlign: 'center' }}>Delete</th>
-							<th style={{ textAlign: 'center' }}>Reset Password</th>
 						</tr>
 					</thead>
 					<tbody>{tableRows}</tbody>
@@ -166,12 +174,12 @@ const Roles: FC = () => {
 				<Stack>
 					<TextInput
 						type="text"
-						label="Enter the name of the user"
-						placeholder="Type the name of the user to create"
+						label="Enter the name of the Role"
+						placeholder="Type the name of the Role to create"
 						onChange={(e) => {
-							setCreateUserInput(e.target.value);
+							setCreateRoleInput(e.target.value);
 						}}
-						value={createUserInput}
+						value={createRoleInput}
 						required
 					/>
 					<Select
@@ -219,30 +227,6 @@ const Roles: FC = () => {
 					) : (
 						''
 					)}
-
-					{CreatedUserError ? (
-						<Text className={classes.passwordText} color="red">
-							{CreatedUserError}
-						</Text>
-					) : CreatedUserLoading ? (
-						<Text className={classes.passwordText}>loading</Text>
-					) : CreatedUserResponse ? (
-						<Box>
-							<Text className={classes.passwordText}>Password</Text>
-							<Prism
-								className={classes.passwordPrims}
-								language="markup"
-								copyLabel="Copy password to clipboard"
-								copiedLabel="Password copied to clipboard">
-								{CreatedUserResponse}
-							</Prism>
-							<Text className={classes.passwordText} color="red">
-								Warning this is the only time you are able to see Password
-							</Text>
-						</Box>
-					) : (
-						''
-					)}
 				</Stack>
 
 				<Group position="right" mt={10}>
@@ -250,8 +234,8 @@ const Roles: FC = () => {
 						variant="filled"
 						color="gray"
 						className={classes.modalActionBtn}
-						onClick={handleCreateUser}
-						disabled={createVaildtion()}>
+						disabled={createVaildtion()}
+						onClick={handleCreateUser}>
 						Create
 					</Button>
 					<Button onClick={handleClose} variant="outline" color="gray" className={classes.modalCancelBtn}>

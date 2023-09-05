@@ -7,7 +7,7 @@ export const useGetRole = () => {
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
 
-	const getRolePermission = async (roleName:string) => {
+	const getRolePrivilege = async (roleName:string) => {
 		try {
 			setLoading(true);
 			setError(null);
@@ -35,5 +35,5 @@ export const useGetRole = () => {
 		setData(null);
 	};
 
-	return { data, error, loading, getRolePermission, resetData };
+	return { data, error, loading, getRolePrivilege, resetData };
 };

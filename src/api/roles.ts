@@ -9,8 +9,8 @@ export const deleteRole = (roleName: string) => {
     return Axios().delete(ROLE_URL(roleName));
 }
 
-export const putRole = (roleName: string, permissions: object[]) => {
-    return Axios().put(ROLE_URL(roleName), permissions);
+export const putRole = (roleName: string, privilege: object[]) => {
+    return Axios().put(ROLE_URL(roleName), privilege);
 }
 
 export const getRole = (roleName: string) => {

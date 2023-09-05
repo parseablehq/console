@@ -75,8 +75,8 @@ const Navbar: FC<NavbarProps> = (props) => {
 	}, [subNavbarTogle.get()]);
 
 	const onSignOut = () => {
-		// Cookies.remove('session');
-		// Cookies.remove('username');
+		Cookies.remove('session');
+		Cookies.remove('username');
 
 		window.location.href=`${baseURL}api/v1/o/logout?redirect=${window.location.origin}/login`;
 	};
@@ -166,7 +166,6 @@ const Navbar: FC<NavbarProps> = (props) => {
 		}
 	}, [deleteData]);
 
-	//isAdmin
 	const { data: roles, getRoles, resetData } = useGetUserRole();
 	useEffect(() => {
 		if (username) {
@@ -178,9 +177,9 @@ const Navbar: FC<NavbarProps> = (props) => {
 	}, [username]);
 
 	useEffect(() => {
-		if(streams && streams.length > 0 && roles && roles.length > 0){
+		if(streams && streams.length > 0 && roles){
 			const userStreams = getUserSepcificStreams(roles,streams as any);
-			setUserSepecficStreams(userStreams as any); 
+			setUserSepecficStreams(userStreams as any);
 		}
 
 	}, [roles, streams]);
