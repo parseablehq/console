@@ -48,14 +48,18 @@ export const theme: MantineThemeOverride = {
 	defaultRadius: 'md',
 	components: {
 		Pagination: {
-			styles: ({ colors }) => {
+			styles: ({ colors, fontSizes }) => {
 				return {
 					control: {
+						border: `solid 1px ${colors.gray[2]}`,
+						fontSize: fontSizes.sm,
+
 						'&[data-active=true]': {
 							background: colors.brandPrimary[0],
 
 							':hover': {
-								color: colors.brandSecondary[0],
+								backgroundColor: colors.brandSecondary[0],
+								color: colors.white[0],
 							},
 						},
 					},
@@ -208,11 +212,10 @@ export const theme: MantineThemeOverride = {
 						},
 						'&:hover': { color: colors.brandSecondary[0] },
 					},
-					
 				};
 			},
 		},
-		TextInput:{
+		TextInput: {
 			styles: ({ colors }) => {
 				return {
 					input: {
@@ -220,8 +223,19 @@ export const theme: MantineThemeOverride = {
 						borderRadius: 'md',
 					},
 				};
+			},
+		},
+		Tooltip: {
+			styles: ({ colors }) => {
+				return {
+					tooltip: {
+						background: colors.brandPrimary[0],
+						color: colors.white[0],
+					},
+				};
 			}
 		},
+
 		PasswordInput: {
 			styles: ({ colors }) => {
 				return {
@@ -233,6 +247,5 @@ export const theme: MantineThemeOverride = {
 				};
 			}
 		}
-
 	},
 };

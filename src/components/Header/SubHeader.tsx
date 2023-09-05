@@ -8,7 +8,7 @@ import TimeRange from './TimeRange';
 import { useLogQueryStyles } from './styles';
 import ReloadUser from './ReloadUser';
 import DocsUser from './UserDocs';
-// import CreateUser from './CreateUser';
+
 
 export const StatsHeader: FC = () => {
 	const { classes } = useLogQueryStyles();
@@ -69,6 +69,8 @@ export const LogsHeader: FC = () => {
 				<Box className={innerContainer}>
 					<Search />
 					<RefreshNow />
+					{/* <LimitLog /> */}
+
 					<TimeRange />
 					<RefreshInterval />
 				</Box>

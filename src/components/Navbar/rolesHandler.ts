@@ -1,54 +1,8 @@
-// [
-//     {
-//         "privilege": "writer",
-//         "resource": {
-//             "stream": "backend"
-//         }
-//     },
-//     {
-//         "privilege": "writer",
-//         "resource": {
-//             "stream": "frontend"
-//         }
-//     },
+const adminAccess =[ "Ingest", "Query", "CreateStream", "ListStream", "GetSchema", "GetStats", "DeleteStream", "GetRetention", "PutRetention", "PutAlert", "GetAlert", "PutUser", "ListUser", "DeleteUser", "PutRoles", "GetRole"]
+const editorAccess = ["Ingest", "Query", "CreateStream", "ListStream", "GetSchema", "GetStats", "GetRetention", "PutRetention", "PutAlert", "GetAlert"]
+const writerAccess = ["Ingest", "Query", "ListStream", "GetSchema", "GetStats", "GetRetention", "PutAlert", "GetAlert"]
+const readerAccess = ["Query", "ListStream", "GetSchema", "GetStats", "GetRetention", "GetAlert"]
 
-//     {
-//         "privilege": "reader",
-//         "resource": {
-//             "stream": "backend"
-//         }
-//     },
-
-// ]
-// [
-//     {
-//         "privilege": "admin"
-//     }
-// ]
-
-// [
-//     {
-//         "privilege": "editor",
-//     }
-// ]
-// Writer: Ingest, Query, ListStream, GetSchema, GetStats, GetRetention, PutAlert, GetAlert.
-// Reader: Query, ListStream, GetSchema, GetStats, GetRetention, GetAlert.
-// admin :Ingest,
-// Query,
-// CreateStream,
-// ListStream,
-// GetSchema,
-// GetStats,
-// DeleteStream,
-// GetRetention,
-// PutRetention,
-// PutAlert,
-// GetAlert,
-// PutUser,
-// ListUser,
-// DeleteUser,
-// PutRoles,
-// GetRole,
 
 const adminAccess = [
 	'Ingest',

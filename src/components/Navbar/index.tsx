@@ -28,16 +28,16 @@ import {  USERS_MANAGEMENT_ROUTE } from '@/constants/routes';
 import { useDeleteLogStream } from '@/hooks/useDeleteLogStream';
 import InfoModal from './infoModal';
 import { useGetUserRole } from '@/hooks/useGetUserRoles';
-import {  getStreamsSepcificAccess, getUserSepcificStreams } from './rolesHandler';
+import { getStreamsSepcificAccess, getUserSepcificStreams } from './rolesHandler';
 import { LogStreamData } from '@/@types/parseable/api/stream';
 import Cookies from 'js-cookie';
 const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 
 const links = [
-	{ icon: IconZoomCode, label: 'Query', pathname: '/query', requiredAccess: ["Query","GetSchema"] },
-	{ icon: IconTableShortcut, label: 'Logs', pathname: '/logs', requiredAccess: ["Query","GetSchema"]},
-	{ icon: IconReportAnalytics, label: 'Stats', pathname: '/stats', requiredAccess: ["GetStats"]},
-	{ icon: IconSettings, label: 'Config', pathname: '/config', requiredAccess: ["PutAlert"]},
+	{ icon: IconZoomCode, label: 'Query', pathname: '/query', requiredAccess: ['Query', 'GetSchema'] },
+	{ icon: IconTableShortcut, label: 'Logs', pathname: '/logs', requiredAccess: ['Query', 'GetSchema'] },
+	{ icon: IconReportAnalytics, label: 'Stats', pathname: '/stats', requiredAccess: ['GetStats'] },
+	{ icon: IconSettings, label: 'Config', pathname: '/config', requiredAccess: ['PutAlert'] },
 ];
 
 type NavbarProps = Omit<MantineNavbarProps, 'children'>;
@@ -57,8 +57,8 @@ const Navbar: FC<NavbarProps> = (props) => {
 	const [searchValue, setSearchValue] = useMountedState('');
 	const [currentPage, setCurrentPage] = useMountedState('/query');
 	const [deleteStream, setDeleteStream] = useMountedState('');
-	const [userSepecficStreams, setUserSepecficStreams] =useMountedState<LogStreamData | null>(null );
-	const [userSepecficAccess, setUserSepecficAccess] =useMountedState<string[] | null>(null);
+	const [userSepecficStreams, setUserSepecficStreams] = useMountedState<LogStreamData | null>(null);
+	const [userSepecficAccess, setUserSepecficAccess] = useMountedState<string[] | null>(null);
 
 	const [disableLink, setDisableLink] = useMountedState(false);
 	const [isSubNavbarOpen, setIsSubNavbarOpen] = useMountedState(false);
@@ -98,7 +98,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 			if (streamName === deleteStream && userSepecficStreams) {
 				setDeleteStream('');
 				handleChange(userSepecficStreams[0].name);
-			} else if (userSepecficStreams && !userSepecficStreams.find((stream : any) => stream.name === streamName)) {
+			} else if (userSepecficStreams && !userSepecficStreams.find((stream: any) => stream.name === streamName)) {
 				notifications.show({
 					id: 'error-data',
 					color: 'red',
@@ -108,7 +108,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 					autoClose: 5000,
 				});
 				handleChange(userSepecficStreams[0].name);
-			} else if (userSepecficStreams?.find((stream:any) => stream.name === streamName)) {
+			} else if (userSepecficStreams?.find((stream: any) => stream.name === streamName)) {
 				handleChange(streamName);
 			}
 		} else if (userSepecficStreams && Boolean(userSepecficStreams.length)) {
@@ -121,9 +121,11 @@ const Navbar: FC<NavbarProps> = (props) => {
 		}
 	}, [userSepecficStreams]);
 
-	const handleChange = (value: string,page: string = currentPage ) => {
-		handleChangeWithoutRiderection(value,page);
-		navigate(`/${value}${page}`);
+	const handleChange = (value: string, page: string = currentPage) => {
+		handleChangeWithoutRiderection(value, page);
+		if (page !== '/users') {
+			navigate(`/${value}${page}`);
+		}
 	};
 	const handleChangeWithoutRiderection = (value: string, page: string = currentPage) => {
 		setActiveStream(value);
@@ -135,7 +137,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 			state.streamName = value || '';
 			state.startTime = now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate();
 			state.endTime = now.toDate();
-			state.access= getStreamsSepcificAccess(roles, value);
+			state.access = getStreamsSepcificAccess(roles, value);
 		});
 		subLogSelectedTimeRange.set((state) => {
 			state.state = 'fixed';
@@ -181,9 +183,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 			const userStreams = getUserSepcificStreams(roles,streams as any);
 			setUserSepecficStreams(userStreams as any);
 		}
-
 	}, [roles, streams]);
-
 
 	const { classes } = useNavbarStyles();
 	const {
@@ -198,13 +198,12 @@ const Navbar: FC<NavbarProps> = (props) => {
 		userManagementBtn,
 		userManagementBtnActive,
 		modalStyle,
-		modalActionBtn
-		,modalCancelBtn
+		modalActionBtn,
+		modalCancelBtn,
 	} = classes;
 	return (
 		<MantineNavbar {...props} withBorder zIndex={1} hiddenBreakpoint={window.outerWidth + 20} hidden={isSubNavbarOpen}>
 			<MantineNavbar.Section grow className={container}>
-				
 				<NavLink label="Log Streams" icon={<IconBinaryTree2 size="1.5rem" stroke={1.3} />} className={streamsBtn} />
 				<Select
 					placeholder="Pick one"
@@ -215,13 +214,16 @@ const Navbar: FC<NavbarProps> = (props) => {
 					onSearchChange={(value) => setSearchValue(value)}
 					onDropdownClose={() => setSearchValue(activeStream)}
 					onDropdownOpen={() => setSearchValue('')}
-					data={userSepecficStreams?.map((stream:any) => ({ value: stream.name, label: stream.name })) ?? []}
+					data={userSepecficStreams?.map((stream: any) => ({ value: stream.name, label: stream.name })) ?? []}
 					searchable
 					required
 					className={selectStreambtn}
 				/>
 				{links.map((link) => {
-					if (link.requiredAccess && !userSepecficAccess?.some((access:string) => link.requiredAccess.includes(access))) {
+					if (
+						link.requiredAccess &&
+						!userSepecficAccess?.some((access: string) => link.requiredAccess.includes(access))
+					) {
 						return null;
 					}
 					return (
@@ -231,24 +233,24 @@ const Navbar: FC<NavbarProps> = (props) => {
 							sx={{ paddingLeft: 53 }}
 							disabled={disableLink}
 							onClick={() => {
-								handleChange(activeStream,link.pathname);
+								handleChange(activeStream, link.pathname);
 							}}
 							key={link.label}
 							className={(currentPage === link.pathname && linkBtnActive) || linkBtn}
 						/>
 					);
 				})}
-				{ !userSepecficAccess?.some((access:string) => ["DeleteStream"].includes(access)) ? null :
-				 <NavLink
-					label={'Delete'}
-					icon={<IconTrash size="1.3rem" stroke={1.2} />}
-					sx={{ paddingLeft: 53 }}
-					onClick={openDelete}
-					className={linkBtn}
-					disabled={disableLink}
-				/>
-				}
-				
+				{!userSepecficAccess?.some((access: string) => ['DeleteStream'].includes(access)) ? null : (
+					<NavLink
+						label={'Delete'}
+						icon={<IconTrash size="1.3rem" stroke={1.2} />}
+						sx={{ paddingLeft: 53 }}
+						onClick={openDelete}
+						className={linkBtn}
+						disabled={disableLink}
+					/>
+				)}
+
 				{error && <div>{error}</div>}
 				{error && (
 					<NavLink
@@ -259,7 +261,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 						sx={{ paddingLeft: 0 }}
 					/>
 				)}
-				{ !userSepecficAccess?.some((access:string) => ["ListUser"].includes(access)) ? null :
+				{!userSepecficAccess?.some((access: string) => ['ListUser'].includes(access)) ? null : (
 					<NavLink
 						pt={24}
 						className={(currentPage === USERS_MANAGEMENT_ROUTE && userManagementBtnActive) || userManagementBtn}
@@ -270,7 +272,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 							setCurrentPage(USERS_MANAGEMENT_ROUTE);
 						}}
 					/>
-				}
+				)}
 			</MantineNavbar.Section>
 			<MantineNavbar.Section className={lowerContainer}>
 				<NavLink label={username} icon={<IconUser size="1.3rem" stroke={1.3} />} className={userBtn} component="a" />
@@ -289,8 +291,14 @@ const Navbar: FC<NavbarProps> = (props) => {
 					onClick={onSignOut}
 				/>
 			</MantineNavbar.Section>
-			<Modal withinPortal size="md" opened={openedDelete} onClose={handleCloseDelete} title={'Delete Stream'} centered
-			className={modalStyle} >
+			<Modal
+				withinPortal
+				size="md"
+				opened={openedDelete}
+				onClose={handleCloseDelete}
+				title={'Delete Stream'}
+				centered
+				className={modalStyle}>
 				<TextInput
 					type="text"
 					label="Are you sure you want to delete this stream?"
@@ -301,7 +309,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 					required
 				/>
 
-				<Group mt={10} position='right'>
+				<Group mt={10} position="right">
 					<Button
 						className={modalActionBtn}
 						disabled={deleteStream === activeStream ? false : true}
