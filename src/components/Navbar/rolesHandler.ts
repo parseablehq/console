@@ -4,39 +4,6 @@ const writerAccess = ["Ingest", "Query", "ListStream", "GetSchema", "GetStats", 
 const readerAccess = ["Query", "ListStream", "GetSchema", "GetStats", "GetRetention", "GetAlert"]
 
 
-const adminAccess = [
-	'Ingest',
-	'Query',
-	'CreateStream',
-	'ListStream',
-	'GetSchema',
-	'GetStats',
-	'DeleteStream',
-	'GetRetention',
-	'PutRetention',
-	'PutAlert',
-	'GetAlert',
-	'PutUser',
-	'ListUser',
-	'DeleteUser',
-	'PutRoles',
-	'GetRole',
-];
-const editorAccess = [
-	'Ingest',
-	'Query',
-	'CreateStream',
-	'ListStream',
-	'GetSchema',
-	'GetStats',
-	'GetRetention',
-	'PutRetention',
-	'PutAlert',
-	'GetAlert',
-];
-const writerAccess = ['Ingest', 'Query', 'ListStream', 'GetSchema', 'GetStats', 'GetRetention', 'PutAlert', 'GetAlert'];
-const readerAccess = ['Query', 'ListStream', 'GetSchema', 'GetStats', 'GetRetention', 'GetAlert'];
-
 const getStreamsSepcificAccess = (rolesWithRoleName: object[], stream: string) => {
 	let access: string[] = [];
     let roles: any[] = [];
