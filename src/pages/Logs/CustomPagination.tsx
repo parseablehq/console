@@ -51,7 +51,8 @@ const CustomPagination: FC<PaginationProps> = (props) => {
 			nextStartTimeTemp >= subLogQuery.get().startTime
 		) {
 			setNextStartTimeTemp(new Date(dayjs(nextStartTimeTemp).subtract(1, 'minute').toDate()));
-		} else if (queryCountResForNext && queryCountResForNext[0].totalcurrentcount !== 0) {
+		} else if (queryCountResForNext && queryCountResForNext[0].totalcurrentcount !== 0 &&nextStartTimeTemp &&
+			nextStartTimeTemp >= subLogQuery.get().startTime) {
 			setNextStartTime(nextStartTimeTemp);
 		}
 	}, [queryCountResForNext]);

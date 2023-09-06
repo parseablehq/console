@@ -181,7 +181,6 @@ const LogTable: FC = () => {
 
 	useEffect(() => {
 		if (currentStartTimeTemp) {
-			console.log(currentStartTimeTemp);
 			getQueryCountData({
 				streamName: subLogQuery.get().streamName,
 				startTime: currentStartTimeTemp,
@@ -205,7 +204,6 @@ const LogTable: FC = () => {
 				access: subLogQuery.get().access,
 			});
 		} else if (queryCountRes && queryCountRes[0].totalcurrentcount === 0) {
-			console.log(queryCountRes[0].totalcurrentcount, currentStartTimeTemp);
 			setCurrentStartTimeTemp(new Date(dayjs(currentStartTimeTemp).subtract(1, 'minute').format('YYYY-MM-DD HH:mm z')));
 		} else if (queryCountRes && queryCountRes[0].totalcurrentcount !== 0 && currentStartTimeTemp) {
 			setCurrentStartTime(currentStartTimeTemp);
