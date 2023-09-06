@@ -2,7 +2,7 @@ import React, { FC, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useQueryPageContext } from './Context';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Box, Button, Text, Tooltip, px } from '@mantine/core';
+import { Box, Button, Input, Text, Tooltip, px } from '@mantine/core';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import { ErrorMarker, errChecker } from './ErrorMarker';
 import { notifications } from '@mantine/notifications';
@@ -10,6 +10,8 @@ import { IconPlayerPlayFilled, IconCheck, IconFileAlert, IconFileInfo } from '@t
 import useMountedState from '@/hooks/useMountedState';
 import { useQueryCodeEditorStyles } from './styles';
 import dayjs from 'dayjs';
+import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
+import { makeAPIRequest } from '@/utils';
 
 const QueryCodeEditor: FC = () => {
 	const {
@@ -25,7 +27,51 @@ const QueryCodeEditor: FC = () => {
 	const [isSchemaOpen, setIsSchemaOpen] = useMountedState(false);
 	const [refreshInterval, setRefreshInterval] = useMountedState<number | null>(null);
 	const [currentStreamName, setCurrentStreamName] = useMountedState<string>(subLogQuery.get().streamName);
-	const [query, setQuery] = useMountedState<string>("");
+	const [query, setQuery] = useMountedState<string>('');
+	const [aiQuery, setAiQuery] = useMountedState('Show all records');
+	const { data: querySchema, getDataSchema } = useGetLogStreamSchema();
+
+	const filterUnnecessaryFieldsFromRecord = (objArray = []) => {
+		return objArray.map((obj) => {
+			const { name, data_type } = obj;
+			return { name, data_type };
+		});
+	};
+
+	const handleAIGenerate = async () => {
+		if (!aiQuery?.length) {
+			alert('Please enter a valid query');
+			return;
+		}
+
+		notifications.show({
+			id: 'ai-suggest',
+			loading: true,
+			color: '#545BEB',
+			title: 'Getting suggestions',
+			message: 'AI based SQL being generated.',
+			autoClose: true,
+			withCloseButton: false,
+		});
+
+		const columnData = querySchema?.fields;
+		const usefulCols = filterUnnecessaryFieldsFromRecord(columnData);
+		const stringified = JSON.stringify(usefulCols);
+
+		const prompt = `I have a table called ${currentStreamName}. It has the columns:\n${stringified}
+Based on this, please generate valid SQL for the query: "${aiQuery}"
+Generate only the SQL as output. Also add comments in SQL syntax to explain your action. Don't output anything else.
+If it is not possible to generate valid SQL, output as an SQL comment saying so.`;
+		const resp = await makeAPIRequest(prompt);
+
+		const warningMsg =
+			'-- Parseable AI is experimental and may produce incorrect answers\n-- Always verify the generated SQL before executing\n\n';
+		setQuery(warningMsg + resp);
+	};
+
+	useEffect(() => {
+		getDataSchema(currentStreamName);
+	}, [currentStreamName]);
 
 	const handleEditorChange = (code: any) => {
 		setQuery(code);
@@ -59,14 +105,13 @@ const QueryCodeEditor: FC = () => {
 			refreshIntervalListener();
 			subQueryListener();
 		};
-	}, [subLogQuery.get(), subSchemaToggle.get(), subRefreshInterval.get()]);
+	}, [subLogQuery.get(), subSchemaToggle.get(), subRefreshInterval.get(), querySchema]);
 
-useEffect(() => {
-	if(subLogQuery.get().streamName){
-		setQuery(`SELECT * FROM ${subLogQuery.get().streamName} LIMIT 100  ; `);
-	}
-}, []);
-
+	useEffect(() => {
+		if (subLogQuery.get().streamName) {
+			setQuery(`SELECT * FROM ${subLogQuery.get().streamName} LIMIT 100  ; `);
+		}
+	}, []);
 
 	function handleEditorDidMount(editor: any, monaco: any) {
 		editorRef.current = editor;
@@ -75,7 +120,17 @@ useEffect(() => {
 			runQuery(editor.getValue());
 		});
 	}
-	const runQuery = (query:string) => {
+
+	const sanitseSqlString = (sqlString: string): string => {
+		const withoutComments = sqlString.replace(/--.*$/gm, '');
+		const withoutNewLines = withoutComments.replace(/\n/g, ' ');
+		const withoutTrailingSemicolon = withoutNewLines.replace(/;/, '');
+		return withoutTrailingSemicolon;
+	};
+
+	const runQuery = (inputQuery: string) => {
+		const query = sanitseSqlString(inputQuery);
+
 		resetData();
 		notifications.show({
 			id: 'load-data',
@@ -86,21 +141,21 @@ useEffect(() => {
 			autoClose: false,
 			withCloseButton: false,
 		});
-		let LogQuery ={
-			startTime : subLogQuery.get().startTime,
-			endTime :subLogQuery.get().endTime,
-			streamName : currentStreamName,
-			access:[]
-		}
-		if (subLogSelectedTimeRange.get().state==='fixed') {
+		let LogQuery = {
+			startTime: subLogQuery.get().startTime,
+			endTime: subLogQuery.get().endTime,
+			streamName: currentStreamName,
+			access: [],
+		};
+		if (subLogSelectedTimeRange.get().state === 'fixed') {
 			const now = dayjs();
 			const timeDiff = subLogQuery.get().endTime.getTime() - subLogQuery.get().startTime.getTime();
-			LogQuery ={
-				startTime : now.subtract(timeDiff).toDate(),
-				endTime :now.toDate(),
-				streamName : currentStreamName,
-				access:[]
-			}
+			LogQuery = {
+				startTime: now.subtract(timeDiff).toDate(),
+				endTime: now.toDate(),
+				streamName: currentStreamName,
+				access: [],
+			};
 		}
 		const parsedQuery = query.replace(/(\r\n|\n|\r)/gm, '');
 		getQueryData(LogQuery, parsedQuery);
@@ -158,13 +213,32 @@ useEffect(() => {
 						sx={{ color: 'white', backgroundColor: 'black' }}
 						withArrow
 						position="right">
-						<Button variant="default" className={runQueryBtn} onClick={()=>{runQuery(query)}}>
+						<Button
+							variant="default"
+							className={runQueryBtn}
+							onClick={() => {
+								runQuery(query);
+							}}>
 							<IconPlayerPlayFilled size={px('1.2rem')} stroke={1.5} />
 						</Button>
 					</Tooltip>
 				</Box>
 			</Box>
 			<Box sx={{ marginTop: '5px', height: 'calc(100% - 60px)' }}>
+				<Box className="flex" style={{ display: 'flex', margin: '15px', flexWrap: 'wrap' }}>
+					<Input
+						type="text"
+						name="ai_query"
+						id="ai_query"
+						style={{ minWidth: '85%', margin: '2px 20px 10px 0' }}
+						value={aiQuery}
+						onChange={(e) => setAiQuery(e.target.value)}
+						placeholder="Ask Parseable AI"
+					/>
+					<Button variant="gradient" onClick={handleAIGenerate}>
+						Generate SQL
+					</Button>
+				</Box>
 				<Editor
 					height={'100%'}
 					defaultLanguage="sql"
