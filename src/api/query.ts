@@ -31,3 +31,19 @@ export const getQueryResult = (logsQuery: LogsQuery, query = '') => {
 		{},
 	);
 };
+
+export const getQueryCount = (logsQuery: LogsQuery) => {
+	const { startTime, endTime, streamName } = logsQuery;
+
+	const query = `SELECT count(*) as totalcurrentcount FROM ${streamName}`;
+
+	return Axios().post(
+		LOG_QUERY_URL,
+		{
+			query,
+			startTime,
+			endTime,
+		},
+		{},
+	);
+};
