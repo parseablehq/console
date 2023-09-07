@@ -148,7 +148,9 @@ const LogTable: FC = () => {
 			resetStreamData();
 			resetLogsData();
 		}
-		setCurrentStartTimeTemp(new Date(dayjs(subLogQuery.get().endTime).format('YYYY-MM-DD HH:mm z')));
+		let tempDate = subLogQuery.get().endTime;
+		tempDate.setSeconds(0, 0);
+		setCurrentStartTimeTemp(tempDate);
 		getDataSchema(query.streamName);
 		setColumnToggles(new Map());
 	};
@@ -163,7 +165,9 @@ const LogTable: FC = () => {
 					resetStreamData();
 					resetLogsData();
 				}
-				setCurrentStartTimeTemp(new Date(dayjs(subLogQuery.get().endTime).format('YYYY-MM-DD HH:mm z')));
+				let tempDate = subLogQuery.get().endTime;
+				tempDate.setSeconds(0, 0);
+				setCurrentStartTimeTemp(tempDate);
 				getDataSchema(query.streamName);
 				setColumnToggles(new Map());
 				setPinnedColumns(new Set());
@@ -204,7 +208,10 @@ const LogTable: FC = () => {
 				access: subLogQuery.get().access,
 			});
 		} else if (queryCountRes && queryCountRes[0].totalcurrentcount === 0) {
-			setCurrentStartTimeTemp(new Date(dayjs(currentStartTimeTemp).subtract(1, 'minute').format('YYYY-MM-DD HH:mm z')));
+			let tempDate = subLogQuery.get().endTime;
+			tempDate.setSeconds(0, 0);
+			tempDate.setMinutes(tempDate.getMinutes() - 1);
+			setCurrentStartTimeTemp(tempDate);
 		} else if (queryCountRes && queryCountRes[0].totalcurrentcount !== 0 && currentStartTimeTemp) {
 			setCurrentStartTime(currentStartTimeTemp);
 		}
@@ -245,7 +252,9 @@ const LogTable: FC = () => {
 				resetStreamData();
 				resetLogsData;
 			}
-			setCurrentStartTimeTemp(new Date(dayjs(subLogQuery.get().endTime).format('YYYY-MM-DD HH:mm z')));
+			let tempDate = subLogQuery.get().endTime;
+			tempDate.setSeconds(0, 0);
+			setCurrentStartTimeTemp(tempDate);
 			getDataSchema(query.streamName);
 			setColumnToggles(new Map());
 		}
