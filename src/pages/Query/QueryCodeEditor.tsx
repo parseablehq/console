@@ -13,6 +13,7 @@ import dayjs from 'dayjs';
 import { notify } from '@/utils/notification';
 import { Axios } from '@/api/axios';
 import { LLM_QUERY_URL } from '@/api/constants';
+import { filterUnnecessaryFieldsFromRecord } from '@/utils';
 
 const QueryCodeEditor: FC = () => {
 	const {
@@ -112,6 +113,15 @@ const QueryCodeEditor: FC = () => {
 		const query = sanitseSqlString(inputQuery);
 
 		resetData();
+		notifications.show({
+			id: 'load-data',
+			loading: true,
+			color: '#545BEB',
+			title: 'Running Query',
+			message: 'Data will be loaded.',
+			autoClose: false,
+			withCloseButton: false,
+		});
 		let LogQuery = {
 			startTime: subLogQuery.get().startTime,
 			endTime: subLogQuery.get().endTime,
