@@ -150,6 +150,7 @@ const LogTable: FC = () => {
 		}
 		let tempDate = subLogQuery.get().endTime;
 		tempDate.setSeconds(0, 0);
+		setCurrentCount(0);
 		setCurrentStartTimeTemp(tempDate);
 		getDataSchema(query.streamName);
 		setColumnToggles(new Map());
@@ -169,6 +170,7 @@ const LogTable: FC = () => {
 				tempDate.setSeconds(0, 0);
 				setCurrentStartTimeTemp(tempDate);
 				getDataSchema(query.streamName);
+				setCurrentCount(0);
 				setColumnToggles(new Map());
 				setPinnedColumns(new Set());
 			}
@@ -211,6 +213,7 @@ const LogTable: FC = () => {
 			setCurrentStartTimeTemp(dayjs(currentStartTimeTemp).subtract(1, 'minute').toDate());
 		} else if (queryCountRes && queryCountRes[0].totalcurrentcount !== 0 && currentStartTimeTemp) {
 			setCurrentStartTime(currentStartTimeTemp);
+			setCurrentCount(queryCountRes[0].totalcurrentcount);
 		}
 	}, [queryCountRes]);
 
@@ -256,12 +259,6 @@ const LogTable: FC = () => {
 			setColumnToggles(new Map());
 		}
 	}, [subLogQuery]);
-
-	useEffect(() => {
-		if (logs && logs[0] && logs[0].currentquerycount) {
-			setCurrentCount(logs[0].currentquerycount as number);
-		}
-	}, [logs]);
 
 	const renderTh = useMemo(() => {
 		if (logsSchema) {
@@ -449,6 +446,7 @@ const LogTable: FC = () => {
 									pageLogData={pageLogData}
 									goToPage={goToPage}
 									setCurrentStartTime={setCurrentStartTime}
+									setCurrentCount={setCurrentCount}
 								/>
 								<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
 							</Box>

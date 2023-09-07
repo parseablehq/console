@@ -11,9 +11,10 @@ type PaginationProps = {
 	setCurrentStartTime: (date: Date | null) => void;
 	pageLogData: any;
 	goToPage: (page: number, limit: number) => void;
+	setCurrentCount: (currentCount:number)=>void;
 };
 const CustomPagination: FC<PaginationProps> = (props) => {
-	const { currentStartTime, pageLogData, goToPage, setCurrentStartTime } = props;
+	const { currentStartTime, pageLogData, goToPage, setCurrentStartTime,setCurrentCount } = props;
 	const [nextStartTimeTemp, setNextStartTimeTemp] = useMountedState<Date | null>(null);
 	const [nextStartTime, setNextStartTime] = useMountedState<Date | null>(null);
 	const [prevStartTimeTemp, setPrevStartTimeTemp] = useMountedState<Date | null>(null);
@@ -102,6 +103,7 @@ const CustomPagination: FC<PaginationProps> = (props) => {
 								onClick={() => {
 									if (prevStartTime) {
 										setCurrentStartTime(prevStartTime);
+										setCurrentCount(queryCountResForPrev[0].totalcurrentcount)
 									}
 								}}
 							/>
@@ -114,6 +116,7 @@ const CustomPagination: FC<PaginationProps> = (props) => {
 								onClick={() => {
 									if (nextStartTime) {
 										setCurrentStartTime(nextStartTime);
+										setCurrentCount(queryCountResForNext[0].totalcurrentcount)
 									}
 								}}
 								disabled={Boolean(!nextStartTime)}
