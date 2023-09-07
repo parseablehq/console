@@ -127,15 +127,6 @@ If it is not possible to generate valid SQL, output as an SQL comment saying so.
 		const query = sanitseSqlString(inputQuery);
 
 		resetData();
-		notifications.show({
-			id: 'load-data',
-			loading: true,
-			color: '#545BEB',
-			title: 'Running Query',
-			message: 'Data will be loaded.',
-			autoClose: false,
-			withCloseButton: false,
-		});
 		let LogQuery = {
 			startTime: subLogQuery.get().startTime,
 			endTime: subLogQuery.get().endTime,
