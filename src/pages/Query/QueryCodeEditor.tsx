@@ -14,6 +14,7 @@ import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { notify } from '@/utils/notification';
 import { Axios } from '@/api/axios';
 import { LLM_QUERY_URL } from '@/api/constants';
+import { filterUnnecessaryFieldsFromRecord } from '@/utils';
 
 const QueryCodeEditor: FC = () => {
 	const {
@@ -33,13 +34,6 @@ const QueryCodeEditor: FC = () => {
 	const [aiQuery, setAiQuery] = useMountedState('Show all records');
 	const { data: querySchema, getDataSchema } = useGetLogStreamSchema();
 
-	const filterUnnecessaryFieldsFromRecord = (objArray = []) => {
-		return objArray.map((obj) => {
-			const { name, data_type } = obj;
-			return { name, data_type };
-		});
-	};
-
 	const handleAIGenerate = async () => {
 		if (!aiQuery?.length) {
 			notify({ message: 'Please enter a valid query' });
@@ -47,7 +41,7 @@ const QueryCodeEditor: FC = () => {
 		}
 		notify({ message: 'AI based SQL being generated.', title: 'Getting suggestions', autoClose: 3000, color: 'blue' });
 
-		const columnData = querySchema?.fields;
+		const columnData = querySchema?.fields || [];
 		const usefulCols = filterUnnecessaryFieldsFromRecord(columnData);
 		const stringified = JSON.stringify(usefulCols);
 
@@ -133,6 +127,15 @@ If it is not possible to generate valid SQL, output as an SQL comment saying so.
 		const query = sanitseSqlString(inputQuery);
 
 		resetData();
+		notifications.show({
+			id: 'load-data',
+			loading: true,
+			color: '#545BEB',
+			title: 'Running Query',
+			message: 'Data will be loaded.',
+			autoClose: false,
+			withCloseButton: false,
+		});
 		let LogQuery = {
 			startTime: subLogQuery.get().startTime,
 			endTime: subLogQuery.get().endTime,
