@@ -208,10 +208,7 @@ const LogTable: FC = () => {
 				access: subLogQuery.get().access,
 			});
 		} else if (queryCountRes && queryCountRes[0].totalcurrentcount === 0) {
-			let tempDate = subLogQuery.get().endTime;
-			tempDate.setSeconds(0, 0);
-			tempDate.setMinutes(tempDate.getMinutes() - 1);
-			setCurrentStartTimeTemp(tempDate);
+			setCurrentStartTimeTemp(dayjs(currentStartTimeTemp).subtract(1, 'minute').toDate());
 		} else if (queryCountRes && queryCountRes[0].totalcurrentcount !== 0 && currentStartTimeTemp) {
 			setCurrentStartTime(currentStartTimeTemp);
 		}

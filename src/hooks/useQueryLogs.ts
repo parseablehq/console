@@ -154,6 +154,7 @@ export const useQueryLogs = () => {
 	const resetData = () => {
 		_dataRef.current = null;
 		setPageLogData(null);
+		setError(null);
 	};
 
 	return {
