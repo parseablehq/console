@@ -1,4 +1,4 @@
-import { Box, Button, Group, Modal, ScrollArea, Select, Stack, Table, Text, TextInput } from '@mantine/core';
+import { Box, Button, Group, Modal, ScrollArea, Select, Stack, Table, Text, TextInput, px } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect, useState } from 'react';
 
@@ -6,9 +6,11 @@ import { useGetUsers } from '@/hooks/useGetUsers';
 import { useUsersStyles } from './styles';
 import { usePostUser } from '@/hooks/usePostUser';
 import { Prism } from '@mantine/prism';
-import RoleTd from './row';
-import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
+
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
+import RoleTR from './RoleTR';
+import { IconUserPlus } from '@tabler/icons-react';
+import { useGetRoles } from '@/hooks/useGetRoles';
 const Users: FC = () => {
 	useDocumentTitle('Parseable | Users');
 	const {
@@ -24,13 +26,9 @@ const Users: FC = () => {
 
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
 	const [createUserInput, setCreateUserInput] = useState<string>('');
-	const [tagInput, setTagInput] = useState<string>('');
-	const [selectedPrivilege, setSelectedPrivilege] = useState<string>('');
-	const [SelectedStream, setSelectedStream] = useState<string>('');
-	const [streamSearchValue, setStreamSearchValue] = useState<string>('');
-
-	const { data: streams } = useGetLogStreamList();
-
+	const [SelectedRole, setSelectedRole] = useState<string>('');
+	const [roleSearchValue, setRoleSearchValue] = useState<string>('');
+	const [tableRows, setTableRows] = useState<any>([]);
 	const {
 		data: CreatedUserResponse,
 		error: CreatedUserError,
@@ -39,13 +37,14 @@ const Users: FC = () => {
 		resetData: resetCreateUser,
 	} = usePostUser();
 	const { data: users, error: usersError, loading: usersLoading, getUsersList, resetData: usersReset } = useGetUsers();
+	const { data: roles, getRolesList, resetData: rolesReset } = useGetRoles();
 
-	const [tableRows, setTableRows] = useState<any>([]);
 	useEffect(() => {
 		getUsersList();
-
+		getRolesList();
 		return () => {
 			usersReset();
+			rolesReset();
 		};
 	}, []);
 
@@ -53,21 +52,21 @@ const Users: FC = () => {
 		if (users) {
 			const getrows = async () => {
 				let rows = users.map((user: any) => {
-					return <RoleTd key={user} Username={user} getUsersList={getUsersList} />;
+					return <RoleTR key={user.id} user={user} getUsersList={getUsersList} />;
 				});
 				setTableRows(rows);
 			};
 
 			getrows();
 		}
-		if (usersError) {
+		if (usersError ) {
 			setTableRows(
 				<tr>
 					<td>error</td>
 				</tr>,
 			);
 		}
-		if (usersLoading) {
+		if (usersLoading ) {
 			setTableRows(
 				<tr>
 					<td>loading</td>
@@ -86,38 +85,14 @@ const Users: FC = () => {
 		setCreateUserInput('');
 		setModalOpen(false);
 		resetCreateUser();
-		setSelectedPrivilege('');
-		setSelectedStream('');
-		setStreamSearchValue('');
-		setTagInput('');
+		setSelectedRole('');
+		setRoleSearchValue('');
 	};
 
 	const handleCreateUser = () => {
 		let userRole: any = [];
-		if (selectedPrivilege === 'admin' || selectedPrivilege === 'editor') {
-			userRole?.push({
-				privilege: selectedPrivilege,
-			});
-		}
-		if (selectedPrivilege === 'reader' || selectedPrivilege === 'writer') {
-			if (streams?.find((stream) => stream.name === SelectedStream)) {
-				if (tagInput !== '' && tagInput !== undefined && selectedPrivilege !== 'writer') {
-					userRole?.push({
-						privilege: selectedPrivilege,
-						resource: {
-							stream: SelectedStream,
-							tag: tagInput,
-						},
-					});
-				} else {
-					userRole?.push({
-						privilege: selectedPrivilege,
-						resource: {
-							stream: SelectedStream,
-						},
-					});
-				}
-			}
+		if (SelectedRole !== '') {
+			userRole.push(SelectedRole);
 		}
 		createUser(createUserInput, userRole);
 	};
@@ -126,22 +101,12 @@ const Users: FC = () => {
 		if (users?.includes(createUserInput) || createUserInput.length < 3) {
 			return true;
 		}
-		if (selectedPrivilege !== '') {
-			if (selectedPrivilege === 'admin' || selectedPrivilege === 'editor') {
+
+		if (SelectedRole !== '') {
+			if (roles?.includes(SelectedRole)) {
 				return false;
 			}
-			if (selectedPrivilege === 'reader') {
-				if (streams?.find((stream) => stream.name === SelectedStream)) {
-					return false;
-				}
-				return true;
-			}
-			if (selectedPrivilege === 'writer') {
-				if (streams?.find((stream) => stream.name === SelectedStream)) {
-					return false;
-				}
-				return true;
-			}
+			return true;
 		}
 		return false;
 	};
@@ -149,6 +114,21 @@ const Users: FC = () => {
 	const { classes } = useUsersStyles();
 	return (
 		<Box className={classes.container}>
+			<Box className={classes.header}>
+				<Text size="xl" weight={500}>
+					Users
+				</Text>
+				<Button
+					variant="outline"
+					color="gray"
+					className={classes.createBtn}
+					onClick={() => {
+						setModalOpen(true);
+					}}
+					rightIcon={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
+					Create Users
+				</Button>
+			</Box>
 			<ScrollArea className={classes.tableContainer} type="always">
 				<Table striped highlightOnHover className={classes.tableStyle}>
 					<thead className={classes.theadStyle}>
@@ -174,51 +154,23 @@ const Users: FC = () => {
 						value={createUserInput}
 						required
 					/>
-					<Select
-						placeholder="Select privilege"
-						label="Select a privilege to assign"
-						data={['admin', 'editor', 'writer', 'reader']}
-						onChange={(value) => {
-							setSelectedPrivilege(value ?? '');
-						}}
-						value={selectedPrivilege}
-						nothingFound="No options"
-					/>
 
-					{selectedPrivilege === 'reader' || selectedPrivilege === 'writer' ? (
-						<>
-							<Select
-								placeholder="Pick one"
-								onChange={(value) => {
-									setSelectedStream(value ?? '');
-								}}
-								nothingFound="No options"
-								value={SelectedStream}
-								searchValue={streamSearchValue}
-								onSearchChange={(value) => setStreamSearchValue(value)}
-								onDropdownClose={() => setStreamSearchValue(SelectedStream)}
-								onDropdownOpen={() => setStreamSearchValue('')}
-								data={streams?.map((stream) => ({ value: stream.name, label: stream.name })) ?? []}
-								searchable
-								label="Select a stream to assign"
-								required
-							/>
-							{selectedPrivilege === 'reader' ? (
-								<TextInput
-									type="text"
-									placeholder={`Please enter the Tag.`}
-									label="Tag"
-									onChange={(e) => {
-										setTagInput(e.target.value);
-									}}
-								/>
-							) : (
-								''
-							)}
-						</>
-					) : (
-						''
-					)}
+					<Select
+						placeholder="Select a role to assign"
+						onChange={(value) => {
+							setSelectedRole(value ?? '');
+						}}
+						nothingFound="No roles found"
+						value={SelectedRole}
+						searchValue={roleSearchValue}
+						onSearchChange={(value) => setRoleSearchValue(value)}
+						onDropdownClose={() => setRoleSearchValue(SelectedRole)}
+						onDropdownOpen={() => setRoleSearchValue('')}
+						data={roles}
+						searchable
+						label="Select a role to assign"
+						required
+					/>
 
 					{CreatedUserError ? (
 						<Text className={classes.passwordText} color="red">

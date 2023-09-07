@@ -16,20 +16,22 @@ import {
 } from '@tabler/icons-react';
 import { FC, useEffect } from 'react';
 import { useNavbarStyles } from './styles';
-import { useLocation, useParams } from 'react-router-dom';
+import {  useLocation, useParams } from 'react-router-dom';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import { notifications } from '@mantine/notifications';
 import { useNavigate } from 'react-router-dom';
 import { DEFAULT_FIXED_DURATIONS, useHeaderContext } from '@/layouts/MainLayout/Context';
 import useMountedState from '@/hooks/useMountedState';
 import dayjs from 'dayjs';
-import { useDisclosure, useLocalStorage } from '@mantine/hooks';
-import { LOGIN_ROUTE, USERS_MANAGEMENT_ROUTE } from '@/constants/routes';
+import { useDisclosure } from '@mantine/hooks';
+import {  USERS_MANAGEMENT_ROUTE } from '@/constants/routes';
 import { useDeleteLogStream } from '@/hooks/useDeleteLogStream';
 import InfoModal from './infoModal';
 import { useGetUserRole } from '@/hooks/useGetUserRoles';
 import { getStreamsSepcificAccess, getUserSepcificStreams } from './rolesHandler';
 import { LogStreamData } from '@/@types/parseable/api/stream';
+import Cookies from 'js-cookie';
+const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 
 const links = [
 	{ icon: IconZoomCode, label: 'Query', pathname: '/query', requiredAccess: ['Query', 'GetSchema'] },
@@ -45,9 +47,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 	const { streamName } = useParams();
 	const location = useLocation();
 
-	const [username] = useLocalStorage({ key: 'username', getInitialValueInEffect: false });
-	const [, , removeCredentials] = useLocalStorage({ key: 'credentials' });
-	const [, , removeUsername] = useLocalStorage({ key: 'username' });
+	const username =  Cookies.get('username') 
 
 	const {
 		state: { subNavbarTogle },
@@ -75,14 +75,10 @@ const Navbar: FC<NavbarProps> = (props) => {
 	}, [subNavbarTogle.get()]);
 
 	const onSignOut = () => {
-		removeCredentials();
-		removeUsername();
-		navigate(
-			{
-				pathname: LOGIN_ROUTE,
-			},
-			{ replace: true },
-		);
+		Cookies.remove('session');
+		Cookies.remove('username');
+
+		window.location.href=`${baseURL}api/v1/o/logout?redirect=${window.location.origin}/login`;
 	};
 
 	const {
@@ -172,7 +168,6 @@ const Navbar: FC<NavbarProps> = (props) => {
 		}
 	}, [deleteData]);
 
-	//isAdmin
 	const { data: roles, getRoles, resetData } = useGetUserRole();
 	useEffect(() => {
 		if (username) {
@@ -184,8 +179,8 @@ const Navbar: FC<NavbarProps> = (props) => {
 	}, [username]);
 
 	useEffect(() => {
-		if (streams && streams.length > 0 && roles && roles.length > 0) {
-			const userStreams = getUserSepcificStreams(roles, streams as any);
+		if(streams && streams.length > 0 && roles){
+			const userStreams = getUserSepcificStreams(roles,streams as any);
 			setUserSepecficStreams(userStreams as any);
 		}
 	}, [roles, streams]);
