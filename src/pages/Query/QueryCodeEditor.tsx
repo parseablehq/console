@@ -11,7 +11,9 @@ import useMountedState from '@/hooks/useMountedState';
 import { useQueryCodeEditorStyles } from './styles';
 import dayjs from 'dayjs';
 import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
-import { makeAPIRequest } from '@/utils';
+import { notify } from '@/utils/notification';
+import { Axios } from '@/api/axios';
+import { LLM_QUERY_URL } from '@/api/constants';
 
 const QueryCodeEditor: FC = () => {
 	const {
@@ -40,19 +42,10 @@ const QueryCodeEditor: FC = () => {
 
 	const handleAIGenerate = async () => {
 		if (!aiQuery?.length) {
-			alert('Please enter a valid query');
+			notify({ message: 'Please enter a valid query' });
 			return;
 		}
-
-		notifications.show({
-			id: 'ai-suggest',
-			loading: true,
-			color: '#545BEB',
-			title: 'Getting suggestions',
-			message: 'AI based SQL being generated.',
-			autoClose: true,
-			withCloseButton: false,
-		});
+		notify({ message: 'AI based SQL being generated.', title: 'Getting suggestions', autoClose: 3000, color: 'blue' });
 
 		const columnData = querySchema?.fields;
 		const usefulCols = filterUnnecessaryFieldsFromRecord(columnData);
@@ -62,11 +55,19 @@ const QueryCodeEditor: FC = () => {
 Based on this, please generate valid SQL for the query: "${aiQuery}"
 Generate only the SQL as output. Also add comments in SQL syntax to explain your action. Don't output anything else.
 If it is not possible to generate valid SQL, output as an SQL comment saying so.`;
-		const resp = await makeAPIRequest(prompt);
+		const resp = await Axios().post(LLM_QUERY_URL, { prompt });
+		if (resp.status !== 200) {
+			notify({
+				message: 'Please check your internet connection and add a valid OpenAI API key',
+				title: 'Error getting suggestions',
+				color: 'red',
+			});
+			return;
+		}
 
 		const warningMsg =
 			'-- Parseable AI is experimental and may produce incorrect answers\n-- Always verify the generated SQL before executing\n\n';
-		setQuery(warningMsg + resp);
+		setQuery(warningMsg + resp.data);
 	};
 
 	useEffect(() => {
@@ -132,15 +133,6 @@ If it is not possible to generate valid SQL, output as an SQL comment saying so.
 		const query = sanitseSqlString(inputQuery);
 
 		resetData();
-		notifications.show({
-			id: 'load-data',
-			loading: true,
-			color: '#545BEB',
-			title: 'Running Query',
-			message: 'Data will be loaded.',
-			autoClose: false,
-			withCloseButton: false,
-		});
 		let LogQuery = {
 			startTime: subLogQuery.get().startTime,
 			endTime: subLogQuery.get().endTime,

@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import axios from 'axios';
 
 export const wait = (sec = 1) => new Promise<void>((res) => setTimeout(res, sec * 1000));
 
@@ -33,29 +32,4 @@ export const parseLogData = (value?: any, columnName?: string) => {
 	}
 
 	return 'N/A';
-};
-
-export const makeAPIRequest = async (promptContent: string) => {
-	const data = {
-		model: 'gpt-3.5-turbo',
-		messages: [{ role: 'user', content: promptContent }],
-		temperature: 0.5,
-	};
-
-	const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-
-	const headers = {
-		'Content-Type': 'application/json',
-		Authorization: `Bearer ${apiKey}`,
-	};
-
-	try {
-		const response = await axios.post('https://api.openai.com/v1/chat/completions', data, { headers });
-		const {
-			choices: [choice],
-		} = response.data;
-		return choice.message.content;
-	} catch (error) {
-		console.error(error);
-	}
 };
