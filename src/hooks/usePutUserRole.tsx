@@ -1,16 +1,15 @@
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
-import { putUserRoles } from '@/api/users';
+import {  putUserRoles } from '@/api/users';
 import { notifications } from '@mantine/notifications';
 import { IconCheck, IconFileAlert } from '@tabler/icons-react';
-import Cookies from 'js-cookie';
 
 export const usePutUserRole = () => {
 	const [data, setData] = useMountedState<any | null>(null);
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
 
-	const putRole = async (userName: string, roles: any) => {
+	const putRole = async (userName:string, roles :any) => {
 		try {
 			setLoading(true);
 			notifications.show({
@@ -33,16 +32,15 @@ export const usePutUserRole = () => {
 						color: 'green',
 						title: 'Updated user',
 						message: 'Successfully updated',
-						icon: <IconCheck size="1rem" />,
+					icon: <IconCheck size="1rem" />,
 						autoClose: 3000,
 					});
 					break;
+
 				}
 				default: {
 					setError(res.data);
 					console.error(res);
-					Cookies.remove('session');
-					Cookies.remove('username');
 					notifications.update({
 						id: 'load-data',
 						color: 'red',
@@ -53,17 +51,17 @@ export const usePutUserRole = () => {
 					});
 				}
 			}
-		} catch (error) {
+		} catch(error) {
 			setError('Failed to get create user');
-			notifications.update({
-				id: 'load-data',
-				color: 'red',
-				title: 'Error occurred',
-				message: 'Error occurred while updating user role(s)',
-				icon: <IconFileAlert size="1rem" />,
-				autoClose: 2000,
-			});
-			console.error(error);
+					notifications.update({
+						id: 'load-data',
+						color: 'red',
+						title: 'Error occurred',
+						message: 'Error occurred while updating user role(s)',
+						icon: <IconFileAlert size="1rem" />,
+						autoClose: 2000,
+					});
+			console.error(error);	
 		} finally {
 			setLoading(false);
 		}
@@ -75,3 +73,4 @@ export const usePutUserRole = () => {
 
 	return { data, error, loading, putRole, resetData };
 };
+

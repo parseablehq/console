@@ -8,7 +8,8 @@ import TimeRange from './TimeRange';
 import { useLogQueryStyles } from './styles';
 import ReloadUser from './ReloadUser';
 import DocsUser from './UserDocs';
-
+import CreateUser from './CreateUser';
+// import LimitLog from './LimitLogs';
 
 export const StatsHeader: FC = () => {
 	const { classes } = useLogQueryStyles();
@@ -109,7 +110,7 @@ export const UsersManagementHeader: FC = () => {
 				<Box className={innerContainer}>
 					<ReloadUser />
 					<DocsUser />
-					{/* <CreateUser /> */}
+					<CreateUser />
 				</Box>
 			</Box>
 		</Box>

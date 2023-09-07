@@ -70,7 +70,7 @@ export const ConfigElement: FC = () => {
 	);
 };
 
-const Users = lazy(() => import('@/pages/AccessManagement'));
+const Users = lazy(() => import('@/pages/Users'));
 
 export const UsersElement: FC = () => {
 	return (
@@ -78,4 +78,4 @@ export const UsersElement: FC = () => {
 			<Users />
 		</SuspensePage>
 	);
-};
+}
