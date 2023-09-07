@@ -1,11 +1,10 @@
 import { Axios } from './axios';
-import {  LOGIN_URL } from './constants';
-
+import {  LOG_STREAM_LIST_URL } from './constants';
 
 export const loginIn = (username: string, password: string) => {
 	const credentials = btoa(`${username}:${password}`);
 
-	return Axios().get(LOGIN_URL, {
+	return Axios().get(LOG_STREAM_LIST_URL, {
 		headers: {
 			Authorization: `Basic ${credentials}`,
 		},
