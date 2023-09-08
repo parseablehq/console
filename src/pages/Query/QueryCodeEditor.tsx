@@ -10,11 +10,9 @@ import { IconPlayerPlayFilled, IconCheck, IconFileAlert, IconFileInfo } from '@t
 import useMountedState from '@/hooks/useMountedState';
 import { useQueryCodeEditorStyles } from './styles';
 import dayjs from 'dayjs';
-import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { notify } from '@/utils/notification';
 import { Axios } from '@/api/axios';
 import { LLM_QUERY_URL } from '@/api/constants';
-import { filterUnnecessaryFieldsFromRecord } from '@/utils';
 
 const QueryCodeEditor: FC = () => {
 	const {
@@ -32,7 +30,6 @@ const QueryCodeEditor: FC = () => {
 	const [currentStreamName, setCurrentStreamName] = useMountedState<string>(subLogQuery.get().streamName);
 	const [query, setQuery] = useMountedState<string>('');
 	const [aiQuery, setAiQuery] = useMountedState('Show all records');
-	const { data: querySchema, getDataSchema } = useGetLogStreamSchema();
 
 	const handleAIGenerate = async () => {
 		if (!aiQuery?.length) {
@@ -41,15 +38,7 @@ const QueryCodeEditor: FC = () => {
 		}
 		notify({ message: 'AI based SQL being generated.', title: 'Getting suggestions', autoClose: 3000, color: 'blue' });
 
-		const columnData = querySchema?.fields || [];
-		const usefulCols = filterUnnecessaryFieldsFromRecord(columnData);
-		const stringified = JSON.stringify(usefulCols);
-
-		const prompt = `I have a table called ${currentStreamName}. It has the columns:\n${stringified}
-Based on this, please generate valid SQL for the query: "${aiQuery}"
-Generate only the SQL as output. Also add comments in SQL syntax to explain your action. Don't output anything else.
-If it is not possible to generate valid SQL, output as an SQL comment saying so.`;
-		const resp = await Axios().post(LLM_QUERY_URL, { prompt });
+		const resp = await Axios().post(LLM_QUERY_URL, { prompt: aiQuery, stream: currentStreamName });
 		if (resp.status !== 200) {
 			notify({
 				message: 'Please check your internet connection and add a valid OpenAI API key',
@@ -63,10 +52,6 @@ If it is not possible to generate valid SQL, output as an SQL comment saying so.
 			'-- Parseable AI is experimental and may produce incorrect answers\n-- Always verify the generated SQL before executing\n\n';
 		setQuery(warningMsg + resp.data);
 	};
-
-	useEffect(() => {
-		getDataSchema(currentStreamName);
-	}, [currentStreamName]);
 
 	const handleEditorChange = (code: any) => {
 		setQuery(code);
@@ -100,7 +85,7 @@ If it is not possible to generate valid SQL, output as an SQL comment saying so.
 			refreshIntervalListener();
 			subQueryListener();
 		};
-	}, [subLogQuery.get(), subSchemaToggle.get(), subRefreshInterval.get(), querySchema]);
+	}, [subLogQuery.get(), subSchemaToggle.get(), subRefreshInterval.get()]);
 
 	useEffect(() => {
 		if (subLogQuery.get().streamName) {
@@ -146,6 +131,7 @@ If it is not possible to generate valid SQL, output as an SQL comment saying so.
 		const parsedQuery = query.replace(/(\r\n|\n|\r)/gm, '');
 		getQueryData(LogQuery, parsedQuery);
 	};
+
 	useEffect(() => {
 		if (error) {
 			notifications.update({
