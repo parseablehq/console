@@ -13,7 +13,6 @@ import dayjs from 'dayjs';
 import { notify } from '@/utils/notification';
 import { Axios } from '@/api/axios';
 import { LLM_QUERY_URL } from '@/api/constants';
-import { filterUnnecessaryFieldsFromRecord } from '@/utils';
 
 const QueryCodeEditor: FC = () => {
 	const {

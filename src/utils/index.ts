@@ -34,11 +34,3 @@ export const parseLogData = (value?: any, columnName?: string) => {
 
 	return 'N/A';
 };
-
-export const filterUnnecessaryFieldsFromRecord = (objArray: Field[] = []) => {
-	// For selecting only the necessary parts of schema to pass on to llm query
-	return objArray.map((obj) => {
-		const { name, data_type } = obj;
-		return { name, data_type };
-	});
-};
