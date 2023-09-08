@@ -1,4 +1,3 @@
-import { Field } from '@/@types/parseable/dataType';
 import dayjs from 'dayjs';
 
 export const wait = (sec = 1) => new Promise<void>((res) => setTimeout(res, sec * 1000));
