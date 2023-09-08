@@ -26,8 +26,6 @@ const Login: FC = () => {
 							Welcome to Parseable
 						</Text>
 
-						
-
 						{/* <Text mt="xs" className={descriptionStyle}>
 							Add your credentials to login
 						</Text> */}
@@ -59,17 +57,27 @@ const Login: FC = () => {
 
 						{/* <ForgotPassword /> */}
 
-						<Divider label=" Or  " labelPosition="center" my="md"  sx={{width:"100%"}} />
+						<Divider label=" Or  " labelPosition="center" my="md" sx={{ width: '100%' }} />
 
 						<Button
-						mt={rem(10)}
+							mt={rem(10)}
 							component="a"
 							href={`${baseURL}api/v1/o/login?redirect=${window.location.origin}`}
 							variant="outline"
-							color="indigo">
+							color='brandPrimary.0'
+							
+							sx={({ colors }) => ({
+								color: colors.brandPrimary[0],
+								borderColor: colors.brandPrimary[0],
+								'&:hover': {
+									borderColor: colors.brandSecondary[0],
+									color: colors.brandSecondary[0],
+									background: 'transparent',
+								},
+							})}
+							>
 							Login with OAuth
 						</Button>
-
 					</form>
 				</Box>
 			)}

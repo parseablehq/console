@@ -1,4 +1,4 @@
-import loginBg from '@/assets/images/login-bg.svg';
+// import loginBg from '@/assets/images/login-bg.svg';
 import { createStyles } from '@mantine/core';
 
 export const useLoginStyles = createStyles((theme) => {
@@ -14,7 +14,7 @@ export const useLoginStyles = createStyles((theme) => {
 		container: {
 			position: 'relative',
 			flex: 1,
-			backgroundImage: `url(${loginBg})`,
+			// backgroundImage: `url(${loginBg})`,
 			backgroundRepeat: 'no-repeat',
 			backgroundPosition: 'top center',
 			display: 'flex',
@@ -27,7 +27,8 @@ export const useLoginStyles = createStyles((theme) => {
 			background: colors.white,
 			padding: spacing.xl,
 			borderRadius: defaultRadius,
-			boxShadow: shadows.sm,
+			boxShadow: shadows.lg,
+			border: `1px solid ${colors.gray[2]}`,
 			width: widths[96],
 			display: 'flex',
 			flexDirection: 'column',
@@ -39,7 +40,7 @@ export const useLoginStyles = createStyles((theme) => {
 		},
 
 		loginBtnStyle: {
-			background: colors.brandSecondary[1],
+			background: colors.brandPrimary[0],
 			width: widths.full,
 
 			'&:hover': {
