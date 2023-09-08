@@ -1,35 +1,15 @@
+import { NAVBAR_WIDTH } from '@/constants/theme';
 import { createStyles } from '@mantine/core';
 export const useUsersStyles = createStyles((theme) => {
-	const { spacing,radius, colors } = theme;
+	const { spacing, colors } = theme;
+	const { widths } = theme.other;
 	const sColor = colors.brandSecondary[0];
-	const defaultRadius = radius[theme.defaultRadius as string];
-
 	return {
 		container: {
 			flex: 1,
-			width:"100%",
+			width: `calc(${widths.full} - ${NAVBAR_WIDTH}px)`,
 			position: 'relative',
-			margin: '10px',
-			borderRadius: defaultRadius,
-			border: `1px solid ${colors.gray[2]}`,
 		},
-		header: {
-			display: 'flex',
-			justifyContent: 'space-between',
-			alignItems: 'center',
-			padding: '20px',
-			borderBottom: `1px solid ${colors.gray[2]}`,
-		},
-
-		createBtn: {
-			height: '34px',
-			width: '150px',
-			padding: '0px',
-			marginInlineEnd: spacing.xs,
-			color: colors.gray[5],
-			borderColor: colors.gray[2],
-		},
-
 		actionBtn: {
 			'&:hover': {
 				color: sColor,
@@ -42,7 +22,7 @@ export const useUsersStyles = createStyles((theme) => {
 			borderColor: colors.gray[2],
 		},
 		tableContainer: {
-			
+			height: '100%',
 		},
 		tableStyle: {
 			overflow: 'scroll',

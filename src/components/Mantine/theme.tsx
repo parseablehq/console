@@ -1,4 +1,4 @@
-import { type CSSObject, type MantineThemeOverride } from '@mantine/core';
+import type { CSSObject, MantineThemeOverride } from '@mantine/core';
 import { heights, widths, sizing } from './sizing';
 
 const globalStyles = (): CSSObject => {
@@ -235,17 +235,5 @@ export const theme: MantineThemeOverride = {
 				};
 			}
 		},
-
-		PasswordInput: {
-			styles: ({ colors }) => {
-				return {
-					input: {
-						border: `${sizing.px} ${colors.gray[2]} solid`,
-						borderRadius: 'md',
-					
-					},
-				};
-			}
-		}
 	},
 };
