@@ -1,13 +1,13 @@
 import { createStyles } from '@mantine/core';
 export const useUsersStyles = createStyles((theme) => {
-	const { spacing,radius, colors } = theme;
+	const { spacing, radius, colors } = theme;
 	const sColor = colors.brandSecondary[0];
 	const defaultRadius = radius[theme.defaultRadius as string];
 
 	return {
 		container: {
 			flex: 1,
-			width:"100%",
+			width: '100%',
 			position: 'relative',
 			margin: '10px',
 			borderRadius: defaultRadius,
@@ -17,7 +17,9 @@ export const useUsersStyles = createStyles((theme) => {
 			display: 'flex',
 			justifyContent: 'space-between',
 			alignItems: 'center',
-			padding: '20px',
+			paddingLeft: '20px',
+			paddingRight: '20px',
+			height: '70px',
 			borderBottom: `1px solid ${colors.gray[2]}`,
 		},
 
@@ -42,7 +44,7 @@ export const useUsersStyles = createStyles((theme) => {
 			borderColor: colors.gray[2],
 		},
 		tableContainer: {
-			
+			height: 'calc(100% - 70px)',
 		},
 		tableStyle: {
 			overflow: 'scroll',
