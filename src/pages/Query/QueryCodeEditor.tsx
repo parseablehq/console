@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect } from 'react';
+import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import Editor from '@monaco-editor/react';
 import { useQueryPageContext } from './Context';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
@@ -13,6 +13,7 @@ import dayjs from 'dayjs';
 import { notify } from '@/utils/notification';
 import { Axios } from '@/api/axios';
 import { LLM_QUERY_URL } from '@/api/constants';
+import { useGetAbout } from '@/hooks/useGetAbout';
 
 const QueryCodeEditor: FC = () => {
 	const {
@@ -20,7 +21,6 @@ const QueryCodeEditor: FC = () => {
 	} = useHeaderContext();
 	const {
 		state: { result, subSchemaToggle },
-		isLlmActive,
 	} = useQueryPageContext();
 
 	const { data: queryResult, getQueryData, error, resetData } = useQueryResult();
@@ -31,6 +31,8 @@ const QueryCodeEditor: FC = () => {
 	const [currentStreamName, setCurrentStreamName] = useMountedState<string>(subLogQuery.get().streamName);
 	const [query, setQuery] = useMountedState<string>('');
 	const [aiQuery, setAiQuery] = useMountedState('Show all records');
+	const { data: aboutData, getAbout } = useGetAbout();
+	const isLlmActive = useMemo(() => aboutData?.llmActive, [aboutData?.llmActive]);
 
 	const handleAIGenerate = useCallback(async () => {
 		if (!aiQuery?.length) {
@@ -97,6 +99,7 @@ const QueryCodeEditor: FC = () => {
 		if (subLogQuery.get().streamName) {
 			setQuery(`SELECT * FROM ${subLogQuery.get().streamName} LIMIT 100  ; `);
 		}
+		getAbout();
 	}, []);
 
 	function handleEditorDidMount(editor: any, monaco: any) {
