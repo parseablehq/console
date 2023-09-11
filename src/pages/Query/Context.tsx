@@ -42,12 +42,11 @@ const QueryPageProvider: FC<QueryPageProviderProps> = ({ children }) => {
 
 	const methods: QueryPageContextMethods = {};
 
+	// function to test if LLM key has been set up in the backend
 	const checkIfLlmActive = async () => {
 		try {
 			const { data } = await Axios().post(IS_LLM_ACTIVE_URL);
-			if (data.is_active) {
-				setIsLlmActive(true);
-			}
+			setIsLlmActive(data.is_active);
 		} catch (error) {
 			console.log('Error in getting LLM status: ', error);
 		}

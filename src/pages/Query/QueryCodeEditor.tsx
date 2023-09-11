@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useCallback, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useQueryPageContext } from './Context';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
@@ -32,12 +32,17 @@ const QueryCodeEditor: FC = () => {
 	const [query, setQuery] = useMountedState<string>('');
 	const [aiQuery, setAiQuery] = useMountedState('Show all records');
 
-	const handleAIGenerate = async () => {
+	const handleAIGenerate = useCallback(async () => {
 		if (!aiQuery?.length) {
 			notify({ message: 'Please enter a valid query' });
 			return;
 		}
-		notify({ message: 'AI based SQL being generated.', title: 'Getting suggestions', autoClose: 3000, color: 'blue' });
+		notify({
+			message: 'AI based SQL being generated.',
+			title: 'Getting suggestions',
+			autoClose: 3000,
+			color: 'blue',
+		});
 
 		const resp = await Axios().post(LLM_QUERY_URL, { prompt: aiQuery, stream: currentStreamName });
 		if (resp.status !== 200) {
@@ -52,7 +57,7 @@ const QueryCodeEditor: FC = () => {
 		const warningMsg =
 			'-- Parseable AI is experimental and may produce incorrect answers\n-- Always verify the generated SQL before executing\n\n';
 		setQuery(warningMsg + resp.data);
-	};
+	}, [aiQuery]);
 
 	const handleEditorChange = (code: any) => {
 		setQuery(code);
