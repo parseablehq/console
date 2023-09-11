@@ -20,6 +20,7 @@ const QueryCodeEditor: FC = () => {
 	} = useHeaderContext();
 	const {
 		state: { result, subSchemaToggle },
+		isLlmActive,
 	} = useQueryPageContext();
 
 	const { data: queryResult, getQueryData, error, resetData } = useQueryResult();
@@ -176,6 +177,11 @@ const QueryCodeEditor: FC = () => {
 			<Box className={container}>
 				<Text className={textContext}>Query</Text>
 				<Box style={{ height: '100%', width: '100%', textAlign: 'right' }}>
+					{!isLlmActive ? (
+						<a style={{ marginRight: '2rem' }} href="https://www.parseable.io/docs/api/llm-queries">
+							Enable SQL generation with OpenAI
+						</a>
+					) : null}
 					<Tooltip
 						label={`View Schema for ${subLogQuery.get().streamName}`}
 						sx={{ color: 'white', backgroundColor: 'black' }}
@@ -206,20 +212,22 @@ const QueryCodeEditor: FC = () => {
 				</Box>
 			</Box>
 			<Box sx={{ marginTop: '5px', height: 'calc(100% - 60px)' }}>
-				<Box className="flex" style={{ display: 'flex', margin: '15px', flexWrap: 'wrap' }}>
-					<Input
-						type="text"
-						name="ai_query"
-						id="ai_query"
-						style={{ minWidth: '85%', margin: '2px 20px 10px 0' }}
-						value={aiQuery}
-						onChange={(e) => setAiQuery(e.target.value)}
-						placeholder="Ask Parseable AI"
-					/>
-					<Button variant="gradient" onClick={handleAIGenerate}>
-						Generate SQL
-					</Button>
-				</Box>
+				{isLlmActive ? (
+					<Box className="flex" style={{ display: 'flex', margin: '15px', flexWrap: 'wrap' }}>
+						<Input
+							type="text"
+							name="ai_query"
+							id="ai_query"
+							style={{ minWidth: '85%', margin: '2px 20px 10px 0' }}
+							value={aiQuery}
+							onChange={(e) => setAiQuery(e.target.value)}
+							placeholder="Ask Parseable AI"
+						/>
+						<Button variant="gradient" onClick={handleAIGenerate}>
+							Generate SQL
+						</Button>
+					</Box>
+				) : null}
 				<Editor
 					height={'100%'}
 					defaultLanguage="sql"

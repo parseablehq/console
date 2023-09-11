@@ -1,7 +1,10 @@
+import { Axios } from '@/api/axios';
+import { IS_LLM_ACTIVE_URL } from '@/api/constants';
+import useMountedState from '@/hooks/useMountedState';
 import useSubscribeState, { SubData } from '@/hooks/useSubscribeState';
 
 import type { FC } from 'react';
-import { ReactNode, createContext, useContext } from 'react';
+import { ReactNode, createContext, useContext, useEffect } from 'react';
 
 const Context = createContext({});
 
@@ -20,6 +23,7 @@ interface QueryPageContextMethods {}
 interface QueryPageContextValue {
 	state: QueryPageContextState;
 	methods: QueryPageContextMethods;
+	isLlmActive: boolean;
 }
 
 interface QueryPageProviderProps {
@@ -29,6 +33,7 @@ interface QueryPageProviderProps {
 const QueryPageProvider: FC<QueryPageProviderProps> = ({ children }) => {
 	const result = useSubscribeState<string>(defaultQueryResult);
 	const subSchemaToggle = useSubscribeState<boolean>(false);
+	const [isLlmActive, setIsLlmActive] = useMountedState(false);
 
 	const state: QueryPageContextState = {
 		result,
@@ -37,7 +42,22 @@ const QueryPageProvider: FC<QueryPageProviderProps> = ({ children }) => {
 
 	const methods: QueryPageContextMethods = {};
 
-	return <Provider value={{ state, methods }}>{children}</Provider>;
+	const checkIfLlmActive = async () => {
+		try {
+			const { data } = await Axios().post(IS_LLM_ACTIVE_URL);
+			if (data.is_active) {
+				setIsLlmActive(true);
+			}
+		} catch (error) {
+			console.log('Error in getting LLM status: ', error);
+		}
+	};
+
+	useEffect(() => {
+		checkIfLlmActive();
+	}, []);
+
+	return <Provider value={{ state, methods, isLlmActive }}>{children}</Provider>;
 };
 
 export const useQueryPageContext = () => useContext(Context) as QueryPageContextValue;
