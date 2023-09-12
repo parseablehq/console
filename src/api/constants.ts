@@ -20,3 +20,4 @@ export const USER_PASSWORD_URL = (username: string) => `${USER_URL(username)}/ge
 
 // LLM queries
 export const LLM_QUERY_URL = `${API_V1}/llm`;
+export const IS_LLM_ACTIVE_URL = `${LLM_QUERY_URL}/isactive`;

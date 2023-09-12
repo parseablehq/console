@@ -1,5 +1,5 @@
 import { Box, Button, Modal, Text, Tooltip, px } from '@mantine/core';
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import { useInfoModalStyles } from './styles';
 import { useGetAbout } from '@/hooks/useGetAbout';
 import { IconAlertCircle, IconBook2, IconBrandGithub, IconBrandSlack, IconBusinessplan } from '@tabler/icons-react';
@@ -69,6 +69,14 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 		};
 	}, []);
 
+	const llmStatus = useMemo(() => {
+		let status = 'LLM API Key not set';
+		if (data?.llmActive) {
+			status = `${data.llmProvider} configured`;
+		}
+		return status;
+	}, [data?.llmActive]);
+
 	const { classes } = useInfoModalStyles();
 	const {
 		container,
@@ -80,96 +88,91 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 		aboutTextKey,
 		aboutTextValue,
 		aboutTextInnerBox,
-		actionBtnRed
+		actionBtnRed,
 	} = classes;
 
 	return (
-		<Modal
-			opened={opened}
-			onClose={close}
-			withinPortal
-			withCloseButton={false}
-			size="xl"
-			centered>
+		<Modal opened={opened} onClose={close} withinPortal withCloseButton={false} size="xl" centered>
 			<Box className={container}>
-
-					<Text className={aboutTitle}>About Parseable</Text>
-					<Text className={aboutDescription} id="info-modal-description">Important info about your Parseable deployment</Text>
-					{error ? (
-						<Text className={aboutDescription}>Error...</Text>
-					) : loading ? (
-						<Text className={aboutDescription}>Loading...</Text>
-					) : data ? (
-						<>
-							<Box className={aboutTextBox}>
-								<Box className={aboutTextInnerBox}>
-									<Text className={aboutTextKey}> License: </Text>
-									<Text className={aboutTextValue}> {data.license} </Text>
-									<Button
+				<Text className={aboutTitle}>About Parseable</Text>
+				<Text className={aboutDescription} id="info-modal-description">
+					Important info about your Parseable deployment
+				</Text>
+				{error ? (
+					<Text className={aboutDescription}>Error...</Text>
+				) : loading ? (
+					<Text className={aboutDescription}>Loading...</Text>
+				) : data ? (
+					<>
+						<Box className={aboutTextBox}>
+							<Box className={aboutTextInnerBox}>
+								<Text className={aboutTextKey}> License: </Text>
+								<Text className={aboutTextValue}> {data.license} </Text>
+								<Button
 									variant="outline"
 									component={'a'}
 									href="mailto:sales@parseable.io?subject=Production%20Support%20Query"
 									target="_blank"
-									className={actionBtn}
-									>
+									className={actionBtn}>
 									Upgrade to production support
 								</Button>
-								</Box>
 							</Box>
-							<Box className={aboutTextBox}>
-								<Box className={aboutTextInnerBox}>
-									<Text className={aboutTextKey}> Commit: </Text>
-									<Text className={aboutTextValue}> {data.commit} </Text>
-								</Box>
-								<Box className={aboutTextInnerBox}>
-									<Text className={aboutTextKey}> Version: </Text>
-									<Text className={aboutTextValue}> {data.version} </Text>
-									{data.updateAvailable ? (
-										<Button
+						</Box>
+						<Box className={aboutTextBox}>
+							<Box className={aboutTextInnerBox}>
+								<Text className={aboutTextKey}> Commit: </Text>
+								<Text className={aboutTextValue}> {data.commit} </Text>
+							</Box>
+							<Box className={aboutTextInnerBox}>
+								<Text className={aboutTextKey}> Version: </Text>
+								<Text className={aboutTextValue}> {data.version} </Text>
+								{data.updateAvailable ? (
+									<Button
 										variant="outline"
 										component={'a'}
 										href="https://github.com/parseablehq/parseable/releases/latest"
 										target="_blank"
 										className={actionBtnRed}
-										leftIcon={<IconAlertCircle size={px('1.2rem')} stroke={1.5} />}
-										>
+										leftIcon={<IconAlertCircle size={px('1.2rem')} stroke={1.5} />}>
 										Upgrade to latest version {data.latestVersion}
-									</Button> ): null}
-								</Box>
-								
+									</Button>
+								) : null}
 							</Box>
-							<Box className={aboutTextBox}>
-								<Box className={aboutTextInnerBox}>
-									<Text className={aboutTextKey}> Deployment Id: </Text>
-									<Text className={aboutTextValue}> {data.deploymentId} </Text>
-								</Box>
-								<Box className={aboutTextInnerBox}>
-									<Text className={aboutTextKey}>Mode</Text>
-									<Text className={aboutTextValue}>{data.mode}</Text>
-								</Box>
-								<Box className={aboutTextInnerBox}>
-									<Text className={aboutTextKey}>Staging</Text>
-									<Text className={aboutTextValue}>{data.staging}</Text>
-								</Box>
-								<Box className={aboutTextInnerBox}>
-									<Text className={aboutTextKey}>Store</Text>
-									<Text className={aboutTextValue}>{data.store}</Text>
-								</Box>
+						</Box>
+						<Box className={aboutTextBox}>
+							<Box className={aboutTextInnerBox}>
+								<Text className={aboutTextKey}> Deployment Id: </Text>
+								<Text className={aboutTextValue}> {data.deploymentId} </Text>
 							</Box>
-						</>
-					) : null}
+							<Box className={aboutTextInnerBox}>
+								<Text className={aboutTextKey}>Mode</Text>
+								<Text className={aboutTextValue}>{data.mode}</Text>
+							</Box>
+							<Box className={aboutTextInnerBox}>
+								<Text className={aboutTextKey}>Staging</Text>
+								<Text className={aboutTextValue}>{data.staging}</Text>
+							</Box>
+							<Box className={aboutTextInnerBox}>
+								<Text className={aboutTextKey}>Store</Text>
+								<Text className={aboutTextValue}>{data.store}</Text>
+							</Box>
+							<Box className={aboutTextInnerBox}>
+								<Text className={aboutTextKey}>LLM Status</Text>
+								<Text className={aboutTextValue}>{llmStatus}</Text>
+							</Box>
+						</Box>
+					</>
+				) : null}
 
-					<Text className={aboutTitle}>Need help?</Text>
-					<Text className={aboutDescription}>Ensure uninterrupted deployment</Text>
+				<Text className={aboutTitle}>Need help?</Text>
+				<Text className={aboutDescription}>Ensure uninterrupted deployment</Text>
 
-					<Box mt={15} className={helpIconContainer}>
-						{helpResources.map((data) => (
-							<HelpCard key={data.title} data={data} />
-						))}
-					</Box>
-
+				<Box mt={15} className={helpIconContainer}>
+					{helpResources.map((data) => (
+						<HelpCard key={data.title} data={data} />
+					))}
 				</Box>
-			
+			</Box>
 		</Modal>
 	);
 };

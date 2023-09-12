@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import Editor from '@monaco-editor/react';
 import { useQueryPageContext } from './Context';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
@@ -13,6 +13,7 @@ import dayjs from 'dayjs';
 import { notify } from '@/utils/notification';
 import { Axios } from '@/api/axios';
 import { LLM_QUERY_URL } from '@/api/constants';
+import { useGetAbout } from '@/hooks/useGetAbout';
 
 const QueryCodeEditor: FC = () => {
 	const {
@@ -30,13 +31,20 @@ const QueryCodeEditor: FC = () => {
 	const [currentStreamName, setCurrentStreamName] = useMountedState<string>(subLogQuery.get().streamName);
 	const [query, setQuery] = useMountedState<string>('');
 	const [aiQuery, setAiQuery] = useMountedState('Show all records');
+	const { data: aboutData, getAbout } = useGetAbout();
+	const isLlmActive = useMemo(() => aboutData?.llmActive, [aboutData?.llmActive]);
 
-	const handleAIGenerate = async () => {
+	const handleAIGenerate = useCallback(async () => {
 		if (!aiQuery?.length) {
 			notify({ message: 'Please enter a valid query' });
 			return;
 		}
-		notify({ message: 'AI based SQL being generated.', title: 'Getting suggestions', autoClose: 3000, color: 'blue' });
+		notify({
+			message: 'AI based SQL being generated.',
+			title: 'Getting suggestions',
+			autoClose: 3000,
+			color: 'blue',
+		});
 
 		const resp = await Axios().post(LLM_QUERY_URL, { prompt: aiQuery, stream: currentStreamName });
 		if (resp.status !== 200) {
@@ -51,7 +59,7 @@ const QueryCodeEditor: FC = () => {
 		const warningMsg =
 			'-- Parseable AI is experimental and may produce incorrect answers\n-- Always verify the generated SQL before executing\n\n';
 		setQuery(warningMsg + resp.data);
-	};
+	}, [aiQuery]);
 
 	const handleEditorChange = (code: any) => {
 		setQuery(code);
@@ -91,6 +99,7 @@ const QueryCodeEditor: FC = () => {
 		if (subLogQuery.get().streamName) {
 			setQuery(`SELECT * FROM ${subLogQuery.get().streamName} LIMIT 100  ; `);
 		}
+		getAbout();
 	}, []);
 
 	function handleEditorDidMount(editor: any, monaco: any) {
@@ -176,6 +185,11 @@ const QueryCodeEditor: FC = () => {
 			<Box className={container}>
 				<Text className={textContext}>Query</Text>
 				<Box style={{ height: '100%', width: '100%', textAlign: 'right' }}>
+					{!isLlmActive ? (
+						<a style={{ marginRight: '2rem' }} href="https://www.parseable.io/docs/api/llm-queries">
+							Enable SQL generation with OpenAI
+						</a>
+					) : null}
 					<Tooltip
 						label={`View Schema for ${subLogQuery.get().streamName}`}
 						sx={{ color: 'white', backgroundColor: 'black' }}
@@ -206,20 +220,22 @@ const QueryCodeEditor: FC = () => {
 				</Box>
 			</Box>
 			<Box sx={{ marginTop: '5px', height: 'calc(100% - 60px)' }}>
-				<Box className="flex" style={{ display: 'flex', margin: '15px', flexWrap: 'wrap' }}>
-					<Input
-						type="text"
-						name="ai_query"
-						id="ai_query"
-						style={{ minWidth: '85%', margin: '2px 20px 10px 0' }}
-						value={aiQuery}
-						onChange={(e) => setAiQuery(e.target.value)}
-						placeholder="Ask Parseable AI"
-					/>
-					<Button variant="gradient" onClick={handleAIGenerate}>
-						Generate SQL
-					</Button>
-				</Box>
+				{isLlmActive ? (
+					<Box className="flex" style={{ display: 'flex', margin: '15px', flexWrap: 'wrap' }}>
+						<Input
+							type="text"
+							name="ai_query"
+							id="ai_query"
+							style={{ minWidth: '85%', margin: '2px 20px 10px 0' }}
+							value={aiQuery}
+							onChange={(e) => setAiQuery(e.target.value)}
+							placeholder="Ask Parseable AI"
+						/>
+						<Button variant="gradient" onClick={handleAIGenerate}>
+							Generate SQL
+						</Button>
+					</Box>
+				) : null}
 				<Editor
 					height={'100%'}
 					defaultLanguage="sql"
