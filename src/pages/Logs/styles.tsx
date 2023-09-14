@@ -1,12 +1,10 @@
-import { HEADER_HEIGHT, NAVBAR_WIDTH } from '@/constants/theme';
+import { HEADER_HEIGHT } from '@/constants/theme';
 import { createStyles } from '@mantine/core';
 
-export const useLogsStyles = createStyles((theme) => {
-	const { widths } = theme.other;
+export const useLogsStyles = createStyles(() => {
 	return {
 		container: {
 			flex: 1,
-			width: `calc(${widths.full} - ${NAVBAR_WIDTH}px)`,
 			display: 'flex',
 			position: 'relative',
 		},
@@ -25,7 +23,7 @@ export const useLogTableStyles = createStyles((theme) => {
 		container: {
 			position: 'relative',
 			flex: 1,
-			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT}px)`,
+			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT*2}px)`,
 			display: 'flex',
 			flexDirection: 'column',
 			overflow: 'hidden',
@@ -34,7 +32,7 @@ export const useLogTableStyles = createStyles((theme) => {
 		innerContainer: {
 			position: 'relative',
 			flex: 1,
-			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT}px)`,
+			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT*2}px)`,
 			display: 'flex',
 			flexDirection: 'column',
 			overflow: 'hidden',
@@ -48,8 +46,7 @@ export const useLogTableStyles = createStyles((theme) => {
 		pinnedScrollView: {
 			overflow: 'unset !important',
 
-			"& .mantine-ScrollArea-root ":{
-			}
+			'& .mantine-ScrollArea-root ': {},
 		},
 
 		tableStyle: {

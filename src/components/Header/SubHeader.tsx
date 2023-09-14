@@ -109,7 +109,6 @@ export const UsersManagementHeader: FC = () => {
 				<Box className={innerContainer}>
 					<ReloadUser />
 					<DocsUser />
-					{/* <CreateUser /> */}
 				</Box>
 			</Box>
 		</Box>

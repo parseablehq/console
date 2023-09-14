@@ -16,7 +16,7 @@ import {
 } from '@tabler/icons-react';
 import { FC, useEffect } from 'react';
 import { useNavbarStyles } from './styles';
-import {  useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import { notifications } from '@mantine/notifications';
 import { useNavigate } from 'react-router-dom';
@@ -24,13 +24,14 @@ import { DEFAULT_FIXED_DURATIONS, useHeaderContext } from '@/layouts/MainLayout/
 import useMountedState from '@/hooks/useMountedState';
 import dayjs from 'dayjs';
 import { useDisclosure } from '@mantine/hooks';
-import {  USERS_MANAGEMENT_ROUTE } from '@/constants/routes';
+import { USERS_MANAGEMENT_ROUTE } from '@/constants/routes';
 import { useDeleteLogStream } from '@/hooks/useDeleteLogStream';
 import InfoModal from './infoModal';
 import { useGetUserRole } from '@/hooks/useGetUserRoles';
 import { getStreamsSepcificAccess, getUserSepcificStreams } from './rolesHandler';
 import { LogStreamData } from '@/@types/parseable/api/stream';
 import Cookies from 'js-cookie';
+import { NAVBAR_WIDTH } from '@/constants/theme';
 const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 
 const links = [
@@ -47,7 +48,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 	const { streamName } = useParams();
 	const location = useLocation();
 
-	const username =  Cookies.get('username') 
+	const username = Cookies.get('username');
 
 	const {
 		state: { subNavbarTogle },
@@ -78,7 +79,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 		Cookies.remove('session');
 		Cookies.remove('username');
 
-		window.location.href=`${baseURL}api/v1/o/logout?redirect=${window.location.origin}/login`;
+		window.location.href = `${baseURL}api/v1/o/logout?redirect=${window.location.origin}/login`;
 	};
 
 	const {
@@ -179,8 +180,8 @@ const Navbar: FC<NavbarProps> = (props) => {
 	}, [username]);
 
 	useEffect(() => {
-		if(streams && streams.length > 0 && roles){
-			const userStreams = getUserSepcificStreams(roles,streams as any);
+		if (streams && streams.length > 0 && roles) {
+			const userStreams = getUserSepcificStreams(roles, streams as any);
 			setUserSepecficStreams(userStreams as any);
 		}
 	}, [roles, streams]);
@@ -202,7 +203,13 @@ const Navbar: FC<NavbarProps> = (props) => {
 		modalCancelBtn,
 	} = classes;
 	return (
-		<MantineNavbar {...props} withBorder zIndex={1} hiddenBreakpoint={window.outerWidth + 20} hidden={isSubNavbarOpen}>
+		<MantineNavbar
+			{...props}
+			withBorder
+			zIndex={1}
+			hiddenBreakpoint={window.outerWidth + 20}
+			hidden={isSubNavbarOpen}
+			width={{ xs: `${NAVBAR_WIDTH}px` }}>
 			<MantineNavbar.Section grow className={container}>
 				<NavLink label="Log Streams" icon={<IconBinaryTree2 size="1.5rem" stroke={1.3} />} className={streamsBtn} />
 				<Select

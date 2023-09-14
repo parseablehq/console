@@ -1,11 +1,9 @@
-import {  NAVBAR_WIDTH } from '@/constants/theme';
 import { createStyles } from '@mantine/core';
 export const useConfigStyles = createStyles((theme) => {
 	const { spacing ,colors} = theme;
 	const { widths, } = theme.other;
 	return {
 		container: {
-			width: `calc(${widths.full} - ${NAVBAR_WIDTH}px)`,
 			display: 'flex',
 			margin: spacing.md,
 			flex: 1,

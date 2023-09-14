@@ -1,3 +1,5 @@
+import { heights } from '@/components/Mantine/sizing';
+import { HEADER_HEIGHT } from '@/constants/theme';
 import { createStyles } from '@mantine/core';
 export const useUsersStyles = createStyles((theme) => {
 	const { spacing, radius, colors } = theme;
@@ -6,6 +8,7 @@ export const useUsersStyles = createStyles((theme) => {
 
 	return {
 		container: {
+			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT*2}px - ${20}px)`,
 			flex: 1,
 			width: '100%',
 			position: 'relative',
