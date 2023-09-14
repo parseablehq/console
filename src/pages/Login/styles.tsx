@@ -1,5 +1,5 @@
 // import loginBg from '@/assets/images/login-bg.svg';
-import { createStyles } from '@mantine/core';
+import { createStyles, rem } from '@mantine/core';
 
 export const useLoginStyles = createStyles((theme) => {
 	const { colors, other, spacing, radius, shadows, primaryColor, fontSizes } = theme;
@@ -11,6 +11,17 @@ export const useLoginStyles = createStyles((theme) => {
 	const defaultRadius = radius[theme.defaultRadius as string];
 
 	return {
+		sideContainer:{
+			display: 'flex',
+			flexDirection: 'column',
+			width: '30vw',
+			background: 'radial-gradient(circle at 78.7% 87.8%, rgb(250, 250, 250) 70%, rgb(225, 234, 238) 60%)',
+			padding: rem(20),
+			[theme.fn.smallerThan('md')]: {
+				display: 'none',
+			  },
+		},
+
 		container: {
 			position: 'relative',
 			flex: 1,
@@ -51,7 +62,7 @@ export const useLoginStyles = createStyles((theme) => {
 		titleStyle: {
 			color: pColor,
 			fontWeight: fontWeights.bold,
-			fontSize: fontSizes.sm,
+			fontSize: fontSizes.xl,
 		},
 
 		descriptionStyle: {

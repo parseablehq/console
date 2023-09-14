@@ -13,75 +13,93 @@ const Login: FC = () => {
 	const { getInputProps, isValid, loading, handleSubmit, error } = useLoginForm();
 
 	const { classes } = useLoginStyles();
-	const { container, formContainer, titleStyle, formInput, loginBtnStyle, errorStyle } = classes;
+	const { container, formContainer, titleStyle, formInput, loginBtnStyle, errorStyle, sideContainer } = classes;
 
 	return (
-		<Transition mounted transition="fade" duration={10000} timingFunction="ease">
-			{(styles) => (
-				<Box style={styles} className={container}>
-					<form className={formContainer} onSubmit={handleSubmit()}>
-						<Loading visible={loading} variant="oval" position="absolute" />
-						<Image maw={230} mx="auto" src={logo} alt="Parseable Logo" />
-						<Text mt="xl" className={titleStyle}>
-							Welcome to Parseable
-						</Text>
-
-						{/* <Text mt="xs" className={descriptionStyle}>
-							Add your credentials to login
-						</Text> */}
-
-						{error && (
-							<Text mt="xs" className={errorStyle}>
-								{error}
-							</Text>
-						)}
-						<TextInput
-							mt="xl"
-							className={formInput}
-							placeholder="J.Doe"
-							label="Username"
-							withAsterisk
-							{...getInputProps('username')}
-						/>
-						<PasswordInput
-							mt="xl"
-							className={formInput}
-							placeholder="**********"
-							label="Password"
-							withAsterisk
-							{...getInputProps('password')}
-						/>
-						<Button type="submit" my="xl" className={loginBtnStyle} disabled={!isValid()}>
-							Login
-						</Button>
-
-						{/* <ForgotPassword /> */}
-
-						<Divider label=" Or  " labelPosition="center" my="md" sx={{ width: '100%' }} />
-
-						<Button
-							mt={rem(10)}
-							component="a"
-							href={`${baseURL}api/v1/o/login?redirect=${window.location.origin}`}
-							variant="outline"
-							color='brandPrimary.0'
-							
-							sx={({ colors }) => ({
-								color: colors.brandPrimary[0],
-								borderColor: colors.brandPrimary[0],
-								'&:hover': {
-									borderColor: colors.brandSecondary[0],
-									color: colors.brandSecondary[0],
-									background: 'transparent',
-								},
-							})}
-							>
-							Login with OAuth
-						</Button>
-					</form>
+		<Box
+			sx={{
+				display: 'flex',
+				flexDirection: 'row',
+				width: '100vw',
+			}}>
+			<Box className={sideContainer}>
+				<Image width={300} src={logo} />
+				<Box
+					sx={{
+						height: '100%',
+						display: 'flex',
+						flexDirection: 'column',
+						justifyContent: 'center',
+						alignItems: 'center',
+					}}>
+					<Text size={'xl'}>Find revenue opportunities in your open source data</Text>
+					<Text color="dimmed" size={'md'}>
+						Centralize community, product, and customer data to understand which companies are engaging with your open
+						source project.
+					</Text>
 				</Box>
-			)}
-		</Transition>
+			</Box>
+			<Transition mounted transition="fade" duration={10000} timingFunction="ease">
+				{(styles) => (
+					<Box style={styles} className={container}>
+						<form className={formContainer} onSubmit={handleSubmit()}>
+							<Loading visible={loading} variant="oval" position="absolute" />
+							<Text mt="xl" className={titleStyle} >
+								👋 Welcome back
+							</Text>
+							<Text mt="xl" size={"sm"} color="dimmed">Please enter your credentials</Text>
+
+							{error && (
+								<Text mt="xs" className={errorStyle}>
+									{error}
+								</Text>
+							)}
+							<TextInput
+								mt="xl"
+								className={formInput}
+								placeholder="J.Doe"
+								label="Username"
+								withAsterisk
+								{...getInputProps('username')}
+							/>
+							<PasswordInput
+								mt="xl"
+								className={formInput}
+								placeholder="**********"
+								label="Password"
+								withAsterisk
+								{...getInputProps('password')}
+							/>
+							<Button type="submit" my="xl" className={loginBtnStyle} disabled={!isValid()}>
+								Login
+							</Button>
+
+							{/* <ForgotPassword /> */}
+
+							<Divider label=" Or  " labelPosition="center" my="md" sx={{ width: '100%' }} />
+
+							<Button
+								mt={rem(10)}
+								component="a"
+								href={`${baseURL}api/v1/o/login?redirect=${window.location.origin}`}
+								variant="outline"
+								color="brandPrimary.0"
+								sx={({ colors }) => ({
+									color: colors.brandPrimary[0],
+									borderColor: colors.brandPrimary[0],
+									'&:hover': {
+										borderColor: colors.brandSecondary[0],
+										color: colors.brandSecondary[0],
+										background: 'transparent',
+									},
+								})}>
+								Login with OAuth
+							</Button>
+						</form>
+					</Box>
+				)}
+			</Transition>
+		</Box>
 	);
 };
 
