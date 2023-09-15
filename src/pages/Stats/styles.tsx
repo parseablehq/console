@@ -1,12 +1,8 @@
-import {  NAVBAR_WIDTH } from '@/constants/theme';
 import { createStyles } from '@mantine/core';
-export const useStatsStyles = createStyles((theme) => {
-	const { widths } = theme.other;
+export const useStatsStyles = createStyles(() => {
 	return {
 		container: {
 			flex: 1,
-			width: `calc(${widths.full} - ${NAVBAR_WIDTH}px)`,
-			// display: 'flex',
 			position: 'relative',
 		},
 	};

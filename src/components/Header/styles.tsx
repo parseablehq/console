@@ -23,21 +23,22 @@ export const useHeaderStyles = createStyles((theme) => {
 			justifyContent: 'center',
 			alignItems: 'center',
 			padding: spacing.md,
-			paddingRight:0,
-			width: NAVBAR_WIDTH,
-			height: "24px",
-
+			paddingRight: 0,
+			minWidth: NAVBAR_WIDTH,
+			height: '24px',
 		},
-		imageSty: {
-
-		},
-		burgerIcon: {
-			
-			
-		},
+		imageSty: {},
+		burgerIcon: {},
 		navContainer: {
-			width: `calc(100% - ${NAVBAR_WIDTH}px)`,
+			width: `calc(100% )`,
 			justifyContent: 'space-between',
+		},
+		actionBtn: {
+			transition: 'transform .2s ease-in-out',
+			'&:hover ': {
+				transform: 'scale(1.3)',
+				backgroundColor: colors.gray[0],
+			},
 		},
 	};
 });

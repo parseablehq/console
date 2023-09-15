@@ -1,4 +1,4 @@
-import { HEADER_HEIGHT, NAVBAR_WIDTH } from '@/constants/theme';
+import { HEADER_HEIGHT } from '@/constants/theme';
 
 import { createStyles } from '@mantine/core';
 
@@ -11,18 +11,17 @@ export const useQueryStyles = createStyles((theme) => {
 	return {
 		container: {
 			flex: 1,
-			width: `calc(${widths.full} - ${NAVBAR_WIDTH}px)`,
 			display: 'flex',
 			position: 'relative',
+			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2}px)`,
 		},
 		innerContainer: {
 			position: 'relative',
 			flex: 1,
-			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT}px)`,
+			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2}px)`,
 			display: 'flex',
 			flexDirection: 'column',
 			overflow: 'hidden',
-			// padding: px(spacing.sm),
 		},
 		runQueryBtn: {
 			background: pColor,

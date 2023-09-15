@@ -1,15 +1,40 @@
-import { NAVBAR_WIDTH } from '@/constants/theme';
+import { heights } from '@/components/Mantine/sizing';
+import { HEADER_HEIGHT } from '@/constants/theme';
 import { createStyles } from '@mantine/core';
 export const useUsersStyles = createStyles((theme) => {
-	const { spacing, colors } = theme;
-	const { widths } = theme.other;
+	const { spacing, radius, colors } = theme;
 	const sColor = colors.brandSecondary[0];
+	const defaultRadius = radius[theme.defaultRadius as string];
+
 	return {
 		container: {
+			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT*2}px - ${20}px)`,
 			flex: 1,
-			width: `calc(${widths.full} - ${NAVBAR_WIDTH}px)`,
+			width: '100%',
 			position: 'relative',
+			margin: '10px',
+			borderRadius: defaultRadius,
+			border: `1px solid ${colors.gray[2]}`,
 		},
+		header: {
+			display: 'flex',
+			justifyContent: 'space-between',
+			alignItems: 'center',
+			paddingLeft: '20px',
+			paddingRight: '20px',
+			height: '70px',
+			borderBottom: `1px solid ${colors.gray[2]}`,
+		},
+
+		createBtn: {
+			height: '34px',
+			width: '150px',
+			padding: '0px',
+			marginInlineEnd: spacing.xs,
+			color: colors.gray[5],
+			borderColor: colors.gray[2],
+		},
+
 		actionBtn: {
 			'&:hover': {
 				color: sColor,
@@ -22,7 +47,7 @@ export const useUsersStyles = createStyles((theme) => {
 			borderColor: colors.gray[2],
 		},
 		tableContainer: {
-			height: '100%',
+			height: 'calc(100% - 70px)',
 		},
 		tableStyle: {
 			overflow: 'scroll',
