@@ -4,6 +4,7 @@ import {
 	HOME_ROUTE,
 	LOGIN_ROUTE,
 	LOGS_ROUTE,
+	OIDC_NOT_CONFIGURED_ROUTE,
 	QUERY_ROUTE,
 	STATS_ROUTE,
 	USERS_MANAGEMENT_ROUTE,
@@ -24,6 +25,7 @@ import {
 	UsersElement,
 } from './elements';
 import AccessSpecificRoute from './AccessSpecificRoute';
+import OIDCNotConFigured from '@/pages/Errors/OIDC';
 
 const AppRouter: FC = () => {
 	return (
@@ -44,15 +46,16 @@ const AppRouter: FC = () => {
 							<Route path={QUERY_ROUTE} element={<QueryElement />} />
 						</Route>
 
-						<Route element={<AccessSpecificRoute accessRequired={["GetStats"]} />}>
+						<Route element={<AccessSpecificRoute accessRequired={['GetStats']} />}>
 							<Route path={STATS_ROUTE} element={<StatsElement />} />
 						</Route>
-						<Route element={<AccessSpecificRoute accessRequired={["PutAlert"]} />}>
+						<Route element={<AccessSpecificRoute accessRequired={['PutAlert']} />}>
 							<Route path={CONFIG_ROUTE} element={<ConfigElement />} />
 						</Route>
 					</Route>
 				</Route>
 				<Route path={LOGIN_ROUTE} element={<LoginElement />} />
+				<Route path={OIDC_NOT_CONFIGURED_ROUTE} element={<OIDCNotConFigured />} />
 				<Route path={ALL_ROUTE} element={<NotFound />} />
 			</Routes>
 		</FullPageLayout>
