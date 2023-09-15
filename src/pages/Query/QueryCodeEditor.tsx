@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo } from 'react';
+import React, { FC, useCallback, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useQueryPageContext } from './Context';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
@@ -11,13 +11,11 @@ import useMountedState from '@/hooks/useMountedState';
 import { useQueryCodeEditorStyles } from './styles';
 import dayjs from 'dayjs';
 import { notify } from '@/utils/notification';
-import { Axios } from '@/api/axios';
-import { LLM_QUERY_URL } from '@/api/constants';
-import { useGetAbout } from '@/hooks/useGetAbout';
+import { usePostLLM } from '@/hooks/usePostLLM';
 
 const QueryCodeEditor: FC = () => {
 	const {
-		state: { subLogQuery, subRefreshInterval, subLogSelectedTimeRange },
+		state: { subLogQuery, subRefreshInterval, subLogSelectedTimeRange, subLLMActive },
 	} = useHeaderContext();
 	const {
 		state: { result, subSchemaToggle },
@@ -31,35 +29,24 @@ const QueryCodeEditor: FC = () => {
 	const [currentStreamName, setCurrentStreamName] = useMountedState<string>(subLogQuery.get().streamName);
 	const [query, setQuery] = useMountedState<string>('');
 	const [aiQuery, setAiQuery] = useMountedState('Show all records');
-	const { data: aboutData, getAbout } = useGetAbout();
-	const isLlmActive = useMemo(() => aboutData?.llmActive, [aboutData?.llmActive]);
+	const [isLlmActive, setIsLlmActive] = useMountedState(subLLMActive.get());
+	const { data: resAIQuery, postLLMQuery } = usePostLLM();
 
 	const handleAIGenerate = useCallback(async () => {
 		if (!aiQuery?.length) {
 			notify({ message: 'Please enter a valid query' });
 			return;
 		}
-		notify({
-			message: 'AI based SQL being generated.',
-			title: 'Getting suggestions',
-			autoClose: 3000,
-			color: 'blue',
-		});
-
-		const resp = await Axios().post(LLM_QUERY_URL, { prompt: aiQuery, stream: currentStreamName });
-		if (resp.status !== 200) {
-			notify({
-				message: 'Please check your internet connection and add a valid OpenAI API key',
-				title: 'Error getting suggestions',
-				color: 'red',
-			});
-			return;
-		}
-
-		const warningMsg =
-			'-- Parseable AI is experimental and may produce incorrect answers\n-- Always verify the generated SQL before executing\n\n';
-		setQuery(warningMsg + resp.data);
+		postLLMQuery(aiQuery, currentStreamName);
 	}, [aiQuery]);
+
+	useEffect(() => {
+		if (resAIQuery) {
+			const warningMsg =
+				'-- Parseable AI is experimental and may produce incorrect answers\n-- Always verify the generated SQL before executing\n\n';
+			setQuery(warningMsg + resAIQuery);
+		}
+	}, [resAIQuery]);
 
 	const handleEditorChange = (code: any) => {
 		setQuery(code);
@@ -78,6 +65,7 @@ const QueryCodeEditor: FC = () => {
 
 	useEffect(() => {
 		const listener = subSchemaToggle.subscribe(setIsSchemaOpen);
+		const subLLMActiveListener = subLLMActive.subscribe(setIsLlmActive);
 		const refreshIntervalListener = subRefreshInterval.subscribe(setRefreshInterval);
 		const subQueryListener = subLogQuery.subscribe((state) => {
 			if (state.streamName) {
@@ -92,6 +80,7 @@ const QueryCodeEditor: FC = () => {
 			listener();
 			refreshIntervalListener();
 			subQueryListener();
+			subLLMActiveListener();
 		};
 	}, [subLogQuery.get(), subSchemaToggle.get(), subRefreshInterval.get()]);
 
@@ -99,7 +88,6 @@ const QueryCodeEditor: FC = () => {
 		if (subLogQuery.get().streamName) {
 			setQuery(`SELECT * FROM ${subLogQuery.get().streamName} LIMIT 100  ; `);
 		}
-		getAbout();
 	}, []);
 
 	function handleEditorDidMount(editor: any, monaco: any) {
@@ -114,6 +102,11 @@ const QueryCodeEditor: FC = () => {
 		const withoutComments = sqlString.replace(/--.*$/gm, '');
 		const withoutNewLines = withoutComments.replace(/\n/g, ' ');
 		const withoutTrailingSemicolon = withoutNewLines.replace(/;/, '');
+		const limitRegex = /limit\s+(\d+)/i;
+		if (!limitRegex.test(withoutTrailingSemicolon)) {
+			notify({ message: 'default limit used i.e - 200' });
+			return withoutTrailingSemicolon.trim() + ' LIMIT 200';
+		}
 		return withoutTrailingSemicolon;
 	};
 

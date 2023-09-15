@@ -3,6 +3,7 @@ import { FC, useEffect, useMemo } from 'react';
 import { useInfoModalStyles } from './styles';
 import { useGetAbout } from '@/hooks/useGetAbout';
 import { IconAlertCircle, IconBook2, IconBrandGithub, IconBrandSlack, IconBusinessplan } from '@tabler/icons-react';
+import { useHeaderContext } from '@/layouts/MainLayout/Context';
 
 const helpResources = [
 	{
@@ -57,6 +58,9 @@ type InfoModalProps = {
 
 const InfoModal: FC<InfoModalProps> = (props) => {
 	const { opened, close } = props;
+	const {
+		state: { subLLMActive },
+	} = useHeaderContext();
 
 	const { data, loading, error, getAbout, resetData } = useGetAbout();
 	useEffect(() => {
@@ -75,6 +79,12 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 			status = `${data.llmProvider} configured`;
 		}
 		return status;
+	}, [data?.llmActive]);
+
+	useEffect(() => {
+		if (data) {
+			subLLMActive.set(data.llmActive);
+		}
 	}, [data?.llmActive]);
 
 	const { classes } = useInfoModalStyles();
