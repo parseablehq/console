@@ -32,7 +32,7 @@ const QueryCodeEditor: FC = () => {
 	const [isLlmActive, setIsLlmActive] = useMountedState(subLLMActive.get());
 	const { data: resAIQuery, postLLMQuery } = usePostLLM();
 
-	const handleAIGenerate = useCallback(async () => {
+	const handleAIGenerate = useCallback(() => {
 		if (!aiQuery?.length) {
 			notify({ message: 'Please enter a valid query' });
 			return;
@@ -105,7 +105,7 @@ const QueryCodeEditor: FC = () => {
 		const limitRegex = /limit\s+(\d+)/i;
 		if (!limitRegex.test(withoutTrailingSemicolon)) {
 			notify({ message: 'default limit used i.e - 200' });
-			return withoutTrailingSemicolon.trim() + ' LIMIT 200';
+			return `${withoutTrailingSemicolon.trim()} LIMIT 200`;
 		}
 		return withoutTrailingSemicolon;
 	};
