@@ -114,3 +114,19 @@ export const UsersManagementHeader: FC = () => {
 		</Box>
 	);
 };
+
+
+export const AllRouteHeader: FC = () => {
+	const { classes } = useLogQueryStyles();
+	const { container, innerContainer } = classes;
+
+	return (
+		<Box className={container}>
+			<Box>
+				<Box className={innerContainer}>
+					<HeaderBreadcrumbs crumbs={[]} />
+				</Box>
+			</Box>
+		</Box>
+	);
+}
