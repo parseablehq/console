@@ -17,7 +17,7 @@ const PrimaryHeader: FC<PrimaryHeaderProps> = (props) => {
 		<MantineHeader {...props} className={container} height={HEADER_HEIGHT} p={0} withBorder>
 			<Box className={logoContainer}>
 				<Link to={HOME_ROUTE}>
-					<Image className={imageSty} src={logoInvert} height={24} alt="Parseable Logo" />
+					<Image className={imageSty} src={logoInvert} height={32} alt="Parseable Logo" />
 				</Link>
 			</Box>
 			<Box className={navContainer}>

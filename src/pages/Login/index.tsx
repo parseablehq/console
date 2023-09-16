@@ -23,7 +23,7 @@ const Login: FC = () => {
 				width: '100vw',
 			}}>
 			<Box className={sideContainer}>
-				<Image width={300} src={logo} />
+				<Image width={250} src={logo} />
 				<Box
 					sx={{
 						height: '100%',
@@ -32,10 +32,9 @@ const Login: FC = () => {
 						justifyContent: 'center',
 						alignItems: 'center',
 					}}>
-					<Text size={'xl'}>Find revenue opportunities in your open source data</Text>
+					<Text size={'xl'}>Unified logs for all applications and infrastructure</Text>
 					<Text color="dimmed" size={'md'}>
-						Centralize community, product, and customer data to understand which companies are engaging with your open
-						source project.
+						Access, debug and analyze your log data here. Run sophisticated SQL queries on your log data, or look at tabular view. 
 					</Text>
 				</Box>
 			</Box>
@@ -44,10 +43,12 @@ const Login: FC = () => {
 					<Box style={styles} className={container}>
 						<form className={formContainer} onSubmit={handleSubmit()}>
 							<Loading visible={loading} variant="oval" position="absolute" />
-							<Text mt="xl" className={titleStyle} >
+							<Text mt="xl" className={titleStyle}>
 								👋 Welcome back
 							</Text>
-							<Text mt="xl" size={"sm"} color="dimmed">Please enter your credentials</Text>
+							<Text mt="xl" size={'sm'} color="dimmed">
+								Please enter your credentials
+							</Text>
 
 							{error && (
 								<Text mt="xs" className={errorStyle}>
