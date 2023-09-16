@@ -2,7 +2,7 @@ import React, { FC, useCallback, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useQueryPageContext } from './Context';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Box, Button, Input, Text, Tooltip, px } from '@mantine/core';
+import { Box, Button, Text, TextInput, Tooltip, px } from '@mantine/core';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import { ErrorMarker, errChecker } from './ErrorMarker';
 import { notifications } from '@mantine/notifications';
@@ -28,7 +28,7 @@ const QueryCodeEditor: FC = () => {
 	const [refreshInterval, setRefreshInterval] = useMountedState<number | null>(null);
 	const [currentStreamName, setCurrentStreamName] = useMountedState<string>(subLogQuery.get().streamName);
 	const [query, setQuery] = useMountedState<string>('');
-	const [aiQuery, setAiQuery] = useMountedState('Show all records');
+	const [aiQuery, setAiQuery] = useMountedState('');
 	const [isLlmActive, setIsLlmActive] = useMountedState(subLLMActive.get());
 	const { data: resAIQuery, postLLMQuery } = usePostLLM();
 
@@ -104,8 +104,8 @@ const QueryCodeEditor: FC = () => {
 		const withoutTrailingSemicolon = withoutNewLines.replace(/;/, '');
 		const limitRegex = /limit\s+(\d+)/i;
 		if (!limitRegex.test(withoutTrailingSemicolon)) {
-			notify({ message: 'default limit used i.e - 200' });
-			return `${withoutTrailingSemicolon.trim()} LIMIT 200`;
+			notify({ message: 'default limit used i.e - 1000' });
+			return `${withoutTrailingSemicolon.trim()} LIMIT 1000`;
 		}
 		return withoutTrailingSemicolon;
 	};
@@ -175,6 +175,39 @@ const QueryCodeEditor: FC = () => {
 
 	return (
 		<Box style={{ height: '100%' }}>
+			{isLlmActive ? (
+				<TextInput
+					type="text"
+					name="ai_query"
+					id="ai_query"
+					value={aiQuery}
+					onChange={(e) => setAiQuery(e.target.value)}
+					placeholder="Enter plain text to generate SQL query using OpenAI"
+					rightSectionWidth={'auto'}
+					sx={{
+						// border: '1px solid #545BEB',
+						// backgroundColor: 'rgba(84,91,235,.2)',
+
+						'& .mantine-Input-input': {
+							// color: '#FC466B',
+							border: 'none',
+							borderRadius:0,
+							backgroundColor: 'rgba(84,91,235,.2)',
+							'::placeholder': {
+								// color: "rgba(0,0,107,.7)",
+							},
+						},
+						'& .mantine-TextInput-rightSection	': {
+							height: '100%',
+						},
+					}}
+					rightSection={
+						<Button variant="filled" color="brandPrimary.0" radius={0} onClick={handleAIGenerate} h={'100%'}>
+							 ✨ Generate
+						</Button>
+					}
+				/>
+			) : null}
 			<Box className={container}>
 				<Text className={textContext}>Query</Text>
 				<Box style={{ height: '100%', width: '100%', textAlign: 'right' }}>
@@ -212,23 +245,8 @@ const QueryCodeEditor: FC = () => {
 					</Tooltip>
 				</Box>
 			</Box>
-			<Box sx={{ marginTop: '5px', height: 'calc(100% - 60px)' }}>
-				{isLlmActive ? (
-					<Box className="flex" style={{ display: 'flex', margin: '15px', flexWrap: 'wrap' }}>
-						<Input
-							type="text"
-							name="ai_query"
-							id="ai_query"
-							style={{ minWidth: '85%', margin: '2px 20px 10px 0' }}
-							value={aiQuery}
-							onChange={(e) => setAiQuery(e.target.value)}
-							placeholder="Ask Parseable AI"
-						/>
-						<Button variant="gradient" onClick={handleAIGenerate}>
-							Generate SQL
-						</Button>
-					</Box>
-				) : null}
+
+			<Box sx={{ height: 'calc(100% - 96px)' }}>
 				<Editor
 					height={'100%'}
 					defaultLanguage="sql"
@@ -244,6 +262,7 @@ const QueryCodeEditor: FC = () => {
 						automaticLayout: true,
 						mouseWheelZoom: true,
 						glyphMargin: true,
+						padding: { top: 10 },
 					}}
 				/>
 			</Box>

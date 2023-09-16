@@ -20,8 +20,8 @@ export const usePostLLM = () => {
 				id: 'load-data',
 				loading: true,
 				color: '#545BEB',
-				title: 'Genrating Query',
-				message: 'Query will be genrated using AI.',
+				title: 'Generating Query',
+				message: 'Query will be generating using AI.',
 				autoClose: false,
 				withCloseButton: false,
 			});
@@ -33,8 +33,8 @@ export const usePostLLM = () => {
 					notifications.update({
 						id: 'load-data',
 						color: 'green',
-						title: 'Query Genrated',
-						message: 'Query Genrated Successfully',
+						title: 'Query Generated Successfully',
+						message: 'Query Generated Successfully',
 						icon: <IconCheck size="1rem" />,
 						autoClose: 3000,
 					});
@@ -59,7 +59,7 @@ export const usePostLLM = () => {
 				id: 'load-data',
 				color: 'red',
 				title: 'Error occurred',
-				message: 'Error occurred while genrating query',
+				message: 'Error occurred while generating query',
 				icon: <IconFileAlert size="1rem" />,
 				autoClose: 2000,
 			});
