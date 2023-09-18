@@ -43,7 +43,7 @@ const QueryCodeEditor: FC = () => {
 	useEffect(() => {
 		if (resAIQuery) {
 			const warningMsg =
-				'-- Parseable AI is experimental and may produce incorrect answers\n-- Always verify the generated SQL before executing\n\n';
+				'-- LLM generated query is experimental and may produce incorrect answers\n-- Always verify the generated SQL before executing\n\n';
 			setQuery(warningMsg + resAIQuery);
 		}
 	}, [resAIQuery]);
@@ -191,7 +191,7 @@ const QueryCodeEditor: FC = () => {
 						'& .mantine-Input-input': {
 							// color: '#FC466B',
 							border: 'none',
-							borderRadius:0,
+							borderRadius: 0,
 							backgroundColor: 'rgba(84,91,235,.2)',
 							'::placeholder': {
 								// color: "rgba(0,0,107,.7)",
@@ -203,7 +203,7 @@ const QueryCodeEditor: FC = () => {
 					}}
 					rightSection={
 						<Button variant="filled" color="brandPrimary.0" radius={0} onClick={handleAIGenerate} h={'100%'}>
-							 ✨ Generate
+							✨ Generate
 						</Button>
 					}
 				/>
