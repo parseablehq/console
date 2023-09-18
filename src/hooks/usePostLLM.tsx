@@ -4,13 +4,11 @@ import { notifications } from '@mantine/notifications';
 import { IconCheck, IconFileAlert } from '@tabler/icons-react';
 import { postLLM } from '@/api/llm';
 
-
 // this used to call ai query api
 export const usePostLLM = () => {
 	const [data, setData] = useMountedState<string | null>(null);
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
-
 
 	// this function is used to call ai query api
 	const postLLMQuery = async (prompt: string, stream: string) => {
@@ -21,7 +19,7 @@ export const usePostLLM = () => {
 				loading: true,
 				color: '#545BEB',
 				title: 'Generating Query',
-				message: 'Query will be generating using AI.',
+				message: 'Generating SQL query using AI.',
 				autoClose: false,
 				withCloseButton: false,
 			});
