@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import { useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 
 export const wait = (sec = 1) => new Promise<void>((res) => setTimeout(res, sec * 1000));
 
@@ -32,4 +34,23 @@ export const parseLogData = (value?: any, columnName?: string) => {
 	}
 
 	return 'N/A';
+};
+
+export const getQueryParam = () => {
+	const location = useLocation();
+	return useMemo(() => {
+		const searchParams = new URLSearchParams(location.search);
+		const q = searchParams.get('q');
+		if (!q) return {};
+		const base64 = q.replaceAll('.', '+').replaceAll('_', '/').replaceAll('-', '=');
+		const decoded = atob(base64);
+		return JSON.parse(decoded);
+	}, [location]);
+};
+
+export const generateQueryParam = (obj: any) => {
+	const stringObj = JSON.stringify(obj);
+	const base64 = btoa(stringObj);
+	const endcodedBase64 = base64.replaceAll('+', '.').replaceAll('/', '_').replaceAll('=', '-');
+	return `?q=${endcodedBase64}`;
 };
