@@ -60,10 +60,9 @@ export const useLoginForm = () => {
 				switch (res.status) {
 					case StatusCodes.OK: {
 						const pathname = location.state?.from?.pathname || HOME_ROUTE;
-						console.log(pathname, 'pathname');
 						nav(
 							{
-								pathname: '/',
+								pathname: pathname,
 							},
 							{ replace: true },
 						);
