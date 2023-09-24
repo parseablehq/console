@@ -9,13 +9,14 @@ import { HOME_ROUTE } from '@/constants/routes';
 import { useId } from '@mantine/hooks';
 import { useEffect } from 'react';
 import Cookies from 'js-cookie';
+import { getQueryParam } from '@/utils';
 
 export const useLoginForm = () => {
 	const notificationId = useId();
-
+	const queryParams = getQueryParam();
 	const [loading, setLoading] = useMountedState(false);
 	const [error, setError] = useMountedState<string | null>(null);
-	const auth = Cookies.get('session') 
+	const auth = Cookies.get('session');
 	const nav = useNavigate();
 	const location = useLocation();
 
@@ -32,8 +33,8 @@ export const useLoginForm = () => {
 
 	const form = useForm({
 		initialValues: {
-			username: '',
-			password: '',
+			username: queryParams.username ?? '',
+			password: queryParams.password ?? '',
 		},
 		validate: {
 			username: (value) => (value ? null : ''),
@@ -59,11 +60,12 @@ export const useLoginForm = () => {
 				switch (res.status) {
 					case StatusCodes.OK: {
 						const pathname = location.state?.from?.pathname || HOME_ROUTE;
-						console.log(pathname,"pathname");
-						nav({
-							pathname:"/"
-						},
-						{ replace: true });
+						nav(
+							{
+								pathname
+							},
+							{ replace: true },
+						);
 
 						break;
 					}
