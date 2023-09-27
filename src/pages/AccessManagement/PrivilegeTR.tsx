@@ -411,7 +411,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 							{selectedPrivilege === 'reader' ? (
 								<TextInput
 									type="text"
-									placeholder={`Please enter the Tag.`}
+									placeholder={"Please enter the Tag."}
 									label="Tag"
 									onChange={(e) => {
 										setTagInput(e.target.value);
