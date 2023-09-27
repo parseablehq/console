@@ -129,7 +129,7 @@ const Status: FC = () => {
 				setStatusSuccess(false);
 			}
 		} else {
-			setStatus(`No events received`);
+			setStatus("No events received");
 			setStatusSuccess(false);
 			return;
 		}

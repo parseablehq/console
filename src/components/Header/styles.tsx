@@ -30,7 +30,7 @@ export const useHeaderStyles = createStyles((theme) => {
 		imageSty: {},
 		burgerIcon: {},
 		navContainer: {
-			width: `calc(100% )`,
+			width: "calc(100% )",
 			justifyContent: 'space-between',
 		},
 		actionBtn: {
