@@ -148,6 +148,10 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 									</Button>
 								) : null}
 							</Box>
+							<Box className={aboutTextInnerBox}>
+								<Text className={aboutTextKey}> UI Version: </Text>
+								<Text className={aboutTextValue}> {data.uiVersion} </Text>
+							</Box>
 						</Box>
 						<Box className={aboutTextBox}>
 							<Box className={aboutTextInnerBox}>
