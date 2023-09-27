@@ -65,7 +65,7 @@ export const useGetLogStreamList = () => {
 					setError('Unauthorized');
 					Cookies.remove('session');
 					Cookies.remove('username');
-					console.log(Cookies.get());
+					
 					notifications.update({
 						id: 'load-data',
 						color: 'red',
