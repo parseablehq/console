@@ -353,7 +353,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 					)}
 				</Stack>
 				<Group position="right" mt={10}>
-					{"native" === user.method ? (<Button
+					{user.method === "native" ? (<Button
 						variant="filled"
 						color="gray"
 						className={classes.modalActionBtn}
