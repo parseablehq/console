@@ -45,7 +45,12 @@ export const getQueryParam = () => {
 		if (!query) return {};
 		const base64 = query.replaceAll('.', '+').replaceAll('_', '/').replaceAll('-', '=');
 		const decoded = atob(base64);
-		return JSON.parse(decoded);
+		try {
+			const obj = JSON.parse(decoded);
+			return obj;
+		} catch (e) {
+			return {};
+		}
 	}, [location]);
 };
 
