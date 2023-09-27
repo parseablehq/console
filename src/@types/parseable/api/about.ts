@@ -10,4 +10,5 @@ export type AboutData = {
 	version: string;
 	llmActive: boolean;
 	llmProvider: string;
+	uiVersion: string;
 };
