@@ -333,7 +333,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 					</Button>
 				</Group>
 			</Modal>
-			{privileges && privileges[deletePrivilegeIndex] ? (
+			{privileges?.[deletePrivilegeIndex] ? (
 				<Modal
 					withinPortal
 					size="md"

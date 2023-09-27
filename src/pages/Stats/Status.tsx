@@ -238,7 +238,7 @@ const Status: FC = () => {
 						Icon: IconClockStop,
 						value: !loadingRetention
 							? !errorRetention
-								? dataRetention && dataRetention[0] && dataRetention[0].duration
+								? dataRetention?.[0] && dataRetention[0].duration
 									? ` ${dataRetention[0].duration.split('d')[0]} Days`
 									: 'Not Set'
 								: 'ERROR'
