@@ -35,10 +35,6 @@ export const FIXED_DURATIONS = [
 		name: 'last 7 days',
 		milliseconds: dayjs.duration({ days: 7 }).asMilliseconds(),
 	},
-	{
-		name: 'last 2 months',
-		milliseconds: dayjs.duration({ months: 2 }).asMilliseconds(),
-	},
 ] as const;
 
 export const DEFAULT_FIXED_DURATIONS = FIXED_DURATIONS[0];
@@ -70,18 +66,18 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 		startTime: now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate(),
 		endTime: now.toDate(),
 		streamName: '',
-		access:null
+		access: null,
 	});
 	const subLogSearch = useSubscribeState<LogsSearch>({
 		search: '',
 		filters: {},
 		sort: {
 			field: 'p_timestamp',
-			order: SortOrder.DESCENDING
-		}
+			order: SortOrder.DESCENDING,
+		},
 	});
 	const subLogSelectedTimeRange = useSubscribeState<LogSelectedTimeRange>({
-		state: "fixed",
+		state: 'fixed',
 		value: DEFAULT_FIXED_DURATIONS.name,
 	});
 	const subRefreshInterval = useSubscribeState<number | null>(null);
@@ -95,7 +91,7 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 		subLogSelectedTimeRange,
 		subNavbarTogle,
 		subCreateUserModalTogle,
-		subLLMActive
+		subLLMActive,
 	};
 
 	const methods: HeaderContextMethods = {};

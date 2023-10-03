@@ -15,13 +15,13 @@ export const useQueryLogs = () => {
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
 	const [pageLogData, setPageLogData] = useMountedState<LogsData | null>(null);
-	const [querySearch, setQuerySearch] = useMountedState<LogsSearch>({ 
-		search: '', 
-		filters: {}, 
-		sort: { 
-			field: 'p_timestamp', 
+	const [querySearch, setQuerySearch] = useMountedState<LogsSearch>({
+		search: '',
+		filters: {},
+		sort: {
+			field: 'p_timestamp',
 			order: SortOrder.DESCENDING 
-		} 
+		}
 	});
 	const [isPending, startTransition] = useTransition();
 

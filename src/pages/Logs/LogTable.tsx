@@ -25,6 +25,20 @@ import CustomPagination from './CustomPagination';
 
 const skipFields = ['p_metadata', 'p_tags'];
 
+type LogPageContext = {
+	[key: string]: {
+		LIMITS: number;
+		SEARCH: string;
+		FILTERS: {};
+		SORT: {
+			field: string;
+			order: number;
+		};
+		COLUMN: Map<string, boolean>;
+		PINNED_COLUMN: string[];
+	};
+};
+
 const LogTable: FC = () => {
 	const {
 		state: { subLogStreamError },
@@ -40,6 +54,60 @@ const LogTable: FC = () => {
 	const [currentStartTimeTemp, setCurrentStartTimeTemp] = useMountedState<Date | null>(null);
 	const [currentStartTime, setCurrentStartTime] = useMountedState<Date | null>(null);
 	const [currentCount, setCurrentCount] = useMountedState<number>(0);
+	const streamName = subLogQuery.get().streamName;
+	const [constextLS, setContextLS] = useMountedState<string>(localStorage.getItem('LOG_PAGE_CONTEXT') ?? '{}');
+
+	// useEffect(() => {
+	// 	constextLS
+	// 		? () => {
+	// 				const temp = JSON.parse(constextLS ?? '{}') as LogPageContext;
+	// 				if (temp[streamName]) {
+	// 					setPageLimit(temp[streamName].LIMITS);
+	// 					setQuerySearch({
+	// 						search: temp[streamName].SEARCH,
+	// 						filters: temp[streamName].FILTERS,
+	// 						sort: {
+	// 							field: temp[streamName].SORT.field,
+	// 							order: temp[streamName].SORT.order,
+	// 						},
+	// 					});
+	// 					setPinnedColumns(new Set(temp[streamName].PINNED_COLUMN));
+	// 					setColumnToggles(new Map(Object.entries(temp[streamName].COLUMN)));
+	// 				} else {
+	// 					temp[streamName] = {
+	// 						LIMITS: 10,
+	// 						SEARCH: '',
+	// 						FILTERS: {},
+	// 						SORT: {
+	// 							field: 'p_timestamp',
+	// 							order: SortOrder.DESCENDING,
+	// 						},
+	// 						COLUMN: new Map(),
+	// 						PINNED_COLUMN: [],
+	// 					};
+	// 					setContextLS(JSON.stringify(temp));
+	// 					localStorage.setItem('LOG_PAGE_CONTEXT', constextLS);
+	// 				}
+	// 		  }
+	// 		: () => {
+	// 				setContextLS(
+	// 					JSON.stringify({
+	// 						streamName: {
+	// 							LIMITS: 30,
+	// 							SEARCH: '',
+	// 							FILTERS: {},
+	// 							SORT: {
+	// 								field: 'p_timestamp',
+	// 								order: SortOrder.DESCENDING,
+	// 							},
+	// 							COLUMN: new Map(),
+	// 							PINNED_COLUMN: [],
+	// 						},
+	// 					}),
+	// 				);
+	// 				localStorage.setItem('LOG_PAGE_CONTEXT', constextLS);
+	// 		  };
+	// }, [streamName]);
 
 	const {
 		data: queryCountRes,
@@ -83,6 +151,12 @@ const LogTable: FC = () => {
 				delete state.filters[key];
 			}
 		});
+		const temp = JSON.parse(constextLS ?? '{}') as LogPageContext;
+		if (temp[streamName]) {
+			temp[streamName].FILTERS = subLogSearch.get().filters;
+			setContextLS(JSON.stringify(temp));
+			localStorage.setItem('LOG_PAGE_CONTEXT', JSON.stringify(temp));
+		}
 	};
 
 	const isColumnActive = useCallback(
@@ -165,6 +239,43 @@ const LogTable: FC = () => {
 				if (logsSchema) {
 					resetStreamData();
 					resetLogsData();
+				}
+
+				const temp = JSON.parse(constextLS ?? '{}') as LogPageContext;
+				if (temp[query.streamName]) {
+					setPageLimit(temp[streamName].LIMITS);
+					setQuerySearch({
+						search: temp[streamName].SEARCH,
+						filters: temp[streamName].FILTERS,
+						sort: {
+							field: temp[streamName].SORT.field,
+							order: temp[streamName].SORT.order,
+						},
+					});
+					subLogSearch.set({
+						search: temp[streamName].SEARCH,
+						filters: temp[streamName].FILTERS,
+						sort: {
+							field: temp[streamName].SORT.field,
+							order: temp[streamName].SORT.order,
+						},
+					});
+					setPinnedColumns(new Set(temp[streamName].PINNED_COLUMN));
+					setColumnToggles(new Map(Object.entries(temp[streamName].COLUMN)));
+				} else {
+					temp[streamName] = {
+						LIMITS: 10,
+						SEARCH: '',
+						FILTERS: {},
+						SORT: {
+							field: 'p_timestamp',
+							order: SortOrder.DESCENDING,
+						},
+						COLUMN: new Map(),
+						PINNED_COLUMN: [],
+					};
+					setContextLS(JSON.stringify(temp));
+					localStorage.setItem('LOG_PAGE_CONTEXT', constextLS);
 				}
 				let tempDate = subLogQuery.get().endTime;
 				tempDate.setSeconds(0, 0);
@@ -448,7 +559,18 @@ const LogTable: FC = () => {
 									setCurrentStartTime={setCurrentStartTime}
 									setCurrentCount={setCurrentCount}
 								/>
-								<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
+								<LimitControl
+									value={pageLogData?.limit || 30}
+									onChange={(e) => {
+										setPageLimit(e);
+										const temp = JSON.parse(constextLS ?? '{}') as LogPageContext;
+										if (temp[streamName]) {
+											temp[streamName].LIMITS = e;
+											setContextLS(JSON.stringify(temp));
+											localStorage.setItem('LOG_PAGE_CONTEXT', JSON.stringify(temp));
+										}
+									}}
+								/>
 							</Box>
 						</Box>
 					) : (
