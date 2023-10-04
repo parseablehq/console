@@ -27,7 +27,7 @@ const skipFields = ['p_metadata', 'p_tags'];
 
 const LogTable: FC = () => {
 	const {
-		state: { subLogStreamError },
+		state: { subLogStreamError, subGapTime },
 	} = useLogsPageContext();
 	const {
 		state: { subLogSearch, subLogQuery, subRefreshInterval, subLogSelectedTimeRange },
@@ -162,15 +162,19 @@ const LogTable: FC = () => {
 		const refreshIntervalListener = subRefreshInterval.subscribe(setRefreshInterval);
 		const logQueryListener = subLogQuery.subscribe((query) => {
 			if (query.streamName) {
-				if (logsSchema) {
-					resetStreamData();
-					resetLogsData();
-				}
-				let tempDate = subLogQuery.get().endTime;
-				tempDate.setSeconds(0, 0);
-				setCurrentStartTimeTemp(tempDate);
-				getDataSchema(query.streamName);
-				setCurrentCount(0);
+				resetLogsData();
+			}
+		});
+
+		const subID = subGapTime.subscribe((data) => {
+			if (data) {
+				getQueryData({
+					streamName: subLogQuery.get().streamName,
+					startTime: data.startTime,
+					endTime: data.endTime,
+					access: subLogQuery.get().access,
+				});
+				getDataSchema(subLogQuery.get().streamName);
 				setColumnToggles(new Map());
 				setPinnedColumns(new Set());
 			}
@@ -178,6 +182,7 @@ const LogTable: FC = () => {
 
 		return () => {
 			streamErrorListener();
+			subID();
 			resetQueryCountData();
 			refreshIntervalListener();
 			logQueryListener();
@@ -185,48 +190,48 @@ const LogTable: FC = () => {
 		};
 	}, [logsSchema]);
 
-	useEffect(() => {
-		if (currentStartTimeTemp) {
-			getQueryCountData({
-				streamName: subLogQuery.get().streamName,
-				startTime: currentStartTimeTemp,
-				endTime: dayjs(currentStartTimeTemp).add(1, 'minute').toDate(),
-				access: subLogQuery.get().access,
-			});
-		}
-	}, [currentStartTimeTemp]);
+	// useEffect(() => {
+	// 	if (currentStartTimeTemp) {
+	// 		getQueryCountData({
+	// 			streamName: subLogQuery.get().streamName,
+	// 			startTime: currentStartTimeTemp,
+	// 			endTime: dayjs(currentStartTimeTemp).add(1, 'minute').toDate(),
+	// 			access: subLogQuery.get().access,
+	// 		});
+	// 	}
+	// }, [currentStartTimeTemp]);
 
-	useEffect(() => {
-		if (
-			queryCountRes &&
-			queryCountRes[0].totalcurrentcount === 0 &&
-			currentStartTimeTemp &&
-			currentStartTimeTemp <= subLogQuery.get().startTime
-		) {
-			getQueryData({
-				streamName: subLogQuery.get().streamName,
-				startTime: currentStartTimeTemp,
-				endTime: dayjs(currentStartTimeTemp).add(1, 'minute').toDate(),
-				access: subLogQuery.get().access,
-			});
-		} else if (queryCountRes && queryCountRes[0].totalcurrentcount === 0) {
-			setCurrentStartTimeTemp(dayjs(currentStartTimeTemp).subtract(1, 'minute').toDate());
-		} else if (queryCountRes && queryCountRes[0].totalcurrentcount !== 0 && currentStartTimeTemp) {
-			setCurrentStartTime(currentStartTimeTemp);
-			setCurrentCount(queryCountRes[0].totalcurrentcount);
-		}
-	}, [queryCountRes]);
+	// useEffect(() => {
+	// 	if (
+	// 		queryCountRes &&
+	// 		queryCountRes[0].totalcurrentcount === 0 &&
+	// 		currentStartTimeTemp &&
+	// 		currentStartTimeTemp <= subLogQuery.get().startTime
+	// 	) {
+	// 		getQueryData({
+	// 			streamName: subLogQuery.get().streamName,
+	// 			startTime: currentStartTimeTemp,
+	// 			endTime: dayjs(currentStartTimeTemp).add(1, 'minute').toDate(),
+	// 			access: subLogQuery.get().access,
+	// 		});
+	// 	} else if (queryCountRes && queryCountRes[0].totalcurrentcount === 0) {
+	// 		setCurrentStartTimeTemp(dayjs(currentStartTimeTemp).subtract(1, 'minute').toDate());
+	// 	} else if (queryCountRes && queryCountRes[0].totalcurrentcount !== 0 && currentStartTimeTemp) {
+	// 		setCurrentStartTime(currentStartTimeTemp);
+	// 		setCurrentCount(queryCountRes[0].totalcurrentcount);
+	// 	}
+	// }, [queryCountRes]);
 
-	useEffect(() => {
-		if (currentStartTime) {
-			getQueryData({
-				streamName: subLogQuery.get().streamName,
-				startTime: currentStartTime,
-				endTime: dayjs(currentStartTime).add(1, 'minute').toDate(),
-				access: subLogQuery.get().access,
-			});
-		}
-	}, [currentStartTime]);
+	// useEffect(() => {
+	// 	if (currentStartTime) {
+	// 		getQueryData({
+	// 			streamName: subLogQuery.get().streamName,
+	// 			startTime: currentStartTime,
+	// 			endTime: dayjs(currentStartTime).add(1, 'minute').toDate(),
+	// 			access: subLogQuery.get().access,
+	// 		});
+	// 	}
+	// }, [currentStartTime]);
 
 	useEffect(() => {
 		if (subRefreshInterval.get()) {
@@ -349,25 +354,11 @@ const LogTable: FC = () => {
 		<Box className={container}>
 			<Box
 				sx={{
-					display: 'flex',
-					justifyContent: 'center',
-					alignItems: 'center',
-					padding: '0 1rem',
-					height: '3rem',
 					borderBottom: '1px solid #ccc',
-					gap: '1rem',
-				}}>
-				<Text>
-					{' '}
-					{currentCount} events loaded from{' '}
-					{subLogSelectedTimeRange.get().state === 'fixed'
-						? subLogSelectedTimeRange.get().value
-						: 'selected time range'}
-				</Text>
-			</Box>
+				}}></Box>
 			<FilterPills />
 			{!(logStreamError || logStreamSchemaError || logsError || queryCountError) ? (
-				!loading && !logsLoading && Boolean(logsSchema) && Boolean(pageLogData) && !queryCountLoading ? (
+				!loading && !logsLoading && Boolean(logsSchema) && !queryCountLoading ? (
 					Boolean(logsSchema?.fields.length) && Boolean(pageLogData?.data.length) ? (
 						<Box className={innerContainer}>
 							<Box className={innerContainer} style={{ display: 'flex', flexDirection: 'row' }}>
@@ -451,8 +442,10 @@ const LogTable: FC = () => {
 								<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
 							</Box>
 						</Box>
-					) : (
+					) : pageLogData?.data.length === 0 ? (
 						<EmptyBox message="No Data Available" />
+					) : (
+						<EmptyBox message="Select a time Slot " />
 					)
 				) : (
 					<Loading visible variant="oval" position="absolute" zIndex={0} />

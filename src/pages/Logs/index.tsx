@@ -4,6 +4,7 @@ import { FC } from 'react';
 import LogTable from './LogTable';
 import { useLogsStyles } from './styles';
 import ViewLog from './ViewLog';
+import HeaderPagination from './HeaderPagination';
 
 const Logs: FC = () => {
 	useDocumentTitle('Parseable | Logs');
@@ -13,6 +14,7 @@ const Logs: FC = () => {
 
 	return (
 		<Box className={container}>
+			<HeaderPagination />
 			<LogTable />
 			<ViewLog />
 		</Box>

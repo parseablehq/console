@@ -9,9 +9,16 @@ const { Provider } = Context;
 
 export const LOG_QUERY_LIMITS = [30, 50, 100, 150, 200];
 
+type GapTime = {
+	startTime: Date;
+	endTime: Date;
+	id: number;
+};
+
 interface LogsPageContextState {
 	subLogStreamError: SubData<string | null>;
 	subViewLog: SubData<Log | null>;
+	subGapTime: SubData<GapTime | null>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -29,10 +36,12 @@ interface LogsPageProviderProps {
 const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 	const subLogStreamError = useSubscribeState<string | null>(null);
 	const subViewLog = useSubscribeState<Log | null>(null);
+	const subGapTime = useSubscribeState<GapTime | null>(null);
 
 	const state: LogsPageContextState = {
 		subLogStreamError,
 		subViewLog,
+		subGapTime,
 	};
 
 	const methods: LogsPageContextMethods = {};

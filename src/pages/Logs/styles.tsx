@@ -7,6 +7,7 @@ export const useLogsStyles = createStyles(() => {
 			flex: 1,
 			display: 'flex',
 			position: 'relative',
+			flexDirection: 'column',
 		},
 	};
 });
@@ -23,7 +24,7 @@ export const useLogTableStyles = createStyles((theme) => {
 		container: {
 			position: 'relative',
 			flex: 1,
-			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT*2}px)`,
+			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2 + 148}px )`,
 			display: 'flex',
 			flexDirection: 'column',
 			overflow: 'hidden',
@@ -32,7 +33,7 @@ export const useLogTableStyles = createStyles((theme) => {
 		innerContainer: {
 			position: 'relative',
 			flex: 1,
-			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT*2}px)`,
+			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2 + 148}px -200px)`,
 			display: 'flex',
 			flexDirection: 'column',
 			overflow: 'hidden',
