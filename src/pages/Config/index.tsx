@@ -9,6 +9,8 @@ import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { notifications } from '@mantine/notifications';
 import { IconCheck, IconFileAlert } from '@tabler/icons-react';
 import { usePutLogStreamRetention } from '@/hooks/usePutLogStreamRetention';
+import { useGetLogStreamAlert } from '@/hooks/useGetLogStreamAlert';
+import { useGetLogStreamRetention } from '@/hooks/useGetLogStreamRetention';
 
 const Config: FC = () => {
 	useDocumentTitle('Parseable | Config');
@@ -31,6 +33,25 @@ const Config: FC = () => {
 		putRetentionData,
 		resetData: resetRetentionData,
 	} = usePutLogStreamRetention();
+
+	// useGetLogStreamAlert
+
+	const {
+		data: intialAlert,
+		error: intialAlertError,
+		loading: intialAlertLoading,
+		getLogAlert,
+		resetData: resetIntailAlertData,
+	} = useGetLogStreamAlert();
+
+	const {
+		data: intialRetention,
+		error: intialRetentionError,
+		loading: intialRetentionLoading,
+		getLogRetention,
+		resetData: ResetIntialRetentionData,
+	} = useGetLogStreamRetention();
+
 	const handleAlertQueryEditorChange = (code: any) => {
 		setAlertQuery(code);
 	};
@@ -74,6 +95,44 @@ const Config: FC = () => {
 		}
 		putRetentionData(subLogQuery.get().streamName, retentionQueryObj);
 	};
+
+	useEffect(() => {
+		getLogAlert(subLogQuery.get().streamName);
+		getLogRetention(subLogQuery.get().streamName);
+
+		const subQuery = subLogQuery.subscribe((value: any) => {
+			if (intialAlert) {
+				resetIntailAlertData();
+				setAlertQuery('');
+			}
+			if (intialRetention) {
+				ResetIntialRetentionData();
+				setRetentionQuery('');
+			}
+			getLogAlert(value.streamName);
+			getLogRetention(value.streamName);
+		});
+
+		return () => {
+			subQuery();
+		};
+	}, []);
+
+	useEffect(() => {
+		if (intialAlertLoading) return;
+		if (intialAlertError) return;
+		if (intialAlert) {
+			setAlertQuery(JSON.stringify(intialAlert, null, 2));
+		}
+	}, [intialAlert, intialAlertError, intialAlertLoading]);
+
+	useEffect(() => {
+		if (intialRetentionLoading) return;
+		if (intialRetentionError) return;
+		if (intialRetention) {
+			setRetentionQuery(JSON.stringify(intialRetention, null, 2));
+		}
+	}, [intialRetention, intialRetentionError, intialRetentionLoading]);
 
 	useEffect(() => {
 		if (alertLoading) {
