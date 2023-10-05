@@ -391,16 +391,12 @@ const LogTable: FC = () => {
 							</Box>
 							<Box className={footerContainer}>
 								<Box></Box>
-								<Pagination.Root
+								<Pagination
 									total={pageLogData?.totalPages || 1}
 									value={pageLogData?.page || 1}
 									onChange={(page) => {
 										goToPage(page, pageLogData?.limit || 1);
-									}}>
-									<Pagination.Previous />
-									<Pagination.Items />
-									<Pagination.Next />
-								</Pagination.Root>
+									}}></Pagination>
 								<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
 							</Box>
 						</Box>
