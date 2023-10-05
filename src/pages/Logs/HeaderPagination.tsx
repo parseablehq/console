@@ -39,12 +39,14 @@ const HeaderPagination: FC = () => {
 	const getMinuteCount = (minute: number) => {
 		if (endDatePointer) {
 			const startTime = dayjs(endDatePointer).subtract(minute, 'minute').toDate();
-			getQueryCountData({
-				startTime: startTime,
-				endTime: endDatePointer,
-				streamName: subLogQuery.get().streamName,
-				access: subLogQuery.get().access,
-			});
+			if (subLogQuery.get().streamName) {
+				getQueryCountData({
+					startTime: startTime,
+					endTime: endDatePointer,
+					streamName: subLogQuery.get().streamName,
+					access: subLogQuery.get().access,
+				});
+			}
 		}
 	};
 

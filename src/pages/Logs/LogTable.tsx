@@ -33,6 +33,7 @@ import FilterPills from './FilterPills';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import dayjs from 'dayjs';
 import { SortOrder } from '@/@types/parseable/api/query';
+import { get } from 'http';
 
 const skipFields = ['p_metadata', 'p_tags'];
 
@@ -121,6 +122,18 @@ const LogTable: FC = () => {
 			});
 		};
 	};
+
+	useEffect(() => {
+		if (subLogQuery.get().streamName) {
+			getDataSchema(subLogQuery.get().streamName);
+			getQueryData({
+				streamName: subLogQuery.get().streamName,
+				startTime: dayjs(subLogQuery.get().endTime).subtract(1, 'minute').toDate(),
+				endTime: subLogQuery.get().endTime,
+				access: subLogQuery.get().access,
+			});
+		}
+	}, []);
 
 	const isColumnPinned = useCallback((columnName: string) => pinnedColumns.has(columnName), [pinnedColumns]);
 
