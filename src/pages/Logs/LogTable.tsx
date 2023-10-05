@@ -122,18 +122,6 @@ const LogTable: FC = () => {
 		};
 	};
 
-	useEffect(() => {
-		if (subLogQuery.get().streamName) {
-			getDataSchema(subLogQuery.get().streamName);
-			getQueryData({
-				streamName: subLogQuery.get().streamName,
-				startTime: dayjs(subLogQuery.get().endTime).subtract(1, 'minute').toDate(),
-				endTime: subLogQuery.get().endTime,
-				access: subLogQuery.get().access,
-			});
-		}
-	}, []);
-
 	const isColumnPinned = useCallback((columnName: string) => pinnedColumns.has(columnName), [pinnedColumns]);
 
 	const toggleColumnPinned = (columnName: string) => {
@@ -175,12 +163,30 @@ const LogTable: FC = () => {
 	};
 
 	useEffect(() => {
+		if (subLogQuery.get().streamName) {
+			getDataSchema(subLogQuery.get().streamName);
+			getQueryData({
+				streamName: subLogQuery.get().streamName,
+				startTime: dayjs(subLogQuery.get().endTime).subtract(1, 'minute').toDate(),
+				endTime: subLogQuery.get().endTime,
+				access: subLogQuery.get().access,
+			});
+		}
+	}, []);
+
+	useEffect(() => {
 		const streamErrorListener = subLogStreamError.subscribe(setLogStreamError);
 		const logSearchListener = subLogSearch.subscribe(setQuerySearch);
 		const refreshIntervalListener = subRefreshInterval.subscribe(setRefreshInterval);
 		const logQueryListener = subLogQuery.subscribe((query) => {
 			if (query.streamName) {
 				resetLogsData();
+				getQueryData({
+					streamName: subLogQuery.get().streamName,
+					startTime: dayjs(subLogQuery.get().endTime).subtract(1, 'minute').toDate(),
+					endTime: subLogQuery.get().endTime,
+					access: subLogQuery.get().access,
+				});
 			}
 		});
 

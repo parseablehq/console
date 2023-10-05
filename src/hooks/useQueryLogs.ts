@@ -135,7 +135,13 @@ export const useQueryLogs = () => {
 			const data = logsQueryRes.data;
 
 			if (logsQueryRes.status === StatusCodes.OK) {
-				_dataRef.current = data;
+				// _dataRef.current = data;
+				if(_dataRef.current ){
+					_dataRef.current = [..._dataRef.current, ...data];
+				}
+				else{
+					_dataRef.current = data;
+				}
 
 				return;
 			}
