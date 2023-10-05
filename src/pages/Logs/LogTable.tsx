@@ -33,7 +33,6 @@ import FilterPills from './FilterPills';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import dayjs from 'dayjs';
 import { SortOrder } from '@/@types/parseable/api/query';
-import { get } from 'http';
 
 const skipFields = ['p_metadata', 'p_tags'];
 
