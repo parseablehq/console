@@ -9,7 +9,8 @@ import { FC, useEffect } from 'react';
 import FillCarousel from './CarouselSlide';
 import { useLogsPageContext } from './Context';
 import { theme } from '@/components/Mantine/theme';
-import { IconEye, IconEyeClosed, IconMoonStars, IconSun } from '@tabler/icons-react';
+import { IconEye, IconEyeClosed } from '@tabler/icons-react';
+import Loading from '@/components/Loading';
 
 const Limit = 10000;
 const gapOptions = [1, 5, 10, 15, 20, 30, 60];
@@ -110,8 +111,8 @@ const HeaderPagination: FC = () => {
 
 	return (
 		<Box h={148}>
-			{gapMinute === 0 ? (
-				'loading'
+			{gapMinute === 0 || queryCountLoading ? (
+				<Loading visible />
 			) : (
 				<Carousel
 					p={'sm'}
@@ -146,6 +147,7 @@ const HeaderPagination: FC = () => {
 					},
 				}}
 			/>
+			{queryCountError && <div>{queryCountError}</div>}
 		</Box>
 	);
 };

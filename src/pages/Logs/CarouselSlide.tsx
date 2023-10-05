@@ -1,6 +1,6 @@
 import { useGetQueryCount } from '@/hooks/useGetQueryCount';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Box, Button, Text, Title, UnstyledButton } from '@mantine/core';
+import { Text, UnstyledButton } from '@mantine/core';
 import dayjs from 'dayjs';
 import { useEffect } from 'react';
 import { useLogsPageContext } from './Context';
@@ -22,7 +22,7 @@ const FillCarousel = ({ gapMinute, endtime, id, checked }: FillCarouselProps) =>
 	} = useLogsPageContext();
 	const [subID, setSubID] = useMountedState<number | null>(null);
 
-	const { data: count, error, loading, getQueryCountData: getCount, resetData } = useGetQueryCount();
+	const { data: count, error, loading, getQueryCountData: getCount } = useGetQueryCount();
 
 	const parsedEndTime = dayjs(endtime).set('second', 0).set('millisecond', 0).toDate();
 
@@ -76,7 +76,7 @@ const FillCarousel = ({ gapMinute, endtime, id, checked }: FillCarouselProps) =>
 								id: id,
 							});
 						}}>
-						<Text>{loading ? 'Loading' : count ? count[0].totalcurrentcount : 'error'}</Text>
+						<Text>{loading ? 'Loading' : count ? count[0].totalcurrentcount : error ? error : 'Unexpected Error'}</Text>
 						<Text>
 							{dayjs(parsedEndTime).subtract(gapMinute, 'minute').format('HH:mm')} :{' '}
 							{dayjs(parsedEndTime).format('HH:mm')}

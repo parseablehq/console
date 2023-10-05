@@ -2,7 +2,20 @@ import Loading from '@/components/Loading';
 import { Tbody, Thead } from '@/components/Table';
 import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useQueryLogs } from '@/hooks/useQueryLogs';
-import { Box, Center, Checkbox, Menu, ScrollArea, Table, px, ActionIcon, Text, Flex, Button } from '@mantine/core';
+import {
+	Box,
+	Center,
+	Checkbox,
+	Menu,
+	ScrollArea,
+	Table,
+	px,
+	ActionIcon,
+	Text,
+	Flex,
+	Button,
+	Pagination,
+} from '@mantine/core';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { FC } from 'react';
 import { LOG_QUERY_LIMITS, useLogsPageContext } from './Context';
@@ -20,8 +33,6 @@ import FilterPills from './FilterPills';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import dayjs from 'dayjs';
 import { SortOrder } from '@/@types/parseable/api/query';
-import { useGetQueryCount } from '@/hooks/useGetQueryCount';
-import CustomPagination from './CustomPagination';
 
 const skipFields = ['p_metadata', 'p_tags'];
 
@@ -37,17 +48,6 @@ const LogTable: FC = () => {
 	const [logStreamError, setLogStreamError] = useMountedState<string | null>(null);
 	const [columnToggles, setColumnToggles] = useMountedState<Map<string, boolean>>(new Map());
 	const [pinnedColumns, setPinnedColumns] = useMountedState<Set<string>>(new Set());
-	const [currentStartTimeTemp, setCurrentStartTimeTemp] = useMountedState<Date | null>(null);
-	const [currentStartTime, setCurrentStartTime] = useMountedState<Date | null>(null);
-	const [currentCount, setCurrentCount] = useMountedState<number>(0);
-
-	const {
-		data: queryCountRes,
-		error: queryCountError,
-		loading: queryCountLoading,
-		getQueryCountData,
-		resetData: resetQueryCountData,
-	} = useGetQueryCount();
 
 	const {
 		data: logsSchema,
@@ -143,15 +143,21 @@ const LogTable: FC = () => {
 
 	const onRetry = () => {
 		const query = subLogQuery.get();
+		const data = subGapTime.get();
 
 		if (logsSchema) {
 			resetStreamData();
 			resetLogsData();
 		}
-		let tempDate = subLogQuery.get().endTime;
-		tempDate.setSeconds(0, 0);
-		setCurrentCount(0);
-		setCurrentStartTimeTemp(tempDate);
+		if (data) {
+			getQueryData({
+				streamName: subLogQuery.get().streamName,
+				startTime: data.startTime,
+				endTime: data.endTime,
+				access: subLogQuery.get().access,
+			});
+		}
+
 		getDataSchema(query.streamName);
 		setColumnToggles(new Map());
 	};
@@ -183,55 +189,11 @@ const LogTable: FC = () => {
 		return () => {
 			streamErrorListener();
 			subID();
-			resetQueryCountData();
 			refreshIntervalListener();
 			logQueryListener();
 			logSearchListener();
 		};
 	}, [logsSchema]);
-
-	// useEffect(() => {
-	// 	if (currentStartTimeTemp) {
-	// 		getQueryCountData({
-	// 			streamName: subLogQuery.get().streamName,
-	// 			startTime: currentStartTimeTemp,
-	// 			endTime: dayjs(currentStartTimeTemp).add(1, 'minute').toDate(),
-	// 			access: subLogQuery.get().access,
-	// 		});
-	// 	}
-	// }, [currentStartTimeTemp]);
-
-	// useEffect(() => {
-	// 	if (
-	// 		queryCountRes &&
-	// 		queryCountRes[0].totalcurrentcount === 0 &&
-	// 		currentStartTimeTemp &&
-	// 		currentStartTimeTemp <= subLogQuery.get().startTime
-	// 	) {
-	// 		getQueryData({
-	// 			streamName: subLogQuery.get().streamName,
-	// 			startTime: currentStartTimeTemp,
-	// 			endTime: dayjs(currentStartTimeTemp).add(1, 'minute').toDate(),
-	// 			access: subLogQuery.get().access,
-	// 		});
-	// 	} else if (queryCountRes && queryCountRes[0].totalcurrentcount === 0) {
-	// 		setCurrentStartTimeTemp(dayjs(currentStartTimeTemp).subtract(1, 'minute').toDate());
-	// 	} else if (queryCountRes && queryCountRes[0].totalcurrentcount !== 0 && currentStartTimeTemp) {
-	// 		setCurrentStartTime(currentStartTimeTemp);
-	// 		setCurrentCount(queryCountRes[0].totalcurrentcount);
-	// 	}
-	// }, [queryCountRes]);
-
-	// useEffect(() => {
-	// 	if (currentStartTime) {
-	// 		getQueryData({
-	// 			streamName: subLogQuery.get().streamName,
-	// 			startTime: currentStartTime,
-	// 			endTime: dayjs(currentStartTime).add(1, 'minute').toDate(),
-	// 			access: subLogQuery.get().access,
-	// 		});
-	// 	}
-	// }, [currentStartTime]);
 
 	useEffect(() => {
 		if (subRefreshInterval.get()) {
@@ -257,9 +219,6 @@ const LogTable: FC = () => {
 				resetStreamData();
 				resetLogsData;
 			}
-			let tempDate = subLogQuery.get().endTime;
-			tempDate.setSeconds(0, 0);
-			setCurrentStartTimeTemp(tempDate);
 			getDataSchema(query.streamName);
 			setColumnToggles(new Map());
 		}
@@ -357,8 +316,8 @@ const LogTable: FC = () => {
 					borderBottom: '1px solid #ccc',
 				}}></Box>
 			<FilterPills />
-			{!(logStreamError || logStreamSchemaError || logsError || queryCountError) ? (
-				!loading && !logsLoading && Boolean(logsSchema) && !queryCountLoading ? (
+			{!(logStreamError || logStreamSchemaError || logsError) ? (
+				!loading && !logsLoading && Boolean(logsSchema) ? (
 					Boolean(logsSchema?.fields.length) && Boolean(pageLogData?.data.length) ? (
 						<Box className={innerContainer}>
 							<Box className={innerContainer} style={{ display: 'flex', flexDirection: 'row' }}>
@@ -432,13 +391,16 @@ const LogTable: FC = () => {
 							</Box>
 							<Box className={footerContainer}>
 								<Box></Box>
-								<CustomPagination
-									currentStartTime={currentStartTime}
-									pageLogData={pageLogData}
-									goToPage={goToPage}
-									setCurrentStartTime={setCurrentStartTime}
-									setCurrentCount={setCurrentCount}
-								/>
+								<Pagination.Root
+									total={pageLogData?.totalPages || 1}
+									value={pageLogData?.page || 1}
+									onChange={(page) => {
+										goToPage(page, pageLogData?.limit || 1);
+									}}>
+									<Pagination.Previous />
+									<Pagination.Items />
+									<Pagination.Next />
+								</Pagination.Root>
 								<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
 							</Box>
 						</Box>
