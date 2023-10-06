@@ -2,14 +2,12 @@ import { useGetQueryCount } from '@/hooks/useGetQueryCount';
 import useMountedState from '@/hooks/useMountedState';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Carousel } from '@mantine/carousel';
-import { Box, Switch } from '@mantine/core';
+import { Box } from '@mantine/core';
 import dayjs from 'dayjs';
 
 import { FC, useEffect } from 'react';
 import FillCarousel from './CarouselSlide';
 import { useLogsPageContext } from './Context';
-import { theme } from '@/components/Mantine/theme';
-import { IconEye, IconEyeClosed } from '@tabler/icons-react';
 import Loading from '@/components/Loading';
 
 const Limit = 10000;
@@ -23,7 +21,6 @@ const HeaderPagination: FC = () => {
 	const [endDatePointer, setEndDatePointer] = useMountedState<Date | null>(null);
 	const [gapTemp, setGapTemp] = useMountedState<number>(0);
 	const [gapMinute, setGapMinute] = useMountedState<number>(0);
-	const [checked, setChecked] = useMountedState(true);
 
 	const {
 		data: queryCountRes,
@@ -111,7 +108,7 @@ const HeaderPagination: FC = () => {
 			i > subLogQuery.get().startTime;
 			i = dayjs(i).subtract(gapMinute, 'minute').toDate(), j++
 		) {
-			carouselArr.push(<FillCarousel checked={checked} gapMinute={gapMinute} endtime={i} id={j} key={j} />);
+			carouselArr.push(<FillCarousel gapMinute={gapMinute} endtime={i} id={j} key={j} />);
 		}
 		return carouselArr;
 	};
@@ -139,21 +136,6 @@ const HeaderPagination: FC = () => {
 					{renderCarousel()}
 				</Carousel>
 			)}
-			<Switch
-				size="md"
-				color={theme.colorScheme === 'dark' ? 'gray' : 'dark'}
-				onLabel={<IconEye size="1rem" stroke={2.5} />}
-				offLabel={<IconEyeClosed size="1rem" stroke={2.5} />}
-				checked={checked}
-				onChange={() => {
-					setChecked(!checked);
-				}}
-				styles={{
-					body: {
-						justifyContent: 'center',
-					},
-				}}
-			/>
 			{queryCountError && <div>{queryCountError}</div>}
 		</Box>
 	);

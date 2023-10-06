@@ -11,9 +11,8 @@ type FillCarouselProps = {
 	gapMinute: number;
 	endtime: Date;
 	id: number;
-	checked: boolean;
 };
-const FillCarousel = ({ gapMinute, endtime, id, checked }: FillCarouselProps) => {
+const FillCarousel = ({ gapMinute, endtime, id }: FillCarouselProps) => {
 	const {
 		state: { subLogQuery },
 	} = useHeaderContext();
@@ -55,7 +54,7 @@ const FillCarousel = ({ gapMinute, endtime, id, checked }: FillCarouselProps) =>
 
 	return (
 		<>
-			{(checked || (count && count[0].totalcurrentcount !== 0)) && (
+			{count && count[0].totalcurrentcount !== 0 && (
 				<Carousel.Slide>
 					<UnstyledButton
 						sx={{
