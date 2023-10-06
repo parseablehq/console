@@ -59,11 +59,6 @@ const HeaderPagination: FC = () => {
 				setEndDatePointer(query.endTime);
 			}
 		});
-		subGapTime.set({
-			startTime: dayjs(subLogQuery.get().endTime).subtract(1, 'minute').toDate(),
-			endTime: subLogQuery.get().endTime,
-			id: null,
-		});
 		setEndDatePointer(subLogQuery.get().endTime);
 		getMinuteCount(gapOptions[gapTemp]);
 		return () => {

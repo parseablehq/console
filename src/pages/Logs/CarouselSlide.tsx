@@ -53,41 +53,36 @@ const FillCarousel = ({ gapMinute, endtime, id }: FillCarouselProps) => {
 	}, [count]);
 
 	return (
-		<>
-			{count && count[0].totalcurrentcount !== 0 && (
-				<Carousel.Slide>
-					<UnstyledButton
-						sx={{
-							display: 'flex',
-							justifyContent: 'center',
-							alignItems: 'center',
-							height: '100%',
-							border: subID === id ? '1px solid #535BEB' : '1px solid #ccc',
-							borderRadius: '10px',
-							flexDirection: 'column',
-							padding: '10px',
-							width: '100%',
-						}}
-						onClick={() => {
-							subGapTime.set({
-								startTime: dayjs(parsedEndTime).subtract(gapMinute, 'minute').toDate(),
-								endTime: parsedEndTime,
-								id: id,
-							});
-						}}>
-						<Text>{loading ? 'Loading' : count ? count[0].totalcurrentcount : error ? error : 'Unexpected Error'}</Text>
-						<Text>
-							{dayjs(parsedEndTime).subtract(gapMinute, 'minute').format('HH:mm')} :{' '}
-							{dayjs(parsedEndTime).format('HH:mm')}
-						</Text>
-						<Text>
-							{dayjs(parsedEndTime).subtract(gapMinute, 'minute').format('YYYY-MM-DD')} :{' '}
-							{dayjs(parsedEndTime).format('YYYY-MM-DD')}
-						</Text>
-					</UnstyledButton>
-				</Carousel.Slide>
-			)}
-		</>
+		<Carousel.Slide>
+			<UnstyledButton
+				sx={{
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+					height: '100%',
+					border: subID === id ? '1px solid #535BEB' : '1px solid #ccc',
+					borderRadius: '10px',
+					flexDirection: 'column',
+					padding: '10px',
+					width: '100%',
+				}}
+				onClick={() => {
+					subGapTime.set({
+						startTime: dayjs(parsedEndTime).subtract(gapMinute, 'minute').toDate(),
+						endTime: parsedEndTime,
+						id: id,
+					});
+				}}>
+				<Text>{loading ? 'Loading' : count ? count[0].totalcurrentcount : error ? error : 'Unexpected Error'}</Text>
+				<Text>
+					{dayjs(parsedEndTime).subtract(gapMinute, 'minute').format('HH:mm')} : {dayjs(parsedEndTime).format('HH:mm')}
+				</Text>
+				<Text>
+					{dayjs(parsedEndTime).subtract(gapMinute, 'minute').format('YYYY-MM-DD')} :{' '}
+					{dayjs(parsedEndTime).format('YYYY-MM-DD')}
+				</Text>
+			</UnstyledButton>
+		</Carousel.Slide>
 	);
 };
 

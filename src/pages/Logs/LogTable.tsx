@@ -180,7 +180,7 @@ const LogTable: FC = () => {
 
 		const subID = subGapTime.subscribe((data) => {
 			if (data) {
-				getQueryData({
+								getQueryData({
 					streamName: subLogQuery.get().streamName,
 					startTime: data.startTime,
 					endTime: data.endTime,
@@ -216,19 +216,6 @@ const LogTable: FC = () => {
 			return () => clearInterval(interval);
 		}
 	}, [refreshInterval]);
-
-	useEffect(() => {
-		const query = subLogQuery.get();
-
-		if (query.streamName) {
-			if (logsSchema) {
-				resetStreamData();
-				resetLogsData;
-			}
-			getDataSchema(query.streamName);
-			setColumnToggles(new Map());
-		}
-	}, [subLogQuery]);
 
 	const renderTh = useMemo(() => {
 		if (logsSchema) {
