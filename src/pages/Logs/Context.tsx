@@ -12,7 +12,7 @@ export const LOG_QUERY_LIMITS = [30, 50, 100, 150, 200];
 type GapTime = {
 	startTime: Date;
 	endTime: Date;
-	id: number;
+	id: number | null;
 };
 
 interface LogsPageContextState {

@@ -163,18 +163,6 @@ const LogTable: FC = () => {
 	};
 
 	useEffect(() => {
-		if (subLogQuery.get().streamName) {
-			getDataSchema(subLogQuery.get().streamName);
-			getQueryData({
-				streamName: subLogQuery.get().streamName,
-				startTime: dayjs(subLogQuery.get().endTime).subtract(1, 'minute').toDate(),
-				endTime: subLogQuery.get().endTime,
-				access: subLogQuery.get().access,
-			});
-		}
-	}, []);
-
-	useEffect(() => {
 		const streamErrorListener = subLogStreamError.subscribe(setLogStreamError);
 		const logSearchListener = subLogSearch.subscribe(setQuerySearch);
 		const refreshIntervalListener = subRefreshInterval.subscribe(setRefreshInterval);
