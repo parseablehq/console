@@ -119,7 +119,7 @@ const HeaderPagination: FC = () => {
 	return (
 		<Box h={148}>
 			{gapMinute === 0 || queryCountLoading ? (
-				<Loading visible />
+				<Loading visible zIndex={0} />
 			) : (
 				<Carousel
 					p={'sm'}
