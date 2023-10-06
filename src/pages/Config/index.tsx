@@ -97,9 +97,12 @@ const Config: FC = () => {
 	};
 
 	useEffect(() => {
+		if(!subLogQuery.get().streamName) return;
 		getLogAlert(subLogQuery.get().streamName);
 		getLogRetention(subLogQuery.get().streamName);
+	}, []);
 
+	useEffect(() => {
 		const subQuery = subLogQuery.subscribe((value: any) => {
 			if (intialAlert) {
 				resetIntailAlertData();
