@@ -15,13 +15,13 @@ export const useQueryLogs = () => {
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
 	const [pageLogData, setPageLogData] = useMountedState<LogsData | null>(null);
-	const [querySearch, setQuerySearch] = useMountedState<LogsSearch>({ 
-		search: '', 
-		filters: {}, 
-		sort: { 
-			field: 'p_timestamp', 
-			order: SortOrder.DESCENDING 
-		} 
+	const [querySearch, setQuerySearch] = useMountedState<LogsSearch>({
+		search: '',
+		filters: {},
+		sort: {
+			field: 'p_timestamp',
+			order: SortOrder.DESCENDING,
+		},
 	});
 	const [isPending, startTransition] = useTransition();
 
@@ -60,15 +60,15 @@ export const useQueryLogs = () => {
 
 			const { field, order } = sort;
 
-			temp.sort(({[field]: aData}, {[field]: bData}) => {
-				let res = 0
+			temp.sort(({ [field]: aData }, { [field]: bData }) => {
+				let res = 0;
 				if (aData === bData) res = 0;
 				else if (aData === null) res = -1;
 				else if (bData === null) res = 1;
 				else res = aData > bData ? 1 : -1;
 
-				return res*order;
-			})
+				return res * order;
+			});
 
 			return temp;
 		}
@@ -135,14 +135,7 @@ export const useQueryLogs = () => {
 			const data = logsQueryRes.data;
 
 			if (logsQueryRes.status === StatusCodes.OK) {
-				// _dataRef.current = data;
-				if(_dataRef.current ){
-					_dataRef.current = [..._dataRef.current, ...data];
-				}
-				else{
-					_dataRef.current = data;
-				}
-
+				_dataRef.current = data;
 				return;
 			}
 			if (typeof data === 'string' && data.includes('Stream is not initialized yet')) {

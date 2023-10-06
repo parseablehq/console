@@ -1,4 +1,3 @@
-import Loading from '@/components/Loading';
 import { Tbody, Thead } from '@/components/Table';
 import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useQueryLogs } from '@/hooks/useQueryLogs';
@@ -15,6 +14,7 @@ import {
 	Flex,
 	Button,
 	Pagination,
+	Loader,
 } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { FC } from 'react';
@@ -335,96 +335,82 @@ const LogTable: FC = () => {
 				}}></Box>
 			<FilterPills />
 			{!(logStreamError || logStreamSchemaError || logsError) ? (
-				!loading && !logsLoading && Boolean(logsSchema) ? (
-					Boolean(logsSchema?.fields.length) && Boolean(pageLogData?.data.length) ? (
-						<Box className={innerContainer}>
-							<Box className={innerContainer} style={{ display: 'flex', flexDirection: 'row' }}>
-								<ScrollArea
-									w={`${pinnedColumnsWidth}px`}
-									className={pinnedScrollView}
-									styles={() => ({
-										scrollbar: {
-											'&[data-orientation="vertical"] .mantine-ScrollArea-thumb': {
-												display: 'none',
-											},
+				Boolean(logsSchema?.fields.length) && Boolean(pageLogData?.data.length) ? (
+					<Box className={innerContainer}>
+						<Box className={innerContainer} style={{ display: 'flex', flexDirection: 'row' }}>
+							<ScrollArea
+								w={`${pinnedColumnsWidth}px`}
+								className={pinnedScrollView}
+								styles={() => ({
+									scrollbar: {
+										'&[data-orientation="vertical"] .mantine-ScrollArea-thumb': {
+											display: 'none',
 										},
-									})}
-									onMouseEnter={() => {
-										active.current = 'left';
-									}}
-									viewportRef={leftRef}
-									onScrollPositionChange={({ y }) => {
-										if (active.current === 'right') return;
-										rightRef.current!.scrollTop = y;
-									}}>
-									<Box className={pinnedTableContainer} ref={pinnedContianerRef}>
-										<Table className={tableStyle}>
-											<Thead className={theadStylePinned}>{renderPinnedTh}</Thead>
-											<Tbody>
-												<LogRow
-													logData={pageLogData?.data || []}
-													logsSchema={logsSchema?.fields.filter((field) => isColumnPinned(field.name)) || []}
-													isColumnActive={isColumnActive}
-												/>
-											</Tbody>
-										</Table>
-									</Box>
-								</ScrollArea>
-								{pinnedColumnsWidth > 0 && <Box style={{ height: '100%', borderLeft: '1px solid #ccc' }} />}
-								<ScrollArea
-									onMouseEnter={() => {
-										active.current = 'right';
-									}}
-									viewportRef={rightRef}
-									onScrollPositionChange={({ y }) => {
-										if (active.current === 'left') return;
-										leftRef.current!.scrollTop = y;
-									}}>
-									<Box className={tableContainer}>
-										<Table className={tableStyle}>
-											<Thead className={theadStyle}>
-												{renderTh}
-												<ThColumnMenu
-													logSchemaFields={logsSchema?.fields || []}
-													columnToggles={columnToggles}
-													toggleColumn={toggleColumn}
-													isColumnActive={isColumnActive}
-													reorderColumn={reorderSchemaFields}
-													isColumnPinned={isColumnPinned}
-													toggleColumnPinned={toggleColumnPinned}
-													resetColumns={resetColumns}
-												/>
-											</Thead>
-											<Tbody>
-												<LogRow
-													logData={pageLogData?.data || []}
-													logsSchema={logsSchema?.fields.filter((field) => !isColumnPinned(field.name)) || []}
-													isColumnActive={isColumnActive}
-													rowArrows={true}
-												/>
-											</Tbody>
-										</Table>
-									</Box>
-								</ScrollArea>
-							</Box>
-							<Box className={footerContainer}>
-								<Box></Box>
-								<Pagination
-									total={pageLogData?.totalPages || 1}
-									value={pageLogData?.page || 1}
-									onChange={(page) => {
-										goToPage(page, pageLogData?.limit || 1);
-									}}></Pagination>
-								<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
-							</Box>
+									},
+								})}
+								onMouseEnter={() => {
+									active.current = 'left';
+								}}
+								viewportRef={leftRef}
+								onScrollPositionChange={({ y }) => {
+									if (active.current === 'right') return;
+									rightRef.current!.scrollTop = y;
+								}}>
+								<Box className={pinnedTableContainer} ref={pinnedContianerRef}>
+									<Table className={tableStyle}>
+										<Thead className={theadStylePinned}>{renderPinnedTh}</Thead>
+										<Tbody>
+											<LogRow
+												logData={pageLogData?.data || []}
+												logsSchema={logsSchema?.fields.filter((field) => isColumnPinned(field.name)) || []}
+												isColumnActive={isColumnActive}
+											/>
+										</Tbody>
+									</Table>
+								</Box>
+							</ScrollArea>
+							{pinnedColumnsWidth > 0 && <Box style={{ height: '100%', borderLeft: '1px solid #ccc' }} />}
+							<ScrollArea
+								onMouseEnter={() => {
+									active.current = 'right';
+								}}
+								viewportRef={rightRef}
+								onScrollPositionChange={({ y }) => {
+									if (active.current === 'left') return;
+									leftRef.current!.scrollTop = y;
+								}}>
+								<Box className={tableContainer}>
+									<Table className={tableStyle}>
+										<Thead className={theadStyle}>
+											{renderTh}
+											<ThColumnMenu
+												logSchemaFields={logsSchema?.fields || []}
+												columnToggles={columnToggles}
+												toggleColumn={toggleColumn}
+												isColumnActive={isColumnActive}
+												reorderColumn={reorderSchemaFields}
+												isColumnPinned={isColumnPinned}
+												toggleColumnPinned={toggleColumnPinned}
+												resetColumns={resetColumns}
+											/>
+										</Thead>
+										<Tbody>
+											<LogRow
+												logData={pageLogData?.data || []}
+												logsSchema={logsSchema?.fields.filter((field) => !isColumnPinned(field.name)) || []}
+												isColumnActive={isColumnActive}
+												rowArrows={true}
+											/>
+										</Tbody>
+									</Table>
+								</Box>
+							</ScrollArea>
 						</Box>
-					) : pageLogData?.data.length === 0 ? (
-						<EmptyBox message="No Data Available" />
-					) : (
-						<EmptyBox message="Select a time Slot " />
-					)
+					</Box>
+				) : pageLogData?.data.length === 0 ? (
+					<EmptyBox message="No Data Available" />
 				) : (
-					<Loading visible variant="oval" position="absolute" zIndex={0} />
+					<EmptyBox message="Select a time Slot " />
 				)
 			) : (
 				<Center className={errorContainer}>
@@ -432,6 +418,20 @@ const LogTable: FC = () => {
 					{(logsError || logStreamSchemaError) && <RetryBtn onClick={onRetry} mt="md" />}
 				</Center>
 			)}
+			<Box className={footerContainer}>
+				<Box></Box>
+				{!loading && !logsLoading && Boolean(logsSchema) ? (
+					<Pagination
+						total={pageLogData?.totalPages || 1}
+						value={pageLogData?.page || 1}
+						onChange={(page) => {
+							goToPage(page, pageLogData?.limit || 1);
+						}}></Pagination>
+				) : (
+					<Loader variant="dots" />
+				)}
+				<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
+			</Box>
 		</Box>
 	);
 };
