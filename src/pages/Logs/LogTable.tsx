@@ -180,7 +180,7 @@ const LogTable: FC = () => {
 
 		const subID = subGapTime.subscribe((data) => {
 			if (data) {
-								getQueryData({
+				getQueryData({
 					streamName: subLogQuery.get().streamName,
 					startTime: data.startTime,
 					endTime: data.endTime,
@@ -395,7 +395,7 @@ const LogTable: FC = () => {
 			)}
 			<Box className={footerContainer}>
 				<Box></Box>
-				{!loading && !logsLoading && Boolean(logsSchema) ? (
+				{!loading && !logsLoading ? (
 					<Pagination
 						total={pageLogData?.totalPages || 1}
 						value={pageLogData?.page || 1}

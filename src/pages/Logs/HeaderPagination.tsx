@@ -49,18 +49,23 @@ const HeaderPagination: FC = () => {
 
 	useEffect(() => {
 		const logQueryListener = subLogQuery.subscribe((query) => {
-			if (query.streamName) {
-				let tempDate = new Date(subLogQuery.get().endTime);
+			if (query.endTime) {
+				let tempDate = new Date(query.endTime);
 				tempDate.setSeconds(0, 0);
 				resetQueryCountData();
 				subGapTime.set(null);
 				setGapTemp(0);
 				setGapMinute(0);
-				setEndDatePointer(query.endTime);
+				setEndDatePointer(tempDate);
 			}
 		});
-		setEndDatePointer(subLogQuery.get().endTime);
-		getMinuteCount(gapOptions[gapTemp]);
+		if (subLogQuery.get().endTime) {
+			let tempDate = new Date(subLogQuery.get().endTime);
+			tempDate.setSeconds(0, 0);
+			setEndDatePointer(tempDate);
+			getMinuteCount(gapOptions[gapTemp]);
+		}
+
 		return () => {
 			logQueryListener();
 		};
@@ -115,11 +120,12 @@ const HeaderPagination: FC = () => {
 			) : (
 				<Carousel
 					p={'sm'}
+					px={50}
 					height={100}
-					slideSize="20%"
+					slideSize="12.5%"
 					slideGap="sm"
 					align="start"
-					slidesToScroll={5}
+					slidesToScroll={8}
 					styles={{
 						control: {
 							'&[data-inactive]': {
