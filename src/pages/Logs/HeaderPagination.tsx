@@ -114,7 +114,7 @@ const HeaderPagination: FC = () => {
 	};
 
 	return (
-		<Box h={148}>
+		<Box h={124}>
 			{gapMinute === 0 || queryCountLoading ? (
 				<Loading visible zIndex={0} />
 			) : (
