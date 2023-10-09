@@ -64,6 +64,8 @@ const HeaderPagination: FC = () => {
 				subGapTime.set(null);
 				setGapTemp(0);
 				setGapMinute(0);
+				setSlots([]);
+				setUpperLimit(20);
 				setEndDatePointer(tempDate);
 			}
 		});
