@@ -2,7 +2,7 @@ import { useGetQueryCount } from '@/hooks/useGetQueryCount';
 import useMountedState from '@/hooks/useMountedState';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Carousel } from '@mantine/carousel';
-import { Box } from '@mantine/core';
+import { Box, UnstyledButton } from '@mantine/core';
 import dayjs from 'dayjs';
 
 import { FC, useEffect } from 'react';
@@ -21,6 +21,14 @@ const HeaderPagination: FC = () => {
 	const [endDatePointer, setEndDatePointer] = useMountedState<Date | null>(null);
 	const [gapTemp, setGapTemp] = useMountedState<number>(0);
 	const [gapMinute, setGapMinute] = useMountedState<number>(0);
+	const [upperLimit, setUpperLimit] = useMountedState<number>(20);
+	const [slots, setSlots] = useMountedState<
+		{
+			gapMinute: number;
+			endtime: Date;
+			id: number;
+		}[]
+	>([]);
 
 	const {
 		data: queryCountRes,
@@ -84,7 +92,6 @@ const HeaderPagination: FC = () => {
 				gapTemp !== gapOptions.length - 1 &&
 				gapOptions[gapTemp + 1] < dayjs(subLogQuery.get().endTime).diff(dayjs(subLogQuery.get().startTime), 'minute')
 			) {
-				console.log('gapTemp', gapTemp);
 				setGapTemp(gapTemp + 1);
 				getMinuteCount(gapOptions[gapTemp + 1]);
 			} else if (
@@ -92,25 +99,53 @@ const HeaderPagination: FC = () => {
 				gapTemp <= gapOptions.length - 1 &&
 				gapOptions[gapTemp + 1] >= dayjs(subLogQuery.get().endTime).diff(dayjs(subLogQuery.get().startTime), 'minute')
 			) {
-				console.log('gapTemp', gapTemp);
 				setGapMinute(gapOptions[gapTemp]);
 			} else if (queryCountRes[0].totalcurrentcount >= Limit || gapTemp === gapOptions.length - 1) {
-				console.log('gapTemp', gapTemp);
 				setGapMinute(gapOptions[gapTemp]);
 			}
 		}
 	}, [queryCountRes]);
 
-	const renderCarousel = () => {
-		let carouselArr = [];
-		for (
-			let i = subLogQuery.get().endTime, j = 0;
-			i > subLogQuery.get().startTime;
-			i = dayjs(i).subtract(gapMinute, 'minute').toDate(), j++
-		) {
-			carouselArr.push(<FillCarousel gapMinute={gapMinute} endtime={i} id={j} key={j} />);
+	useEffect(() => {
+		if (gapMinute !== 0) {
+			const tempSlots = [];
+			for (
+				let i = dayjs(subLogQuery.get().endTime).toDate(), j = 1;
+				i > subLogQuery.get().startTime && j <= upperLimit;
+				i = dayjs(i).subtract(gapMinute, 'minute').toDate(), j++
+			) {
+				tempSlots.push({
+					gapMinute: gapMinute,
+					endtime: i,
+					id: j,
+				});
+			}
+			setSlots(tempSlots);
 		}
-		return carouselArr;
+	}, [gapMinute]);
+
+	const loadMore = () => {
+		if (
+			subLogQuery.get().endTime &&
+			slots.length > 0 &&
+			slots[slots.length - 1].endtime > subLogQuery.get().startTime
+		) {
+			setUpperLimit(upperLimit + 20);
+			for (
+				let i = dayjs(slots[slots.length - 1].endtime).toDate(), j = slots[slots.length - 1].id + 1;
+				dayjs(i).subtract(gapMinute, 'minute').toDate() > subLogQuery.get().startTime && j <= upperLimit;
+				i = dayjs(i).subtract(gapMinute, 'minute').toDate(), j++
+			) {
+				setSlots((prev) => [
+					...prev,
+					{
+						gapMinute: gapMinute,
+						endtime: i,
+						id: j,
+					},
+				]);
+			}
+		}
 	};
 
 	return (
@@ -134,7 +169,32 @@ const HeaderPagination: FC = () => {
 							},
 						},
 					}}>
-					{renderCarousel()}
+					{slots.map((slot) => (
+						<FillCarousel key={slot.id} {...slot} />
+					))}
+					<Carousel.Slide>
+						<UnstyledButton
+							sx={{
+								display: 'flex',
+								justifyContent: 'center',
+								alignItems: 'center',
+								height: '100%',
+								border: '1px solid #ccc',
+								borderRadius: '10px',
+								flexDirection: 'column',
+								padding: '10px',
+								width: '100%',
+							}}
+							onClick={loadMore}>
+							{subLogQuery.get().endTime &&
+							slots.length > 0 &&
+							dayjs(slots[slots.length - 1].endtime)
+								.subtract(gapMinute, 'minute')
+								.toDate() > subLogQuery.get().startTime
+								? 'Load More'
+								: 'No More Data'}
+						</UnstyledButton>
+					</Carousel.Slide>
 				</Carousel>
 			)}
 			{queryCountError && <div>{queryCountError}</div>}
