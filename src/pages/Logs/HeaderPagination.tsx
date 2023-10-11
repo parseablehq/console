@@ -158,73 +158,72 @@ const HeaderPagination: FC = () => {
 	};
 
 	return (
-		<Box h={110}  
-		sx={{
-			overflow: 'hidden',
-		}}
-		
-		>
-			<Box>
-				<Text
-					sx={{
-						fontSize: '1rem',
-						fontWeight: 500,
-						color: '#211F1F',
-						padding: '12px',
-					}}>
-					{' '}
-					Time Slots: {dayjs(headDate).format('DD-MM-YYYY')}
-				</Text>
-			</Box>
+		<Box
+			h={110}
+			sx={{
+				overflow: 'hidden',
+			}}>
 			{gapMinute === 0 || queryCountLoading ? (
 				<Loading visible zIndex={0} />
 			) : (
-				<Carousel
-					p={'sm'}
-					px={50}
-					height={36}
-					slideSize="12.5%"
-					slideGap="sm"
-					align="start"
-					slidesToScroll={8}
-					onSlideChange={onSlideChange}
-					styles={{
-						viewport: {
-							overflow: 'unset',
-						},
-					}}>
-					{slots.current?.map((slot) => (
-						<FillCarousel key={slot.id} {...slot} />
-					))}
+				<>
+					<Text
+						sx={{
+							fontSize: '1rem',
+							fontWeight: 500,
+							color: '#211F1F',
+							padding: '12px',
+						}}>
+						{' '}
+						Time Slots: {dayjs(headDate).format('DD-MM-YYYY')}
+					</Text>
+					<Carousel
+						p={'sm'}
+						px={50}
+						height={36}
+						slideSize="12.5%"
+						slideGap="sm"
+						align="start"
+						slidesToScroll={8}
+						onSlideChange={onSlideChange}
+						styles={{
+							viewport: {
+								overflow: 'unset',
+							},
+						}}>
+						{slots.current?.map((slot) => (
+							<FillCarousel key={slot.id} {...slot} />
+						))}
 
-					<Carousel.Slide>
-						<Button
-							sx={{
-								backgroundColor: '#fff',
-								color: '#211F1F',
-								border: '1px solid #ccc',
-								borderRadius: '10px',
-								padding: '10px',
-								width: '100%',
-							}}
-							disabled={Boolean(
-								subLogQuery.get().startTime &&
-									slots.current &&
-									dayjs(slots.current[slots.current.length - 1].endtime)
-										.subtract(gapMinute + 1, 'minute')
-										.toDate() <= subLogQuery.get().startTime,
-							)}
-							onClick={loadMore}>
-							{subLogQuery.get().endTime &&
-							slots.current &&
-							dayjs(slots.current[slots.current.length - 1].endtime)
-								.subtract(gapMinute + 1, 'minute')
-								.toDate() <= subLogQuery.get().startTime
-								? 'No More Data'
-								: 'Load More'}
-						</Button>
-					</Carousel.Slide>
-				</Carousel>
+						<Carousel.Slide>
+							<Button
+								sx={{
+									backgroundColor: '#fff',
+									color: '#211F1F',
+									border: '1px solid #ccc',
+									borderRadius: '10px',
+									padding: '10px',
+									width: '100%',
+								}}
+								disabled={Boolean(
+									subLogQuery.get().startTime &&
+										slots.current &&
+										dayjs(slots.current[slots.current.length - 1].endtime)
+											.subtract(gapMinute + 1, 'minute')
+											.toDate() <= subLogQuery.get().startTime,
+								)}
+								onClick={loadMore}>
+								{subLogQuery.get().endTime &&
+								slots.current &&
+								dayjs(slots.current[slots.current.length - 1].endtime)
+									.subtract(gapMinute + 1, 'minute')
+									.toDate() <= subLogQuery.get().startTime
+									? 'No More Data'
+									: 'Load More'}
+							</Button>
+						</Carousel.Slide>
+					</Carousel>
+				</>
 			)}
 			{queryCountError && <div>{queryCountError}</div>}
 		</Box>
