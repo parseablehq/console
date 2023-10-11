@@ -2,10 +2,10 @@ import { useGetQueryCount } from '@/hooks/useGetQueryCount';
 import useMountedState from '@/hooks/useMountedState';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Carousel } from '@mantine/carousel';
-import { Box, UnstyledButton } from '@mantine/core';
+import { Box, Button, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import FillCarousel from './CarouselSlide';
 import { useLogsPageContext } from './Context';
 import Loading from '@/components/Loading';
@@ -17,18 +17,20 @@ const HeaderPagination: FC = () => {
 	const {
 		state: { subLogQuery },
 	} = useHeaderContext();
+	const [headDate, setHeadDate] = useMountedState<Date | null>(null);
 
 	const [endDatePointer, setEndDatePointer] = useMountedState<Date | null>(null);
 	const [gapTemp, setGapTemp] = useMountedState<number>(0);
 	const [gapMinute, setGapMinute] = useMountedState<number>(0);
 	const [upperLimit, setUpperLimit] = useMountedState<number>(20);
-	const [slots, setSlots] = useMountedState<
-		{
-			gapMinute: number;
-			endtime: Date;
-			id: number;
-		}[]
-	>([]);
+	const slots = useRef<
+		| {
+				gapMinute: number;
+				endtime: Date;
+				id: number;
+		  }[]
+		| null
+	>(null);
 
 	const {
 		data: queryCountRes,
@@ -64,7 +66,7 @@ const HeaderPagination: FC = () => {
 				subGapTime.set(null);
 				setGapTemp(0);
 				setGapMinute(0);
-				setSlots([]);
+				slots.current = null;
 				setUpperLimit(20);
 				setEndDatePointer(tempDate);
 			}
@@ -122,80 +124,105 @@ const HeaderPagination: FC = () => {
 					id: j,
 				});
 			}
-			setSlots(tempSlots);
+			slots.current = tempSlots;
 		}
 	}, [gapMinute]);
 
 	const loadMore = () => {
 		if (
 			subLogQuery.get().endTime &&
-			slots.length > 0 &&
-			slots[slots.length - 1].endtime > subLogQuery.get().startTime
+			slots.current &&
+			slots.current.length > 0 &&
+			slots.current[slots.current.length - 1].endtime > subLogQuery.get().startTime
 		) {
 			setUpperLimit(upperLimit + 20);
 			for (
-				let i = dayjs(slots[slots.length - 1].endtime).toDate(), j = slots[slots.length - 1].id + 1;
-				dayjs(i).subtract(gapMinute, 'minute').toDate() > subLogQuery.get().startTime && j <= upperLimit;
+				let i = dayjs(slots.current[slots.current.length - 1].endtime).toDate(),
+					j = slots.current[slots.current.length - 1].id + 1;
+				dayjs(i).subtract(gapMinute, 'minute').toDate() > subLogQuery.get().startTime && j <= upperLimit + 20;
 				i = dayjs(i).subtract(gapMinute, 'minute').toDate(), j++
 			) {
-				setSlots((prev) => [
-					...prev,
-					{
-						gapMinute: gapMinute,
-						endtime: i,
-						id: j,
-					},
-				]);
+				slots.current.push({
+					gapMinute: gapMinute,
+					endtime: i,
+					id: j,
+				});
 			}
 		}
 	};
 
+	const onSlideChange = (index: number) => {
+		if (slots.current && slots.current.length - 1 >= index * 8) {
+			setHeadDate(dayjs(slots.current[index * 8].endtime).toDate());
+		}
+	};
+
 	return (
-		<Box h={124}>
+		<Box h={110}  
+		sx={{
+			overflow: 'hidden',
+		}}
+		
+		>
+			<Box>
+				<Text
+					sx={{
+						fontSize: '1rem',
+						fontWeight: 500,
+						color: '#211F1F',
+						padding: '12px',
+					}}>
+					{' '}
+					Time Slots: {dayjs(headDate).format('DD-MM-YYYY')}
+				</Text>
+			</Box>
 			{gapMinute === 0 || queryCountLoading ? (
 				<Loading visible zIndex={0} />
 			) : (
 				<Carousel
 					p={'sm'}
 					px={50}
-					height={100}
+					height={36}
 					slideSize="12.5%"
 					slideGap="sm"
 					align="start"
 					slidesToScroll={8}
+					onSlideChange={onSlideChange}
 					styles={{
-						control: {
-							'&[data-inactive]': {
-								opacity: 0,
-								cursor: 'default',
-							},
+						viewport: {
+							overflow: 'unset',
 						},
 					}}>
-					{slots.map((slot) => (
+					{slots.current?.map((slot) => (
 						<FillCarousel key={slot.id} {...slot} />
 					))}
+
 					<Carousel.Slide>
-						<UnstyledButton
+						<Button
 							sx={{
-								display: 'flex',
-								justifyContent: 'center',
-								alignItems: 'center',
-								height: '100%',
+								backgroundColor: '#fff',
+								color: '#211F1F',
 								border: '1px solid #ccc',
 								borderRadius: '10px',
-								flexDirection: 'column',
 								padding: '10px',
 								width: '100%',
 							}}
+							disabled={Boolean(
+								subLogQuery.get().startTime &&
+									slots.current &&
+									dayjs(slots.current[slots.current.length - 1].endtime)
+										.subtract(gapMinute + 1, 'minute')
+										.toDate() <= subLogQuery.get().startTime,
+							)}
 							onClick={loadMore}>
 							{subLogQuery.get().endTime &&
-							slots.length > 0 &&
-							dayjs(slots[slots.length - 1].endtime)
-								.subtract(gapMinute, 'minute')
-								.toDate() > subLogQuery.get().startTime
-								? 'Load More'
-								: 'No More Data'}
-						</UnstyledButton>
+							slots.current &&
+							dayjs(slots.current[slots.current.length - 1].endtime)
+								.subtract(gapMinute + 1, 'minute')
+								.toDate() <= subLogQuery.get().startTime
+								? 'No More Data'
+								: 'Load More'}
+						</Button>
 					</Carousel.Slide>
 				</Carousel>
 			)}

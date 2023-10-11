@@ -293,7 +293,7 @@ const LogTable: FC = () => {
 		<Box className={container}>
 			<Box
 				sx={{
-					borderBottom: '1px solid #ccc',
+					borderBottom: '1px solid #D4D4D4',
 				}}></Box>
 			<FilterPills />
 			{!(logStreamError || logStreamSchemaError || logsError) ? (

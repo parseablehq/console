@@ -111,7 +111,7 @@ export const theme: MantineThemeOverride = {
 			}),
 		},
 		Table: {
-			styles: ({ defaultRadius: _defaultRadius, colors, fontSizes, other: { fontWeights } }) => {
+			styles: ({ defaultRadius: _defaultRadius, colors }) => {
 				return {
 					root: {
 						background: colors.white,
@@ -126,15 +126,6 @@ export const theme: MantineThemeOverride = {
 							whiteSpace: 'nowrap',
 							textAlign: 'left',
 							padding: 0,
-						},
-
-						'& tr th .label': {
-							display: 'flex',
-							alignItems: 'center',
-							fontSize: fontSizes.md,
-							fontWeight: fontWeights.semibold,
-							height: '100%',
-							textAlign: 'left',
 						},
 					},
 				};

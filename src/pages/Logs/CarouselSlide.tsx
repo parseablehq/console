@@ -1,6 +1,6 @@
 import { useGetQueryCount } from '@/hooks/useGetQueryCount';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Box, Text, UnstyledButton } from '@mantine/core';
+import { Button, Tooltip } from '@mantine/core';
 import dayjs from 'dayjs';
 import { useEffect } from 'react';
 import { useLogsPageContext } from './Context';
@@ -53,20 +53,24 @@ const FillCarousel = ({ gapMinute, endtime, id }: FillCarouselProps) => {
 	}, [count]);
 
 	return (
-		<>
-			<Carousel.Slide>
-				<UnstyledButton
+		<Carousel.Slide>
+			<Tooltip
+				label={
+					loading ? 'Loading...' : count ? `Count: ${count[0].totalcurrentcount}` : error ? error : 'Unexpected Error'
+				}
+				withArrow
+				color="blue"
+				position="top">
+				<Button
 					sx={{
-						display: 'flex',
-						justifyContent: 'center',
-						alignItems: 'center',
-						height: '100%',
+						backgroundColor: '#fff',
+						color: subID === id ? '#535BEB' : '#211F1F',
 						border: subID === id ? '1px solid #535BEB' : '1px solid #ccc',
 						borderRadius: '10px',
-						flexDirection: 'column',
 						padding: '10px',
 						width: '100%',
 					}}
+					disabled={count && count[0]?.totalcurrentcount === 0}
 					onClick={() => {
 						subGapTime.set({
 							startTime: dayjs(parsedEndTime).subtract(gapMinute, 'minute').toDate(),
@@ -74,44 +78,10 @@ const FillCarousel = ({ gapMinute, endtime, id }: FillCarouselProps) => {
 							id: id,
 						});
 					}}>
-					<Text>{loading ? 'Loading' : count ? count[0].totalcurrentcount : error ? error : 'Unexpected Error'}</Text>
-					<Text>
-						{dayjs(parsedEndTime).format('HH:mm')} :{' '}
-						{dayjs(parsedEndTime).subtract(gapMinute, 'minute').format('HH:mm')}
-					</Text>
-					<Text>{dayjs(parsedEndTime).format('DD-MMM')}</Text>
-				</UnstyledButton>
-			</Carousel.Slide>
-			{dayjs(parsedEndTime).subtract(gapMinute, 'minute').day() !== dayjs(parsedEndTime).day() && (
-				<Carousel.Slide>
-					<Box
-						sx={{
-							display: 'flex',
-							justifyContent: 'space-between',
-							alignItems: 'center',
-							height: '100%',
-							border: '1px solid #ccc',
-							borderRadius: '10px',
-							flexDirection: 'row',
-							padding: '10px',
-							width: '100%',
-						}}>
-						<Text
-							sx={{
-								writingMode: 'vertical-rl',
-							}}>
-							{dayjs(parsedEndTime).format('DD-MMM')}
-						</Text>
-						<Text
-							sx={{
-								writingMode: 'vertical-rl',
-							}}>
-							{dayjs(parsedEndTime).subtract(gapMinute, 'minute').format('DD-MMM')}
-						</Text>
-					</Box>
-				</Carousel.Slide>
-			)}
-		</>
+					{dayjs(parsedEndTime).format('HH:mm')} : {dayjs(parsedEndTime).subtract(gapMinute, 'minute').format('HH:mm')}
+				</Button>
+			</Tooltip>
+		</Carousel.Slide>
 	);
 };
 

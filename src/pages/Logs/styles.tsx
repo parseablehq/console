@@ -24,7 +24,7 @@ export const useLogTableStyles = createStyles((theme) => {
 		container: {
 			position: 'relative',
 			flex: 1,
-			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2 + 124}px )`,
+			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2 + 110}px )`,
 			display: 'flex',
 			flexDirection: 'column',
 			overflow: 'hidden',
@@ -33,7 +33,7 @@ export const useLogTableStyles = createStyles((theme) => {
 		innerContainer: {
 			position: 'relative',
 			flex: 1,
-			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2 + 124}px -200px)`,
+			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2 + 110}px -200px)`,
 			display: 'flex',
 			flexDirection: 'column',
 			overflow: 'hidden',
@@ -71,6 +71,7 @@ export const useLogTableStyles = createStyles((theme) => {
 			position: 'sticky',
 			top: 0,
 		},
+
 
 		trStyle: {
 			cursor: 'pointer',
@@ -122,8 +123,8 @@ export const useLogTableStyles = createStyles((theme) => {
 		},
 
 		thColumnMenuBtn: {
-			width: widths[10],
-			height: heights[10],
+			width: widths[6],
+			height: heights[6],
 		},
 
 		thColumnMenuResetBtn: {
@@ -255,15 +256,16 @@ export const useTableColumnStyle = createStyles((theme) => {
 
 	return {
 		labelBtn: {
-			padding: '15px',
 			width: widths.full,
 			display: 'flex',
 			alignItems: 'center',
 			textAlign: 'left',
-			height: '100%',
+			padding: `${spacing.xs} ${spacing.sm}`,
+			fontWeight: fontWeights.medium,
 			'&:hover': {
 				background: colors.gray[1],
 			},
+			height: '100%',
 		},
 
 		labelIcon: {
