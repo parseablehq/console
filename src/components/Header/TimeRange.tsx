@@ -15,6 +15,7 @@ const TimeRange: FC = () => {
 		state: { subLogQuery, subLogSelectedTimeRange },
 	} = useHeaderContext();
 
+	const [opened, setOpened] = useMountedState(false);
 	const [selectedRange, setSelectedRange] = useMountedState<string>(subLogSelectedTimeRange.get().value);
 
 	useEffect(() => {
@@ -26,7 +27,7 @@ const TimeRange: FC = () => {
 	}, []);
 
 	const onDurationSelect = (duration: FixedDurations) => {
-		subLogSelectedTimeRange.set((state)=>{
+		subLogSelectedTimeRange.set((state) => {
 			state.value = duration.name;
 			state.state = 'fixed';
 		});
@@ -36,6 +37,7 @@ const TimeRange: FC = () => {
 			query.startTime = now.subtract(duration.milliseconds, 'milliseconds').toDate();
 			query.endTime = now.toDate();
 		});
+		setOpened(false);
 	};
 
 	const { classes, cx } = useLogQueryStyles();
@@ -49,7 +51,7 @@ const TimeRange: FC = () => {
 	} = classes;
 
 	return (
-		<Menu withArrow position="top">
+		<Menu withArrow position="top" opened={opened} onChange={setOpened}>
 			<Menu.Target>
 				<Button className={timeRangeBTn} leftIcon={<IconClock size={px('1.2rem')} stroke={1.5} />}>
 					<Text>{selectedRange}</Text>
@@ -73,7 +75,7 @@ const TimeRange: FC = () => {
 						})}
 					</Box>
 					<Box className={customRangeContainer}>
-						<CustomTimeRange />
+						<CustomTimeRange setOpened={setOpened} />
 					</Box>
 				</Box>
 			</Menu.Dropdown>
@@ -81,7 +83,10 @@ const TimeRange: FC = () => {
 	);
 };
 
-const CustomTimeRange: FC = () => {
+type CustomTimeRangeProps = {
+	setOpened: (opened: boolean) => void;
+};
+const CustomTimeRange: FC<CustomTimeRangeProps> = ({ setOpened }) => {
 	const {
 		state: { subLogQuery, subLogSelectedTimeRange },
 	} = useHeaderContext();
@@ -105,10 +110,11 @@ const CustomTimeRange: FC = () => {
 		});
 		const startTime = dayjs(selectedRange.startTime).format('DD-MM-YY HH:mm');
 		const endTime = dayjs(selectedRange.endTime).format('DD-MM-YY HH:mm');
-		subLogSelectedTimeRange.set((state)=>{
+		subLogSelectedTimeRange.set((state) => {
 			state.state = 'custom';
 			state.value = `${startTime} - ${endTime}`;
 		});
+		setOpened(false);
 	};
 
 	const { classes } = useLogQueryStyles();

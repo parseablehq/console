@@ -1,8 +1,21 @@
-import Loading from '@/components/Loading';
 import { Tbody, Thead } from '@/components/Table';
 import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useQueryLogs } from '@/hooks/useQueryLogs';
-import { Box, Center, Checkbox, Menu, ScrollArea, Table, px, ActionIcon, Text, Flex, Button } from '@mantine/core';
+import {
+	Box,
+	Center,
+	Checkbox,
+	Menu,
+	ScrollArea,
+	Table,
+	px,
+	ActionIcon,
+	Text,
+	Flex,
+	Button,
+	Pagination,
+	Loader,
+} from '@mantine/core';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { FC } from 'react';
 import { LOG_QUERY_LIMITS, useLogsPageContext } from './Context';
@@ -20,14 +33,12 @@ import FilterPills from './FilterPills';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import dayjs from 'dayjs';
 import { SortOrder } from '@/@types/parseable/api/query';
-import { useGetQueryCount } from '@/hooks/useGetQueryCount';
-import CustomPagination from './CustomPagination';
 
 const skipFields = ['p_metadata', 'p_tags'];
 
 const LogTable: FC = () => {
 	const {
-		state: { subLogStreamError },
+		state: { subLogStreamError, subGapTime },
 	} = useLogsPageContext();
 	const {
 		state: { subLogSearch, subLogQuery, subRefreshInterval, subLogSelectedTimeRange },
@@ -37,17 +48,6 @@ const LogTable: FC = () => {
 	const [logStreamError, setLogStreamError] = useMountedState<string | null>(null);
 	const [columnToggles, setColumnToggles] = useMountedState<Map<string, boolean>>(new Map());
 	const [pinnedColumns, setPinnedColumns] = useMountedState<Set<string>>(new Set());
-	const [currentStartTimeTemp, setCurrentStartTimeTemp] = useMountedState<Date | null>(null);
-	const [currentStartTime, setCurrentStartTime] = useMountedState<Date | null>(null);
-	const [currentCount, setCurrentCount] = useMountedState<number>(0);
-
-	const {
-		data: queryCountRes,
-		error: queryCountError,
-		loading: queryCountLoading,
-		getQueryCountData,
-		resetData: resetQueryCountData,
-	} = useGetQueryCount();
 
 	const {
 		data: logsSchema,
@@ -143,15 +143,21 @@ const LogTable: FC = () => {
 
 	const onRetry = () => {
 		const query = subLogQuery.get();
+		const data = subGapTime.get();
 
 		if (logsSchema) {
 			resetStreamData();
 			resetLogsData();
 		}
-		let tempDate = subLogQuery.get().endTime;
-		tempDate.setSeconds(0, 0);
-		setCurrentCount(0);
-		setCurrentStartTimeTemp(tempDate);
+		if (data) {
+			getQueryData({
+				streamName: subLogQuery.get().streamName,
+				startTime: data.startTime,
+				endTime: data.endTime,
+				access: subLogQuery.get().access,
+			});
+		}
+
 		getDataSchema(query.streamName);
 		setColumnToggles(new Map());
 	};
@@ -160,17 +166,15 @@ const LogTable: FC = () => {
 		const streamErrorListener = subLogStreamError.subscribe(setLogStreamError);
 		const logSearchListener = subLogSearch.subscribe(setQuerySearch);
 		const refreshIntervalListener = subRefreshInterval.subscribe(setRefreshInterval);
-		const logQueryListener = subLogQuery.subscribe((query) => {
-			if (query.streamName) {
-				if (logsSchema) {
-					resetStreamData();
-					resetLogsData();
-				}
-				let tempDate = subLogQuery.get().endTime;
-				tempDate.setSeconds(0, 0);
-				setCurrentStartTimeTemp(tempDate);
-				getDataSchema(query.streamName);
-				setCurrentCount(0);
+		const subID = subGapTime.subscribe((data) => {
+			if (data) {
+				getQueryData({
+					streamName: subLogQuery.get().streamName,
+					startTime: data.startTime,
+					endTime: data.endTime,
+					access: subLogQuery.get().access,
+				});
+				getDataSchema(subLogQuery.get().streamName);
 				setColumnToggles(new Map());
 				setPinnedColumns(new Set());
 			}
@@ -178,55 +182,11 @@ const LogTable: FC = () => {
 
 		return () => {
 			streamErrorListener();
-			resetQueryCountData();
+			subID();
 			refreshIntervalListener();
-			logQueryListener();
 			logSearchListener();
 		};
 	}, [logsSchema]);
-
-	useEffect(() => {
-		if (currentStartTimeTemp) {
-			getQueryCountData({
-				streamName: subLogQuery.get().streamName,
-				startTime: currentStartTimeTemp,
-				endTime: dayjs(currentStartTimeTemp).add(1, 'minute').toDate(),
-				access: subLogQuery.get().access,
-			});
-		}
-	}, [currentStartTimeTemp]);
-
-	useEffect(() => {
-		if (
-			queryCountRes &&
-			queryCountRes[0].totalcurrentcount === 0 &&
-			currentStartTimeTemp &&
-			currentStartTimeTemp <= subLogQuery.get().startTime
-		) {
-			getQueryData({
-				streamName: subLogQuery.get().streamName,
-				startTime: currentStartTimeTemp,
-				endTime: dayjs(currentStartTimeTemp).add(1, 'minute').toDate(),
-				access: subLogQuery.get().access,
-			});
-		} else if (queryCountRes && queryCountRes[0].totalcurrentcount === 0) {
-			setCurrentStartTimeTemp(dayjs(currentStartTimeTemp).subtract(1, 'minute').toDate());
-		} else if (queryCountRes && queryCountRes[0].totalcurrentcount !== 0 && currentStartTimeTemp) {
-			setCurrentStartTime(currentStartTimeTemp);
-			setCurrentCount(queryCountRes[0].totalcurrentcount);
-		}
-	}, [queryCountRes]);
-
-	useEffect(() => {
-		if (currentStartTime) {
-			getQueryData({
-				streamName: subLogQuery.get().streamName,
-				startTime: currentStartTime,
-				endTime: dayjs(currentStartTime).add(1, 'minute').toDate(),
-				access: subLogQuery.get().access,
-			});
-		}
-	}, [currentStartTime]);
 
 	useEffect(() => {
 		if (subRefreshInterval.get()) {
@@ -243,22 +203,6 @@ const LogTable: FC = () => {
 			return () => clearInterval(interval);
 		}
 	}, [refreshInterval]);
-
-	useEffect(() => {
-		const query = subLogQuery.get();
-
-		if (query.streamName) {
-			if (logsSchema) {
-				resetStreamData();
-				resetLogsData;
-			}
-			let tempDate = subLogQuery.get().endTime;
-			tempDate.setSeconds(0, 0);
-			setCurrentStartTimeTemp(tempDate);
-			getDataSchema(query.streamName);
-			setColumnToggles(new Map());
-		}
-	}, [subLogQuery]);
 
 	const renderTh = useMemo(() => {
 		if (logsSchema) {
@@ -349,113 +293,86 @@ const LogTable: FC = () => {
 		<Box className={container}>
 			<Box
 				sx={{
-					display: 'flex',
-					justifyContent: 'center',
-					alignItems: 'center',
-					padding: '0 1rem',
-					height: '3rem',
-					borderBottom: '1px solid #ccc',
-					gap: '1rem',
-				}}>
-				<Text>
-					{' '}
-					{currentCount} events loaded from{' '}
-					{subLogSelectedTimeRange.get().state === 'fixed'
-						? subLogSelectedTimeRange.get().value
-						: 'selected time range'}
-				</Text>
-			</Box>
+					borderBottom: '1px solid #D4D4D4',
+				}}></Box>
 			<FilterPills />
-			{!(logStreamError || logStreamSchemaError || logsError || queryCountError) ? (
-				!loading && !logsLoading && Boolean(logsSchema) && Boolean(pageLogData) && !queryCountLoading ? (
-					Boolean(logsSchema?.fields.length) && Boolean(pageLogData?.data.length) ? (
-						<Box className={innerContainer}>
-							<Box className={innerContainer} style={{ display: 'flex', flexDirection: 'row' }}>
-								<ScrollArea
-									w={`${pinnedColumnsWidth}px`}
-									className={pinnedScrollView}
-									styles={() => ({
-										scrollbar: {
-											'&[data-orientation="vertical"] .mantine-ScrollArea-thumb': {
-												display: 'none',
-											},
+			{!(logStreamError || logStreamSchemaError || logsError) ? (
+				Boolean(logsSchema?.fields.length) && Boolean(pageLogData?.data.length) ? (
+					<Box className={innerContainer}>
+						<Box className={innerContainer} style={{ display: 'flex', flexDirection: 'row' }}>
+							<ScrollArea
+								w={`${pinnedColumnsWidth}px`}
+								className={pinnedScrollView}
+								styles={() => ({
+									scrollbar: {
+										'&[data-orientation="vertical"] .mantine-ScrollArea-thumb': {
+											display: 'none',
 										},
-									})}
-									onMouseEnter={() => {
-										active.current = 'left';
-									}}
-									viewportRef={leftRef}
-									onScrollPositionChange={({ y }) => {
-										if (active.current === 'right') return;
-										rightRef.current!.scrollTop = y;
-									}}>
-									<Box className={pinnedTableContainer} ref={pinnedContianerRef}>
-										<Table className={tableStyle}>
-											<Thead className={theadStylePinned}>{renderPinnedTh}</Thead>
-											<Tbody>
-												<LogRow
-													logData={pageLogData?.data || []}
-													logsSchema={logsSchema?.fields.filter((field) => isColumnPinned(field.name)) || []}
-													isColumnActive={isColumnActive}
-												/>
-											</Tbody>
-										</Table>
-									</Box>
-								</ScrollArea>
-								{pinnedColumnsWidth > 0 && <Box style={{ height: '100%', borderLeft: '1px solid #ccc' }} />}
-								<ScrollArea
-									onMouseEnter={() => {
-										active.current = 'right';
-									}}
-									viewportRef={rightRef}
-									onScrollPositionChange={({ y }) => {
-										if (active.current === 'left') return;
-										leftRef.current!.scrollTop = y;
-									}}>
-									<Box className={tableContainer}>
-										<Table className={tableStyle}>
-											<Thead className={theadStyle}>
-												{renderTh}
-												<ThColumnMenu
-													logSchemaFields={logsSchema?.fields || []}
-													columnToggles={columnToggles}
-													toggleColumn={toggleColumn}
-													isColumnActive={isColumnActive}
-													reorderColumn={reorderSchemaFields}
-													isColumnPinned={isColumnPinned}
-													toggleColumnPinned={toggleColumnPinned}
-													resetColumns={resetColumns}
-												/>
-											</Thead>
-											<Tbody>
-												<LogRow
-													logData={pageLogData?.data || []}
-													logsSchema={logsSchema?.fields.filter((field) => !isColumnPinned(field.name)) || []}
-													isColumnActive={isColumnActive}
-													rowArrows={true}
-												/>
-											</Tbody>
-										</Table>
-									</Box>
-								</ScrollArea>
-							</Box>
-							<Box className={footerContainer}>
-								<Box></Box>
-								<CustomPagination
-									currentStartTime={currentStartTime}
-									pageLogData={pageLogData}
-									goToPage={goToPage}
-									setCurrentStartTime={setCurrentStartTime}
-									setCurrentCount={setCurrentCount}
-								/>
-								<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
-							</Box>
+									},
+								})}
+								onMouseEnter={() => {
+									active.current = 'left';
+								}}
+								viewportRef={leftRef}
+								onScrollPositionChange={({ y }) => {
+									if (active.current === 'right') return;
+									rightRef.current!.scrollTop = y;
+								}}>
+								<Box className={pinnedTableContainer} ref={pinnedContianerRef}>
+									<Table className={tableStyle}>
+										<Thead className={theadStylePinned}>{renderPinnedTh}</Thead>
+										<Tbody>
+											<LogRow
+												logData={pageLogData?.data || []}
+												logsSchema={logsSchema?.fields.filter((field) => isColumnPinned(field.name)) || []}
+												isColumnActive={isColumnActive}
+											/>
+										</Tbody>
+									</Table>
+								</Box>
+							</ScrollArea>
+							{pinnedColumnsWidth > 0 && <Box style={{ height: '100%', borderLeft: '1px solid #ccc' }} />}
+							<ScrollArea
+								onMouseEnter={() => {
+									active.current = 'right';
+								}}
+								viewportRef={rightRef}
+								onScrollPositionChange={({ y }) => {
+									if (active.current === 'left') return;
+									leftRef.current!.scrollTop = y;
+								}}>
+								<Box className={tableContainer}>
+									<Table className={tableStyle}>
+										<Thead className={theadStyle}>
+											{renderTh}
+											<ThColumnMenu
+												logSchemaFields={logsSchema?.fields || []}
+												columnToggles={columnToggles}
+												toggleColumn={toggleColumn}
+												isColumnActive={isColumnActive}
+												reorderColumn={reorderSchemaFields}
+												isColumnPinned={isColumnPinned}
+												toggleColumnPinned={toggleColumnPinned}
+												resetColumns={resetColumns}
+											/>
+										</Thead>
+										<Tbody>
+											<LogRow
+												logData={pageLogData?.data || []}
+												logsSchema={logsSchema?.fields.filter((field) => !isColumnPinned(field.name)) || []}
+												isColumnActive={isColumnActive}
+												rowArrows={true}
+											/>
+										</Tbody>
+									</Table>
+								</Box>
+							</ScrollArea>
 						</Box>
-					) : (
-						<EmptyBox message="No Data Available" />
-					)
+					</Box>
+				) : pageLogData?.data.length === 0 ? (
+					<EmptyBox message="No Data Available" />
 				) : (
-					<Loading visible variant="oval" position="absolute" zIndex={0} />
+					<EmptyBox message="Select a time Slot " />
 				)
 			) : (
 				<Center className={errorContainer}>
@@ -463,6 +380,20 @@ const LogTable: FC = () => {
 					{(logsError || logStreamSchemaError) && <RetryBtn onClick={onRetry} mt="md" />}
 				</Center>
 			)}
+			<Box className={footerContainer}>
+				<Box></Box>
+				{!loading && !logsLoading ? (
+					<Pagination
+						total={pageLogData?.totalPages || 1}
+						value={pageLogData?.page || 1}
+						onChange={(page) => {
+							goToPage(page, pageLogData?.limit || 1);
+						}}></Pagination>
+				) : (
+					<Loader variant="dots" />
+				)}
+				<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
+			</Box>
 		</Box>
 	);
 };

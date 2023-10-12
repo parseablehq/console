@@ -38,7 +38,9 @@ const RefreshInterval: FC = () => {
 					<Text>{selectedInterval ? ms(selectedInterval) : 'Off'}</Text>
 				</Button>
 			</Menu.Target>
-			<Menu.Dropdown>
+			<Menu.Dropdown sx={{
+				zIndex: 1000,
+			}}>
 				{REFRESH_INTERVALS.map((interval) => {
 					if (interval === selectedInterval) return null;
 

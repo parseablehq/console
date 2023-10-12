@@ -1,0 +1,16 @@
+{
+	"rewrites": [
+		{
+			"source": "/api",
+			"destination": "https://demo.parseable.io/api/"
+		},
+		{
+			"source": "/api/:path*",
+			"destination": "https://demo.parseable.io/api/:path*"
+		},
+		{
+			"source": "/(.*)",
+			"destination": "/"
+		}
+	]
+}

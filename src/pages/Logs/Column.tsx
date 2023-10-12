@@ -110,11 +110,15 @@ const Column: FC<Column> = (props) => {
 	const { labelBtn, applyBtn, labelIcon, labelIconActive, searchInputStyle, filterText } = classes;
 
 	return (
-		<th>
+		<th style={{
+			height: "42px",
+			padding:0,
+			textAlign: 'left',
+		}}>
 			<Popover position="bottom" withArrow withinPortal shadow="md" zIndex={2} onOpen={onOpen}>
 				<Popover.Target>
 					<UnstyledButton className={labelBtn}>
-						<span className="label">{capitalizeFirstLetter(columnName)}</span>
+						<span>{capitalizeFirstLetter(columnName)}</span>
 						<IconDotsVertical
 							stroke={filterActive ? 3 : 1.8}
 							size={px('1rem')}
