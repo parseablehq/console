@@ -61,12 +61,12 @@ const FillCarousel = ({ gapMinute, endtime, id }: FillCarouselProps) => {
 						: count
 						? dayjs(parsedEndTime).day() !== dayjs(parsedEndTime).subtract(gapMinute, 'minute').day()
 							? count[0].totalcurrentcount === 0
-								? `Date changed from ${dayjs(parsedEndTime).format('DD')} to ${dayjs(parsedEndTime)
+								? `Date changed from ${dayjs(parsedEndTime).format('DD-MMM-YYYY')} to ${dayjs(parsedEndTime)
 										.subtract(gapMinute, 'minute')
-										.format('DD')}, no events durning this period`
-								: `Day changed from ${dayjs(parsedEndTime).format('DD')} to ${dayjs(parsedEndTime)
+										.format('DD-MMM-YYYY')}, no events durning this period`
+								: `Day changed from ${dayjs(parsedEndTime).format('DD-MMM-YYYY')} to ${dayjs(parsedEndTime)
 										.subtract(gapMinute, 'minute')
-										.format('DD')}, ${count[0].totalcurrentcount} events`
+										.format('DD-MMM-YYYY')}, ${count[0].totalcurrentcount} events`
 							: count[0].totalcurrentcount === 0
 							? 'No events durning this period'
 							: `${count[0].totalcurrentcount} events`
