@@ -95,7 +95,7 @@ const FillCarousel = ({ gapMinute, endtime, id }: FillCarouselProps) => {
 								id: id,
 							});
 						}}>
-						{dayjs(parsedEndTime).format('HH:mm')} :{' '}
+						{dayjs(parsedEndTime).format('HH:mm')} -{' '}
 						{dayjs(parsedEndTime).subtract(gapMinute, 'minute').format('HH:mm')}
 					</Button>
 				</Box>
