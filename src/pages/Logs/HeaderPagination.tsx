@@ -152,8 +152,8 @@ const HeaderPagination: FC = () => {
 	};
 
 	const onSlideChange = (index: number) => {
-		if (slots.current && slots.current.length - 1 >= index * 8) {
-			setHeadDate(dayjs(slots.current[index * 8].endtime).toDate());
+		if (slots.current && slots.current.length - 1 >= index * 9) {
+			setHeadDate(dayjs(slots.current[index * 9].endtime).toDate());
 		}
 	};
 
