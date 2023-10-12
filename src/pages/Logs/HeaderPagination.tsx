@@ -159,7 +159,7 @@ const HeaderPagination: FC = () => {
 
 	return (
 		<Box
-			h={110}
+			h={95}
 			sx={{
 				overflow: 'hidden',
 			}}>
@@ -172,23 +172,26 @@ const HeaderPagination: FC = () => {
 							fontSize: '1rem',
 							fontWeight: 500,
 							color: '#211F1F',
-							padding: '12px',
-						}}>
+							paddingTop: '10px',
+						}}
+						ta={'center'}>
 						{' '}
-						Time Slots: {dayjs(headDate).format('DD-MM-YYYY')}
+						Loaded events for {dayjs(headDate).format('DD-MM-YYYY')}. Showing {gapMinute} minute intervals.
 					</Text>
+
 					<Carousel
 						p={'sm'}
 						px={50}
 						height={36}
-						slideSize="12.5%"
+						slideSize="11.1%"
 						slideGap="sm"
 						align="start"
-						slidesToScroll={8}
+						slidesToScroll={9}
 						onSlideChange={onSlideChange}
 						styles={{
 							viewport: {
 								overflow: 'unset',
+								overflowX: 'clip',
 							},
 						}}>
 						{slots.current?.map((slot) => (
