@@ -11,12 +11,14 @@ import { useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { getQueryParam } from '@/utils';
 
+const parseable_session = import.meta.env.VITE_PARSEABLE_SESSION ?? 'parseable_session';
+
 export const useLoginForm = () => {
 	const notificationId = useId();
 	const queryParams = getQueryParam();
 	const [loading, setLoading] = useMountedState(false);
 	const [error, setError] = useMountedState<string | null>(null);
-	const auth = Cookies.get('session');
+	const auth = Cookies.get(parseable_session);
 	const nav = useNavigate();
 	const location = useLocation();
 

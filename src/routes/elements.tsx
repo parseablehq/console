@@ -79,3 +79,13 @@ export const UsersElement: FC = () => {
 		</SuspensePage>
 	);
 };
+
+const LiveTail = lazy(() => import('@/pages/LiveTail'));
+
+export const LiveTailElement: FC = () => {
+	return (
+		<SuspensePage>
+			<LiveTail />
+		</SuspensePage>
+	);
+};

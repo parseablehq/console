@@ -13,6 +13,7 @@ import {
 	IconTrash,
 	IconInfoCircle,
 	IconUserCog,
+	IconServerBolt,
 } from '@tabler/icons-react';
 import { FC, useEffect } from 'react';
 import { useNavbarStyles } from './styles';
@@ -34,9 +35,13 @@ import Cookies from 'js-cookie';
 import { NAVBAR_WIDTH } from '@/constants/theme';
 const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 
+const parseable_session = import.meta.env.VITE_PARSEABLE_SESSION ?? 'parseable_session';
+const parseable_user = import.meta.env.VITE_PARSEABLE_USER ?? 'parseable_user';
+
 const links = [
 	{ icon: IconZoomCode, label: 'Query', pathname: '/query', requiredAccess: ['Query', 'GetSchema'] },
 	{ icon: IconTableShortcut, label: 'Logs', pathname: '/logs', requiredAccess: ['Query', 'GetSchema'] },
+	{ icon: IconServerBolt, label: 'Live Tail', pathname: '/live-tail', requiredAccess: ['Query', 'GetSchema'] },
 	{ icon: IconReportAnalytics, label: 'Stats', pathname: '/stats', requiredAccess: ['GetStats'] },
 	{ icon: IconSettings, label: 'Config', pathname: '/config', requiredAccess: ['PutAlert'] },
 ];
@@ -48,7 +53,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 	const { streamName } = useParams();
 	const location = useLocation();
 
-	const username = Cookies.get('username');
+	const username = Cookies.get(parseable_user);
 
 	const {
 		state: { subNavbarTogle },
@@ -76,8 +81,8 @@ const Navbar: FC<NavbarProps> = (props) => {
 	}, [subNavbarTogle.get()]);
 
 	const onSignOut = () => {
-		Cookies.remove('session');
-		Cookies.remove('username');
+		Cookies.remove(parseable_session);
+		Cookies.remove(parseable_user);
 
 		window.location.href = `${baseURL}api/v1/o/logout?redirect=${window.location.origin}/login`;
 	};
@@ -94,7 +99,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 			setActiveStream('');
 			setSearchValue('');
 			setDisableLink(true);
-			navigate("/");
+			navigate('/');
 		} else if (streamName) {
 			if (streamName === deleteStream && userSepecficStreams) {
 				setDeleteStream('');
@@ -115,7 +120,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 		} else if (userSepecficStreams && Boolean(userSepecficStreams.length)) {
 			if (location.pathname === USERS_MANAGEMENT_ROUTE) {
 				handleChangeWithoutRiderection(userSepecficStreams[0].name, location.pathname);
-				navigate("/users");
+				navigate('/users');
 			} else {
 				handleChange(userSepecficStreams[0].name);
 			}
@@ -275,7 +280,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 						label="Users"
 						icon={<IconUserCog size="1.5rem" stroke={1.3} />}
 						onClick={() => {
-							navigate("/users");
+							navigate('/users');
 							setCurrentPage(USERS_MANAGEMENT_ROUTE);
 						}}
 					/>

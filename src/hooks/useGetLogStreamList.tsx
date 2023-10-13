@@ -11,6 +11,10 @@ import { useNavigate } from 'react-router-dom';
 import { LOGIN_ROUTE } from '@/constants/routes';
 import Cookies from 'js-cookie';
 
+
+const parseable_session = import.meta.env.VITE_PARSEABLE_SESSION ?? 'parseable_session';
+const parseable_user= import.meta.env.VITE_PARSEABLE_USER ?? 'parseable_user';
+
 export const useGetLogStreamList = () => {
 	const [data, setData] = useMountedState<LogStreamData | null>(null);
 	const [error, setError] = useMountedState<string | null>(null);
@@ -63,9 +67,9 @@ export const useGetLogStreamList = () => {
 				}
 				case StatusCodes.UNAUTHORIZED: {
 					setError('Unauthorized');
-					Cookies.remove('session');
-					Cookies.remove('username');
-					
+					Cookies.remove(parseable_session);
+					Cookies.remove(parseable_user);
+
 					notifications.update({
 						id: 'load-data',
 						color: 'red',

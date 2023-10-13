@@ -5,6 +5,9 @@ import { notifications } from '@mantine/notifications';
 import { IconCheck, IconFileAlert } from '@tabler/icons-react';
 import Cookies from 'js-cookie';
 
+const parseable_session = import.meta.env.VITE_PARSEABLE_SESSION ?? 'parseable_session';
+const parseable_user= import.meta.env.VITE_PARSEABLE_USER ?? 'parseable_user';
+
 export const usePutUserRole = () => {
 	const [data, setData] = useMountedState<any | null>(null);
 	const [error, setError] = useMountedState<string | null>(null);
@@ -41,8 +44,8 @@ export const usePutUserRole = () => {
 				default: {
 					setError(res.data);
 					console.error(res);
-					Cookies.remove('session');
-					Cookies.remove('username');
+					Cookies.remove(parseable_session);
+					Cookies.remove(parseable_user);
 					notifications.update({
 						id: 'load-data',
 						color: 'red',
