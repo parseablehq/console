@@ -340,3 +340,30 @@ export const useTableColumnStyle = createStyles((theme) => {
 		},
 	};
 });
+
+export const useHeaderPaginationStyle = createStyles((theme) => {
+	const { spacing, colors } = theme;
+	const { sizing } = theme.other;
+	return {
+		controlBtn: {
+			background: colors.white[0],
+			padding: 0,
+			marginRight: spacing.xs,
+			width: '36px',
+			color: theme.colors.gray[6],
+			border: `${sizing.px} ${colors.gray[2]} solid`,
+			'&:hover': {
+				background: colors.gray[1],
+			},
+		},
+		controlContainer: {
+			display: 'flex',
+			justifyContent: 'center',
+			alignItems: 'center',
+			flexDirection: 'row',
+		},
+		controlText: {
+			marginRight: spacing.xs,
+		}
+	};
+});

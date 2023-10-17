@@ -1,14 +1,16 @@
 import { useGetQueryCount } from '@/hooks/useGetQueryCount';
 import useMountedState from '@/hooks/useMountedState';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Carousel } from '@mantine/carousel';
-import { Box, Button, Text } from '@mantine/core';
+import { Carousel, Embla } from '@mantine/carousel';
+import { Box, Button, Text, px } from '@mantine/core';
 import dayjs from 'dayjs';
+import { useHeaderPaginationStyle } from './styles';
 
-import { FC, useEffect, useRef } from 'react';
+import { FC, useEffect } from 'react';
 import FillCarousel from './CarouselSlide';
 import { useLogsPageContext } from './Context';
 import Loading from '@/components/Loading';
+import { IconChevronLeft, IconChevronRight, IconZoomIn, IconZoomOut } from '@tabler/icons-react';
 
 const Limit = 10000;
 const gapOptions = [1, 5, 10, 15, 20, 30, 60];
@@ -17,20 +19,24 @@ const HeaderPagination: FC = () => {
 	const {
 		state: { subLogQuery },
 	} = useHeaderContext();
-	const [headDate, setHeadDate] = useMountedState<Date | null>(null);
+	const [embla, setEmbla] = useMountedState<Embla | null>(null);
+	const [showSlotTime, setShowSlotTime] = useMountedState<{
+		startTime: Date;
+		endTime: Date;
+	} | null>(null);
 
 	const [endDatePointer, setEndDatePointer] = useMountedState<Date | null>(null);
 	const [gapTemp, setGapTemp] = useMountedState<number>(0);
 	const [gapMinute, setGapMinute] = useMountedState<number>(0);
 	const [upperLimit, setUpperLimit] = useMountedState<number>(20);
-	const slots = useRef<
-		| {
-				gapMinute: number;
-				endtime: Date;
-				id: number;
-		  }[]
-		| null
-	>(null);
+
+	const [slots, setSlots] = useMountedState<
+		{
+			gapMinute: number;
+			endtime: Date;
+			id: number;
+		}[]
+	>([]);
 
 	const {
 		data: queryCountRes,
@@ -66,7 +72,7 @@ const HeaderPagination: FC = () => {
 				subGapTime.set(null);
 				setGapTemp(0);
 				setGapMinute(0);
-				slots.current = null;
+				setSlots([]);
 				setUpperLimit(20);
 				setEndDatePointer(tempDate);
 			}
@@ -124,25 +130,24 @@ const HeaderPagination: FC = () => {
 					id: j,
 				});
 			}
-			slots.current = tempSlots;
+
+			setSlots(tempSlots);
 		}
 	}, [gapMinute]);
 
 	const loadMore = () => {
 		if (
 			subLogQuery.get().endTime &&
-			slots.current &&
-			slots.current.length > 0 &&
-			slots.current[slots.current.length - 1].endtime > subLogQuery.get().startTime
+			slots.length > 0 &&
+			slots[slots.length - 1].endtime > subLogQuery.get().startTime
 		) {
 			setUpperLimit(upperLimit + 20);
 			for (
-				let i = dayjs(slots.current[slots.current.length - 1].endtime).toDate(),
-					j = slots.current[slots.current.length - 1].id + 1;
+				let i = dayjs(slots[slots.length - 1].endtime).toDate(), j = slots[slots.length - 1].id + 1;
 				dayjs(i).subtract(gapMinute, 'minute').toDate() > subLogQuery.get().startTime && j <= upperLimit + 20;
 				i = dayjs(i).subtract(gapMinute, 'minute').toDate(), j++
 			) {
-				slots.current.push({
+				slots.push({
 					gapMinute: gapMinute,
 					endtime: i,
 					id: j,
@@ -152,11 +157,26 @@ const HeaderPagination: FC = () => {
 	};
 
 	const onSlideChange = (index: number) => {
-		if (slots.current && slots.current.length - 1 >= index * 9) {
-			setHeadDate(dayjs(slots.current[index * 9].endtime).toDate());
+		if (slots && slots.length - 1 >= index * 9) {
+			if (slots.length - 1 >= (index + 1) * 9) {
+				setShowSlotTime({
+					startTime: dayjs(slots[index * 9].endtime).toDate(),
+					endTime: dayjs(slots[(index + 1) * 9].endtime)
+						.subtract(gapMinute, 'minute')
+						.toDate(),
+				});
+			} else {
+				setShowSlotTime({
+					startTime: dayjs(slots[index * 9].endtime).toDate(),
+					endTime: dayjs(slots[slots.length - 1].endtime)
+						.subtract(gapMinute, 'minute')
+						.toDate(),
+				});
+			}
 		}
 	};
 
+	const { classes } = useHeaderPaginationStyle();
 	return (
 		<Box
 			h={95}
@@ -167,34 +187,75 @@ const HeaderPagination: FC = () => {
 				<Loading visible zIndex={0} />
 			) : (
 				<>
-					<Text
-						sx={{
-							fontSize: '1rem',
-							fontWeight: 500,
-							color: '#211F1F',
-							paddingTop: '10px',
-						}}
-						ta={'center'}>
-						{' '}
-						Loaded events for {dayjs(headDate).format('DD-MM-YYYY')}. Showing {gapMinute} minute intervals.
-					</Text>
+					<Box className={classes.controlContainer}>
+						<Button
+							className={classes.controlBtn}
+							onClick={() => {
+								embla?.scrollPrev();
+							}}>
+							<IconChevronLeft size={px('1.2rem')} stroke={1.5} />
+						</Button>
+						<Button
+							className={classes.controlBtn}
+							onClick={() => {
+								if (gapTemp > 0 && gapTemp < gapOptions.length) {
+									setGapMinute(gapOptions[gapTemp - 1]);
+									setGapTemp(gapTemp - 1);
+									subGapTime.set(null);
+								}
+							}}
+							disabled={gapTemp === 0}>
+							<IconZoomIn size={px('1.2rem')} stroke={1.5} />
+						</Button>
+
+						<Text className={classes.controlText}>
+							{dayjs(showSlotTime?.startTime).format('DD-MMM-YYYY HH:mm')} to{' '}
+							{dayjs(showSlotTime?.endTime).format('DD-MMM-YYYY HH:mm')}. Slot Size: <b>{gapMinute} min</b>
+						</Text>
+
+						<Button
+							className={classes.controlBtn}
+							onClick={() => {
+								if (gapTemp < gapOptions.length - 1) {
+									setGapMinute(gapOptions[gapTemp + 1]);
+									setGapTemp(gapTemp + 1);
+									subGapTime.set(null);
+								}
+							}}
+							disabled={
+								gapTemp === gapOptions.length - 1 ||
+								gapOptions[gapTemp + 1] >=
+									dayjs(subLogQuery.get().endTime).diff(dayjs(subLogQuery.get().startTime), 'minute')
+							}>
+							<IconZoomOut size={px('1.2rem')} stroke={1.5} />
+						</Button>
+
+						<Button
+							className={classes.controlBtn}
+							onClick={() => {
+								embla?.scrollNext();
+							}}>
+							<IconChevronRight size={px('1.2rem')} stroke={1.5} />
+						</Button>
+					</Box>
 
 					<Carousel
 						p={'sm'}
-						px={50}
 						height={36}
 						slideSize="11.1%"
 						slideGap="sm"
 						align="start"
 						slidesToScroll={9}
+						getEmblaApi={setEmbla}
 						onSlideChange={onSlideChange}
 						styles={{
 							viewport: {
 								overflow: 'unset',
 								overflowX: 'clip',
 							},
-						}}>
-						{slots.current?.map((slot) => (
+						}}
+						withControls={false}>
+						{slots?.map((slot) => (
 							<FillCarousel key={slot.id} {...slot} />
 						))}
 
@@ -210,15 +271,15 @@ const HeaderPagination: FC = () => {
 								}}
 								disabled={Boolean(
 									subLogQuery.get().startTime &&
-										slots.current &&
-										dayjs(slots.current[slots.current.length - 1].endtime)
+										slots.length &&
+										dayjs(slots[slots.length - 1].endtime)
 											.subtract(gapMinute + 1, 'minute')
 											.toDate() <= subLogQuery.get().startTime,
 								)}
 								onClick={loadMore}>
 								{subLogQuery.get().endTime &&
-								slots.current &&
-								dayjs(slots.current[slots.current.length - 1].endtime)
+								slots.length &&
+								dayjs(slots[slots.length - 1].endtime)
 									.subtract(gapMinute + 1, 'minute')
 									.toDate() <= subLogQuery.get().startTime
 									? 'No More Data'
