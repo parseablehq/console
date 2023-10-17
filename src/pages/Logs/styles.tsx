@@ -24,7 +24,7 @@ export const useLogTableStyles = createStyles((theme) => {
 		container: {
 			position: 'relative',
 			flex: 1,
-			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2 + 95}px )`,
+			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2 + 105}px )`,
 			display: 'flex',
 			flexDirection: 'column',
 			overflow: 'hidden',
@@ -33,7 +33,7 @@ export const useLogTableStyles = createStyles((theme) => {
 		innerContainer: {
 			position: 'relative',
 			flex: 1,
-			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2 + 95}px -200px)`,
+			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2 + 105}px -200px)`,
 			display: 'flex',
 			flexDirection: 'column',
 			overflow: 'hidden',
@@ -361,9 +361,32 @@ export const useHeaderPaginationStyle = createStyles((theme) => {
 			justifyContent: 'center',
 			alignItems: 'center',
 			flexDirection: 'row',
+			paddingTop: spacing.xs,
 		},
 		controlText: {
 			marginRight: spacing.xs,
-		}
+		},
 	};
+});
+
+
+export const useCarouselSlideStyle = createStyles((theme) => {
+	const { spacing, colors } = theme;
+	const { sizing } = theme.other;
+
+	return {
+		controlBtn: {
+			background: colors.white[0],
+			padding: spacing.xs,
+			marginRight: spacing.xs,
+			color: theme.colors.gray[6],
+			border: `${sizing.px} ${colors.gray[2]} solid`,
+			'&:hover': {
+				background: colors.gray[1],
+			},
+		},
+
+
+	}
+
 });

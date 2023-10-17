@@ -1,8 +1,8 @@
 import { useGetQueryCount } from '@/hooks/useGetQueryCount';
 import useMountedState from '@/hooks/useMountedState';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Carousel, Embla } from '@mantine/carousel';
-import { Box, Button, Text, px } from '@mantine/core';
+import { Carousel } from '@mantine/carousel';
+import { Box, Button, Text, Tooltip, px } from '@mantine/core';
 import dayjs from 'dayjs';
 import { useHeaderPaginationStyle } from './styles';
 
@@ -10,7 +10,7 @@ import { FC, useEffect } from 'react';
 import FillCarousel from './CarouselSlide';
 import { useLogsPageContext } from './Context';
 import Loading from '@/components/Loading';
-import { IconChevronLeft, IconChevronRight, IconZoomIn, IconZoomOut } from '@tabler/icons-react';
+import { IconZoomIn, IconZoomOut } from '@tabler/icons-react';
 
 const Limit = 10000;
 const gapOptions = [1, 5, 10, 15, 20, 30, 60];
@@ -19,11 +19,6 @@ const HeaderPagination: FC = () => {
 	const {
 		state: { subLogQuery },
 	} = useHeaderContext();
-	const [embla, setEmbla] = useMountedState<Embla | null>(null);
-	const [showSlotTime, setShowSlotTime] = useMountedState<{
-		startTime: Date;
-		endTime: Date;
-	} | null>(null);
 
 	const [endDatePointer, setEndDatePointer] = useMountedState<Date | null>(null);
 	const [gapTemp, setGapTemp] = useMountedState<number>(0);
@@ -156,30 +151,25 @@ const HeaderPagination: FC = () => {
 		}
 	};
 
-	const onSlideChange = (index: number) => {
-		if (slots && slots.length - 1 >= index * 9) {
-			if (slots.length - 1 >= (index + 1) * 9) {
-				setShowSlotTime({
-					startTime: dayjs(slots[index * 9].endtime).toDate(),
-					endTime: dayjs(slots[(index + 1) * 9].endtime)
-						.subtract(gapMinute, 'minute')
-						.toDate(),
-				});
-			} else {
-				setShowSlotTime({
-					startTime: dayjs(slots[index * 9].endtime).toDate(),
-					endTime: dayjs(slots[slots.length - 1].endtime)
-						.subtract(gapMinute, 'minute')
-						.toDate(),
-				});
-			}
+	const zoomIn = () => {
+		if (gapTemp > 0 && gapTemp < gapOptions.length) {
+			setGapMinute(gapOptions[gapTemp - 1]);
+			setGapTemp(gapTemp - 1);
+			subGapTime.set(null);
+		}
+	};
+	const zoomOut = () => {
+		if (gapTemp < gapOptions.length - 1) {
+			setGapMinute(gapOptions[gapTemp + 1]);
+			setGapTemp(gapTemp + 1);
+			subGapTime.set(null);
 		}
 	};
 
 	const { classes } = useHeaderPaginationStyle();
 	return (
 		<Box
-			h={95}
+			h={105}
 			sx={{
 				overflow: 'hidden',
 			}}>
@@ -188,75 +178,44 @@ const HeaderPagination: FC = () => {
 			) : (
 				<>
 					<Box className={classes.controlContainer}>
-						<Button
-							className={classes.controlBtn}
-							onClick={() => {
-								embla?.scrollPrev();
-							}}>
-							<IconChevronLeft size={px('1.2rem')} stroke={1.5} />
-						</Button>
-						<Button
-							className={classes.controlBtn}
-							onClick={() => {
-								if (gapTemp > 0 && gapTemp < gapOptions.length) {
-									setGapMinute(gapOptions[gapTemp - 1]);
-									setGapTemp(gapTemp - 1);
-									subGapTime.set(null);
-								}
-							}}
-							disabled={gapTemp === 0}>
-							<IconZoomIn size={px('1.2rem')} stroke={1.5} />
-						</Button>
-
-						<Text className={classes.controlText}>
-							{dayjs(showSlotTime?.startTime).format('DD-MMM-YYYY HH:mm')} to{' '}
-							{dayjs(showSlotTime?.endTime).format('DD-MMM-YYYY HH:mm')}. Slot Size: <b>{gapMinute} min</b>
-						</Text>
-
-						<Button
-							className={classes.controlBtn}
-							onClick={() => {
-								if (gapTemp < gapOptions.length - 1) {
-									setGapMinute(gapOptions[gapTemp + 1]);
-									setGapTemp(gapTemp + 1);
-									subGapTime.set(null);
-								}
-							}}
-							disabled={
-								gapTemp === gapOptions.length - 1 ||
-								gapOptions[gapTemp + 1] >=
-									dayjs(subLogQuery.get().endTime).diff(dayjs(subLogQuery.get().startTime), 'minute')
-							}>
-							<IconZoomOut size={px('1.2rem')} stroke={1.5} />
-						</Button>
-
-						<Button
-							className={classes.controlBtn}
-							onClick={() => {
-								embla?.scrollNext();
-							}}>
-							<IconChevronRight size={px('1.2rem')} stroke={1.5} />
-						</Button>
+						<Text className={classes.controlText}>Showing events in blocks of {gapMinute} min</Text>
+						<Tooltip
+							label={gapOptions[gapTemp - 1] ? `Change Block time to ${gapOptions[gapTemp - 1]} min` : 'Loading...'}>
+							<Button className={classes.controlBtn} onClick={zoomIn} disabled={gapTemp === 0}>
+								<IconZoomIn size={px('1.2rem')} stroke={1.5} />
+							</Button>
+						</Tooltip>
+						<Tooltip
+							label={gapOptions[gapTemp + 1] ? `Change Block time to ${gapOptions[gapTemp + 1]} min` : 'Loading...'}>
+							<Button
+								className={classes.controlBtn}
+								onClick={zoomOut}
+								disabled={
+									gapTemp === gapOptions.length - 1 ||
+									gapOptions[gapTemp + 1] >=
+										dayjs(subLogQuery.get().endTime).diff(dayjs(subLogQuery.get().startTime), 'minute')
+								}>
+								<IconZoomOut size={px('1.2rem')} stroke={1.5} />
+							</Button>
+						</Tooltip>
 					</Box>
 
 					<Carousel
-						p={'sm'}
+						py={'sm'}
+						px={50}
 						height={36}
 						slideSize="11.1%"
 						slideGap="sm"
 						align="start"
 						slidesToScroll={9}
-						getEmblaApi={setEmbla}
-						onSlideChange={onSlideChange}
 						styles={{
 							viewport: {
 								overflow: 'unset',
 								overflowX: 'clip',
 							},
-						}}
-						withControls={false}>
+						}}>
 						{slots?.map((slot) => (
-							<FillCarousel key={slot.id} {...slot} />
+							<FillCarousel key={slot.id} {...slot} zoomIn={zoomIn}/>
 						))}
 
 						<Carousel.Slide>
