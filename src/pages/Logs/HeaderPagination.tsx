@@ -2,13 +2,15 @@ import { useGetQueryCount } from '@/hooks/useGetQueryCount';
 import useMountedState from '@/hooks/useMountedState';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Carousel } from '@mantine/carousel';
-import { Box, Button, Text } from '@mantine/core';
+import { Box, Button, Text, Tooltip, px } from '@mantine/core';
 import dayjs from 'dayjs';
+import { useHeaderPaginationStyle } from './styles';
 
-import { FC, useEffect, useRef } from 'react';
+import { FC, useEffect } from 'react';
 import FillCarousel from './CarouselSlide';
 import { useLogsPageContext } from './Context';
 import Loading from '@/components/Loading';
+import { IconZoomIn, IconZoomOut } from '@tabler/icons-react';
 
 const Limit = 10000;
 const gapOptions = [1, 5, 10, 15, 20, 30, 60];
@@ -17,20 +19,19 @@ const HeaderPagination: FC = () => {
 	const {
 		state: { subLogQuery },
 	} = useHeaderContext();
-	const [headDate, setHeadDate] = useMountedState<Date | null>(null);
 
 	const [endDatePointer, setEndDatePointer] = useMountedState<Date | null>(null);
 	const [gapTemp, setGapTemp] = useMountedState<number>(0);
 	const [gapMinute, setGapMinute] = useMountedState<number>(0);
 	const [upperLimit, setUpperLimit] = useMountedState<number>(20);
-	const slots = useRef<
-		| {
-				gapMinute: number;
-				endtime: Date;
-				id: number;
-		  }[]
-		| null
-	>(null);
+
+	const [slots, setSlots] = useMountedState<
+		{
+			gapMinute: number;
+			endtime: Date;
+			id: number;
+		}[]
+	>([]);
 
 	const {
 		data: queryCountRes,
@@ -66,7 +67,7 @@ const HeaderPagination: FC = () => {
 				subGapTime.set(null);
 				setGapTemp(0);
 				setGapMinute(0);
-				slots.current = null;
+				setSlots([]);
 				setUpperLimit(20);
 				setEndDatePointer(tempDate);
 			}
@@ -124,25 +125,24 @@ const HeaderPagination: FC = () => {
 					id: j,
 				});
 			}
-			slots.current = tempSlots;
+
+			setSlots(tempSlots);
 		}
 	}, [gapMinute]);
 
 	const loadMore = () => {
 		if (
 			subLogQuery.get().endTime &&
-			slots.current &&
-			slots.current.length > 0 &&
-			slots.current[slots.current.length - 1].endtime > subLogQuery.get().startTime
+			slots.length > 0 &&
+			slots[slots.length - 1].endtime > subLogQuery.get().startTime
 		) {
 			setUpperLimit(upperLimit + 20);
 			for (
-				let i = dayjs(slots.current[slots.current.length - 1].endtime).toDate(),
-					j = slots.current[slots.current.length - 1].id + 1;
+				let i = dayjs(slots[slots.length - 1].endtime).toDate(), j = slots[slots.length - 1].id + 1;
 				dayjs(i).subtract(gapMinute, 'minute').toDate() > subLogQuery.get().startTime && j <= upperLimit + 20;
 				i = dayjs(i).subtract(gapMinute, 'minute').toDate(), j++
 			) {
-				slots.current.push({
+				slots.push({
 					gapMinute: gapMinute,
 					endtime: i,
 					id: j,
@@ -151,15 +151,25 @@ const HeaderPagination: FC = () => {
 		}
 	};
 
-	const onSlideChange = (index: number) => {
-		if (slots.current && slots.current.length - 1 >= index * 9) {
-			setHeadDate(dayjs(slots.current[index * 9].endtime).toDate());
+	const zoomIn = () => {
+		if (gapTemp > 0 && gapTemp < gapOptions.length) {
+			setGapMinute(gapOptions[gapTemp - 1]);
+			setGapTemp(gapTemp - 1);
+			subGapTime.set(null);
+		}
+	};
+	const zoomOut = () => {
+		if (gapTemp < gapOptions.length - 1) {
+			setGapMinute(gapOptions[gapTemp + 1]);
+			setGapTemp(gapTemp + 1);
+			subGapTime.set(null);
 		}
 	};
 
+	const { classes } = useHeaderPaginationStyle();
 	return (
 		<Box
-			h={95}
+			h={105}
 			sx={{
 				overflow: 'hidden',
 			}}>
@@ -167,35 +177,45 @@ const HeaderPagination: FC = () => {
 				<Loading visible zIndex={0} />
 			) : (
 				<>
-					<Text
-						sx={{
-							fontSize: '1rem',
-							fontWeight: 500,
-							color: '#211F1F',
-							paddingTop: '10px',
-						}}
-						ta={'center'}>
-						{' '}
-						Loaded events for {dayjs(headDate).format('DD-MM-YYYY')}. Showing {gapMinute} minute intervals.
-					</Text>
+					<Box className={classes.controlContainer}>
+						<Text className={classes.controlText}>Showing events in blocks of {gapMinute} min</Text>
+						<Tooltip
+							label={gapOptions[gapTemp - 1] ? `Change Block time to ${gapOptions[gapTemp - 1]} min` : 'Loading...'}>
+							<Button className={classes.controlBtn} onClick={zoomIn} disabled={gapTemp === 0}>
+								<IconZoomIn size={px('1.2rem')} stroke={1.5} />
+							</Button>
+						</Tooltip>
+						<Tooltip
+							label={gapOptions[gapTemp + 1] ? `Change Block time to ${gapOptions[gapTemp + 1]} min` : 'Loading...'}>
+							<Button
+								className={classes.controlBtn}
+								onClick={zoomOut}
+								disabled={
+									gapTemp === gapOptions.length - 1 ||
+									gapOptions[gapTemp + 1] >=
+										dayjs(subLogQuery.get().endTime).diff(dayjs(subLogQuery.get().startTime), 'minute')
+								}>
+								<IconZoomOut size={px('1.2rem')} stroke={1.5} />
+							</Button>
+						</Tooltip>
+					</Box>
 
 					<Carousel
-						p={'sm'}
+						py={'sm'}
 						px={50}
 						height={36}
 						slideSize="11.1%"
 						slideGap="sm"
 						align="start"
 						slidesToScroll={9}
-						onSlideChange={onSlideChange}
 						styles={{
 							viewport: {
 								overflow: 'unset',
 								overflowX: 'clip',
 							},
 						}}>
-						{slots.current?.map((slot) => (
-							<FillCarousel key={slot.id} {...slot} />
+						{slots?.map((slot) => (
+							<FillCarousel key={slot.id} {...slot} zoomIn={zoomIn}/>
 						))}
 
 						<Carousel.Slide>
@@ -210,15 +230,15 @@ const HeaderPagination: FC = () => {
 								}}
 								disabled={Boolean(
 									subLogQuery.get().startTime &&
-										slots.current &&
-										dayjs(slots.current[slots.current.length - 1].endtime)
+										slots.length &&
+										dayjs(slots[slots.length - 1].endtime)
 											.subtract(gapMinute + 1, 'minute')
 											.toDate() <= subLogQuery.get().startTime,
 								)}
 								onClick={loadMore}>
 								{subLogQuery.get().endTime &&
-								slots.current &&
-								dayjs(slots.current[slots.current.length - 1].endtime)
+								slots.length &&
+								dayjs(slots[slots.length - 1].endtime)
 									.subtract(gapMinute + 1, 'minute')
 									.toDate() <= subLogQuery.get().startTime
 									? 'No More Data'
