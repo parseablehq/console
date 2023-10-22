@@ -5,8 +5,8 @@ import { notifications } from '@mantine/notifications';
 import { IconCheck, IconFileAlert } from '@tabler/icons-react';
 import Cookies from 'js-cookie';
 
-const parseable_session = import.meta.env.VITE_PARSEABLE_SESSION ?? 'parseable_session';
-const parseable_user= import.meta.env.VITE_PARSEABLE_USER ?? 'parseable_user';
+const parseable_session = import.meta.env.VITE_PARSEABLE_SESSION ?? 'session';
+const parseable_user= import.meta.env.VITE_PARSEABLE_USER ?? 'username';
 
 export const usePutUserRole = () => {
 	const [data, setData] = useMountedState<any | null>(null);

@@ -12,8 +12,8 @@ import { LOGIN_ROUTE } from '@/constants/routes';
 import Cookies from 'js-cookie';
 
 
-const parseable_session = import.meta.env.VITE_PARSEABLE_SESSION ?? 'parseable_session';
-const parseable_user= import.meta.env.VITE_PARSEABLE_USER ?? 'parseable_user';
+const parseable_session = import.meta.env.VITE_PARSEABLE_SESSION ?? 'session';
+const parseable_user= import.meta.env.VITE_PARSEABLE_USER ?? 'username';
 
 export const useGetLogStreamList = () => {
 	const [data, setData] = useMountedState<LogStreamData | null>(null);

@@ -11,7 +11,7 @@ import { useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { getQueryParam } from '@/utils';
 
-const parseable_session = import.meta.env.VITE_PARSEABLE_SESSION ?? 'parseable_session';
+const parseable_session = import.meta.env.VITE_PARSEABLE_SESSION ?? 'session';
 
 export const useLoginForm = () => {
 	const notificationId = useId();

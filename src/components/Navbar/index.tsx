@@ -35,8 +35,8 @@ import Cookies from 'js-cookie';
 import { NAVBAR_WIDTH } from '@/constants/theme';
 const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 
-const parseable_session = import.meta.env.VITE_PARSEABLE_SESSION ?? 'parseable_session';
-const parseable_user = import.meta.env.VITE_PARSEABLE_USER ?? 'parseable_user';
+const parseable_session = import.meta.env.VITE_PARSEABLE_SESSION ?? 'session';
+const parseable_user = import.meta.env.VITE_PARSEABLE_USER ?? 'username';
 
 const links = [
 	{ icon: IconZoomCode, label: 'Query', pathname: '/query', requiredAccess: ['Query', 'GetSchema'] },
