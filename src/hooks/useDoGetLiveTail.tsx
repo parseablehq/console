@@ -1,4 +1,4 @@
-import { Metadata, createChannel, createClient } from 'nice-grpc-web';
+import { FetchTransport, Metadata, createChannel, createClient } from 'nice-grpc-web';
 import { AsyncRecordBatchStreamReader } from '@apache-arrow/ts';
 
 import { type FlightServiceClient, FlightServiceDefinition, FlightData } from '@/assets/arrow';
@@ -37,16 +37,14 @@ export const useDoGetLiveTail = () => {
 		if (currentStreamName && grpcPort) {
 			const grpcUrl = new URL(window.location.origin);
 			grpcUrl.port = String(grpcPort);
-			const channel = createChannel(grpcUrl.origin);
-			const client: FlightServiceClient = createClient(FlightServiceDefinition, channel);
+		
+			const transport = FetchTransport({credentials: 'include'})  
+			const channel = createChannel(grpcUrl.origin, transport);
+			const client: FlightServiceClient = createClient(FlightServiceDefinition, channel, );
 
 			let encoder = new TextEncoder();
 			let iter = client.doGet(
-				{ ticket: encoder.encode(JSON.stringify({ stream: currentStreamName })) },
-				{
-					metadata: Metadata({ Cookie: 'session=01HDKHDP67P7YRBHKE68EMEVB6' }),
-					// metadata: Metadata({ Authorization: 'Basic YWRtaW46YWRtaW4=' }),
-				},
+				{ ticket: encoder.encode(JSON.stringify({ stream: currentStreamName })) }
 			);
 
 			let task = async function () {
