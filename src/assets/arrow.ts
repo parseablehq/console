@@ -1,9 +1,8 @@
 /* eslint-disable */
 import type { CallContext, CallOptions } from "nice-grpc-common";
 import * as _m0 from "protobufjs/minimal";
-import { Timestamp } from "../../google/protobuf/timestamp";
-import Long = require("long");
-
+import { Timestamp } from "./google/protobuf/timestamp";
+import Long from "long";
 export const protobufPackage = "arrow.flight.protocol";
 
 /**

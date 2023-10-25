@@ -13,6 +13,7 @@
 		"pq": "pretty-quick"
 	},
 	"dependencies": {
+		"@apache-arrow/ts": "^13.0.0",
 		"@emotion/react": "^11.11.1",
 		"@mantine/carousel": "^6.0.15",
 		"@mantine/core": "^6.0.15",
