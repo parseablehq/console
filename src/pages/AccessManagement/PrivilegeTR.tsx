@@ -130,7 +130,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 
 	const handlePrivilegeDelete = () => {
 		const newPrivileges = privileges?.filter((privilege: any, i: number) => {
-			if (i !== deletePrivilegeIndex){
+			if (i !== deletePrivilegeIndex) {
 				return privilege;
 			}
 		});
@@ -185,9 +185,9 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 				privilege: selectedPrivilege,
 			});
 		}
-		if (selectedPrivilege === 'reader' || selectedPrivilege === 'writer') {
+		if (selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingester') {
 			if (streams?.find((stream) => stream.name === SelectedStream)) {
-				if (tagInput !== '' && tagInput !== undefined && selectedPrivilege !== 'writer') {
+				if (tagInput !== '' && tagInput !== undefined && selectedPrivilege === 'reader') {
 					privileges?.push({
 						privilege: selectedPrivilege,
 						resource: {
@@ -238,7 +238,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 			}
 			return true;
 		}
-		if (selectedPrivilege === 'writer') {
+		if (selectedPrivilege === 'writer' || selectedPrivilege === 'ingester') {
 			if (
 				privileges?.find(
 					(role: any) => role.privilege === selectedPrivilege && role.resource?.stream === SelectedStream,
@@ -364,7 +364,11 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 							onClick={handlePrivilegeDelete}>
 							Delete
 						</Button>
-						<Button onClick={handleClosePrivilegeDelete} variant="outline" color="gray" className={classes.modalCancelBtn}>
+						<Button
+							onClick={handleClosePrivilegeDelete}
+							variant="outline"
+							color="gray"
+							className={classes.modalCancelBtn}>
 							Cancel
 						</Button>
 					</Group>
@@ -382,7 +386,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 					<Select
 						placeholder="Select privilege"
 						label="Select a privilege to assign"
-						data={['admin', 'editor', 'writer', 'reader']}
+						data={['admin', 'editor', 'writer', 'reader', 'ingester']}
 						onChange={(value) => {
 							setSelectedPrivilege(value ?? '');
 						}}
@@ -390,7 +394,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 						nothingFound="No options"
 					/>
 
-					{selectedPrivilege === 'reader' || selectedPrivilege === 'writer' ? (
+					{selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingester' ? (
 						<>
 							<Select
 								placeholder="Pick one"
@@ -411,7 +415,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 							{selectedPrivilege === 'reader' ? (
 								<TextInput
 									type="text"
-									placeholder={"Please enter the Tag."}
+									placeholder={'Please enter the Tag.'}
 									label="Tag"
 									onChange={(e) => {
 										setTagInput(e.target.value);

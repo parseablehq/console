@@ -92,9 +92,9 @@ const Roles: FC = () => {
 				privilege: selectedPrivilege,
 			});
 		}
-		if (selectedPrivilege === 'reader' || selectedPrivilege === 'writer') {
+		if (selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingester') {
 			if (streams?.find((stream) => stream.name === SelectedStream)) {
-				if (tagInput !== '' && tagInput !== undefined && selectedPrivilege !== 'writer') {
+				if (tagInput !== '' && tagInput !== undefined && selectedPrivilege === 'reader') {
 					userRole?.push({
 						privilege: selectedPrivilege,
 						resource: {
@@ -130,7 +130,7 @@ const Roles: FC = () => {
 				}
 				return true;
 			}
-			if (selectedPrivilege === 'writer') {
+			if (selectedPrivilege === 'writer' || selectedPrivilege === 'ingester') {
 				if (streams?.find((stream) => stream.name === SelectedStream)) {
 					return false;
 				}
@@ -185,7 +185,7 @@ const Roles: FC = () => {
 					<Select
 						placeholder="Select privilege"
 						label="Select a privilege to assign"
-						data={['admin', 'editor', 'writer', 'reader']}
+						data={['admin', 'editor', 'writer', 'reader', 'ingester']}
 						onChange={(value) => {
 							setSelectedPrivilege(value ?? '');
 						}}
@@ -193,7 +193,7 @@ const Roles: FC = () => {
 						nothingFound="No options"
 					/>
 
-					{selectedPrivilege === 'reader' || selectedPrivilege === 'writer' ? (
+					{selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingester' ? (
 						<>
 							<Select
 								placeholder="Pick one"
@@ -214,7 +214,7 @@ const Roles: FC = () => {
 							{selectedPrivilege === 'reader' ? (
 								<TextInput
 									type="text"
-									placeholder={"Please enter the Tag."}
+									placeholder={'Please enter the Tag.'}
 									label="Tag"
 									onChange={(e) => {
 										setTagInput(e.target.value);
