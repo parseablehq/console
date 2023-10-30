@@ -180,8 +180,15 @@ const LogTable: FC = () => {
 			}
 		});
 
+		const subLogQueryListener = subLogQuery.subscribe(() => {
+			resetLogsData();
+			resetStreamData();
+			resetColumns();
+		});
+
 		return () => {
 			streamErrorListener();
+			subLogQueryListener();
 			subID();
 			refreshIntervalListener();
 			logSearchListener();
