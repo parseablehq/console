@@ -35,7 +35,17 @@ export const useGetLogStreamList = () => {
 
 			switch (res.status) {
 				case StatusCodes.OK: {
-					const streams = res.data;
+					const streams = res.data.sort((a, b) => {
+						const nameA = a.name.toUpperCase();
+						const nameB = b.name.toUpperCase();
+						if (nameA < nameB) {
+							return -1;
+						}
+						if (nameA > nameB) {
+							return 1;
+						}
+						return 0;
+					});
 
 					setData(streams);
 					if (streams && Boolean(streams.length)) {
@@ -65,7 +75,7 @@ export const useGetLogStreamList = () => {
 					setError('Unauthorized');
 					Cookies.remove('session');
 					Cookies.remove('username');
-					
+
 					notifications.update({
 						id: 'load-data',
 						color: 'red',
