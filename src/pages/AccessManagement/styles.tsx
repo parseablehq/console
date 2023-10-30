@@ -28,8 +28,7 @@ export const useUsersStyles = createStyles((theme) => {
 
 		createBtn: {
 			height: '34px',
-			width: '150px',
-			padding: '0px',
+			paddingX: '15px',
 			marginInlineEnd: spacing.xs,
 			color: colors.gray[5],
 			borderColor: colors.gray[2],

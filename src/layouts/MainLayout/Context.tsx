@@ -1,3 +1,4 @@
+import { AboutData } from '@/@types/parseable/api/about';
 import { SortOrder, type LogsQuery, type LogsSearch, type LogSelectedTimeRange } from '@/@types/parseable/api/query';
 import useSubscribeState, { SubData } from '@/hooks/useSubscribeState';
 import dayjs from 'dayjs';
@@ -46,7 +47,7 @@ interface HeaderContextState {
 	subLogSelectedTimeRange: SubData<LogSelectedTimeRange>;
 	subNavbarTogle: SubData<boolean>;
 	subCreateUserModalTogle: SubData<boolean>;
-	subLLMActive: SubData<boolean>;
+	subInstanceConfig: SubData<AboutData|null>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -83,7 +84,7 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 	const subRefreshInterval = useSubscribeState<number | null>(null);
 	const subNavbarTogle = useSubscribeState<boolean>(false);
 	const subCreateUserModalTogle = useSubscribeState<boolean>(false);
-	const subLLMActive = useSubscribeState<boolean>(false);
+	const subInstanceConfig = useSubscribeState<AboutData|null>(null);
 	const state: HeaderContextState = {
 		subLogQuery,
 		subLogSearch,
@@ -91,7 +92,7 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 		subLogSelectedTimeRange,
 		subNavbarTogle,
 		subCreateUserModalTogle,
-		subLLMActive,
+		subInstanceConfig,
 	};
 
 	const methods: HeaderContextMethods = {};
