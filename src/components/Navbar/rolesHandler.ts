@@ -1,14 +1,42 @@
-const adminAccess =[ "Ingest", "Query", "CreateStream", "ListStream", "GetSchema", "GetStats", "DeleteStream", "GetRetention", "PutRetention", "PutAlert", "GetAlert", "PutUser", "ListUser", "DeleteUser", "PutRoles", "GetRole"]
-const editorAccess = ["Ingest", "Query", "CreateStream", "ListStream", "GetSchema", "GetStats", "GetRetention", "PutRetention", "PutAlert", "GetAlert"]
-const writerAccess = ["Ingest", "Query", "ListStream", "GetSchema", "GetStats", "GetRetention", "PutAlert", "GetAlert"]
-const readerAccess = ["Query", "ListStream", "GetSchema", "GetStats", "GetRetention", "GetAlert"]
-
+const adminAccess = [
+	'Ingest',
+	'Query',
+	'CreateStream',
+	'ListStream',
+	'GetSchema',
+	'GetStats',
+	'DeleteStream',
+	'GetRetention',
+	'PutRetention',
+	'PutAlert',
+	'GetAlert',
+	'PutUser',
+	'ListUser',
+	'DeleteUser',
+	'PutRoles',
+	'GetRole',
+];
+const editorAccess = [
+	'Ingest',
+	'Query',
+	'CreateStream',
+	'ListStream',
+	'GetSchema',
+	'GetStats',
+	'GetRetention',
+	'PutRetention',
+	'PutAlert',
+	'GetAlert',
+];
+const writerAccess = ['Ingest', 'Query', 'ListStream', 'GetSchema', 'GetStats', 'GetRetention', 'PutAlert', 'GetAlert'];
+const readerAccess = ['Query', 'ListStream', 'GetSchema', 'GetStats', 'GetRetention', 'GetAlert'];
+const ingesterAccess = ['Ingest'];
 
 const getStreamsSepcificAccess = (rolesWithRoleName: object[], stream: string) => {
 	let access: string[] = [];
-    let roles: any[] = [];
+	let roles: any[] = [];
 	for (var prop in rolesWithRoleName) {
-		roles = [...roles, ...rolesWithRoleName[prop] as any];
+		roles = [...roles, ...(rolesWithRoleName[prop] as any)];
 	}
 	roles.forEach((role: any) => {
 		if (role.privilege === 'admin') {
@@ -39,6 +67,13 @@ const getStreamsSepcificAccess = (rolesWithRoleName: object[], stream: string) =
 				}
 			});
 		}
+		if (role.privilege === 'ingester' && role.resource.stream === stream) {
+			ingesterAccess.forEach((ingesterAction: string) => {
+				if (!access.includes(ingesterAction)) {
+					access.push(ingesterAction);
+				}
+			});
+		}
 	});
 
 	return access;
@@ -48,7 +83,7 @@ const getUserSepcificStreams = (rolesWithRoleName: object[], streams: any[]) => 
 	let userStreams: any[] = [];
 	let roles: any[] = [];
 	for (var prop in rolesWithRoleName) {
-		roles = [...roles, ...rolesWithRoleName[prop] as any];
+		roles = [...roles, ...(rolesWithRoleName[prop] as any)];
 	}
 	roles.forEach((role: any) => {
 		if (role.privilege === 'admin' || role.privilege === 'editor' || role.resource.stream === '*') {
