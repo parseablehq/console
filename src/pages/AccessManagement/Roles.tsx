@@ -6,12 +6,14 @@ import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { useGetRoles } from '@/hooks/useGetRoles';
 import PrivilegeTR from './PrivilegeTR';
-import { IconUserPlus } from '@tabler/icons-react';
+import { IconPencil, IconUserPlus } from '@tabler/icons-react';
 import { usePutRole } from '@/hooks/usePutRole';
+import { usePutDefaultRole } from '@/hooks/usePutDefaultRole';
+import { useGetDefaultRole } from '@/hooks/useGetDefaultRole';
 const Roles: FC = () => {
 	useDocumentTitle('Parseable | Users');
 	const {
-		state: { subCreateUserModalTogle },
+		state: { subCreateUserModalTogle, subInstanceConfig },
 	} = useHeaderContext();
 
 	useEffect(() => {
@@ -22,6 +24,10 @@ const Roles: FC = () => {
 	}, [subCreateUserModalTogle.get()]);
 
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
+	const [defaultRoleModalOpen, setDefaultRoleModalOpen] = useState<boolean>(false);
+	const [inputDefaultRole, setInputDefaultRole] = useState<string>('');
+	const [defaultRole, setDefaultRole] = useState<string| null>(null);
+	const [oidcActive, setOidcActive] = useState<boolean>(subInstanceConfig.get()?.oidcActive ?? false);
 	const [createRoleInput, setCreateRoleInput] = useState<string>('');
 	const [tagInput, setTagInput] = useState<string>('');
 	const [selectedPrivilege, setSelectedPrivilege] = useState<string>('');
@@ -30,14 +36,23 @@ const Roles: FC = () => {
 
 	const { data: streams } = useGetLogStreamList();
 
+	const { data: defaultRoleResponse, getDefaultOidc } = useGetDefaultRole();
+	const { data: putDefaultRoleResponse, setDefaultRole: putDefaultRole } = usePutDefaultRole();
 	const { data: CreatedRoleResponse, putRolePrivilege, resetData: resetCreateRoleData } = usePutRole();
 	const { data: roles, error: rolesError, loading: rolesLoading, getRolesList, resetData: rolesReset } = useGetRoles();
 
 	const [tableRows, setTableRows] = useState<any>([]);
 	useEffect(() => {
 		getRolesList();
+		getDefaultOidc();
+		const listener = subInstanceConfig.subscribe((value) => {
+			if (value) {
+				setOidcActive(value.oidcActive);
+			}
+		});
 
 		return () => {
+			listener();
 			rolesReset();
 		};
 	}, []);
@@ -46,7 +61,7 @@ const Roles: FC = () => {
 		if (roles) {
 			const getrows = async () => {
 				let rows = roles.map((role: any) => {
-					return <PrivilegeTR key={role} roleName={role} getRolesList={getRolesList} />;
+					return <PrivilegeTR key={role} roleName={role} getRolesList={getRolesList} defaultRole={defaultRole} />;
 				});
 				setTableRows(rows);
 			};
@@ -67,13 +82,25 @@ const Roles: FC = () => {
 				</tr>,
 			);
 		}
-	}, [roles, rolesError, rolesLoading]);
+	}, [roles, rolesError, rolesLoading, defaultRole]);
 
 	useEffect(() => {
 		if (CreatedRoleResponse) {
 			getRolesList();
 		}
 	}, [CreatedRoleResponse]);
+
+	useEffect(() => {
+		if (putDefaultRoleResponse) {
+			setDefaultRole(putDefaultRoleResponse.data);
+		}
+	}, [putDefaultRoleResponse]);
+
+	useEffect(() => {
+		if (defaultRoleResponse) {
+			setDefaultRole(defaultRoleResponse);
+		}
+	}, [defaultRoleResponse]);
 
 	const handleClose = () => {
 		setCreateRoleInput('');
@@ -85,7 +112,12 @@ const Roles: FC = () => {
 		setTagInput('');
 	};
 
-	const handleCreateUser = () => {
+	const handleDefaultRoleModalClose = () => {
+		setDefaultRoleModalOpen(false);
+		setInputDefaultRole('');
+	};
+
+	const handleCreateRole = () => {
 		let userRole: any = [];
 		if (selectedPrivilege === 'admin' || selectedPrivilege === 'editor') {
 			userRole?.push({
@@ -140,6 +172,18 @@ const Roles: FC = () => {
 		return false;
 	};
 
+	const defaultRoleVaildtion = () => {
+		if (inputDefaultRole === '' && !roles?.includes(inputDefaultRole)) {
+			return true;
+		}
+		return false;
+	};
+
+	const handleSetDefaultRole = () => {
+		putDefaultRole(inputDefaultRole);
+		handleDefaultRoleModalClose();
+	};
+
 	const { classes } = useUsersStyles();
 	return (
 		<Box className={classes.container}>
@@ -147,16 +191,34 @@ const Roles: FC = () => {
 				<Text size="xl" weight={500}>
 					Roles
 				</Text>
-				<Button
-					variant="outline"
-					color="gray"
-					className={classes.createBtn}
-					onClick={() => {
-						setModalOpen(true);
-					}}
-					rightIcon={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
-					Create Role
-				</Button>
+				<Box>
+					
+
+					<Button
+						variant="outline"
+						color="gray"
+						className={classes.createBtn}
+						onClick={() => {
+							setModalOpen(true);
+						}}
+						rightIcon={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
+						Create role
+					</Button>
+					{oidcActive ? (
+						<Button
+							variant="outline"
+							color="gray"
+							className={classes.createBtn}
+							onClick={() => {
+								setDefaultRoleModalOpen(true);
+							}}
+							rightIcon={<IconPencil size={px('1.2rem')} stroke={1.5} />}>
+							Set default oidc role
+						</Button>
+					) : (
+						''
+					)}
+				</Box>
 			</Box>
 			<ScrollArea className={classes.tableContainer} type="always">
 				<Table striped highlightOnHover className={classes.tableStyle}>
@@ -170,6 +232,44 @@ const Roles: FC = () => {
 					<tbody>{tableRows}</tbody>
 				</Table>
 			</ScrollArea>
+			<Modal
+				opened={defaultRoleModalOpen}
+				onClose={handleDefaultRoleModalClose}
+				title="Set default oidc role"
+				centered
+				className={classes.modalStyle}>
+				<Stack>
+					<Select
+						placeholder="Select Role"
+						label="Select a role to automatically assign to new oidc users"
+						data={roles ?? []}
+						onChange={(value) => {
+							setInputDefaultRole(value ?? '');
+						}}
+						value={inputDefaultRole}
+						nothingFound="No options"
+						searchable
+					/>
+				</Stack>
+
+				<Group position="right" mt={10}>
+					<Button
+						variant="filled"
+						color="gray"
+						className={classes.modalActionBtn}
+						disabled={defaultRoleVaildtion()}
+						onClick={handleSetDefaultRole}>
+						Set default
+					</Button>
+					<Button
+						onClick={handleDefaultRoleModalClose}
+						variant="outline"
+						color="gray"
+						className={classes.modalCancelBtn}>
+						Cancel
+					</Button>
+				</Group>
+			</Modal>
 			<Modal opened={modalOpen} onClose={handleClose} title="Create user" centered className={classes.modalStyle}>
 				<Stack>
 					<TextInput
@@ -235,7 +335,7 @@ const Roles: FC = () => {
 						color="gray"
 						className={classes.modalActionBtn}
 						disabled={createVaildtion()}
-						onClick={handleCreateUser}>
+						onClick={handleCreateRole}>
 						Create
 					</Button>
 					<Button onClick={handleClose} variant="outline" color="gray" className={classes.modalCancelBtn}>

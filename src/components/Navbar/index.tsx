@@ -35,8 +35,8 @@ import { NAVBAR_WIDTH } from '@/constants/theme';
 const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 
 const links = [
-	{ icon: IconZoomCode, label: 'Query', pathname: '/query', requiredAccess: ['Query', 'GetSchema'] },
-	{ icon: IconTableShortcut, label: 'Logs', pathname: '/logs', requiredAccess: ['Query', 'GetSchema'] },
+	{ icon: IconZoomCode, label: 'SQL', pathname: '/query', requiredAccess: ['Query', 'GetSchema'] },
+	{ icon: IconTableShortcut, label: 'Explore', pathname: '/logs', requiredAccess: ['Query', 'GetSchema'] },
 	{ icon: IconReportAnalytics, label: 'Stats', pathname: '/stats', requiredAccess: ['GetStats'] },
 	{ icon: IconSettings, label: 'Config', pathname: '/config', requiredAccess: ['PutAlert'] },
 ];

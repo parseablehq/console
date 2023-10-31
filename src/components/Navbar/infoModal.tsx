@@ -59,7 +59,7 @@ type InfoModalProps = {
 const InfoModal: FC<InfoModalProps> = (props) => {
 	const { opened, close } = props;
 	const {
-		state: { subLLMActive },
+		state: { subInstanceConfig },
 	} = useHeaderContext();
 
 	const { data, loading, error, getAbout, resetData } = useGetAbout();
@@ -83,9 +83,9 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 
 	useEffect(() => {
 		if (data) {
-			subLLMActive.set(data.llmActive);
+			subInstanceConfig.set(data);
 		}
-	}, [data?.llmActive]);
+	}, [data]);
 
 	const { classes } = useInfoModalStyles();
 	const {

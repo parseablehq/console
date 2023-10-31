@@ -126,7 +126,7 @@ const Users: FC = () => {
 						setModalOpen(true);
 					}}
 					rightIcon={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
-					Create Users
+					Create users
 				</Button>
 			</Box>
 			<ScrollArea className={classes.tableContainer} type="always">

@@ -15,7 +15,7 @@ import { usePostLLM } from '@/hooks/usePostLLM';
 
 const QueryCodeEditor: FC = () => {
 	const {
-		state: { subLogQuery, subRefreshInterval, subLogSelectedTimeRange, subLLMActive },
+		state: { subLogQuery, subRefreshInterval, subLogSelectedTimeRange, subInstanceConfig },
 	} = useHeaderContext();
 	const {
 		state: { result, subSchemaToggle },
@@ -29,7 +29,7 @@ const QueryCodeEditor: FC = () => {
 	const [currentStreamName, setCurrentStreamName] = useMountedState<string>(subLogQuery.get().streamName);
 	const [query, setQuery] = useMountedState<string>('');
 	const [aiQuery, setAiQuery] = useMountedState('');
-	const [isLlmActive, setIsLlmActive] = useMountedState(subLLMActive.get());
+	const [isLlmActive, setIsLlmActive] = useMountedState(subInstanceConfig.get()?.llmActive);
 	const { data: resAIQuery, postLLMQuery } = usePostLLM();
 
 	const handleAIGenerate = useCallback(() => {
@@ -65,7 +65,9 @@ const QueryCodeEditor: FC = () => {
 
 	useEffect(() => {
 		const listener = subSchemaToggle.subscribe(setIsSchemaOpen);
-		const subLLMActiveListener = subLLMActive.subscribe(setIsLlmActive);
+		const subLLMActiveListener = subInstanceConfig.subscribe((state) => {
+			setIsLlmActive(state?.llmActive);
+		});
 		const refreshIntervalListener = subRefreshInterval.subscribe(setRefreshInterval);
 		const subQueryListener = subLogQuery.subscribe((state) => {
 			if (state.streamName) {

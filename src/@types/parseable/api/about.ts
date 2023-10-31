@@ -11,4 +11,6 @@ export type AboutData = {
 	llmActive: boolean;
 	llmProvider: string;
 	uiVersion: string;
+	grpcPort: number;
+	oidcActive: boolean;
 };
