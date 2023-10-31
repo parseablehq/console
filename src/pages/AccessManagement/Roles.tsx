@@ -26,7 +26,7 @@ const Roles: FC = () => {
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
 	const [defaultRoleModalOpen, setDefaultRoleModalOpen] = useState<boolean>(false);
 	const [inputDefaultRole, setInputDefaultRole] = useState<string>('');
-	const [defaultRole, setDefaultRole] = useState<string>('');
+	const [defaultRole, setDefaultRole] = useState<string| null>(null);
 	const [oidcActive, setOidcActive] = useState<boolean>(subInstanceConfig.get()?.oidcActive ?? false);
 	const [createRoleInput, setCreateRoleInput] = useState<string>('');
 	const [tagInput, setTagInput] = useState<string>('');
@@ -82,7 +82,7 @@ const Roles: FC = () => {
 				</tr>,
 			);
 		}
-	}, [roles, rolesError, rolesLoading]);
+	}, [roles, rolesError, rolesLoading, defaultRole]);
 
 	useEffect(() => {
 		if (CreatedRoleResponse) {
@@ -192,6 +192,18 @@ const Roles: FC = () => {
 					Roles
 				</Text>
 				<Box>
+					
+
+					<Button
+						variant="outline"
+						color="gray"
+						className={classes.createBtn}
+						onClick={() => {
+							setModalOpen(true);
+						}}
+						rightIcon={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
+						Create role
+					</Button>
 					{oidcActive ? (
 						<Button
 							variant="outline"
@@ -206,17 +218,6 @@ const Roles: FC = () => {
 					) : (
 						''
 					)}
-
-					<Button
-						variant="outline"
-						color="gray"
-						className={classes.createBtn}
-						onClick={() => {
-							setModalOpen(true);
-						}}
-						rightIcon={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
-						Create role
-					</Button>
 				</Box>
 			</Box>
 			<ScrollArea className={classes.tableContainer} type="always">
@@ -240,7 +241,7 @@ const Roles: FC = () => {
 				<Stack>
 					<Select
 						placeholder="Select Role"
-						label="Select a role to automatically assign to new oidc cusers"
+						label="Select a role to automatically assign to new oidc users"
 						data={roles ?? []}
 						onChange={(value) => {
 							setInputDefaultRole(value ?? '');

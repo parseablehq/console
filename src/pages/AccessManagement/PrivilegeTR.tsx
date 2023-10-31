@@ -25,7 +25,7 @@ import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 interface PrivilegeTRProps {
 	roleName: string;
 	getRolesList: () => void;
-	defaultRole: string;
+	defaultRole: string | null;
 }
 
 const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
@@ -264,8 +264,16 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 		<>
 			<tr className={classes.trStyle}>
 				<td>
-					{roleName}
-					{roleName === defaultRole ? <span> (Default Oidc)</span> : ''}
+					{roleName === defaultRole ? (
+						<Tooltip label={'Default role for oidc'}>
+							<Text>
+								{roleName}
+								<span style={{ color: 'red' }}>*</span>
+							</Text>
+						</Tooltip>
+					) : (
+						roleName
+					)}
 				</td>
 				<td>
 					{getRolePrivilegeError ? (
