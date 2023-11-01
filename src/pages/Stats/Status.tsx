@@ -1,12 +1,10 @@
-import { useGetLogStreamRetention } from '@/hooks/useGetLogStreamRetention';
 import { useGetLogStreamStat } from '@/hooks/useGetLogStreamStat';
 import { FIXED_DURATIONS, useHeaderContext } from '@/layouts/MainLayout/Context';
 import { FC, useEffect } from 'react';
 import { useStatCardStyles, useStatusStyles } from './styles';
-import { Box, Text, ThemeIcon, Tooltip, px } from '@mantine/core';
+import { Box, SimpleGrid, Text, ThemeIcon, Tooltip, px } from '@mantine/core';
 import dayjs from 'dayjs';
 import {
-	IconClockStop,
 	IconDatabase,
 	IconInfoCircle,
 	IconTimelineEventText,
@@ -37,7 +35,7 @@ function formatBytes(a: any, b = 1) {
 	const c = b < 0 ? 0 : b,
 		d = Math.floor(Math.log(a) / Math.log(1024));
 	return `${parseFloat((a / Math.pow(1024, d)).toFixed(c))} ${
-		['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'][d]
+		['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'][d]
 	}`;
 }
 
@@ -49,13 +47,7 @@ const Status: FC = () => {
 	const {
 		state: { subLogQuery },
 	} = useHeaderContext();
-	const {
-		data: dataRetention,
-		error: errorRetention,
-		loading: loadingRetention,
-		getLogRetention: getLogRetention,
-		resetData: resetDataRetention,
-	} = useGetLogStreamRetention();
+
 	const { data: queryResult, getQueryData, error: errorQueryResult, resetData: resetqueryResult } = useQueryResult();
 
 	const {
@@ -67,12 +59,10 @@ const Status: FC = () => {
 	} = useGetLogStreamStat();
 	useEffect(() => {
 		if (subLogQuery.get().streamName) {
-			getLogRetention(subLogQuery.get().streamName);
 			getLogStat(subLogQuery.get().streamName);
 			getStatus();
 		}
 		return () => {
-			resetDataRetention();
 			resetStat();
 		};
 	}, []);
@@ -81,10 +71,8 @@ const Status: FC = () => {
 		const logQueryListener = subLogQuery.subscribe((query) => {
 			if (query.streamName) {
 				setStatusFIXEDDURATIONS(0);
-				resetDataRetention();
 				resetStat();
 				resetqueryResult();
-				getLogRetention(query.streamName);
 				getLogStat(query.streamName);
 				getStatus();
 			}
@@ -96,13 +84,12 @@ const Status: FC = () => {
 	}, []);
 
 	const getStatus = async () => {
-
 		const now = dayjs();
 		const LogQuery = {
 			streamName: subLogQuery.get().streamName,
 			startTime: now.subtract(FIXED_DURATIONS[statusFIXEDDURATIONS].milliseconds, 'milliseconds').toDate(),
 			endTime: now.toDate(),
-			access: [],	
+			access: [],
 		};
 		setStatusFIXEDDURATIONS(statusFIXEDDURATIONS + 1);
 		getQueryData(LogQuery, `SELECT count(*) as count FROM ${subLogQuery.get().streamName} ;`);
@@ -110,7 +97,7 @@ const Status: FC = () => {
 
 	useEffect(() => {
 		if (queryResult?.data[0] && queryResult?.data[0]['count']) {
-			setStatus(`${queryResult?.data[0]['count']} events in ${FIXED_DURATIONS[statusFIXEDDURATIONS-1].name}`);
+			setStatus(`${queryResult?.data[0]['count']} events in ${FIXED_DURATIONS[statusFIXEDDURATIONS - 1].name}`);
 			setStatusSuccess(true);
 			return;
 		}
@@ -121,15 +108,15 @@ const Status: FC = () => {
 		}
 		if (queryResult?.data[0] && queryResult?.data[0]['count'] === 0) {
 			setStatus('Loading...');
-			if (FIXED_DURATIONS.length  > statusFIXEDDURATIONS) {
+			if (FIXED_DURATIONS.length > statusFIXEDDURATIONS) {
 				getStatus();
 				return;
 			} else {
-				setStatus(`No events received ${FIXED_DURATIONS[statusFIXEDDURATIONS-1].name}`);
+				setStatus(`No events received ${FIXED_DURATIONS[statusFIXEDDURATIONS - 1].name}`);
 				setStatusSuccess(false);
 			}
 		} else {
-			setStatus("No events received");
+			setStatus('No events received');
 			setStatusSuccess(false);
 			return;
 		}
@@ -143,7 +130,6 @@ const Status: FC = () => {
 		genterateContiner,
 		genterateText,
 		genterateTextResult,
-		StatsContainer,
 		statusTextFailed,
 	} = classes;
 	return (
@@ -170,7 +156,7 @@ const Status: FC = () => {
 					</Text>
 				</Box>
 			</Box>
-			<Box className={StatsContainer}>
+			<SimpleGrid cols={4} spacing="lg" breakpoints={[{ maxWidth: '70rem', cols: 2, spacing: 'md' }]} p={'md'} pb={0}>
 				<StatCard
 					data={{
 						Icon: IconTimelineEventText,
@@ -232,22 +218,7 @@ const Status: FC = () => {
 						title: 'Compression ',
 					}}
 				/>
-
-				<StatCard
-					data={{
-						Icon: IconClockStop,
-						value: !loadingRetention
-							? !errorRetention
-								? dataRetention?.[0] && dataRetention[0].duration
-									? ` ${dataRetention[0].duration.split('d')[0]} Days`
-									: 'Not Set'
-								: 'ERROR'
-							: 'Loading...',
-						description: 'Retention period for events in the stream',
-						title: 'Retention',
-					}}
-				/>
-			</Box>
+			</SimpleGrid>
 		</Box>
 	);
 };
@@ -259,21 +230,30 @@ type statCardProps = {
 const StatCard: FC<statCardProps> = (props) => {
 	const { data } = props;
 	const { classes } = useStatCardStyles();
-	const { statCard, statCardTitle, statCardDescription, statCardDescriptionIcon, statCardIcon, statCardTitleValue } =
-		classes;
+	const {
+		statCard,
+		statCardTitle,
+		statCardDescription,
+		statCardDescriptionIcon,
+		statCardIcon,
+		statCardTitleValue,
+		statCardText,
+	} = classes;
 
 	return (
 		<Box className={statCard}>
+			<ThemeIcon radius={80} className={statCardIcon} size={80}>
+				<data.Icon size={px('3.2rem')} stroke={1.2} />
+			</ThemeIcon>
+			<Box className={statCardText}>
+				<Text className={statCardTitleValue}>{data.value}</Text>
+				<Text className={statCardTitle}>{data.title}</Text>
+			</Box>
 			<Box className={statCardDescription}>
 				<Tooltip withArrow label={data.description}>
 					<IconInfoCircle className={statCardDescriptionIcon} size="1.5rem" stroke={1.3} />
 				</Tooltip>
 			</Box>
-			<ThemeIcon radius={80} className={statCardIcon} size={80}>
-				<data.Icon size={px('3.2rem')} stroke={1.2} />
-			</ThemeIcon>
-			<Text className={statCardTitleValue}>{data.value}</Text>
-			<Text className={statCardTitle}>{data.title}</Text>
 		</Box>
 	);
 };

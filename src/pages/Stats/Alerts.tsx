@@ -2,23 +2,19 @@ import { useGetLogStreamAlert } from '@/hooks/useGetLogStreamAlert';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Box, Button, Modal, ScrollArea, Text, px } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { FC, useEffect, useRef } from 'react';
+import { FC, useEffect } from 'react';
 import { useAlertsStyles } from './styles';
 import { IconArrowsMaximize } from '@tabler/icons-react';
 import { Prism } from '@mantine/prism';
 import useMountedState from '@/hooks/useMountedState';
-import { heights } from '@/components/Mantine/sizing';
 
 const Alerts: FC = () => {
-
 	const {
 		state: { subLogQuery },
 	} = useHeaderContext();
 	const { data, error, loading, getLogAlert, resetData } = useGetLogStreamAlert();
 	const [opened, { open, close }] = useDisclosure(false);
 	const [Alert, setAlert] = useMountedState({ name: 'Loading....' });
-	const AlertsWrapper = useRef<HTMLDivElement>(null);
-	const [editorHeight, setEditorHeight] = useMountedState(0);
 
 	useEffect(() => {
 		const subQueryListener = subLogQuery.subscribe((state) => {
@@ -27,7 +23,7 @@ const Alerts: FC = () => {
 					resetData();
 				}
 				getLogAlert(state.streamName);
-			}		
+			}
 		});
 		return () => {
 			subQueryListener();
@@ -35,7 +31,7 @@ const Alerts: FC = () => {
 	}, [data]);
 
 	useEffect(() => {
-		if(subLogQuery.get().streamName){
+		if (subLogQuery.get().streamName) {
 			getLogAlert(subLogQuery.get().streamName);
 		}
 		return () => {
@@ -43,20 +39,11 @@ const Alerts: FC = () => {
 		};
 	}, []);
 
-	useEffect(() => {
-		setEditorHeight(AlertsWrapper.current?.offsetTop ? AlertsWrapper.current?.offsetTop + 15 : 0);
-	}, [heights.full, AlertsWrapper]);
-
 	const { classes } = useAlertsStyles();
-	const { container, headContainer, alertsText, alertsContainer, alertContainer, expandButton } =
-		classes;
+	const { container, headContainer, alertsText, alertsContainer, alertContainer, expandButton } = classes;
 
 	return (
-		<ScrollArea
-			className={container}
-			ref={AlertsWrapper}
-			sx={{ height: `calc(${heights.full} - ${editorHeight}px) ` }}
-			type="auto">
+		<ScrollArea className={container}>
 			<Box className={headContainer}>
 				<Text className={alertsText}>Alerts</Text>
 			</Box>
