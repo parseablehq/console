@@ -144,43 +144,60 @@ const LogTable: FC = () => {
 		setPinnedColumns(new Set());
 		setColumnToggles(new Map());
 	};
-
 	const onRetry = () => {
 		const query = subLogQuery.get();
-		// const data = subGapTime.get();
+		resetStreamData();
+		resetLogsData();
+		resetColumns();
+		setPageOffset(0);
 
-		if (logsSchema) {
-			resetStreamData();
-			resetLogsData();
+		if (query) {
+			getQueryData({
+				streamName: query.streamName,
+				startTime: query.startTime,
+				endTime: query.endTime,
+				limit: loadLimit,
+				pageOffset: 0,
+			});
+			getDataSchema(query.streamName);
 		}
-		// if (data) {
-		// 	getQueryData({
-		// 		streamName: subLogQuery.get().streamName,
-		// 		startTime: data.startTime,
-		// 		endTime: data.endTime,
-		// 		access: subLogQuery.get().access,
-		// 	});
-		// }
-
-		getDataSchema(query.streamName);
-		setColumnToggles(new Map());
 	};
+	// const onRetry = () => {
+	// 	const query = subLogQuery.get();
+	// 	const data = subGapTime.get();
+
+	// 	if (logsSchema) {
+	// 		resetStreamData();
+	// 		resetLogsData();
+	// 		setPageOffset(0);
+	// 	}
+	// 	if (data) {
+	// 		getQueryData({
+	// 			streamName: subLogQuery.get().streamName,
+	// 			startTime: data.startTime,
+	// 			endTime: data.endTime,
+	// 			access: subLogQuery.get().access,
+	// 		});
+	// 	}
+
+	// 	getDataSchema(query.streamName);
+	// 	setColumnToggles(new Map());
+	// };
 
 	useEffect(() => {
 		if (subLogQuery.get()) {
 			const query = subLogQuery.get();
-			if (logsSchema) {
-				resetStreamData();
-				resetLogsData();
-				resetColumns();
-			}
+			resetColumns();
+			setPageOffset(0);
+			resetStreamData();
+			resetLogsData();
 			if (query) {
 				getQueryData({
 					streamName: query.streamName,
 					startTime: query.startTime,
 					endTime: query.endTime,
 					limit: loadLimit,
-					pageOffset: pageOffset,
+					pageOffset: 0,
 				});
 				getDataSchema(query.streamName);
 			}
@@ -206,18 +223,18 @@ const LogTable: FC = () => {
 		// });
 
 		const subLogQueryListener = subLogQuery.subscribe((state) => {
-			if (logsSchema) {
-				resetLogsData();
-				resetStreamData();
-				resetColumns();
-			}
+			setPageOffset(0);
+			resetLogsData();
+			resetStreamData();
+			resetColumns();
+
 			if (state) {
 				getQueryData({
 					streamName: state.streamName,
 					startTime: state.startTime,
 					endTime: state.endTime,
 					limit: loadLimit,
-					pageOffset: pageOffset,
+					pageOffset: 0,
 				});
 				getDataSchema(state.streamName);
 			}
