@@ -1,0 +1,28 @@
+.container {
+	flex: 1;
+	padding: var(--mantine-spacing-xl);
+}
+
+.illustration {
+	fill: var(--mantine-color-brandPrimary-4);
+	max-height: 250px;
+}
+
+.titleStyle {
+	text-align: center;
+	font-weight: 900;
+	font-size: 38px;
+	margin-top: 20px;
+	color: var(--mantine-color-brandPrimary-4);
+}
+
+.descriptionStyle {
+	max-width: 540px;
+	margin: auto;
+	margin-top: var(--mantine-spacing-xl);
+	margin-bottom: var(--mantine-spacing-xl);
+}
+
+.btnStyle {
+	color: var(--mantine-color-brandPrimary-4);
+}

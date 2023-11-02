@@ -4,10 +4,9 @@ import { NAVBAR_WIDTH } from '@/constants/theme';
 import { Box } from '@mantine/core';
 import type { FC } from 'react';
 import { Outlet } from 'react-router-dom';
-import { useMainLayoutStyles } from './styles';
+import classes from './MainLayout.module.css';
 
 const MainLayout: FC = () => {
-	const { classes } = useMainLayoutStyles();
 
 	const { container, contentContainer } = classes;
 
@@ -16,11 +15,12 @@ const MainLayout: FC = () => {
 			<PrimaryHeader p="xs" />
 			<Box className={contentContainer}>
 				<Navbar w={NAVBAR_WIDTH} />
-				<Box sx={{
-					width: `calc(100% - ${NAVBAR_WIDTH}px)`,
-					display: 'flex',
-					flexDirection: 'column',
-				}}>
+				<Box
+					style={{
+						width: `calc(100% - ${NAVBAR_WIDTH}px)`,
+						display: 'flex',
+						flexDirection: 'column',
+					}}>
 					<SecondaryHeader />
 					<Outlet />
 				</Box>

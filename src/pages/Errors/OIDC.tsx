@@ -3,7 +3,7 @@ import { Box, Button, Center, Group, Text, Title } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { ComponentPropsWithoutRef, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useErrorPageStyles } from './styles';
+import classes from './Errors.module.css';
 
 const Illustration: FC<ComponentPropsWithoutRef<'svg'>> = (props) => {
 	return (
@@ -22,8 +22,6 @@ const OIDCNotConFigured: FC = () => {
 		nav(HOME_ROUTE, { replace: true });
 	};
 
-	const { classes } = useErrorPageStyles();
-
 	const { container, illustration, titleStyle, descriptionStyle } = classes;
 
 	return (
@@ -32,21 +30,15 @@ const OIDCNotConFigured: FC = () => {
 				<Illustration className={illustration} />
 				<div>
 					<Title className={titleStyle}>Nothing to see here</Title>
-					<Text color="dimmed" size="lg" align="center" className={descriptionStyle}>
+					<Text ta={'center'} className={descriptionStyle}>
 						OIDC is not configured. Please contact your administrator.
 					</Text>
-					<Group position="center">
-						<Button variant="outline" color="brandPrimary.0" size="md" onClick={onHome}>
+					<Group ta="center">
+						<Button variant="outline" size="md" onClick={onHome}>
 							Take me back to home page
 						</Button>
-						<Button
-							variant="outline"
-							color="brandSecondary.0"
-							size="md"
-							component="a"
-							href="https://www.parseable.io/docs/oidc"
-							target="_blank">
-							View Documentation for OIDC
+						<Button variant="outline" size="md" component="a" href="https://www.parseable.io/docs/oidc" target="_blank">
+							View documentation for OIDC
 						</Button>
 					</Group>
 				</div>

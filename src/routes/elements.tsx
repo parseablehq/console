@@ -43,13 +43,13 @@ export const QueryElement: FC = () => {
 	);
 };
 
-export const MainLayoutElement: FC = () => {
-	return (
-		<MainLayoutPageProvider>
-			<MainLayout />
-		</MainLayoutPageProvider>
-	);
-};
+// export const MainLayoutElement: FC = () => {
+// 	return (
+// 		<MainLayoutPageProvider>
+// 			<MainLayout />
+// 		</MainLayoutPageProvider>
+// 	);
+// };
 
 const Stats = lazy(() => import('@/pages/Stats'));
 

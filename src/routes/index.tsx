@@ -1,10 +1,10 @@
 import {
 	ALL_ROUTE,
+	OIDC_NOT_CONFIGURED_ROUTE,
+	LOGIN_ROUTE,
 	CONFIG_ROUTE,
 	HOME_ROUTE,
-	LOGIN_ROUTE,
 	LOGS_ROUTE,
-	OIDC_NOT_CONFIGURED_ROUTE,
 	QUERY_ROUTE,
 	STATS_ROUTE,
 	USERS_MANAGEMENT_ROUTE,
@@ -14,29 +14,28 @@ import NotFound from '@/pages/Errors/NotFound';
 import type { FC } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
+import AccessSpecificRoute from './AccessSpecificRoute';
 import {
-	HomeElement,
 	LoginElement,
+	HomeElement,
 	LogsElement,
 	QueryElement,
-	MainLayoutElement,
+	// MainLayoutElement, 
 	StatsElement,
 	ConfigElement,
 	UsersElement,
 } from './elements';
-import AccessSpecificRoute from './AccessSpecificRoute';
+
 import OIDCNotConFigured from '@/pages/Errors/OIDC';
 
 const AppRouter: FC = () => {
 	return (
 		<FullPageLayout>
 			<Routes>
-				<Route element={<PrivateRoute />}>
+				{/* <Route element={<PrivateRoute />}>
 					<Route element={<MainLayoutElement />}>
-						{/* Cuurently working Empty Stream page sooner change to HomeElement */}
 						<Route path={HOME_ROUTE} element={<HomeElement />} />
 
-						{/* Users Management Route */}
 						<Route element={<AccessSpecificRoute accessRequired={['ListUser']} />}>
 							<Route path={USERS_MANAGEMENT_ROUTE} element={<UsersElement />} />
 						</Route>
@@ -53,7 +52,7 @@ const AppRouter: FC = () => {
 							<Route path={CONFIG_ROUTE} element={<ConfigElement />} />
 						</Route>
 					</Route>
-				</Route>
+				</Route> */}
 				<Route path={LOGIN_ROUTE} element={<LoginElement />} />
 				<Route path={OIDC_NOT_CONFIGURED_ROUTE} element={<OIDCNotConFigured />} />
 				<Route path={ALL_ROUTE} element={<NotFound />} />

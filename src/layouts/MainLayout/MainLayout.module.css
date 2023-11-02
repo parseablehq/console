@@ -1,0 +1,9 @@
+.container {
+	width: 100vw;
+	min-width: 1000px;
+}
+
+.contentContainer {
+	display: flex;
+	height: calc(100vh - 64px);
+}

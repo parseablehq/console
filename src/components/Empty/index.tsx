@@ -1,7 +1,7 @@
 import type { CenterProps, TextProps } from '@mantine/core';
 import { Center, Text } from '@mantine/core';
 import type { FC } from 'react';
-import { useEmptyStyles } from './styles';
+import classes from './Empty.module.css';
 
 type EmptyProps = {
 	height?: number | string;
@@ -75,7 +75,6 @@ type EmptyBoxProps = {
 
 const EmptyBox: FC<EmptyBoxProps> = (props) => {
 	const { message, imgHeight, imgWidth, textProps, ...restProps } = props;
-	const { classes } = useEmptyStyles();
 	const { container, messageStyle } = classes;
 
 	return (

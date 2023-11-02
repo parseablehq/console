@@ -5,7 +5,7 @@ import type { ImageProps } from '@mantine/core';
 import { Box, Button, Center, Group, Image, Text, Title } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import type { FC } from 'react';
-import { useErrorPageStyles } from './styles';
+import classes from './Errors.module.css';
 
 const Illustration: FC<ImageProps> = (props) => {
 	return <Image src={bugError} {...props} alt="Bug" mx="auto" />;
@@ -18,8 +18,6 @@ const BugPage: FC = () => {
 		window.location.href = HOME_ROUTE;
 	};
 
-	const { classes } = useErrorPageStyles();
-
 	const { container, titleStyle, descriptionStyle, btnStyle } = classes;
 
 	return (
@@ -28,11 +26,11 @@ const BugPage: FC = () => {
 				<Box>
 					<Illustration maw={400} />
 					<Title className={titleStyle}>Oops</Title>
-					<Text color="dimmed" size="lg" align="center" className={descriptionStyle}>
+					<Text color="dimmed" size="lg" ta="center" className={descriptionStyle}>
 						Sorry, it seems like something unexpected happened. We now know about this mistake and are working to fix
 						it.
 					</Text>
-					<Group position="center">
+					<Group ta="center">
 						<Button className={btnStyle} size="md" onClick={onHome}>
 							Take me back to home page
 						</Button>

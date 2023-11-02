@@ -24,8 +24,6 @@ const Loading: FC<LoadingProps & LoadingOverlayProps> = (props) => {
 				color: colors[primaryColor][1],
 				variant,
 			}}
-			overlayOpacity={0.6}
-			overlayColor="#fff"
 			visible={visible}
 			{...restProps}
 		/>

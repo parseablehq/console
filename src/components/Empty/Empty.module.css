@@ -1,0 +1,13 @@
+.container {
+	height: 100%;
+	width: 100%;
+	padding-top: var(--mantine-spacing-xl);
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.messageStyle {
+	margin-top: var(--mantine-spacing-md);
+	color: var(--mantine-color-gray-6);
+}

@@ -1,10 +1,11 @@
 import logo from '@/assets/images/brand/logo.svg';
 import Loading from '@/components/Loading';
 import { useLoginForm } from '@/hooks/useLoginForm';
-import { Box, Button, Divider, Image, PasswordInput, Text, TextInput, Transition, rem } from '@mantine/core';
+import { Box, Button, Divider, Image, PasswordInput, Text, TextInput, Transition } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC } from 'react';
-import { useLoginStyles } from './styles';
+import classes from './Login.module.css';
+import ForgotPassword from './ForgotPassword';
 const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 
 const Login: FC = () => {
@@ -12,20 +13,19 @@ const Login: FC = () => {
 
 	const { getInputProps, isValid, loading, handleSubmit, error } = useLoginForm();
 
-	const { classes } = useLoginStyles();
-	const { container, formContainer, titleStyle, formInput, loginBtnStyle, errorStyle, sideContainer } = classes;
+	const { container, formContainer, titleStyle, formInput, errorStyle, sideContainer } = classes;
 
 	return (
 		<Box
-			sx={{
+			style={{
 				display: 'flex',
 				flexDirection: 'row',
 				width: '100vw',
 			}}>
 			<Box className={sideContainer}>
-				<Image width={250} src={logo} />
+				<Image w={250} src={logo} />
 				<Box
-					sx={{
+					style={{
 						height: '100%',
 						display: 'flex',
 						flexDirection: 'column',
@@ -34,7 +34,8 @@ const Login: FC = () => {
 					}}>
 					<Text size={'xl'}>Unified logs for all applications and infrastructure</Text>
 					<Text color="dimmed" size={'md'}>
-						Access, debug and analyze your log data here. Run sophisticated SQL queries on your log data, or look at tabular view. 
+						Access, debug and analyze your log data here. Run sophisticated SQL queries on your log data, or look at
+						tabular view.
 					</Text>
 				</Box>
 			</Box>
@@ -43,10 +44,10 @@ const Login: FC = () => {
 					<Box style={styles} className={container}>
 						<form className={formContainer} onSubmit={handleSubmit()}>
 							<Loading visible={loading} variant="oval" position="absolute" />
-							<Text mt="xl" className={titleStyle}>
+							<Text mt="md" className={titleStyle}>
 								👋 Welcome back
 							</Text>
-							<Text mt="xl" size={'sm'} color="dimmed">
+							<Text mt="md" size={'sm'} color="dimmed">
 								Please enter your credentials
 							</Text>
 
@@ -71,29 +72,16 @@ const Login: FC = () => {
 								withAsterisk
 								{...getInputProps('password')}
 							/>
-							<Button type="submit" my="xl" className={loginBtnStyle} disabled={!isValid()}>
+							<Button type="submit" my="xl" variant="outline" w={'100%'} disabled={!isValid()}>
 								Login
 							</Button>
 
-							{/* <ForgotPassword /> */}
-
-							<Divider label=" Or  " labelPosition="center" my="md" sx={{ width: '100%' }} />
-
+							<ForgotPassword />
+							<Divider label=" Or  " labelPosition="center" my="xl" style={{ width: '100%' }} />
 							<Button
-								mt={rem(10)}
 								component="a"
 								href={`${baseURL}api/v1/o/login?redirect=${window.location.origin}`}
-								variant="outline"
-								color="brandPrimary.0"
-								sx={({ colors }) => ({
-									color: colors.brandPrimary[0],
-									borderColor: colors.brandPrimary[0],
-									'&:hover': {
-										borderColor: colors.brandSecondary[0],
-										color: colors.brandSecondary[0],
-										background: 'transparent',
-									},
-								})}>
+								variant="outline">
 								Login with OAuth
 							</Button>
 						</form>
