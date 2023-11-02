@@ -1,10 +1,18 @@
-import { SortOrder, type Log, type LogsData, type LogsQuery, type LogsSearch } from '@/@types/parseable/api/query';
+import { SortOrder, type Log, type LogsData, type LogsSearch } from '@/@types/parseable/api/query';
 import { getQueryLogs } from '@/api/query';
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
 import { useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
 import { LOG_QUERY_LIMITS } from '@/pages/Logs/Context';
 import { parseLogData } from '@/utils';
+
+type QueryLogs = {
+	streamName: string;
+	startTime: Date;
+	endTime: Date;
+	limit: number;
+	pageOffset: number;
+};
 
 export const useQueryLogs = () => {
 	// data ref will always have the unfiltered data.
@@ -125,7 +133,7 @@ export const useQueryLogs = () => {
 		}
 	}, [data]);
 
-	const getQueryData = async (logsQuery: LogsQuery) => {
+	const getQueryData = async (logsQuery: QueryLogs) => {
 		try {
 			setLoading(true);
 			setError(null);
