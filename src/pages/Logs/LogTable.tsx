@@ -15,6 +15,7 @@ import {
 	Button,
 	Pagination,
 	Loader,
+	Group,
 } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { FC } from 'react';
@@ -33,12 +34,14 @@ import FilterPills from './FilterPills';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import dayjs from 'dayjs';
 import { SortOrder } from '@/@types/parseable/api/query';
+import { usePagination } from '@mantine/hooks';
 
 const skipFields = ['p_metadata', 'p_tags'];
+const loadLimit = 9000;
 
 const LogTable: FC = () => {
 	const {
-		state: { subLogStreamError, subGapTime },
+		state: { subLogStreamError },
 	} = useLogsPageContext();
 	const {
 		state: { subLogSearch, subLogQuery, subRefreshInterval, subLogSelectedTimeRange },
@@ -48,6 +51,7 @@ const LogTable: FC = () => {
 	const [logStreamError, setLogStreamError] = useMountedState<string | null>(null);
 	const [columnToggles, setColumnToggles] = useMountedState<Map<string, boolean>>(new Map());
 	const [pinnedColumns, setPinnedColumns] = useMountedState<Set<string>>(new Set());
+	const [pageOffset, setPageOffset] = useMountedState(0);
 
 	const {
 		data: logsSchema,
@@ -143,57 +147,101 @@ const LogTable: FC = () => {
 
 	const onRetry = () => {
 		const query = subLogQuery.get();
-		const data = subGapTime.get();
+		// const data = subGapTime.get();
 
 		if (logsSchema) {
 			resetStreamData();
 			resetLogsData();
 		}
-		if (data) {
-			getQueryData({
-				streamName: subLogQuery.get().streamName,
-				startTime: data.startTime,
-				endTime: data.endTime,
-				access: subLogQuery.get().access,
-			});
-		}
+		// if (data) {
+		// 	getQueryData({
+		// 		streamName: subLogQuery.get().streamName,
+		// 		startTime: data.startTime,
+		// 		endTime: data.endTime,
+		// 		access: subLogQuery.get().access,
+		// 	});
+		// }
 
 		getDataSchema(query.streamName);
 		setColumnToggles(new Map());
 	};
 
 	useEffect(() => {
+		if (subLogQuery.get()) {
+			const query = subLogQuery.get();
+			if (logsSchema) {
+				resetStreamData();
+				resetLogsData();
+				resetColumns();
+			}
+			if (query) {
+				getQueryData({
+					streamName: query.streamName,
+					startTime: query.startTime,
+					endTime: query.endTime,
+					limit: loadLimit,
+					pageOffset: pageOffset,
+				});
+				getDataSchema(query.streamName);
+			}
+		}
+	}, []);
+
+	useEffect(() => {
 		const streamErrorListener = subLogStreamError.subscribe(setLogStreamError);
 		const logSearchListener = subLogSearch.subscribe(setQuerySearch);
 		const refreshIntervalListener = subRefreshInterval.subscribe(setRefreshInterval);
-		const subID = subGapTime.subscribe((data) => {
-			if (data) {
-				getQueryData({
-					streamName: subLogQuery.get().streamName,
-					startTime: data.startTime,
-					endTime: data.endTime,
-					access: subLogQuery.get().access,
-				});
-				getDataSchema(subLogQuery.get().streamName);
-				setColumnToggles(new Map());
-				setPinnedColumns(new Set());
-			}
-		});
+		// const subID = subGapTime.subscribe((data) => {
+		// 	if (data) {
+		// 		getQueryData({
+		// 			streamName: subLogQuery.get().streamName,
+		// 			startTime: data.startTime,
+		// 			endTime: data.endTime,
+		// 			access: subLogQuery.get().access,
+		// 		});
+		// 		getDataSchema(subLogQuery.get().streamName);
+		// 		setColumnToggles(new Map());
+		// 		setPinnedColumns(new Set());
+		// 	}
+		// });
 
-		const subLogQueryListener = subLogQuery.subscribe(() => {
-			resetLogsData();
-			resetStreamData();
-			resetColumns();
+		const subLogQueryListener = subLogQuery.subscribe((state) => {
+			if (logsSchema) {
+				resetLogsData();
+				resetStreamData();
+				resetColumns();
+			}
+			if (state) {
+				getQueryData({
+					streamName: state.streamName,
+					startTime: state.startTime,
+					endTime: state.endTime,
+					limit: loadLimit,
+					pageOffset: pageOffset,
+				});
+				getDataSchema(state.streamName);
+			}
 		});
 
 		return () => {
 			streamErrorListener();
 			subLogQueryListener();
-			subID();
+			// subID();
 			refreshIntervalListener();
 			logSearchListener();
 		};
 	}, [logsSchema]);
+
+	useEffect(() => {
+		const state = subLogQuery.get();
+		getQueryData({
+			streamName: state.streamName,
+			startTime: state.startTime,
+			endTime: state.endTime,
+			limit: loadLimit,
+			pageOffset: pageOffset,
+		});
+	}, [pageOffset]);
 
 	useEffect(() => {
 		if (subRefreshInterval.get()) {
@@ -277,6 +325,7 @@ const LogTable: FC = () => {
 	const rightRef = useRef<HTMLDivElement>(null);
 	const pinnedContianerRef = useRef<HTMLDivElement>(null);
 	const [pinnedColumnsWidth, setPinnedColumnsWidth] = useMountedState(0);
+	const pagination = usePagination({ total: pageLogData?.totalPages ?? 1, initialPage: 1 });
 
 	useEffect(() => {
 		if (
@@ -298,10 +347,6 @@ const LogTable: FC = () => {
 
 	return (
 		<Box className={container}>
-			<Box
-				sx={{
-					borderBottom: '1px solid #D4D4D4',
-				}}></Box>
 			<FilterPills />
 			{!(logStreamError || logStreamSchemaError || logsError) ? (
 				Boolean(logsSchema?.fields.length) && Boolean(pageLogData?.data.length) ? (
@@ -390,12 +435,58 @@ const LogTable: FC = () => {
 			<Box className={footerContainer}>
 				<Box></Box>
 				{!loading && !logsLoading ? (
-					<Pagination
+					// <Pagination
+					// 	total={pageLogData?.totalPages || 1}
+					// 	value={pageLogData?.page || 1}
+					// 	onChange={(page) => {
+					// 		goToPage(page, pageLogData?.limit || 1);
+					// 	}}></Pagination>
+
+					<Pagination.Root
 						total={pageLogData?.totalPages || 1}
 						value={pageLogData?.page || 1}
 						onChange={(page) => {
 							goToPage(page, pageLogData?.limit || 1);
-						}}></Pagination>
+							pagination.setPage(page);
+						}}>
+						<Group spacing={5} position="center">
+							<Pagination.First
+								onClick={() => {
+									if (pageOffset !== 0) setPageOffset((value) => value - loadLimit);
+								}}
+								disabled={pageOffset === 0}
+							/>
+							<Pagination.Previous />
+							{pagination.range.map((page) => {
+								if (page === 'dots') {
+									return <Pagination.Dots key={page} />;
+								} else {
+									return (
+										<Pagination.Control
+											value={page}
+											key={page}
+											active={pageLogData?.page === page}
+											onClick={() => {
+												goToPage(page);
+												pagination.setPage(page);
+											}}>
+											{pageLogData?.limit ? page + pageOffset / pageLogData?.limit ?? 1 : page}
+										</Pagination.Control>
+									);
+								}
+							})}
+
+							<Pagination.Next />
+							<Pagination.Last
+								onClick={() => {
+									setPageOffset((value) => {
+										return value + loadLimit;
+									});
+								}}
+								disabled={false}
+							/>
+						</Group>
+					</Pagination.Root>
 				) : (
 					<Loader variant="dots" />
 				)}
