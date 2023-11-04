@@ -20,7 +20,7 @@ import {
 	HomeElement,
 	LogsElement,
 	QueryElement,
-	// MainLayoutElement, 
+	MainLayoutElement,
 	StatsElement,
 	ConfigElement,
 	UsersElement,
@@ -32,14 +32,14 @@ const AppRouter: FC = () => {
 	return (
 		<FullPageLayout>
 			<Routes>
-				{/* <Route element={<PrivateRoute />}>
+				<Route element={<PrivateRoute />}>
 					<Route element={<MainLayoutElement />}>
 						<Route path={HOME_ROUTE} element={<HomeElement />} />
 
 						<Route element={<AccessSpecificRoute accessRequired={['ListUser']} />}>
 							<Route path={USERS_MANAGEMENT_ROUTE} element={<UsersElement />} />
 						</Route>
-
+						 
 						<Route element={<AccessSpecificRoute accessRequired={['Query', 'GetSchema']} />}>
 							<Route path={LOGS_ROUTE} element={<LogsElement />} />
 							<Route path={QUERY_ROUTE} element={<QueryElement />} />
@@ -52,7 +52,7 @@ const AppRouter: FC = () => {
 							<Route path={CONFIG_ROUTE} element={<ConfigElement />} />
 						</Route>
 					</Route>
-				</Route> */}
+				</Route>
 				<Route path={LOGIN_ROUTE} element={<LoginElement />} />
 				<Route path={OIDC_NOT_CONFIGURED_ROUTE} element={<OIDCNotConFigured />} />
 				<Route path={ALL_ROUTE} element={<NotFound />} />

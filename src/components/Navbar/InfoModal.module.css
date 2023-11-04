@@ -1,0 +1,138 @@
+
+.container {
+    height: '100%';
+    width: '100%';
+
+}
+
+.aboutTitle {
+    font-size: var(--mantine-font-size-md);
+    text-align: center;
+    color: var(--mantine-color-gray-7);
+    font-weight: var(--mantine-font-weight-bold);
+}
+
+.parseableText {
+    color: var(--mantine-color-brand-secondary-0);
+}
+
+.aboutDescription {
+    font-size: var(--mantine-font-size-sm);
+    text-align: center;
+    color: var(--mantine-color-dimmed-0);
+    margin-top: var(--mantine-spacing-xs);
+
+    &::after {
+        content: '';
+        border-radius: var(--mantine-radius-sm);
+        display: block;
+        background-color: var(--mantine-color-brand-secondary-0);
+        width: var(--mantine-spacing-14);
+        height: var(--mantine-spacing-0.5);
+        margin-top: var(--mantine-spacing-sm);
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: var(--mantine-spacing-sm);
+    }
+}
+
+
+.aboutTextBox {
+    margin-top: var(--mantine-spacing-md);
+    margin-bottom: var(--mantine-spacing-md);
+    width: 100%;
+    display: flex;
+    border-radius: var(--mantine-radius-sm);
+    border: var(--mantine-spacing-px) solid var(--mantine-color-gray-2);
+    padding: var(--mantine-spacing-md);
+    flex-direction: column;
+}
+
+.aboutTextInnerBox {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    margin-top: var(--mantine-spacing-xs);
+    margin-bottom: var(--mantine-spacing-xs);
+}
+
+.aboutTextKey {
+    font-size: var(--mantine-font-size-sm);
+    color: var(--mantine-color-gray-7);
+    line-height: normal;
+    width: 15%;
+}
+
+
+.aboutTextValue {
+    font-size: var(--mantine-font-size-sm);
+    color: var(--mantine-color-dimmed-0);
+    line-height: normal;
+    width: 85%;
+}
+
+
+.actionBtn {
+    color: var(--mantine-color-brand-primary-0);
+    border-radius: var(--mantine-radius-sm);
+    border: var(--mantine-spacing-px) solid var(--mantine-color-gray-2);
+    position: absolute;
+    right: var(--mantine-spacing-xl);
+    transition: transform 0.2s ease-in-out;
+
+    &:hover {
+        transform: scale(1.03);
+        color: var(--mantine-color-brand-secondary-0);
+        background-color: var(--mantine-color-white);
+    }
+}
+
+.actionBtnRed {
+    color: rgb(224, 49, 49);
+    border-radius: var(--mantine-radius-sm);
+    border: var(--mantine-spacing-px) solid var(--mantine-color-gray-2);
+    position: absolute;
+    right: var(--mantine-spacing-xl);
+    transition: transform 0.2s ease-in-out;
+
+    &:hover {
+        color: green;
+        transform: scale(1.03);
+        background-color: var(--mantine-color-white);
+    }
+}
+
+
+.helpTitle {
+    font-size: var(--mantine-font-size-md);
+    text-align: center;
+    color: var(--mantine-color-gray-7);
+    font-weight: var(--mantine-font-weight-bold);
+}
+
+
+.HelpIconBox {
+    &:hover {
+        color: var(--mantine-color-brand-secondary-0);
+        transform: scale(1.4);
+    }
+    height: 34px;
+    transition: transform 0.2s ease-in-out;
+    width: 34px;
+    padding: 0px;
+    margin-inline-end: var(--mantine-spacing-xs);
+    color: var(--mantine-color-gray-5);
+    border-color: var(--mantine-color-gray-2);
+}
+
+
+.helpIconContainer {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+}
+
+
+
+

@@ -1,19 +1,17 @@
 import logoInvert from '@/assets/images/brand/logo-invert.svg';
 import { HOME_ROUTE } from '@/constants/routes';
-import { HEADER_HEIGHT } from '@/constants/theme';
-import type { HeaderProps as MantineHeaderProps } from '@mantine/core';
-import { Box, Button, Image, Header as MantineHeader, Tooltip } from '@mantine/core';
-import { FC } from 'react';
-import { useHeaderStyles } from './styles';
 
-type PrimaryHeaderProps = Omit<MantineHeaderProps, 'children' | 'height' | 'className'>;
+import { Box, Button, Image, Tooltip } from '@mantine/core';
+import { FC } from 'react';
+import classes from './Header.module.css';
+type PrimaryHeaderProps = Omit<any, 'children' | 'height' | 'className'>;
 
 const PrimaryHeader: FC<PrimaryHeaderProps> = (props) => {
-	const { classes } = useHeaderStyles();
 	const { container, logoContainer, navContainer, imageSty, actionBtn } = classes;
 
 	return (
-		<MantineHeader {...props} className={container} height={HEADER_HEIGHT} p={0} withBorder>
+		// heights[HEADER_HEIGHT] && (p={0} withBorder>
+		<header {...props} className={container}>
 			<Box className={logoContainer}>
 				<a href={HOME_ROUTE}>
 					<Image className={imageSty} src={logoInvert} height={32} alt="Parseable Logo" />
@@ -22,7 +20,7 @@ const PrimaryHeader: FC<PrimaryHeaderProps> = (props) => {
 			<Box className={navContainer}>
 				<Box
 					display={'flex'}
-					sx={{
+					style={{
 						justifyContent: 'flex-end',
 						alignItems: 'center',
 						width: '100%',
@@ -41,7 +39,7 @@ const PrimaryHeader: FC<PrimaryHeaderProps> = (props) => {
 					</Tooltip>
 				</Box>
 			</Box>
-		</MantineHeader>
+		</header>
 	);
 };
 

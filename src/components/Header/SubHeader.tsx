@@ -5,13 +5,11 @@ import RefreshInterval from './RefreshInterval';
 import RefreshNow from './RefreshNow';
 import Search from './Search';
 import TimeRange from './TimeRange';
-import { useLogQueryStyles } from './styles';
+import classes from './LogQuery.module.css';
 import ReloadUser from './ReloadUser';
 import DocsUser from './UserDocs';
 
-
 export const StatsHeader: FC = () => {
-	const { classes } = useLogQueryStyles();
 	const { container, innerContainer } = classes;
 
 	return (
@@ -32,7 +30,7 @@ export const StatsHeader: FC = () => {
 };
 
 export const QueryHeader: FC = () => {
-	const { classes } = useLogQueryStyles();
+
 	const { container, innerContainer } = classes;
 
 	return (
@@ -54,7 +52,6 @@ export const QueryHeader: FC = () => {
 };
 
 export const LogsHeader: FC = () => {
-	const { classes } = useLogQueryStyles();
 	const { container, innerContainer } = classes;
 
 	return (
@@ -80,7 +77,7 @@ export const LogsHeader: FC = () => {
 };
 
 export const ConfigHeader: FC = () => {
-	const { classes } = useLogQueryStyles();
+
 	const { container, innerContainer } = classes;
 
 	return (
@@ -95,7 +92,6 @@ export const ConfigHeader: FC = () => {
 };
 
 export const UsersManagementHeader: FC = () => {
-	const { classes } = useLogQueryStyles();
 	const { container, innerContainer } = classes;
 
 	return (
@@ -115,9 +111,7 @@ export const UsersManagementHeader: FC = () => {
 	);
 };
 
-
 export const AllRouteHeader: FC = () => {
-	const { classes } = useLogQueryStyles();
 	const { container, innerContainer } = classes;
 
 	return (
@@ -129,4 +123,4 @@ export const AllRouteHeader: FC = () => {
 			</Box>
 		</Box>
 	);
-}
+};

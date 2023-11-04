@@ -1,6 +1,6 @@
 import { Box, Button, Modal, Text, Tooltip, px } from '@mantine/core';
 import { FC, useEffect, useMemo } from 'react';
-import { useInfoModalStyles } from './styles';
+import classes from './InfoModal.module.css';
 import { useGetAbout } from '@/hooks/useGetAbout';
 import { IconAlertCircle, IconBook2, IconBrandGithub, IconBrandSlack, IconBusinessplan } from '@tabler/icons-react';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
@@ -38,12 +38,10 @@ type HelpCardProps = {
 
 const HelpCard: FC<HelpCardProps> = (props) => {
 	const { data } = props;
-
-	const { classes } = useInfoModalStyles();
 	const { HelpIconBox } = classes;
 
 	return (
-		<Tooltip label={data.description} position="bottom" withArrow sx={{ color: 'white', backgroundColor: 'black' }}>
+		<Tooltip label={data.description} position="bottom" withArrow style={{ color: 'white', backgroundColor: 'black' }}>
 			<Button className={HelpIconBox} component={'a'} href={data.href} target="_blank">
 				<data.icon size={px('1.2rem')} stroke={1.5} />
 			</Button>
@@ -87,7 +85,6 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 		}
 	}, [data]);
 
-	const { classes } = useInfoModalStyles();
 	const {
 		container,
 		aboutTitle,
@@ -143,7 +140,7 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 										href="https://github.com/parseablehq/parseable/releases/latest"
 										target="_blank"
 										className={actionBtnRed}
-										leftIcon={<IconAlertCircle size={px('1.2rem')} stroke={1.5} />}>
+										leftSection={<IconAlertCircle size={px('1.2rem')} stroke={1.5} />}>
 										Upgrade to latest version {data.latestVersion}
 									</Button>
 								) : null}

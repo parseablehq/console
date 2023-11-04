@@ -1,18 +1,17 @@
 import useMountedState from '@/hooks/useMountedState';
 // import { REFRESH_INTERVALS, useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Button, Menu, Text, } from '@mantine/core';
-import {  IconTableDown } from '@tabler/icons-react';
+import { Button, Menu, Text } from '@mantine/core';
+import { IconTableDown } from '@tabler/icons-react';
 
 import type { FC } from 'react';
 
-
-import { useLogQueryStyles } from './styles';
+import classes from './LogQuery.module.css';
 
 const LimitLog: FC = () => {
 	// const {
 	// 	state: { subRefreshInterval },
 	// } = useHeaderContext();
-	const [limit , setLimit] = useMountedState<number | null>(1000);
+	const [limit, setLimit] = useMountedState<number | null>(1000);
 
 	// const [selectedInterval, setSelectedInterval] = useMountedState<number | null>(subRefreshInterval.get());
 
@@ -31,13 +30,12 @@ const LimitLog: FC = () => {
 
 	// };
 
-	const { classes } = useLogQueryStyles();
 	const { intervalBtn } = classes;
 
 	return (
 		<Menu withArrow>
 			<Menu.Target>
-				<Button className={intervalBtn} leftIcon={<IconTableDown/>}>
+				<Button className={intervalBtn} leftSection={<IconTableDown />}>
 					{/* <Text>{selectedInterval ? ms(selectedInterval) : 'Off'}</Text>
 					 */}
 					<Text>{limit} rows</Text>
@@ -53,7 +51,6 @@ const LimitLog: FC = () => {
 						</Menu.Item>
 					);
 				})} */}
-
 
 				{/* {selectedInterval !== null && (
 					<Menu.Item onClick={() => onSelectedInterval(null)}>

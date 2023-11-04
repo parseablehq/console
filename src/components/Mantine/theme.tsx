@@ -2,6 +2,7 @@ import { createTheme } from '@mantine/core';
 import { heights, widths, sizing } from './sizing';
 
 export const theme = createTheme({
+
 	colors: {
 		brandPrimary: [
 			'#ececff',

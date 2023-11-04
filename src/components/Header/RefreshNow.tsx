@@ -3,7 +3,7 @@ import { Button, px } from '@mantine/core';
 import { IconReload } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import type { FC } from 'react';
-import { useLogQueryStyles } from './styles';
+import classes from './LogQuery.module.css';
 
 const RefreshNow: FC = () => {
 	const {
@@ -11,7 +11,7 @@ const RefreshNow: FC = () => {
 	} = useHeaderContext();
 
 	const onRefresh = () => {
-		if (subLogSelectedTimeRange.get().state==='fixed') {
+		if (subLogSelectedTimeRange.get().state === 'fixed') {
 			const now = dayjs();
 			const timeDiff = subLogQuery.get().endTime.getTime() - subLogQuery.get().startTime.getTime();
 			subLogQuery.set((state) => {
@@ -20,7 +20,6 @@ const RefreshNow: FC = () => {
 			});
 		}
 	};
-	const { classes } = useLogQueryStyles();
 	const { refreshNowBtn } = classes;
 
 	return (

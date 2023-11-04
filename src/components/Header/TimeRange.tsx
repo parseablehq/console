@@ -6,7 +6,7 @@ import { IconClock } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import type { FC } from 'react';
 import { Fragment, useEffect, useMemo } from 'react';
-import { useLogQueryStyles } from './styles';
+import  classes from './LogQuery.module.css';
 
 type FixedDurations = (typeof FIXED_DURATIONS)[number];
 
@@ -40,7 +40,7 @@ const TimeRange: FC = () => {
 		setOpened(false);
 	};
 
-	const { classes, cx } = useLogQueryStyles();
+	
 	const {
 		timeRangeBTn,
 		timeRangeContainer,
@@ -53,7 +53,7 @@ const TimeRange: FC = () => {
 	return (
 		<Menu withArrow position="top" opened={opened} onChange={setOpened}>
 			<Menu.Target>
-				<Button className={timeRangeBTn} leftIcon={<IconClock size={px('1.2rem')} stroke={1.5} />}>
+				<Button className={timeRangeBTn} leftSection={<IconClock size={px('1.2rem')} stroke={1.5} />}>
 					<Text>{selectedRange}</Text>
 				</Button>
 			</Menu.Target>
@@ -64,9 +64,9 @@ const TimeRange: FC = () => {
 							return (
 								<UnstyledButton
 									disabled={selectedRange === duration.name}
-									className={cx(fixedRangeBtn, {
-										[fixedRangeBtnSelected]: selectedRange === duration.name,
-									})}
+									// className={cx(fixedRangeBtn, {
+									// 	[fixedRangeBtnSelected]: selectedRange === duration.name,
+									// })}
 									key={duration.name}
 									onClick={() => onDurationSelect(duration)}>
 									{duration.name}
@@ -117,7 +117,6 @@ const CustomTimeRange: FC<CustomTimeRangeProps> = ({ setOpened }) => {
 		setOpened(false);
 	};
 
-	const { classes } = useLogQueryStyles();
 	const { customTimeRangeFooter, customTimeRangeApplyBtn } = classes;
 
 	const isApplicable = useMemo(() => {
