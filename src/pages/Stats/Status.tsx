@@ -1,7 +1,7 @@
 import { useGetLogStreamStat } from '@/hooks/useGetLogStreamStat';
 import { FIXED_DURATIONS, useHeaderContext } from '@/layouts/MainLayout/Context';
 import { FC, useEffect } from 'react';
-import { useStatCardStyles, useStatusStyles } from './styles';
+import classes from './Status.module.css';
 import { Box, SimpleGrid, Text, ThemeIcon, Tooltip, px } from '@mantine/core';
 import dayjs from 'dayjs';
 import {
@@ -45,7 +45,7 @@ const Status: FC = () => {
 	const [statusSuccess, setStatusSuccess] = useMountedState(true);
 	FIXED_DURATIONS;
 	const {
-		state: { subLogQuery },
+		state: { subAppContext },
 	} = useHeaderContext();
 
 	const { data: queryResult, getQueryData, error: errorQueryResult, resetData: resetqueryResult } = useQueryResult();
@@ -58,8 +58,8 @@ const Status: FC = () => {
 		resetData: resetStat,
 	} = useGetLogStreamStat();
 	useEffect(() => {
-		if (subLogQuery.get().streamName) {
-			getLogStat(subLogQuery.get().streamName);
+		if (subAppContext.get().selectedStream) {
+			getLogStat(subAppContext.get().selectedStream ?? '');
 			getStatus();
 		}
 		return () => {
@@ -68,12 +68,12 @@ const Status: FC = () => {
 	}, []);
 
 	useEffect(() => {
-		const logQueryListener = subLogQuery.subscribe((query) => {
-			if (query.streamName) {
+		const logQueryListener = subAppContext.subscribe((query) => {
+			if (query.selectedStream) {
 				setStatusFIXEDDURATIONS(0);
 				resetStat();
 				resetqueryResult();
-				getLogStat(query.streamName);
+				getLogStat(query.selectedStream);
 				getStatus();
 			}
 		});
@@ -86,13 +86,13 @@ const Status: FC = () => {
 	const getStatus = async () => {
 		const now = dayjs();
 		const LogQuery = {
-			streamName: subLogQuery.get().streamName,
+			streamName: subAppContext.get().selectedStream ?? '',
 			startTime: now.subtract(FIXED_DURATIONS[statusFIXEDDURATIONS].milliseconds, 'milliseconds').toDate(),
 			endTime: now.toDate(),
 			access: [],
 		};
 		setStatusFIXEDDURATIONS(statusFIXEDDURATIONS + 1);
-		getQueryData(LogQuery, `SELECT count(*) as count FROM ${subLogQuery.get().streamName} ;`);
+		getQueryData(LogQuery, `SELECT count(*) as count FROM ${subAppContext.get().selectedStream} ;`);
 	};
 
 	useEffect(() => {
@@ -121,7 +121,6 @@ const Status: FC = () => {
 			return;
 		}
 	}, [queryResult, errorQueryResult]);
-	const { classes } = useStatusStyles();
 	const {
 		container,
 		headContainer,
@@ -156,7 +155,12 @@ const Status: FC = () => {
 					</Text>
 				</Box>
 			</Box>
-			<SimpleGrid cols={4} spacing="lg" breakpoints={[{ maxWidth: '70rem', cols: 2, spacing: 'md' }]} p={'md'} pb={0}>
+			<SimpleGrid
+				cols={4}
+				spacing="lg"
+				//  breakpoints={[{ maxWidth: '70rem', cols: 2, spacing: 'md' }]}
+				p={'md'}
+				pb={0}>
 				<StatCard
 					data={{
 						Icon: IconTimelineEventText,
@@ -229,7 +233,6 @@ type statCardProps = {
 
 const StatCard: FC<statCardProps> = (props) => {
 	const { data } = props;
-	const { classes } = useStatCardStyles();
 	const {
 		statCard,
 		statCardTitle,

@@ -18,8 +18,9 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlus, IconTransform, IconTrash, IconX } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
-import { useUsersStyles } from './styles';
-import { Prism } from '@mantine/prism';
+import classes from './Users.module.css';
+import { CodeHighlight } from '@mantine/code-highlight';
+
 import { useDeleteUser } from '@/hooks/useDeleteUser';
 import { usePostUserResetPassword } from '@/hooks/usePostResetPassword';
 import { useGetRoles } from '@/hooks/useGetRoles';
@@ -43,7 +44,6 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 	const [UserInput, setUserInput] = useState<string>('');
 	const [SelectedRole, setSelectedRole] = useState<string>('');
 	const [roleSearchValue, setRoleSearchValue] = useState<string>('');
-
 
 	const { putRole, data: putRoleData, resetData: resetPutRoleData } = usePutUserRole();
 	const {
@@ -157,18 +157,15 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 	};
 
 	const handleEditUserRole = () => {
-		
 		let userRoleArray: any = Object.keys(userRole);
 		if (userRoleArray.includes(SelectedRole) || SelectedRole === '') {
 			return;
 		}
 		userRoleArray.push(SelectedRole);
-		
+
 		putRole(user.id, userRoleArray);
 		handleCloseRoleEdit();
 	};
-
-
 
 	//for reset password
 
@@ -182,8 +179,6 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 		resetPasswordUser(UserInput);
 	};
 
-	const { classes } = useUsersStyles();
-
 	return (
 		<tr key={user.id} className={classes.trStyle}>
 			<td>{user.id}</td>
@@ -195,7 +190,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				) : userRole ? (
 					<>
 						{getBadges(userRole)}
-						<Tooltip label={'Add a Role'} sx={{ color: 'white', backgroundColor: 'black' }} withArrow position="right">
+						<Tooltip label={'Add a Role'} style={{ color: 'white', backgroundColor: 'black' }} withArrow ta="right">
 							<Badge color="green" onClick={openEditModal}>
 								<IconPlus size={rem(10)} />
 							</Badge>
@@ -207,7 +202,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 			</td>
 			<td>
 				<Box style={{ height: '100%', width: '100%', whiteSpace: 'nowrap', textAlign: 'center' }}>
-					<Tooltip label={'Delete'} sx={{ color: 'white', backgroundColor: 'black' }} withArrow position="right">
+					<Tooltip label={'Delete'} style={{ color: 'white', backgroundColor: 'black' }} withArrow ta="right">
 						<Button
 							variant="default"
 							className={classes.actionBtn}
@@ -223,19 +218,20 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 			<td>
 				<Box style={{ height: '100%', width: '100%', whiteSpace: 'nowrap', textAlign: 'center' }}>
 					<Tooltip
-						label={user.method!=="native"? "Cannot reset password for this user":'Reset Password'}
-						sx={{ color: 'white', backgroundColor: 'black' }}
+						label={user.method !== 'native' ? 'Cannot reset password for this user' : 'Reset Password'}
+						style={{ color: 'white', backgroundColor: 'black' }}
 						withArrow
-						position="right">
-							
-							<Button variant="default" className={classes.actionBtn} onClick={()=>{
-								if(user.method==="native"){
+						ta="right">
+						<Button
+							variant="default"
+							className={classes.actionBtn}
+							onClick={() => {
+								if (user.method === 'native') {
 									open();
 								}
-							}} >
+							}}>
 							<IconTransform size={px('1.2rem')} stroke={1.5} />
 						</Button>
-							
 					</Tooltip>
 				</Box>
 			</td>
@@ -257,7 +253,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 					required
 				/>
 
-				<Group position="right" mt={10}>
+				<Group ta="right" mt={10}>
 					<Button
 						variant="filled"
 						color="gray"
@@ -293,7 +289,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						/>
 					</Stack>
 
-					<Group position="right" mt={10}>
+					<Group ta="right" mt={10}>
 						<Button
 							variant="filled"
 							color="gray"
@@ -337,13 +333,13 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 					) : newPassword ? (
 						<Box>
 							<Text className={classes.passwordText}>Password</Text>
-							<Prism
+							<CodeHighlight
 								className={classes.passwordPrims}
-								language="markup"
+								language="text"
 								copyLabel="Copy password to clipboard"
-								copiedLabel="Password copied to clipboard">
-								{newPassword}
-							</Prism>
+								code={newPassword}
+								copiedLabel="Password copied to clipboard"
+							/>
 							<Text className={classes.passwordText} color="red">
 								Warning this is the only time you are able to see Password
 							</Text>
@@ -352,15 +348,17 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						''
 					)}
 				</Stack>
-				<Group position="right" mt={10}>
-					{user.method === "native" ? (<Button
-						variant="filled"
-						color="gray"
-						className={classes.modalActionBtn}
-						onClick={handleResetPassword}
-						disabled={UserInput === user.id ? false : true}>
-						Reset Password
-					</Button>):(
+				<Group ta="right" mt={10}>
+					{user.method === 'native' ? (
+						<Button
+							variant="filled"
+							color="gray"
+							className={classes.modalActionBtn}
+							onClick={handleResetPassword}
+							disabled={UserInput === user.id ? false : true}>
+							Reset Password
+						</Button>
+					) : (
 						<Text>Cannot reset password for this user</Text>
 					)}
 					<Button onClick={handleCloseResetPassword} variant="outline" color="gray" className={classes.modalCancelBtn}>
@@ -380,7 +378,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						onChange={(value) => {
 							setSelectedRole(value ?? '');
 						}}
-						nothingFound="No roles found"
+						nothingFoundMessage="No roles found"
 						value={SelectedRole}
 						searchValue={roleSearchValue}
 						onSearchChange={(value) => setRoleSearchValue(value)}
@@ -391,18 +389,16 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						label="Select a role to assign"
 						required
 					/>
-
 				</Stack>
 
-				<Group position="right" mt={10}>
+				<Group ta="right" mt={10}>
 					<Button
 						variant="filled"
 						color="gray"
 						className={classes.modalActionBtn}
 						onClick={handleEditUserRole}
 						//if role is already assigned or no role is selected then disable the button
-						disabled={userRole && (Object.keys(userRole).includes(SelectedRole) || SelectedRole === '') ? true : false}
-						>
+						disabled={userRole && (Object.keys(userRole).includes(SelectedRole) || SelectedRole === '') ? true : false}>
 						Create
 					</Button>
 					<Button onClick={handleCloseRoleEdit} variant="outline" color="gray" className={classes.modalCancelBtn}>

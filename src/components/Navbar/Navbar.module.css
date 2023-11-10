@@ -35,20 +35,17 @@
 	}
 }
 .imageContainer {
-	height: rem(36px);
-	border-radius: var(--mantine-radius-md);
 	display: flex;
+	height: 28px;
 	align-items: center;
-	overflow: hidden;
-	gap: var(--mantine-spacing-xs);
-	margin: 0 var(--mantine-spacing-sm);
-	padding-top: 4px;
+	padding: 0 var(--mantine-spacing-sm);
+	gap: var(--mantine-spacing-sm);
+	overflow-x: clip;
 }
 .collapseButton {
 	position: absolute;
 	transition: all 0.4s ease-in-out;
-	top: 69px;
-	transform: translate(-50%, -50%);
+	top: 39px;
 }
 .collapseButtonIcon {
 	transition: all 0.4s ease-in-out;

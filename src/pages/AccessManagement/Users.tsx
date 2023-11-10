@@ -3,14 +3,14 @@ import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect, useState } from 'react';
 
 import { useGetUsers } from '@/hooks/useGetUsers';
-import { useUsersStyles } from './styles';
+import classes from './Users.module.css';
 import { usePostUser } from '@/hooks/usePostUser';
-import { Prism } from '@mantine/prism';
 
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import RoleTR from './RoleTR';
 import { IconUserPlus } from '@tabler/icons-react';
 import { useGetRoles } from '@/hooks/useGetRoles';
+import { CodeHighlight } from '@mantine/code-highlight';
 const Users: FC = () => {
 	useDocumentTitle('Parseable | Users');
 	const {
@@ -59,14 +59,14 @@ const Users: FC = () => {
 
 			getrows();
 		}
-		if (usersError ) {
+		if (usersError) {
 			setTableRows(
 				<tr>
 					<td>error</td>
 				</tr>,
 			);
 		}
-		if (usersLoading ) {
+		if (usersLoading) {
 			setTableRows(
 				<tr>
 					<td>loading</td>
@@ -111,13 +111,10 @@ const Users: FC = () => {
 		return false;
 	};
 
-	const { classes } = useUsersStyles();
 	return (
 		<Box className={classes.container}>
 			<Box className={classes.header}>
-				<Text size="xl" weight={500}>
-					Users
-				</Text>
+				<Text size="xl">Users</Text>
 				<Button
 					variant="outline"
 					color="gray"
@@ -125,7 +122,7 @@ const Users: FC = () => {
 					onClick={() => {
 						setModalOpen(true);
 					}}
-					rightIcon={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
+					rightSection={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
 					Create users
 				</Button>
 			</Box>
@@ -160,7 +157,7 @@ const Users: FC = () => {
 						onChange={(value) => {
 							setSelectedRole(value ?? '');
 						}}
-						nothingFound="No roles found"
+						nothingFoundMessage="No roles found"
 						value={SelectedRole}
 						searchValue={roleSearchValue}
 						onSearchChange={(value) => setRoleSearchValue(value)}
@@ -181,13 +178,14 @@ const Users: FC = () => {
 					) : CreatedUserResponse ? (
 						<Box>
 							<Text className={classes.passwordText}>Password</Text>
-							<Prism
+							<CodeHighlight
 								className={classes.passwordPrims}
-								language="markup"
+								language="text"
 								copyLabel="Copy password to clipboard"
-								copiedLabel="Password copied to clipboard">
-								{CreatedUserResponse}
-							</Prism>
+								code={CreatedUserResponse}
+								copiedLabel="Password copied to clipboard"
+							/>
+							
 							<Text className={classes.passwordText} color="red">
 								Warning this is the only time you are able to see Password
 							</Text>
@@ -197,7 +195,7 @@ const Users: FC = () => {
 					)}
 				</Stack>
 
-				<Group position="right" mt={10}>
+				<Group ta="right" mt={10}>
 					<Button
 						variant="filled"
 						color="gray"

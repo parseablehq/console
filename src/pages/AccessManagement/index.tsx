@@ -5,12 +5,13 @@ import Roles from './Roles';
 
 const AccessMangement: FC = () => {
 	return (
-		<Box sx={{
-            display: 'flex',
-            width: '100%',
-        }}>
+		<Box
+			style={{
+				display: 'flex',
+				width: '100%',
+			}}>
 			<Users />
-            <Roles/>
+			{/* <Roles /> */}
 		</Box>
 	);
 };

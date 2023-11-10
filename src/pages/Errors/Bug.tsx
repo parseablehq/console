@@ -18,7 +18,7 @@ const BugPage: FC = () => {
 		window.location.href = HOME_ROUTE;
 	};
 
-	const { container, titleStyle, descriptionStyle, btnStyle } = classes;
+	const { container, titleStyle, descriptionStyle } = classes;
 
 	return (
 		<FullPageLayout>
@@ -30,8 +30,8 @@ const BugPage: FC = () => {
 						Sorry, it seems like something unexpected happened. We now know about this mistake and are working to fix
 						it.
 					</Text>
-					<Group ta="center">
-						<Button className={btnStyle} size="md" onClick={onHome}>
+					<Group justify="center">
+						<Button variant="outline" size="md" onClick={onHome}>
 							Take me back to home page
 						</Button>
 					</Group>

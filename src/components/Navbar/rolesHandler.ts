@@ -79,8 +79,8 @@ const getStreamsSepcificAccess = (rolesWithRoleName: object[], stream: string) =
 	return access;
 };
 
-const getUserSepcificStreams = (rolesWithRoleName: object[], streams: any[]) => {
-	let userStreams: any[] = [];
+const getUserSepcificStreams = (rolesWithRoleName: object[], streams: string[]) => {
+	let userStreams: string[] = [];
 	let roles: any[] = [];
 	for (var prop in rolesWithRoleName) {
 		roles = [...roles, ...(rolesWithRoleName[prop] as any)];
@@ -90,9 +90,9 @@ const getUserSepcificStreams = (rolesWithRoleName: object[], streams: any[]) => 
 			userStreams = streams;
 			return userStreams;
 		}
-		if (streams.find((stream: any) => stream.name === role.resource.stream)) {
-			if (!userStreams.find((stream: any) => stream.name === role.resource.stream)) {
-				userStreams.push({ name: role.resource.stream });
+		if (streams.find((stream: any) => stream === role.resource.stream)) {
+			if (!userStreams.find((stream: any) => stream === role.resource.stream)) {
+				userStreams.push(role.resource.stream);
 			}
 		}
 	});

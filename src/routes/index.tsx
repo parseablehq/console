@@ -34,23 +34,23 @@ const AppRouter: FC = () => {
 			<Routes>
 				<Route element={<PrivateRoute />}>
 					<Route element={<MainLayoutElement />}>
-						<Route path={HOME_ROUTE} element={<HomeElement />} />
+						{/* <Route path={HOME_ROUTE} element={<HomeElement />}  /> */}
 
 						<Route element={<AccessSpecificRoute accessRequired={['ListUser']} />}>
 							<Route path={USERS_MANAGEMENT_ROUTE} element={<UsersElement />} />
 						</Route>
-						 
-						<Route element={<AccessSpecificRoute accessRequired={['Query', 'GetSchema']} />}>
+
+						{/* <Route element={<AccessSpecificRoute accessRequired={['Query', 'GetSchema']} />}>
 							<Route path={LOGS_ROUTE} element={<LogsElement />} />
 							<Route path={QUERY_ROUTE} element={<QueryElement />} />
-						</Route>
+						</Route> */}
 
 						<Route element={<AccessSpecificRoute accessRequired={['GetStats']} />}>
 							<Route path={STATS_ROUTE} element={<StatsElement />} />
 						</Route>
-						<Route element={<AccessSpecificRoute accessRequired={['PutAlert']} />}>
+						{/* <Route element={<AccessSpecificRoute accessRequired={['PutAlert']} />}>
 							<Route path={CONFIG_ROUTE} element={<ConfigElement />} />
-						</Route>
+						</Route> */}
 					</Route>
 				</Route>
 				<Route path={LOGIN_ROUTE} element={<LoginElement />} />

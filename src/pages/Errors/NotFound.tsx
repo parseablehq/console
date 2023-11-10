@@ -35,7 +35,7 @@ const NotFound: FC = () => {
 						another URL. If you think this is an error contact support.
 					</Text>
 					<Group justify="center">
-						<Button className={btnStyle} size="md" onClick={onHome} variant="outline">
+						<Button  size="md" onClick={onHome} variant="outline">
 							Take me back to home page
 						</Button>
 					</Group>

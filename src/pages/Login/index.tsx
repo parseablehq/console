@@ -21,6 +21,7 @@ const Login: FC = () => {
 				display: 'flex',
 				flexDirection: 'row',
 				width: '100vw',
+				height: '100vh',
 			}}>
 			<Box className={sideContainer}>
 				<Image w={250} src={logo} />

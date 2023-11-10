@@ -49,10 +49,6 @@ const Navbar: FC<NavbarProps> = (props) => {
 
 	const username = Cookies.get('username');
 
-	const {
-		state: { subNavbarTogle },
-	} = useHeaderContext();
-
 	const [activeStream, setActiveStream] = useMountedState('');
 	const [searchValue, setSearchValue] = useMountedState('');
 	const [currentPage, setCurrentPage] = useMountedState('/query');
@@ -61,18 +57,12 @@ const Navbar: FC<NavbarProps> = (props) => {
 	const [userSepecficAccess, setUserSepecficAccess] = useMountedState<string[] | null>(null);
 
 	const [disableLink, setDisableLink] = useMountedState(false);
-	const [isSubNavbarOpen, setIsSubNavbarOpen] = useMountedState(false);
+
 	const [opened, { open, close }] = useDisclosure(false);
 	const [openedDelete, { close: closeDelete, open: openDelete }] = useDisclosure();
 
 	const { data: streams, error, getData, resetData: resetStreamArray } = useGetLogStreamList();
 	const { data: deleteData, deleteLogStreamFun } = useDeleteLogStream();
-	useEffect(() => {
-		const listener = subNavbarTogle.subscribe(setIsSubNavbarOpen);
-		return () => {
-			listener();
-		};
-	}, [subNavbarTogle.get()]);
 
 	const onSignOut = () => {
 		Cookies.remove('session');

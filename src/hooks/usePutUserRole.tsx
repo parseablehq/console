@@ -35,6 +35,7 @@ export const usePutUserRole = () => {
 						message: 'Successfully updated',
 						icon: <IconCheck size="1rem" />,
 						autoClose: 3000,
+						loading: false,
 					});
 					break;
 				}
@@ -50,6 +51,7 @@ export const usePutUserRole = () => {
 						message: res.data,
 						icon: <IconFileAlert size="1rem" />,
 						autoClose: 2000,
+						loading: false,
 					});
 				}
 			}
@@ -62,6 +64,7 @@ export const usePutUserRole = () => {
 				message: 'Error occurred while updating user role(s)',
 				icon: <IconFileAlert size="1rem" />,
 				autoClose: 2000,
+				loading: false,
 			});
 			console.error(error);
 		} finally {

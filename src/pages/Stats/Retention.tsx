@@ -1,24 +1,24 @@
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Box, Button, Group, Modal, Stack, Text, TextInput, ThemeIcon, px } from '@mantine/core';
 import { FC, useEffect } from 'react';
-import { useRetentionStyles } from './styles';
+import classes from './Retention.module.css';
 import { IconClockStop, IconFileAlert } from '@tabler/icons-react';
 import { useGetLogStreamRetention } from '@/hooks/useGetLogStreamRetention';
 import Loading from '@/components/Loading';
 import { useDisclosure } from '@mantine/hooks';
-import useMountedState from '@/hooks/useMountedState';
+
 import { usePutLogStreamRetention } from '@/hooks/usePutLogStreamRetention';
 import { useForm } from '@mantine/form';
 
 const Retention: FC = () => {
 	const {
-		state: { subLogQuery },
+		state: { subAppContext },
 	} = useHeaderContext();
 	const {
 		data: dataRetention,
 		error: errorRetention,
 		loading: loadingRetention,
-		getLogRetention: getLogRetention,
+		getLogRetention,
 		resetData: resetDataRetention,
 	} = useGetLogStreamRetention();
 
@@ -39,24 +39,18 @@ const Retention: FC = () => {
 		},
 		validate: {
 			description: (value) => (value.length > 0 ? null : 'Please Fill the description'),
-			duration: (value) =>
-				value.trim().length > 0 &&
-				value.endsWith('d') &&
-				!isNaN(parseInt(value.trim().split('d')[0])) &&
-				value.trim().split('d').length === 2
-					? null
-					: 'Must be a number and end with d. eg:  2d',
+			duration: (value) => (Number.isInteger(Number(value)) ? null : 'Must be a number'),
 			action: (value) => (value === 'delete' ? null : 'Action must be equal to delete'),
 		},
 	});
 
 	useEffect(() => {
-		const subQueryListener = subLogQuery.subscribe((state) => {
-			if (state.streamName) {
+		const subQueryListener = subAppContext.subscribe((state) => {
+			if (state.selectedStream) {
 				if (dataRetention) {
 					resetDataRetention();
 				}
-				getLogRetention(state.streamName);
+				getLogRetention(state.selectedStream);
 			}
 		});
 		return () => {
@@ -65,8 +59,8 @@ const Retention: FC = () => {
 	}, []);
 
 	useEffect(() => {
-		if (subLogQuery.get().streamName) {
-			getLogRetention(subLogQuery.get().streamName);
+		if (subAppContext.get().selectedStream) {
+			getLogRetention(subAppContext.get().selectedStream ?? '');
 		}
 		return () => {
 			resetDataRetention();
@@ -74,13 +68,15 @@ const Retention: FC = () => {
 	}, []);
 
 	const retry = () => {
-		getLogRetention(subLogQuery.get().streamName);
+		if (subAppContext.get().selectedStream) {
+			getLogRetention(subAppContext.get().selectedStream ?? '');
+		}
 	};
 
 	useEffect(() => {
 		if (dataRetention?.length) {
 			form.setFieldValue('description', dataRetention[0].description);
-			form.setFieldValue('duration', dataRetention[0].duration);
+			form.setFieldValue('duration', dataRetention[0].duration.split('d')[0]);
 			form.setFieldValue('action', dataRetention[0].action);
 		}
 	}, [dataRetention]);
@@ -88,7 +84,9 @@ const Retention: FC = () => {
 	useEffect(() => {
 		if (resultRetentionData) {
 			if (resultRetentionData) {
-				getLogRetention(subLogQuery.get().streamName);
+				if (subAppContext.get().selectedStream) {
+					getLogRetention(subAppContext.get().selectedStream ?? '');
+				}
 			}
 		}
 	}, [resultRetentionData]);
@@ -96,13 +94,11 @@ const Retention: FC = () => {
 	const modalClose = () => {
 		if (dataRetention?.length) {
 			form.setFieldValue('description', dataRetention[0].description);
-			form.setFieldValue('duration', dataRetention[0].duration);
+			form.setFieldValue('duration', dataRetention[0].duration.split('d')[0]);
 			form.setFieldValue('action', dataRetention[0].action);
 		}
 		close();
 	};
-
-	const { classes } = useRetentionStyles();
 
 	const { headContainer, IconStyle, container, contentContainer, iconBox, heading, updateBtn, modalStyle } = classes;
 
@@ -114,7 +110,7 @@ const Retention: FC = () => {
 					<Loading visible variant="oval" />
 				) : errorRetention || retentionError ? (
 					<Box
-						sx={{
+						style={{
 							display: 'flex',
 							alignItems: 'center',
 							gap: '10px',
@@ -123,7 +119,7 @@ const Retention: FC = () => {
 							<IconFileAlert />
 						</ThemeIcon>
 						<Text color="red">Error :{errorRetention}</Text>
-						<Button color="brandPrimary.0" onClick={retry}>
+						<Button color="brandPrimary.4" onClick={retry}>
 							Retry
 						</Button>
 					</Box>
@@ -131,7 +127,7 @@ const Retention: FC = () => {
 					dataRetention &&
 					dataRetention.length === 0 && (
 						<Box
-							sx={{
+							style={{
 								display: 'flex',
 								alignItems: 'center',
 								gap: '10px',
@@ -140,7 +136,7 @@ const Retention: FC = () => {
 								<IconFileAlert />
 							</ThemeIcon>
 							<Text color="red">No Retention set</Text>
-							<Button color="brandPrimary.0" onClick={open}>
+							<Button color="brandPrimary.4" onClick={open}>
 								Add Retention
 							</Button>
 						</Box>
@@ -158,7 +154,7 @@ const Retention: FC = () => {
 								</ThemeIcon>
 							</Box>
 							<Box
-								sx={{
+								style={{
 									display: 'flex',
 									justifyContent: 'space-between',
 									width: '100%',
@@ -193,7 +189,10 @@ const Retention: FC = () => {
 				<form
 					onSubmit={form.onSubmit((values) => {
 						close();
-						putRetentionData(subLogQuery.get().streamName, [values]);
+						if (!values.duration.endsWith('d')) {
+							values.duration = values.duration + 'd';
+						}
+						putRetentionData(subAppContext.get().selectedStream ?? '', [values]);
 					})}>
 					<Stack>
 						<TextInput
@@ -204,8 +203,8 @@ const Retention: FC = () => {
 							required
 						/>
 						<TextInput
-							type="text"
-							label="Duration"
+							type="number"
+							label="Duration (in days)"
 							placeholder="Enter the duration"
 							{...form.getInputProps('duration')}
 							required
@@ -214,17 +213,16 @@ const Retention: FC = () => {
 							type="text"
 							label="Action"
 							placeholder="Enter action"
-						
 							{...form.getInputProps('action')}
 							disabled
 						/>
 					</Stack>
 
-					<Group position="right" mt={10}>
+					<Group justify="right" mt={10}>
 						<Button variant="filled" color="green" type="submit">
 							{dataRetention?.length ? 'Update' : 'Create'}
 						</Button>
-						<Button variant="outline" color="gray.3" onClick={modalClose}>
+						<Button variant="outline" color="gray.6" onClick={modalClose}>
 							Cancel
 						</Button>
 					</Group>

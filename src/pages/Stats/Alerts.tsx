@@ -3,26 +3,26 @@ import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Box, Button, Modal, ScrollArea, Text, px } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { FC, useEffect } from 'react';
-import { useAlertsStyles } from './styles';
+import classes from './Alerts.module.css';
 import { IconArrowsMaximize } from '@tabler/icons-react';
-import { Prism } from '@mantine/prism';
+import { CodeHighlight } from '@mantine/code-highlight';
 import useMountedState from '@/hooks/useMountedState';
 
 const Alerts: FC = () => {
 	const {
-		state: { subLogQuery },
+		state: { subAppContext },
 	} = useHeaderContext();
 	const { data, error, loading, getLogAlert, resetData } = useGetLogStreamAlert();
 	const [opened, { open, close }] = useDisclosure(false);
 	const [Alert, setAlert] = useMountedState({ name: 'Loading....' });
 
 	useEffect(() => {
-		const subQueryListener = subLogQuery.subscribe((state) => {
-			if (state.streamName) {
+		const subQueryListener = subAppContext.subscribe((state) => {
+			if (state.selectedStream) {
 				if (data) {
 					resetData();
 				}
-				getLogAlert(state.streamName);
+				getLogAlert(state.selectedStream);
 			}
 		});
 		return () => {
@@ -31,15 +31,14 @@ const Alerts: FC = () => {
 	}, [data]);
 
 	useEffect(() => {
-		if (subLogQuery.get().streamName) {
-			getLogAlert(subLogQuery.get().streamName);
+		if (subAppContext.get().selectedStream) {
+			getLogAlert(subAppContext.get().selectedStream ?? '');
 		}
 		return () => {
 			resetData();
 		};
 	}, []);
 
-	const { classes } = useAlertsStyles();
 	const { container, headContainer, alertsText, alertsContainer, alertContainer, expandButton } = classes;
 
 	return (
@@ -68,14 +67,14 @@ const Alerts: FC = () => {
 							);
 						})
 					) : (
-						<Text m={'lg'}>No Alert set for {subLogQuery.get().streamName}</Text>
+						<Text m={'lg'}>No Alert set for {subAppContext.get().selectedStream}</Text>
 					)
 				) : (
 					'Loading'
 				)}
 			</Box>
 			<Modal size="auto" opened={opened} onClose={close} title={Alert.name} scrollAreaComponent={ScrollArea.Autosize}>
-				<Prism language="json">{JSON.stringify(Alert, null, 2)}</Prism>
+				<CodeHighlight code={JSON.stringify(Alert, null, 2)} language="json" />
 			</Modal>
 		</ScrollArea>
 	);

@@ -1,0 +1,97 @@
+/*  
+		container: {
+			flex: ' 1 1 auto',
+			overflowY: 'auto',
+			borderRadius: defaultRadius,
+			margin: spacing.md,
+			border: `${widths.px} ${colors.gray[1]} solid`,
+		},
+		headContainer: {
+			padding: spacing.md,
+			width: '100%',
+			height: '55px',
+			top: 0,
+			position: 'sticky',
+			backgroundColor: colors.white,
+			zIndex: 1,
+			borderBottom: `${widths.px} ${colors.gray[1]} solid`,
+		},
+		alertsText: {
+			fontSize: fontSizes.md,
+			fontWeight: fontWeights.semibold,
+			color: colors.gray[6],
+		},
+		alertsContainer: {
+			overflow: 'auto',
+			color: colors.gray[6],
+		},
+		alertContainer: {
+			borderBottom: `${widths.px} ${colors.gray[1]} solid`,
+			padding: `${spacing.xs} ${spacing.lg}`,
+			display: 'flex',
+			justifyContent: 'space-between',
+			alignItems: 'center',
+		},
+		expandButton: {
+			background: colors.white[0],
+			padding: 0,
+			marginRight: spacing.xs,
+			width: '36px',
+			color: theme.colors.gray[6],
+			border: `${sizing.px} ${colors.gray[2]} solid`,
+			'&:hover': {
+				background: colors.gray[1],
+			},
+		},
+	} */
+
+.container {
+	flex: 1 1 auto;
+	overflow-y: auto;
+	border-radius: var(--mantine-radius-md);
+	margin: var(--mantine-spacing-md);
+	border: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+
+.headContainer {
+	padding: var(--mantine-spacing-md);
+	width: 100%;
+	height: 55px;
+	top: 0;
+	position: sticky;
+	background-color: #ffffff;
+	z-index: 1;
+	border-bottom: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+
+.alertsText {
+	font-size: var(--mantine-font-size-md);
+	font-weight:500;
+	color: var(--mantine-color-gray-9);
+}
+
+.alertsContainer {
+	overflow: scroll;
+	color: var(--mantine-color-gray-9)
+}
+
+.alertContainer {
+	border-bottom: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+	padding: var(--mantine-spacing-xs) var(--mantine-spacing-lg);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.expandButton {
+	background: #ffffff;
+	padding: 0;
+	margin-right: 4px;
+	width: 36px;
+	color:	var(--mantine-color-gray-9);
+	border: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+
+.expandButton:hover {
+	background: #f2f2f2;
+}

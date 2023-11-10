@@ -1,21 +1,21 @@
-import { Button, Tooltip, px } from '@mantine/core';
+import { ActionIcon, Tooltip } from '@mantine/core';
 import { IconBook2 } from '@tabler/icons-react';
 import type { FC } from 'react';
-import classes from './LogQuery.module.css';
 
 const DocsUser: FC = () => {
-	const { refreshNowBtn } = classes;
 
 	return (
-		<Tooltip label={'Docs'} style={{ color: 'white', backgroundColor: 'black' }} withArrow position="left">
-			<Button
+		<Tooltip label={'Docs'} withArrow position="left">
+			<ActionIcon
 				variant="default"
-				className={refreshNowBtn}
 				onClick={() => {
 					window.open('https://www.parseable.io/docs/rbac', '_blank');
-				}}>
-				<IconBook2 size={px('1.2rem')} stroke={1.5} />
-			</Button>
+				}}
+				radius={"md"}
+				size={"lg"}
+				>
+				<IconBook2 stroke={1.5} />
+			</ActionIcon>
 		</Tooltip>
 	);
 };

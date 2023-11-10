@@ -34,6 +34,7 @@ export const usePostUser = () => {
 						message: 'Successfully created',
 						icon: <IconCheck size="1rem" />,
 						autoClose: 3000,
+						loading: false,
 					});
 					break;
 
@@ -48,6 +49,7 @@ export const usePostUser = () => {
 						message: res.data,
 						icon: <IconFileAlert size="1rem" />,
 						autoClose: 2000,
+						loading: false,
 					});
 				}
 			}
@@ -60,6 +62,7 @@ export const usePostUser = () => {
 						message: 'Error occurred while creating user',
 						icon: <IconFileAlert size="1rem" />,
 						autoClose: 2000,
+						loading: false,
 					});
 			console.error(error);	
 		} finally {

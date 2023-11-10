@@ -2,12 +2,11 @@ import { Box } from '@mantine/core';
 import type { FC } from 'react';
 import HeaderBreadcrumbs from './HeaderBreadcrumbs';
 import RefreshInterval from './RefreshInterval';
-import RefreshNow from './RefreshNow';
 import Search from './Search';
 import TimeRange from './TimeRange';
 import classes from './LogQuery.module.css';
-import ReloadUser from './ReloadUser';
 import DocsUser from './UserDocs';
+import Reload from './Reload';
 
 export const StatsHeader: FC = () => {
 	const { container, innerContainer } = classes;
@@ -16,13 +15,13 @@ export const StatsHeader: FC = () => {
 		<Box className={container}>
 			<Box>
 				<Box className={innerContainer}>
-					<HeaderBreadcrumbs crumbs={['Streams', 'streamName', 'Stats']} />
+					<HeaderBreadcrumbs crumbs={['Management', 'streamName']} />
 				</Box>
 			</Box>
 
 			<Box>
 				<Box className={innerContainer}>
-					<RefreshNow />
+					<Reload />
 				</Box>
 			</Box>
 		</Box>
@@ -30,14 +29,13 @@ export const StatsHeader: FC = () => {
 };
 
 export const QueryHeader: FC = () => {
-
 	const { container, innerContainer } = classes;
 
 	return (
 		<Box className={container}>
 			<Box>
 				<Box className={innerContainer}>
-					<HeaderBreadcrumbs crumbs={['Streams', 'streamName', 'Query']} />
+					<HeaderBreadcrumbs crumbs={['SQL', 'streamName']} />
 				</Box>
 			</Box>
 
@@ -58,14 +56,14 @@ export const LogsHeader: FC = () => {
 		<Box className={container}>
 			<Box>
 				<Box className={innerContainer}>
-					<HeaderBreadcrumbs crumbs={['Streams', 'streamName', 'Logs']} />
+					<HeaderBreadcrumbs crumbs={['Logs', 'streamName']} />
 				</Box>
 			</Box>
 
 			<Box>
 				<Box className={innerContainer}>
 					<Search />
-					<RefreshNow />
+					{/* <Reload /> */}
 					{/* <LimitLog /> */}
 
 					<TimeRange />
@@ -77,34 +75,13 @@ export const LogsHeader: FC = () => {
 };
 
 export const ConfigHeader: FC = () => {
-
 	const { container, innerContainer } = classes;
 
 	return (
 		<Box className={container}>
 			<Box>
 				<Box className={innerContainer}>
-					<HeaderBreadcrumbs crumbs={['Streams', 'streamName', 'Config']} />
-				</Box>
-			</Box>
-		</Box>
-	);
-};
-
-export const UsersManagementHeader: FC = () => {
-	const { container, innerContainer } = classes;
-
-	return (
-		<Box className={container}>
-			<Box>
-				<Box className={innerContainer}>
-					<HeaderBreadcrumbs crumbs={['User Management']} />
-				</Box>
-			</Box>
-			<Box>
-				<Box className={innerContainer}>
-					<ReloadUser />
-					<DocsUser />
+					<HeaderBreadcrumbs crumbs={['streamName', 'Config']} />
 				</Box>
 			</Box>
 		</Box>
@@ -120,6 +97,28 @@ export const AllRouteHeader: FC = () => {
 				<Box className={innerContainer}>
 					<HeaderBreadcrumbs crumbs={[]} />
 				</Box>
+			</Box>
+			<Box className={innerContainer}>
+				<Reload />
+			</Box>
+		</Box>
+	);
+};
+
+// completed
+
+export const UsersManagementHeader: FC = () => {
+	const { container, innerContainer } = classes;
+
+	return (
+		<Box className={container}>
+			<Box className={innerContainer}>
+				<HeaderBreadcrumbs crumbs={['Team']} />
+			</Box>
+
+			<Box className={innerContainer}>
+				<Reload />
+				<DocsUser />
 			</Box>
 		</Box>
 	);

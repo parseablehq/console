@@ -1,5 +1,11 @@
 import { AboutData } from '@/@types/parseable/api/about';
-import { SortOrder, type LogsQuery, type LogsSearch, type LogSelectedTimeRange } from '@/@types/parseable/api/query';
+import {
+	SortOrder,
+	type LogsQuery,
+	type LogsSearch,
+	type LogSelectedTimeRange,
+	type AppContext,
+} from '@/@types/parseable/api/query';
 import useSubscribeState, { SubData } from '@/hooks/useSubscribeState';
 import dayjs from 'dayjs';
 import type { FC } from 'react';
@@ -41,13 +47,13 @@ export const FIXED_DURATIONS = [
 export const DEFAULT_FIXED_DURATIONS = FIXED_DURATIONS[0];
 
 interface HeaderContextState {
+	subInstanceConfig: SubData<AboutData | null>;
+	subAppContext: SubData<AppContext>;
 	subLogQuery: SubData<LogsQuery>;
 	subLogSearch: SubData<LogsSearch>;
 	subRefreshInterval: SubData<number | null>;
 	subLogSelectedTimeRange: SubData<LogSelectedTimeRange>;
-	subNavbarTogle: SubData<boolean>;
 	subCreateUserModalTogle: SubData<boolean>;
-	subInstanceConfig: SubData<AboutData|null>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -63,6 +69,14 @@ interface HeaderProviderProps {
 }
 
 const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
+	const subAppContext = useSubscribeState<AppContext>({
+		selectedStream: null,
+		activePage: null,
+		action: null,
+		userSpecificStreams: null,
+		userRoles: null,
+	});
+	const subInstanceConfig = useSubscribeState<AboutData | null>(null);
 	const subLogQuery = useSubscribeState<LogsQuery>({
 		startTime: now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate(),
 		endTime: now.toDate(),
@@ -82,15 +96,14 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 		value: DEFAULT_FIXED_DURATIONS.name,
 	});
 	const subRefreshInterval = useSubscribeState<number | null>(null);
-	const subNavbarTogle = useSubscribeState<boolean>(false);
 	const subCreateUserModalTogle = useSubscribeState<boolean>(false);
-	const subInstanceConfig = useSubscribeState<AboutData|null>(null);
+
 	const state: HeaderContextState = {
+		subAppContext,
 		subLogQuery,
 		subLogSearch,
 		subRefreshInterval,
 		subLogSelectedTimeRange,
-		subNavbarTogle,
 		subCreateUserModalTogle,
 		subInstanceConfig,
 	};

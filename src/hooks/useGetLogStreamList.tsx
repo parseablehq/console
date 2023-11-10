@@ -1,5 +1,3 @@
-import { LogStreamData } from '@/@types/parseable/api/stream';
-
 import { getLogStreamList } from '@/api/logStream';
 import { StatusCodes } from 'http-status-codes';
 import { useEffect } from 'react';
@@ -12,10 +10,9 @@ import { LOGIN_ROUTE } from '@/constants/routes';
 import Cookies from 'js-cookie';
 
 export const useGetLogStreamList = () => {
-	const [data, setData] = useMountedState<LogStreamData | null>(null);
+	const [data, setData] = useMountedState<string[] | null>(null);
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
-
 	const navigate = useNavigate();
 
 	const getData = async () => {
@@ -35,9 +32,10 @@ export const useGetLogStreamList = () => {
 
 			switch (res.status) {
 				case StatusCodes.OK: {
-					const streams = res.data.sort((a, b) => {
-						const nameA = a.name.toUpperCase();
-						const nameB = b.name.toUpperCase();
+					const streams = res.data.map((stream) => stream.name);
+					streams.sort((a, b) => {
+						const nameA = a.toUpperCase();
+						const nameB = b.toUpperCase();
 						if (nameA < nameB) {
 							return -1;
 						}
@@ -56,6 +54,7 @@ export const useGetLogStreamList = () => {
 							message: 'Successfully Loaded',
 							icon: <IconCheck size="1rem" />,
 							autoClose: 1000,
+							loading: false,
 						});
 					}
 
@@ -66,6 +65,7 @@ export const useGetLogStreamList = () => {
 							title: 'No Streams',
 							message: 'No Streams Found in your account',
 							icon: <IconFileAlert size="1rem" />,
+							loading: false,
 							autoClose: 2000,
 						});
 					}
@@ -81,6 +81,7 @@ export const useGetLogStreamList = () => {
 						color: 'red',
 						title: 'Error occurred',
 						message: 'Unauthorized',
+						loading: false,
 						icon: <IconFileAlert size="1rem" />,
 						autoClose: 2000,
 					});
@@ -102,6 +103,7 @@ export const useGetLogStreamList = () => {
 						message: 'Error occurred while fetching streams',
 						icon: <IconFileAlert size="1rem" />,
 						autoClose: 2000,
+						loading: false,
 					});
 				}
 			}
@@ -114,6 +116,7 @@ export const useGetLogStreamList = () => {
 				message: 'Error occurred while fetching streams',
 				icon: <IconFileAlert size="1rem" />,
 				autoClose: 2000,
+				loading: false,
 			});
 		} finally {
 			setLoading(false);
