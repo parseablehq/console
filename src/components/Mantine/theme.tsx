@@ -53,6 +53,7 @@ export const theme = createTheme({
 			'#5a6671',
 			'#495866',
 		],
+		
 	},
 	spacing: {
 		xxs: '0.2rem',

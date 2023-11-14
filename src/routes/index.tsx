@@ -34,7 +34,7 @@ const AppRouter: FC = () => {
 			<Routes>
 				<Route element={<PrivateRoute />}>
 					<Route element={<MainLayoutElement />}>
-						{/* <Route path={HOME_ROUTE} element={<HomeElement />}  /> */}
+						<Route path={HOME_ROUTE} element={<HomeElement />}  />
 
 						<Route element={<AccessSpecificRoute accessRequired={['ListUser']} />}>
 							<Route path={USERS_MANAGEMENT_ROUTE} element={<UsersElement />} />

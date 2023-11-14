@@ -16,7 +16,7 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlus, IconTrash, IconX } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
-import { useUsersStyles } from './styles';
+import classes from './AccessManagement.module.css';
 import { useGetRole } from '@/hooks/useGetRole';
 import { useDeleteRole } from '@/hooks/useDeleteRole';
 import { usePutRole } from '@/hooks/usePutRole';
@@ -187,7 +187,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 			});
 		}
 		if (selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingester') {
-			if (streams?.find((stream) => stream.name === SelectedStream)) {
+			if (streams?.find((stream) => stream === SelectedStream)) {
 				if (tagInput !== '' && tagInput !== undefined && selectedPrivilege === 'reader') {
 					privileges?.push({
 						privilege: selectedPrivilege,
@@ -231,7 +231,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 				return true;
 			}
 			if (
-				streams?.find((stream) => stream.name === SelectedStream) &&
+				streams?.find((stream) => stream === SelectedStream) &&
 				SelectedStream !== '' &&
 				SelectedStream !== undefined
 			) {
@@ -248,7 +248,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 				return true;
 			}
 			if (
-				streams?.find((stream) => stream.name === SelectedStream) &&
+				streams?.find((stream) => stream === SelectedStream) &&
 				SelectedStream !== '' &&
 				SelectedStream !== undefined
 			) {
@@ -259,7 +259,6 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 		return true;
 	};
 
-	const { classes } = useUsersStyles();
 	return (
 		<>
 			<tr className={classes.trStyle}>
@@ -281,25 +280,25 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 					) : getRolePrivilegeLoading ? (
 						'loading..'
 					) : privileges ? (
-						<>
+						<Group >
 							{getBadges(privileges)}
 							<Tooltip
 								label={'Add a Privilege'}
-								sx={{ color: 'white', backgroundColor: 'black' }}
+								style={{ color: 'white', backgroundColor: 'black' }}
 								withArrow
 								position="right">
-								<Badge color="green">
-									<IconPlus size={rem(10)} onClick={openUpdateRole} />
-								</Badge>
+								<ActionIcon size={'xs'} radius={'lg'} color="green" onClick={openUpdateRole}>
+									<IconPlus onClick={openUpdateRole} />
+								</ActionIcon>
 							</Tooltip>
-						</>
+						</Group>
 					) : (
 						<Badge color="red">Error</Badge>
 					)}
 				</td>
 				<td>
 					<Box style={{ height: '100%', width: '100%', whiteSpace: 'nowrap', textAlign: 'center' }}>
-						<Tooltip label={'Delete'} sx={{ color: 'white', backgroundColor: 'black' }} withArrow position="right">
+						<Tooltip label={'Delete'} style={{ color: 'white', backgroundColor: 'black' }} withArrow position="right">
 							<Button
 								variant="default"
 								className={classes.actionBtn}
@@ -331,7 +330,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 					required
 				/>
 
-				<Group position="right" mt={10}>
+				<Group justify="right" mt={10}>
 					<Button
 						variant="filled"
 						color="gray"
@@ -367,7 +366,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 						/>
 					</Stack>
 
-					<Group position="right" mt={10}>
+					<Group justify="right" mt={10}>
 						<Button
 							variant="filled"
 							color="gray"
@@ -403,7 +402,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 							setSelectedPrivilege(value ?? '');
 						}}
 						value={selectedPrivilege}
-						nothingFound="No options"
+						nothingFoundMessage="No options"
 					/>
 
 					{selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingester' ? (
@@ -413,13 +412,13 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 								onChange={(value) => {
 									setSelectedStream(value ?? '');
 								}}
-								nothingFound="No options"
+								nothingFoundMessage="No options"
 								value={SelectedStream}
 								searchValue={streamSearchValue}
 								onSearchChange={(value) => setStreamSearchValue(value)}
 								onDropdownClose={() => setStreamSearchValue(SelectedStream)}
 								onDropdownOpen={() => setStreamSearchValue('')}
-								data={streams?.map((stream) => ({ value: stream.name, label: stream.name })) ?? []}
+								data={streams?.map((stream) => ({ value: stream, label: stream })) ?? []}
 								searchable
 								label="Select a stream to assign"
 								required
@@ -442,7 +441,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 					)}
 				</Stack>
 
-				<Group position="right" mt={10}>
+				<Group justify="right" mt={10}>
 					<Button
 						variant="filled"
 						color="gray"

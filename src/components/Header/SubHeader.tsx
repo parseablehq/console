@@ -7,6 +7,7 @@ import TimeRange from './TimeRange';
 import classes from './LogQuery.module.css';
 import DocsUser from './UserDocs';
 import Reload from './Reload';
+import DeleteStream from './DeleteStream';
 
 export const StatsHeader: FC = () => {
 	const { container, innerContainer } = classes;
@@ -22,6 +23,7 @@ export const StatsHeader: FC = () => {
 			<Box>
 				<Box className={innerContainer}>
 					<Reload />
+					<DeleteStream />
 				</Box>
 			</Box>
 		</Box>

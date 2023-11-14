@@ -222,7 +222,7 @@ const Config: FC = () => {
 					<Accordion.Item value="Alert">
 						<Accordion.Control>Alert</Accordion.Control>
 						<Accordion.Panel>
-							<Box>
+						<Box>
 								<Box sx={{ height: '500px' }}>
 									<Editor
 										onChange={handleAlertQueryEditorChange}

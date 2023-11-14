@@ -8,10 +8,12 @@ const AccessMangement: FC = () => {
 		<Box
 			style={{
 				display: 'flex',
-				width: '100%',
+				flexDirection: 'row',
+				flex: '1 1 auto',
+				overflow: 'scroll',
 			}}>
 			<Users />
-			{/* <Roles /> */}
+			<Roles />
 		</Box>
 	);
 };

@@ -49,6 +49,10 @@ const Retention: FC = () => {
 			if (state.selectedStream) {
 				if (dataRetention) {
 					resetDataRetention();
+					resetRetentionData();
+					form.setFieldValue('description', '');
+					form.setFieldValue('duration', '');
+					form.setFieldValue('action', 'delete');
 				}
 				getLogRetention(state.selectedStream);
 			}

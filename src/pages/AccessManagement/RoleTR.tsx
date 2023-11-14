@@ -18,7 +18,7 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlus, IconTransform, IconTrash, IconX } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
-import classes from './Users.module.css';
+import classes from './AccessManagement.module.css';
 import { CodeHighlight } from '@mantine/code-highlight';
 
 import { useDeleteUser } from '@/hooks/useDeleteUser';
@@ -105,7 +105,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 
 	const getBadge = (role: any, withAction: boolean) => {
 		return (
-			<Badge color="orange" rightSection={withAction ? removeButton(role) : ''} variant={'light'}>
+			<Badge color="#0074FF" rightSection={withAction ? removeButton(role) : ''} variant={'light'}>
 				{role}
 			</Badge>
 		);
@@ -188,14 +188,14 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				) : userRoleLoading ? (
 					'loading..'
 				) : userRole ? (
-					<>
+					<Group>
 						{getBadges(userRole)}
 						<Tooltip label={'Add a Role'} style={{ color: 'white', backgroundColor: 'black' }} withArrow ta="right">
-							<Badge color="green" onClick={openEditModal}>
-								<IconPlus size={rem(10)} />
-							</Badge>
+							<ActionIcon size={'xs'} radius={'lg'} color="#00A477" onClick={openEditModal}>
+								<IconPlus />
+							</ActionIcon>
 						</Tooltip>
-					</>
+					</Group>
 				) : (
 					<Badge color="red">Error</Badge>
 				)}
@@ -253,7 +253,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 					required
 				/>
 
-				<Group ta="right" mt={10}>
+				<Group justify="right" mt={10}>
 					<Button
 						variant="filled"
 						color="gray"
@@ -289,7 +289,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						/>
 					</Stack>
 
-					<Group ta="right" mt={10}>
+					<Group justify="right" mt={10}>
 						<Button
 							variant="filled"
 							color="gray"
@@ -348,7 +348,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						''
 					)}
 				</Stack>
-				<Group ta="right" mt={10}>
+				<Group justify="right" mt={10}>
 					{user.method === 'native' ? (
 						<Button
 							variant="filled"
@@ -391,7 +391,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 					/>
 				</Stack>
 
-				<Group ta="right" mt={10}>
+				<Group justify="right" mt={10}>
 					<Button
 						variant="filled"
 						color="gray"

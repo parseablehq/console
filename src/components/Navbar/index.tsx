@@ -1,5 +1,17 @@
 import { useEffect } from 'react';
-import { Tooltip, UnstyledButton, Stack, rem, Text, Box, Image, ActionIcon } from '@mantine/core';
+import {
+	Tooltip,
+	UnstyledButton,
+	Stack,
+	rem,
+	Text,
+	Box,
+	Image,
+	ActionIcon,
+	Popover,
+	Badge,
+	Group,
+} from '@mantine/core';
 import {
 	IconZoomCode,
 	IconTableShortcut,
@@ -31,21 +43,72 @@ interface NavbarLinkProps {
 	collapsed: boolean;
 }
 
-export const onSignOut = () => {
-	Cookies.remove('session');
-	Cookies.remove('username');
+interface UsersInfoProps {
+	icon: typeof IconZoomCode;
+	label: string;
+	active?: boolean;
+	onClick?(): void;
+	collapsed: boolean;
+	Roles: object;
+}
 
-	window.location.href = `${baseURL}api/v1/o/logout?redirect=${window.location.origin}/login`;
-};
-
-export const navigatetoHome = () => {
-	const navigateTo = useNavigate();
-	navigateTo('/');
-};
+function UsersInfo({ icon: Icon, label, active, onClick, collapsed, Roles }: UsersInfoProps) {
+	const [opened, { close, open }] = useDisclosure(false);
+	const getBadges = (userRole: any) => {
+		if (Object.keys(userRole).length > 0) {
+			const Badges = Object.keys(userRole).map((role: any) => {
+				return (
+					<Badge color="white" variant={"outline"}>
+						{role}
+					</Badge>
+				);
+			});
+			return Badges;
+		} else {
+			return (
+				<Badge color="red" variant={'light'}>
+					No Role
+				</Badge>
+			);
+		}
+	};
+	return (
+		<Popover width={200} position="left" withArrow shadow="md" opened={opened} disabled={!collapsed}>
+			<Popover.Target>
+				<UnstyledButton
+					onMouseEnter={open}
+					onMouseLeave={close}
+					onClick={onClick}
+					className={classes.link}
+					data-active={active || undefined}>
+					<Box style={{ width: rem(20), height: rem(20) }}>
+						<Icon stroke={1.5} />
+					</Box>
+					<Text
+						style={{
+							overflow: 'hidden',
+						}}>
+						{label}
+					</Text>
+				</UnstyledButton>
+			</Popover.Target>
+			<Popover.Dropdown style={{ pointerEvents: 'none',
+			background:"black",
+			color:"white"
+		}}>
+				<Text size="sm">Username: {label}</Text>
+				<Group>
+					<Text size="sm">Roles:</Text>
+					{Roles && getBadges(Roles)}
+				</Group>
+			</Popover.Dropdown>
+		</Popover>
+	);
+}
 
 function NavbarLink({ icon: Icon, label, active, onClick, collapsed }: NavbarLinkProps) {
 	return (
-		<Tooltip label={label} position="right" transitionProps={{ duration: 0 }} disabled={!collapsed}>
+		<Tooltip label={label} position="right" withArrow transitionProps={{ duration: 0 }} disabled={!collapsed}>
 			<UnstyledButton onClick={onClick} className={classes.link} data-active={active || undefined}>
 				<Box style={{ width: rem(20), height: rem(20) }}>
 					<Icon stroke={1.5} />
@@ -60,6 +123,19 @@ function NavbarLink({ icon: Icon, label, active, onClick, collapsed }: NavbarLin
 		</Tooltip>
 	);
 }
+
+export const onSignOut = () => {
+	Cookies.remove('session');
+	Cookies.remove('username');
+
+	window.location.href = `${baseURL}api/v1/o/logout?redirect=${window.location.origin}/login`;
+};
+
+export const navigatetoHome = () => {
+	const navigateTo = useNavigate();
+	navigateTo('/');
+};
+
 const data = [
 	{ icon: IconZoomCode, label: 'SQL', pathname: '/sql', requiredAccess: ['Query', 'GetSchema'] },
 	{ icon: IconTableShortcut, label: 'Explore', pathname: '/explore', requiredAccess: ['Query', 'GetSchema'] },
@@ -221,7 +297,9 @@ export default function Navbar() {
 						/>
 					)}
 					<NavbarLink icon={IconInfoHexagon} label="About" collapsed={collapsed} onClick={openAboutInfo} />
-					<NavbarLink icon={IconUser} label={username ?? ''} collapsed={collapsed} />
+
+					<UsersInfo Roles={userRoles} icon={IconUser} label={username ? `${username}` : ''} collapsed={collapsed} />
+
 					<NavbarLink icon={IconLogout} label="Logout" collapsed={collapsed} onClick={onSignOut} />
 				</Stack>
 				<InfoModal opened={openedAboutInfo} close={closeAboutInfo} />

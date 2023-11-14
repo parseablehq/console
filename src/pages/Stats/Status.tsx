@@ -13,31 +13,7 @@ import {
 } from '@tabler/icons-react';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import useMountedState from '@/hooks/useMountedState';
-function convert(val: number) {
-	// Thousands, millions, billions etc..
-	let s = ['', ' K', ' M', ' B', ' T'];
-
-	// Dividing the value by 3.
-	let sNum = Math.floor(('' + val).length / 3);
-
-	// Calculating the precised value.
-	let sVal = parseFloat((sNum != 0 ? val / Math.pow(1000, sNum) : val).toPrecision(4));
-
-	if (sVal % 1 != 0) {
-		return sVal.toFixed(1) + s[sNum];
-	}
-
-	// Appending the letter to precised val.
-	return sVal + s[sNum];
-}
-function formatBytes(a: any, b = 1) {
-	if (!+a) return '0 Bytes';
-	const c = b < 0 ? 0 : b,
-		d = Math.floor(Math.log(a) / Math.log(1024));
-	return `${parseFloat((a / Math.pow(1024, d)).toFixed(c))} ${
-		['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'][d]
-	}`;
-}
+import { HumanizeNumber, formatBytes } from '@/utils';
 
 const Status: FC = () => {
 	const [statusFIXEDDURATIONS, setStatusFIXEDDURATIONS] = useMountedState(0);
@@ -167,7 +143,7 @@ const Status: FC = () => {
 						value: !loadingStat
 							? !errorStat
 								? dataStat?.ingestion?.count
-									? convert(dataStat.ingestion.count)
+									? HumanizeNumber(dataStat.ingestion.count)
 									: '0'
 								: 'ERROR'
 							: 'Loading...',

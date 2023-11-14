@@ -1,7 +1,6 @@
 .container {
 	height: 100%;
 	width: 100%;
-	padding-top: var(--mantine-spacing-xl);
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
@@ -9,11 +8,6 @@
 
 .messageStyle {
 	margin-top: var(--mantine-spacing-md);
-	color: var(--mantine-color-dimmed-0);
+	color: var(--mantine-color-gray-6);
 }
 
-.btnStyle {
-	margin-top: var(--mantine-spacing-md);
-	color: var(--mantine-color-gray-6);
-	background-color: var(--mantine-color-red-500);
-}

@@ -1,12 +1,12 @@
 import { Box, Button, Group, Modal, ScrollArea, Select, Stack, Table, Text, TextInput, px } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect, useState } from 'react';
-import { useUsersStyles } from './styles';
+import classes from './AccessManagement.module.css';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { useGetRoles } from '@/hooks/useGetRoles';
 import PrivilegeTR from './PrivilegeTR';
-import { IconPencil, IconUserPlus } from '@tabler/icons-react';
+import { IconLockAccess, IconPencil } from '@tabler/icons-react';
 import { usePutRole } from '@/hooks/usePutRole';
 import { usePutDefaultRole } from '@/hooks/usePutDefaultRole';
 import { useGetDefaultRole } from '@/hooks/useGetDefaultRole';
@@ -26,7 +26,7 @@ const Roles: FC = () => {
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
 	const [defaultRoleModalOpen, setDefaultRoleModalOpen] = useState<boolean>(false);
 	const [inputDefaultRole, setInputDefaultRole] = useState<string>('');
-	const [defaultRole, setDefaultRole] = useState<string| null>(null);
+	const [defaultRole, setDefaultRole] = useState<string | null>(null);
 	const [oidcActive, setOidcActive] = useState<boolean>(subInstanceConfig.get()?.oidcActive ?? false);
 	const [createRoleInput, setCreateRoleInput] = useState<string>('');
 	const [tagInput, setTagInput] = useState<string>('');
@@ -125,7 +125,7 @@ const Roles: FC = () => {
 			});
 		}
 		if (selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingester') {
-			if (streams?.find((stream) => stream.name === SelectedStream)) {
+			if (streams?.find((stream) => stream === SelectedStream)) {
 				if (tagInput !== '' && tagInput !== undefined && selectedPrivilege === 'reader') {
 					userRole?.push({
 						privilege: selectedPrivilege,
@@ -157,13 +157,13 @@ const Roles: FC = () => {
 				return false;
 			}
 			if (selectedPrivilege === 'reader') {
-				if (streams?.find((stream) => stream.name === SelectedStream)) {
+				if (streams?.find((stream) => stream === SelectedStream)) {
 					return false;
 				}
 				return true;
 			}
 			if (selectedPrivilege === 'writer' || selectedPrivilege === 'ingester') {
-				if (streams?.find((stream) => stream.name === SelectedStream)) {
+				if (streams?.find((stream) => stream === SelectedStream)) {
 					return false;
 				}
 				return true;
@@ -184,35 +184,29 @@ const Roles: FC = () => {
 		handleDefaultRoleModalClose();
 	};
 
-	const { classes } = useUsersStyles();
 	return (
 		<Box className={classes.container}>
 			<Box className={classes.header}>
-				<Text size="xl" weight={500}>
-					Roles
-				</Text>
+				<Text size="xl">Roles</Text>
 				<Box>
-					
-
 					<Button
 						variant="outline"
-						color="gray"
-						className={classes.createBtn}
+						color="brandSecondary"
 						onClick={() => {
 							setModalOpen(true);
 						}}
-						rightIcon={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
+						rightSection={<IconLockAccess size={px('1.2rem')} stroke={1.5} />}>
 						Create role
 					</Button>
 					{oidcActive ? (
 						<Button
 							variant="outline"
-							color="gray"
-							className={classes.createBtn}
+							color="brandSecondary"
+							ml={"md"}
 							onClick={() => {
 								setDefaultRoleModalOpen(true);
 							}}
-							rightIcon={<IconPencil size={px('1.2rem')} stroke={1.5} />}>
+							rightSection={<IconPencil size={px('1.2rem')} stroke={1.5} />}>
 							Set default oidc role
 						</Button>
 					) : (
@@ -247,12 +241,12 @@ const Roles: FC = () => {
 							setInputDefaultRole(value ?? '');
 						}}
 						value={inputDefaultRole}
-						nothingFound="No options"
+						nothingFoundMessage="No options"
 						searchable
 					/>
 				</Stack>
 
-				<Group position="right" mt={10}>
+				<Group justify="right" mt={10}>
 					<Button
 						variant="filled"
 						color="gray"
@@ -290,7 +284,7 @@ const Roles: FC = () => {
 							setSelectedPrivilege(value ?? '');
 						}}
 						value={selectedPrivilege}
-						nothingFound="No options"
+						nothingFoundMessage="No options"
 					/>
 
 					{selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingester' ? (
@@ -300,13 +294,13 @@ const Roles: FC = () => {
 								onChange={(value) => {
 									setSelectedStream(value ?? '');
 								}}
-								nothingFound="No options"
+								nothingFoundMessage="No options"
 								value={SelectedStream}
 								searchValue={streamSearchValue}
 								onSearchChange={(value) => setStreamSearchValue(value)}
 								onDropdownClose={() => setStreamSearchValue(SelectedStream)}
 								onDropdownOpen={() => setStreamSearchValue('')}
-								data={streams?.map((stream) => ({ value: stream.name, label: stream.name })) ?? []}
+								data={streams?.map((stream) => ({ value: stream, label: stream })) ?? []}
 								searchable
 								label="Select a stream to assign"
 								required
@@ -329,13 +323,8 @@ const Roles: FC = () => {
 					)}
 				</Stack>
 
-				<Group position="right" mt={10}>
-					<Button
-						variant="filled"
-						color="gray"
-						className={classes.modalActionBtn}
-						disabled={createVaildtion()}
-						onClick={handleCreateRole}>
+				<Group justify="right" mt={10}>
+					<Button className={classes.modalActionBtn} disabled={createVaildtion()} onClick={handleCreateRole}>
 						Create
 					</Button>
 					<Button onClick={handleClose} variant="outline" color="gray" className={classes.modalCancelBtn}>

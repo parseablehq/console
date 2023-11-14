@@ -108,12 +108,11 @@ modalCancelBtn: {
 }, */
 
 .container {
-	flex: 1;
-	width: 100%;
-	position: relative;
-	margin: 10px;
-	border-radius: 8px;
-	border: 1px solid #e0e0e0;
+	flex: 1 1 auto;
+	overflow-y: auto;
+	margin: var(--mantine-spacing-md);
+	border-radius: var(--mantine-radius-md);
+	border: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
 }
 
 .header {
@@ -123,16 +122,11 @@ modalCancelBtn: {
 	padding-left: 20px;
 	padding-right: 20px;
 	height: 70px;
-	border-bottom: 1px solid #e0e0e0;
+	border-bottom: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
 }
 
 .createBtn {
-	height: 34px;
-	padding-left: 15px;
-	padding-right: 15px;
-	margin-right: 8px;
-	color: #757575;
-	border-color: #e0e0e0;
+
 }
 
 .actionBtn {
@@ -160,12 +154,24 @@ modalCancelBtn: {
 	z-index: 1;
 	top: 0;
 	height: 50px;
+	background-color: white;
+	text-align: left;
+}
+.theadStyle tr th {
+	padding: var(--mantine-spacing-xs);
+	padding-left: var(--mantine-spacing-md);
 }
 
-.trStyle {
-	& tr:nth-of-type(odd) {
-		background-color: #ececec !important;
-	}
+.trStyle:nth-child(odd) {
+	background-color: #ececec;
+}
+
+.trStyle td {
+	height: 100%;
+	vertical-align: middle;
+
+	padding: var(--mantine-spacing-xs);
+	padding-left: var(--mantine-spacing-md);
 }
 
 .passwordPrims {

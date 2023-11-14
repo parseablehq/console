@@ -3,7 +3,7 @@ import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect, useState } from 'react';
 
 import { useGetUsers } from '@/hooks/useGetUsers';
-import classes from './Users.module.css';
+import classes from './AccessManagement.module.css';
 import { usePostUser } from '@/hooks/usePostUser';
 
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
@@ -116,9 +116,8 @@ const Users: FC = () => {
 			<Box className={classes.header}>
 				<Text size="xl">Users</Text>
 				<Button
-					variant="outline"
-					color="gray"
-					className={classes.createBtn}
+					variant="filled"
+					color="#00A477"
 					onClick={() => {
 						setModalOpen(true);
 					}}
@@ -185,7 +184,7 @@ const Users: FC = () => {
 								code={CreatedUserResponse}
 								copiedLabel="Password copied to clipboard"
 							/>
-							
+
 							<Text className={classes.passwordText} color="red">
 								Warning this is the only time you are able to see Password
 							</Text>
@@ -195,10 +194,9 @@ const Users: FC = () => {
 					)}
 				</Stack>
 
-				<Group ta="right" mt={10}>
+				<Group justify="right" mt={10}>
 					<Button
 						variant="filled"
-						color="gray"
 						className={classes.modalActionBtn}
 						onClick={handleCreateUser}
 						disabled={createVaildtion()}>
