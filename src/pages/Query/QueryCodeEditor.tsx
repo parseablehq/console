@@ -8,7 +8,7 @@ import { ErrorMarker, errChecker } from './ErrorMarker';
 import { notifications } from '@mantine/notifications';
 import { IconPlayerPlayFilled, IconCheck, IconFileAlert, IconFileInfo } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
-import { useQueryCodeEditorStyles } from './styles';
+import classes from './Query.module.css';
 import dayjs from 'dayjs';
 import { notify } from '@/utils/notification';
 import { usePostLLM } from '@/hooks/usePostLLM';
@@ -172,7 +172,6 @@ const QueryCodeEditor: FC = () => {
 		}
 	}, [queryResult, error]);
 
-	const { classes } = useQueryCodeEditorStyles();
 	const { container, runQueryBtn, textContext, actionBtn } = classes;
 
 	return (
@@ -186,7 +185,7 @@ const QueryCodeEditor: FC = () => {
 					onChange={(e) => setAiQuery(e.target.value)}
 					placeholder="Enter plain text to generate SQL query using OpenAI"
 					rightSectionWidth={'auto'}
-					sx={{
+					style={{
 						// border: '1px solid #545BEB',
 						// backgroundColor: 'rgba(84,91,235,.2)',
 
@@ -204,7 +203,7 @@ const QueryCodeEditor: FC = () => {
 						},
 					}}
 					rightSection={
-						<Button variant="filled" color="brandPrimary.0" radius={0} onClick={handleAIGenerate} h={'100%'}>
+						<Button variant="filled" color="brandPrimary" radius={0} onClick={handleAIGenerate} h={'100%'}>
 							✨ Generate
 						</Button>
 					}
@@ -220,7 +219,7 @@ const QueryCodeEditor: FC = () => {
 					) : null}
 					<Tooltip
 						label={`View Schema for ${subLogQuery.get().streamName}`}
-						sx={{ color: 'white', backgroundColor: 'black' }}
+						style={{ color: 'white', backgroundColor: 'black' }}
 						withArrow
 						position="right">
 						<Button
@@ -228,12 +227,12 @@ const QueryCodeEditor: FC = () => {
 							className={actionBtn}
 							aria-label="Schema"
 							onClick={() => subSchemaToggle.set(!isSchemaOpen)}>
-							<IconFileInfo size={px('1.2rem')} stroke={1.5} />
+							<IconFileInfo stroke={1.5} />
 						</Button>
 					</Tooltip>
 					<Tooltip
 						label={'Click to Run Query or ctrl + enter '}
-						sx={{ color: 'white', backgroundColor: 'black' }}
+						style={{ color: 'white', backgroundColor: 'black' }}
 						withArrow
 						position="right">
 						<Button
@@ -242,13 +241,13 @@ const QueryCodeEditor: FC = () => {
 							onClick={() => {
 								runQuery(query);
 							}}>
-							<IconPlayerPlayFilled size={px('1.2rem')} stroke={1.5} />
+							<IconPlayerPlayFilled stroke={1.5} />
 						</Button>
 					</Tooltip>
 				</Box>
 			</Box>
 
-			<Box sx={{ height: 'calc(100% - 96px)' }}>
+			<Box style={{ height: 'calc(100% - 96px)' }}>
 				<Editor
 					height={'100%'}
 					defaultLanguage="sql"

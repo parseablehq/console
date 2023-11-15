@@ -48,17 +48,16 @@ interface UsersInfoProps {
 	label: string;
 	active?: boolean;
 	onClick?(): void;
-	collapsed: boolean;
 	Roles: object;
 }
 
-function UsersInfo({ icon: Icon, label, active, onClick, collapsed, Roles }: UsersInfoProps) {
+function UsersInfo({ icon: Icon, label, active, onClick, Roles }: UsersInfoProps) {
 	const [opened, { close, open }] = useDisclosure(false);
 	const getBadges = (userRole: any) => {
 		if (Object.keys(userRole).length > 0) {
 			const Badges = Object.keys(userRole).map((role: any) => {
 				return (
-					<Badge color="white" variant={"outline"}>
+					<Badge key={role} color="white" variant={'outline'}>
 						{role}
 					</Badge>
 				);
@@ -73,7 +72,7 @@ function UsersInfo({ icon: Icon, label, active, onClick, collapsed, Roles }: Use
 		}
 	};
 	return (
-		<Popover width={200} position="left" withArrow shadow="md" opened={opened} disabled={!collapsed}>
+		<Popover width={200} position="left" withArrow shadow="md" opened={opened}>
 			<Popover.Target>
 				<UnstyledButton
 					onMouseEnter={open}
@@ -92,10 +91,7 @@ function UsersInfo({ icon: Icon, label, active, onClick, collapsed, Roles }: Use
 					</Text>
 				</UnstyledButton>
 			</Popover.Target>
-			<Popover.Dropdown style={{ pointerEvents: 'none',
-			background:"black",
-			color:"white"
-		}}>
+			<Popover.Dropdown style={{ pointerEvents: 'none', background: 'black', color: 'white' }}>
 				<Text size="sm">Username: {label}</Text>
 				<Group>
 					<Text size="sm">Roles:</Text>
@@ -298,7 +294,7 @@ export default function Navbar() {
 					)}
 					<NavbarLink icon={IconInfoHexagon} label="About" collapsed={collapsed} onClick={openAboutInfo} />
 
-					<UsersInfo Roles={userRoles} icon={IconUser} label={username ? `${username}` : ''} collapsed={collapsed} />
+					<UsersInfo Roles={userRoles} icon={IconUser} label={username ? `${username}` : ''} />
 
 					<NavbarLink icon={IconLogout} label="Logout" collapsed={collapsed} onClick={onSignOut} />
 				</Stack>

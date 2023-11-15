@@ -1,0 +1,82 @@
+/* {
+    container: {
+        display: 'flex',
+        borderBottom: `solid 1px ${colors.gray[2]}`,
+        alignItems: 'center',
+        height: '55px',
+        padding: `${spacing.xs} ${spacing.md}`,
+        width: '100%',
+    },
+    runQueryBtn: {
+        color: pColor,
+        borderColor: colors.gray[2],
+        height: '34px',
+        width: '34px',
+        padding: '0px',
+        '&:hover': {
+            color: sColor,
+        },
+        marginInlineEnd: spacing.xs,
+    },
+    actionBtn: {
+        '&:hover': {
+            color: sColor,
+        },
+        height: '34px',
+        width: '34px',
+        padding: '0px',
+        marginInlineEnd: spacing.xs,
+        color: colors.gray[5],
+        borderColor: colors.gray[2],
+    },
+    textContext: {
+        marginRight: spacing.md,
+        fontSize: fontSizes.md,
+        fontFamily: fontFamily,
+        fontWeight: fontWeights.semibold,
+    },
+} */
+
+.container {
+    display: flex;
+    flex: 1;
+    width: 100%;
+}
+
+
+/* container: {
+    flex: 1,
+    display: 'flex',
+    position: 'relative',
+    maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2}px)`,
+},
+innerContainer: {
+    position: 'relative',
+    flex: 1,
+    maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2}px)`,
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden',
+},
+runQueryBtn: {
+    background: pColor,
+    color: 'white',
+    height: '40px',
+    marginRight: '5px',
+    '&:hover': {
+        background: sColor,
+    },
+},
+actionBtn: {
+    '&:hover': {
+        color: sColor,
+    },
+    height: '25px',
+    marginRight: '5px',
+},
+schemaContainer: {
+    border: `${widths.px} ${colors.gray[1]} solid`,
+    boxShadow: shadows.sm,
+    maxWidth: '500px',
+},
+}; */

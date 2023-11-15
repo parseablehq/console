@@ -115,6 +115,10 @@ modalCancelBtn: {
 	border: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
 }
 
+.container:first-of-type{
+    margin-right: 0;
+}
+
 .header {
 	display: flex;
 	justify-content: space-between;
@@ -125,18 +129,6 @@ modalCancelBtn: {
 	border-bottom: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
 }
 
-.createBtn {
-
-}
-
-.actionBtn {
-	height: 34px;
-	width: 34px;
-	padding: 0px;
-	margin-right: 8px;
-	color: #757575;
-	border-color: #e0e0e0;
-}
 
 .tableContainer {
 	height: calc(100% - 70px);
@@ -163,7 +155,7 @@ modalCancelBtn: {
 }
 
 .trStyle:nth-child(odd) {
-	background-color: #ececec;
+	background-color: #ececec80;
 }
 
 .trStyle td {
@@ -210,12 +202,8 @@ modalCancelBtn: {
 	font-size: 0.875rem;
 }
 
-.modalActionBtn {
-	background-color: #f50057;
-	color: white;
-}
 
 .modalCancelBtn {
-	border-color: #e0e0e0;
-	color: #757575;
+	border-color: #ced4da;
+	color: #000000;
 }

@@ -65,10 +65,10 @@ const DeleteStream: FC = () => {
 				/>
 
 				<Group mt={10} justify="right">
-					<Button disabled={deleteStream === activeStream ? false : true} onClick={handleDelete} color="green">
+					<Button disabled={deleteStream === activeStream ? false : true} onClick={handleDelete} color="green.9">
 						Delete
 					</Button>
-					<Button onClick={handleCloseDelete} variant="outline" color="gray.6">
+					<Button onClick={handleCloseDelete} variant="default">
 						Cancel
 					</Button>
 				</Group>

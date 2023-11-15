@@ -32,8 +32,8 @@
 }
 
 .aboutTextBox {
-	margin-top: var(--mantine-spacing-md);
-	margin-bottom: var(--mantine-spacing-md);
+	margin-top: var(--mantine-spacing-sm);
+	margin-bottom: var(--mantine-spacing-sm);
 	width: 100%;
 	display: flex;
 	border-radius: var(--mantine-radius-md);
@@ -62,37 +62,6 @@
 	color: var(--mantine-color-gray-6);
 	line-height: normal;
 	width: 85%;
-}
-
-.actionBtn {
-	color: var(--mantine-color-brandPrimary-4);
-	border-radius: var(--mantine-radius-md);
-	border: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
-	position: absolute;
-	right: var(--mantine-spacing-xl);
-	transition: transform 0.2s ease-in-out;
-
-	&:hover {
-		transform: scale(1.03);
-		color: var(--mantine-color-brandSecondary-4);
-		background-color: var(--mantine-color-white);
-	}
-}
-
-.actionBtnRed {
-	color: rgb(224, 49, 49);
-	border-radius: var(--mantine-radius-md);
-	border: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
-	position: absolute;
-	right: var(--mantine-spacing-xl);
-	transition: transform 0.2s ease-in-out;
-
-	&:hover {
-		color: green;
-		transform: scale(1.03);
-		border-color: green;
-		background-color: var(--mantine-color-white);
-	}
 }
 
 .helpTitle {

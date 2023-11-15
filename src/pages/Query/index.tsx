@@ -1,7 +1,7 @@
 import { Box } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect } from 'react';
-import { useQueryStyles } from './styles';
+import classes from './Query.module.css';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import QueryCodeEditor from './QueryCodeEditor';
 import QueryResultEditor from './QueryResultEditor';
@@ -12,7 +12,6 @@ import useMountedState from '@/hooks/useMountedState';
 const Logs: FC = () => {
 	useDocumentTitle('Parseable | Query');
 
-	const { classes } = useQueryStyles();
 	const { container, innerContainer, schemaContainer } = classes;
 	const {
 		state: { subSchemaToggle },
@@ -39,7 +38,7 @@ const Logs: FC = () => {
 							background: '#CCCCCC',
 						}}>
 						<Box
-							sx={{
+							style={{
 								display: 'flex',
 								alignItems: 'center',
 								justifyContent: 'center',
@@ -50,12 +49,12 @@ const Logs: FC = () => {
 						</Box>
 					</PanelResizeHandle>
 					<Panel defaultSize={60}>
-						<QueryResultEditor />
+						{/* <QueryResultEditor /> */}
 					</Panel>
 				</PanelGroup>
 			</Box>
 			<Box className={schemaContainer} display={isSchemaOpen ? '' : 'none'}>
-				<QuerySchemaList />
+				{/* <QuerySchemaList /> */}
 			</Box>
 		</Box>
 	);

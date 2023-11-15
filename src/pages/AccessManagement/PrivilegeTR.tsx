@@ -10,7 +10,7 @@ import {
 	Text,
 	TextInput,
 	Tooltip,
-	px,
+	UnstyledButton,
 	rem,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
@@ -82,7 +82,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 	const getBadge = (privilege: any, i: number, withAction: boolean) => {
 		if (privilege.privilege === 'admin' || privilege.privilege === 'editor') {
 			return (
-				<Badge color="violet" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
+				<Badge color="blue.9" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
 					{privilege.privilege}
 				</Badge>
 			);
@@ -91,20 +91,20 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 		if (privilege.privilege === 'reader') {
 			if (privilege.resource?.tag) {
 				return (
-					<Badge color="orange" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
+					<Badge color="blue.9" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
 						{privilege.privilege} of {privilege.resource?.stream === '*' ? 'All' : privilege.resource?.stream} with{' '}
 						{privilege.resource?.tag}
 					</Badge>
 				);
 			}
 			return (
-				<Badge color="orange" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
+				<Badge color="blue.9" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
 					{privilege.privilege} of {privilege.resource?.stream === '*' ? 'All' : privilege.resource?.stream}
 				</Badge>
 			);
 		}
 		return (
-			<Badge color="blue" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
+			<Badge color="blue.9" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
 				{privilege.privilege} of {privilege.resource?.stream === '*' ? 'All' : privilege.resource?.stream}
 			</Badge>
 		);
@@ -120,7 +120,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 				openDeletePrivilege();
 				setDeletePrivilegeIndex(i);
 			}}>
-			<IconX size={rem(10)} />
+			<IconX />
 		</ActionIcon>
 	);
 
@@ -280,14 +280,14 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 					) : getRolePrivilegeLoading ? (
 						'loading..'
 					) : privileges ? (
-						<Group >
+						<Group>
 							{getBadges(privileges)}
 							<Tooltip
 								label={'Add a Privilege'}
 								style={{ color: 'white', backgroundColor: 'black' }}
 								withArrow
 								position="right">
-								<ActionIcon size={'xs'} radius={'lg'} color="green" onClick={openUpdateRole}>
+								<ActionIcon size={'xs'} radius={'lg'} color="green.9" onClick={openUpdateRole}>
 									<IconPlus onClick={openUpdateRole} />
 								</ActionIcon>
 							</Tooltip>
@@ -299,15 +299,16 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 				<td>
 					<Box style={{ height: '100%', width: '100%', whiteSpace: 'nowrap', textAlign: 'center' }}>
 						<Tooltip label={'Delete'} style={{ color: 'white', backgroundColor: 'black' }} withArrow position="right">
-							<Button
+							<ActionIcon
 								variant="default"
-								className={classes.actionBtn}
+								radius={'md'}
+								size={'lg'}
 								aria-label="Delete user"
 								onClick={() => {
 									openDeleteRole();
 								}}>
-								<IconTrash size={px('1.2rem')} stroke={1.5} />
-							</Button>
+								<IconTrash stroke={1.5} />
+							</ActionIcon>
 						</Tooltip>
 					</Box>
 				</td>
@@ -333,13 +334,12 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 				<Group justify="right" mt={10}>
 					<Button
 						variant="filled"
-						color="gray"
-						className={classes.modalActionBtn}
+						color="green.9"
 						disabled={UserInput === roleName ? false : true}
 						onClick={handleDelete}>
 						Delete
 					</Button>
-					<Button onClick={handleCloseDelete} variant="outline" color="gray" className={classes.modalCancelBtn}>
+					<Button onClick={handleCloseDelete} variant="default">
 						Cancel
 					</Button>
 				</Group>
@@ -369,8 +369,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 					<Group justify="right" mt={10}>
 						<Button
 							variant="filled"
-							color="gray"
-							className={classes.modalActionBtn}
+							color="green.9"
 							disabled={UserInput === roleName ? false : true}
 							onClick={handlePrivilegeDelete}>
 							Delete
@@ -378,7 +377,6 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 						<Button
 							onClick={handleClosePrivilegeDelete}
 							variant="outline"
-							color="gray"
 							className={classes.modalCancelBtn}>
 							Cancel
 						</Button>
@@ -442,15 +440,10 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 				</Stack>
 
 				<Group justify="right" mt={10}>
-					<Button
-						variant="filled"
-						color="gray"
-						className={classes.modalActionBtn}
-						disabled={updateRoleVaildtion()}
-						onClick={handleUpadterole}>
+					<Button variant="filled" color="green.9" disabled={updateRoleVaildtion()} onClick={handleUpadterole}>
 						Add privilege
 					</Button>
-					<Button onClick={handleCloseUpdateRole} variant="outline" color="gray" className={classes.modalCancelBtn}>
+					<Button onClick={handleCloseUpdateRole} >
 						Cancel
 					</Button>
 				</Group>

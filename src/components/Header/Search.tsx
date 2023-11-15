@@ -48,7 +48,7 @@ const Search: FC = () => {
 				onKeyDown={handleKeyDown}
 				onChange={onSearchValueChange}
 				placeholder="Search"
-				leftSection={<IconSearch size={px('1.2rem')} stroke={1.5} />}
+				leftSection={<IconSearch  stroke={1.5} />}
 			/>
 		</Box>
 	);

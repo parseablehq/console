@@ -117,11 +117,11 @@ const Users: FC = () => {
 				<Text size="xl">Users</Text>
 				<Button
 					variant="filled"
-					color="#00A477"
+					color="green.9"
 					onClick={() => {
 						setModalOpen(true);
 					}}
-					rightSection={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
+					rightSection={<IconUserPlus  stroke={1.5} />}>
 					Create users
 				</Button>
 			</Box>
@@ -130,9 +130,9 @@ const Users: FC = () => {
 					<thead className={classes.theadStyle}>
 						<tr>
 							<th>Username</th>
-							<th>Role</th>
-							<th style={{ textAlign: 'center' }}>Delete</th>
+							<th>Role(s)</th>
 							<th style={{ textAlign: 'center' }}>Reset Password</th>
+							<th style={{ textAlign: 'center' }}>Delete</th>
 						</tr>
 					</thead>
 					<tbody>{tableRows}</tbody>
@@ -198,6 +198,7 @@ const Users: FC = () => {
 					<Button
 						variant="filled"
 						className={classes.modalActionBtn}
+						color="green.9"
 						onClick={handleCreateUser}
 						disabled={createVaildtion()}>
 						Create

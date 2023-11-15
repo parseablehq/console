@@ -24,7 +24,7 @@ const CreateUser: FC = () => {
         onClick={handleOpen}
         position="left">
         <Button variant="default" className={refreshNowBtn} aria-label="create user">
-            <IconUserPlus size={px('1.2rem')} stroke={1.5} />
+            <IconUserPlus stroke={1.5} />
         </Button>
     </Tooltip>
 	);

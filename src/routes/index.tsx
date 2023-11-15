@@ -32,7 +32,7 @@ const AppRouter: FC = () => {
 	return (
 		<FullPageLayout>
 			<Routes>
-				<Route element={<PrivateRoute />}>
+				<Route element={<PrivateRoute />} >
 					<Route element={<MainLayoutElement />}>
 						<Route path={HOME_ROUTE} element={<HomeElement />}  />
 
@@ -40,10 +40,10 @@ const AppRouter: FC = () => {
 							<Route path={USERS_MANAGEMENT_ROUTE} element={<UsersElement />} />
 						</Route>
 
-						{/* <Route element={<AccessSpecificRoute accessRequired={['Query', 'GetSchema']} />}>
+						<Route element={<AccessSpecificRoute accessRequired={['Query', 'GetSchema']} />}>
 							<Route path={LOGS_ROUTE} element={<LogsElement />} />
-							<Route path={QUERY_ROUTE} element={<QueryElement />} />
-						</Route> */}
+							{/* <Route path={QUERY_ROUTE} element={<QueryElement />} /> */}
+						</Route>
 
 						<Route element={<AccessSpecificRoute accessRequired={['GetStats']} />}>
 							<Route path={STATS_ROUTE} element={<StatsElement />} />

@@ -140,7 +140,7 @@ const Retention: FC = () => {
 								<IconFileAlert />
 							</ThemeIcon>
 							<Text color="red">No Retention set</Text>
-							<Button color="brandPrimary.4" onClick={open}>
+							<Button color="green.9" onClick={open}>
 								Add Retention
 							</Button>
 						</Box>
@@ -176,7 +176,7 @@ const Retention: FC = () => {
 									<Text className={heading}>Duration : </Text>
 									<Text>{item.duration}</Text>
 								</Box>
-								<Button className={updateBtn} onClick={open}>
+								<Button color="green.9" onClick={open}>
 									Update Retention
 								</Button>
 							</Box>
@@ -223,10 +223,10 @@ const Retention: FC = () => {
 					</Stack>
 
 					<Group justify="right" mt={10}>
-						<Button variant="filled" color="green" type="submit">
+						<Button variant="filled" color="green.9" type="submit">
 							{dataRetention?.length ? 'Update' : 'Create'}
 						</Button>
-						<Button variant="outline" color="gray.6" onClick={modalClose}>
+						<Button variant="outline" color="gray" onClick={modalClose}>
 							Cancel
 						</Button>
 					</Group>

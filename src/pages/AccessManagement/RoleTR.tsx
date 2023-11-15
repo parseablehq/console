@@ -12,7 +12,6 @@ import {
 	Text,
 	TextInput,
 	Tooltip,
-	px,
 	rem,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
@@ -99,13 +98,13 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				openDeleteRole();
 				setDeleteRole(role);
 			}}>
-			<IconX size={rem(10)} />
+			<IconX />
 		</ActionIcon>
 	);
 
 	const getBadge = (role: any, withAction: boolean) => {
 		return (
-			<Badge color="#0074FF" rightSection={withAction ? removeButton(role) : ''} variant={'light'}>
+			<Badge color="blue.9" rightSection={withAction ? removeButton(role) : ''} variant={'light'}>
 				{role}
 			</Badge>
 		);
@@ -191,7 +190,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 					<Group>
 						{getBadges(userRole)}
 						<Tooltip label={'Add a Role'} style={{ color: 'white', backgroundColor: 'black' }} withArrow ta="right">
-							<ActionIcon size={'xs'} radius={'lg'} color="#00A477" onClick={openEditModal}>
+							<ActionIcon size={'xs'} radius={'lg'} color="green.9" onClick={openEditModal}>
 								<IconPlus />
 							</ActionIcon>
 						</Tooltip>
@@ -200,21 +199,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 					<Badge color="red">Error</Badge>
 				)}
 			</td>
-			<td>
-				<Box style={{ height: '100%', width: '100%', whiteSpace: 'nowrap', textAlign: 'center' }}>
-					<Tooltip label={'Delete'} style={{ color: 'white', backgroundColor: 'black' }} withArrow ta="right">
-						<Button
-							variant="default"
-							className={classes.actionBtn}
-							aria-label="Delete user"
-							onClick={() => {
-								openDelete();
-							}}>
-							<IconTrash size={px('1.2rem')} stroke={1.5} />
-						</Button>
-					</Tooltip>
-				</Box>
-			</td>
+
 			<td>
 				<Box style={{ height: '100%', width: '100%', whiteSpace: 'nowrap', textAlign: 'center' }}>
 					<Tooltip
@@ -222,16 +207,33 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						style={{ color: 'white', backgroundColor: 'black' }}
 						withArrow
 						ta="right">
-						<Button
+						<ActionIcon
 							variant="default"
-							className={classes.actionBtn}
+							radius={'md'}
+							size={'lg'}
 							onClick={() => {
 								if (user.method === 'native') {
 									open();
 								}
 							}}>
-							<IconTransform size={px('1.2rem')} stroke={1.5} />
-						</Button>
+							<IconTransform stroke={1.5} />
+						</ActionIcon>
+					</Tooltip>
+				</Box>
+			</td>
+			<td>
+				<Box style={{ height: '100%', width: '100%', whiteSpace: 'nowrap', textAlign: 'center' }}>
+					<Tooltip label={'Delete'} style={{ color: 'white', backgroundColor: 'black' }} withArrow ta="right">
+						<ActionIcon
+							variant="default"
+							radius={'md'}
+							size={'lg'}
+							aria-label="Delete user"
+							onClick={() => {
+								openDelete();
+							}}>
+							<IconTrash stroke={1.5} />
+						</ActionIcon>
 					</Tooltip>
 				</Box>
 			</td>
@@ -256,8 +258,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				<Group justify="right" mt={10}>
 					<Button
 						variant="filled"
-						color="gray"
-						className={classes.modalActionBtn}
+						color="green.9"
 						disabled={UserInput === user.id ? false : true}
 						onClick={handleDelete}>
 						Delete
@@ -292,8 +293,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 					<Group justify="right" mt={10}>
 						<Button
 							variant="filled"
-							color="gray"
-							className={classes.modalActionBtn}
+							color="green.9"
 							disabled={UserInput === user.id ? false : true}
 							onClick={handleRoleDelete}>
 							Delete
@@ -352,8 +352,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 					{user.method === 'native' ? (
 						<Button
 							variant="filled"
-							color="gray"
-							className={classes.modalActionBtn}
+							color="green.9"
 							onClick={handleResetPassword}
 							disabled={UserInput === user.id ? false : true}>
 							Reset Password
@@ -394,12 +393,11 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				<Group justify="right" mt={10}>
 					<Button
 						variant="filled"
-						color="gray"
-						className={classes.modalActionBtn}
+						color="green.9"
 						onClick={handleEditUserRole}
 						//if role is already assigned or no role is selected then disable the button
 						disabled={userRole && (Object.keys(userRole).includes(SelectedRole) || SelectedRole === '') ? true : false}>
-						Create
+						Add role
 					</Button>
 					<Button onClick={handleCloseRoleEdit} variant="outline" color="gray" className={classes.modalCancelBtn}>
 						Cancel

@@ -24,7 +24,7 @@ const RefreshNow: FC = () => {
 
 	return (
 		<Button className={refreshNowBtn} onClick={onRefresh}>
-			<IconReload size={px('1.2rem')} stroke={1.5} />
+			<IconReload  stroke={1.5} />
 		</Button>
 	);
 };

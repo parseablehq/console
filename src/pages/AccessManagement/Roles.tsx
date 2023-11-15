@@ -10,6 +10,7 @@ import { IconLockAccess, IconPencil } from '@tabler/icons-react';
 import { usePutRole } from '@/hooks/usePutRole';
 import { usePutDefaultRole } from '@/hooks/usePutDefaultRole';
 import { useGetDefaultRole } from '@/hooks/useGetDefaultRole';
+import { useNavigate } from 'react-router-dom';
 const Roles: FC = () => {
 	useDocumentTitle('Parseable | Users');
 	const {
@@ -41,6 +42,7 @@ const Roles: FC = () => {
 	const { data: CreatedRoleResponse, putRolePrivilege, resetData: resetCreateRoleData } = usePutRole();
 	const { data: roles, error: rolesError, loading: rolesLoading, getRolesList, resetData: rolesReset } = useGetRoles();
 
+	const navigate = useNavigate();	
 	const [tableRows, setTableRows] = useState<any>([]);
 	useEffect(() => {
 		getRolesList();
@@ -86,7 +88,7 @@ const Roles: FC = () => {
 
 	useEffect(() => {
 		if (CreatedRoleResponse) {
-			getRolesList();
+			navigate(0);
 		}
 	}, [CreatedRoleResponse]);
 
@@ -190,23 +192,23 @@ const Roles: FC = () => {
 				<Text size="xl">Roles</Text>
 				<Box>
 					<Button
-						variant="outline"
-						color="brandSecondary"
+						variant="filled"
+						color="green.9"
 						onClick={() => {
 							setModalOpen(true);
 						}}
-						rightSection={<IconLockAccess size={px('1.2rem')} stroke={1.5} />}>
+						rightSection={<IconLockAccess  stroke={1.5} />}>
 						Create role
 					</Button>
 					{oidcActive ? (
 						<Button
-							variant="outline"
-							color="brandSecondary"
-							ml={"md"}
+							variant="filled"
+							color="green.9"
+							ml={'md'}
 							onClick={() => {
 								setDefaultRoleModalOpen(true);
 							}}
-							rightSection={<IconPencil size={px('1.2rem')} stroke={1.5} />}>
+							rightSection={<IconPencil  stroke={1.5} />}>
 							Set default oidc role
 						</Button>
 					) : (
@@ -249,16 +251,14 @@ const Roles: FC = () => {
 				<Group justify="right" mt={10}>
 					<Button
 						variant="filled"
-						color="gray"
-						className={classes.modalActionBtn}
+						color="green.9"
 						disabled={defaultRoleVaildtion()}
 						onClick={handleSetDefaultRole}>
 						Set default
 					</Button>
 					<Button
 						onClick={handleDefaultRoleModalClose}
-						variant="outline"
-						color="gray"
+						variant="default"
 						className={classes.modalCancelBtn}>
 						Cancel
 					</Button>
@@ -324,7 +324,7 @@ const Roles: FC = () => {
 				</Stack>
 
 				<Group justify="right" mt={10}>
-					<Button className={classes.modalActionBtn} disabled={createVaildtion()} onClick={handleCreateRole}>
+					<Button variant="filled" color="green.9" disabled={createVaildtion()} onClick={handleCreateRole}>
 						Create
 					</Button>
 					<Button onClick={handleClose} variant="outline" color="gray" className={classes.modalCancelBtn}>

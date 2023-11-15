@@ -46,6 +46,7 @@
 	position: absolute;
 	transition: all 0.4s ease-in-out;
 	top: 39px;
+	z-index: 1;
 }
 .collapseButtonIcon {
 	transition: all 0.4s ease-in-out;

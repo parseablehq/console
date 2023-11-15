@@ -43,7 +43,7 @@ const HelpCard: FC<HelpCardProps> = (props) => {
 	return (
 		<Tooltip label={data.description} position="bottom" withArrow style={{ color: 'white', backgroundColor: 'black' }}>
 			<Button className={HelpIconBox} component={'a'} href={data.href} target="_blank">
-				<data.icon size={px('1.2rem')} stroke={1.5} />
+				<data.icon  stroke={1.5} />
 			</Button>
 		</Tooltip>
 	);
@@ -89,13 +89,11 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 		container,
 		aboutTitle,
 		aboutDescription,
-		actionBtn,
 		helpIconContainer,
 		aboutTextBox,
 		aboutTextKey,
 		aboutTextValue,
 		aboutTextInnerBox,
-		actionBtnRed,
 	} = classes;
 
 	return (
@@ -116,11 +114,11 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 								<Text className={aboutTextKey}> License: </Text>
 								<Text className={aboutTextValue}> {data.license} </Text>
 								<Button
-									variant="outline"
+									variant="filled"
 									component={'a'}
 									href="mailto:sales@parseable.io?subject=Production%20Support%20Query"
 									target="_blank"
-									className={actionBtn}>
+									color="green.9">
 									Upgrade to production support
 								</Button>
 							</Box>
@@ -139,8 +137,8 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 										component={'a'}
 										href="https://github.com/parseablehq/parseable/releases/latest"
 										target="_blank"
-										className={actionBtnRed}
-										leftSection={<IconAlertCircle size={px('1.2rem')} stroke={1.5} />}>
+										color='red'
+										leftSection={<IconAlertCircle  stroke={1.5} />}>
 										Upgrade to latest version {data.latestVersion}
 									</Button>
 								) : null}

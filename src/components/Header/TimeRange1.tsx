@@ -52,7 +52,7 @@ const TimeRange: FC = () => {
 	return (
 		<Menu withArrow position="top" opened={opened} onChange={setOpened}>
 			<Menu.Target>
-				<Button className={timeRangeBTn} leftSection={<IconClock size={px('1.2rem')} stroke={1.5} />}>
+				<Button className={timeRangeBTn} leftSection={<IconClock stroke={1.5} />}>
 					<Text>{selectedRange}</Text>
 				</Button>
 			</Menu.Target>

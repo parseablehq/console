@@ -1,6 +1,6 @@
 import { useGetLogStreamAlert } from '@/hooks/useGetLogStreamAlert';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { ActionIcon, Box, Button, Group, Modal, ScrollArea, Text, px } from '@mantine/core';
+import { ActionIcon, Box, Button, Group, Modal, ScrollArea, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { FC, useEffect } from 'react';
 import classes from './Alerts.module.css';
@@ -64,7 +64,7 @@ const Alerts: FC = () => {
 	const onCloseAlert = () => {
 		setAlertQuery(JSON.stringify(data, null, 2));
 		closeAlert();
-	}
+	};
 
 	const onSubmitAlertQuery = () => {
 		let alertQueryObj = {};
@@ -129,8 +129,8 @@ const Alerts: FC = () => {
 		<ScrollArea className={container}>
 			<Box className={headContainer}>
 				<Text className={alertsText}>Alerts</Text>
-				<ActionIcon variant="outline" color="brandSecondary" onClick={openAlert}>
-					<IconEdit size={px('1.2rem')} stroke={1.5} />
+				<ActionIcon variant="default" radius={'md'} size={'lg'} onClick={openAlert}>
+					<IconEdit stroke={1.5} />
 				</ActionIcon>
 			</Box>
 			<Box className={alertsContainer}>
@@ -143,13 +143,14 @@ const Alerts: FC = () => {
 								<Box className={alertContainer} key={item.name + index}>
 									<Text>Name: {item.name}</Text>
 									<ActionIcon
-										variant="outline"
-										color="gray.6"
+										variant="default"
+										radius={'md'}
+										size={'lg'}
 										onClick={() => {
 											setAlert(item);
 											open();
 										}}>
-										<IconArrowsMaximize size={px('1.2rem')} stroke={1.5} />
+										<IconArrowsMaximize stroke={1.5} />
 									</ActionIcon>
 								</Box>
 							);
@@ -170,29 +171,28 @@ const Alerts: FC = () => {
 				title={'Edited Alerts'}
 				fullScreen
 				scrollAreaComponent={ScrollArea.Autosize}>
-				<Box>
-					<Box >
-						<Editor
-							onChange={handleAlertQueryEditorChange}
-							value={alertQuery}
-							defaultLanguage="json"
-							options={{
-								scrollBeyondLastLine: false,
-								readOnly: false,
-								fontSize: 12,
-								wordWrap: 'on',
-								minimap: { enabled: false },
-								automaticLayout: true,
-								mouseWheelZoom: true,
-								glyphMargin: true,
-							}}
-						/>
-					</Box>
+				<Box >
+					<Editor
+						onChange={handleAlertQueryEditorChange}
+						value={alertQuery}
+						defaultLanguage="json"
+						height={'calc(100vh - 110px)'}
+						options={{
+							scrollBeyondLastLine: false,
+							readOnly: false,
+							fontSize: 12,
+							wordWrap: 'on',
+							minimap: { enabled: false },
+							automaticLayout: true,
+							mouseWheelZoom: true,
+							glyphMargin: true,
+						}}
+					/>
 					<Group justify="right" mt={10}>
-						<Button color="green" onClick={onSubmitAlertQuery}>
+						<Button color="green.9" onClick={onSubmitAlertQuery}>
 							Submit
 						</Button>
-						<Button color="red" onClick={onCloseAlert}>
+						<Button variant="default" onClick={onCloseAlert}>
 							Cancel
 						</Button>
 					</Group>

@@ -62,10 +62,10 @@ const QueryResultEditor: FC = () => {
 				<Text className={textContext}>Result</Text>
 				<Box style={{ height: '100%', width: '100%', textAlign: 'right' }}>
 					<Button variant="default" className={actionBtn} onClick={runCopy}>
-						<IconClipboard size={px('1.2rem')} stroke={1.5} />
+						<IconClipboard  stroke={1.5} />
 					</Button>
 					<Button variant="default" onClick={runFind} className={actionBtn}>
-						<IconSearch size={px('1.2rem')} stroke={1.5} />
+						<IconSearch  stroke={1.5} />
 					</Button>
 				</Box>
 			</Box>

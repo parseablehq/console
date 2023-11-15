@@ -8,7 +8,7 @@ const Reload: FC = () => {
 
 	return (
 		<Tooltip label="Refresh" withArrow position="left">
-			<ActionIcon variant="default" onClick={() => navigate(0)} radius={'md'} size={'lg'}>
+			<ActionIcon variant="default"  radius={'md'} size={'lg'} onClick={() => navigate(0)}>
 				<IconReload stroke={1.5} />
 			</ActionIcon>
 		</Tooltip>
