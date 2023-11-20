@@ -1,0 +1,206 @@
+/* mycontainer, myrow, mycell, col
+.mycontainer {
+	margin: 5px;
+	background-color: rgba(0, 0, 0, 1);
+	overflow-x: auto;
+	
+}
+.myrow {
+	margin: 5px;
+	display: inline-flex; 
+  flex-direction: column;
+	background-color: rgba(255, 0, 0, 1);
+}
+.mycell {
+	
+	display: flex;
+	flex-direction: row;
+	height: 48px;
+	background-color: #e7eff5;
+	border-bottom: 1px solid red;
+}
+.col {
+	
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 48px;
+	background-color: #fff;
+	width: 300px;
+	background: transparent;
+	background-color: #f8f9fb;
+} */
+
+.mycontainer {
+
+		flex-direction: column;
+	flex: 1 1 auto;
+	overflow: scroll;
+	align-items: flex-start;
+
+}
+.col {
+	display: flex;
+	flex-direction: column;
+	width: max-content; /* note this usage */
+}
+.myrow {
+	display: flex;
+	flex-direction: row;
+	height: 48px;
+	background-color: #e7eff5;
+	border-bottom: 1px solid red;
+}
+.mycell {
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 48px;
+	background-color: #fff;
+	width: 300px;
+	background: transparent;
+	background-color: #f8f9fb;
+}
+
+.container {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+	overflow: scroll;
+	align-items: flex-start;
+}
+
+.innerContainer {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+	overflow: scroll;
+	align-items: flex-start;
+}
+
+.tableContainer {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+	overflow: scroll;
+}
+
+.pinnedTableContainer {
+}
+
+.pinnedScrollView {
+	overflow: unset !important;
+}
+
+.tableStyle {
+	white-space: nowrap;
+	overflow: scroll;
+	padding: 0;
+}
+
+.theadStyle {
+	position: sticky;
+	background-color: var(--mantine-color-white);
+	top: 0;
+}
+
+.theadStylePinned {
+	position: sticky;
+	top: 0;
+	background-color: var(--mantine-color-white);
+}
+
+.trStyle {
+	cursor: pointer;
+	background-color: var(--mantine-color-white);
+	&:hover {
+		background-color: var(--mantine-color-gray-1);
+	}
+	z-index: 2;
+}
+
+.trEvenStyle {
+	cursor: pointer;
+	background-color: var(--mantine-color-gray-0);
+	&:hover {
+		background-color: var(--mantine-color-gray-1);
+	}
+	z-index: 2;
+}
+
+.tdArrowContainer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.tdArrow {
+	position: sticky;
+	right: 0;
+	background: inherit;
+	box-shadow: var(--mantine-shadow-sm);
+	tr:hover & {
+		background-color: var(--mantine-color-gray-1);
+	}
+}
+
+.thColumnMenuBtn {
+	width: var(--mantine-spacing-6);
+	height: var(--mantine-spacing-6);
+}
+
+.thColumnMenuResetBtn {
+	margin: var(--mantine-spacing-sm);
+}
+
+.thColumnMenuDropdown {
+	max-height: var(--mantine-spacing-96);
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+
+.thColumnMenuDragHandle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	color: var(--mantine-color-gray-6);
+	padding-right: var(--mantine-spacing-md);
+}
+
+.thColumnMenuDraggable {
+	display: flex;
+}
+
+.footerContainer {
+	padding: var(--mantine-spacing-xs);
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	border-top: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+
+.errorContainer {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: var(--mantine-spacing-full);
+}
+
+.limitActive {
+	background: var(--mantine-color-brandPrimary-4);
+	font-weight: var(--mantine-font-weight-medium);
+	color: var(--mantine-color-white);
+	&:hover {
+		background-color: var(--mantine-color-brandPrimary-4);
+	}
+}
+
+.limitOption {
+	font-weight: var(--mantine-font-weight-normal);
+	&:hover {
+		color: var(--mantine-color-brandPrimary-4);
+	}
+}

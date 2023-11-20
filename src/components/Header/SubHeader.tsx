@@ -64,10 +64,8 @@ export const LogsHeader: FC = () => {
 
 			<Box>
 				<Box className={innerContainer}>
-					<Search />
-					{/* <Reload /> */}
-					{/* <LimitLog /> */}
-
+					{/* <Search /> */}
+					<Reload />
 					<TimeRange />
 					<RefreshInterval />
 				</Box>

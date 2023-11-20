@@ -24,7 +24,7 @@ export const useLogTableStyles = createStyles((theme) => {
 		container: {
 			position: 'relative',
 			flex: 1,
-			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2 }px )`,
+			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2}px )`,
 			display: 'flex',
 			flexDirection: 'column',
 			overflow: 'hidden',
@@ -33,7 +33,7 @@ export const useLogTableStyles = createStyles((theme) => {
 		innerContainer: {
 			position: 'relative',
 			flex: 1,
-			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2 }px)`,
+			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2}px)`,
 			display: 'flex',
 			flexDirection: 'column',
 			overflow: 'hidden',
@@ -369,7 +369,6 @@ export const useHeaderPaginationStyle = createStyles((theme) => {
 	};
 });
 
-
 export const useCarouselSlideStyle = createStyles((theme) => {
 	const { spacing, colors } = theme;
 	const { sizing } = theme.other;
@@ -385,8 +384,5 @@ export const useCarouselSlideStyle = createStyles((theme) => {
 				background: colors.gray[1],
 			},
 		},
-
-
-	}
-
+	};
 });

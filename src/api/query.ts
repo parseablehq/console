@@ -1,16 +1,10 @@
 import { Axios } from './axios';
 import { LOG_QUERY_URL } from './constants';
-import { LogsQuery } from '@/@types/parseable/api/query';
+import { LogsQuery, QueryAPI } from '@/@types/parseable/api/query';
 
-type QueryLogs = {
-	streamName: string;
-	startTime: Date;
-	endTime: Date;
-	limit: number;
-	pageOffset: number;
-};
 
-export const getQueryLogs = (logsQuery: QueryLogs) => {
+
+export const getQueryLogs = (logsQuery: QueryAPI) => {
 	const { startTime, endTime, streamName, limit, pageOffset } = logsQuery;
 
 	const query = `SELECT * FROM ${streamName} LIMIT ${limit} OFFSET ${pageOffset}`;

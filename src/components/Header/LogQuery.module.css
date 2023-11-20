@@ -13,45 +13,17 @@
 	align-items: center;
 }
 
-.intervalBtn {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	background: var(--mantine-colors-white-0);
-	color: var(--mantine-colors-gray-6);
-	min-width: var(--mantine-sizes-20);
-	border: var(--mantine-sizes-px) var(--mantine-colors-gray-2) solid;
-	padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
-	margin-right: var(--mantine-spacing-xs);
-}
-.intervalBtn:hover {
-	background: var(--mantine-colors-gray-1);
-}
-
 .refreshNowBtn {
-	background: var(--mantine-colors-white-0);
+	background: var(--mantine-color-white-0);
 	padding: 0;
 	margin-right: var(--mantine-spacing-xs);
 	width: 36px;
-	color: var(--mantine-colors-gray-6);
-	border: var(--mantine-sizes-px) var(--mantine-colors-gray-2) solid;
+	color: var(--mantine-color-gray-6);
+	border: var(--mantine-sizes-px) var(--mantine-color-gray-2) solid;
 }
 
 .refreshNowBtn:hover {
-	background: var(--mantine-colors-gray-1);
-}
-
-.timeRangeBTn {
-	color: var(--mantine-colors-gray-6);
-	border: var(--mantine-sizes-px) var(--mantine-colors-gray-2) solid;
-	min-width: var(--mantine-sizes-20);
-	padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
-	margin-right: var(--mantine-spacing-xs);
-	background: var(--mantine-colors-white-0);
-}
-
-.timeRangeBTn:hover {
-	background: var(--mantine-colors-gray-1);
+	background: var(--mantine-color-gray-1);
 }
 
 .timeRangeContainer {
@@ -61,17 +33,13 @@
 .fixedRangeContainer {
 	display: flex;
 	flex-direction: column;
-	background: var(--mantine-colors-gray-0);
 }
 
 .fixedRangeBtn {
-	color: var(--mantine-colors-black);
+	color: var(--mantine-color-black);
 	padding: var(--mantine-spacing-sm);
 	font-size: var(--mantine-font-size-sm);
-}
-
-.fixedRangeBtn:hover {
-	background: var(--mantine-colors-gray-1);
+	background: var(--mantine-color-gray-0);
 }
 
 .fixedRangeBtn:first-of-type {
@@ -82,15 +50,19 @@
 	border-bottom-left-radius: var(--mantine-radius-sm);
 }
 
-.fixedRangeBtnSelected {
-	background: var(--mantine-colors-brandPrimary-0);
-	font-weight: var(--mantine-font-weight-semiBold);
-	color: var(--mantine-colors-white-0);
+.fixedRangeBtn:hover {
+	background: var(--mantine-color-gray-3);
+}
+.fixedRangeBtn:disabled {
+	cursor: not-allowed;
+	background: var(--mantine-color-brandPrimary-4);
+	font-weight: 600;
+	color: var(--mantine-color-white);
 }
 
 .customRangeContainer {
 	padding: var(--mantine-spacing-xs) var(--mantine-spacing-lg);
-	min-width: var(--mantine-sizes-80);
+	min-width: 20rem;
 	flex: 1;
 	display: flex;
 	flex-direction: column;
@@ -104,38 +76,30 @@
 	align-items: center;
 }
 
-.customTimeRangeApplyBtn {
-	background: var(--mantine-colors-brandPrimary-0);
-}
-
-.customTimeRangeApplyBtn:hover {
-	background: var(--mantine-colors-brandSecondary-0);
-}
-
 .searchContainer {
 	display: flex;
 	padding-right: var(--mantine-spacing-sm);
 }
 
 .searchTypeBtn {
-	border: var(--mantine-sizes-px) var(--mantine-colors-gray-1) solid;
+	border: var(--mantine-sizes-px) var(--mantine-color-gray-1) solid;
 	border-top-right-radius: 0;
 	border-bottom-right-radius: 0;
-	background: var(--mantine-colors-brandPrimary-0);
-	color: var(--mantine-colors-white-0);
+	background: var(--mantine-color-brandPrimary-0);
+	color: var(--mantine-color-white-0);
 	border-right: none;
 	font-weight: var(--mantine-font-weight-semiBold);
 	padding-right: var(--mantine-spacing-sm);
 }
 
 .searchTypeActive {
-	background: var(--mantine-colors-brandPrimary-0);
+	background: var(--mantine-color-brandPrimary-0);
 	font-weight: var(--mantine-font-weight-medium);
-	color: var(--mantine-colors-white-0);
+	color: var(--mantine-color-white-0);
 }
 
 .searchTypeActive:hover {
-	background: var(--mantine-colors-brandSecondary-0);
+	background: var(--mantine-color-brandSecondary-0);
 }
 
 .searchInput {
@@ -144,12 +108,12 @@
 }
 
 .searchInput input {
-	background: var(--mantine-colors-white-0);
-	border: var(--mantine-sizes-px) var(--mantine-colors-gray-2) solid;
+	background: var(--mantine-color-white-0);
+	border: var(--mantine-sizes-px) var(--mantine-color-gray-2) solid;
 	border-radius: var(--mantine-radius-sm);
 	font-weight: var(--mantine-font-weight-medium);
 }
 
 .searchInput input:hover {
-	background: var(--mantine-colors-gray-1);
+	background: var(--mantine-color-gray-1);
 }

@@ -41,7 +41,7 @@ const FilterPills: FC = () => {
 	return (
 		<Fragment>
 			{filters.length ? (
-				<Group position="left" mt="md" ml="md">
+				<Group justify="left" mt="md" ml="md">
 					{filters.map((key) => {
 						return (
 							<Badge

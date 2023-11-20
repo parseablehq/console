@@ -1,4 +1,4 @@
-import { Tbody, Thead } from '@/components/Table';
+// import { Tbody, Thead } from '@/components/Table';
 import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useQueryLogs } from '@/hooks/useQueryLogs';
 import {
@@ -21,7 +21,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { FC } from 'react';
 import { LOG_QUERY_LIMITS, useLogsPageContext } from './Context';
 import LogRow from './LogRow';
-import { useLogTableStyles } from './styles';
+import classes from './Logs.module.css';
 import useMountedState from '@/hooks/useMountedState';
 import ErrorText from '@/components/Text/ErrorText';
 import { IconSelector, IconGripVertical, IconPin, IconPinFilled, IconSettings } from '@tabler/icons-react';
@@ -35,6 +35,7 @@ import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import dayjs from 'dayjs';
 import { SortOrder } from '@/@types/parseable/api/query';
 import { usePagination } from '@mantine/hooks';
+import { Tbody, Thead } from '@/components/Table';
 
 const skipFields = ['p_metadata', 'p_tags'];
 const loadLimit = 9000;
@@ -44,7 +45,7 @@ const LogTable: FC = () => {
 		state: { subLogStreamError },
 	} = useLogsPageContext();
 	const {
-		state: { subLogSearch, subLogQuery, subRefreshInterval, subLogSelectedTimeRange },
+		state: { subLogSearch, subAppContext, subRefreshInterval, subTimeRange },
 	} = useHeaderContext();
 
 	const [refreshInterval, setRefreshInterval] = useMountedState<number | null>(null);
@@ -145,21 +146,23 @@ const LogTable: FC = () => {
 		setColumnToggles(new Map());
 	};
 	const onRetry = () => {
-		const query = subLogQuery.get();
+		const streamName = subAppContext.get().selectedStream;
+		const startTime = subTimeRange.get().startTime;
+		const endTime = subTimeRange.get().endTime;
 		resetStreamData();
 		resetLogsData();
 		resetColumns();
 		setPageOffset(0);
 
-		if (query) {
+		if (streamName) {
 			getQueryData({
-				streamName: query.streamName,
-				startTime: query.startTime,
-				endTime: query.endTime,
-				limit: loadLimit,
+				streamName: streamName,
 				pageOffset: 0,
+				limit: loadLimit,
+				startTime: startTime,
+				endTime: endTime,
 			});
-			getDataSchema(query.streamName);
+			getDataSchema(streamName);
 		}
 	};
 	// const onRetry = () => {
@@ -185,21 +188,23 @@ const LogTable: FC = () => {
 	// };
 
 	useEffect(() => {
-		if (subLogQuery.get()) {
-			const query = subLogQuery.get();
+		if (subAppContext.get().selectedStream) {
+			const streamName = subAppContext.get().selectedStream;
+			const startTime = subTimeRange.get().startTime;
+			const endTime = subTimeRange.get().endTime;
 			resetColumns();
 			setPageOffset(0);
 			resetStreamData();
 			resetLogsData();
-			if (query) {
+			if (streamName) {
 				getQueryData({
-					streamName: query.streamName,
-					startTime: query.startTime,
-					endTime: query.endTime,
+					streamName: streamName,
+					startTime: startTime,
+					endTime: endTime,
 					limit: loadLimit,
 					pageOffset: 0,
 				});
-				getDataSchema(query.streamName);
+				getDataSchema(streamName);
 			}
 		}
 	}, []);
@@ -222,27 +227,49 @@ const LogTable: FC = () => {
 		// 	}
 		// });
 
-		const subLogQueryListener = subLogQuery.subscribe((state) => {
+		const subLogQueryListener = subAppContext.subscribe((state) => {
 			setPageOffset(0);
 			resetLogsData();
 			resetStreamData();
 			resetColumns();
+			const startTime = subTimeRange.get().startTime;
+			const endTime = subTimeRange.get().endTime;
 
-			if (state) {
+			if (state.selectedStream) {
 				getQueryData({
-					streamName: state.streamName,
-					startTime: state.startTime,
-					endTime: state.endTime,
+					streamName: state.selectedStream,
+					startTime: startTime,
+					endTime: endTime,
 					limit: loadLimit,
 					pageOffset: 0,
 				});
-				getDataSchema(state.streamName);
+				getDataSchema(state.selectedStream);
+			}
+		});
+		const subTimeRangeListener = subTimeRange.subscribe((state) => {
+			const streamName = subAppContext.get().selectedStream;
+			const startTime = state.startTime;
+			const endTime = state.endTime;
+			setPageOffset(0);
+			resetLogsData();
+			resetStreamData();
+			resetColumns();
+			if (streamName) {
+				getQueryData({
+					streamName: streamName,
+					startTime: startTime,
+					endTime: endTime,
+					limit: loadLimit,
+					pageOffset: 0,
+				});
+				getDataSchema(streamName);
 			}
 		});
 
 		return () => {
 			streamErrorListener();
 			subLogQueryListener();
+			subTimeRangeListener();
 			// subID();
 			refreshIntervalListener();
 			logSearchListener();
@@ -250,31 +277,33 @@ const LogTable: FC = () => {
 	}, [logsSchema]);
 
 	useEffect(() => {
-		const state = subLogQuery.get();
+		const streamName = subAppContext.get().selectedStream ?? '';
+		const startTime = subTimeRange.get().startTime;
+		const endTime = subTimeRange.get().endTime;
 		getQueryData({
-			streamName: state.streamName,
-			startTime: state.startTime,
-			endTime: state.endTime,
+			streamName: streamName,
+			startTime: startTime,
+			endTime: endTime,
 			limit: loadLimit,
 			pageOffset: pageOffset,
 		});
 	}, [pageOffset]);
 
-	useEffect(() => {
-		if (subRefreshInterval.get()) {
-			const interval = setInterval(() => {
-				if (subLogSelectedTimeRange.get().state === 'fixed') {
-					const now = dayjs();
-					const timeDiff = subLogQuery.get().endTime.getTime() - subLogQuery.get().startTime.getTime();
-					subLogQuery.set((state) => {
-						state.startTime = now.subtract(timeDiff).toDate();
-						state.endTime = now.toDate();
-					});
-				}
-			}, subRefreshInterval.get() as number);
-			return () => clearInterval(interval);
-		}
-	}, [refreshInterval]);
+	// useEffect(() => {
+	// 	if (subRefreshInterval.get()) {
+	// 		const interval = setInterval(() => {
+	// 			if (subLogSelectedTimeRange.get().state === 'fixed') {
+	// 				const now = dayjs();
+	// 				const timeDiff = subLogQuery.get().endTime.getTime() - subLogQuery.get().startTime.getTime();
+	// 				subLogQuery.set((state) => {
+	// 					state.startTime = now.subtract(timeDiff).toDate();
+	// 					state.endTime = now.toDate();
+	// 				});
+	// 			}
+	// 		}, subRefreshInterval.get() as number);
+	// 		return () => clearInterval(interval);
+	// 	}
+	// }, [refreshInterval]);
 
 	const renderTh = useMemo(() => {
 		if (logsSchema) {
@@ -322,8 +351,6 @@ const LogTable: FC = () => {
 		return null;
 	}, [logsSchema, columnToggles, logs, sort, pinnedColumns]);
 
-	const { classes } = useLogTableStyles();
-
 	const {
 		container,
 		innerContainer,
@@ -368,75 +395,73 @@ const LogTable: FC = () => {
 			{!(logStreamError || logStreamSchemaError || logsError) ? (
 				Boolean(logsSchema?.fields.length) && Boolean(pageLogData?.data.length) ? (
 					<Box className={innerContainer}>
-						<Box className={innerContainer} style={{ display: 'flex', flexDirection: 'row' }}>
-							<ScrollArea
-								w={`${pinnedColumnsWidth}px`}
-								className={pinnedScrollView}
-								styles={() => ({
-									scrollbar: {
-										'&[data-orientation="vertical"] .mantine-ScrollArea-thumb': {
-											display: 'none',
-										},
-									},
-								})}
-								onMouseEnter={() => {
-									active.current = 'left';
-								}}
-								viewportRef={leftRef}
-								onScrollPositionChange={({ y }) => {
-									if (active.current === 'right') return;
-									rightRef.current!.scrollTop = y;
-								}}>
-								<Box className={pinnedTableContainer} ref={pinnedContianerRef}>
-									<Table className={tableStyle}>
-										<Thead className={theadStylePinned}>{renderPinnedTh}</Thead>
-										<Tbody>
-											<LogRow
-												logData={pageLogData?.data || []}
-												logsSchema={logsSchema?.fields.filter((field) => isColumnPinned(field.name)) || []}
-												isColumnActive={isColumnActive}
-											/>
-										</Tbody>
-									</Table>
-								</Box>
-							</ScrollArea>
-							{pinnedColumnsWidth > 0 && <Box style={{ height: '100%', borderLeft: '1px solid #ccc' }} />}
-							<ScrollArea
-								onMouseEnter={() => {
-									active.current = 'right';
-								}}
-								viewportRef={rightRef}
-								onScrollPositionChange={({ y }) => {
-									if (active.current === 'left') return;
-									leftRef.current!.scrollTop = y;
-								}}>
-								<Box className={tableContainer}>
-									<Table className={tableStyle}>
-										<Thead className={theadStyle}>
-											{renderTh}
-											<ThColumnMenu
-												logSchemaFields={logsSchema?.fields || []}
-												columnToggles={columnToggles}
-												toggleColumn={toggleColumn}
-												isColumnActive={isColumnActive}
-												reorderColumn={reorderSchemaFields}
-												isColumnPinned={isColumnPinned}
-												toggleColumnPinned={toggleColumnPinned}
-												resetColumns={resetColumns}
-											/>
-										</Thead>
-										<Tbody>
-											<LogRow
-												logData={pageLogData?.data || []}
-												logsSchema={logsSchema?.fields.filter((field) => !isColumnPinned(field.name)) || []}
-												isColumnActive={isColumnActive}
-												rowArrows={true}
-											/>
-										</Tbody>
-									</Table>
-								</Box>
-							</ScrollArea>
-						</Box>
+						<ScrollArea
+							w={`${pinnedColumnsWidth}px`}
+							className={pinnedScrollView}
+							// styles={() => ({
+							// 	scrollbar: {
+							// 		'&[data-orientation="vertical"] .mantine-ScrollArea-thumb': {
+							// 			display: 'none',
+							// 		},
+							// 	},
+							// })}
+							onMouseEnter={() => {
+								active.current = 'left';
+							}}
+							viewportRef={leftRef}
+							onScrollPositionChange={({ y }) => {
+								if (active.current === 'right') return;
+								rightRef.current!.scrollTop = y;
+							}}>
+							<Box className={pinnedTableContainer} ref={pinnedContianerRef}>
+								<Table className={tableStyle}>
+									<Thead className={theadStylePinned}>{renderPinnedTh}</Thead>
+									<Tbody>
+										<LogRow
+											logData={pageLogData?.data || []}
+											logsSchema={logsSchema?.fields.filter((field) => isColumnPinned(field.name)) || []}
+											isColumnActive={isColumnActive}
+										/>
+									</Tbody>
+								</Table>
+							</Box>
+						</ScrollArea>
+						{pinnedColumnsWidth > 0 && <Box style={{ height: '100%', borderLeft: '1px solid #ccc' }} />}
+						<ScrollArea
+							onMouseEnter={() => {
+								active.current = 'right';
+							}}
+							viewportRef={rightRef}
+							onScrollPositionChange={({ y }) => {
+								if (active.current === 'left') return;
+								leftRef.current!.scrollTop = y;
+							}}>
+							<Box className={tableContainer}>
+								<Table className={tableStyle}>
+									<Thead className={theadStyle}>
+										{renderTh}
+										<ThColumnMenu
+											logSchemaFields={logsSchema?.fields || []}
+											columnToggles={columnToggles}
+											toggleColumn={toggleColumn}
+											isColumnActive={isColumnActive}
+											reorderColumn={reorderSchemaFields}
+											isColumnPinned={isColumnPinned}
+											toggleColumnPinned={toggleColumnPinned}
+											resetColumns={resetColumns}
+										/>
+									</Thead>
+									<Tbody>
+										<LogRow
+											logData={pageLogData?.data || []}
+											logsSchema={logsSchema?.fields.filter((field) => !isColumnPinned(field.name)) || []}
+											isColumnActive={isColumnActive}
+											rowArrows={true}
+										/>
+									</Tbody>
+								</Table>
+							</Box>
+						</ScrollArea>
 					</Box>
 				) : pageLogData?.data.length === 0 ? (
 					<EmptyBox message="No Data Available" />
@@ -445,19 +470,13 @@ const LogTable: FC = () => {
 				)
 			) : (
 				<Center className={errorContainer}>
-					<ErrorText>{logStreamError || logStreamSchemaError || logsError}</ErrorText>
+					{/* <ErrorText>{logStreamError || logStreamSchemaError || logsError || ''}</ErrorText> */}
 					{(logsError || logStreamSchemaError) && <RetryBtn onClick={onRetry} mt="md" />}
 				</Center>
 			)}
 			<Box className={footerContainer}>
 				<Box></Box>
 				{!loading && !logsLoading ? (
-					// <Pagination
-					// 	total={pageLogData?.totalPages || 1}
-					// 	value={pageLogData?.page || 1}
-					// 	onChange={(page) => {
-					// 		goToPage(page, pageLogData?.limit || 1);
-					// 	}}></Pagination>
 
 					<Pagination.Root
 						total={pageLogData?.totalPages || 1}
@@ -466,7 +485,7 @@ const LogTable: FC = () => {
 							goToPage(page, pageLogData?.limit || 1);
 							pagination.setPage(page);
 						}}>
-						<Group spacing={5} position="center">
+						<Group gap={7}>
 							<Pagination.First
 								onClick={() => {
 									if (pageOffset !== 0) setPageOffset((value) => value - loadLimit);
@@ -524,7 +543,7 @@ type ThColumnMenuItemProps = {
 
 const ThColumnMenuItem: FC<ThColumnMenuItemProps> = (props) => {
 	const { field, index, toggleColumn, isColumnActive, toggleColumnPinned, isColumnPinned } = props;
-	const { classes } = useLogTableStyles();
+
 	if (skipFields.includes(field.name)) return null;
 
 	return (
@@ -577,7 +596,6 @@ const ThColumnMenu: FC<ThColumnMenuProps> = (props) => {
 		resetColumns,
 	} = props;
 
-	const { classes } = useLogTableStyles();
 	const { thColumnMenuBtn, thColumnMenuDropdown, thColumnMenuResetBtn } = classes;
 
 	const pinnedFields = logSchemaFields.filter((field) => isColumnPinned(field.name));
@@ -662,36 +680,29 @@ const LimitControl: FC<LimitControlProps> = (props) => {
 		}
 	};
 
-	const { classes } = useLogTableStyles();
-	const { limitContainer, limitBtn, limitBtnText, limitActive, limitOption } = classes;
-
+	const { limitActive, limitOption } = classes;
 	return (
-		<Box className={limitContainer}>
-			<Menu withArrow withinPortal shadow="md" opened={opened} onChange={setOpened}>
-				<Center>
-					<Menu.Target>
-						<Box onClick={toggle} className={limitBtn}>
-							<Text className={limitBtnText}>{value}</Text>
-							<IconSelector size={px('1rem')} />
-						</Box>
-					</Menu.Target>
-				</Center>
-				<Menu.Dropdown>
-					{LOG_QUERY_LIMITS.map((limit) => {
-						return (
-							<Menu.Item
-								className={limit === value ? limitActive : limitOption}
-								key={limit}
-								onClick={() => onSelect(limit)}>
-								<Center>
-									<Text>{limit}</Text>
-								</Center>
-							</Menu.Item>
-						);
-					})}
-				</Menu.Dropdown>
-			</Menu>
-		</Box>
+		<Menu withArrow withinPortal shadow="md" opened={opened} onChange={setOpened}>
+			<Menu.Target>
+				<Button onClick={toggle} variant="default" rightSection={<IconSelector stroke={1.5} size={px('1rem')} />}>
+					{value}
+				</Button>
+			</Menu.Target>
+			<Menu.Dropdown>
+				{LOG_QUERY_LIMITS.map((limit) => {
+					return (
+						<Menu.Item
+							className={limit === value ? limitActive : limitOption}
+							key={limit}
+							onClick={() => onSelect(limit)}>
+							<Center>
+								<Text>{limit}</Text>
+							</Center>
+						</Menu.Item>
+					);
+				})}
+			</Menu.Dropdown>
+		</Menu>
 	);
 };
 

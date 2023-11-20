@@ -1,7 +1,7 @@
 import { Button, ButtonProps, px } from '@mantine/core';
 import { IconReload } from '@tabler/icons-react';
 import { FC } from 'react';
-import { useButtonStyles } from './styles';
+import classes from './Button.module.css';
 
 type RetryProps = ButtonProps & {
 	onClick: () => void;
@@ -10,11 +10,13 @@ type RetryProps = ButtonProps & {
 export const RetryBtn: FC<RetryProps> = (props) => {
 	const { className, ...restProps } = props;
 
-	const { classes, cx } = useButtonStyles();
 	const { retryBtn } = classes;
 
 	return (
-		<Button className={cx([retryBtn, className])} rightIcon={<IconReload size={px('0.8rem')} />} {...restProps}>
+		<Button
+			className={[retryBtn, className].join(' ')}
+			rightSection={<IconReload size={px('0.8rem')} />}
+			{...restProps}>
 			Reload
 		</Button>
 	);

@@ -4,7 +4,7 @@ import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Carousel } from '@mantine/carousel';
 import { Box, Button, Text, Tooltip, px } from '@mantine/core';
 import dayjs from 'dayjs';
-import { useHeaderPaginationStyle } from './styles';
+import classes from "./Logs.module.css"
 
 import { FC, useEffect } from 'react';
 import FillCarousel from './CarouselSlide';
@@ -166,11 +166,10 @@ const HeaderPagination: FC = () => {
 		}
 	};
 
-	const { classes } = useHeaderPaginationStyle();
 	return (
 		<Box
 			h={105}
-			sx={{
+			style={{
 				overflow: 'hidden',
 			}}>
 			{gapMinute === 0 || queryCountLoading ? (
@@ -220,7 +219,7 @@ const HeaderPagination: FC = () => {
 
 						<Carousel.Slide>
 							<Button
-								sx={{
+								style={{
 									backgroundColor: '#fff',
 									color: '#211F1F',
 									border: '1px solid #ccc',

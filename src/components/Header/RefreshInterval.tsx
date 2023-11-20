@@ -5,7 +5,6 @@ import { IconRefresh, IconRefreshOff } from '@tabler/icons-react';
 import ms from 'ms';
 import type { FC } from 'react';
 import { useEffect, useMemo } from 'react';
-import classes from './LogQuery.module.css';
 
 const RefreshInterval: FC = () => {
 	const {
@@ -27,13 +26,10 @@ const RefreshInterval: FC = () => {
 	const onSelectedInterval = (interval: number | null) => {
 		subRefreshInterval.set(interval);
 	};
-
-	const { intervalBtn } = classes;
-
 	return (
 		<Menu withArrow>
 			<Menu.Target>
-				<Button className={intervalBtn} rightSection={<Icon stroke={1.5} />}>
+				<Button variant="default" rightSection={<Icon stroke={1.5} />}>
 					<Text>{selectedInterval ? ms(selectedInterval) : 'Off'}</Text>
 				</Button>
 			</Menu.Target>

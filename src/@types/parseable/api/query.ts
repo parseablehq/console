@@ -1,3 +1,5 @@
+import { FIXED_DURATIONS } from '@/layouts/MainLayout/Context';
+
 export type LogsQuery = {
 	streamName: string;
 	startTime: Date;
@@ -58,3 +60,27 @@ export type AppContext = {
 	userSpecificStreams: string[] | null;
 	userRoles: UserRoles | null;
 };
+
+type AbsoluteTimeRange = {
+	startTime: Date;
+	endTime: Date;
+	state: 'absolute';
+	name: string;
+};
+
+type RelativeTimeRange = {
+	startTime: (typeof FIXED_DURATIONS)[number]['value'];
+	endTime: 'now';
+	state: 'relative';
+	name: string;
+};
+
+export type TimeRange = AbsoluteTimeRange | RelativeTimeRange;
+
+export type QueryAPI={
+	startTime: Date| typeof FIXED_DURATIONS[number]['value'];
+	endTime: Date|"now";
+	streamName: string;
+	limit: number;
+	pageOffset: number;
+}
