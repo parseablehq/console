@@ -14,7 +14,6 @@ import {
 } from '@mantine/core';
 import {
 	IconZoomCode,
-	IconTableShortcut,
 	IconReportAnalytics,
 	IconChevronRight,
 	IconInfoHexagon,
