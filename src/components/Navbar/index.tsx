@@ -34,6 +34,9 @@ import { AppContext, PageOption } from '@/@types/parseable/api/query';
 import InfoModal from './infoModal';
 import { useDisclosure } from '@mantine/hooks';
 const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
+import logoCircle from '@/assets/images/brand/logo-circle.svg';
+import logoText from '@/assets/images/brand/logo-text.svg'
+
 
 interface NavbarLinkProps {
 	icon: typeof IconZoomCode;
@@ -133,8 +136,8 @@ export const navigatetoHome = () => {
 };
 
 const data = [
-	{ icon: IconZoomCode, label: 'SQL', pathname: '/sql', requiredAccess: ['Query', 'GetSchema'] },
-	{ icon: IconTableShortcut, label: 'Explore', pathname: '/explore', requiredAccess: ['Query', 'GetSchema'] },
+	// { icon: IconZoomCode, label: 'SQL', pathname: '/sql', requiredAccess: ['Query', 'GetSchema'] },
+	// { icon: IconTableShortcut, label: 'Explore', pathname: '/explore', requiredAccess: ['Query', 'GetSchema'] },
 	{ icon: IconReportAnalytics, label: 'Management', pathname: '/management', requiredAccess: ['GetStats', 'PutAlert'] },
 ];
 
@@ -272,8 +275,8 @@ export default function Navbar() {
 						setCollapsed(!collapsed);
 					}}
 					className={classes.imageContainer}>
-					<Image src={'/src/assets/images/brand/logo-circle.svg'} w={50} />
-					<Image src={'/src/assets/images/brand/logo-text.svg'} w={115} />
+					<Image src={logoCircle} w={50} />
+					<Image src={logoText} w={115} />
 				</UnstyledButton>
 
 				<div className={classes.navbarMain}>
