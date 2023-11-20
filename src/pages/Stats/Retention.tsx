@@ -104,7 +104,7 @@ const Retention: FC = () => {
 		close();
 	};
 
-	const { headContainer, IconStyle, container, contentContainer, iconBox, heading, updateBtn, modalStyle } = classes;
+	const { headContainer, IconStyle, container, contentContainer, iconBox, heading, modalStyle } = classes;
 
 	return (
 		<Box className={container}>

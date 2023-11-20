@@ -107,7 +107,7 @@ const Column: FC<Column> = (props) => {
 		return word.charAt(0).toUpperCase() + word.slice(1);
 	}
 
-	const { labelBtn, applyBtn, labelIcon, labelIconActive, searchInputStyle, filterText } = classes;
+	const { labelBtn, applyBtn, searchInputStyle, filterText } = classes;
 
 	return (
 		<th style={{

@@ -2,7 +2,7 @@ import React, { FC, useCallback, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useQueryPageContext } from './Context';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Box, Button, Text, TextInput, Tooltip, px } from '@mantine/core';
+import { Box, Button, Text, TextInput, Tooltip } from '@mantine/core';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import { ErrorMarker, errChecker } from './ErrorMarker';
 import { notifications } from '@mantine/notifications';

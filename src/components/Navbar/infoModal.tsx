@@ -1,4 +1,4 @@
-import { Box, Button, Modal, Text, Tooltip, px } from '@mantine/core';
+import { Box, Button, Modal, Text, Tooltip } from '@mantine/core';
 import { FC, useEffect, useMemo } from 'react';
 import classes from './InfoModal.module.css';
 import { useGetAbout } from '@/hooks/useGetAbout';

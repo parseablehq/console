@@ -23,7 +23,7 @@ import { LOG_QUERY_LIMITS, useLogsPageContext } from './Context';
 import LogRow from './LogRow';
 import classes from './Logs.module.css';
 import useMountedState from '@/hooks/useMountedState';
-import ErrorText from '@/components/Text/ErrorText';
+// import ErrorText from '@/components/Text/ErrorText';
 import { IconSelector, IconGripVertical, IconPin, IconPinFilled, IconSettings } from '@tabler/icons-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Field } from '@/@types/parseable/dataType';
@@ -32,7 +32,7 @@ import { RetryBtn } from '@/components/Button/Retry';
 import Column from './Column';
 import FilterPills from './FilterPills';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import dayjs from 'dayjs';
+// import dayjs from 'dayjs';
 import { SortOrder } from '@/@types/parseable/api/query';
 import { usePagination } from '@mantine/hooks';
 import { Tbody, Thead } from '@/components/Table';
@@ -45,10 +45,10 @@ const LogTable: FC = () => {
 		state: { subLogStreamError },
 	} = useLogsPageContext();
 	const {
-		state: { subLogSearch, subAppContext, subRefreshInterval, subTimeRange },
+		state: { subLogSearch, subAppContext, subTimeRange },
 	} = useHeaderContext();
 
-	const [refreshInterval, setRefreshInterval] = useMountedState<number | null>(null);
+	// const [refreshInterval, setRefreshInterval] = useMountedState<number | null>(null);
 	const [logStreamError, setLogStreamError] = useMountedState<string | null>(null);
 	const [columnToggles, setColumnToggles] = useMountedState<Map<string, boolean>>(new Map());
 	const [pinnedColumns, setPinnedColumns] = useMountedState<Set<string>>(new Set());
@@ -212,7 +212,7 @@ const LogTable: FC = () => {
 	useEffect(() => {
 		const streamErrorListener = subLogStreamError.subscribe(setLogStreamError);
 		const logSearchListener = subLogSearch.subscribe(setQuerySearch);
-		const refreshIntervalListener = subRefreshInterval.subscribe(setRefreshInterval);
+		// const refreshIntervalListener = subRefreshInterval.subscribe(setRefreshInterval);
 		// const subID = subGapTime.subscribe((data) => {
 		// 	if (data) {
 		// 		getQueryData({
@@ -271,7 +271,7 @@ const LogTable: FC = () => {
 			subLogQueryListener();
 			subTimeRangeListener();
 			// subID();
-			refreshIntervalListener();
+			// refreshIntervalListener();
 			logSearchListener();
 		};
 	}, [logsSchema]);

@@ -3,7 +3,8 @@ import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Table, Box, Title, Button, ScrollArea } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
-import { useQuerySchemaListStyles } from './styles';
+// import { useQuerySchemaListStyles } from './styles';
+import classes from "./Query.module.css"
 import { useQueryPageContext } from './Context';
 
 const QuerySchemaList: FC = () => {
@@ -53,7 +54,6 @@ const QuerySchemaList: FC = () => {
 		}
 	});
 
-	const { classes } = useQuerySchemaListStyles();
 	const { actionBtn, container, textContext, theadSt, tbodySt, innercontainer, scrollAreaSt } = classes;
 
 	return (

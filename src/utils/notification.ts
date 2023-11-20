@@ -1,7 +1,7 @@
-import type { NotificationProps } from '@mantine/notifications';
+import type { NotificationData } from '@mantine/notifications';
 import { showNotification } from '@mantine/notifications';
 
-export const notifyError = (payload?: Partial<NotificationProps>) => {
+export const notifyError = (payload?: Partial<NotificationData>) => {
 	const title = ['string', 'undefined'].includes(typeof payload?.title) ? payload?.title : 'Oops!';
 	const message = payload?.message || 'Something went wrong!.';
 	const color = payload?.color || 'red';
@@ -15,7 +15,7 @@ export const notifyError = (payload?: Partial<NotificationProps>) => {
 	});
 };
 
-export const notify = (payload: NotificationProps) => {
+export const notify = (payload: NotificationData) => {
 	const color = payload.color || 'green';
 	const autoClose = payload.autoClose || 6000;
 	showNotification({

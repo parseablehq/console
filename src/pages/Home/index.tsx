@@ -15,7 +15,7 @@ interface StreamInfoProp {
 	streamname: string;
 }
 function StreamInfo({ streamname }: StreamInfoProp) {
-	const { data, loading, error, resetData, getLogStat } = useGetLogStreamStat();
+	const { data, loading, error, getLogStat } = useGetLogStreamStat();
 	useEffect(() => {
 		getLogStat(streamname);
 	}, []);

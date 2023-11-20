@@ -153,8 +153,8 @@ export default function Navbar() {
 	const [collapsed, setCollapsed] = useMountedState(true);
 	const [appContext, setAppContext] = useMountedState<AppContext>(subAppContext.get());
 
-	const { data: streams, error, getData, resetData: resetStreamArray } = useGetLogStreamList();
-	const { data: userRoles, getRoles, resetData } = useGetUserRole();
+	const { data: streams } = useGetLogStreamList();
+	const { data: userRoles, getRoles } = useGetUserRole();
 
 	useEffect(() => {
 		if (username) {

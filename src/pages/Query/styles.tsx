@@ -1,191 +1,191 @@
-import { HEADER_HEIGHT } from '@/constants/theme';
+// import { HEADER_HEIGHT } from '@/constants/theme';
 
-import { createStyles } from '@mantine/core';
+// // import { createStyles } from '@mantine/core';
 
-export const useQueryStyles = createStyles((theme) => {
-	const { colors, shadows } = theme;
-	const { heights, widths } = theme.other;
-	const sColor = colors.brandSecondary[0];
-	const pColor = colors.brandPrimary[0];
+// export const useQueryStyles = createStyles((theme) => {
+// 	const { colors, shadows } = theme;
+// 	const { heights, widths } = theme.other;
+// 	const sColor = colors.brandSecondary[0];
+// 	const pColor = colors.brandPrimary[0];
 
-	return {
-		container: {
-			flex: 1,
-			display: 'flex',
-			position: 'relative',
-			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2}px)`,
-		},
-		innerContainer: {
-			position: 'relative',
-			flex: 1,
-			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2}px)`,
-			display: 'flex',
-			flexDirection: 'column',
-			overflow: 'hidden',
-		},
-		runQueryBtn: {
-			background: pColor,
-			color: 'white',
-			height: '40px',
-			marginRight: '5px',
-			'&:hover': {
-				background: sColor,
-			},
-		},
-		actionBtn: {
-			'&:hover': {
-				color: sColor,
-			},
-			height: '25px',
-			marginRight: '5px',
-		},
-		schemaContainer: {
-			border: `${widths.px} ${colors.gray[1]} solid`,
-			boxShadow: shadows.sm,
-			maxWidth: '500px',
-		},
-	};
-});
+// 	return {
+// 		container: {
+// 			flex: 1,
+// 			display: 'flex',
+// 			position: 'relative',
+// 			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2}px)`,
+// 		},
+// 		innerContainer: {
+// 			position: 'relative',
+// 			flex: 1,
+// 			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2}px)`,
+// 			display: 'flex',
+// 			flexDirection: 'column',
+// 			overflow: 'hidden',
+// 		},
+// 		runQueryBtn: {
+// 			background: pColor,
+// 			color: 'white',
+// 			height: '40px',
+// 			marginRight: '5px',
+// 			'&:hover': {
+// 				background: sColor,
+// 			},
+// 		},
+// 		actionBtn: {
+// 			'&:hover': {
+// 				color: sColor,
+// 			},
+// 			height: '25px',
+// 			marginRight: '5px',
+// 		},
+// 		schemaContainer: {
+// 			border: `${widths.px} ${colors.gray[1]} solid`,
+// 			boxShadow: shadows.sm,
+// 			maxWidth: '500px',
+// 		},
+// 	};
+// });
 
-export const useQueryCodeEditorStyles = createStyles((theme) => {
-	const { colors, spacing, fontFamily, fontSizes } = theme;
-	const { fontWeights } = theme.other;
-	const sColor = colors.brandSecondary[0];
-	const pColor = colors.brandPrimary[0];
+// export const useQueryCodeEditorStyles = createStyles((theme) => {
+// 	const { colors, spacing, fontFamily, fontSizes } = theme;
+// 	const { fontWeights } = theme.other;
+// 	const sColor = colors.brandSecondary[0];
+// 	const pColor = colors.brandPrimary[0];
 
-	return {
-		container: {
-			display: 'flex',
-			borderBottom: `solid 1px ${colors.gray[2]}`,
-			alignItems: 'center',
-			height: '55px',
-			padding: `${spacing.xs} ${spacing.md}`,
-			width: '100%',
-		},
-		runQueryBtn: {
-			color: pColor,
-			borderColor: colors.gray[2],
-			height: '34px',
-			width: '34px',
-			padding: '0px',
-			'&:hover': {
-				color: sColor,
-			},
-			marginInlineEnd: spacing.xs,
-		},
-		actionBtn: {
-			'&:hover': {
-				color: sColor,
-			},
-			height: '34px',
-			width: '34px',
-			padding: '0px',
-			marginInlineEnd: spacing.xs,
-			color: colors.gray[5],
-			borderColor: colors.gray[2],
-		},
-		textContext: {
-			marginRight: spacing.md,
-			fontSize: fontSizes.md,
-			fontFamily: fontFamily,
-			fontWeight: fontWeights.semibold,
-		},
-	};
-});
+// 	return {
+// 		container: {
+// 			display: 'flex',
+// 			borderBottom: `solid 1px ${colors.gray[2]}`,
+// 			alignItems: 'center',
+// 			height: '55px',
+// 			padding: `${spacing.xs} ${spacing.md}`,
+// 			width: '100%',
+// 		},
+// 		runQueryBtn: {
+// 			color: pColor,
+// 			borderColor: colors.gray[2],
+// 			height: '34px',
+// 			width: '34px',
+// 			padding: '0px',
+// 			'&:hover': {
+// 				color: sColor,
+// 			},
+// 			marginInlineEnd: spacing.xs,
+// 		},
+// 		actionBtn: {
+// 			'&:hover': {
+// 				color: sColor,
+// 			},
+// 			height: '34px',
+// 			width: '34px',
+// 			padding: '0px',
+// 			marginInlineEnd: spacing.xs,
+// 			color: colors.gray[5],
+// 			borderColor: colors.gray[2],
+// 		},
+// 		textContext: {
+// 			marginRight: spacing.md,
+// 			fontSize: fontSizes.md,
+// 			fontFamily: fontFamily,
+// 			fontWeight: fontWeights.semibold,
+// 		},
+// 	};
+// });
 
-export const useQueryResultEditorStyles = createStyles((theme) => {
-	const { colors, spacing, fontFamily, fontSizes } = theme;
-	const { fontWeights } = theme.other;
-	const sColor = colors.brandSecondary[0];
+// export const useQueryResultEditorStyles = createStyles((theme) => {
+// 	const { colors, spacing, fontFamily, fontSizes } = theme;
+// 	const { fontWeights } = theme.other;
+// 	const sColor = colors.brandSecondary[0];
 
-	return {
-		container: {
-			display: 'flex',
-			alignItems: 'center',
-			borderBottom: `solid 1px ${colors.gray[2]}`,
-			height: '55px',
-			padding: `${spacing.xs} ${spacing.md}`,
-		},
-		actionBtn: {
-			'&:hover': {
-				color: sColor,
-			},
-			height: '34px',
-			width: '34px',
-			padding: '0px',
-			marginInlineEnd: spacing.xs,
-			color: colors.gray[5],
-			borderColor: colors.gray[2],
-		},
-		textContext: {
-			marginRight: spacing.md,
-			fontSize: fontSizes.md,
-			fontFamily: fontFamily,
-			fontWeight: fontWeights.semibold,
-		},
-	};
-});
+// 	return {
+// 		container: {
+// 			display: 'flex',
+// 			alignItems: 'center',
+// 			borderBottom: `solid 1px ${colors.gray[2]}`,
+// 			height: '55px',
+// 			padding: `${spacing.xs} ${spacing.md}`,
+// 		},
+// 		actionBtn: {
+// 			'&:hover': {
+// 				color: sColor,
+// 			},
+// 			height: '34px',
+// 			width: '34px',
+// 			padding: '0px',
+// 			marginInlineEnd: spacing.xs,
+// 			color: colors.gray[5],
+// 			borderColor: colors.gray[2],
+// 		},
+// 		textContext: {
+// 			marginRight: spacing.md,
+// 			fontSize: fontSizes.md,
+// 			fontFamily: fontFamily,
+// 			fontWeight: fontWeights.semibold,
+// 		},
+// 	};
+// });
 
-export const useQuerySchemaListStyles = createStyles((theme) => {
-	const { colors, spacing, fontFamily, fontSizes } = theme;
-	const { fontWeights } = theme.other;
-	const sColor = colors.brandSecondary[0];
+// export const useQuerySchemaListStyles = createStyles((theme) => {
+// 	const { colors, spacing, fontFamily, fontSizes } = theme;
+// 	const { fontWeights } = theme.other;
+// 	const sColor = colors.brandSecondary[0];
 
-	return {
-		container: {
-			maxWidth: '500px',
-			height: '100%',
-			overflow: 'auto',
-		},
-		innercontainer: {
-			display: 'flex',
-			alignItems: 'center',
-			borderBottom: `solid 1px ${colors.gray[2]}`,
-			height: '55px',
-			padding: `${spacing.xs} ${spacing.md}`,
-			justifyContent: 'space-between',
-			paddingRight: 0,
-		},
+// 	return {
+// 		container: {
+// 			maxWidth: '500px',
+// 			height: '100%',
+// 			overflow: 'auto',
+// 		},
+// 		innercontainer: {
+// 			display: 'flex',
+// 			alignItems: 'center',
+// 			borderBottom: `solid 1px ${colors.gray[2]}`,
+// 			height: '55px',
+// 			padding: `${spacing.xs} ${spacing.md}`,
+// 			justifyContent: 'space-between',
+// 			paddingRight: 0,
+// 		},
 
-		actionBtn: {
-			color: colors.gray[3],
-			height: '34px',
-			width: '34px',
-			padding: '0px',
-			borderColor: colors.gray[2],
-			'&:hover': {
-				color: sColor,
-			},
-		},
-		textContext: {
-			marginRight: spacing.md,
-			fontSize: fontSizes.md,
-			fontFamily: fontFamily,
-			fontWeight: fontWeights.semibold,
-		},
-		theadSt: {
-			'& tr>th': {
-				backgroundColor: colors.gray[0],
-				fontSize: fontSizes.md,
-				fontFamily: fontFamily,
-				fontWeight: fontWeights.semibold,
-				color: colors.gray[3],
-				height: '34px',
-			},
-		},
-		tbodySt: {
-			'& tr>td': {
-				fontSize: fontSizes.md,
-				fontFamily: fontFamily,
-				borderTop: `solid 1px ${colors.gray[2]} !important`,
-				color: colors.gray[6],
-				height: '34px',
-			},
-		},
-		scrollAreaSt: {
-			maxWidth: '500px',
-			height: 'calc(100% - 55px)',
-			overflow: 'auto',
-		},
-	};
-});
+// 		actionBtn: {
+// 			color: colors.gray[3],
+// 			height: '34px',
+// 			width: '34px',
+// 			padding: '0px',
+// 			borderColor: colors.gray[2],
+// 			'&:hover': {
+// 				color: sColor,
+// 			},
+// 		},
+// 		textContext: {
+// 			marginRight: spacing.md,
+// 			fontSize: fontSizes.md,
+// 			fontFamily: fontFamily,
+// 			fontWeight: fontWeights.semibold,
+// 		},
+// 		theadSt: {
+// 			'& tr>th': {
+// 				backgroundColor: colors.gray[0],
+// 				fontSize: fontSizes.md,
+// 				fontFamily: fontFamily,
+// 				fontWeight: fontWeights.semibold,
+// 				color: colors.gray[3],
+// 				height: '34px',
+// 			},
+// 		},
+// 		tbodySt: {
+// 			'& tr>td': {
+// 				fontSize: fontSizes.md,
+// 				fontFamily: fontFamily,
+// 				borderTop: `solid 1px ${colors.gray[2]} !important`,
+// 				color: colors.gray[6],
+// 				height: '34px',
+// 			},
+// 		},
+// 		scrollAreaSt: {
+// 			maxWidth: '500px',
+// 			height: 'calc(100% - 55px)',
+// 			overflow: 'auto',
+// 		},
+// 	};
+// });

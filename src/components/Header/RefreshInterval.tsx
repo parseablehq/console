@@ -1,6 +1,6 @@
 import useMountedState from '@/hooks/useMountedState';
 import { REFRESH_INTERVALS, useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Button, Menu, Text, px } from '@mantine/core';
+import { Button, Menu, Text } from '@mantine/core';
 import { IconRefresh, IconRefreshOff } from '@tabler/icons-react';
 import ms from 'ms';
 import type { FC } from 'react';

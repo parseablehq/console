@@ -2,10 +2,11 @@ import React, { FC, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useQueryPageContext } from './Context';
 import useMountedState from '@/hooks/useMountedState';
-import { Box, Button, Text, px } from '@mantine/core';
+import { Box, Button, Text, } from '@mantine/core';
 import { IconClipboard, IconSearch, IconCheck } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
-import { useQueryResultEditorStyles } from './styles';
+// import { useQueryResultEditorStyles } from './styles';
+import classes from "./Query.module.css"
 
 const QueryResultEditor: FC = () => {
 	const {
@@ -54,7 +55,6 @@ const QueryResultEditor: FC = () => {
 			autoClose: 1000,
 		});
 	};
-	const { classes } = useQueryResultEditorStyles();
 	const { actionBtn, container, textContext } = classes;
 	return (
 		<Box style={{ height: '100%' }}>
@@ -69,7 +69,7 @@ const QueryResultEditor: FC = () => {
 					</Button>
 				</Box>
 			</Box>
-			<Box sx={{ marginTop: '5px', height: 'calc(100% - 60px)' }}>
+			<Box style={{ marginTop: '5px', height: 'calc(100% - 60px)' }}>
 				<Editor
 					height={'100%'}
 					defaultLanguage="json"

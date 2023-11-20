@@ -2,9 +2,9 @@ import {
 	ALL_ROUTE,
 	OIDC_NOT_CONFIGURED_ROUTE,
 	LOGIN_ROUTE,
-	CONFIG_ROUTE,
+	// CONFIG_ROUTE,
 	HOME_ROUTE,
-	LOGS_ROUTE,
+	// LOGS_ROUTE,
 	QUERY_ROUTE,
 	STATS_ROUTE,
 	USERS_MANAGEMENT_ROUTE,
@@ -18,11 +18,11 @@ import AccessSpecificRoute from './AccessSpecificRoute';
 import {
 	LoginElement,
 	HomeElement,
-	LogsElement,
+	// LogsElement,
 	QueryElement,
 	MainLayoutElement,
 	StatsElement,
-	ConfigElement,
+	// ConfigElement,
 	UsersElement,
 } from './elements';
 
@@ -41,8 +41,8 @@ const AppRouter: FC = () => {
 						</Route>
 
 						<Route element={<AccessSpecificRoute accessRequired={['Query', 'GetSchema']} />}>
-							<Route path={LOGS_ROUTE} element={<LogsElement />} />
-							{/* <Route path={QUERY_ROUTE} element={<QueryElement />} /> */}
+							{/* <Route path={LOGS_ROUTE} element={<LogsElement />} /> */}
+							<Route path={QUERY_ROUTE} element={<QueryElement />} />
 						</Route>
 
 						<Route element={<AccessSpecificRoute accessRequired={['GetStats']} />}>

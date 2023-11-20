@@ -49,12 +49,12 @@ const Logs: FC = () => {
 						</Box>
 					</PanelResizeHandle>
 					<Panel defaultSize={60}>
-						{/* <QueryResultEditor /> */}
+						<QueryResultEditor />
 					</Panel>
 				</PanelGroup>
 			</Box>
 			<Box className={schemaContainer} display={isSchemaOpen ? '' : 'none'}>
-				{/* <QuerySchemaList /> */}
+				<QuerySchemaList />
 			</Box>
 		</Box>
 	);

@@ -2,7 +2,6 @@ import { Box } from '@mantine/core';
 import type { FC } from 'react';
 import HeaderBreadcrumbs from './HeaderBreadcrumbs';
 import RefreshInterval from './RefreshInterval';
-import Search from './Search';
 import TimeRange from './TimeRange';
 import classes from './LogQuery.module.css';
 import DocsUser from './UserDocs';

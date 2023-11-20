@@ -30,7 +30,6 @@ import { useGetUserRole } from '@/hooks/useGetUserRoles';
 import { getStreamsSepcificAccess, getUserSepcificStreams } from './rolesHandler';
 import { LogStreamData } from '@/@types/parseable/api/stream';
 import Cookies from 'js-cookie';
-import { NAVBAR_WIDTH } from '@/constants/theme';
 const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 
 const links = [

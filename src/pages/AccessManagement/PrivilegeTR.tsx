@@ -10,8 +10,6 @@ import {
 	Text,
 	TextInput,
 	Tooltip,
-	UnstyledButton,
-	rem,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlus, IconTrash, IconX } from '@tabler/icons-react';

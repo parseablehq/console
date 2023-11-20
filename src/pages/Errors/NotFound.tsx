@@ -22,7 +22,7 @@ const NotFound: FC = () => {
 		nav(HOME_ROUTE, { replace: true });
 	};
 
-	const { container, illustration, titleStyle, descriptionStyle, btnStyle } = classes;
+	const { container, illustration, titleStyle, descriptionStyle } = classes;
 
 	return (
 		<Center className={container}>

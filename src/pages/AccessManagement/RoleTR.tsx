@@ -12,7 +12,6 @@ import {
 	Text,
 	TextInput,
 	Tooltip,
-	rem,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlus, IconTransform, IconTrash, IconX } from '@tabler/icons-react';

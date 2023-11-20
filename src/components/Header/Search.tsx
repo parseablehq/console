@@ -1,6 +1,6 @@
 import useMountedState from '@/hooks/useMountedState';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Box, TextInput, px } from '@mantine/core';
+import { Box, TextInput } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
 import type { ChangeEvent, FC, KeyboardEvent } from 'react';
 import { useEffect } from 'react';

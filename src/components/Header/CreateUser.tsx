@@ -1,4 +1,4 @@
-import { Button, Tooltip, px } from '@mantine/core';
+import { Button, Tooltip} from '@mantine/core';
 import {  IconUserPlus } from '@tabler/icons-react';
 import type { FC } from 'react';
 import classes from './LogQuery.module.css';
