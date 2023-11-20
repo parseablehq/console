@@ -1,40 +1,42 @@
 import { FC, useEffect } from 'react';
 import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Table, Box, Title, Button, ScrollArea } from '@mantine/core';
+import { Table, Box, ScrollArea, ActionIcon, Text } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
-// import { useQuerySchemaListStyles } from './styles';
-import classes from "./Query.module.css"
+
+import classes from './Query.module.css';
 import { useQueryPageContext } from './Context';
 
 const QuerySchemaList: FC = () => {
 	const { data: querySchema, getDataSchema, resetData, loading, error: logStreamSchemaError } = useGetLogStreamSchema();
 	const {
-		state: { subLogQuery },
+		state: { subAppContext },
 	} = useHeaderContext();
 	const {
 		state: { subSchemaToggle },
 	} = useQueryPageContext();
 
-
 	useEffect(() => {
 		const subSchemaToggleListener = subSchemaToggle.subscribe((state) => {
 			if (state) {
-				getDataSchema(subLogQuery.get().streamName);
+				if (subAppContext.get().selectedStream) {
+					getDataSchema(subAppContext.get().selectedStream ?? '');
+				}
 			}
 		});
-		const subQueryListener = subLogQuery.subscribe((state) => {
+		const subQueryListener = subAppContext.subscribe((state) => {
 			if (querySchema) {
 				resetData();
 			}
-			getDataSchema(state.streamName);
+			if (state.selectedStream) {
+				getDataSchema(state.selectedStream);
+			}
 		});
 		return () => {
 			subQueryListener();
 			subSchemaToggleListener();
 		};
 	}, [querySchema]);
-
 
 	const renderList = querySchema?.fields.map((field, index) => {
 		if (typeof field.data_type === 'string')
@@ -54,15 +56,24 @@ const QuerySchemaList: FC = () => {
 		}
 	});
 
-	const { actionBtn, container, textContext, theadSt, tbodySt, innercontainer, scrollAreaSt } = classes;
+	const { HeaderContainer, theadSt, tbodySt, innercontainer, scrollAreaSt } = classes;
 
 	return (
-		<Box className={container}>
-			<Box className={innercontainer}>
-				<Title className={textContext}> Schema for {subLogQuery.get().streamName}</Title>
-				<Button variant="default" className={actionBtn} onClick={() => subSchemaToggle.set((state) => !state)}>
+		<Box className={innercontainer}>
+			<Box className={HeaderContainer}
+			style={{
+				justifyContent:"space-between"
+			}}
+			>
+				<Text> Schema for {subAppContext.get().selectedStream}</Text>
+				<ActionIcon
+					variant="default"
+					radius={'md'}
+					mr={'md'}
+					size={'lg'}
+					onClick={() => subSchemaToggle.set((state) => !state)}>
 					<IconX />
-				</Button>
+				</ActionIcon>
 			</Box>
 
 			{!logStreamSchemaError ? (

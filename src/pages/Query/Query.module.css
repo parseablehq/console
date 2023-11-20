@@ -1,12 +1,5 @@
 /* {
-    container: {
-        display: 'flex',
-        borderBottom: `solid 1px ${colors.gray[2]}`,
-        alignItems: 'center',
-        height: '55px',
-        padding: `${spacing.xs} ${spacing.md}`,
-        width: '100%',
-    },
+
     runQueryBtn: {
         color: pColor,
         borderColor: colors.gray[2],
@@ -38,9 +31,9 @@
 } */
 
 .container {
-    display: flex;
-    flex: 1;
-    width: 100%;
+	display: flex;
+	flex: 1 1 auto;
+	width: 100%;
 }
 
 
@@ -80,3 +73,26 @@ schemaContainer: {
     maxWidth: '500px',
 },
 }; */
+
+
+.schemaContainer{
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+    max-width: 500px;
+}
+
+
+.HeaderContainer{
+    display: flex;
+    height: 55px;
+    align-items: center;
+    padding: var(--mantine-spacing-xs) var(--mantine-spacing-md);
+    border-bottom:  solid 1px var(--mantine-color-gray-4);
+}
+
+
+.innercontainer{
+    display: flex;
+    flex-direction: column;
+}
+

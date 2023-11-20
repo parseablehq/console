@@ -7,10 +7,10 @@ const Context = createContext({});
 
 const { Provider } = Context;
 
-export const defaultQueryResult = '';
+export const defaultQueryResult = null;
 
 interface QueryPageContextState {
-	result: SubData<string>;
+	result: SubData<{data:any}|null>;
 	subSchemaToggle: SubData<boolean>;
 }
 
@@ -27,7 +27,7 @@ interface QueryPageProviderProps {
 }
 
 const QueryPageProvider: FC<QueryPageProviderProps> = ({ children }) => {
-	const result = useSubscribeState<string>(defaultQueryResult);
+	const result = useSubscribeState<{data:any}|null>(defaultQueryResult);
 	const subSchemaToggle = useSubscribeState<boolean>(false);
 
 	const state: QueryPageContextState = {

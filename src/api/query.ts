@@ -20,7 +20,7 @@ export const getQueryLogs = (logsQuery: QueryAPI) => {
 	);
 };
 
-export const getQueryResult = (logsQuery: LogsQuery, query = '') => {
+export const getQueryResult = (logsQuery: QueryAPI, query = '') => {
 	const { startTime, endTime } = logsQuery;
 
 	return Axios().post(

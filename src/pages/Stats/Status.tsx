@@ -65,7 +65,8 @@ const Status: FC = () => {
 			streamName: subAppContext.get().selectedStream ?? '',
 			startTime: now.subtract(FIXED_DURATIONS[statusFIXEDDURATIONS].milliseconds, 'milliseconds').toDate(),
 			endTime: now.toDate(),
-			access: [],
+			limit: 10000,
+			pageOffset: 0,
 		};
 		setStatusFIXEDDURATIONS(statusFIXEDDURATIONS + 1);
 		getQueryData(LogQuery, `SELECT count(*) as count FROM ${subAppContext.get().selectedStream} ;`);

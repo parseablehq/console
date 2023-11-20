@@ -12,7 +12,7 @@ import useMountedState from '@/hooks/useMountedState';
 const Logs: FC = () => {
 	useDocumentTitle('Parseable | Query');
 
-	const { container, innerContainer, schemaContainer } = classes;
+	const { container, schemaContainer } = classes;
 	const {
 		state: { subSchemaToggle },
 	} = useQueryPageContext();
@@ -27,32 +27,31 @@ const Logs: FC = () => {
 
 	return (
 		<Box className={container}>
-			<Box className={innerContainer}>
-				<PanelGroup direction="vertical">
-					<Panel defaultSize={40}>
-						<QueryCodeEditor />
-					</Panel>
-					<PanelResizeHandle
+			<PanelGroup direction="vertical">
+				<Panel defaultSize={40}>
+					<QueryCodeEditor />
+				</Panel>
+				<PanelResizeHandle
+					style={{
+						height: '10px',
+						background: '#CCCCCC',
+					}}>
+					<Box
 						style={{
-							height: '10px',
-							background: '#CCCCCC',
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'center',
+							width: '100%',
+							height: '1px',
 						}}>
-						<Box
-							style={{
-								display: 'flex',
-								alignItems: 'center',
-								justifyContent: 'center',
-								width: '100%',
-								height: '1px',
-							}}>
-							&#8230;
-						</Box>
-					</PanelResizeHandle>
-					<Panel defaultSize={60}>
-						<QueryResultEditor />
-					</Panel>
-				</PanelGroup>
-			</Box>
+						&#8230;
+					</Box>
+				</PanelResizeHandle>
+				<Panel defaultSize={60}>
+					<QueryResultEditor />
+				</Panel>
+			</PanelGroup>
+
 			<Box className={schemaContainer} display={isSchemaOpen ? '' : 'none'}>
 				<QuerySchemaList />
 			</Box>

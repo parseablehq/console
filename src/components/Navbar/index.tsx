@@ -135,7 +135,7 @@ export const navigatetoHome = () => {
 };
 
 const data = [
-	// { icon: IconZoomCode, label: 'SQL', pathname: '/sql', requiredAccess: ['Query', 'GetSchema'] },
+	{ icon: IconZoomCode, label: 'SQL', pathname: '/sql', requiredAccess: ['Query', 'GetSchema'] },
 	// { icon: IconTableShortcut, label: 'Explore', pathname: '/explore', requiredAccess: ['Query', 'GetSchema'] },
 	{ icon: IconReportAnalytics, label: 'Management', pathname: '/management', requiredAccess: ['GetStats', 'PutAlert'] },
 ];

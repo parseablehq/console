@@ -2,20 +2,19 @@ import React, { FC, useCallback, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useQueryPageContext } from './Context';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Box, Button, Text, TextInput, Tooltip } from '@mantine/core';
+import { ActionIcon, Box, Button, Text, TextInput, Tooltip } from '@mantine/core';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import { ErrorMarker, errChecker } from './ErrorMarker';
 import { notifications } from '@mantine/notifications';
 import { IconPlayerPlayFilled, IconCheck, IconFileAlert, IconFileInfo } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
 import classes from './Query.module.css';
-import dayjs from 'dayjs';
-import { notify } from '@/utils/notification';
+import { notifyError } from '@/utils/notification';
 import { usePostLLM } from '@/hooks/usePostLLM';
 
 const QueryCodeEditor: FC = () => {
 	const {
-		state: { subLogQuery, subRefreshInterval, subLogSelectedTimeRange, subInstanceConfig },
+		state: { subAppContext, subRefreshInterval, subTimeRange, subInstanceConfig },
 	} = useHeaderContext();
 	const {
 		state: { result, subSchemaToggle },
@@ -26,7 +25,7 @@ const QueryCodeEditor: FC = () => {
 	const monacoRef = React.useRef<any>();
 	const [isSchemaOpen, setIsSchemaOpen] = useMountedState(false);
 	const [refreshInterval, setRefreshInterval] = useMountedState<number | null>(null);
-	const [currentStreamName, setCurrentStreamName] = useMountedState<string>(subLogQuery.get().streamName);
+	const [currentStreamName, setCurrentStreamName] = useMountedState<string | null>(subAppContext.get().selectedStream);
 	const [query, setQuery] = useMountedState<string>('');
 	const [aiQuery, setAiQuery] = useMountedState('');
 	const [isLlmActive, setIsLlmActive] = useMountedState(subInstanceConfig.get()?.llmActive);
@@ -34,10 +33,12 @@ const QueryCodeEditor: FC = () => {
 
 	const handleAIGenerate = useCallback(() => {
 		if (!aiQuery?.length) {
-			notify({ message: 'Please enter a valid query' });
+			notifyError({ message: 'Please enter a valid query' });
 			return;
 		}
-		postLLMQuery(aiQuery, currentStreamName);
+		if (currentStreamName) {
+			postLLMQuery(aiQuery, currentStreamName);
+		}
 	}, [aiQuery]);
 
 	useEffect(() => {
@@ -50,7 +51,11 @@ const QueryCodeEditor: FC = () => {
 
 	const handleEditorChange = (code: any) => {
 		setQuery(code);
-		errChecker(code, subLogQuery.get().streamName);
+		// errChecker(code, subLogQuery.get().streamName);
+
+		if (currentStreamName) {
+			errChecker(code, currentStreamName);
+		}
 		monacoRef.current?.editor.setModelMarkers(editorRef.current?.getModel(), 'owner', ErrorMarker);
 	};
 
@@ -69,13 +74,13 @@ const QueryCodeEditor: FC = () => {
 			setIsLlmActive(state?.llmActive);
 		});
 		const refreshIntervalListener = subRefreshInterval.subscribe(setRefreshInterval);
-		const subQueryListener = subLogQuery.subscribe((state) => {
-			if (state.streamName) {
-				if (state.streamName !== currentStreamName) {
-					setQuery(`SELECT * FROM ${state.streamName} LIMIT 100  ; `);
-					result.set('');
+		const subQueryListener = subAppContext.subscribe((state) => {
+			if (state.selectedStream) {
+				if (state.selectedStream !== currentStreamName) {
+					setQuery(`SELECT * FROM ${state.selectedStream} LIMIT 100  ; `);
+					result.set(null);
 				}
-				setCurrentStreamName(state.streamName);
+				setCurrentStreamName(state.selectedStream);
 			}
 		});
 		return () => {
@@ -84,11 +89,11 @@ const QueryCodeEditor: FC = () => {
 			subQueryListener();
 			subLLMActiveListener();
 		};
-	}, [subLogQuery.get(), subSchemaToggle.get(), subRefreshInterval.get()]);
+	}, [subAppContext.get(), subSchemaToggle.get(), subRefreshInterval.get()]);
 
 	useEffect(() => {
-		if (subLogQuery.get().streamName) {
-			setQuery(`SELECT * FROM ${subLogQuery.get().streamName} LIMIT 100  ; `);
+		if (subAppContext.get().selectedStream) {
+			setQuery(`SELECT * FROM ${subAppContext.get().selectedStream} LIMIT 100  ; `);
 		}
 	}, []);
 
@@ -106,7 +111,7 @@ const QueryCodeEditor: FC = () => {
 		const withoutTrailingSemicolon = withoutNewLines.replace(/;/, '');
 		const limitRegex = /limit\s+(\d+)/i;
 		if (!limitRegex.test(withoutTrailingSemicolon)) {
-			notify({ message: 'default limit used i.e - 1000' });
+			notifyError({ message: 'default limit used i.e - 1000' });
 			return `${withoutTrailingSemicolon.trim()} LIMIT 1000`;
 		}
 		return withoutTrailingSemicolon;
@@ -126,21 +131,12 @@ const QueryCodeEditor: FC = () => {
 			withCloseButton: false,
 		});
 		let LogQuery = {
-			startTime: subLogQuery.get().startTime,
-			endTime: subLogQuery.get().endTime,
-			streamName: currentStreamName,
-			access: [],
+			startTime: subTimeRange.get().startTime,
+			endTime: subTimeRange.get().endTime,
+			streamName: currentStreamName ?? '',
+			limit: 1000,
+			pageOffset: 0,
 		};
-		if (subLogSelectedTimeRange.get().state === 'fixed') {
-			const now = dayjs();
-			const timeDiff = subLogQuery.get().endTime.getTime() - subLogQuery.get().startTime.getTime();
-			LogQuery = {
-				startTime: now.subtract(timeDiff).toDate(),
-				endTime: now.toDate(),
-				streamName: currentStreamName,
-				access: [],
-			};
-		}
 		const parsedQuery = query.replace(/(\r\n|\n|\r)/gm, '');
 		getQueryData(LogQuery, parsedQuery);
 	};
@@ -155,11 +151,11 @@ const QueryCodeEditor: FC = () => {
 				icon: <IconFileAlert size="1rem" />,
 				autoClose: 2000,
 			});
-			result.set(error);
+			result.set({ data: error });
 			return;
 		}
 		if (queryResult) {
-			result.set(JSON.stringify(queryResult?.data, null, 2));
+			result.set(queryResult);
 			notifications.update({
 				id: 'load-data',
 				color: 'green',
@@ -172,7 +168,7 @@ const QueryCodeEditor: FC = () => {
 		}
 	}, [queryResult, error]);
 
-	const { container, runQueryBtn, textContext, actionBtn } = classes;
+	const { HeaderContainer, textContext } = classes;
 
 	return (
 		<Box style={{ height: '100%' }}>
@@ -185,20 +181,14 @@ const QueryCodeEditor: FC = () => {
 					onChange={(e) => setAiQuery(e.target.value)}
 					placeholder="Enter plain text to generate SQL query using OpenAI"
 					rightSectionWidth={'auto'}
-					style={{
-						// border: '1px solid #545BEB',
-						// backgroundColor: 'rgba(84,91,235,.2)',
-
-						'& .mantine-Input-input': {
-							// color: '#FC466B',
+					styles={{
+						input: {
+							paddingLeft: '20px',
 							border: 'none',
 							borderRadius: 0,
 							backgroundColor: 'rgba(84,91,235,.2)',
-							'::placeholder': {
-								// color: "rgba(0,0,107,.7)",
-							},
 						},
-						'& .mantine-TextInput-rightSection	': {
+						section: {
 							height: '100%',
 						},
 					}}
@@ -209,7 +199,7 @@ const QueryCodeEditor: FC = () => {
 					}
 				/>
 			) : null}
-			<Box className={container}>
+			<Box className={HeaderContainer}>
 				<Text className={textContext}>Query</Text>
 				<Box style={{ height: '100%', width: '100%', textAlign: 'right' }}>
 					{!isLlmActive ? (
@@ -218,31 +208,34 @@ const QueryCodeEditor: FC = () => {
 						</a>
 					) : null}
 					<Tooltip
-						label={`View Schema for ${subLogQuery.get().streamName}`}
+						label={`View Schema for ${subAppContext.get().selectedStream}`}
 						style={{ color: 'white', backgroundColor: 'black' }}
 						withArrow
 						position="right">
-						<Button
+						<ActionIcon
 							variant="default"
-							className={actionBtn}
+							radius={'md'}
+							size={'lg'}
+							mr={'md'}
 							aria-label="Schema"
 							onClick={() => subSchemaToggle.set(!isSchemaOpen)}>
 							<IconFileInfo stroke={1.5} />
-						</Button>
+						</ActionIcon>
 					</Tooltip>
 					<Tooltip
 						label={'Click to Run Query or ctrl + enter '}
 						style={{ color: 'white', backgroundColor: 'black' }}
 						withArrow
 						position="right">
-						<Button
+						<ActionIcon
 							variant="default"
-							className={runQueryBtn}
+							radius={'md'}
+							size={'lg'}
 							onClick={() => {
 								runQuery(query);
 							}}>
 							<IconPlayerPlayFilled stroke={1.5} />
-						</Button>
+						</ActionIcon>
 					</Tooltip>
 				</Box>
 			</Box>

@@ -1,7 +1,7 @@
 import { getQueryResult } from '@/api/query';
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
-import { LogsQuery } from '@/@types/parseable/api/query';
+import {  QueryAPI } from '@/@types/parseable/api/query';
 
 export const useQueryResult = () => {
 	const [data, setData] = useMountedState<{
@@ -10,7 +10,7 @@ export const useQueryResult = () => {
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
 
-	const getQueryData = async (logsQuery: LogsQuery, query = '') => {
+	const getQueryData = async (logsQuery: QueryAPI, query = '') => {
 		try {
 			setLoading(true);
 			setError(null);

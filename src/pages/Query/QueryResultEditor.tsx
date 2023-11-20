@@ -2,17 +2,16 @@ import React, { FC, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useQueryPageContext } from './Context';
 import useMountedState from '@/hooks/useMountedState';
-import { Box, Button, Text, } from '@mantine/core';
-import { IconClipboard, IconSearch, IconCheck } from '@tabler/icons-react';
+import { ActionIcon, Box, Text } from '@mantine/core';
+import { IconClipboard, IconSearch, IconCheck, IconDownload } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
-// import { useQueryResultEditorStyles } from './styles';
-import classes from "./Query.module.css"
+import classes from './Query.module.css';
 
 const QueryResultEditor: FC = () => {
 	const {
 		state: { result },
 	} = useQueryPageContext();
-	const [resultValue, setResultValue] = useMountedState<string>(result.get());
+	const [resultValue, setResultValue] = useMountedState<{ data: any } | null>(result.get());
 	const editorRef = React.useRef<any>();
 	const monacoRef = React.useRef<any>();
 
@@ -24,12 +23,15 @@ const QueryResultEditor: FC = () => {
 		};
 	}, [resultValue]);
 
-	const formatJSON = (jsonString: string) => {
+	const formatJSON = (jsonString: { data: any }) => {
 		try {
-			const jsonObject = JSON.parse(jsonString);
-			return JSON.stringify(jsonObject, null, 2);
+			if (jsonString && typeof jsonString.data === 'object') {
+				return JSON.stringify(jsonString.data, null, 2);
+			} else {
+				return JSON.stringify(jsonString, null, 2);
+			}
 		} catch (e) {
-			return jsonString;
+			return 'Error in parsing the error.';
 		}
 	};
 	function handleEditorDidMount(editor: any, monaco: any) {
@@ -55,25 +57,54 @@ const QueryResultEditor: FC = () => {
 			autoClose: 1000,
 		});
 	};
-	const { actionBtn, container, textContext } = classes;
+	const downloadCSV = () => {
+		const fileName = 'Parseable-logs';
+		let json = undefined;
+		if (resultValue && typeof resultValue.data === 'object') {
+			json = JSON.stringify(resultValue.data, null, 2);
+		} else {
+			json = JSON.stringify(resultValue, null, 2);
+		}
+
+		const blob = new Blob([json], { type: 'application/json' });
+		const href = URL.createObjectURL(blob);
+
+		// create "a" HTLM element with href to file
+		const link = document.createElement('a');
+		link.href = href;
+		link.download = fileName + '.json';
+		document.body.appendChild(link);
+		link.click();
+
+		// clean up "a" element & remove ObjectURL
+		document.body.removeChild(link);
+		URL.revokeObjectURL(href);
+	};
+
+	const { HeaderContainer, textContext } = classes;
 	return (
 		<Box style={{ height: '100%' }}>
-			<Box className={container}>
+			<Box className={HeaderContainer}>
 				<Text className={textContext}>Result</Text>
 				<Box style={{ height: '100%', width: '100%', textAlign: 'right' }}>
-					<Button variant="default" className={actionBtn} onClick={runCopy}>
-						<IconClipboard  stroke={1.5} />
-					</Button>
-					<Button variant="default" onClick={runFind} className={actionBtn}>
-						<IconSearch  stroke={1.5} />
-					</Button>
+					{resultValue && (
+						<ActionIcon variant="default" radius={'md'} mr={'md'} size={'lg'} onClick={downloadCSV}>
+							<IconDownload stroke={1.5} />
+						</ActionIcon>
+					)}
+					<ActionIcon variant="default" radius={'md'} mr={'md'} size={'lg'} onClick={runCopy}>
+						<IconClipboard stroke={1.5} />
+					</ActionIcon>
+					<ActionIcon variant="default" radius={'md'} size={'lg'} onClick={runFind}>
+						<IconSearch stroke={1.5} />
+					</ActionIcon>
 				</Box>
 			</Box>
 			<Box style={{ marginTop: '5px', height: 'calc(100% - 60px)' }}>
 				<Editor
 					height={'100%'}
 					defaultLanguage="json"
-					value={formatJSON(resultValue)}
+					value={formatJSON(resultValue ?? {data:{}})}
 					onMount={handleEditorDidMount}
 					options={{
 						scrollBeyondLastLine: false,
