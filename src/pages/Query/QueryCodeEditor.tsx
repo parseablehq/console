@@ -242,7 +242,12 @@ const QueryCodeEditor: FC = () => {
 				</Box>
 			</Box>
 
-			<Box style={{ height: 'calc(100% - 96px)' }}>
+			<Box
+				style={
+					isLlmActive
+						? { height: 'calc(100% - 96px)', width: 'calc(100% - 10px)' }
+						: { height: 'calc(100% - 55px)', width: 'calc(100% - 10px)' }
+				}>
 				<Editor
 					height={'100%'}
 					defaultLanguage="sql"

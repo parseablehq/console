@@ -127,7 +127,7 @@ const QueryResultEditor: FC = () => {
 
 								<Menu.Dropdown>
 									<Menu.Label>Download</Menu.Label>
-									{resultValue.data.length!==0 && (
+									{resultValue.data.length !== 0 && (
 										<Menu.Item
 											onClick={downloadCsv}
 											leftSection={<IconCsv style={{ width: rem(14), height: rem(14) }} />}>
@@ -152,7 +152,7 @@ const QueryResultEditor: FC = () => {
 					</ActionIcon>
 				</Box>
 			</Box>
-			<Box style={{ marginTop: '5px', height: 'calc(100% - 60px)' }}>
+			<Box style={{ marginTop: '5px', height: 'calc(100% - 60px)', width: 'calc(100% - 10px)' }}>
 				<Editor
 					height={'100%'}
 					defaultLanguage="json"
