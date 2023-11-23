@@ -3,7 +3,7 @@ import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { ActionIcon, Breadcrumbs, Select, Text } from '@mantine/core';
 import type { FC } from 'react';
 import { useEffect } from 'react';
-import {  IconCaretRight, IconHome2 } from '@tabler/icons-react';
+import { IconCaretRight, IconHome2 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '@/@types/parseable/api/query';
 
@@ -30,6 +30,7 @@ const HeaderBreadcrumbs: FC<HeaderBreadcrumbs> = (props) => {
 	}, []);
 
 	const navigatetoHome = () => {
+		subAppContext.set({ ...appContext, activePage: '/' });
 		navigate('/');
 	};
 

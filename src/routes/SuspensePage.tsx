@@ -12,7 +12,7 @@ const SuspensePage: FC<SuspensePageProps> = ({ children }) => {
 		<Suspense
 			fallback={
 				<Center style={{ flex: 1, position: 'relative' }}>
-					<Loading visible position="absolute" variant="bars" />
+					<Loading visible position="absolute" variant="bars" zIndex={0} />
 				</Center>
 			}>
 			{children}
