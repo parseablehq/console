@@ -1,5 +1,5 @@
 import { EmptySimple } from '@/components/Empty';
-import { Text, Button, Center, Box, Stack, Group, Table } from '@mantine/core';
+import { Text, Button, Center, Box, Table } from '@mantine/core';
 import { IconExternalLink } from '@tabler/icons-react';
 import { useEffect, type FC } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
