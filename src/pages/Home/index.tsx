@@ -1,8 +1,8 @@
 import { EmptySimple } from '@/components/Empty';
-import { Text, Button, Center, Box, Stack, Group } from '@mantine/core';
+import { Text, Button, Center, Box, Stack, Group, Table } from '@mantine/core';
 import { IconExternalLink } from '@tabler/icons-react';
 import { useEffect, type FC } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import classes from './Home.module.css';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import useMountedState from '@/hooks/useMountedState';
@@ -19,11 +19,12 @@ function StreamInfo({ streamname }: StreamInfoProp) {
 	useEffect(() => {
 		getLogStat(streamname);
 	}, []);
+	const nav = useNavigate();
 
 	return (
-		<Group>
-			<Text>{streamname}</Text>
-			<Text>
+		<Table.Tr>
+			<Table.Td>{streamname}</Table.Td>
+			<Table.Td>
 				{!loading
 					? !error
 						? data?.ingestion?.count
@@ -31,9 +32,9 @@ function StreamInfo({ streamname }: StreamInfoProp) {
 							: '0'
 						: 'ERROR'
 					: 'Loading...'}
-			</Text>
+			</Table.Td>
 
-			<Text>
+			<Table.Td>
 				{!loading
 					? !error
 						? data?.ingestion?.size
@@ -41,12 +42,12 @@ function StreamInfo({ streamname }: StreamInfoProp) {
 							: '0'
 						: 'ERROR'
 					: 'Loading...'}
-			</Text>
-			<Text>
+			</Table.Td>
+			<Table.Td>
 				{loading ? 'Loading...' : error ? 'Error' : data ? formatBytes(data?.storage.size.split(' ')[0]) : '0'}
-			</Text>
+			</Table.Td>
 
-			<Text>
+			<Table.Td>
 				{!loading
 					? !error
 						? data?.ingestion?.size
@@ -57,8 +58,17 @@ function StreamInfo({ streamname }: StreamInfoProp) {
 							: 'NotFound'
 						: 'ERROR'
 					: 'Loading...'}
-			</Text>
-		</Group>
+			</Table.Td>
+			<Table.Td>
+				<Button
+					variant="default"
+					onClick={() => {
+						nav(`/sql/${streamname}`);
+					}}>
+					Visit
+				</Button>
+			</Table.Td>
+		</Table.Tr>
 	);
 }
 
@@ -96,19 +106,32 @@ const Home: FC = () => {
 		);
 	} else if (appContext.userSpecificStreams) {
 		return (
-			<Box className={container}>
-				<Stack >
-					<Group>
-						<Text>Stream name</Text>
-						<Text>Events</Text>
-						<Text>Ingestion</Text>
-						<Text>Storage</Text>
-						<Text>Compression</Text>
-					</Group>
-					{appContext.userSpecificStreams.map((key) => {
-						return <StreamInfo streamname={key} key={key} />;
-					})}
-				</Stack>
+			<Box
+				style={{
+					height: '100%',
+					width: '100%',
+					padding: '1rem',
+					overflow: 'auto',
+				}}>
+				<Box>
+					<Table withColumnBorders withTableBorder striped highlightOnHover>
+						<Table.Thead>
+							<Table.Tr>
+								<Table.Th>Stream name</Table.Th>
+								<Table.Th>Events</Table.Th>
+								<Table.Th>Ingestion</Table.Th>
+								<Table.Th>Storage</Table.Th>
+								<Table.Th>Compression</Table.Th>
+								<Table.Th>Query</Table.Th>
+							</Table.Tr>
+						</Table.Thead>
+						<Table.Tbody>
+							{appContext.userSpecificStreams.map((key) => {
+								return <StreamInfo streamname={key} key={key} />;
+							})}
+						</Table.Tbody>
+					</Table>
+				</Box>
 			</Box>
 		);
 	} else {

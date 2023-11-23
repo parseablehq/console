@@ -150,6 +150,7 @@ const QueryCodeEditor: FC = () => {
 				message: 'Error occurred, please check your query and try again',
 				icon: <IconFileAlert size="1rem" />,
 				autoClose: 2000,
+				loading: false,
 			});
 			result.set({ data: error });
 			return;
@@ -163,6 +164,7 @@ const QueryCodeEditor: FC = () => {
 				message: 'Successfully Loaded',
 				icon: <IconCheck size="1rem" />,
 				autoClose: 1000,
+				loading: false,
 			});
 			return;
 		}

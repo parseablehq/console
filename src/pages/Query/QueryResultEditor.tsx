@@ -2,10 +2,12 @@ import React, { FC, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useQueryPageContext } from './Context';
 import useMountedState from '@/hooks/useMountedState';
-import { ActionIcon, Box, Text } from '@mantine/core';
-import { IconClipboard, IconSearch, IconCheck, IconDownload } from '@tabler/icons-react';
+import { ActionIcon, Box, Menu, Text, rem } from '@mantine/core';
+import { IconClipboard, IconSearch, IconCheck, IconDownload, IconCsv, IconJson } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import classes from './Query.module.css';
+
+const fileName = 'Parseable-logs';
 
 const QueryResultEditor: FC = () => {
 	const {
@@ -57,8 +59,7 @@ const QueryResultEditor: FC = () => {
 			autoClose: 1000,
 		});
 	};
-	const downloadCSV = () => {
-		const fileName = 'Parseable-logs';
+	const downloadJson = () => {
 		let json = undefined;
 		if (resultValue && typeof resultValue.data === 'object') {
 			json = JSON.stringify(resultValue.data, null, 2);
@@ -75,11 +76,39 @@ const QueryResultEditor: FC = () => {
 		link.download = fileName + '.json';
 		document.body.appendChild(link);
 		link.click();
-
-		// clean up "a" element & remove ObjectURL
 		document.body.removeChild(link);
 		URL.revokeObjectURL(href);
 	};
+
+	function downloadCsv() {
+		let csvData;
+		if (resultValue && typeof resultValue.data === 'object') {
+			csvData = jsonToCsv(resultValue.data);
+		} else {
+			csvData = jsonToCsv(resultValue);
+		}
+		let blob = new Blob([csvData], { type: 'text/csv' });
+		let url = URL.createObjectURL(blob);
+		let a = document.createElement('a');
+		a.href = url;
+		a.download = fileName + '.csv';
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+	}
+	function jsonToCsv(jsonData: any) {
+		let csv = '';
+		// Get the headers
+		let headers = Object.keys(jsonData[0]);
+		csv += headers.join(',') + '\n';
+		// Add the data
+		jsonData.forEach(function (row: any) {
+			let data = headers.map((header) => JSON.stringify(row[header])).join(','); // Add JSON.stringify statement
+			csv += data + '\n';
+		});
+		return csv;
+	}
 
 	const { HeaderContainer, textContext } = classes;
 	return (
@@ -88,9 +117,32 @@ const QueryResultEditor: FC = () => {
 				<Text className={textContext}>Result</Text>
 				<Box style={{ height: '100%', width: '100%', textAlign: 'right' }}>
 					{resultValue && (
-						<ActionIcon variant="default" radius={'md'} mr={'md'} size={'lg'} onClick={downloadCSV}>
-							<IconDownload stroke={1.5} />
-						</ActionIcon>
+						<>
+							<Menu shadow="md" width={200}>
+								<Menu.Target>
+									<ActionIcon variant="default" radius={'md'} mr={'md'} size={'lg'}>
+										<IconDownload stroke={1.5} />
+									</ActionIcon>
+								</Menu.Target>
+
+								<Menu.Dropdown>
+									<Menu.Label>Download</Menu.Label>
+									{resultValue.data.length!==0 && (
+										<Menu.Item
+											onClick={downloadCsv}
+											leftSection={<IconCsv style={{ width: rem(14), height: rem(14) }} />}>
+											Download as csv
+										</Menu.Item>
+									)}
+
+									<Menu.Item
+										onClick={downloadJson}
+										leftSection={<IconJson style={{ width: rem(14), height: rem(14) }} />}>
+										Download as json
+									</Menu.Item>
+								</Menu.Dropdown>
+							</Menu>
+						</>
 					)}
 					<ActionIcon variant="default" radius={'md'} mr={'md'} size={'lg'} onClick={runCopy}>
 						<IconClipboard stroke={1.5} />
@@ -104,7 +156,7 @@ const QueryResultEditor: FC = () => {
 				<Editor
 					height={'100%'}
 					defaultLanguage="json"
-					value={formatJSON(resultValue ?? {data:{}})}
+					value={formatJSON(resultValue ?? { data: {} })}
 					onMount={handleEditorDidMount}
 					options={{
 						scrollBeyondLastLine: false,
