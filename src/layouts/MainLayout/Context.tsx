@@ -51,7 +51,7 @@ export const FIXED_DURATIONS = [
 	},
 ] as const;
 
-export const DEFAULT_FIXED_DURATIONS = FIXED_DURATIONS[0];
+export const DEFAULT_FIXED_DURATIONS = FIXED_DURATIONS[5];
 
 interface HeaderContextState {
 	subInstanceConfig: SubData<AboutData | null>;

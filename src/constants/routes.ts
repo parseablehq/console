@@ -4,8 +4,8 @@
 export const HOME_ROUTE = '/';
 export const USERS_MANAGEMENT_ROUTE = '/team';
 
-export const LOGS_ROUTE = '/explore/:streamName';
-export const QUERY_ROUTE = '/sql/:streamName';
+export const LOGS_ROUTE = '/sql/:streamName';
+export const QUERY_ROUTE = '/explore/:streamName';
 export const STATS_ROUTE = '/management/:streamName';
 export const CONFIG_ROUTE = '/:streamName/config';
 

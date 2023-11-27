@@ -28,7 +28,7 @@ const Logs: FC = () => {
 	return (
 		<Box className={container}>
 			<PanelGroup direction="vertical">
-				<Panel defaultSize={40}>
+				<Panel defaultSize={20}>
 					<QueryCodeEditor />
 				</Panel>
 				<PanelResizeHandle
@@ -47,7 +47,7 @@ const Logs: FC = () => {
 						&#8230;
 					</Box>
 				</PanelResizeHandle>
-				<Panel defaultSize={60}>
+				<Panel defaultSize={80}>
 					<QueryResultEditor />
 				</Panel>
 			</PanelGroup>

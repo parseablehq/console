@@ -2,7 +2,7 @@ import React, { FC, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useQueryPageContext } from './Context';
 import useMountedState from '@/hooks/useMountedState';
-import { ActionIcon, Box, Menu, Text, rem } from '@mantine/core';
+import { ActionIcon, Box, Menu, ScrollArea, SegmentedControl, Table, Text, rem } from '@mantine/core';
 import { IconClipboard, IconSearch, IconCheck, IconDownload, IconCsv, IconJson } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import classes from './Query.module.css';
@@ -14,6 +14,7 @@ const QueryResultEditor: FC = () => {
 		state: { result },
 	} = useQueryPageContext();
 	const [resultValue, setResultValue] = useMountedState<{ data: any } | null>(result.get());
+	const [view, setView] = useMountedState('json');
 	const editorRef = React.useRef<any>();
 	const monacoRef = React.useRef<any>();
 
@@ -110,17 +111,88 @@ const QueryResultEditor: FC = () => {
 		return csv;
 	}
 
+	const renderView = () => {
+		if (view === 'json') {
+			return (
+				<Box style={{ height: 'calc(100% - 55px)', width: 'calc(100% - 10px)' }}>
+					<Editor
+						height={'100%'}
+						defaultLanguage="json"
+						value={formatJSON(resultValue ?? { data: {} })}
+						onMount={handleEditorDidMount}
+						options={{
+							scrollBeyondLastLine: false,
+							readOnly: true,
+							fontSize: 12,
+							wordWrap: 'on',
+							minimap: { enabled: false },
+							automaticLayout: true,
+							mouseWheelZoom: true,
+							glyphMargin: true,
+							wordBasedSuggestions: true,
+						}}
+					/>
+				</Box>
+			);
+		}
+		if (view === 'table') {
+			return (
+				<ScrollArea className={classes.tableWrapper}>
+					<Table striped highlightOnHover withTableBorder withColumnBorders>
+						<Table.Thead
+							style={{
+								position: 'sticky',
+								top: 0,
+								background:"white"
+							}}>
+							<Table.Tr>
+								{resultValue && resultValue.data.length !== 0
+									? Object.keys(resultValue.data[0]).map((key) => {
+											return <Table.Th>{key}</Table.Th>;
+									  })
+									: 'null'}
+							</Table.Tr>
+						</Table.Thead>
+						<Table.Tbody>
+							{resultValue &&
+								resultValue.data.length !== 0 &&
+								resultValue.data.map((item: any) => {
+									return (
+										<Table.Tr>
+											{Object.values(item).map((value: any) => {
+												return <Table.Td>{value}</Table.Td>;
+											})}
+										</Table.Tr>
+									);
+								})}
+						</Table.Tbody>
+					</Table>
+				</ScrollArea>
+			);
+		}
+	};
+
 	const { HeaderContainer, textContext } = classes;
 	return (
 		<Box style={{ height: '100%' }}>
 			<Box className={HeaderContainer}>
 				<Text className={textContext}>Result</Text>
-				<Box style={{ height: '100%', width: '100%', textAlign: 'right' }}>
+				<Box className={classes.HeaderContainerRight}>
 					{resultValue && (
 						<>
+							{resultValue.data.length !== 0 && (
+								<SegmentedControl
+									data={[
+										{ value: 'json', label: 'JSON' },
+										{ value: 'table', label: 'Table' },
+									]}
+									value={view}
+									onChange={setView}
+								/>
+							)}
 							<Menu shadow="md" width={200}>
 								<Menu.Target>
-									<ActionIcon variant="default" radius={'md'} mr={'md'} size={'lg'}>
+									<ActionIcon variant="default" radius={'md'} size={'lg'}>
 										<IconDownload stroke={1.5} />
 									</ActionIcon>
 								</Menu.Target>
@@ -144,7 +216,7 @@ const QueryResultEditor: FC = () => {
 							</Menu>
 						</>
 					)}
-					<ActionIcon variant="default" radius={'md'} mr={'md'} size={'lg'} onClick={runCopy}>
+					<ActionIcon variant="default" radius={'md'} size={'lg'} onClick={runCopy}>
 						<IconClipboard stroke={1.5} />
 					</ActionIcon>
 					<ActionIcon variant="default" radius={'md'} size={'lg'} onClick={runFind}>
@@ -152,25 +224,7 @@ const QueryResultEditor: FC = () => {
 					</ActionIcon>
 				</Box>
 			</Box>
-			<Box style={{ marginTop: '5px', height: 'calc(100% - 60px)', width: 'calc(100% - 10px)' }}>
-				<Editor
-					height={'100%'}
-					defaultLanguage="json"
-					value={formatJSON(resultValue ?? { data: {} })}
-					onMount={handleEditorDidMount}
-					options={{
-						scrollBeyondLastLine: false,
-						readOnly: true,
-						fontSize: 12,
-						wordWrap: 'on',
-						minimap: { enabled: false },
-						automaticLayout: true,
-						mouseWheelZoom: true,
-						glyphMargin: true,
-						wordBasedSuggestions: true,
-					}}
-				/>
-			</Box>
+			{renderView()}
 		</Box>
 	);
 };
