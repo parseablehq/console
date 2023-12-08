@@ -11,6 +11,7 @@ import useMountedState from '@/hooks/useMountedState';
 import classes from './Query.module.css';
 import { notifyError } from '@/utils/notification';
 import { usePostLLM } from '@/hooks/usePostLLM';
+import FilterBox from './FilterBox';
 
 const QueryCodeEditor: FC = () => {
 	const {
@@ -203,6 +204,7 @@ const QueryCodeEditor: FC = () => {
 			) : null}
 			<Box className={HeaderContainer}>
 				<Text className={textContext}>Query</Text>
+				<FilterBox setQuery={setQuery} streamName={currentStreamName} />
 				<Box style={{ height: '100%', width: '100%', textAlign: 'right' }}>
 					{!isLlmActive ? (
 						<a style={{ marginRight: '2rem' }} href="https://www.parseable.io/docs/api/llm-queries">

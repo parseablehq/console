@@ -74,6 +74,9 @@ dependencies:
   react-error-boundary:
     specifier: ^4.0.10
     version: 4.0.10(react@18.2.0)
+  react-querybuilder:
+    specifier: ^6.5.4
+    version: 6.5.4(react@18.2.0)
   react-resizable-panels:
     specifier: ^0.0.53
     version: 0.0.53(react-dom@18.2.0)(react@18.2.0)
@@ -2136,6 +2139,10 @@ packages:
     resolution: {integrity: sha512-Rx3CqeqQ19sxUtYV9CU911Vhy8/721wRFnJv3REVGWUmoAcIwzifTsdmJte/MV+0/XpM35LZdQMBGkRIoLPwQA==}
     dev: false
 
+  /immer@10.0.3:
+    resolution: {integrity: sha512-pwupu3eWfouuaowscykeckFmVTpqbzW+rXFCX8rQLkZzM9ftBmU/++Ra+o+L27mz03zJTlyV4UUr+fdKNffo4A==}
+    dev: false
+
   /import-fresh@3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
     engines: {node: '>=6'}
@@ -2845,6 +2852,16 @@ packages:
       prop-types: 15.8.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /react-querybuilder@6.5.4(react@18.2.0):
+    resolution: {integrity: sha512-m7LShwKQsFJTbGj8UxdYhbyhrVZmJ0VZV7JDElGui6jv7KsUPaIfXP8FtBBTiaP7SWbhXI1p7sGY7Z6eaU8MTg==}
+    peerDependencies:
+      react: '>=16.8.0'
+    dependencies:
+      clsx: 2.0.0
+      immer: 10.0.3
+      react: 18.2.0
     dev: false
 
   /react-redux@7.2.9(react-dom@18.2.0)(react@18.2.0):
