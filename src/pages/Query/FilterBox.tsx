@@ -1,207 +1,81 @@
-import { Button, PillsInput, Popover } from '@mantine/core';
-import { useState } from 'react';
-import { Field, RuleType, formatQuery, QueryBuilder, RuleGroupType } from 'react-querybuilder';
-import 'react-querybuilder/dist/query-builder.css';
+import { Badge, Button, Checkbox, Group, Popover, ScrollArea } from '@mantine/core';
+import { Dispatch, ReactNode, SetStateAction, useEffect } from 'react';
+import { Field, RuleType, formatQuery, QueryBuilder, RuleGroupType, parseSQL } from 'react-querybuilder';
+import { QueryBuilderMantine } from '@react-querybuilder/mantine';
 
-const demoSchema = {
-	fields: [
-		{
-			name: 'app_meta',
-			data_type: 'Utf8',
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-		{
-			name: 'device_id',
-			data_type: 'Int64',
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-		{
-			name: 'host',
-			data_type: 'Utf8',
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-		{
-			name: 'level',
-			data_type: 'Utf8',
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-		{
-			name: 'location',
-			data_type: 'Utf8',
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-		{
-			name: 'message',
-			data_type: 'Utf8',
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-		{
-			name: 'os',
-			data_type: 'Utf8',
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-		{
-			name: 'p_metadata',
-			data_type: 'Utf8',
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-		{
-			name: 'p_tags',
-			data_type: 'Utf8',
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-		{
-			name: 'p_timestamp',
-			data_type: {
-				Timestamp: ['Millisecond', null],
-			},
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-		{
-			name: 'process_id',
-			data_type: 'Int64',
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-		{
-			name: 'request_body',
-			data_type: 'Utf8',
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-		{
-			name: 'response_time',
-			data_type: 'Int64',
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-		{
-			name: 'runtime',
-			data_type: 'Utf8',
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-		{
-			name: 'session_id',
-			data_type: 'Utf8',
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-		{
-			name: 'source_time',
-			data_type: 'Utf8',
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-		{
-			name: 'status_code',
-			data_type: 'Int64',
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-		{
-			name: 'timezone',
-			data_type: 'Utf8',
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-		{
-			name: 'user_agent',
-			data_type: 'Utf8',
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-		{
-			name: 'user_id',
-			data_type: 'Int64',
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-		{
-			name: 'uuid',
-			data_type: 'Utf8',
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-		{
-			name: 'version',
-			data_type: 'Utf8',
-			nullable: true,
-			dict_id: 0,
-			dict_is_ordered: false,
-			metadata: {},
-		},
-	],
-	metadata: {},
-};
+import 'react-querybuilder/dist/query-builder.css';
+import { useQueryPageContext } from './Context';
+import useMountedState from '@/hooks/useMountedState';
 
 export const validator = (r: RuleType) => !!r.value;
 
 type FilterBoxProps = {
 	setQuery: (q: string) => void;
 	streamName: string | null;
+	query: string;
 };
-const FilterBox = ({ setQuery: setMainContextQuery, streamName }: FilterBoxProps) => {
-	const [query, setQuery] = useState<RuleGroupType>({
+const FilterBox = ({ setQuery: setMainContextQuery, streamName, query: mainContextQuery }: FilterBoxProps) => {
+	const {
+		state: { subSchemaList },
+	} = useQueryPageContext();
+	const [fields, setFields] = useMountedState<Field[]>([]);
+	const [selectedFields, setSelectedFields] = useMountedState<Field[]>([]);
+
+	const [query, setQuery] = useMountedState<RuleGroupType>({
 		combinator: 'and',
-		rules: [
-			{ field: 'device_id', operator: '=', value: 4000 },
-			{ field: 'level', operator: '=', value: 'info' },
-		],
+		rules: [],
 	});
-	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [isModalOpen, setIsModalOpen] = useMountedState(false);
+
+	useEffect(() => {
+		const schemaListener = subSchemaList.subscribe((schemaRes) => {
+			if (schemaRes) {
+				const fields: Field[] = schemaRes.fields.map((field) => ({
+					name: field.name,
+					label: field.name,
+					inputType: parseType(field.data_type),
+					validator,
+				}));
+				setFields(fields);
+				setSelectedFields(fields);
+			}
+		});
+
+		return () => {
+			schemaListener();
+		};
+	}, []);
+
+	useEffect(() => {
+		if (mainContextQuery) {
+			try {
+				const parsedQuery = parseSQL(mainContextQuery);
+				console.log(parsedQuery);
+				setQuery(parsedQuery);
+				const parsedSelectedField = mainContextQuery
+					.split('SELECT')[1]
+					.split('FROM')[0]
+					.split(',')
+					.map((field) => field.trim());
+				const selectedFields = fields.filter((field) => parsedSelectedField.includes(field.name));
+				if (selectedFields.length) {
+					setSelectedFields(selectedFields);
+				} else if (mainContextQuery.split('SELECT')[1].split('FROM')[0].trim() === '*') {
+					setSelectedFields(fields);
+				} else {
+					const customQuery = mainContextQuery.split('SELECT')[1].split('FROM')[0].trim();
+					setSelectedFields([
+						{
+							name: customQuery,
+							label: customQuery,
+						},
+					]);
+				}
+			} catch {
+				console.log('Query Cannot be parsed');
+			}
+		}
+	}, [mainContextQuery]);
 
 	const parseType = (type: any) => {
 		if (typeof type === 'object') {
@@ -216,16 +90,17 @@ const FilterBox = ({ setQuery: setMainContextQuery, streamName }: FilterBoxProps
 				return 'text';
 		}
 	};
-	const fields: Field[] = demoSchema.fields.map((field) => ({
-		name: field.name,
-		label: field.name,
-		inputType: parseType(field.data_type),
-		validator,
-	}));
+
+	const GenerateQueryStart = (streamName: string, selectedFields: Field[], fields?: Field[]) => {
+		if (fields && fields.length === selectedFields.length) {
+			return `SELECT * FROM ${streamName} WHERE `;
+		} else {
+			return `SELECT ${selectedFields.map((field) => field.name).join(',')} FROM ${streamName} WHERE `;
+		}
+	};
 
 	const onApply = () => {
-		const queryStart = `SELECT * FROM ${streamName} WHERE `;
-		// setMainContextQuery(formatQuery(query, 'sql'));
+		const queryStart = GenerateQueryStart(streamName!, selectedFields, fields);
 		setMainContextQuery(queryStart + formatQuery(query, 'sql'));
 		setIsModalOpen(false);
 	};
@@ -233,30 +108,98 @@ const FilterBox = ({ setQuery: setMainContextQuery, streamName }: FilterBoxProps
 	return (
 		<Popover opened={isModalOpen}>
 			<Popover.Target>
-				<PillsInput
-					w={'100%'}
+				<Button
+					variant="outline"
+					ml={'sm'}
 					onClick={() => {
-						setIsModalOpen(true);
+						setIsModalOpen((prev) => !prev);
 					}}
-				/>
+					h={'100%'}>
+					<FieldsPillList query={query} setQuery={setQuery} setIsModalOpen={setIsModalOpen} />
+				</Button>
 			</Popover.Target>
+
 			<Popover.Dropdown>
-				<QueryBuilder
-					fields={fields}
-					controlClassnames={{ queryBuilder: 'queryBuilder-branches' }}
-					query={query}
-					onQueryChange={(q) => setQuery(q)}
-				/>
-				<h4>
-					SQL as result of <code>formatQuery(query, 'sql')</code>:
-				</h4>
-				<pre>{formatQuery(query, 'sql')}</pre>
-				<Button onClick={() => setIsModalOpen(false)}>Close</Button>
-				<Button ml={'md'} onClick={onApply}>
+				<FieldSelection selectedFields={selectedFields} setSelectedFields={setSelectedFields} fields={fields} />
+				<QueryBuilderMantine>
+					<QueryBuilder
+						fields={fields}
+						controlClassnames={{ queryBuilder: 'queryBuilder-branches' }}
+						query={query}
+						onQueryChange={(q) => setQuery(q)}
+					/>
+				</QueryBuilderMantine>
+
+				<Button m={'md'} onClick={() => setIsModalOpen(false)}>
+					Close
+				</Button>
+				<Button m={'md'} onClick={onApply}>
 					Apply
 				</Button>
 			</Popover.Dropdown>
 		</Popover>
+	);
+};
+
+type fieldsPillListProps = {
+	query: RuleGroupType;
+	setQuery: Dispatch<SetStateAction<RuleGroupType>>;
+	setIsModalOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+const FieldsPillList = ({ query }: fieldsPillListProps) => {
+	const set = (rg: RuleGroupType, padding: number) => {
+		const rules = rg.rules.map((rule): ReactNode => {
+			if ('field' in rule) {
+				return (
+					<Badge variant="outline" color="blue" ml={'xs'} radius="lg">
+						{rule.field} {rule.operator} {rule.value}
+					</Badge>
+				);
+			}
+		});
+
+		const groups = rg.rules.map((rule): ReactNode => {
+			if ('rules' in rule) {
+				return set(rule, padding - 2);
+			}
+		});
+
+		return (
+			<Badge variant="outline" p={padding} radius="xs">
+				{rg.combinator} {rules} {groups}
+			</Badge>
+		);
+	};
+
+	return <Group>{set(query, 13)}</Group>;
+};
+
+type FieldSelectionProps = {
+	selectedFields: Field[];
+	setSelectedFields: Dispatch<SetStateAction<Field[]>>;
+	fields: Field[];
+};
+
+const FieldSelection = ({ selectedFields, setSelectedFields, fields }: FieldSelectionProps) => {
+	return (
+		<ScrollArea h={'400px'}>
+			{fields.map((field) => (
+				<Checkbox
+					mb={'md'}
+					key={field.name}
+					label={field.name}
+					checked={selectedFields.includes(field)}
+					onChange={(e) => {
+						if (e.target.checked) {
+							setSelectedFields([...selectedFields, field]);
+						} else {
+							setSelectedFields(selectedFields.filter((ele) => ele !== field));
+						}
+					}}
+				/>
+			))}
+		</ScrollArea>
 	);
 };
 

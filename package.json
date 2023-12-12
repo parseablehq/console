@@ -22,6 +22,7 @@
 		"@mantine/hooks": "^7.1.7",
 		"@mantine/notifications": "^7.1.7",
 		"@monaco-editor/react": "^4.5.1",
+		"@react-querybuilder/mantine": "^6.5.4",
 		"@tabler/icons-react": "^2.23.0",
 		"@types/js-cookie": "^3.0.3",
 		"axios": "^1.4.0",

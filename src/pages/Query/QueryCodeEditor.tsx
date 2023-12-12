@@ -12,13 +12,14 @@ import classes from './Query.module.css';
 import { notifyError } from '@/utils/notification';
 import { usePostLLM } from '@/hooks/usePostLLM';
 import FilterBox from './FilterBox';
+import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 
 const QueryCodeEditor: FC = () => {
 	const {
 		state: { subAppContext, subRefreshInterval, subTimeRange, subInstanceConfig },
 	} = useHeaderContext();
 	const {
-		state: { result, subSchemaToggle },
+		state: { result, subSchemaToggle, subSchemaList },
 	} = useQueryPageContext();
 
 	const { data: queryResult, getQueryData, error, resetData } = useQueryResult();
@@ -31,6 +32,7 @@ const QueryCodeEditor: FC = () => {
 	const [aiQuery, setAiQuery] = useMountedState('');
 	const [isLlmActive, setIsLlmActive] = useMountedState(subInstanceConfig.get()?.llmActive);
 	const { data: resAIQuery, postLLMQuery } = usePostLLM();
+	const { data: querySchema, getDataSchema } = useGetLogStreamSchema();
 
 	const handleAIGenerate = useCallback(() => {
 		if (!aiQuery?.length) {
@@ -97,6 +99,18 @@ const QueryCodeEditor: FC = () => {
 			setQuery(`SELECT * FROM ${subAppContext.get().selectedStream} LIMIT 100  ; `);
 		}
 	}, []);
+
+	useEffect(() => {
+		if (currentStreamName) {
+			getDataSchema(currentStreamName);
+		}
+	}, [currentStreamName]);
+
+	useEffect(() => {
+		if (querySchema) {
+			subSchemaList.set(querySchema);
+		}
+	}, [querySchema]);
 
 	function handleEditorDidMount(editor: any, monaco: any) {
 		editorRef.current = editor;
@@ -204,8 +218,8 @@ const QueryCodeEditor: FC = () => {
 			) : null}
 			<Box className={HeaderContainer}>
 				<Text className={textContext}>Query</Text>
-				<FilterBox setQuery={setQuery} streamName={currentStreamName} />
-				<Box style={{ height: '100%', width: '100%', textAlign: 'right' }}>
+				<FilterBox setQuery={setQuery} streamName={currentStreamName} query={query} />
+				<Box >
 					{!isLlmActive ? (
 						<a style={{ marginRight: '2rem' }} href="https://www.parseable.io/docs/api/llm-queries">
 							Enable SQL generation with OpenAI
