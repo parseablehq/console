@@ -1,6 +1,6 @@
 import { EmptySimple } from '@/components/Empty';
-import { Text, Button, Center, Box, Table } from '@mantine/core';
-import { IconExternalLink } from '@tabler/icons-react';
+import { Text, Button, Center, Box, Stack, Group, ActionIcon } from '@mantine/core';
+import { IconChevronRight, IconExternalLink } from '@tabler/icons-react';
 import { useEffect, type FC } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import classes from './Home.module.css';
@@ -22,53 +22,79 @@ function StreamInfo({ streamname }: StreamInfoProp) {
 	const nav = useNavigate();
 
 	return (
-		<Table.Tr>
-			<Table.Td>{streamname}</Table.Td>
-			<Table.Td>
-				{!loading
-					? !error
-						? data?.ingestion?.count
-							? HumanizeNumber(data.ingestion.count)
-							: '0'
-						: 'ERROR'
-					: 'Loading...'}
-			</Table.Td>
+		<Group
+			className={classes.streamBox}
+			onClick={() => {
+				nav(`/explore/${streamname}`);
+			}}>
+			<Box className={classes.streamBoxCol} w={220}>
+				<Text size="xs">Stream</Text>
+				<Text fw={700} size={'xl'}>
+					{streamname}
+				</Text>
+			</Box>
+			<Box className={classes.streamBoxCol}>
+				<Text size="xs">Events</Text>
+				<Text fw={700} size={'xl'} c={'blue'}>
+					{!loading
+						? !error
+							? data?.ingestion?.count
+								? HumanizeNumber(data.ingestion.count)
+								: '0'
+							: 'ERROR'
+						: 'Loading...'}
+				</Text>
+			</Box>
+			<Box className={classes.streamBoxCol}>
+				<Text size="xs">Ingestion</Text>
+				<Text fw={700} size={'xl'} c={'blue'}>
+					{!loading
+						? !error
+							? data?.ingestion?.size
+								? formatBytes(data.ingestion.size.split(' ')[0])
+								: '0'
+							: 'ERROR'
+						: 'Loading...'}
+				</Text>
+			</Box>
 
-			<Table.Td>
-				{!loading
-					? !error
-						? data?.ingestion?.size
-							? formatBytes(data.ingestion.size.split(' ')[0])
-							: '0'
-						: 'ERROR'
-					: 'Loading...'}
-			</Table.Td>
-			<Table.Td>
-				{loading ? 'Loading...' : error ? 'Error' : data ? formatBytes(data?.storage.size.split(' ')[0]) : '0'}
-			</Table.Td>
-
-			<Table.Td>
-				{!loading
-					? !error
-						? data?.ingestion?.size
-							? `${(
-									100 -
-									(parseInt(data.storage.size.split(' ')[0]) / parseInt(data.ingestion.size.split(' ')[0])) * 100
-							  ).toPrecision(4)} %`
-							: 'NotFound'
-						: 'ERROR'
-					: 'Loading...'}
-			</Table.Td>
-			<Table.Td>
-				<Button
-					variant="default"
-					onClick={() => {
-						nav(`/sql/${streamname}`);
-					}}>
-					Visit
-				</Button>
-			</Table.Td>
-		</Table.Tr>
+			<Box className={classes.streamBoxCol}>
+				<Text size="xs">Storage</Text>
+				<Text fw={700} size={'xl'} c={'orange'}>
+					{!loading
+						? !error
+							? data?.storage?.size
+								? formatBytes(data.storage.size.split(' ')[0])
+								: '0'
+							: 'ERROR'
+						: 'Loading...'}
+				</Text>
+			</Box>
+			<Box className={classes.streamBoxCol}>
+				<Text size="xs">Compression</Text>
+				<Text fw={700} size={'xl'}>
+					{!loading
+						? !error
+							? data?.ingestion?.size
+								? `${(
+										100 -
+										(parseInt(data.storage.size.split(' ')[0]) / parseInt(data.ingestion.size.split(' ')[0])) * 100
+								  ).toPrecision(4)} %`
+								: 'NotFound'
+							: 'ERROR'
+						: 'Loading...'}
+				</Text>
+			</Box>
+			<Box
+				ta={'end'}
+				style={{
+					flex: '1 1 auto',
+				}}>
+				<ActionIcon variant="transparent" color="black" size={50}>
+					<IconChevronRight stroke={1} />
+				</ActionIcon>
+			</Box>
+		</Group>
 	);
 }
 
@@ -110,28 +136,28 @@ const Home: FC = () => {
 				style={{
 					height: '100%',
 					width: '100%',
-					padding: '1rem',
+
 					overflow: 'auto',
 				}}>
-				<Box>
-					<Table withColumnBorders withTableBorder striped highlightOnHover>
-						<Table.Thead>
-							<Table.Tr>
-								<Table.Th>Stream name</Table.Th>
-								<Table.Th>Events</Table.Th>
-								<Table.Th>Ingestion</Table.Th>
-								<Table.Th>Storage</Table.Th>
-								<Table.Th>Compression</Table.Th>
-								<Table.Th>Query</Table.Th>
-							</Table.Tr>
-						</Table.Thead>
-						<Table.Tbody>
-							{appContext.userSpecificStreams.map((key) => {
-								return <StreamInfo streamname={key} key={key} />;
-							})}
-						</Table.Tbody>
-					</Table>
+				<Box
+					style={{
+						height: '50px',
+						marginBottom: '1rem',
+						boxShadow: '0px 2px 10px -4px rgba(0, 0, 0, 0.25)',
+						display: 'flex',
+						alignItems: 'center',
+						padding: '0 1rem',
+					}}>
+					<Text size="xl" fw={700}>
+						Your Streams
+					</Text>
 				</Box>
+
+				<Stack>
+					{appContext.userSpecificStreams.map((key) => {
+						return <StreamInfo streamname={key} key={key} />;
+					})}
+				</Stack>
 			</Box>
 		);
 	} else {

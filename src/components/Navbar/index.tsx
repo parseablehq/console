@@ -271,7 +271,7 @@ export default function Navbar() {
 				}>
 				<UnstyledButton
 					onClick={() => {
-						setCollapsed(!collapsed);
+						navigateTo('/');
 					}}
 					className={classes.imageContainer}>
 					<Image src={logoCircle} w={50} />
