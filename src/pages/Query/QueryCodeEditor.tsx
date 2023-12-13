@@ -13,6 +13,7 @@ import { notifyError } from '@/utils/notification';
 import { usePostLLM } from '@/hooks/usePostLLM';
 import FilterBox from './FilterBox';
 import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
+import SavedModal from './SavedModal';
 
 const QueryCodeEditor: FC = () => {
 	const {
@@ -219,12 +220,18 @@ const QueryCodeEditor: FC = () => {
 			<Box className={HeaderContainer}>
 				<Text className={textContext}>Query</Text>
 				<FilterBox setQuery={setQuery} streamName={currentStreamName} query={query} />
-				<Box >
+				<Box
+					style={{
+						width: '100%',
+						display: 'flex',
+						justifyContent: 'end',
+					}}>
 					{!isLlmActive ? (
 						<a style={{ marginRight: '2rem' }} href="https://www.parseable.io/docs/api/llm-queries">
 							Enable SQL generation with OpenAI
 						</a>
 					) : null}
+					<SavedModal setQuery={setQuery} streamName={currentStreamName} query={query} />
 					<Tooltip
 						label={`View Schema for ${subAppContext.get().selectedStream}`}
 						style={{ color: 'white', backgroundColor: 'black' }}
@@ -240,6 +247,7 @@ const QueryCodeEditor: FC = () => {
 							<IconFileInfo stroke={1.5} />
 						</ActionIcon>
 					</Tooltip>
+
 					<Tooltip
 						label={'Click to Run Query or ctrl + enter '}
 						style={{ color: 'white', backgroundColor: 'black' }}

@@ -20,6 +20,7 @@ const FilterBox = ({ setQuery: setMainContextQuery, streamName, query: mainConte
 	} = useQueryPageContext();
 	const [fields, setFields] = useMountedState<Field[]>([]);
 	const [selectedFields, setSelectedFields] = useMountedState<Field[]>([]);
+	const [checkBoxFields, setCheckBoxFields] = useMountedState<Field[]>([]);
 
 	const [query, setQuery] = useMountedState<RuleGroupType>({
 		combinator: 'and',
@@ -36,6 +37,7 @@ const FilterBox = ({ setQuery: setMainContextQuery, streamName, query: mainConte
 					inputType: parseType(field.data_type),
 					validator,
 				}));
+				setCheckBoxFields(fields);
 				setFields(fields);
 				setSelectedFields(fields);
 			}
@@ -48,34 +50,39 @@ const FilterBox = ({ setQuery: setMainContextQuery, streamName, query: mainConte
 
 	useEffect(() => {
 		if (mainContextQuery) {
+			parseSelectField(mainContextQuery);
 			try {
 				const parsedQuery = parseSQL(mainContextQuery);
-				console.log(parsedQuery);
 				setQuery(parsedQuery);
-				const parsedSelectedField = mainContextQuery
-					.split('SELECT')[1]
-					.split('FROM')[0]
-					.split(',')
-					.map((field) => field.trim());
-				const selectedFields = fields.filter((field) => parsedSelectedField.includes(field.name));
-				if (selectedFields.length) {
-					setSelectedFields(selectedFields);
-				} else if (mainContextQuery.split('SELECT')[1].split('FROM')[0].trim() === '*') {
-					setSelectedFields(fields);
-				} else {
-					const customQuery = mainContextQuery.split('SELECT')[1].split('FROM')[0].trim();
-					setSelectedFields([
-						{
-							name: customQuery,
-							label: customQuery,
-						},
-					]);
-				}
 			} catch {
 				console.log('Query Cannot be parsed');
 			}
 		}
 	}, [mainContextQuery]);
+
+	const parseSelectField = (mainContextQuery: string) => {
+		const parsedSelectedField = mainContextQuery
+			.split('SELECT')[1]
+			.split('FROM')[0]
+			.split(',')
+			.map((field) => field.trim());
+		const selectedFields = fields.filter((field) => parsedSelectedField.includes(field.name));
+		if (selectedFields.length) {
+			setSelectedFields(selectedFields);
+			setCheckBoxFields(fields);
+		} else if (mainContextQuery.split('SELECT')[1].split('FROM')[0].trim() === '*') {
+			setSelectedFields(fields);
+			setCheckBoxFields(fields);
+		} else {
+			console.log('Custom Query', query);
+			const customQuery = {
+				name: mainContextQuery.split('SELECT')[1].split('FROM')[0],
+				label: mainContextQuery.split('SELECT')[1].split('FROM')[0],
+			};
+			setSelectedFields([customQuery]);
+			setCheckBoxFields([customQuery, ...fields]);
+		}
+	};
 
 	const parseType = (type: any) => {
 		if (typeof type === 'object') {
@@ -101,7 +108,7 @@ const FilterBox = ({ setQuery: setMainContextQuery, streamName, query: mainConte
 
 	const onApply = () => {
 		const queryStart = GenerateQueryStart(streamName!, selectedFields, fields);
-		setMainContextQuery(queryStart + formatQuery(query, 'sql'));
+		setMainContextQuery(queryStart + formatQuery(query, 'sql') + ` LIMIT 1000;`);
 		setIsModalOpen(false);
 	};
 
@@ -114,13 +121,14 @@ const FilterBox = ({ setQuery: setMainContextQuery, streamName, query: mainConte
 					onClick={() => {
 						setIsModalOpen((prev) => !prev);
 					}}
-					h={'100%'}>
+					h={'100%'}
+					>
 					<FieldsPillList query={query} setQuery={setQuery} setIsModalOpen={setIsModalOpen} />
 				</Button>
 			</Popover.Target>
 
 			<Popover.Dropdown>
-				<FieldSelection selectedFields={selectedFields} setSelectedFields={setSelectedFields} fields={fields} />
+				<FieldSelection selectedFields={selectedFields} setSelectedFields={setSelectedFields} fields={checkBoxFields} />
 				<QueryBuilderMantine>
 					<QueryBuilder
 						fields={fields}
