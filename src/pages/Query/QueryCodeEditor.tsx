@@ -2,7 +2,7 @@ import React, { FC, useCallback, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useQueryPageContext } from './Context';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { ActionIcon, Box, Button, Text, TextInput, Tooltip } from '@mantine/core';
+import { ActionIcon, Box, Button, SegmentedControl, Text, TextInput, Tooltip } from '@mantine/core';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import { ErrorMarker, errChecker } from './ErrorMarker';
 import { notifications } from '@mantine/notifications';
@@ -26,6 +26,7 @@ const QueryCodeEditor: FC = () => {
 	const { data: queryResult, getQueryData, error, resetData } = useQueryResult();
 	const editorRef = React.useRef<any>();
 	const monacoRef = React.useRef<any>();
+	const [view, setView] = useMountedState('builderMode');
 	const [isSchemaOpen, setIsSchemaOpen] = useMountedState(false);
 	const [refreshInterval, setRefreshInterval] = useMountedState<number | null>(null);
 	const [currentStreamName, setCurrentStreamName] = useMountedState<string | null>(subAppContext.get().selectedStream);
@@ -55,8 +56,6 @@ const QueryCodeEditor: FC = () => {
 
 	const handleEditorChange = (code: any) => {
 		setQuery(code);
-		// errChecker(code, subLogQuery.get().streamName);
-
 		if (currentStreamName) {
 			errChecker(code, currentStreamName);
 		}
@@ -190,33 +189,6 @@ const QueryCodeEditor: FC = () => {
 
 	return (
 		<Box style={{ height: '100%' }}>
-			{isLlmActive ? (
-				<TextInput
-					type="text"
-					name="ai_query"
-					id="ai_query"
-					value={aiQuery}
-					onChange={(e) => setAiQuery(e.target.value)}
-					placeholder="Enter plain text to generate SQL query using OpenAI"
-					rightSectionWidth={'auto'}
-					styles={{
-						input: {
-							paddingLeft: '20px',
-							border: 'none',
-							borderRadius: 0,
-							backgroundColor: 'rgba(84,91,235,.2)',
-						},
-						section: {
-							height: '100%',
-						},
-					}}
-					rightSection={
-						<Button variant="filled" color="brandPrimary" radius={0} onClick={handleAIGenerate} h={'100%'}>
-							✨ Generate
-						</Button>
-					}
-				/>
-			) : null}
 			<Box className={HeaderContainer}>
 				<Text className={textContext}>Query</Text>
 				<FilterBox setQuery={setQuery} streamName={currentStreamName} query={query} />
@@ -226,6 +198,14 @@ const QueryCodeEditor: FC = () => {
 						display: 'flex',
 						justifyContent: 'end',
 					}}>
+					<SegmentedControl
+						data={[
+							{ value: 'queryMode', label: 'Query' },
+							{ value: 'builderMode', label: 'Builder' },
+						]}
+						value={view}
+						onChange={setView}
+					/>
 					{!isLlmActive ? (
 						<a style={{ marginRight: '2rem' }} href="https://www.parseable.io/docs/api/llm-queries">
 							Enable SQL generation with OpenAI
@@ -265,6 +245,33 @@ const QueryCodeEditor: FC = () => {
 					</Tooltip>
 				</Box>
 			</Box>
+			{isLlmActive ? (
+				<TextInput
+					type="text"
+					name="ai_query"
+					id="ai_query"
+					value={aiQuery}
+					onChange={(e) => setAiQuery(e.target.value)}
+					placeholder="Enter plain text to generate SQL query using OpenAI"
+					rightSectionWidth={'auto'}
+					styles={{
+						input: {
+							paddingLeft: '20px',
+							border: 'none',
+							borderRadius: 0,
+							backgroundColor: 'rgba(84,91,235,.2)',
+						},
+						section: {
+							height: '100%',
+						},
+					}}
+					rightSection={
+						<Button variant="filled" color="brandPrimary" radius={0} onClick={handleAIGenerate} h={'100%'}>
+							✨ Generate
+						</Button>
+					}
+				/>
+			) : null}
 
 			<Box
 				style={

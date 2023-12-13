@@ -1,19 +1,7 @@
 import useMountedState from '@/hooks/useMountedState';
 import { notifyError } from '@/utils/notification';
 import { CodeHighlightTabs } from '@mantine/code-highlight';
-import {
-	ActionIcon,
-	Box,
-	Button,
-	Checkbox,
-	Code,
-	Group,
-	Input,
-	Modal,
-	Stack,
-	Text,
-	Tooltip,
-} from '@mantine/core';
+import { ActionIcon, Box, Button, Checkbox, Code, Group, Input, Modal, Stack, Text, Tooltip } from '@mantine/core';
 import { useDisclosure, useLocalStorage } from '@mantine/hooks';
 import { IconStar } from '@tabler/icons-react';
 import superjson from 'superjson';
@@ -34,7 +22,7 @@ const defaultValue = [
 	},
 ];
 const SavedModal = ({ setQuery, streamName, query }: SavedModalProps) => {
-	const [opened, { open, close }] = useDisclosure(true);
+	const [opened, { open, close }] = useDisclosure(false);
 	const [name, setName] = useMountedState('');
 	const [streamSpecific, setStreamSpecific] = useMountedState(true);
 
@@ -46,11 +34,11 @@ const SavedModal = ({ setQuery, streamName, query }: SavedModalProps) => {
 	});
 
 	const saveQuery = () => {
-		if(!name){
+		if (!name) {
 			notifyError({
-				message:"Name is required!"
-			})
-			return
+				message: 'Name is required!',
+			});
+			return;
 		}
 		if (savedQueries) {
 			const newQuery = [
@@ -63,8 +51,7 @@ const SavedModal = ({ setQuery, streamName, query }: SavedModalProps) => {
 				...savedQueries,
 			];
 			setSavedQueries(newQuery);
-			setName('')
-
+			setName('');
 		} else {
 			const newQuery = [
 				{
@@ -76,7 +63,7 @@ const SavedModal = ({ setQuery, streamName, query }: SavedModalProps) => {
 				...defaultValue,
 			];
 			setSavedQueries(newQuery);
-			setName('')
+			setName('');
 		}
 	};
 	return (
@@ -151,7 +138,7 @@ const SavedModal = ({ setQuery, streamName, query }: SavedModalProps) => {
 										</Button>
 									</Stack>
 								);
-							} else if(!streamSpecific) {
+							} else if (!streamSpecific) {
 								return (
 									<Stack
 										key={query.name}
