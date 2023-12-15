@@ -10,14 +10,26 @@ import { AppContext } from '@/@types/parseable/api/query';
 import Loading from '@/components/Loading';
 import { useGetLogStreamStat } from '@/hooks/useGetLogStreamStat';
 import { HumanizeNumber, formatBytes } from '@/utils';
+import { useGetLogStreamRetention } from '@/hooks/useGetLogStreamRetention';
+
 
 interface StreamInfoProp {
 	streamname: string;
 }
+
 function StreamInfo({ streamname }: StreamInfoProp) {
 	const { data, loading, error, getLogStat } = useGetLogStreamStat();
+
+	const {
+		data: dataRetention,
+		error: errorRetention,
+		loading: loadingRetention,
+		getLogRetention,
+		// resetData: resetDataRetention,
+	} = useGetLogStreamRetention();
 	useEffect(() => {
 		getLogStat(streamname);
+		getLogRetention(streamname);
 	}, []);
 	const nav = useNavigate();
 
@@ -84,6 +96,21 @@ function StreamInfo({ streamname }: StreamInfoProp) {
 							: 'ERROR'
 						: 'Loading...'}
 				</Text>
+			</Box>
+			<Box className={classes.streamBoxCol}>
+				<Text size="xs">Retention</Text>
+				<Text fw={700} size={'xl'} c={dataRetention?.length ? 'indigo' : 'red'}>
+					{!loadingRetention
+						? !errorRetention
+							? dataRetention?.length
+								? dataRetention[0].duration
+								: 'Not set'
+							: 'ERROR'
+						: 'Loading...'}
+				</Text>
+			</Box>
+			<Box className={classes.streamBoxCol}>
+				<Text size="xs">Status</Text>
 			</Box>
 			<Box
 				ta={'end'}
