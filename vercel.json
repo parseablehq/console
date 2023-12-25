@@ -2,11 +2,11 @@
 	"rewrites": [
 		{
 			"source": "/api",
-			"destination": "http://3.141.23.209:8000/api/"
+			"destination": "https://demo.parseable.io/api/"
 		},
 		{
 			"source": "/api/:path*",
-			"destination": "http://3.141.23.209:8000/api/:path*"
+			"destination": "https://demo.parseable.io/api/:path*"
 		},
 		{
 			"source": "/(.*)",
