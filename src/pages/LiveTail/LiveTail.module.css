@@ -1,0 +1,8 @@
+
+.tableWrapper {
+	display: grid;
+	grid-template-columns: repeat(1, minmax(0, 1fr));
+	overflow: auto;
+	white-space: nowrap;
+	height: 100%;
+}

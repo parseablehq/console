@@ -8,6 +8,7 @@ import {
 	QUERY_ROUTE,
 	STATS_ROUTE,
 	USERS_MANAGEMENT_ROUTE,
+	LIVE_TAIL_ROUTE,
 } from '@/constants/routes';
 import FullPageLayout from '@/layouts/FullPageLayout';
 import NotFound from '@/pages/Errors/NotFound';
@@ -23,6 +24,7 @@ import {
 	MainLayoutElement,
 	StatsElement,
 	// ConfigElement,
+	LiveTailElement,
 	UsersElement,
 } from './elements';
 
@@ -32,9 +34,9 @@ const AppRouter: FC = () => {
 	return (
 		<FullPageLayout>
 			<Routes>
-				<Route element={<PrivateRoute />} >
+				<Route element={<PrivateRoute />}>
 					<Route element={<MainLayoutElement />}>
-						<Route path={HOME_ROUTE} element={<HomeElement />}  />
+						<Route path={HOME_ROUTE} element={<HomeElement />} />
 
 						<Route element={<AccessSpecificRoute accessRequired={['ListUser']} />}>
 							<Route path={USERS_MANAGEMENT_ROUTE} element={<UsersElement />} />
@@ -48,6 +50,11 @@ const AppRouter: FC = () => {
 						<Route element={<AccessSpecificRoute accessRequired={['GetStats']} />}>
 							<Route path={STATS_ROUTE} element={<StatsElement />} />
 						</Route>
+
+						<Route element={<AccessSpecificRoute accessRequired={['Query']} />}>
+							<Route path={LIVE_TAIL_ROUTE} element={<LiveTailElement />} />
+						</Route>
+
 						{/* <Route element={<AccessSpecificRoute accessRequired={['PutAlert']} />}>
 							<Route path={CONFIG_ROUTE} element={<ConfigElement />} />
 						</Route> */}

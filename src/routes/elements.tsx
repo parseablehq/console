@@ -61,13 +61,22 @@ export const StatsElement: FC = () => {
 	);
 };
 
-
 const Users = lazy(() => import('@/pages/AccessManagement'));
 
 export const UsersElement: FC = () => {
 	return (
 		<SuspensePage>
 			<Users />
+		</SuspensePage>
+	);
+};
+
+const LiveTail = lazy(() => import('@/pages/LiveTail'));
+
+export const LiveTailElement: FC = () => {
+	return (
+		<SuspensePage>
+			<LiveTail />
 		</SuspensePage>
 	);
 };
