@@ -1,4 +1,4 @@
-import { Box, Button, Code, Group, ScrollArea, Stack, Table, Text, TextInput } from '@mantine/core';
+import { Button, Code, Group, ScrollArea, Table, Text, TextInput } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect, useRef } from 'react';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
@@ -18,8 +18,8 @@ const LiveTail: FC = () => {
 	} = useHeaderContext();
 	const [currentStreamName, setCurrentStreamName] = useMountedState<string>(subAppContext.get().selectedStream ?? '');
 	const [grpcPort, setGrpcPort] = useMountedState<number | null>(subInstanceConfig.get()?.grpcPort ?? null);
-	const { data, doGetLiveTail, error, loading, resetData, setSearch, abort } = useDoGetLiveTail();
-	const { data: schema, loading: schemaLoading, getDataSchema, resetData: resetSchema } = useGetLogStreamSchema();
+	const { data, doGetLiveTail, resetData, setSearch, abort } = useDoGetLiveTail();
+	const { data: schema, getDataSchema, resetData: resetSchema } = useGetLogStreamSchema();
 	const [tablerData, setTablerData] = useMountedState<any[]>([]);
 	const [scrollPosition, onScrollPositionChange] = useMountedState({ x: 0, y: 0 });
 	const scrollRef = useRef<null | HTMLDivElement>(null);
