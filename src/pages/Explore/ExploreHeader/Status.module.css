@@ -1,0 +1,84 @@
+.container {
+	flex: 0 1 auto;
+}
+
+.headContainer {
+	display: flex;
+	justify-content: space-between;
+	flex-direction: column;
+	padding: var(--mantine-spacing-md);
+	align-items: center;
+	border-bottom: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+
+.statusText {
+	font-size: var(--mantine-font-size-md);
+	font-weight: 600;
+	color: var(--mantine-color-gray-9);
+}
+
+.statusTextResult {
+	color: #00cc14;
+}
+
+.statusTextFailed {
+	color: #ff0000;
+}
+
+.genterateContiner {
+	margin-right: var(--mantine-spacing-sm);
+}
+
+.genterateText {
+	font-size: var(--mantine-font-size-md);
+	font-weight: 600;
+	color: var(--mantine-color-gray-9);
+}
+
+.genterateTextResult {
+	font-size: var(--mantine-font-size-md);
+	font-weight: 400;
+	color: var(--mantine-color-gray-9);
+}
+
+.statCard {
+	border: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+	width: 100%;
+	border-radius: var(--mantine-radius-default);
+	text-align: center;
+	display: flex;
+	justify-content: space-between;
+	padding: var(--mantine-spacing-xs);
+}
+
+.statCardDescription {
+	text-align: right;
+}
+
+.statCardDescriptionIcon {
+	color: var(--mantine-color-gray-9);
+}
+
+.statCardIcon {
+	background-color: #e7eeff;
+	color: var(--mantine-color-brandPrimary-4);
+}
+
+.statCardText {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.statCardTitleValue {
+	font-size: var(--mantine-font-size-xl);
+	font-weight: 600;
+	color: var(--mantine-color-brandPrimary-4);
+}
+
+.statCardTitle {
+	font-size: var(--mantine-font-size-md);
+	font-weight: 600;
+	color: var(--mantine-color-gray-9);
+}

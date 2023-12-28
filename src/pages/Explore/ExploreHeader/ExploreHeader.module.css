@@ -1,0 +1,26 @@
+.header {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0 1rem;
+	height: 3rem;
+	background-color: #fff;
+	border-bottom: 1px solid #e6e6e6;
+	gap: 0.5rem;
+}
+.container {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.headerButton {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	cursor: pointer;
+	color: var(--mantine-color-brandPrimary-4);
+	margin-left: 1rem;
+}

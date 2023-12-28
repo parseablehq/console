@@ -29,7 +29,7 @@ const RefreshInterval: FC = () => {
 	return (
 		<Menu withArrow>
 			<Menu.Target>
-				<Button variant="default" rightSection={<Icon stroke={1.5} />}>
+				<Button variant="default" rightSection={<Icon stroke={1.5} />} radius={'md'}>
 					<Text>{selectedInterval ? ms(selectedInterval) : 'Off'}</Text>
 				</Button>
 			</Menu.Target>

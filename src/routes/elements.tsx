@@ -80,3 +80,13 @@ export const LiveTailElement: FC = () => {
 		</SuspensePage>
 	);
 };
+
+const Explore = lazy(() => import('@/pages/Explore'));
+
+export const ExploreElement: FC = () => {
+	return (
+		<SuspensePage>
+			<Explore />
+		</SuspensePage>
+	);
+};

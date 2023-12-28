@@ -9,6 +9,7 @@ import {
 	STATS_ROUTE,
 	USERS_MANAGEMENT_ROUTE,
 	LIVE_TAIL_ROUTE,
+	EXPLORE_ROUTE,
 } from '@/constants/routes';
 import FullPageLayout from '@/layouts/FullPageLayout';
 import NotFound from '@/pages/Errors/NotFound';
@@ -26,6 +27,7 @@ import {
 	// ConfigElement,
 	LiveTailElement,
 	UsersElement,
+	ExploreElement,
 } from './elements';
 
 import OIDCNotConFigured from '@/pages/Errors/OIDC';
@@ -53,6 +55,9 @@ const AppRouter: FC = () => {
 
 						<Route element={<AccessSpecificRoute accessRequired={['Query']} />}>
 							<Route path={LIVE_TAIL_ROUTE} element={<LiveTailElement />} />
+						</Route>
+						<Route element={<AccessSpecificRoute accessRequired={['Query']} />}>
+							<Route path={EXPLORE_ROUTE} element={<ExploreElement />} />
 						</Route>
 
 						{/* <Route element={<AccessSpecificRoute accessRequired={['PutAlert']} />}>
