@@ -207,7 +207,7 @@ const QueryCodeEditor: FC = () => {
 						onChange={setView}
 					/>
 					{!isLlmActive ? (
-						<a style={{ marginRight: '2rem' }} href="https://www.parseable.io/docs/api/llm-queries">
+						<a style={{ marginRight: '2rem' }} href="https://www.parseable.io/docs/integrations/llm">
 							Enable SQL generation with OpenAI
 						</a>
 					) : null}
