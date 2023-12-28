@@ -109,9 +109,6 @@ function StreamInfo({ streamname }: StreamInfoProp) {
 						: 'Loading...'}
 				</Text>
 			</Box>
-			<Box className={classes.streamBoxCol}>
-				<Text size="xs">Status</Text>
-			</Box>
 			<Box
 				ta={'end'}
 				style={{
