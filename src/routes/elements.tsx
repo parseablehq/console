@@ -51,6 +51,16 @@ export const MainLayoutElement: FC = () => {
 	);
 };
 
+const LiveTail = lazy(() => import('@/pages/LiveTail'));
+
+export const LiveTailElement: FC = () => {
+	return (
+		<SuspensePage>
+			<LiveTail />
+		</SuspensePage>
+	);
+};
+
 const Stats = lazy(() => import('@/pages/Stats'));
 
 export const StatsElement: FC = () => {
@@ -60,6 +70,7 @@ export const StatsElement: FC = () => {
 		</SuspensePage>
 	);
 };
+
 const Config = lazy(() => import('@/pages/Config'));
 
 export const ConfigElement: FC = () => {
