@@ -11,6 +11,7 @@ import { FixedSizeList as List } from 'react-window';
 import compare from 'just-compare';
 import { parseLogData } from '@/utils';
 import { useDisclosure } from '@mantine/hooks';
+import { capitalizeFirstLetter } from '@/utils/capitalizeFirstLetter';
 
 type SortWidgetProps = {
 	setSortOrder: (order: SortOrder | null) => void;
@@ -103,18 +104,17 @@ const Column: FC<Column> = (props) => {
 
 	const filterActive = useMemo(() => Boolean(appliedFilter(columnName)?.length), [selectedFilters]);
 	const canApply = useMemo(() => !compare(selectedFilters, appliedFilter(columnName)), [selectedFilters]);
-	function capitalizeFirstLetter(word: string) {
-		return word.charAt(0).toUpperCase() + word.slice(1);
-	}
+
 	const { classes, cx } = useTableColumnStyle();
 	const { labelBtn, applyBtn, labelIcon, labelIconActive, searchInputStyle, filterText } = classes;
 
 	return (
-		<th style={{
-			height: "42px",
-			padding:0,
-			textAlign: 'left',
-		}}>
+		<th
+			style={{
+				height: '42px',
+				padding: 0,
+				textAlign: 'left',
+			}}>
 			<Popover position="bottom" withArrow withinPortal shadow="md" zIndex={2} onOpen={onOpen}>
 				<Popover.Target>
 					<UnstyledButton className={labelBtn}>

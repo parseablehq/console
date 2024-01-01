@@ -13,6 +13,7 @@ import {
 	IconTrash,
 	IconInfoCircle,
 	IconUserCog,
+	IconTimelineEvent,
 } from '@tabler/icons-react';
 import { FC, useEffect } from 'react';
 import { useNavbarStyles } from './styles';
@@ -37,6 +38,7 @@ const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 const links = [
 	{ icon: IconZoomCode, label: 'SQL', pathname: '/query', requiredAccess: ['Query', 'GetSchema'] },
 	{ icon: IconTableShortcut, label: 'Explore', pathname: '/logs', requiredAccess: ['Query', 'GetSchema'] },
+	{ icon: IconTimelineEvent, label: 'Live tail', pathname: '/live-tail', requiredAccess: ['GetLiveTail'] },
 	{ icon: IconReportAnalytics, label: 'Stats', pathname: '/stats', requiredAccess: ['GetStats'] },
 	{ icon: IconSettings, label: 'Config', pathname: '/config', requiredAccess: ['PutAlert'] },
 ];
@@ -94,7 +96,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 			setActiveStream('');
 			setSearchValue('');
 			setDisableLink(true);
-			navigate("/");
+			navigate('/');
 		} else if (streamName) {
 			if (streamName === deleteStream && userSepecficStreams) {
 				setDeleteStream('');
@@ -115,7 +117,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 		} else if (userSepecficStreams && Boolean(userSepecficStreams.length)) {
 			if (location.pathname === USERS_MANAGEMENT_ROUTE) {
 				handleChangeWithoutRiderection(userSepecficStreams[0].name, location.pathname);
-				navigate("/users");
+				navigate('/users');
 			} else {
 				handleChange(userSepecficStreams[0].name);
 			}
@@ -275,7 +277,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 						label="Users"
 						icon={<IconUserCog size="1.5rem" stroke={1.3} />}
 						onClick={() => {
-							navigate("/users");
+							navigate('/users');
 							setCurrentPage(USERS_MANAGEMENT_ROUTE);
 						}}
 					/>
