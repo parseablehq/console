@@ -63,7 +63,9 @@ export const useDoGetLiveTail = () => {
 					if (data.length > TOTAL_LOGS_TO_SHOW) {
 						data.pop();
 					}
-					setData((prevData) => [resp.toArray()[0]?.toJSON(), ...prevData.slice(0, TOTAL_LOGS_TO_SHOW)]);
+					if (resp.toArray()[0]?.toJSON()) {
+						setData((prevData) => [resp.toArray()[0]?.toJSON(), ...prevData.slice(0, TOTAL_LOGS_TO_SHOW)]);
+					}
 				}
 				setLoading(false);
 			} catch (e) {
