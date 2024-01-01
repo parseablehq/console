@@ -39,16 +39,38 @@ export const FIXED_DURATIONS = [
 ] as const;
 
 export const DEFAULT_FIXED_DURATIONS = FIXED_DURATIONS[0];
-
+export type LiveTailStatus = 'streaming' | 'stopped' | 'abort' | 'fetch' | '';
 interface HeaderContextState {
 	subLogQuery: SubData<LogsQuery>;
 	subLogSearch: SubData<LogsSearch>;
+	subLiveTailsStatus: SubData<LiveTailStatus>;
 	subRefreshInterval: SubData<number | null>;
 	subLogSelectedTimeRange: SubData<LogSelectedTimeRange>;
 	subNavbarTogle: SubData<boolean>;
 	subCreateUserModalTogle: SubData<boolean>;
-	subInstanceConfig: SubData<AboutData|null>;
+	subInstanceConfig: SubData<AboutData | null>;
+	subAppContext: SubData<AppContext>;
 }
+
+export type UserRoles = {
+	roleName: {
+		privilege: string;
+		resource?: {
+			stream: string;
+			tag: string;
+		};
+	}[];
+};
+
+export type PageOption = '/' | '/explore' | '/sql' | '/management' | '/team';
+
+export type AppContext = {
+	selectedStream: string | null;
+	activePage: PageOption | null;
+	action: string[] | null;
+	userSpecificStreams: string[] | null;
+	userRoles: UserRoles | null;
+};
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface HeaderContextMethods {}
@@ -63,6 +85,13 @@ interface HeaderProviderProps {
 }
 
 const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
+	const subAppContext = useSubscribeState<AppContext>({
+		selectedStream: null,
+		activePage: null,
+		action: null,
+		userSpecificStreams: null,
+		userRoles: null,
+	});
 	const subLogQuery = useSubscribeState<LogsQuery>({
 		startTime: now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate(),
 		endTime: now.toDate(),
@@ -84,7 +113,9 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 	const subRefreshInterval = useSubscribeState<number | null>(null);
 	const subNavbarTogle = useSubscribeState<boolean>(false);
 	const subCreateUserModalTogle = useSubscribeState<boolean>(false);
-	const subInstanceConfig = useSubscribeState<AboutData|null>(null);
+	const subInstanceConfig = useSubscribeState<AboutData | null>(null);
+	const subLiveTailsStatus = useSubscribeState<LiveTailStatus>('');
+
 	const state: HeaderContextState = {
 		subLogQuery,
 		subLogSearch,
@@ -93,6 +124,8 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 		subNavbarTogle,
 		subCreateUserModalTogle,
 		subInstanceConfig,
+		subAppContext,
+		subLiveTailsStatus,
 	};
 
 	const methods: HeaderContextMethods = {};
