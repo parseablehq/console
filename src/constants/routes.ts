@@ -3,6 +3,7 @@ export const LOGS_ROUTE = '/:streamName/logs';
 export const LOGIN_ROUTE = '/login';
 export const ALL_ROUTE = '/*';
 export const QUERY_ROUTE = '/:streamName/query';
+export const LIVE_TAIL_ROUTE = '/:streamName/live-tail';
 export const STATS_ROUTE = '/:streamName/stats';
 export const CONFIG_ROUTE = '/:streamName/config';
 export const USERS_MANAGEMENT_ROUTE = '/users';
