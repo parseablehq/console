@@ -213,7 +213,7 @@ const Roles: FC = () => {
 								setDefaultRoleModalOpen(true);
 							}}
 							rightIcon={<IconPencil size={px('1.2rem')} stroke={1.5} />}>
-							Set default oidc role
+							Set Default OIDC Role
 						</Button>
 					) : (
 						''
