@@ -10,9 +10,9 @@ import EmptyBox from '@/components/Empty';
 import { useLiveTailTableStyles } from './styles';
 
 const LogTable: FC = () => {
-	const { data, doGetLiveTail, resetData, abort, loading, schema } = useDoGetLiveTail();
+	const { finalData: data, doGetLiveTail, resetData, abort, loading, schema } = useDoGetLiveTail();
 	const {
-		state: { subInstanceConfig, subLogQuery, subLiveTailsStatus },
+		state: { subInstanceConfig, subLogQuery, subLiveTailsData },
 	} = useHeaderContext();
 
 	const [grpcPort, setGrpcPort] = useMountedState<number | null>(subInstanceConfig.get()?.grpcPort ?? null);
@@ -31,10 +31,10 @@ const LogTable: FC = () => {
 			}
 		});
 
-		const liveTailStatus = subLiveTailsStatus.subscribe((value) => {
-			if (value === 'abort') {
+		const liveTailStatus = subLiveTailsData.subscribe((value) => {
+			if (value.liveTailStatus === 'abort') {
 				abort();
-			} else if (value === 'fetch') {
+			} else if (value.liveTailStatus === 'fetch') {
 				setCallAgain(true);
 			}
 		});
@@ -44,7 +44,7 @@ const LogTable: FC = () => {
 			portListener();
 			liveTailStatus();
 		};
-	}, [subLogQuery, subInstanceConfig, subLiveTailsStatus]);
+	}, [subLogQuery, subInstanceConfig, subLiveTailsData]);
 
 	useEffect(() => {
 		if (currentStreamName && grpcPort) {
@@ -65,12 +65,23 @@ const LogTable: FC = () => {
 
 	useEffect(() => {
 		if (loading) {
-			subLiveTailsStatus.set('streaming');
+			subLiveTailsData.set((state) => {
+				state.liveTailStatus = 'streaming';
+			});
 		} else {
-			subLiveTailsStatus.set('stopped');
+			subLiveTailsData.set((state) => {
+				state.liveTailStatus = 'stopped';
+			});
+			// subLiveTailsData.set('stopped');
 			setCallAgain(false);
 		}
 	}, [loading]);
+
+	useEffect(() => {
+		subLiveTailsData.set((state) => {
+			state.liveTailSchemaData = schema;
+		});
+	}, [schema]);
 
 	const headerRows = schema?.map((element) => <Column key={element.name} columnName={element.name} />);
 

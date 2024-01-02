@@ -2,6 +2,9 @@ import { FetchTransport, createChannel, createClient } from 'nice-grpc-web';
 import { AsyncRecordBatchStreamReader } from '@apache-arrow/ts';
 import { FlightServiceDefinition, FlightData } from '@/assets/arrow';
 import useMountedState from './useMountedState';
+import { useEffect } from 'react';
+import { useHeaderContext } from '@/layouts/MainLayout/Context';
+import { LogStreamData } from '@/@types/parseable/api/stream';
 
 let abortController = new AbortController();
 
@@ -25,10 +28,17 @@ function createFlightDataReadableStream(dataIterable: AsyncIterable<FlightData>)
 }
 
 export const useDoGetLiveTail = () => {
+	const {
+		state: { subLiveTailsData },
+	} = useHeaderContext();
+
 	const [data, setData] = useMountedState<any[]>([]);
+	const [finalData, setFinalData] = useMountedState<any[]>([]);
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
-	const [schema, setSchema] = useMountedState<any[]>([]);
+	const [schema, setSchema] = useMountedState<LogStreamData>([]);
+	const [field, setField] = useMountedState<string>('');
+	const [search, setSearch] = useMountedState<string>('');
 
 	// Handles initiating the live tail stream
 	const livetail = (currentStreamName: string, grpcPort: number | null, abortController: AbortController) => {
@@ -59,7 +69,7 @@ export const useDoGetLiveTail = () => {
 						setLoading(true);
 					}
 
-					await new Promise((resolve) => setTimeout(resolve, 50));
+					await new Promise((resolve) => setTimeout(resolve, 800));
 					if (data.length > TOTAL_LOGS_TO_SHOW) {
 						data.pop();
 					}
@@ -95,5 +105,38 @@ export const useDoGetLiveTail = () => {
 
 	const resetData = () => setData([]);
 
-	return { data, error, loading, doGetLiveTail, resetData, abort, schema };
+	useEffect(() => {
+		const liveTailSchema = subLiveTailsData.subscribe((value) => {
+			setSearch(value.liveTailSearchValue);
+			setField(value.liveTailSearchField);
+		});
+
+		return () => {
+			liveTailSchema();
+		};
+	}, [subLiveTailsData]);
+
+	useEffect(() => {
+		if (field && search) {
+			setFinalData(
+				data.filter((item) => {
+					const fieldValue = item[field.toLowerCase()];
+					return typeof fieldValue === 'string' && fieldValue.toLowerCase().includes(search.toLowerCase());
+				}),
+			);
+		} else {
+			setFinalData(data);
+		}
+	}, [field, search, data]);
+
+	console.log('field, search', search, field);
+
+	useEffect(() => {
+		subLiveTailsData.set((state) => {
+			state.liveTailSearchValue = '';
+			state.liveTailSearchField = '';
+		});
+	}, []);
+
+	return { finalData, error, loading, doGetLiveTail, resetData, abort, schema };
 };

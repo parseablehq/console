@@ -169,6 +169,12 @@ export const useLogQueryStyles = createStyles((theme) => {
 			paddingRight: spacing.sm,
 		},
 
+		liveTailFilterContainer: {
+			display: 'flex',
+			gap: '12px',
+			marginRight: '20px',
+		},
+
 		searchTypeBtn: {
 			border: `${sizing.px} ${colors.gray[1]} solid`,
 			borderTopRightRadius: 0,

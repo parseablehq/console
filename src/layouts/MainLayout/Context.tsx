@@ -1,5 +1,6 @@
 import { AboutData } from '@/@types/parseable/api/about';
 import { SortOrder, type LogsQuery, type LogsSearch, type LogSelectedTimeRange } from '@/@types/parseable/api/query';
+import { LogStreamData } from '@/@types/parseable/api/stream';
 import useSubscribeState, { SubData } from '@/hooks/useSubscribeState';
 import dayjs from 'dayjs';
 import type { FC } from 'react';
@@ -39,11 +40,18 @@ export const FIXED_DURATIONS = [
 ] as const;
 
 export const DEFAULT_FIXED_DURATIONS = FIXED_DURATIONS[0];
-export type LiveTailStatus = 'streaming' | 'stopped' | 'abort' | 'fetch' | '';
+
+type LiveTailData = {
+	liveTailStatus: 'streaming' | 'stopped' | 'abort' | 'fetch' | '';
+	liveTailSchemaData: LogStreamData;
+	liveTailSearchValue: string;
+	liveTailSearchField: string;
+};
+
 interface HeaderContextState {
 	subLogQuery: SubData<LogsQuery>;
 	subLogSearch: SubData<LogsSearch>;
-	subLiveTailsStatus: SubData<LiveTailStatus>;
+	subLiveTailsData: SubData<LiveTailData>;
 	subRefreshInterval: SubData<number | null>;
 	subLogSelectedTimeRange: SubData<LogSelectedTimeRange>;
 	subNavbarTogle: SubData<boolean>;
@@ -106,6 +114,12 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 			order: SortOrder.DESCENDING,
 		},
 	});
+	const subLiveTailsData = useSubscribeState<LiveTailData>({
+		liveTailStatus: '',
+		liveTailSchemaData: [],
+		liveTailSearchValue: '',
+		liveTailSearchField: '',
+	});
 	const subLogSelectedTimeRange = useSubscribeState<LogSelectedTimeRange>({
 		state: 'fixed',
 		value: DEFAULT_FIXED_DURATIONS.name,
@@ -114,7 +128,6 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 	const subNavbarTogle = useSubscribeState<boolean>(false);
 	const subCreateUserModalTogle = useSubscribeState<boolean>(false);
 	const subInstanceConfig = useSubscribeState<AboutData | null>(null);
-	const subLiveTailsStatus = useSubscribeState<LiveTailStatus>('');
 
 	const state: HeaderContextState = {
 		subLogQuery,
@@ -125,7 +138,7 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 		subCreateUserModalTogle,
 		subInstanceConfig,
 		subAppContext,
-		subLiveTailsStatus,
+		subLiveTailsData,
 	};
 
 	const methods: HeaderContextMethods = {};

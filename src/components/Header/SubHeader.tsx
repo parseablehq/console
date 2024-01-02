@@ -9,6 +9,7 @@ import { useLogQueryStyles } from './styles';
 import ReloadUser from './ReloadUser';
 import DocsUser from './UserDocs';
 import StreamingButton from './StreamingButton';
+import LiveTailFilter from './LiveTailFilter';
 
 export const StatsHeader: FC = () => {
 	const { classes } = useLogQueryStyles();
@@ -67,7 +68,7 @@ export const LiveTailHeader: FC = () => {
 
 			<Box>
 				<Box className={innerContainer}>
-					{/* <Search /> */}
+					<LiveTailFilter />
 					<StreamingButton />
 					{/* <TimeRange /> */}
 					{/* <RefreshInterval /> */}

@@ -7,28 +7,32 @@ import useMountedState from '@/hooks/useMountedState';
 
 const StreamingButton: FC = () => {
 	const {
-		state: { subLiveTailsStatus },
+		state: { subLiveTailsData },
 	} = useHeaderContext();
 
-	const [liveTailStatus, setLiveTailStatus] = useMountedState<string>('');
+	const [liveTailStatus, setLiveTailStatus] = useMountedState<string | undefined>('');
 
 	const handleStreaming = () => {
 		if (liveTailStatus === 'streaming') {
-			subLiveTailsStatus.set('abort');
+			subLiveTailsData.set((state) => {
+				state.liveTailStatus = 'abort';
+			});
 		} else {
-			subLiveTailsStatus.set('fetch');
+			subLiveTailsData.set((state) => {
+				state.liveTailStatus = 'fetch';
+			});
 		}
 	};
 
 	useEffect(() => {
-		const liveTailStreaming = subLiveTailsStatus.subscribe((state) => {
-			setLiveTailStatus(state);
+		const liveTailStreaming = subLiveTailsData.subscribe((state) => {
+			setLiveTailStatus(state?.liveTailStatus);
 		});
 
 		return () => {
 			liveTailStreaming();
 		};
-	}, [subLiveTailsStatus]);
+	}, [subLiveTailsData]);
 
 	const { classes } = useLogQueryStyles();
 	const { refreshNowBtn } = classes;
