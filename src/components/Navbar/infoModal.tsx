@@ -28,7 +28,7 @@ const helpResources = [
 		icon: IconBook2,
 		title: 'Documentation',
 		description: 'Refer the documentation',
-		href: 'https://www.parseable.io/docs/introduction',
+		href: 'https://www.parseable.com/docs',
 	},
 ];
 
