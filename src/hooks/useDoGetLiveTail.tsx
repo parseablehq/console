@@ -129,8 +129,6 @@ export const useDoGetLiveTail = () => {
 		}
 	}, [field, search, data]);
 
-	console.log('field, search', search, field);
-
 	useEffect(() => {
 		subLiveTailsData.set((state) => {
 			state.liveTailSearchValue = '';
