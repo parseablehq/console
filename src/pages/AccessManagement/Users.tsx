@@ -59,14 +59,14 @@ const Users: FC = () => {
 
 			getrows();
 		}
-		if (usersError ) {
+		if (usersError) {
 			setTableRows(
 				<tr>
 					<td>error</td>
 				</tr>,
 			);
 		}
-		if (usersLoading ) {
+		if (usersLoading) {
 			setTableRows(
 				<tr>
 					<td>loading</td>
@@ -166,7 +166,7 @@ const Users: FC = () => {
 						onSearchChange={(value) => setRoleSearchValue(value)}
 						onDropdownClose={() => setRoleSearchValue(SelectedRole)}
 						onDropdownOpen={() => setRoleSearchValue('')}
-						data={roles}
+						data={roles || []}
 						searchable
 						label="Select a role to assign"
 						required

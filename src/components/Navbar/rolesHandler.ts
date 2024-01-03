@@ -32,7 +32,7 @@ const writerAccess = ['Ingest', 'Query', 'ListStream', 'GetSchema', 'GetStats', 
 const readerAccess = ['Query', 'ListStream', 'GetSchema', 'GetStats', 'GetRetention', 'GetAlert'];
 const ingesterAccess = ['Ingest'];
 
-const getStreamsSepcificAccess = (rolesWithRoleName: object[], stream: string) => {
+const getStreamsSepcificAccess = (rolesWithRoleName: object[], stream?: string) => {
 	let access: string[] = [];
 	let roles: any[] = [];
 	for (var prop in rolesWithRoleName) {
