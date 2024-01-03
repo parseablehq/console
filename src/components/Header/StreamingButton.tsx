@@ -11,16 +11,23 @@ const StreamingButton: FC = () => {
 	} = useHeaderContext();
 
 	const [liveTailStatus, setLiveTailStatus] = useMountedState<string | undefined>('');
+	const [isClicked, setIsClicked] = useMountedState(false);
 
 	const handleStreaming = () => {
-		if (liveTailStatus === 'streaming') {
-			subLiveTailsData.set((state) => {
-				state.liveTailStatus = 'abort';
-			});
-		} else {
-			subLiveTailsData.set((state) => {
-				state.liveTailStatus = 'fetch';
-			});
+		if (!isClicked) {
+			setIsClicked(true);
+			if (liveTailStatus === 'streaming') {
+				subLiveTailsData.set((state) => {
+					state.liveTailStatus = 'abort';
+				});
+			} else {
+				subLiveTailsData.set((state) => {
+					state.liveTailStatus = 'fetch';
+				});
+			}
+			setTimeout(() => {
+				setIsClicked(false);
+			}, 500);
 		}
 	};
 
