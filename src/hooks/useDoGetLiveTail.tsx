@@ -2,11 +2,9 @@ import { FetchTransport, createChannel, createClient } from 'nice-grpc-web';
 import { AsyncRecordBatchStreamReader } from '@apache-arrow/ts';
 import { FlightServiceDefinition, FlightData } from '@/assets/arrow';
 import useMountedState from './useMountedState';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { LogStreamData } from '@/@types/parseable/api/stream';
-
-let abortController = new AbortController();
 
 const TOTAL_LOGS_TO_SHOW = 500;
 
@@ -40,6 +38,8 @@ export const useDoGetLiveTail = () => {
 	const [field, setField] = useMountedState<string>('');
 	const [search, setSearch] = useMountedState<string>('');
 
+	const abortControllerRef = useRef(new AbortController());
+
 	// Handles initiating the live tail stream
 	const livetail = (currentStreamName: string, grpcPort: number | null, abortController: AbortController) => {
 		if (!currentStreamName || !grpcPort) return;
@@ -69,7 +69,12 @@ export const useDoGetLiveTail = () => {
 						setLoading(true);
 					}
 
-					await new Promise((resolve) => setTimeout(resolve, 800));
+					await new Promise((resolve) => setTimeout(resolve, 600));
+
+					if (abortController.signal.aborted) {
+						break;
+					}
+
 					if (data.length > TOTAL_LOGS_TO_SHOW) {
 						data.pop();
 					}
@@ -84,23 +89,21 @@ export const useDoGetLiveTail = () => {
 			} finally {
 				setLoading(false);
 			}
-
 			setLoading(false);
 		})();
 	};
 
 	// Starts the live tail
 	const doGetLiveTail = (streamName: string, grpcPort: number | null) => {
-		// Abort the previous stream before starting a new one
-		if (abortController) {
-			abortController.abort();
+		if (abortControllerRef.current) {
+			abortControllerRef.current.abort();
 		}
-		abortController = new AbortController();
-		livetail(streamName, grpcPort, abortController);
+		abortControllerRef.current = new AbortController();
+		livetail(streamName, grpcPort, abortControllerRef.current);
 	};
 
 	const abort = () => {
-		abortController.abort();
+		abortControllerRef.current.abort();
 	};
 
 	const resetData = () => setData([]);
@@ -134,6 +137,10 @@ export const useDoGetLiveTail = () => {
 			state.liveTailSearchValue = '';
 			state.liveTailSearchField = '';
 		});
+
+		return () => {
+			abortControllerRef.current.abort();
+		};
 	}, []);
 
 	return { finalData, error, loading, doGetLiveTail, resetData, abort, schema };

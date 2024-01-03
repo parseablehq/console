@@ -72,7 +72,6 @@ const LogTable: FC = () => {
 			subLiveTailsData.set((state) => {
 				state.liveTailStatus = 'stopped';
 			});
-			// subLiveTailsData.set('stopped');
 			setCallAgain(false);
 		}
 	}, [loading]);
