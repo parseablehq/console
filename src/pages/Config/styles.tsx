@@ -1,13 +1,26 @@
 import { createStyles } from '@mantine/core';
 export const useConfigStyles = createStyles((theme) => {
-	const { spacing ,colors} = theme;
-	const { widths, } = theme.other;
+	const { spacing, colors } = theme;
+	const { widths } = theme.other;
 	return {
 		container: {
 			display: 'flex',
-			margin: spacing.md,
+			flexDirection: 'column',
 			flex: 1,
+			margin: spacing.xl,
+			gap: spacing.lg,
 		},
+		containerWrapper: {
+			display: 'flex',
+			gap: '20px',
+		},
+		primaryBtn: {
+			marginTop: spacing.md,
+			backgroundColor: theme.colors.brandPrimary[0],
+			color: theme.colors.white,
+			width: 'max-content',
+		},
+
 		submitBtn: {
 			marginTop: spacing.md,
 			backgroundColor: theme.colors.brandPrimary[0],
@@ -17,7 +30,7 @@ export const useConfigStyles = createStyles((theme) => {
 			borderRadius: '60px',
 			border: 'none',
 			'& .mantine-Accordion-item': {
-				border:`${widths.px} ${colors.gray[1]} solid`,
+				border: `${widths.px} ${colors.gray[1]} solid`,
 			},
 		},
 		innerContainer: {
@@ -25,7 +38,5 @@ export const useConfigStyles = createStyles((theme) => {
 			justifyContent: 'center',
 			display: 'flex',
 		},
-		
 	};
 });
-

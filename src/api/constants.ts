@@ -23,12 +23,12 @@ export const DEFAULT_ROLE_URL = `${API_V1}/role/default`;
 export const ROLES_LIST_URL = `${API_V1}/role`;
 export const ROLE_URL = (roleName: string) => `${ROLES_LIST_URL}/${roleName}`;
 
-
-//USERS LOGIN
-
+// USERS LOGIN
 export const LOGIN_URL = `${API_V1}/o/login?redirect=${window.location.origin}`;
 
 // LLM queries
 export const LLM_QUERY_URL = `${API_V1}/llm`;
 export const IS_LLM_ACTIVE_URL = `${LLM_QUERY_URL}/isactive`;
 
+// caching
+export const CACHING_STATUS_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/cache`;
