@@ -11,11 +11,19 @@ import { IconCheck, IconFileAlert } from '@tabler/icons-react';
 import { usePutLogStreamRetention } from '@/hooks/usePutLogStreamRetention';
 import { useGetLogStreamAlert } from '@/hooks/useGetLogStreamAlert';
 import { useGetLogStreamRetention } from '@/hooks/useGetLogStreamRetention';
+import { useGetCacheStatus } from '@/hooks/useGetCacheStatus';
+import { usePutCache } from '@/hooks/usePutCache';
 
 const Config: FC = () => {
 	useDocumentTitle('Parseable | Config');
+
+	const { data, getCacheStatus } = useGetCacheStatus();
+	usePutCache();
+	const { error: updateCacheError, updateCache } = usePutCache();
+
 	const [alertQuery, setAlertQuery] = useMountedState<string>('');
 	const [retentionQuery, setRetentionQuery] = useMountedState<string>('');
+
 	const {
 		state: { subLogQuery },
 	} = useHeaderContext();
@@ -97,10 +105,11 @@ const Config: FC = () => {
 	};
 
 	useEffect(() => {
-		if(!subLogQuery.get().streamName) return;
+		if (!subLogQuery.get().streamName) return;
 		getLogAlert(subLogQuery.get().streamName);
 		getLogRetention(subLogQuery.get().streamName);
-	}, []);
+		getCacheStatus(subLogQuery.get().streamName);
+	}, [subLogQuery.get().streamName]);
 
 	useEffect(() => {
 		const subQuery = subLogQuery.subscribe((value: any) => {
@@ -211,54 +220,45 @@ const Config: FC = () => {
 			});
 			resetRetentionData();
 		}
-	}, [resultRetentionData, retentionError, retentionLoading]);
+		if (updateCacheError) {
+			notifications.update({
+				id: 'load-data',
+				loading: false,
+				color: 'red',
+				title: 'Error occurred',
+				message: `Error occurred, failed to change cache setting`,
+				icon: <IconFileAlert size="1rem" />,
+				autoClose: 3000,
+			});
+		}
+	}, [resultRetentionData, retentionError, retentionLoading, updateCacheError]);
 
 	const { classes } = useConfigStyles();
-	const { container, submitBtn, accordionSt, innerContainer } = classes;
+	const { container, submitBtn, accordionSt, innerContainer, containerWrapper, primaryBtn } = classes;
+
 	return (
 		<Box className={container}>
-			<Box className={innerContainer}>
-				<Accordion defaultValue="" variant="contained" radius="md" w={'90%'} className={accordionSt}>
-					<Accordion.Item value="Alert">
-						<Accordion.Control>Alert</Accordion.Control>
-						<Accordion.Panel>
-							<Box>
-								<Box sx={{ height: '500px' }}>
-									<Editor
-										onChange={handleAlertQueryEditorChange}
-										value={alertQuery}
-										defaultLanguage="json"
-										options={{
-											scrollBeyondLastLine: false,
-											readOnly: false,
-											fontSize: 12,
-											wordWrap: 'on',
-											minimap: { enabled: false },
-											automaticLayout: true,
-											mouseWheelZoom: true,
-											glyphMargin: true,
-										}}
-									/>
-								</Box>
-								<Button className={submitBtn} onClick={onSubmitAlertQuery}>
-									Submit
-								</Button>
-							</Box>
-						</Accordion.Panel>
-					</Accordion.Item>
-				</Accordion>
-			</Box>
-			{!subLogQuery.get().access?.some((access: string) => ['PutRetention'].includes(access)) ? null : (
+			<Button
+				variant="filled"
+				className={primaryBtn}
+				onClick={async () => {
+					await updateCache(subLogQuery.get().streamName, !data);
+					await getCacheStatus(subLogQuery.get().streamName);
+				}}>
+				{data ? 'Disable Cache' : 'Enable Cache'}
+			</Button>
+
+			<Box className={containerWrapper}>
 				<Box className={innerContainer}>
-					<Accordion defaultValue="" variant="contained" radius="md" w={'90%'} className={accordionSt}>
-						<Accordion.Item value="Retention">
-							<Accordion.Control>Retention</Accordion.Control>
+					<Accordion defaultValue="" variant="contained" radius="md" w={'100%'} className={accordionSt}>
+						<Accordion.Item value="Alert">
+							<Accordion.Control>Alert</Accordion.Control>
 							<Accordion.Panel>
 								<Box>
 									<Box sx={{ height: '500px' }}>
 										<Editor
-											onChange={handleRetentionQueryEditorChange}
-											value={retentionQuery}
+											onChange={handleAlertQueryEditorChange}
+											value={alertQuery}
 											defaultLanguage="json"
 											options={{
 												scrollBeyondLastLine: false,
@@ -272,7 +272,7 @@ const Config: FC = () => {
 											}}
 										/>
 									</Box>
-									<Button className={submitBtn} onClick={onSubmitRetentionQuery}>
+									<Button className={submitBtn} onClick={onSubmitAlertQuery}>
 										Submit
 									</Button>
 								</Box>
@@ -280,7 +280,40 @@ const Config: FC = () => {
 						</Accordion.Item>
 					</Accordion>
 				</Box>
-			)}
+				{!subLogQuery.get().access?.some((access: string) => ['PutRetention'].includes(access)) ? null : (
+					<Box className={innerContainer}>
+						<Accordion defaultValue="" variant="contained" radius="md" w={'100%'} className={accordionSt}>
+							<Accordion.Item value="Retention">
+								<Accordion.Control>Retention</Accordion.Control>
+								<Accordion.Panel>
+									<Box>
+										<Box sx={{ height: '500px' }}>
+											<Editor
+												onChange={handleRetentionQueryEditorChange}
+												value={retentionQuery}
+												defaultLanguage="json"
+												options={{
+													scrollBeyondLastLine: false,
+													readOnly: false,
+													fontSize: 12,
+													wordWrap: 'on',
+													minimap: { enabled: false },
+													automaticLayout: true,
+													mouseWheelZoom: true,
+													glyphMargin: true,
+												}}
+											/>
+										</Box>
+										<Button className={submitBtn} onClick={onSubmitRetentionQuery}>
+											Submit
+										</Button>
+									</Box>
+								</Accordion.Panel>
+							</Accordion.Item>
+						</Accordion>
+					</Box>
+				)}
+			</Box>
 		</Box>
 	);
 };
