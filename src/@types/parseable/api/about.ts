@@ -13,7 +13,5 @@ export type AboutData = {
 	uiVersion: string;
 	grpcPort: number;
 	oidcActive: boolean;
-	cacheEnabled: string;
-    cacheDir: string;
-    cacheSize: number;
+	cache: string;
 };
