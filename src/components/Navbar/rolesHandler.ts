@@ -5,6 +5,7 @@ const adminAccess = [
 	'ListStream',
 	'GetSchema',
 	'GetStats',
+	'GetLiveTail',
 	'DeleteStream',
 	'GetRetention',
 	'PutRetention',
@@ -28,8 +29,18 @@ const editorAccess = [
 	'PutAlert',
 	'GetAlert',
 ];
-const writerAccess = ['Ingest', 'Query', 'ListStream', 'GetSchema', 'GetStats', 'GetRetention', 'PutAlert', 'GetAlert'];
-const readerAccess = ['Query', 'ListStream', 'GetSchema', 'GetStats', 'GetRetention', 'GetAlert'];
+const writerAccess = [
+	'Ingest',
+	'Query',
+	'ListStream',
+	'GetSchema',
+	'GetStats',
+	'GetRetention',
+	'PutAlert',
+	'GetAlert',
+	'GetLiveTail',
+];
+const readerAccess = ['Query', 'ListStream', 'GetSchema', 'GetStats', 'GetRetention', 'GetAlert', 'GetLiveTail'];
 const ingesterAccess = ['Ingest'];
 
 const getStreamsSepcificAccess = (rolesWithRoleName: object[], stream?: string) => {

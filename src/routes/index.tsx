@@ -2,6 +2,7 @@ import {
 	ALL_ROUTE,
 	CONFIG_ROUTE,
 	HOME_ROUTE,
+	LIVE_TAIL_ROUTE,
 	LOGIN_ROUTE,
 	LOGS_ROUTE,
 	OIDC_NOT_CONFIGURED_ROUTE,
@@ -23,6 +24,7 @@ import {
 	StatsElement,
 	ConfigElement,
 	UsersElement,
+	LiveTailElement,
 } from './elements';
 import AccessSpecificRoute from './AccessSpecificRoute';
 import OIDCNotConFigured from '@/pages/Errors/OIDC';
@@ -44,6 +46,10 @@ const AppRouter: FC = () => {
 						<Route element={<AccessSpecificRoute accessRequired={['Query', 'GetSchema']} />}>
 							<Route path={LOGS_ROUTE} element={<LogsElement />} />
 							<Route path={QUERY_ROUTE} element={<QueryElement />} />
+						</Route>
+
+						<Route element={<AccessSpecificRoute accessRequired={['GetLiveTail']} />}>
+							<Route path={LIVE_TAIL_ROUTE} element={<LiveTailElement />} />
 						</Route>
 
 						<Route element={<AccessSpecificRoute accessRequired={['GetStats']} />}>

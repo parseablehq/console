@@ -30,7 +30,7 @@ export const useHeaderStyles = createStyles((theme) => {
 		imageSty: {},
 		burgerIcon: {},
 		navContainer: {
-			width: "calc(100% )",
+			width: 'calc(100% )',
 			justifyContent: 'space-between',
 		},
 		actionBtn: {
@@ -81,9 +81,9 @@ export const useLogQueryStyles = createStyles((theme) => {
 		},
 		refreshNowBtn: {
 			background: colors.white[0],
-			padding: 0,
+			padding: '6px 12px',
 			marginRight: spacing.xs,
-			width: '36px',
+			// width: '36px',
 			color: theme.colors.gray[6],
 			border: `${sizing.px} ${colors.gray[2]} solid`,
 			'&:hover': {
@@ -167,6 +167,12 @@ export const useLogQueryStyles = createStyles((theme) => {
 		searchContainer: {
 			display: 'flex',
 			paddingRight: spacing.sm,
+		},
+
+		liveTailFilterContainer: {
+			display: 'flex',
+			gap: '12px',
+			marginRight: '20px',
 		},
 
 		searchTypeBtn: {

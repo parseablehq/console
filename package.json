@@ -13,6 +13,7 @@
 		"pq": "pretty-quick"
 	},
 	"dependencies": {
+		"@apache-arrow/ts": "^14.0.2",
 		"@emotion/react": "^11.11.1",
 		"@mantine/carousel": "^6.0.15",
 		"@mantine/core": "^6.0.15",
@@ -31,7 +32,11 @@
 		"immer": "^10.0.2",
 		"js-cookie": "^3.0.5",
 		"just-compare": "^2.3.0",
+		"long": "^5.2.3",
+		"nice-grpc-common": "^2.0.2",
 		"ms": "^2.1.3",
+		"nice-grpc-web": "^3.3.2",
+		"protobufjs": "^7.2.5",
 		"react": "^18.2.0",
 		"react-beautiful-dnd": "^13.1.1",
 		"react-dom": "^18.2.0",

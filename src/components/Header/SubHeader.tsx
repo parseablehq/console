@@ -8,7 +8,8 @@ import TimeRange from './TimeRange';
 import { useLogQueryStyles } from './styles';
 import ReloadUser from './ReloadUser';
 import DocsUser from './UserDocs';
-
+import StreamingButton from './StreamingButton';
+import LiveTailFilter from './LiveTailFilter';
 
 export const StatsHeader: FC = () => {
 	const { classes } = useLogQueryStyles();
@@ -47,6 +48,30 @@ export const QueryHeader: FC = () => {
 				<Box className={innerContainer}>
 					<TimeRange />
 					<RefreshInterval />
+				</Box>
+			</Box>
+		</Box>
+	);
+};
+
+export const LiveTailHeader: FC = () => {
+	const { classes } = useLogQueryStyles();
+	const { container, innerContainer } = classes;
+
+	return (
+		<Box className={container}>
+			<Box>
+				<Box className={innerContainer}>
+					<HeaderBreadcrumbs crumbs={['Streams', 'streamName', 'Live tail']} />
+				</Box>
+			</Box>
+
+			<Box>
+				<Box className={innerContainer}>
+					<LiveTailFilter />
+					<StreamingButton />
+					{/* <TimeRange /> */}
+					{/* <RefreshInterval /> */}
 				</Box>
 			</Box>
 		</Box>
@@ -115,7 +140,6 @@ export const UsersManagementHeader: FC = () => {
 	);
 };
 
-
 export const AllRouteHeader: FC = () => {
 	const { classes } = useLogQueryStyles();
 	const { container, innerContainer } = classes;
@@ -129,4 +153,4 @@ export const AllRouteHeader: FC = () => {
 			</Box>
 		</Box>
 	);
-}
+};
