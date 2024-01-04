@@ -171,6 +171,18 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 								<Text className={aboutTextValue}>{data.store}</Text>
 							</Box>
 							<Box className={aboutTextInnerBox}>
+                                <Text className={aboutTextKey}>Cache Enabled</Text>
+                                <Text className={aboutTextValue}>{data.cacheEnabled.toString()}</Text>
+                            </Box>
+                            <Box className={aboutTextInnerBox}>
+                                <Text className={aboutTextKey}>Cache Directory</Text>
+                                <Text className={aboutTextValue}>{data.cacheDir}</Text>
+                            </Box>
+                            <Box className={aboutTextInnerBox}>
+                                <Text className={aboutTextKey}>Cache Size</Text>
+                                <Text className={aboutTextValue}>{data.cacheSize}</Text>
+                            </Box>
+							<Box className={aboutTextInnerBox}>
 								<Text className={aboutTextKey}>LLM Status</Text>
 								<Text className={aboutTextValue}>{llmStatus}</Text>
 							</Box>
