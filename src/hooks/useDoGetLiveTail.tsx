@@ -5,6 +5,7 @@ import useMountedState from './useMountedState';
 import { useEffect, useRef } from 'react';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { LogStreamData } from '@/@types/parseable/api/stream';
+import { notifyError } from '@/utils/notification';
 
 const TOTAL_LOGS_TO_SHOW = 500;
 
@@ -45,6 +46,7 @@ export const useDoGetLiveTail = () => {
 		if (!currentStreamName || !grpcPort) return;
 
 		const grpcUrl = new URL(window.location.origin);
+		grpcUrl.protocol = 'http';
 		grpcUrl.port = String(grpcPort);
 
 		const transport = FetchTransport({ credentials: 'include' });
@@ -65,7 +67,7 @@ export const useDoGetLiveTail = () => {
 				let batchCount = 0;
 				for await (const resp of decoder) {
 					batchCount++;
-					if (batchCount == 1) {
+					if (batchCount <= 1) {
 						setLoading(true);
 					}
 
@@ -84,6 +86,15 @@ export const useDoGetLiveTail = () => {
 				}
 				setLoading(false);
 			} catch (e) {
+				if (abortController.signal.aborted) {
+					return;
+				}
+				if (e) {
+					notifyError({
+						title: 'Error',
+						message: 'Error fetching live tail data',
+					});
+				}
 				setLoading(false);
 				setError('Failed to get data');
 			} finally {
@@ -106,7 +117,10 @@ export const useDoGetLiveTail = () => {
 		abortControllerRef.current.abort();
 	};
 
-	const resetData = () => setData([]);
+	const resetData = () => {
+		setData([]);
+		setFinalData([]);
+	};
 
 	useEffect(() => {
 		const liveTailSchema = subLiveTailsData.subscribe((value) => {

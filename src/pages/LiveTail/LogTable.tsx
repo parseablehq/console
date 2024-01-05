@@ -10,14 +10,14 @@ import EmptyBox from '@/components/Empty';
 import { useLiveTailTableStyles } from './styles';
 
 const LogTable: FC = () => {
-	const { finalData: data, doGetLiveTail, resetData, abort, loading, schema } = useDoGetLiveTail();
+	const { finalData: data, doGetLiveTail, abort, loading, schema } = useDoGetLiveTail();
 	const {
 		state: { subInstanceConfig, subLogQuery, subLiveTailsData },
 	} = useHeaderContext();
 
 	const [grpcPort, setGrpcPort] = useMountedState<number | null>(subInstanceConfig.get()?.grpcPort ?? null);
 	const [currentStreamName, setCurrentStreamName] = useMountedState<string>(subLogQuery.get().streamName ?? '');
-	const [callAgain, setCallAgain] = useMountedState<boolean>(false);
+	const [clickedNum, setClickedNum] = useMountedState<number>(0);
 
 	useEffect(() => {
 		const streamlistener = subLogQuery.subscribe((state) => {
@@ -34,8 +34,10 @@ const LogTable: FC = () => {
 		const liveTailStatus = subLiveTailsData.subscribe((value) => {
 			if (value.liveTailStatus === 'abort') {
 				abort();
-			} else if (value.liveTailStatus === 'fetch') {
-				setCallAgain(true);
+				setClickedNum(0);
+			} else if (value.liveTailStatus === 'fetch' && grpcPort && currentStreamName && clickedNum === 0) {
+				doGetLiveTail(currentStreamName, grpcPort);
+				setClickedNum((prev) => (prev += 1));
 			}
 		});
 
@@ -44,24 +46,13 @@ const LogTable: FC = () => {
 			portListener();
 			liveTailStatus();
 		};
-	}, [subLogQuery, subInstanceConfig, subLiveTailsData]);
+	}, [subLogQuery, subInstanceConfig, subLiveTailsData, grpcPort, currentStreamName, clickedNum]);
 
 	useEffect(() => {
 		if (currentStreamName && grpcPort) {
 			doGetLiveTail(currentStreamName, grpcPort);
 		}
-
-		return () => {
-			abort();
-			resetData();
-		};
 	}, [grpcPort, currentStreamName]);
-
-	useEffect(() => {
-		if (callAgain) {
-			doGetLiveTail(currentStreamName, grpcPort);
-		}
-	}, [callAgain]);
 
 	useEffect(() => {
 		if (loading) {
@@ -72,7 +63,6 @@ const LogTable: FC = () => {
 			subLiveTailsData.set((state) => {
 				state.liveTailStatus = 'stopped';
 			});
-			setCallAgain(false);
 		}
 	}, [loading]);
 
