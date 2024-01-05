@@ -214,7 +214,7 @@ const QueryCodeEditor: FC = () => {
 				<Text className={textContext}>Query</Text>
 				<Box style={{ height: '100%', width: '100%', textAlign: 'right' }}>
 					{!isLlmActive ? (
-						<a style={{ marginRight: '2rem' }} href="https://www.parseable.io/docs/api/llm-queries">
+						<a style={{ marginRight: '2rem' }} href="https://www.parseable.com/docs/integrations/llm">
 							Enable SQL generation with OpenAI
 						</a>
 					) : null}
