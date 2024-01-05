@@ -4,6 +4,7 @@ import { IconCheck, IconFileAlert } from '@tabler/icons-react';
 import { notifyApi } from '@/utils/notification';
 import { notifications } from '@mantine/notifications';
 import useMountedState from './useMountedState';
+import { isAxiosError, AxiosError } from 'axios';
 
 export const useAlertsEditor = (streamName: string) => {
 	const [alertQuery, setAlertQuery] = useMountedState<string | undefined>('');
@@ -20,17 +21,20 @@ export const useAlertsEditor = (streamName: string) => {
 				icon: <IconCheck size="1rem" />,
 			});
 		},
-		onError: () => {
-			notifyApi(
-				{
-					color: 'red',
-					title: 'Error occurred',
-					message: `Error occurred, please check your query and try again`,
-					icon: <IconFileAlert size="1rem" />,
-					autoClose: 3000,
-				},
-				true,
-			);
+		onError: (data: AxiosError) => {
+			if (isAxiosError(data) && data.response) {
+				const error = data.response!.data;
+				notifyApi(
+					{
+						color: 'red',
+						title: 'Error occurred',
+						message: `Error occurred, please check your query and try again ${error}`,
+						icon: <IconFileAlert size="1rem" />,
+						autoClose: 3000,
+					},
+					true,
+				);
+			}
 		},
 	});
 
@@ -41,9 +45,12 @@ export const useAlertsEditor = (streamName: string) => {
 			onError: () => {
 				notifyApi({
 					color: 'red',
-					message: 'Failed to log streams alert',
+					message: 'Failed to get log streams alert',
 					icon: <IconFileAlert size="1rem" />,
 				});
+			},
+			onSuccess: (data) => {
+				setAlertQuery(JSON.stringify(data?.data));
 			},
 			retry: false,
 			enabled: streamName !== '',
@@ -54,8 +61,12 @@ export const useAlertsEditor = (streamName: string) => {
 
 	const submitAlertQuery = () => {
 		try {
-			JSON.parse(alertQuery!);
-			updateLogStreamAlerts(alertQuery!);
+			if (alertQuery) {
+				JSON.parse(alertQuery);
+				updateLogStreamAlerts(alertQuery);
+			} else {
+				throw new Error('Invalid JSON');
+			}
 		} catch (e) {
 			notifications.show({
 				id: 'load-data',

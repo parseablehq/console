@@ -41,8 +41,6 @@ const Config: FC = () => {
 		track: isCacheEnabled ? trackStyle : {},
 	};
 
-	console.log('getLogRetentionData', getLogRetentionData?.data);
-
 	return (
 		<Box className={container}>
 			<Switch
