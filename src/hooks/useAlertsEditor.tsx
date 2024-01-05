@@ -23,7 +23,7 @@ export const useAlertsEditor = (streamName: string) => {
 		},
 		onError: (data: AxiosError) => {
 			if (isAxiosError(data) && data.response) {
-				const error = data.response!.data;
+				const error = data.response.data;
 				notifyApi(
 					{
 						color: 'red',

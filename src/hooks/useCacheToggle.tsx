@@ -28,7 +28,6 @@ export const useCacheToggle = (streamName: string) => {
 		['fetch-cache-status', streamName, updateCacheIsSuccess],
 		() => getCachingStatus(streamName),
 		{
-			onError: () => {},
 			retry: false,
 			enabled: streamName !== '',
 		},
