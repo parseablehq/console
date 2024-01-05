@@ -1,33 +1,45 @@
-// import { useMutation, useQuery } from 'react-query';
-// import { getCachingStatus, updateCaching } from '@/api/caching';
+import { useMutation, useQuery } from 'react-query';
+import { getCachingStatus, updateCaching } from '@/api/caching';
+import { IconCheck, IconFileAlert } from '@tabler/icons-react';
+import { notifyApi } from '@/utils/notification';
 
-// const useCacheToggle = (streamName) => {
-// 	const { data: checkCacheData } = useQuery(['fetch-cache-status', streamName], () => getCachingStatus(streamName), {
-// 		onError: () =>
-// 			notifyApi({
-// 				/* ...error notification details... */
-// 			}),
-// 		retry: false,
-// 		enabled: streamName !== '',
-// 	});
+export const useCacheToggle = (streamName: string) => {
+	const { mutate: updateCacheStatus, isSuccess: updateCacheIsSuccess } = useMutation(
+		({ type }: { type: boolean }) => updateCaching(streamName, type),
+		{
+			onError: () => {
+				notifyApi({
+					color: 'red',
+					message: 'Failed to change cache setting',
+					icon: <IconFileAlert size="1rem" />,
+				});
+			},
+			onSuccess: () => {
+				notifyApi({
+					color: 'green',
+					message: 'Succesfully updated cache setting',
+					icon: <IconCheck size="1rem" />,
+				});
+			},
+		},
+	);
 
-// 	const { mutate: updateCacheStatus } = useMutation(({ type }) => updateCaching(streamName, type), {
-// 		onSuccess: () =>
-// 			notifyApi({
-// 				/* ...success notification details... */
-// 			}),
-// 		onError: () =>
-// 			notifyApi({
-// 				/* ...error notification details... */
-// 			}),
-// 	});
+	const { data: checkCacheData } = useQuery(
+		['fetch-cache-status', streamName, updateCacheIsSuccess],
+		() => getCachingStatus(streamName),
+		{
+			onError: () => {},
+			retry: false,
+			enabled: streamName !== '',
+		},
+	);
 
-// 	const handleCacheToggle = () => {
-// 		updateCacheStatus({ type: !checkCacheData?.data });
-// 	};
+	const handleCacheToggle = () => {
+		updateCacheStatus({ type: !checkCacheData?.data });
+	};
 
-// 	return {
-// 		isCacheEnabled: checkCacheData?.data,
-// 		handleCacheToggle,
-// 	};
-// };
+	return {
+		isCacheEnabled: checkCacheData?.data,
+		handleCacheToggle,
+	};
+};
