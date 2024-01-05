@@ -26,6 +26,7 @@ export const putLogStreamAlerts = (streamName: string, data: any) => {
 };
 
 export const getLogStreamRetention = (streamName: string) => {
+	console.log('getLogStreamRetention', streamName, LOG_STREAMS_RETRNTION_URL(streamName));
 	return Axios().get(LOG_STREAMS_RETRNTION_URL(streamName));
 };
 
@@ -39,4 +40,4 @@ export const getLogStreamStats = (streamName: string) => {
 
 export const deleteLogStream = (streamName: string) => {
 	return Axios().delete(DELETE_STREAMS_URL(streamName));
-}
+};

@@ -1,5 +1,6 @@
 import type { NotificationProps } from '@mantine/notifications';
 import { showNotification } from '@mantine/notifications';
+import { IconCheck, IconFileAlert } from '@tabler/icons-react';
 
 export const notifyError = (payload?: Partial<NotificationProps>) => {
 	const title = ['string', 'undefined'].includes(typeof payload?.title) ? payload?.title : 'Oops!';
@@ -22,5 +23,16 @@ export const notify = (payload: NotificationProps) => {
 		...payload,
 		color,
 		autoClose,
+	});
+};
+
+export const notifyApi = (payload: NotificationProps, customTitle: boolean = true) => {
+	const autoClose = payload.autoClose || 3000;
+	const title = customTitle && payload.color === 'green' ? 'Success' : 'Error';
+
+	showNotification({
+		...payload,
+		autoClose,
+		title,
 	});
 };

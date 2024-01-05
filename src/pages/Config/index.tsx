@@ -13,225 +13,191 @@ import { useGetLogStreamAlert } from '@/hooks/useGetLogStreamAlert';
 import { useGetLogStreamRetention } from '@/hooks/useGetLogStreamRetention';
 import { useGetCacheStatus } from '@/hooks/useGetCacheStatus';
 import { usePutCache } from '@/hooks/usePutCache';
+import { useQuery, useMutation } from 'react-query';
+import { getCachingStatus, updateCaching } from '@/api/caching';
+import { notifyApi } from '@/utils/notification';
+import { getLogStreamAlerts, getLogStreamRetention, putLogStreamAlerts, putLogStreamRetention } from '@/api/logStream';
 
 const Config: FC = () => {
 	useDocumentTitle('Parseable | Config');
 
-	const { data, getCacheStatus } = useGetCacheStatus();
-	usePutCache();
-	const { error: updateCacheError, updateCache } = usePutCache();
-
-	const [alertQuery, setAlertQuery] = useMountedState<string>('');
-	const [retentionQuery, setRetentionQuery] = useMountedState<string>('');
+	const [alertQuery, setAlertQuery] = useMountedState<string | undefined>('');
+	const [retentionQuery, setRetentionQuery] = useMountedState<string | undefined>('');
 
 	const {
 		state: { subLogQuery },
 	} = useHeaderContext();
-	const {
-		data: resultAlertsData,
-		error: alertError,
-		loading: alertLoading,
-		putAlertsData,
-		resetData: resetAlertData,
-	} = usePutLogStreamAlerts();
-	const {
-		data: resultRetentionData,
-		error: retentionError,
-		loading: retentionLoading,
-		putRetentionData,
-		resetData: resetRetentionData,
-	} = usePutLogStreamRetention();
 
-	// useGetLogStreamAlert
-
-	const {
-		data: intialAlert,
-		error: intialAlertError,
-		loading: intialAlertLoading,
-		getLogAlert,
-		resetData: resetIntailAlertData,
-	} = useGetLogStreamAlert();
-
-	const {
-		data: intialRetention,
-		error: intialRetentionError,
-		loading: intialRetentionLoading,
-		getLogRetention,
-		resetData: ResetIntialRetentionData,
-	} = useGetLogStreamRetention();
-
-	const handleAlertQueryEditorChange = (code: any) => {
-		setAlertQuery(code);
-	};
-	const handleRetentionQueryEditorChange = (code: any) => {
-		setRetentionQuery(code);
-	};
-
-	const onSubmitAlertQuery = () => {
-		let alertQueryObj = {};
-		try {
-			alertQueryObj = JSON.parse(alertQuery);
-		} catch (e) {
-			notifications.show({
-				id: 'load-data',
-				loading: false,
-				color: 'red',
-				title: 'Error occurred',
-				message: `Error occurred, please check your query and try again ${e}`,
-				icon: <IconFileAlert size="1rem" />,
-				autoClose: 3000,
-			});
-			return;
-		}
-		putAlertsData(subLogQuery.get().streamName, alertQueryObj);
-	};
-	const onSubmitRetentionQuery = () => {
-		let retentionQueryObj = {};
-		try {
-			retentionQueryObj = JSON.parse(retentionQuery);
-		} catch (e) {
-			notifications.show({
-				id: 'load-data',
-				loading: false,
-				color: 'red',
-				title: 'Error occurred',
-				message: `Error occurred, please check your query and try again ${e}`,
-				icon: <IconFileAlert size="1rem" />,
-				autoClose: 3000,
-			});
-			return;
-		}
-		putRetentionData(subLogQuery.get().streamName, retentionQueryObj);
-	};
-
-	useEffect(() => {
-		if (!subLogQuery.get().streamName) return;
-		getLogAlert(subLogQuery.get().streamName);
-		getLogRetention(subLogQuery.get().streamName);
-		getCacheStatus(subLogQuery.get().streamName);
-	}, [subLogQuery.get().streamName]);
+	const [streamName, setStreamName] = useMountedState<string>('teststream');
 
 	useEffect(() => {
 		const subQuery = subLogQuery.subscribe((value: any) => {
-			if (intialAlert) {
-				resetIntailAlertData();
-				setAlertQuery('');
-			}
-			if (intialRetention) {
-				ResetIntialRetentionData();
-				setRetentionQuery('');
-			}
-			getLogAlert(value.streamName);
-			getLogRetention(value.streamName);
+			console.log('value.streamName', value.streamNam);
+			setStreamName(value.streamName);
 		});
-
 		return () => {
 			subQuery();
 		};
 	}, []);
 
-	useEffect(() => {
-		if (intialAlertLoading) return;
-		if (intialAlertError) return;
-		if (intialAlert) {
-			setAlertQuery(JSON.stringify(intialAlert, null, 2));
-		}
-	}, [intialAlert, intialAlertError, intialAlertLoading]);
+	const { mutate: updateCacheStatus, isSuccess: updateCacheIsSuccess } = useMutation(
+		({ streamName, type }: { streamName: string; type: boolean }) => updateCaching(streamName, type),
+		{
+			onError: () => {
+				notifyApi({
+					color: 'red',
+					message: 'Failed to change cache setting',
+					icon: <IconFileAlert size="1rem" />,
+				});
+			},
+			onSuccess: () => {
+				notifyApi({
+					color: 'green',
+					message: 'Succesfully updated cache setting',
+					icon: <IconCheck size="1rem" />,
+				});
+			},
+		},
+	);
 
-	useEffect(() => {
-		if (intialRetentionLoading) return;
-		if (intialRetentionError) return;
-		if (intialRetention) {
-			setRetentionQuery(JSON.stringify(intialRetention, null, 2));
-		}
-	}, [intialRetention, intialRetentionError, intialRetentionLoading]);
+	const { mutate: updateLogStreamAlerts, isSuccess: updateLogStreamIsSuccess } = useMutation(
+		({ streamName, data }: { streamName: string; data: string }) => putLogStreamAlerts(streamName, data),
+		{
+			onSuccess: () => {
+				notifyApi({
+					color: 'green',
+					message: 'Alert Added.',
+					icon: <IconCheck size="1rem" />,
+				});
+			},
+			onError: (error) => {
+				notifyApi(
+					{
+						color: 'red',
+						title: 'Error occurred',
+						message: `Error occurred, please check your query and try again`,
+						icon: <IconFileAlert size="1rem" />,
+						autoClose: 3000,
+					},
+					true,
+				);
+			},
+		},
+	);
 
-	useEffect(() => {
-		if (alertLoading) {
+	const { mutate: updateLogStreamRetention, isSuccess: updateLogRetentionIsSuccess } = useMutation(
+		({ streamName, data }: { streamName: string; data: string }) => putLogStreamRetention(streamName, data),
+		{
+			onSuccess: () => {
+				notifyApi({
+					color: 'green',
+					message: 'Retention Added.',
+					icon: <IconCheck size="1rem" />,
+				});
+			},
+			onError: (error) => {
+				notifyApi(
+					{
+						color: 'red',
+						title: 'Error occurred',
+						message: `Error occurred, please check your query and try again`,
+						icon: <IconFileAlert size="1rem" />,
+						autoClose: 3000,
+					},
+					true,
+				);
+			},
+		},
+	);
+
+	const { data: checkCacheData } = useQuery(
+		['fetch-cache-status', streamName, updateCacheIsSuccess],
+		() => getCachingStatus(streamName),
+		{
+			onError: () => {
+				notifyApi({
+					color: 'red',
+					message: 'Failed to fetch cache setting',
+					icon: <IconFileAlert size="1rem" />,
+				});
+			},
+			onSuccess: () => {
+				console.log('success occurred');
+			},
+			retry: false,
+			enabled: streamName !== '',
+		},
+	);
+
+	const { data: getLogAlertData } = useQuery(
+		['fetch-log-stream-alert', streamName, updateLogStreamIsSuccess],
+		() => getLogStreamAlerts(streamName),
+		{
+			onError: () => {
+				notifyApi({
+					color: 'red',
+					message: 'Failed to log streams alert',
+					icon: <IconFileAlert size="1rem" />,
+				});
+			},
+			retry: false,
+			enabled: streamName !== '',
+		},
+	);
+
+	const { data: getLogRetentionData } = useQuery(
+		['fetch-log-stream-retention', streamName, updateLogRetentionIsSuccess],
+		() => getLogStreamRetention(streamName),
+		{
+			onError: () => {
+				notifyApi({
+					color: 'red',
+					message: 'Failed to log streams alert',
+					icon: <IconFileAlert size="1rem" />,
+				});
+			},
+			retry: false,
+			enabled: streamName !== '',
+		},
+	);
+
+	const onSubmitAlertQuery = () => {
+		try {
+			JSON.parse(alertQuery!);
+			updateLogStreamAlerts({
+				streamName,
+				data: alertQuery!,
+			});
+		} catch (e) {
 			notifications.show({
 				id: 'load-data',
-				loading: true,
-				color: '#545BEB',
-				title: 'Running Query',
-				message: 'Alert will be Added.',
-				autoClose: false,
-				withCloseButton: false,
-			});
-		}
-		if (resultAlertsData) {
-			notifications.update({
-				id: 'load-data',
-				loading: false,
-				color: 'green',
-				title: 'Success',
-				message: 'Alert Added.',
-				icon: <IconCheck size="1rem" />,
-				autoClose: 1000,
-			});
-			resetAlertData();
-		}
-		if (alertError) {
-			notifications.update({
-				id: 'load-data',
 				loading: false,
 				color: 'red',
 				title: 'Error occurred',
-				message: `Error occurred, please check your query and try again ${alertError}`,
+				message: `Error occurred, please check your query and try again ${e}`,
 				icon: <IconFileAlert size="1rem" />,
 				autoClose: 3000,
 			});
-			resetAlertData();
 		}
-	}, [resultAlertsData, alertError, alertLoading]);
+	};
 
-	useEffect(() => {
-		if (retentionLoading) {
+	const onSubmitRetentionQuery = () => {
+		try {
+			JSON.parse(retentionQuery!);
+			updateLogStreamRetention({ streamName, data: retentionQuery! });
+		} catch (e) {
 			notifications.show({
 				id: 'load-data',
-				loading: true,
-				color: '#545BEB',
-				title: 'Running Query',
-				message: 'Retention will be Added.',
-				autoClose: false,
-				withCloseButton: false,
-			});
-		}
-		if (resultRetentionData) {
-			notifications.update({
-				id: 'load-data',
-				loading: false,
-				color: 'green',
-				title: 'Success',
-				message: 'Retention Added.',
-				icon: <IconCheck size="1rem" />,
-				autoClose: 1000,
-			});
-			resetRetentionData();
-		}
-		if (retentionError) {
-			notifications.update({
-				id: 'load-data',
 				loading: false,
 				color: 'red',
 				title: 'Error occurred',
-				message: `Error occurred, please check your query and try again ${retentionError}`,
+				message: `Error occurred, please check your query and try again ${e}`,
 				icon: <IconFileAlert size="1rem" />,
 				autoClose: 3000,
 			});
-			resetRetentionData();
+			return;
 		}
-		if (updateCacheError) {
-			notifications.update({
-				id: 'load-data',
-				loading: false,
-				color: 'red',
-				title: 'Error occurred',
-				message: `Error occurred, failed to change cache setting`,
-				icon: <IconFileAlert size="1rem" />,
-				autoClose: 3000,
-			});
-		}
-	}, [resultRetentionData, retentionError, retentionLoading, updateCacheError]);
+	};
 
 	const { classes } = useConfigStyles();
 	const { container, submitBtn, accordionSt, innerContainer, containerWrapper, primaryBtn } = classes;
@@ -242,10 +208,12 @@ const Config: FC = () => {
 				variant="filled"
 				className={primaryBtn}
 				onClick={async () => {
-					await updateCache(subLogQuery.get().streamName, !data);
-					await getCacheStatus(subLogQuery.get().streamName);
+					updateCacheStatus({
+						streamName: streamName,
+						type: !checkCacheData?.data,
+					});
 				}}>
-				{data ? 'Disable Cache' : 'Enable Cache'}
+				{checkCacheData?.data ? 'Disable Cache' : 'Enable Cache'}
 			</Button>
 
 			<Box className={containerWrapper}>
@@ -257,8 +225,10 @@ const Config: FC = () => {
 								<Box>
 									<Box sx={{ height: '500px' }}>
 										<Editor
-											onChange={handleAlertQueryEditorChange}
-											value={alertQuery}
+											onChange={(value) => {
+												setAlertQuery(value);
+											}}
+											value={JSON.stringify(getLogAlertData, null, 2)}
 											defaultLanguage="json"
 											options={{
 												scrollBeyondLastLine: false,
@@ -289,8 +259,10 @@ const Config: FC = () => {
 									<Box>
 										<Box sx={{ height: '500px' }}>
 											<Editor
-												onChange={handleRetentionQueryEditorChange}
-												value={retentionQuery}
+												onChange={(value) => {
+													setRetentionQuery(value);
+												}}
+												value={JSON.stringify(getLogRetentionData?.data, null, 2)}
 												defaultLanguage="json"
 												options={{
 													scrollBeyondLastLine: false,
@@ -319,3 +291,106 @@ const Config: FC = () => {
 };
 
 export default Config;
+
+// import React, { FC, useEffect } from 'react';
+// import { Accordion, Box, Button } from '@mantine/core';
+// import { useDocumentTitle, useNotifications } from '@mantine/hooks';
+// import Editor from '@monaco-editor/react';
+// import { IconCheck, IconFileAlert } from '@tabler/icons-react';
+// import { useConfigStyles } from './styles';
+// import { useHeaderContext } from '@/layouts/MainLayout/Context';
+// import useCacheToggle from './hooks/useCacheToggle';
+// import useAlertsEditor from './hooks/useAlertsEditor';
+// import useRetentionEditor from './hooks/useRetentionEditor';
+
+// const Config: FC = () => {
+//     useDocumentTitle('Parseable | Config');
+//     const { classes } = useConfigStyles();
+//     const { container, submitBtn, accordionSt, innerContainer, containerWrapper, primaryBtn } = classes;
+//     const notifications = useNotifications();
+
+//     const {
+//         streamName,
+//         handleCacheToggle,
+//         isCacheEnabled,
+//     } = useCacheToggle();
+
+//     const {
+//         alertQuery,
+//         handleAlertQueryChange,
+//         submitAlertQuery,
+//         logAlertData,
+//     } = useAlertsEditor(streamName);
+
+//     const {
+//         retentionQuery,
+//         handleRetentionQueryChange,
+//         submitRetentionQuery,
+//         logRetentionData,
+//     } = useRetentionEditor(streamName);
+
+//     return (
+//         <Box className={container}>
+//             <Button
+//                 variant="filled"
+//                 className={primaryBtn}
+//                 onClick={handleCacheToggle}
+//             >
+//                 {isCacheEnabled ? 'Disable Cache' : 'Enable Cache'}
+//             </Button>
+
+//             <Box className={containerWrapper}>
+//                 <EditorSection
+//                     title="Alert"
+//                     editorValue={logAlertData}
+//                     onEditorChange={handleAlertQueryChange}
+//                     onSubmit={submitAlertQuery}
+//                     styles={{ innerContainer, accordionSt, submitBtn }}
+//                 />
+//                 <EditorSection
+//                     title="Retention"
+//                     editorValue={logRetentionData}
+//                     onEditorChange={handleRetentionQueryChange}
+//                     onSubmit={submitRetentionQuery}
+//                     styles={{ innerContainer, accordionSt, submitBtn }}
+//                 />
+//             </Box>
+//         </Box>
+//     );
+// };
+
+// const EditorSection = ({ title, editorValue, onEditorChange, onSubmit, styles }) => (
+//     <Box className={styles.innerContainer}>
+//         <Accordion defaultValue="" variant="contained" radius="md" w={'100%'} className={styles.accordionSt}>
+//             <Accordion.Item value={title}>
+//                 <Accordion.Control>{title}</Accordion.Control>
+//                 <Accordion.Panel>
+//                     <Box>
+//                         <Box sx={{ height: '500px' }}>
+//                             <Editor
+//                                 onChange={onEditorChange}
+//                                 value={JSON.stringify(editorValue, null, 2)}
+//                                 defaultLanguage="json"
+//                                 options={{
+//                                     scrollBeyondLastLine: false,
+//                                     readOnly: false,
+//                                     fontSize: 12,
+//                                     wordWrap: 'on',
+//                                     minimap: { enabled: false },
+//                                     automaticLayout: true,
+//                                     mouseWheelZoom: true,
+//                                     glyphMargin: true,
+//                                 }}
+//                             />
+//                         </Box>
+//                         <Button className={styles.submitBtn} onClick={onSubmit}>
+//                             Submit
+//                         </Button>
+//                     </Box>
+//                 </Accordion.Panel>
+//             </Accordion.Item>
+//         </Accordion>
+//     </Box>
+// );
+
+// export default Config;

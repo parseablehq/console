@@ -9,7 +9,7 @@ export const usePutLogStreamRetention = () => {
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
 
-	const putRetentionData = async (streamName :string, payload:any) => {
+	const putRetentionData = async (streamName: string, payload: any) => {
 		try {
 			setLoading(true);
 			setError(null);
@@ -37,3 +37,17 @@ export const usePutLogStreamRetention = () => {
 
 	return { data, error, loading, putRetentionData, resetData };
 };
+
+// onLoading: () => {
+// 	notifyApi(
+// 		{
+// 			color: '#545BEB',
+// 			title: 'Running Query',
+// 			message: 'Alert will be Added.',
+// 			icon: <IconFileAlert size="1rem" />,
+// 			withCloseButton: false,
+// 			loading: true,
+// 		},
+// 		true,
+// 	);
+// },
