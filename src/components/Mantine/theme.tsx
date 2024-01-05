@@ -224,19 +224,30 @@ export const theme: MantineThemeOverride = {
 						color: colors.white[0],
 					},
 				};
-			}
+			},
 		},
-
 		PasswordInput: {
 			styles: ({ colors }) => {
 				return {
 					input: {
 						border: `${sizing.px} ${colors.gray[2]} solid`,
 						borderRadius: 'md',
-					
 					},
 				};
-			}
-		}
+			},
+		},
+		Switch: {
+			styles: () => {
+				return {
+					track: {
+						border: 'none',
+						cursor: 'pointer',
+					},
+					thumb: {
+						border: 'none',
+					},
+				};
+			},
+		},
 	},
 };
