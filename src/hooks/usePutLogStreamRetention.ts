@@ -37,17 +37,3 @@ export const usePutLogStreamRetention = () => {
 
 	return { data, error, loading, putRetentionData, resetData };
 };
-
-// onLoading: () => {
-// 	notifyApi(
-// 		{
-// 			color: '#545BEB',
-// 			title: 'Running Query',
-// 			message: 'Alert will be Added.',
-// 			icon: <IconFileAlert size="1rem" />,
-// 			withCloseButton: false,
-// 			loading: true,
-// 		},
-// 		true,
-// 	);
-// },
