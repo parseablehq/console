@@ -10,6 +10,9 @@ export const useConfigStyles = createStyles((theme) => {
 			margin: spacing.xl,
 			gap: spacing.lg,
 		},
+		trackStyle: {
+			backgroundColor: colors.brandPrimary[0],
+		},
 		containerWrapper: {
 			display: 'flex',
 			gap: '20px',

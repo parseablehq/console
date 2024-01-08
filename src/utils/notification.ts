@@ -24,3 +24,14 @@ export const notify = (payload: NotificationProps) => {
 		autoClose,
 	});
 };
+
+export const notifyApi = (payload: NotificationProps, customTitle: boolean = true) => {
+	const autoClose = payload.autoClose ?? 3000;
+	const title = customTitle && payload.color === 'green' ? 'Success' : 'Error';
+
+	showNotification({
+		...payload,
+		autoClose,
+		title,
+	});
+};
