@@ -1,4 +1,3 @@
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { FC, useEffect } from 'react';
 import { useStatCardStyles, useStatusStyles } from './styles';
 import { Box, Text, ThemeIcon, Tooltip, px } from '@mantine/core';

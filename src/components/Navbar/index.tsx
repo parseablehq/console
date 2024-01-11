@@ -18,7 +18,6 @@ import {
 import { FC, useEffect } from 'react';
 import { useNavbarStyles } from './styles';
 import { useLocation, useParams } from 'react-router-dom';
-import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import { notifications } from '@mantine/notifications';
 import { useNavigate } from 'react-router-dom';
 import { DEFAULT_FIXED_DURATIONS, useHeaderContext } from '@/layouts/MainLayout/Context';
@@ -26,7 +25,6 @@ import useMountedState from '@/hooks/useMountedState';
 import dayjs from 'dayjs';
 import { useDisclosure } from '@mantine/hooks';
 import { USERS_MANAGEMENT_ROUTE } from '@/constants/routes';
-import { useDeleteLogStream } from '@/hooks/useDeleteLogStream';
 import InfoModal from './infoModal';
 import { getStreamsSepcificAccess, getUserSepcificStreams } from './rolesHandler';
 import { LogStreamData } from '@/@types/parseable/api/stream';

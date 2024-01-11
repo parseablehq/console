@@ -39,8 +39,6 @@ const Roles: FC = () => {
 		getRolesIsSuccess,
 		getRolesRefetch,
 		deleteRoleMutation,
-		getRoleData,
-		getRoleMutation,
 		getRoleIsLoading,
 		getRoleIsError,
 	} = useRole();

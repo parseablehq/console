@@ -6,7 +6,8 @@ type FixedDuration = {
 };
 
 export const REFRESH_INTERVALS: number[] = [10000, 30000, 60000, 300000, 600000, 1200000];
-export const FIXED_DURATIONS: FixedDuration[] = [
+
+export const FIXED_DURATIONS: ReadonlyArray<FixedDuration> = [
 	{
 		name: 'last 10 minutes',
 		milliseconds: dayjs.duration({ minutes: 10 }).asMilliseconds(),

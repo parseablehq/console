@@ -62,7 +62,7 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 		state: { subInstanceConfig },
 	} = useHeaderContext();
 
-	const { getAboutData, getAboutIsError, getAboutIsSuccess, getAboutIsLoading } = useAbout();
+	const { getAboutData, getAboutIsError, getAboutIsLoading } = useAbout();
 
 	const llmStatus = useMemo(() => {
 		let status = 'LLM API Key not set';

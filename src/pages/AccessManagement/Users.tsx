@@ -52,7 +52,7 @@ const Users: FC = () => {
 		createUserReset,
 	} = useUser();
 
-	const { getRolesData, updateRoleMutation, updateRoleIsSuccess } = useRole();
+	const { getRolesData, updateRoleIsSuccess } = useRole();
 
 	let rows =
 		getUserIsSuccess && getUserData?.data ? (
