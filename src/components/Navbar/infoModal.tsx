@@ -16,7 +16,7 @@ const helpResources = [
 		icon: IconBrandSlack,
 		title: 'Slack',
 		description: 'Join the Slack community',
-		href: 'https://launchpass.com/parseable',
+		href: 'https://join.slack.com/t/parseable/shared_invite/zt-23t505gz7-zX4T10OvkS8RAhnme4gDZQ',
 	},
 	{
 		icon: IconBrandGithub,
