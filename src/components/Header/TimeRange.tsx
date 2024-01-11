@@ -1,5 +1,5 @@
 import useMountedState from '@/hooks/useMountedState';
-import { FIXED_DURATIONS, useHeaderContext } from '@/layouts/MainLayout/Context';
+import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Box, Button, Menu, Text, UnstyledButton, px } from '@mantine/core';
 import { DateTimePicker } from '@mantine/dates';
 import { IconClock } from '@tabler/icons-react';
@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import type { FC } from 'react';
 import { Fragment, useEffect, useMemo } from 'react';
 import { useLogQueryStyles } from './styles';
+import { FIXED_DURATIONS } from '@/constants/timeConstants';
 
 type FixedDurations = (typeof FIXED_DURATIONS)[number];
 

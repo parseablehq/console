@@ -38,7 +38,12 @@ export const useRetentionEditor = (streamName: string) => {
 		},
 	});
 
-	const { data: getLogRetentionData } = useQuery(
+	const {
+		data: getLogRetentionData,
+		isError: getLogRetentionIsError,
+		isLoading: getLogRetentionIsLoading,
+		isSuccess: getLogRetentionIsSuccess,
+	} = useQuery(
 		['fetch-log-stream-retention', streamName, updateLogRetentionIsSuccess],
 		() => getLogStreamRetention(streamName),
 		{
@@ -86,5 +91,8 @@ export const useRetentionEditor = (streamName: string) => {
 		submitRetentionQuery,
 		retentionEditorData,
 		getLogRetentionData,
+		getLogRetentionIsLoading,
+		getLogRetentionIsError,
+		getLogRetentionIsSuccess,
 	};
 };

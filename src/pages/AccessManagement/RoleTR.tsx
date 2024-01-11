@@ -1,5 +1,3 @@
-import { useGetUserRole } from '@/hooks/useGetUserRoles';
-import { usePutUserRole } from '@/hooks/usePutUserRole';
 import {
 	ActionIcon,
 	Badge,
@@ -20,20 +18,43 @@ import { IconPlus, IconTransform, IconTrash, IconX } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
 import { useUsersStyles } from './styles';
 import { Prism } from '@mantine/prism';
-import { useDeleteUser } from '@/hooks/useDeleteUser';
-import { usePostUserResetPassword } from '@/hooks/usePostResetPassword';
-import { useGetRoles } from '@/hooks/useGetRoles';
+import { AxiosResponse } from 'axios';
+import { useUser } from '@/hooks/useUser';
+import { useRole } from '@/hooks/useRole';
 
 interface RoleTRProps {
 	user: {
 		id: string;
 		method: string;
 	};
-	getUsersList: () => void;
+	refetchUser: () => void;
+	deleteUserMutation: (data: { userName: string }) => void;
+	getUserRolesData: AxiosResponse | undefined;
+	updateUserPasswordIsError: boolean;
+	getUserRolesIsError: boolean;
+	getUserRolesIsLoading: boolean;
+	updateUserPasswordMutation: (data: { userName: string }) => void;
+	updateUserPasswordIsLoading: boolean;
+	udpateUserPasswordData: AxiosResponse | undefined;
+	resetPasswordError: string;
+	getUserRolesMutation: (data: { userName: string }) => void;
+	updateRoleIsSuccess: boolean;
 }
 
 const RoleTR: FC<RoleTRProps> = (props) => {
-	const { user, getUsersList } = props;
+	const {
+		user,
+		getUserRolesIsError,
+		getUserRolesIsLoading,
+		updateUserPasswordMutation,
+		updateUserPasswordIsError,
+		updateUserPasswordIsLoading,
+		udpateUserPasswordData,
+		resetPasswordError,
+		// updateRoleMutation,
+		// udpateUserData,
+		deleteUserMutation,
+	} = props;
 	const [openedDelete, { close: closeDelete, open: openDelete }] = useDisclosure();
 	const [openedDeleteRole, { close: closeDeleteRole, open: openDeleteRole }] = useDisclosure();
 	const [openedEditModal, { close: closeEditModal, open: openEditModal }] = useDisclosure();
@@ -44,50 +65,19 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 	const [SelectedRole, setSelectedRole] = useState<string>('');
 	const [roleSearchValue, setRoleSearchValue] = useState<string>('');
 
+	const { getUserRolesData, getUserRolesMutation, updateUserMutation, updateUserIsSuccess } = useUser();
 
-	const { putRole, data: putRoleData, resetData: resetPutRoleData } = usePutUserRole();
-	const {
-		data: newPassword,
-		error: resetPasswordError,
-		loading: resetPasswordLoading,
-		resetPasswordUser,
-		resetData: resetNewPassword,
-	} = usePostUserResetPassword();
-	const {
-		data: userRole,
-		error: userRoleError,
-		loading: userRoleLoading,
-		getRoles,
-		resetData: userRoleReset,
-	} = useGetUserRole();
-	const { data: deletedUser, deleteUserFun: deleteUserAction, resetData: deletedUserReset } = useDeleteUser();
-	const { data: roles, getRolesList, resetData: rolesReset } = useGetRoles();
+	const { getRolesData } = useRole();
 
 	useEffect(() => {
-		if (deletedUser) {
-			getUsersList();
-			deletedUserReset();
-		}
-	}, [deletedUser]);
-
-	useEffect(() => {
-		getRoles(user.id);
-		getRolesList();
-
-		return () => {
-			rolesReset();
-			userRoleReset();
-		};
+		getUserRolesMutation({ userName: user.id });
 	}, [user]);
 
 	useEffect(() => {
-		if (putRoleData) {
-			getRoles(user.id);
+		if (updateUserIsSuccess) {
+			getUserRolesMutation({ userName: user.id });
 		}
-		return () => {
-			resetPutRoleData();
-		};
-	}, [putRoleData]);
+	}, [updateUserIsSuccess]);
 
 	const removeButton = (role: string) => (
 		<ActionIcon
@@ -110,9 +100,10 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 			</Badge>
 		);
 	};
-	const getBadges = (userRole: any) => {
-		if (Object.keys(userRole).length > 0) {
-			const Badges = Object.keys(userRole).map((role: any) => {
+
+	const getBadges = () => {
+		if (Object.keys(getUserRolesData?.data).length > 0) {
+			const Badges = Object.keys(getUserRolesData?.data).map((role: any) => {
 				return <span key={role}> {getBadge(role, user.method === 'native' ? true : false)}</span>;
 			});
 			return Badges;
@@ -130,18 +121,20 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 		closeDelete();
 		setUserInput('');
 	};
+
 	const handleDelete = () => {
-		deleteUserAction(user.id);
+		deleteUserMutation({ userName: user.id });
 		closeDelete();
 		setUserInput('');
 	};
 
 	// For Delete Role
 	const handleRoleDelete = () => {
-		let filtered = Object.keys(userRole).filter((role) => role !== deleteRole);
-		putRole(user.id, filtered);
+		let filtered = Object.keys(getUserRolesData?.data).filter((role) => role !== deleteRole);
+		updateUserMutation({ userName: user.id, roles: filtered });
 		closeDeleteRole();
 		setDeleteRole(null);
+		getUserRolesMutation({ userName: user.id });
 	};
 	const handleCloseRoleDelete = () => {
 		closeDeleteRole();
@@ -149,7 +142,6 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 	};
 
 	// For Edit Role
-
 	const handleCloseRoleEdit = () => {
 		closeEditModal();
 		setSelectedRole('');
@@ -157,29 +149,24 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 	};
 
 	const handleEditUserRole = () => {
-		
-		let userRoleArray: any = Object.keys(userRole);
+		let userRoleArray: any = Object.keys(getUserRolesData?.data);
 		if (userRoleArray.includes(SelectedRole) || SelectedRole === '') {
 			return;
 		}
 		userRoleArray.push(SelectedRole);
-		
-		putRole(user.id, userRoleArray);
+
+		updateUserMutation({ userName: user.id, roles: userRoleArray });
 		handleCloseRoleEdit();
 	};
 
-
-
-	//for reset password
-
+	// for reset password
 	const handleCloseResetPassword = () => {
 		close();
 		setUserInput('');
-		resetNewPassword();
 	};
 
 	const handleResetPassword = () => {
-		resetPasswordUser(UserInput);
+		updateUserPasswordMutation({ userName: UserInput });
 	};
 
 	const { classes } = useUsersStyles();
@@ -188,13 +175,13 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 		<tr key={user.id} className={classes.trStyle}>
 			<td>{user.id}</td>
 			<td>
-				{userRoleError ? (
+				{getUserRolesIsError ? (
 					'Error'
-				) : userRoleLoading ? (
+				) : getUserRolesIsLoading ? (
 					'loading..'
-				) : userRole ? (
+				) : getUserRolesData?.data ? (
 					<>
-						{getBadges(userRole)}
+						{getBadges()}
 						<Tooltip label={'Add a Role'} sx={{ color: 'white', backgroundColor: 'black' }} withArrow position="right">
 							<Badge color="green" onClick={openEditModal}>
 								<IconPlus size={rem(10)} />
@@ -223,19 +210,20 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 			<td>
 				<Box style={{ height: '100%', width: '100%', whiteSpace: 'nowrap', textAlign: 'center' }}>
 					<Tooltip
-						label={user.method!=="native"? "Cannot reset password for this user":'Reset Password'}
+						label={user.method !== 'native' ? 'Cannot reset password for this user' : 'Reset Password'}
 						sx={{ color: 'white', backgroundColor: 'black' }}
 						withArrow
 						position="right">
-							
-							<Button variant="default" className={classes.actionBtn} onClick={()=>{
-								if(user.method==="native"){
+						<Button
+							variant="default"
+							className={classes.actionBtn}
+							onClick={() => {
+								if (user.method === 'native') {
 									open();
 								}
-							}} >
+							}}>
 							<IconTransform size={px('1.2rem')} stroke={1.5} />
 						</Button>
-							
 					</Tooltip>
 				</Box>
 			</td>
@@ -271,7 +259,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 					</Button>
 				</Group>
 			</Modal>
-			{userRole && deleteRole && userRole[deleteRole] ? (
+			{getUserRolesData?.data && deleteRole && getUserRolesData?.data[deleteRole] ? (
 				<Modal
 					withinPortal
 					size="md"
@@ -328,13 +316,13 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						required
 					/>
 
-					{resetPasswordError ? (
+					{updateUserPasswordIsError ? (
 						<Text className={classes.passwordText} color="red">
 							{resetPasswordError}
 						</Text>
-					) : resetPasswordLoading ? (
+					) : updateUserPasswordIsLoading ? (
 						<Text className={classes.passwordText}>loading</Text>
-					) : newPassword ? (
+					) : udpateUserPasswordData?.data ? (
 						<Box>
 							<Text className={classes.passwordText}>Password</Text>
 							<Prism
@@ -342,7 +330,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 								language="markup"
 								copyLabel="Copy password to clipboard"
 								copiedLabel="Password copied to clipboard">
-								{newPassword}
+								{udpateUserPasswordData?.data}
 							</Prism>
 							<Text className={classes.passwordText} color="red">
 								Warning this is the only time you are able to see Password
@@ -353,14 +341,16 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 					)}
 				</Stack>
 				<Group position="right" mt={10}>
-					{user.method === "native" ? (<Button
-						variant="filled"
-						color="gray"
-						className={classes.modalActionBtn}
-						onClick={handleResetPassword}
-						disabled={UserInput === user.id ? false : true}>
-						Reset Password
-					</Button>):(
+					{user.method === 'native' ? (
+						<Button
+							variant="filled"
+							color="gray"
+							className={classes.modalActionBtn}
+							onClick={handleResetPassword}
+							disabled={UserInput === user.id ? false : true}>
+							Reset Password
+						</Button>
+					) : (
 						<Text>Cannot reset password for this user</Text>
 					)}
 					<Button onClick={handleCloseResetPassword} variant="outline" color="gray" className={classes.modalCancelBtn}>
@@ -386,12 +376,11 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						onSearchChange={(value) => setRoleSearchValue(value)}
 						onDropdownClose={() => setRoleSearchValue(SelectedRole)}
 						onDropdownOpen={() => setRoleSearchValue('')}
-						data={roles}
+						data={getRolesData?.data}
 						searchable
 						label="Select a role to assign"
 						required
 					/>
-
 				</Stack>
 
 				<Group position="right" mt={10}>
@@ -400,9 +389,13 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						color="gray"
 						className={classes.modalActionBtn}
 						onClick={handleEditUserRole}
-						//if role is already assigned or no role is selected then disable the button
-						disabled={userRole && (Object.keys(userRole).includes(SelectedRole) || SelectedRole === '') ? true : false}
-						>
+						// if role is already assigned or no role is selected then disable the button
+						disabled={
+							getUserRolesData?.data &&
+							(Object.keys(getUserRolesData?.data).includes(SelectedRole) || SelectedRole === '')
+								? true
+								: false
+						}>
 						Create
 					</Button>
 					<Button onClick={handleCloseRoleEdit} variant="outline" color="gray" className={classes.modalCancelBtn}>

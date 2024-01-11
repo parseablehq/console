@@ -1,6 +1,4 @@
-import { useGetLogStreamRetention } from '@/hooks/useGetLogStreamRetention';
-import { useGetLogStreamStat } from '@/hooks/useGetLogStreamStat';
-import { FIXED_DURATIONS, useHeaderContext } from '@/layouts/MainLayout/Context';
+import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { FC, useEffect } from 'react';
 import { useStatCardStyles, useStatusStyles } from './styles';
 import { Box, Text, ThemeIcon, Tooltip, px } from '@mantine/core';
@@ -15,125 +13,141 @@ import {
 } from '@tabler/icons-react';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import useMountedState from '@/hooks/useMountedState';
-function convert(val: number) {
-	// Thousands, millions, billions etc..
-	let s = ['', ' K', ' M', ' B', ' T'];
-
-	// Dividing the value by 3.
-	let sNum = Math.floor(('' + val).length / 3);
-
-	// Calculating the precised value.
-	let sVal = parseFloat((sNum != 0 ? val / Math.pow(1000, sNum) : val).toPrecision(4));
-
-	if (sVal % 1 != 0) {
-		return sVal.toFixed(1) + s[sNum];
-	}
-
-	// Appending the letter to precised val.
-	return sVal + s[sNum];
-}
-function formatBytes(a: any, b = 1) {
-	if (!+a) return '0 Bytes';
-	const c = b < 0 ? 0 : b,
-		d = Math.floor(Math.log(a) / Math.log(1024));
-	return `${parseFloat((a / Math.pow(1024, d)).toFixed(c))} ${
-		['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'][d]
-	}`;
-}
+import { convertToReadableScale } from '@/utils/convertToReadableScale';
+import { formatBytes } from '@/utils/formatBytes';
+import { FIXED_DURATIONS } from '@/constants/timeConstants';
+import { useRetentionEditor } from '@/hooks/useRetentionEditor';
+import { useLogStreamStats } from '@/hooks/useLogStreamStats';
+import { useParams } from 'react-router-dom';
 
 const Status: FC = () => {
-	const [statusFIXEDDURATIONS, setStatusFIXEDDURATIONS] = useMountedState(0);
-	const [status, setStatus] = useMountedState('Loading....');
-	const [statusSuccess, setStatusSuccess] = useMountedState(true);
-	FIXED_DURATIONS;
-	const {
-		state: { subLogQuery },
-	} = useHeaderContext();
-	const {
-		data: dataRetention,
-		error: errorRetention,
-		loading: loadingRetention,
-		getLogRetention: getLogRetention,
-		resetData: resetDataRetention,
-	} = useGetLogStreamRetention();
-	const { data: queryResult, getQueryData, error: errorQueryResult, resetData: resetqueryResult } = useQueryResult();
+	const { streamName } = useParams();
+
+	const [statusFixedDurations, setStatusFixedDurations] = useMountedState<number>(0);
+	const [fetchQueryStatus, setFetchQueryStatus] = useMountedState<string>('');
+
+	const { getLogRetentionIsError, getLogRetentionData, getLogRetentionIsSuccess, getLogRetentionIsLoading } =
+		useRetentionEditor(streamName || '');
 
 	const {
-		data: dataStat,
-		error: errorStat,
-		loading: loadingStat,
-		getLogStat,
-		resetData: resetStat,
-	} = useGetLogStreamStat();
+		getLogStreamStatsData,
+		getLogStreamStatsDataIsSuccess,
+		getLogStreamStatsDataIsLoading,
+		getLogStreamStatsDataIsError,
+	} = useLogStreamStats(streamName || '');
+	const { fetchQueryMutation } = useQueryResult();
+
 	useEffect(() => {
-		if (subLogQuery.get().streamName) {
-			getLogRetention(subLogQuery.get().streamName);
-			getLogStat(subLogQuery.get().streamName);
+		if (streamName) {
 			getStatus();
+			setStatusFixedDurations(0);
 		}
-		return () => {
-			resetDataRetention();
-			resetStat();
-		};
-	}, []);
-
-	useEffect(() => {
-		const logQueryListener = subLogQuery.subscribe((query) => {
-			if (query.streamName) {
-				setStatusFIXEDDURATIONS(0);
-				resetDataRetention();
-				resetStat();
-				resetqueryResult();
-				getLogRetention(query.streamName);
-				getLogStat(query.streamName);
-				getStatus();
-			}
-		});
-
-		return () => {
-			logQueryListener();
-		};
-	}, []);
+	}, [streamName]);
 
 	const getStatus = async () => {
-
 		const now = dayjs();
+		setStatusFixedDurations(statusFixedDurations + 1);
 		const LogQuery = {
-			streamName: subLogQuery.get().streamName,
-			startTime: now.subtract(FIXED_DURATIONS[statusFIXEDDURATIONS].milliseconds, 'milliseconds').toDate(),
+			streamName: streamName || '',
+			startTime: now.subtract(FIXED_DURATIONS[statusFixedDurations].milliseconds, 'milliseconds').toDate(),
 			endTime: now.toDate(),
-			access: [],	
+			access: [],
 		};
-		setStatusFIXEDDURATIONS(statusFIXEDDURATIONS + 1);
-		getQueryData(LogQuery, `SELECT count(*) as count FROM ${subLogQuery.get().streamName} ;`);
+		fetchQueryMutation.mutate({
+			logsQuery: LogQuery,
+			query: `SELECT count(*) as count FROM ${streamName} ;`,
+		});
 	};
 
 	useEffect(() => {
-		if (queryResult?.data[0] && queryResult?.data[0]['count']) {
-			setStatus(`${queryResult?.data[0]['count']} events in ${FIXED_DURATIONS[statusFIXEDDURATIONS-1].name}`);
-			setStatusSuccess(true);
-			return;
-		}
-		if (errorQueryResult) {
-			setStatus(`Not Recieved any events in ${FIXED_DURATIONS[statusFIXEDDURATIONS - 1].name} and error occured`);
-			setStatusSuccess(false);
-			return;
-		}
-		if (queryResult?.data[0] && queryResult?.data[0]['count'] === 0) {
-			setStatus('Loading...');
-			if (FIXED_DURATIONS.length  > statusFIXEDDURATIONS) {
-				getStatus();
-				return;
+		const updateStatus = async () => {
+			if (fetchQueryMutation.isLoading) {
+				setFetchQueryStatus('Loading...');
+			} else if (fetchQueryMutation.isError) {
+				setFetchQueryStatus(
+					`Not Received any events in ${FIXED_DURATIONS[statusFixedDurations - 1].name} and error occurred`,
+				);
+			} else if (fetchQueryMutation.isSuccess && fetchQueryMutation?.data[0].count) {
+				setFetchQueryStatus(
+					`${fetchQueryMutation?.data[0].count} events in ${FIXED_DURATIONS[statusFixedDurations - 1].name}`,
+				);
 			} else {
-				setStatus(`No events received ${FIXED_DURATIONS[statusFIXEDDURATIONS-1].name}`);
-				setStatusSuccess(false);
+				if (FIXED_DURATIONS.length > statusFixedDurations) {
+					try {
+						await getStatus();
+					} catch (error: unknown) {
+						let errorMessage = 'An unknown error occurred';
+						if (error instanceof Error) {
+							errorMessage = error.message;
+						} else if (typeof error === 'string') {
+							errorMessage = error;
+						}
+						setFetchQueryStatus(`Error in fetching status: ${errorMessage}`);
+					}
+				} else {
+					setFetchQueryStatus(`No events received ${FIXED_DURATIONS[statusFixedDurations - 1].name}`);
+				}
 			}
-		} else {
-			setStatus("No events received");
-			setStatusSuccess(false);
-			return;
-		}
-	}, [queryResult, errorQueryResult]);
+		};
+
+		updateStatus();
+	}, [fetchQueryMutation.isLoading, fetchQueryMutation.isError, fetchQueryMutation.isSuccess]);
+
+	const generatedOn = getLogStreamStatsDataIsLoading
+		? 'Loading...'
+		: getLogStreamStatsDataIsError
+		? 'ERROR'
+		: getLogStreamStatsDataIsSuccess && getLogStreamStatsData?.data?.time
+		? dayjs(getLogRetentionData?.data?.time).format('HH:mm DD-MM-YYYY')
+		: 'Not Found';
+
+	const retentionValue = getLogRetentionIsLoading
+		? 'Loading...'
+		: getLogRetentionIsError
+		? 'ERROR'
+		: getLogRetentionIsSuccess && getLogRetentionData?.data[0] && getLogRetentionData?.data[0].duration
+		? `${getLogRetentionData?.data[0].duration.split('d')[0]} Days`
+		: 'Not Set';
+
+	const compressionValue = getLogStreamStatsDataIsLoading
+		? 'Loading..'
+		: getLogStreamStatsDataIsError
+		? 'ERROR'
+		: getLogStreamStatsDataIsSuccess &&
+		  getLogStreamStatsData?.data?.ingestion?.size &&
+		  getLogStreamStatsData?.data?.storage?.size
+		? `${(
+				100 -
+				(parseInt(getLogStreamStatsData?.data?.storage?.size.split(' ')[0]) /
+					parseInt(getLogStreamStatsData?.data?.ingestion?.size.split(' ')[0])) *
+					100
+		  ).toPrecision(4)} %`
+		: 'Not Found';
+
+	const storageValue = getLogStreamStatsDataIsLoading
+		? 'Loading..'
+		: getLogStreamStatsDataIsError
+		? 'ERROR'
+		: getLogStreamStatsDataIsSuccess && getLogStreamStatsData?.data?.storage?.size
+		? formatBytes(Number(getLogStreamStatsData?.data?.storage.size.split(' ')[0]))
+		: '0';
+
+	const ingestionValue = getLogStreamStatsDataIsLoading
+		? 'Loading..'
+		: getLogStreamStatsDataIsError
+		? 'ERROR'
+		: getLogStreamStatsDataIsSuccess && getLogStreamStatsData?.data?.ingestion?.size
+		? formatBytes(Number(getLogStreamStatsData?.data?.ingestion.size.split(' ')[0]))
+		: '0';
+
+	const eventsValue = getLogStreamStatsDataIsLoading
+		? 'Loading..'
+		: getLogStreamStatsDataIsError
+		? 'ERROR'
+		: getLogStreamStatsDataIsSuccess && getLogStreamStatsData?.data?.ingestion?.count
+		? convertToReadableScale(getLogStreamStatsData?.data.ingestion.count)
+		: '0';
+
 	const { classes } = useStatusStyles();
 	const {
 		container,
@@ -150,23 +164,12 @@ const Status: FC = () => {
 		<Box className={container}>
 			<Box className={headContainer}>
 				<Text className={statusText}>
-					<span className={statusSuccess ? statusTextResult : statusTextFailed}> {status}</span>
+					<span className={fetchQueryMutation.isSuccess ? statusTextResult : statusTextFailed}>{fetchQueryStatus}</span>
 				</Text>
 
 				<Box className={genterateContiner}>
 					<Text className={genterateText}>
-						Generated at{' '}
-						<span className={genterateTextResult}>
-							[
-							{!loadingStat
-								? errorStat
-									? 'ERROR'
-									: dataStat
-									? dayjs(dataStat?.time).format('HH:mm DD-MM-YYYY')
-									: 'Not found'
-								: 'Loading'}
-							]
-						</span>
+						Generated at <span className={genterateTextResult}>[{generatedOn}]</span>
 					</Text>
 				</Box>
 			</Box>
@@ -174,60 +177,31 @@ const Status: FC = () => {
 				<StatCard
 					data={{
 						Icon: IconTimelineEventText,
-						value: !loadingStat
-							? !errorStat
-								? dataStat?.ingestion?.count
-									? convert(dataStat.ingestion.count)
-									: '0'
-								: 'ERROR'
-							: 'Loading...',
-						description: `Total events received ${dataStat?.ingestion.count}`,
+						value: eventsValue,
+						description: `Total events received ${getLogStreamStatsData?.data?.ingestion.count}`,
 						title: 'Events',
 					}}
 				/>
 				<StatCard
 					data={{
 						Icon: IconTransferIn,
-						value: !loadingStat
-							? !errorStat
-								? dataStat?.ingestion?.size
-									? formatBytes(dataStat.ingestion.size.split(' ')[0])
-									: '0'
-								: 'ERROR'
-							: 'Loading...',
-						description: `Total ingested events size ${dataStat?.ingestion.size}`,
+						value: ingestionValue,
+						description: `Total ingested events size ${getLogStreamStatsData?.data?.ingestion.size}`,
 						title: 'Ingestion',
 					}}
 				/>
 				<StatCard
 					data={{
 						Icon: IconDatabase,
-						value: !loadingStat
-							? !errorStat
-								? dataStat?.storage?.size
-									? formatBytes(dataStat.storage.size.split(' ')[0])
-									: '0'
-								: 'ERROR'
-							: 'Loading...',
-						description: `Total storage on backend (after compression) ${dataStat?.storage.size}`,
+						value: storageValue,
+						description: `Total storage on backend (after compression) ${getLogStreamStatsData?.data?.storage.size}`,
 						title: 'Storage',
 					}}
 				/>
 				<StatCard
 					data={{
 						Icon: IconWindowMinimize,
-						value: !loadingStat
-							? !errorStat
-								? dataStat?.ingestion?.size
-									? `${(
-											100 -
-											(parseInt(dataStat.storage.size.split(' ')[0]) /
-												parseInt(dataStat.ingestion.size.split(' ')[0])) *
-												100
-									  ).toPrecision(4)} %`
-									: 'NotFound'
-								: 'ERROR'
-							: 'Loading...',
+						value: compressionValue,
 						description: 'Compression percentage. Calculated as (events size / storage used) * 100',
 						title: 'Compression ',
 					}}
@@ -236,13 +210,7 @@ const Status: FC = () => {
 				<StatCard
 					data={{
 						Icon: IconClockStop,
-						value: !loadingRetention
-							? !errorRetention
-								? dataRetention?.[0] && dataRetention[0].duration
-									? ` ${dataRetention[0].duration.split('d')[0]} Days`
-									: 'Not Set'
-								: 'ERROR'
-							: 'Loading...',
+						value: retentionValue,
 						description: 'Retention period for events in the stream',
 						title: 'Retention',
 					}}

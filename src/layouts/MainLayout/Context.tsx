@@ -1,6 +1,7 @@
 import { AboutData } from '@/@types/parseable/api/about';
 import { SortOrder, type LogsQuery, type LogsSearch, type LogSelectedTimeRange } from '@/@types/parseable/api/query';
 import { LogStreamData } from '@/@types/parseable/api/stream';
+import { FIXED_DURATIONS } from '@/constants/timeConstants';
 import useSubscribeState, { SubData } from '@/hooks/useSubscribeState';
 import dayjs from 'dayjs';
 import type { FC } from 'react';
@@ -11,33 +12,6 @@ const Context = createContext({});
 const { Provider } = Context;
 
 const now = dayjs();
-export const REFRESH_INTERVALS = [10000, 30000, 60000, 300000, 600000, 1200000];
-export const FIXED_DURATIONS = [
-	{
-		name: 'last 10 minutes',
-		milliseconds: dayjs.duration({ minutes: 10 }).asMilliseconds(),
-	},
-	{
-		name: 'last 1 hour',
-		milliseconds: dayjs.duration({ hours: 1 }).asMilliseconds(),
-	},
-	{
-		name: 'last 5 hours',
-		milliseconds: dayjs.duration({ hours: 5 }).asMilliseconds(),
-	},
-	{
-		name: 'last 24 hours',
-		milliseconds: dayjs.duration({ days: 1 }).asMilliseconds(),
-	},
-	{
-		name: 'last 3 days',
-		milliseconds: dayjs.duration({ days: 3 }).asMilliseconds(),
-	},
-	{
-		name: 'last 7 days',
-		milliseconds: dayjs.duration({ days: 7 }).asMilliseconds(),
-	},
-] as const;
 
 export const DEFAULT_FIXED_DURATIONS = FIXED_DURATIONS[0];
 

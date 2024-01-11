@@ -10,11 +10,11 @@ const Stats: FC = () => {
 
 	const { classes } = useStatsStyles();
 	const { container } = classes;
+
 	return (
 		<Box className={container}>
-
 			<Status />
-			<Alerts/>
+			<Alerts />
 		</Box>
 	);
 };
