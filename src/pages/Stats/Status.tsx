@@ -64,14 +64,14 @@ const Status: FC = () => {
 				setFetchQueryStatus('Loading...');
 			} else if (fetchQueryMutation.isError) {
 				setFetchQueryStatus(
-					`Not Received any events in ${FIXED_DURATIONS[statusFixedDurations - 1].name} and error occurred`,
+					`Not Received any events in ${FIXED_DURATIONS[statusFixedDurations]?.name} and error occurred`,
 				);
 			} else if (fetchQueryMutation.isSuccess && fetchQueryMutation?.data[0].count) {
 				setFetchQueryStatus(
-					`${fetchQueryMutation?.data[0].count} events in ${FIXED_DURATIONS[statusFixedDurations - 1].name}`,
+					`${fetchQueryMutation?.data[0].count} events in ${FIXED_DURATIONS[statusFixedDurations]?.name}`,
 				);
 			} else {
-				if (FIXED_DURATIONS.length > statusFixedDurations) {
+				if (FIXED_DURATIONS.length > statusFixedDurations && fetchQueryMutation?.data[0].count === 0) {
 					try {
 						await getStatus();
 					} catch (error: unknown) {
@@ -84,7 +84,7 @@ const Status: FC = () => {
 						setFetchQueryStatus(`Error in fetching status: ${errorMessage}`);
 					}
 				} else {
-					setFetchQueryStatus(`No events received ${FIXED_DURATIONS[statusFixedDurations - 1].name}`);
+					setFetchQueryStatus(`No events received ${FIXED_DURATIONS[statusFixedDurations]?.name}`);
 				}
 			}
 		};

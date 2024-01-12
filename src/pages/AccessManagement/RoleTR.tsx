@@ -27,9 +27,7 @@ interface RoleTRProps {
 		id: string;
 		method: string;
 	};
-	refetchUser: () => void;
 	deleteUserMutation: (data: { userName: string }) => void;
-	getUserRolesData: AxiosResponse | undefined;
 	updateUserPasswordIsError: boolean;
 	getUserRolesIsError: boolean;
 	getUserRolesIsLoading: boolean;
@@ -37,8 +35,6 @@ interface RoleTRProps {
 	updateUserPasswordIsLoading: boolean;
 	udpateUserPasswordData: AxiosResponse | undefined;
 	resetPasswordError: string;
-	getUserRolesMutation: (data: { userName: string }) => void;
-	updateRoleIsSuccess: boolean;
 }
 
 const RoleTR: FC<RoleTRProps> = (props) => {
@@ -51,8 +47,6 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 		updateUserPasswordIsLoading,
 		udpateUserPasswordData,
 		resetPasswordError,
-		// updateRoleMutation,
-		// udpateUserData,
 		deleteUserMutation,
 	} = props;
 	const [openedDelete, { close: closeDelete, open: openDelete }] = useDisclosure();

@@ -1,10 +1,9 @@
-import { useMutation, useQueryClient } from 'react-query';
 import { getQueryResult } from '@/api/query';
 import { LogsQuery } from '@/@types/parseable/api/query';
 import { notifications } from '@mantine/notifications';
-import { notifyApi } from '@/utils/notification';
 import { isAxiosError, AxiosError } from 'axios';
 import { IconCheck, IconFileAlert } from '@tabler/icons-react';
+import { useMutation } from 'react-query';
 
 type QueryData = {
 	logsQuery: LogsQuery;
@@ -12,8 +11,6 @@ type QueryData = {
 };
 
 export const useQueryResult = () => {
-	const queryClient = useQueryClient();
-
 	const fetchQueryHandler = async (data: QueryData) => {
 		const response = await getQueryResult(data.logsQuery, data.query);
 		if (response.status !== 200) {
@@ -23,23 +20,16 @@ export const useQueryResult = () => {
 	};
 
 	const fetchQueryMutation = useMutation(fetchQueryHandler, {
-		onMutate: async (data) => {
-			await queryClient.cancelQueries('myMutationKey');
-			return data;
-		},
 		onError: (data: AxiosError) => {
 			if (isAxiosError(data) && data.response) {
-				const error = data.response.data;
-				notifyApi(
-					{
-						color: 'red',
-						title: 'Error occurred',
-						message: `Error occurred, please check your query and try again ${error}`,
-						icon: <IconFileAlert size="1rem" />,
-						autoClose: 3000,
-					},
-					true,
-				);
+				notifications.update({
+					id: 'load-data',
+					color: 'red',
+					title: 'Error occurred',
+					message: 'Error occurred, please check your query and try again',
+					icon: <IconFileAlert size="1rem" />,
+					autoClose: 2000,
+				});
 			}
 		},
 		onSuccess: () => {

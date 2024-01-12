@@ -32,14 +32,12 @@ const Users: FC = () => {
 	const {
 		getUserData,
 		getUserIsSuccess,
-		getUserRefetch,
 		getUserIsLoading,
 		createUserMutation,
 		createUserIsError,
 		createUserIsLoading,
 		createUserData,
 		createUserError,
-		getUserRolesData,
 		getUserRolesIsError,
 		getUserRolesIsLoading,
 		updateUserPasswordMutation,
@@ -48,11 +46,10 @@ const Users: FC = () => {
 		udpateUserPasswordData,
 		resetPasswordError,
 		deleteUserMutation,
-		getUserRolesMutation,
 		createUserReset,
 	} = useUser();
 
-	const { getRolesData, updateRoleIsSuccess } = useRole();
+	const { getRolesData } = useRole();
 
 	let rows =
 		getUserIsSuccess && getUserData?.data ? (
@@ -61,9 +58,7 @@ const Users: FC = () => {
 					<RoleTR
 						key={user.id}
 						user={user}
-						refetchUser={getUserRefetch}
 						deleteUserMutation={deleteUserMutation}
-						getUserRolesData={getUserRolesData}
 						updateUserPasswordIsError={updateUserPasswordIsError}
 						getUserRolesIsError={getUserRolesIsError}
 						getUserRolesIsLoading={getUserRolesIsLoading}
@@ -71,8 +66,6 @@ const Users: FC = () => {
 						updateUserPasswordIsLoading={updateUserPasswordIsLoading}
 						udpateUserPasswordData={udpateUserPasswordData}
 						resetPasswordError={resetPasswordError}
-						updateRoleIsSuccess={updateRoleIsSuccess}
-						getUserRolesMutation={getUserRolesMutation}
 					/>
 				);
 			})

@@ -66,7 +66,6 @@ const Roles: FC = () => {
 						defaultRole={defaultRole}
 						refetchRoles={getRolesRefetch}
 						deleteRoleMutation={deleteRoleMutation}
-						updateRoleMutation={updateRoleMutation}
 						getRoleIsLoading={getRoleIsLoading}
 						getRoleIsError={getRoleIsError}
 					/>

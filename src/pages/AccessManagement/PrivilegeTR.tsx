@@ -25,13 +25,12 @@ interface PrivilegeTRProps {
 	defaultRole: string | null;
 	refetchRoles: () => void;
 	deleteRoleMutation: (data: { roleName: string }) => void;
-	updateRoleMutation: (data: { userName: string; privilege: object[] }) => void;
 	getRoleIsLoading: boolean;
 	getRoleIsError: boolean;
 }
 
 const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
-	const { roleName, defaultRole, deleteRoleMutation, updateRoleMutation, getRoleIsLoading, getRoleIsError } = props;
+	const { roleName, defaultRole, deleteRoleMutation, getRoleIsLoading, getRoleIsError } = props;
 
 	const [UserInput, setUserInput] = useState<string>('');
 
@@ -52,11 +51,11 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 	const [tagInput, setTagInput] = useState<string>('');
 	const { getLogStreamListData } = useGetLogStreamList();
 
-	const { getRoleData, getRoleMutation } = useRole();
+	const { getRoleData, getRoleMutation, updateRoleMutation, updateRoleIsSuccess } = useRole();
 
 	useEffect(() => {
 		getRoleMutation({ roleName });
-	}, [roleName]);
+	}, [roleName, updateRoleIsSuccess]);
 
 	const getBadge = (privilege: any, i: number, withAction: boolean) => {
 		if (privilege.privilege === 'admin' || privilege.privilege === 'editor') {

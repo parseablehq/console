@@ -2,8 +2,16 @@ import { getLogStreamList } from '@/api/logStream';
 import { useQuery } from 'react-query';
 import { IconFileAlert, IconCheck } from '@tabler/icons-react';
 import { notifyApi } from '@/utils/notification';
+import { AxiosError, isAxiosError } from 'axios';
+import Cookies from 'js-cookie';
 
 export const useGetLogStreamList = () => {
+	const logout = () => {
+		Cookies.remove('session');
+		Cookies.remove('username');
+		window.location.reload();
+	};
+
 	const {
 		data: getLogStreamListData,
 		isError: getLogStreamListIsError,
@@ -11,12 +19,17 @@ export const useGetLogStreamList = () => {
 		isLoading: getLogStreamListIsLoading,
 		refetch: getLogStreamListRefetch,
 	} = useQuery(['fetch-log-stream-list'], () => getLogStreamList(), {
-		onError: () => {
-			notifyApi({
-				color: 'red',
-				message: 'Failed to get log streams alert',
-				icon: <IconFileAlert size="1rem" />,
-			});
+		onError: (data: AxiosError) => {
+			if (isAxiosError(data) && data.response) {
+				if (data.response && data.response.status === 401) {
+					logout();
+				}
+				notifyApi({
+					color: 'red',
+					message: 'Failed to get log streams alert',
+					icon: <IconFileAlert size="1rem" />,
+				});
+			}
 		},
 		onSuccess: () => {
 			notifyApi({
