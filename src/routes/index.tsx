@@ -30,6 +30,7 @@ import AccessSpecificRoute from './AccessSpecificRoute';
 import OIDCNotConFigured from '@/pages/Errors/OIDC';
 
 const AppRouter: FC = () => {
+	const isSecureConnection = window.location.protocol === 'https:';
 	return (
 		<FullPageLayout>
 			<Routes>
@@ -47,11 +48,11 @@ const AppRouter: FC = () => {
 							<Route path={LOGS_ROUTE} element={<LogsElement />} />
 							<Route path={QUERY_ROUTE} element={<QueryElement />} />
 						</Route>
-
-						<Route element={<AccessSpecificRoute accessRequired={['GetLiveTail']} />}>
-							<Route path={LIVE_TAIL_ROUTE} element={<LiveTailElement />} />
-						</Route>
-
+						{!isSecureConnection && (
+							<Route element={<AccessSpecificRoute accessRequired={['GetLiveTail']} />}>
+								<Route path={LIVE_TAIL_ROUTE} element={<LiveTailElement />} />
+							</Route>
+						)}
 						<Route element={<AccessSpecificRoute accessRequired={['GetStats']} />}>
 							<Route path={STATS_ROUTE} element={<StatsElement />} />
 						</Route>
