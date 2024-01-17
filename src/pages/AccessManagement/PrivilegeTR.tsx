@@ -17,19 +17,20 @@ import { useDisclosure } from '@mantine/hooks';
 import { IconPlus, IconTrash, IconX } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
 import { useUsersStyles } from './styles';
-import { useGetRole } from '@/hooks/useGetRole';
-import { useDeleteRole } from '@/hooks/useDeleteRole';
-import { usePutRole } from '@/hooks/usePutRole';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
+import { useRole } from '@/hooks/useRole';
 
 interface PrivilegeTRProps {
 	roleName: string;
-	getRolesList: () => void;
 	defaultRole: string | null;
+	refetchRoles: () => void;
+	deleteRoleMutation: (data: { roleName: string }) => void;
+	getRoleIsLoading: boolean;
+	getRoleIsError: boolean;
 }
 
 const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
-	const { roleName, getRolesList, defaultRole } = props;
+	const { roleName, defaultRole, deleteRoleMutation, getRoleIsLoading, getRoleIsError } = props;
 
 	const [UserInput, setUserInput] = useState<string>('');
 
@@ -48,36 +49,13 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 	const [SelectedStream, setSelectedStream] = useState<string>('');
 	const [streamSearchValue, setStreamSearchValue] = useState<string>('');
 	const [tagInput, setTagInput] = useState<string>('');
-	const { data: streams } = useGetLogStreamList();
-	// Update Role Modal Constants  : Ends
+	const { getLogStreamListData } = useGetLogStreamList();
 
-	const {
-		data: privileges,
-		error: getRolePrivilegeError,
-		loading: getRolePrivilegeLoading,
-		getRolePrivilege,
-		resetData: resetGetRolePrivilegeData,
-	} = useGetRole();
-
-	const { data: DeleteRoleResponse, deleteRoleFun, resetData: resetDeleteRoleData } = useDeleteRole();
-
-	const { data: UpdatedRoleResponse, putRolePrivilege, resetData: resetUpdatedRoleData } = usePutRole();
+	const { getRoleData, getRoleMutation, updateRoleMutation, updateRoleIsSuccess } = useRole();
 
 	useEffect(() => {
-		getRolePrivilege(roleName);
-
-		return () => {
-			resetGetRolePrivilegeData();
-		};
-	}, []);
-
-	useEffect(() => {
-		getRolePrivilege(roleName);
-
-		return () => {
-			resetUpdatedRoleData();
-		};
-	}, [UpdatedRoleResponse]);
+		getRoleMutation({ roleName });
+	}, [roleName, updateRoleIsSuccess]);
 
 	const getBadge = (privilege: any, i: number, withAction: boolean) => {
 		if (privilege.privilege === 'admin' || privilege.privilege === 'editor') {
@@ -130,14 +108,13 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 	};
 
 	const handlePrivilegeDelete = () => {
-		const newPrivileges = privileges?.filter((privilege: any, i: number) => {
+		const newPrivileges = getRoleData?.data?.filter((privilege: any, i: number) => {
 			if (i !== deletePrivilegeIndex) {
 				return privilege;
 			}
 		});
 
-		putRolePrivilege(roleName, newPrivileges);
-
+		updateRoleMutation({ userName: roleName, privilege: newPrivileges });
 		handleClosePrivilegeDelete();
 	};
 
@@ -157,7 +134,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 	};
 
 	const handleDelete = () => {
-		deleteRoleFun(roleName);
+		deleteRoleMutation({ roleName });
 		handleCloseDelete();
 	};
 
@@ -165,12 +142,6 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 		closeDeleteRole();
 		setUserInput('');
 	};
-	useEffect(() => {
-		if (DeleteRoleResponse) {
-			getRolesList();
-			resetDeleteRoleData();
-		}
-	}, [DeleteRoleResponse]);
 
 	const handleCloseUpdateRole = () => {
 		closeUpdateRole();
@@ -182,14 +153,14 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 
 	const handleUpadterole = () => {
 		if (selectedPrivilege === 'admin' || selectedPrivilege === 'editor') {
-			privileges?.push({
+			getRoleData?.data?.push({
 				privilege: selectedPrivilege,
 			});
 		}
 		if (selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingester') {
-			if (streams?.find((stream) => stream.name === SelectedStream)) {
+			if (getLogStreamListData?.data?.find((stream) => stream.name === SelectedStream)) {
 				if (tagInput !== '' && tagInput !== undefined && selectedPrivilege === 'reader') {
-					privileges?.push({
+					getRoleData?.data?.push({
 						privilege: selectedPrivilege,
 						resource: {
 							stream: SelectedStream,
@@ -197,7 +168,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 						},
 					});
 				} else {
-					privileges?.push({
+					getRoleData?.data?.push({
 						privilege: selectedPrivilege,
 						resource: {
 							stream: SelectedStream,
@@ -206,20 +177,20 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 				}
 			}
 		}
-		putRolePrivilege(roleName, privileges);
+		updateRoleMutation({ userName: roleName, privilege: getRoleData?.data });
 		handleCloseUpdateRole();
 	};
 
 	const updateRoleVaildtion = () => {
 		if (selectedPrivilege === 'admin' || selectedPrivilege === 'editor') {
-			if (privileges?.find((role: any) => role.privilege === selectedPrivilege)) {
+			if (getRoleData?.data?.find((role: any) => role.privilege === selectedPrivilege)) {
 				return true;
 			}
 			return false;
 		}
 		if (selectedPrivilege === 'reader') {
 			if (
-				privileges?.find(
+				getRoleData?.data?.find(
 					(role: any) =>
 						role.privilege === selectedPrivilege &&
 						role.resource?.stream === SelectedStream &&
@@ -231,7 +202,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 				return true;
 			}
 			if (
-				streams?.find((stream) => stream.name === SelectedStream) &&
+				getLogStreamListData?.data?.find((stream) => stream.name === SelectedStream) &&
 				SelectedStream !== '' &&
 				SelectedStream !== undefined
 			) {
@@ -241,14 +212,14 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 		}
 		if (selectedPrivilege === 'writer' || selectedPrivilege === 'ingester') {
 			if (
-				privileges?.find(
+				getRoleData?.data?.find(
 					(role: any) => role.privilege === selectedPrivilege && role.resource?.stream === SelectedStream,
 				)
 			) {
 				return true;
 			}
 			if (
-				streams?.find((stream) => stream.name === SelectedStream) &&
+				getLogStreamListData?.data?.find((stream) => stream.name === SelectedStream) &&
 				SelectedStream !== '' &&
 				SelectedStream !== undefined
 			) {
@@ -276,13 +247,13 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 					)}
 				</td>
 				<td>
-					{getRolePrivilegeError ? (
+					{getRoleIsError ? (
 						'Error'
-					) : getRolePrivilegeLoading ? (
+					) : getRoleIsLoading ? (
 						'loading..'
-					) : privileges ? (
+					) : getRoleData?.data ? (
 						<>
-							{getBadges(privileges)}
+							{getBadges(getRoleData?.data)}
 							<Tooltip
 								label={'Add a Privilege'}
 								sx={{ color: 'white', backgroundColor: 'black' }}
@@ -345,7 +316,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 					</Button>
 				</Group>
 			</Modal>
-			{privileges?.[deletePrivilegeIndex] ? (
+			{getRoleData?.data?.[deletePrivilegeIndex] ? (
 				<Modal
 					withinPortal
 					size="md"
@@ -355,7 +326,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 					centered
 					className={classes.modalStyle}>
 					<Stack>
-						<Text>{getBadge(privileges[deletePrivilegeIndex], deletePrivilegeIndex, false)}</Text>
+						<Text>{getBadge(getRoleData?.data[deletePrivilegeIndex], deletePrivilegeIndex, false)}</Text>
 						<TextInput
 							label="Are you sure you want to delete this role privilege?"
 							type="text"
@@ -419,7 +390,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 								onSearchChange={(value) => setStreamSearchValue(value)}
 								onDropdownClose={() => setStreamSearchValue(SelectedStream)}
 								onDropdownOpen={() => setStreamSearchValue('')}
-								data={streams?.map((stream) => ({ value: stream.name, label: stream.name })) ?? []}
+								data={getLogStreamListData?.data?.map((stream) => ({ value: stream.name, label: stream.name })) ?? []}
 								searchable
 								label="Select a stream to assign"
 								required

@@ -1,11 +1,12 @@
 import useMountedState from '@/hooks/useMountedState';
-import { REFRESH_INTERVALS, useHeaderContext } from '@/layouts/MainLayout/Context';
+import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Button, Menu, Text, px } from '@mantine/core';
 import { IconRefresh, IconRefreshOff } from '@tabler/icons-react';
 import ms from 'ms';
 import type { FC } from 'react';
 import { useEffect, useMemo } from 'react';
 import { useLogQueryStyles } from './styles';
+import { REFRESH_INTERVALS } from '@/constants/timeConstants';
 
 const RefreshInterval: FC = () => {
 	const {
@@ -38,9 +39,10 @@ const RefreshInterval: FC = () => {
 					<Text>{selectedInterval ? ms(selectedInterval) : 'Off'}</Text>
 				</Button>
 			</Menu.Target>
-			<Menu.Dropdown sx={{
-				zIndex: 1000,
-			}}>
+			<Menu.Dropdown
+				sx={{
+					zIndex: 1000,
+				}}>
 				{REFRESH_INTERVALS.map((interval) => {
 					if (interval === selectedInterval) return null;
 

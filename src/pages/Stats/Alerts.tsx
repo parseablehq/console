@@ -1,4 +1,3 @@
-import { useGetLogStreamAlert } from '@/hooks/useGetLogStreamAlert';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Box, Button, Modal, ScrollArea, Text, px } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
@@ -8,48 +7,28 @@ import { IconArrowsMaximize } from '@tabler/icons-react';
 import { Prism } from '@mantine/prism';
 import useMountedState from '@/hooks/useMountedState';
 import { heights } from '@/components/Mantine/sizing';
+import { useAlertsEditor } from '@/hooks/useAlertsEditor';
+import { useParams } from 'react-router-dom';
 
 const Alerts: FC = () => {
-
 	const {
 		state: { subLogQuery },
 	} = useHeaderContext();
-	const { data, error, loading, getLogAlert, resetData } = useGetLogStreamAlert();
+	const { streamName } = useParams();
+
+	const { getLogAlertData, getLogAlertIsError, getLogAlertIsLoading } = useAlertsEditor(streamName || '');
+
 	const [opened, { open, close }] = useDisclosure(false);
 	const [Alert, setAlert] = useMountedState({ name: 'Loading....' });
 	const AlertsWrapper = useRef<HTMLDivElement>(null);
 	const [editorHeight, setEditorHeight] = useMountedState(0);
 
 	useEffect(() => {
-		const subQueryListener = subLogQuery.subscribe((state) => {
-			if (state.streamName) {
-				if (data) {
-					resetData();
-				}
-				getLogAlert(state.streamName);
-			}		
-		});
-		return () => {
-			subQueryListener();
-		};
-	}, [data]);
-
-	useEffect(() => {
-		if(subLogQuery.get().streamName){
-			getLogAlert(subLogQuery.get().streamName);
-		}
-		return () => {
-			resetData();
-		};
-	}, []);
-
-	useEffect(() => {
 		setEditorHeight(AlertsWrapper.current?.offsetTop ? AlertsWrapper.current?.offsetTop + 15 : 0);
 	}, [heights.full, AlertsWrapper]);
 
 	const { classes } = useAlertsStyles();
-	const { container, headContainer, alertsText, alertsContainer, alertContainer, expandButton } =
-		classes;
+	const { container, headContainer, alertsText, alertsContainer, alertContainer, expandButton } = classes;
 
 	return (
 		<ScrollArea
@@ -61,11 +40,11 @@ const Alerts: FC = () => {
 				<Text className={alertsText}>Alerts</Text>
 			</Box>
 			<Box className={alertsContainer}>
-				{!loading ? (
-					error ? (
+				{!getLogAlertIsLoading ? (
+					getLogAlertIsError ? (
 						'ERROR'
-					) : data && data.alerts.length > 0 ? (
-						data.alerts.map((item: any, index: number) => {
+					) : getLogAlertData?.data && getLogAlertData?.data.alerts.length > 0 ? (
+						getLogAlertData?.data.alerts.map((item: any, index: number) => {
 							return (
 								<Box className={alertContainer} key={item.name + index}>
 									<Text>Name: {item.name}</Text>

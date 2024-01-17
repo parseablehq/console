@@ -1,7 +1,7 @@
 import { Box, Button, Modal, Text, Tooltip, px } from '@mantine/core';
 import { FC, useEffect, useMemo } from 'react';
 import { useInfoModalStyles } from './styles';
-import { useGetAbout } from '@/hooks/useGetAbout';
+import { useAbout } from '@/hooks/useGetAbout';
 import { IconAlertCircle, IconBook2, IconBrandGithub, IconBrandSlack, IconBusinessplan } from '@tabler/icons-react';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 
@@ -62,30 +62,21 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 		state: { subInstanceConfig },
 	} = useHeaderContext();
 
-	const { data, loading, error, getAbout, resetData } = useGetAbout();
-	useEffect(() => {
-		if (data) {
-			resetData();
-		}
-		getAbout();
-		return () => {
-			resetData();
-		};
-	}, []);
+	const { getAboutData, getAboutIsError, getAboutIsLoading } = useAbout();
 
 	const llmStatus = useMemo(() => {
 		let status = 'LLM API Key not set';
-		if (data?.llmActive) {
-			status = `${data.llmProvider} configured`;
+		if (getAboutData?.data?.llmActive) {
+			status = `${getAboutData?.data.llmProvider} configured`;
 		}
 		return status;
-	}, [data?.llmActive]);
+	}, [getAboutData?.data?.llmActive]);
 
 	useEffect(() => {
-		if (data) {
-			subInstanceConfig.set(data);
+		if (getAboutData?.data) {
+			subInstanceConfig.set(getAboutData?.data);
 		}
-	}, [data]);
+	}, [getAboutData?.data]);
 
 	const { classes } = useInfoModalStyles();
 	const {
@@ -108,16 +99,16 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 				<Text className={aboutDescription} id="info-modal-description">
 					Important info about your Parseable deployment
 				</Text>
-				{error ? (
+				{getAboutIsError ? (
 					<Text className={aboutDescription}>Error...</Text>
-				) : loading ? (
+				) : getAboutIsLoading ? (
 					<Text className={aboutDescription}>Loading...</Text>
-				) : data ? (
+				) : getAboutData?.data ? (
 					<>
 						<Box className={aboutTextBox}>
 							<Box className={aboutTextInnerBox}>
 								<Text className={aboutTextKey}> License: </Text>
-								<Text className={aboutTextValue}> {data.license} </Text>
+								<Text className={aboutTextValue}> {getAboutData?.data.license} </Text>
 								<Button
 									variant="outline"
 									component={'a'}
@@ -131,12 +122,12 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 						<Box className={aboutTextBox}>
 							<Box className={aboutTextInnerBox}>
 								<Text className={aboutTextKey}> Commit: </Text>
-								<Text className={aboutTextValue}> {data.commit} </Text>
+								<Text className={aboutTextValue}> {getAboutData?.data.commit} </Text>
 							</Box>
 							<Box className={aboutTextInnerBox}>
 								<Text className={aboutTextKey}> Version: </Text>
-								<Text className={aboutTextValue}> {data.version} </Text>
-								{data.updateAvailable ? (
+								<Text className={aboutTextValue}> {getAboutData?.data.version} </Text>
+								{getAboutData?.data.updateAvailable ? (
 									<Button
 										variant="outline"
 										component={'a'}
@@ -144,36 +135,36 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 										target="_blank"
 										className={actionBtnRed}
 										leftIcon={<IconAlertCircle size={px('1.2rem')} stroke={1.5} />}>
-										Upgrade to latest version {data.latestVersion}
+										Upgrade to latest version {getAboutData?.data.latestVersion}
 									</Button>
 								) : null}
 							</Box>
 							<Box className={aboutTextInnerBox}>
 								<Text className={aboutTextKey}> UI Version: </Text>
-								<Text className={aboutTextValue}> {data.uiVersion} </Text>
+								<Text className={aboutTextValue}> {getAboutData?.data.uiVersion} </Text>
 							</Box>
 						</Box>
 						<Box className={aboutTextBox}>
 							<Box className={aboutTextInnerBox}>
 								<Text className={aboutTextKey}> Deployment Id: </Text>
-								<Text className={aboutTextValue}> {data.deploymentId} </Text>
+								<Text className={aboutTextValue}> {getAboutData?.data.deploymentId} </Text>
 							</Box>
 							<Box className={aboutTextInnerBox}>
 								<Text className={aboutTextKey}>Mode</Text>
-								<Text className={aboutTextValue}>{data.mode}</Text>
+								<Text className={aboutTextValue}>{getAboutData?.data.mode}</Text>
 							</Box>
 							<Box className={aboutTextInnerBox}>
 								<Text className={aboutTextKey}>Staging</Text>
-								<Text className={aboutTextValue}>{data.staging}</Text>
+								<Text className={aboutTextValue}>{getAboutData?.data.staging}</Text>
 							</Box>
 							<Box className={aboutTextInnerBox}>
 								<Text className={aboutTextKey}>Store</Text>
-								<Text className={aboutTextValue}>{data.store}</Text>
+								<Text className={aboutTextValue}>{getAboutData?.data.store}</Text>
 							</Box>
 							<Box className={aboutTextInnerBox}>
-                                <Text className={aboutTextKey}>Cache</Text>
-                                <Text className={aboutTextValue}>{data.cache}</Text>
-                            </Box>
+								<Text className={aboutTextKey}>Cache</Text>
+								<Text className={aboutTextValue}>{getAboutData?.data.cache}</Text>
+							</Box>
 							<Box className={aboutTextInnerBox}>
 								<Text className={aboutTextKey}>LLM Status</Text>
 								<Text className={aboutTextValue}>{llmStatus}</Text>

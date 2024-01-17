@@ -18,7 +18,6 @@ import {
 import { FC, useEffect } from 'react';
 import { useNavbarStyles } from './styles';
 import { useLocation, useParams } from 'react-router-dom';
-import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import { notifications } from '@mantine/notifications';
 import { useNavigate } from 'react-router-dom';
 import { DEFAULT_FIXED_DURATIONS, useHeaderContext } from '@/layouts/MainLayout/Context';
@@ -26,13 +25,13 @@ import useMountedState from '@/hooks/useMountedState';
 import dayjs from 'dayjs';
 import { useDisclosure } from '@mantine/hooks';
 import { USERS_MANAGEMENT_ROUTE } from '@/constants/routes';
-import { useDeleteLogStream } from '@/hooks/useDeleteLogStream';
 import InfoModal from './infoModal';
-import { useGetUserRole } from '@/hooks/useGetUserRoles';
 import { getStreamsSepcificAccess, getUserSepcificStreams } from './rolesHandler';
 import { LogStreamData } from '@/@types/parseable/api/stream';
 import Cookies from 'js-cookie';
 import { NAVBAR_WIDTH } from '@/constants/theme';
+import { useUser } from '@/hooks/useUser';
+import { useLogStream } from '@/hooks/useLogStream';
 const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 
 const isSecureConnection = window.location.protocol === 'https:';
@@ -69,8 +68,11 @@ const Navbar: FC<NavbarProps> = (props) => {
 	const [opened, { open, close }] = useDisclosure(false);
 	const [openedDelete, { close: closeDelete, open: openDelete }] = useDisclosure();
 
-	const { data: streams, error, getData, resetData: resetStreamArray } = useGetLogStreamList();
-	const { data: deleteData, deleteLogStreamFun } = useDeleteLogStream();
+	const { deleteLogStreamMutation, getLogStreamListData, getLogStreamListIsError, getLogStreamListRefetch } =
+		useLogStream();
+
+	const { getUserRolesData, getUserRolesMutation } = useUser();
+
 	useEffect(() => {
 		const listener = subNavbarTogle.subscribe(setIsSubNavbarOpen);
 		return () => {
@@ -104,7 +106,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 				handleChange(userSepecficStreams[0].name);
 			} else if (userSepecficStreams && !userSepecficStreams.find((stream: any) => stream.name === streamName)) {
 				notifications.show({
-					id: 'error-data',
+					id: 'getLogStreamListIsError-data',
 					color: 'red',
 					title: 'Error occurred',
 					message: `${streamName} stream not found`,
@@ -131,17 +133,18 @@ const Navbar: FC<NavbarProps> = (props) => {
 			navigate(`/${value}${page}`);
 		}
 	};
+
 	const handleChangeWithoutRiderection = (value: string, page: string = currentPage) => {
 		setActiveStream(value);
 		setSearchValue(value);
 		setCurrentPage(page);
 		const now = dayjs();
-		setUserSepecficAccess(getStreamsSepcificAccess(roles, value));
+		setUserSepecficAccess(getStreamsSepcificAccess(getUserRolesData?.data, value));
 		subLogQuery.set((state) => {
 			state.streamName = value || '';
 			state.startTime = now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate();
 			state.endTime = now.toDate();
-			state.access = getStreamsSepcificAccess(roles, value);
+			state.access = getStreamsSepcificAccess(getUserRolesData?.data, value);
 		});
 		subLogSelectedTimeRange.set((state) => {
 			state.state = 'fixed';
@@ -160,37 +163,23 @@ const Navbar: FC<NavbarProps> = (props) => {
 	};
 
 	const handleDelete = () => {
-		deleteLogStreamFun(deleteStream);
+		deleteLogStreamMutation({ deleteStream });
 		closeDelete();
 	};
 
 	useEffect(() => {
-		if (deleteData) {
-			resetStreamArray();
-			getData();
-			return;
-		}
-	}, [deleteData]);
-
-	const { data: roles, getRoles, resetData } = useGetUserRole();
-	useEffect(() => {
-		if (username) {
-			getRoles(username);
-		}
-		return () => {
-			resetData();
-		};
-	}, [username]);
-
-	useEffect(() => {
-		if (streams && streams.length > 0 && roles) {
-			const userStreams = getUserSepcificStreams(roles, streams as any);
+		if (getLogStreamListData?.data && getLogStreamListData?.data.length > 0 && getUserRolesData?.data) {
+			const userStreams = getUserSepcificStreams(getUserRolesData?.data, getLogStreamListData?.data as any);
 			setUserSepecficStreams(userStreams as any);
 		} else {
 			setUserSepecficStreams([]);
-			setUserSepecficAccess(getStreamsSepcificAccess(roles));
+			setUserSepecficAccess(getStreamsSepcificAccess(getUserRolesData?.data));
 		}
-	}, [roles, streams]);
+	}, [getUserRolesData?.data, getLogStreamListData?.data]);
+
+	useEffect(() => {
+		getUserRolesMutation({ userName: username ? username : '' });
+	}, [username]);
 
 	const { classes } = useNavbarStyles();
 	const {
@@ -232,13 +221,13 @@ const Navbar: FC<NavbarProps> = (props) => {
 					required
 					className={selectStreambtn}
 				/>
-				{error && <div>{error}</div>}
-				{error && (
+				{getLogStreamListIsError && <div>{getLogStreamListIsError}</div>}
+				{getLogStreamListIsError && (
 					<NavLink
 						label="Retry"
 						icon={<IconReload size="1rem" stroke={1.5} />}
 						component="button"
-						onClick={getData}
+						onClick={() => getLogStreamListRefetch()}
 						sx={{ paddingLeft: 0 }}
 					/>
 				)}

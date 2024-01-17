@@ -38,24 +38,25 @@ export const useAlertsEditor = (streamName: string) => {
 		},
 	});
 
-	const { data: getLogAlertData } = useQuery(
-		['fetch-log-stream-alert', streamName, updateLogStreamIsSuccess],
-		() => getLogStreamAlerts(streamName),
-		{
-			onError: () => {
-				notifyApi({
-					color: 'red',
-					message: 'Failed to get log streams alert',
-					icon: <IconFileAlert size="1rem" />,
-				});
-			},
-			onSuccess: (data) => {
-				setAlertQuery(JSON.stringify(data?.data));
-			},
-			retry: false,
-			enabled: streamName !== '',
+	const {
+		data: getLogAlertData,
+		isError: getLogAlertIsError,
+		isSuccess: getLogAlertIsSuccess,
+		isLoading: getLogAlertIsLoading,
+	} = useQuery(['fetch-log-stream-alert', streamName, updateLogStreamIsSuccess], () => getLogStreamAlerts(streamName), {
+		onError: () => {
+			notifyApi({
+				color: 'red',
+				message: 'Failed to get log streams alert',
+				icon: <IconFileAlert size="1rem" />,
+			});
 		},
-	);
+		onSuccess: (data) => {
+			setAlertQuery(JSON.stringify(data?.data));
+		},
+		retry: false,
+		enabled: streamName !== '',
+	});
 
 	const handleAlertQueryChange = (value: string | undefined) => setAlertQuery(value);
 
@@ -86,5 +87,8 @@ export const useAlertsEditor = (streamName: string) => {
 		submitAlertQuery,
 		alertQueryData,
 		getLogAlertData,
+		getLogAlertIsError,
+		getLogAlertIsSuccess,
+		getLogAlertIsLoading,
 	};
 };

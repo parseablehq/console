@@ -2,15 +2,15 @@ import { Box, Button, Group, Modal, ScrollArea, Select, Stack, Table, Text, Text
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect, useState } from 'react';
 
-import { useGetUsers } from '@/hooks/useGetUsers';
+import { useUser } from '@/hooks/useUser';
 import { useUsersStyles } from './styles';
-import { usePostUser } from '@/hooks/usePostUser';
 import { Prism } from '@mantine/prism';
 
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import RoleTR from './RoleTR';
 import { IconUserPlus } from '@tabler/icons-react';
-import { useGetRoles } from '@/hooks/useGetRoles';
+import { useRole } from '@/hooks/useRole';
+
 const Users: FC = () => {
 	useDocumentTitle('Parseable | Users');
 	const {
@@ -28,65 +28,63 @@ const Users: FC = () => {
 	const [createUserInput, setCreateUserInput] = useState<string>('');
 	const [SelectedRole, setSelectedRole] = useState<string>('');
 	const [roleSearchValue, setRoleSearchValue] = useState<string>('');
-	const [tableRows, setTableRows] = useState<any>([]);
+
 	const {
-		data: CreatedUserResponse,
-		error: CreatedUserError,
-		loading: CreatedUserLoading,
-		createUser,
-		resetData: resetCreateUser,
-	} = usePostUser();
-	const { data: users, error: usersError, loading: usersLoading, getUsersList, resetData: usersReset } = useGetUsers();
-	const { data: roles, getRolesList, resetData: rolesReset } = useGetRoles();
+		getUserData,
+		getUserIsSuccess,
+		getUserIsLoading,
+		createUserMutation,
+		createUserIsError,
+		createUserIsLoading,
+		createUserData,
+		createUserError,
+		getUserRolesIsError,
+		getUserRolesIsLoading,
+		updateUserPasswordMutation,
+		updateUserPasswordIsError,
+		updateUserPasswordIsLoading,
+		udpateUserPasswordData,
+		resetPasswordError,
+		deleteUserMutation,
+		createUserReset,
+	} = useUser();
 
-	useEffect(() => {
-		getUsersList();
-		getRolesList();
-		return () => {
-			usersReset();
-			rolesReset();
-		};
-	}, []);
+	const { getRolesData } = useRole();
 
-	useEffect(() => {
-		if (users) {
-			const getrows = async () => {
-				let rows = users.map((user: any) => {
-					return <RoleTR key={user.id} user={user} getUsersList={getUsersList} />;
-				});
-				setTableRows(rows);
-			};
-
-			getrows();
-		}
-		if (usersError) {
-			setTableRows(
-				<tr>
-					<td>error</td>
-				</tr>,
-			);
-		}
-		if (usersLoading) {
-			setTableRows(
-				<tr>
-					<td>loading</td>
-				</tr>,
-			);
-		}
-	}, [users, usersError, usersLoading]);
-
-	useEffect(() => {
-		if (CreatedUserResponse) {
-			getUsersList();
-		}
-	}, [CreatedUserResponse]);
+	let rows =
+		getUserIsSuccess && getUserData?.data ? (
+			getUserData?.data.map((user: any) => {
+				return (
+					<RoleTR
+						key={user.id}
+						user={user}
+						deleteUserMutation={deleteUserMutation}
+						updateUserPasswordIsError={updateUserPasswordIsError}
+						getUserRolesIsError={getUserRolesIsError}
+						getUserRolesIsLoading={getUserRolesIsLoading}
+						updateUserPasswordMutation={updateUserPasswordMutation}
+						updateUserPasswordIsLoading={updateUserPasswordIsLoading}
+						udpateUserPasswordData={udpateUserPasswordData}
+						resetPasswordError={resetPasswordError}
+					/>
+				);
+			})
+		) : getUserIsLoading ? (
+			<tr>
+				<td>loading</td>
+			</tr>
+		) : (
+			<tr>
+				<td>error</td>
+			</tr>
+		);
 
 	const handleClose = () => {
 		setCreateUserInput('');
 		setModalOpen(false);
-		resetCreateUser();
 		setSelectedRole('');
 		setRoleSearchValue('');
+		createUserReset();
 	};
 
 	const handleCreateUser = () => {
@@ -94,16 +92,16 @@ const Users: FC = () => {
 		if (SelectedRole !== '') {
 			userRole.push(SelectedRole);
 		}
-		createUser(createUserInput, userRole);
+		createUserMutation({ userName: createUserInput, roles: userRole });
 	};
 
 	const createVaildtion = () => {
-		if (users?.includes(createUserInput) || createUserInput.length < 3) {
+		if (getUserData?.data?.includes(createUserInput) || createUserInput.length < 3) {
 			return true;
 		}
 
 		if (SelectedRole !== '') {
-			if (roles?.includes(SelectedRole)) {
+			if (getRolesData?.data?.includes(SelectedRole)) {
 				return false;
 			}
 			return true;
@@ -139,7 +137,7 @@ const Users: FC = () => {
 							<th style={{ textAlign: 'center' }}>Reset Password</th>
 						</tr>
 					</thead>
-					<tbody>{tableRows}</tbody>
+					<tbody>{rows}</tbody>
 				</Table>
 			</ScrollArea>
 			<Modal opened={modalOpen} onClose={handleClose} title="Create user" centered className={classes.modalStyle}>
@@ -166,19 +164,19 @@ const Users: FC = () => {
 						onSearchChange={(value) => setRoleSearchValue(value)}
 						onDropdownClose={() => setRoleSearchValue(SelectedRole)}
 						onDropdownOpen={() => setRoleSearchValue('')}
-						data={roles || []}
+						data={getRolesData?.data || []}
 						searchable
 						label="Select a role to assign"
 						required
 					/>
 
-					{CreatedUserError ? (
+					{createUserIsError ? (
 						<Text className={classes.passwordText} color="red">
-							{CreatedUserError}
+							{createUserError}
 						</Text>
-					) : CreatedUserLoading ? (
+					) : createUserIsLoading ? (
 						<Text className={classes.passwordText}>loading</Text>
-					) : CreatedUserResponse ? (
+					) : createUserData?.data ? (
 						<Box>
 							<Text className={classes.passwordText}>Password</Text>
 							<Prism
@@ -186,7 +184,7 @@ const Users: FC = () => {
 								language="markup"
 								copyLabel="Copy password to clipboard"
 								copiedLabel="Password copied to clipboard">
-								{CreatedUserResponse}
+								{createUserData?.data}
 							</Prism>
 							<Text className={classes.passwordText} color="red">
 								Warning this is the only time you are able to see Password

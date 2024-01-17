@@ -4,29 +4,21 @@ import { FC, useEffect, useState } from 'react';
 import { useUsersStyles } from './styles';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { useGetRoles } from '@/hooks/useGetRoles';
 import PrivilegeTR from './PrivilegeTR';
 import { IconPencil, IconUserPlus } from '@tabler/icons-react';
-import { usePutRole } from '@/hooks/usePutRole';
-import { usePutDefaultRole } from '@/hooks/usePutDefaultRole';
-import { useGetDefaultRole } from '@/hooks/useGetDefaultRole';
+import { useRole } from '@/hooks/useRole';
+
 const Roles: FC = () => {
 	useDocumentTitle('Parseable | Users');
 	const {
-		state: { subCreateUserModalTogle, subInstanceConfig },
+		state: { subInstanceConfig },
 	} = useHeaderContext();
 
-	useEffect(() => {
-		const listener = subCreateUserModalTogle.subscribe(setModalOpen);
-		return () => {
-			listener();
-		};
-	}, [subCreateUserModalTogle.get()]);
-
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
+
 	const [defaultRoleModalOpen, setDefaultRoleModalOpen] = useState<boolean>(false);
 	const [inputDefaultRole, setInputDefaultRole] = useState<string>('');
-	const [defaultRole, setDefaultRole] = useState<string| null>(null);
+	const [defaultRole, setDefaultRole] = useState<string | null>(null);
 	const [oidcActive, setOidcActive] = useState<boolean>(subInstanceConfig.get()?.oidcActive ?? false);
 	const [createRoleInput, setCreateRoleInput] = useState<string>('');
 	const [tagInput, setTagInput] = useState<string>('');
@@ -34,17 +26,25 @@ const Roles: FC = () => {
 	const [SelectedStream, setSelectedStream] = useState<string>('');
 	const [streamSearchValue, setStreamSearchValue] = useState<string>('');
 
-	const { data: streams } = useGetLogStreamList();
+	const { getLogStreamListData } = useGetLogStreamList();
 
-	const { data: defaultRoleResponse, getDefaultOidc } = useGetDefaultRole();
-	const { data: putDefaultRoleResponse, setDefaultRole: putDefaultRole } = usePutDefaultRole();
-	const { data: CreatedRoleResponse, putRolePrivilege, resetData: resetCreateRoleData } = usePutRole();
-	const { data: roles, error: rolesError, loading: rolesLoading, getRolesList, resetData: rolesReset } = useGetRoles();
+	const {
+		getDefaultRoleData,
+		getDefaultRoleMutation,
+		updateDefaultRoleMutation,
+		updateDefaultRoleData,
+		updateRoleMutation,
+		getRolesData,
+		getRolesIsLoading,
+		getRolesIsSuccess,
+		getRolesRefetch,
+		deleteRoleMutation,
+		getRoleIsLoading,
+		getRoleIsError,
+	} = useRole();
 
-	const [tableRows, setTableRows] = useState<any>([]);
 	useEffect(() => {
-		getRolesList();
-		getDefaultOidc();
+		getDefaultRoleMutation();
 		const listener = subInstanceConfig.subscribe((value) => {
 			if (value) {
 				setOidcActive(value.oidcActive);
@@ -53,59 +53,49 @@ const Roles: FC = () => {
 
 		return () => {
 			listener();
-			rolesReset();
 		};
 	}, []);
 
-	useEffect(() => {
-		if (roles) {
-			const getrows = async () => {
-				let rows = roles.map((role: any) => {
-					return <PrivilegeTR key={role} roleName={role} getRolesList={getRolesList} defaultRole={defaultRole} />;
-				});
-				setTableRows(rows);
-			};
-
-			getrows();
-		}
-		if (rolesError) {
-			setTableRows(
-				<tr>
-					<td>error</td>
-				</tr>,
-			);
-		}
-		if (rolesLoading) {
-			setTableRows(
-				<tr>
-					<td>loading</td>
-				</tr>,
-			);
-		}
-	}, [roles, rolesError, rolesLoading, defaultRole]);
+	let rows =
+		getRolesIsSuccess && getRolesData?.data ? (
+			getRolesData?.data.map((role: any) => {
+				return (
+					<PrivilegeTR
+						key={role}
+						roleName={role}
+						defaultRole={defaultRole}
+						refetchRoles={getRolesRefetch}
+						deleteRoleMutation={deleteRoleMutation}
+						getRoleIsLoading={getRoleIsLoading}
+						getRoleIsError={getRoleIsError}
+					/>
+				);
+			})
+		) : getRolesIsLoading ? (
+			<tr>
+				<td>loading</td>
+			</tr>
+		) : (
+			<tr>
+				<td>error</td>
+			</tr>
+		);
 
 	useEffect(() => {
-		if (CreatedRoleResponse) {
-			getRolesList();
+		if (updateDefaultRoleData?.data) {
+			setDefaultRole(updateDefaultRoleData?.data);
 		}
-	}, [CreatedRoleResponse]);
+	}, [updateDefaultRoleData?.data]);
 
 	useEffect(() => {
-		if (putDefaultRoleResponse) {
-			setDefaultRole(putDefaultRoleResponse.data);
+		if (getDefaultRoleData?.data) {
+			setDefaultRole(getDefaultRoleData?.data);
 		}
-	}, [putDefaultRoleResponse]);
-
-	useEffect(() => {
-		if (defaultRoleResponse) {
-			setDefaultRole(defaultRoleResponse);
-		}
-	}, [defaultRoleResponse]);
+	}, [getDefaultRoleData?.data]);
 
 	const handleClose = () => {
 		setCreateRoleInput('');
 		setModalOpen(false);
-		resetCreateRoleData();
 		setSelectedPrivilege('');
 		setSelectedStream('');
 		setStreamSearchValue('');
@@ -125,7 +115,7 @@ const Roles: FC = () => {
 			});
 		}
 		if (selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingester') {
-			if (streams?.find((stream) => stream.name === SelectedStream)) {
+			if (getLogStreamListData?.data?.find((stream) => stream.name === SelectedStream)) {
 				if (tagInput !== '' && tagInput !== undefined && selectedPrivilege === 'reader') {
 					userRole?.push({
 						privilege: selectedPrivilege,
@@ -144,12 +134,12 @@ const Roles: FC = () => {
 				}
 			}
 		}
-		putRolePrivilege(createRoleInput, userRole);
+		updateRoleMutation({ userName: createRoleInput, privilege: userRole });
 		handleClose();
 	};
 
 	const createVaildtion = () => {
-		if (roles?.includes(createRoleInput) && createRoleInput.length > 0) {
+		if (getRolesData?.data?.includes(createRoleInput) && createRoleInput.length > 0) {
 			return true;
 		}
 		if (selectedPrivilege !== '') {
@@ -157,13 +147,13 @@ const Roles: FC = () => {
 				return false;
 			}
 			if (selectedPrivilege === 'reader') {
-				if (streams?.find((stream) => stream.name === SelectedStream)) {
+				if (getLogStreamListData?.data?.find((stream) => stream.name === SelectedStream)) {
 					return false;
 				}
 				return true;
 			}
 			if (selectedPrivilege === 'writer' || selectedPrivilege === 'ingester') {
-				if (streams?.find((stream) => stream.name === SelectedStream)) {
+				if (getLogStreamListData?.data?.find((stream) => stream.name === SelectedStream)) {
 					return false;
 				}
 				return true;
@@ -173,14 +163,14 @@ const Roles: FC = () => {
 	};
 
 	const defaultRoleVaildtion = () => {
-		if (inputDefaultRole === '' && !roles?.includes(inputDefaultRole)) {
+		if (inputDefaultRole === '' && !getRolesData?.data?.includes(inputDefaultRole)) {
 			return true;
 		}
 		return false;
 	};
 
 	const handleSetDefaultRole = () => {
-		putDefaultRole(inputDefaultRole);
+		updateDefaultRoleMutation({ roleName: inputDefaultRole });
 		handleDefaultRoleModalClose();
 	};
 
@@ -192,8 +182,6 @@ const Roles: FC = () => {
 					Roles
 				</Text>
 				<Box>
-					
-
 					<Button
 						variant="outline"
 						color="gray"
@@ -229,7 +217,7 @@ const Roles: FC = () => {
 							<th style={{ textAlign: 'center' }}>Delete</th>
 						</tr>
 					</thead>
-					<tbody>{tableRows}</tbody>
+					<tbody>{rows}</tbody>
 				</Table>
 			</ScrollArea>
 			<Modal
@@ -242,7 +230,7 @@ const Roles: FC = () => {
 					<Select
 						placeholder="Select Role"
 						label="Select a role to automatically assign to new oidc users"
-						data={roles ?? []}
+						data={getRolesData?.data ?? []}
 						onChange={(value) => {
 							setInputDefaultRole(value ?? '');
 						}}
@@ -306,7 +294,7 @@ const Roles: FC = () => {
 								onSearchChange={(value) => setStreamSearchValue(value)}
 								onDropdownClose={() => setStreamSearchValue(SelectedStream)}
 								onDropdownOpen={() => setStreamSearchValue('')}
-								data={streams?.map((stream) => ({ value: stream.name, label: stream.name })) ?? []}
+								data={getLogStreamListData?.data?.map((stream) => ({ value: stream.name, label: stream.name })) ?? []}
 								searchable
 								label="Select a stream to assign"
 								required
