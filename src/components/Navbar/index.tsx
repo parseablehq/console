@@ -35,10 +35,11 @@ import Cookies from 'js-cookie';
 import { NAVBAR_WIDTH } from '@/constants/theme';
 const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 
+const isSecureConnection = window.location.protocol === 'https:';
 const links = [
 	{ icon: IconZoomCode, label: 'SQL', pathname: '/query', requiredAccess: ['Query', 'GetSchema'] },
 	{ icon: IconTableShortcut, label: 'Explore', pathname: '/logs', requiredAccess: ['Query', 'GetSchema'] },
-	{ icon: IconTimelineEvent, label: 'Live tail', pathname: '/live-tail', requiredAccess: ['GetLiveTail'] },
+	...(!isSecureConnection ? [{ icon: IconTimelineEvent, label: 'Live tail', pathname: '/live-tail', requiredAccess: ['GetLiveTail'] }] : []),
 	{ icon: IconReportAnalytics, label: 'Stats', pathname: '/stats', requiredAccess: ['GetStats'] },
 	{ icon: IconSettings, label: 'Config', pathname: '/config', requiredAccess: ['PutAlert'] },
 ];
