@@ -1,10 +1,8 @@
 import type { Log } from '@/@types/parseable/api/query';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { useLogsPageContext } from '@/pages/Logs/Context';
 
 type Data = Log[] | null;
 
-const downloadDataAsJson = (data: Data, filename: string) => {
+export const downloadDataAsJson = (data: Data, filename: string) => {
 	if (data === null || data.length === 0) return;
 
 	const jsonString = JSON.stringify(data, null, 2);
@@ -17,7 +15,7 @@ const downloadDataAsJson = (data: Data, filename: string) => {
 	document.body.removeChild(downloadLink);
 };
 
-const downloadDataAsCSV = (data: Data, filename: string) => {
+export const downloadDataAsCSV = (data: Data, filename: string) => {
 	if (data === null || data.length === 0) return;
 
 	const csvString = data
@@ -36,23 +34,16 @@ const downloadDataAsCSV = (data: Data, filename: string) => {
 	document.body.removeChild(downloadLink);
 };
 
-export const useExportData = () => {
-	const {
-		state: { subLogQueryData },
-	} = useLogsPageContext();
-	const {
-		state: { subLogQuery },
-	} = useHeaderContext();
-	const exportLogsHandler = (type: string) => {
-		const { rawData, filteredData: _filteredData } = subLogQueryData.get(); // filteredData - records filtered with in-page search
-		const query = subLogQuery.get();
-		const filename = `${query.streamName}-logs`;
-		type === 'JSON'
-			? downloadDataAsJson(rawData, filename)
-			: type === 'CSV'
-			? downloadDataAsCSV(rawData, filename)
-			: null;
-	};
-
-	return { exportLogsHandler };
+// 1. makes sure no records has missing cells
+// 2. replace new line characters with ''
+export const sanitizeCSVData = (data: Data, headers: string[]): any[] => {
+	if (data) {
+		return data.map((d) => {
+			return headers.reduce((acc, header) => {
+				return { ...acc, [header]: d[header] || '' };
+			}, {});
+		});
+	} else {
+		return [];
+	}
 };

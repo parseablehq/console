@@ -13,7 +13,9 @@ import LiveTailFilter from './LiveTailFilter';
 import Dropdown from './Dropdown';
 import { useHeaderStyles } from './styles';
 import { HEADER_HEIGHT } from '@/constants/theme';
-import { useExportData } from '@/hooks/useExportData';
+import { downloadDataAsCSV, downloadDataAsJson } from '@/utils/exportHelpers';
+import { useLogsPageContext } from '@/pages/Logs/Context';
+import { useHeaderContext } from '@/layouts/MainLayout/Context';
 
 type HeaderLayoutProps = {
 	children: React.ReactNode;
@@ -106,7 +108,22 @@ export const LiveTailHeader: FC = () => {
 export const LogsHeader: FC = () => {
 	const { classes } = useLogQueryStyles();
 	const { container, innerContainer } = classes;
-	const { exportLogsHandler } = useExportData();
+	const {
+		methods: { makeExportData },
+	} = useLogsPageContext();
+	const {
+		state: { subLogQuery },
+	} = useHeaderContext();
+
+	const exportHandler = (fileType: string) => {
+		const query = subLogQuery.get();
+		const filename = `${query.streamName}-logs`;
+		if (fileType === 'CSV') {
+			downloadDataAsCSV(makeExportData('CSV'), filename)
+		} else if (fileType === 'JSON') {
+			downloadDataAsJson(makeExportData('JSON'), filename)
+		}
+	};
 
 	return (
 		<HeaderLayout>
@@ -125,7 +142,7 @@ export const LogsHeader: FC = () => {
 
 						<TimeRange />
 						<RefreshInterval />
-						<Dropdown data={['JSON', 'CSV']} onChange={exportLogsHandler} />
+						<Dropdown data={['JSON', 'CSV']} onChange={exportHandler} />
 					</Box>
 				</Box>
 			</Box>
