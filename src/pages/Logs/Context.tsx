@@ -19,6 +19,12 @@ interface LogsPageContextState {
 	subLogStreamError: SubData<string | null>;
 	subViewLog: SubData<Log | null>;
 	subGapTime: SubData<GapTime | null>;
+	subLogQueryData: SubData<LogQueryData>;
+}
+
+type LogQueryData = {
+	rawData: Log[] | [],
+	filteredData: Log[] | []
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -37,11 +43,16 @@ const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 	const subLogStreamError = useSubscribeState<string | null>(null);
 	const subViewLog = useSubscribeState<Log | null>(null);
 	const subGapTime = useSubscribeState<GapTime | null>(null);
+	const subLogQueryData = useSubscribeState<LogQueryData>({
+		rawData: [],
+		filteredData: [],
+	});
 
 	const state: LogsPageContextState = {
 		subLogStreamError,
 		subViewLog,
 		subGapTime,
+		subLogQueryData
 	};
 
 	const methods: LogsPageContextMethods = {};

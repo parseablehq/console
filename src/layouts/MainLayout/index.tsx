@@ -1,4 +1,4 @@
-import { PrimaryHeader, SecondaryHeader } from '@/components/Header';
+import { PrimaryHeader } from '@/components/Header';
 import Navbar from '@/components/Navbar';
 import { NAVBAR_WIDTH } from '@/constants/theme';
 import { Box } from '@mantine/core';
@@ -21,7 +21,6 @@ const MainLayout: FC = () => {
 					display: 'flex',
 					flexDirection: 'column',
 				}}>
-					<SecondaryHeader />
 					<Outlet />
 				</Box>
 			</Box>
