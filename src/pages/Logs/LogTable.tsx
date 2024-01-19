@@ -41,7 +41,7 @@ const loadLimit = 9000;
 
 const LogTable: FC = () => {
 	const {
-		state: { subLogStreamError },
+		state: { subLogStreamError, subLogStreamSchema },
 	} = useLogsPageContext();
 	const {
 		state: { subLogSearch, subLogQuery, subRefreshInterval, subLogSelectedTimeRange },
@@ -239,7 +239,7 @@ const LogTable: FC = () => {
 				getDataSchema(state.streamName);
 			}
 		});
-
+		subLogStreamSchema.set(logsSchema)
 		return () => {
 			streamErrorListener();
 			subLogQueryListener();

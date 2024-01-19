@@ -54,7 +54,13 @@ const LiveTailFilter: FC = () => {
 		<Box className={liveTailFilterContainer}>
 			{schemaData.length > 0 && (
 				<>
-					<Dropdown data={schemaData.map((item) => item.name)} onChange={handleDropdownValue} />
+					<Dropdown
+						data={schemaData.map((item) => item.name)}
+						searchable
+						onChange={handleDropdownValue}
+						placeholder="Column"
+						value={searchField}
+					/>
 					<TextInput
 						className={searchInput}
 						value={searchValue}

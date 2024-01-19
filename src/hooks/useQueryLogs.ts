@@ -3,7 +3,7 @@ import { getQueryLogs } from '@/api/query';
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
 import { useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
-import { LOG_QUERY_LIMITS } from '@/pages/Logs/Context';
+import { LOG_QUERY_LIMITS, useLogsPageContext } from '@/pages/Logs/Context';
 import { parseLogData } from '@/utils';
 
 type QueryLogs = {
@@ -32,11 +32,14 @@ export const useQueryLogs = () => {
 		},
 	});
 	const [isPending, startTransition] = useTransition();
+	const {
+		state: { subLogQueryData },
+	} = useLogsPageContext();
 
 	const data: Log[] | null = useMemo(() => {
 		if (_dataRef.current) {
 			const logs = _dataRef.current;
-			const temp = [];
+			const temp: Log[] = [];
 			const { search, filters, sort } = querySearch;
 			const searchText = search.trim().toLowerCase();
 			const filteredKeys = Object.keys(filters);
@@ -78,6 +81,10 @@ export const useQueryLogs = () => {
 				return res * order;
 			});
 
+			subLogQueryData.set((state) => {
+				state.filteredData = temp;
+				state.rawData = logs;
+			});
 			return temp;
 		}
 

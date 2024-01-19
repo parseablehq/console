@@ -6,6 +6,14 @@ import SuspensePage from './SuspensePage';
 import QueryPageProvider from '@/pages/Query/Context';
 import MainLayoutPageProvider from '@/layouts/MainLayout/Context';
 import MainLayout from '@/layouts/MainLayout';
+import {
+	ConfigHeader,
+	LiveTailHeader,
+	LogsHeader,
+	QueryHeader,
+	StatsHeader,
+	UsersManagementHeader,
+} from '@/components/Header/SubHeader';
 
 export const HomeElement: FC = () => <Home />;
 
@@ -25,6 +33,7 @@ export const LogsElement: FC = () => {
 	return (
 		<SuspensePage>
 			<LogsPageProvider>
+				<LogsHeader />
 				<Logs />
 			</LogsPageProvider>
 		</SuspensePage>
@@ -37,6 +46,7 @@ export const QueryElement: FC = () => {
 	return (
 		<SuspensePage>
 			<QueryPageProvider>
+				<QueryHeader />
 				<Query />
 			</QueryPageProvider>
 		</SuspensePage>
@@ -56,6 +66,7 @@ const LiveTail = lazy(() => import('@/pages/LiveTail'));
 export const LiveTailElement: FC = () => {
 	return (
 		<SuspensePage>
+			<LiveTailHeader />
 			<LiveTail />
 		</SuspensePage>
 	);
@@ -66,6 +77,7 @@ const Stats = lazy(() => import('@/pages/Stats'));
 export const StatsElement: FC = () => {
 	return (
 		<SuspensePage>
+			<StatsHeader />
 			<Stats />
 		</SuspensePage>
 	);
@@ -76,6 +88,7 @@ const Config = lazy(() => import('@/pages/Config'));
 export const ConfigElement: FC = () => {
 	return (
 		<SuspensePage>
+			<ConfigHeader />
 			<Config />
 		</SuspensePage>
 	);
@@ -86,6 +99,7 @@ const Users = lazy(() => import('@/pages/AccessManagement'));
 export const UsersElement: FC = () => {
 	return (
 		<SuspensePage>
+			<UsersManagementHeader />
 			<Users />
 		</SuspensePage>
 	);
