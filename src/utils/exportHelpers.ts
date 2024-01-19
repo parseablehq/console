@@ -21,8 +21,8 @@ export const downloadDataAsCSV = (data: Data, filename: string) => {
 	const csvString = data
 		.map((row) =>
 			Object.values(row)
-				.map((value) => (value !== null ? value : ''))
-				.join(','),
+			.map((value) => (value !== null ? `\"${value}\"` : ''))
+			.join(','),
 		)
 		.join('\n');
 	const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
@@ -34,8 +34,7 @@ export const downloadDataAsCSV = (data: Data, filename: string) => {
 	document.body.removeChild(downloadLink);
 };
 
-// 1. makes sure no records has missing cells
-// 2. replace new line characters with ''
+// makes sure no records has missing cells
 export const sanitizeCSVData = (data: Data, headers: string[]): any[] => {
 	if (data) {
 		return data.map((d) => {
