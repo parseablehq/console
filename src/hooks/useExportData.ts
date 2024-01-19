@@ -1,4 +1,3 @@
-// import { useEffect, useState } from 'react';
 import type { Log } from '@/@types/parseable/api/query';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { useLogsPageContext } from '@/pages/Logs/Context';
