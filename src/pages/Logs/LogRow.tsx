@@ -1,4 +1,3 @@
-import { LogStreamData } from '@/@types/parseable/api/stream';
 import { parseLogData } from '@/utils';
 import { Box, px } from '@mantine/core';
 import { IconArrowNarrowRight } from '@tabler/icons-react';
@@ -11,13 +10,13 @@ const skipFields = ['p_metadata', 'p_tags'];
 
 type LogRowProps = {
 	logData: Log[];
-	logsSchema: LogStreamData;
+	headers: string[];
 	isColumnActive: (columnName: string) => boolean;
 	rowArrows?: boolean
 };
 
 const LogRow: FC<LogRowProps> = (props) => {
-	const { logData, logsSchema, isColumnActive, rowArrows } = props;
+	const { logData, headers, isColumnActive, rowArrows } = props;
 	const {
 		state: { subViewLog },
 	} = useLogsPageContext();
@@ -40,11 +39,11 @@ const LogRow: FC<LogRowProps> = (props) => {
 					 For now index is a better option for uniqueness, if you have a better way to handle this let us know
 					*/
 					<tr key={logIndex} className={logIndex % 2 ? trStyle : trEvenStyle} onClick={() => onShow(log)}>
-						{logsSchema.map((logSchema, logSchemaIndex) => {
-							if (!isColumnActive(logSchema.name) || skipFields.includes(logSchema.name)) return null;
+						{headers.map((header, logSchemaIndex) => {
+							if (!isColumnActive(header) || skipFields.includes(header)) return null;
 
 							return (
-								<td key={`${logSchema.name}-${logSchemaIndex}`}>{parseLogData(log[logSchema.name], logSchema.name)}</td>
+								<td key={`${header}-${logSchemaIndex}`}>{parseLogData(log[header], header)}</td>
 							);
 						})}
 						{

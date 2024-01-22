@@ -1,7 +1,6 @@
 import type { NavbarProps as MantineNavbarProps } from '@mantine/core';
 import { Navbar as MantineNavbar, NavLink, Select, Modal, Button, TextInput, Group } from '@mantine/core';
 import {
-	IconZoomCode,
 	IconReportAnalytics,
 	IconFileAlert,
 	IconReload,
@@ -36,7 +35,6 @@ const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 
 const isSecureConnection = window.location.protocol === 'https:';
 const links = [
-	{ icon: IconZoomCode, label: 'SQL', pathname: '/query', requiredAccess: ['Query', 'GetSchema'] },
 	{ icon: IconTableShortcut, label: 'Explore', pathname: '/logs', requiredAccess: ['Query', 'GetSchema'] },
 	...(!isSecureConnection ? [{ icon: IconTimelineEvent, label: 'Live tail', pathname: '/live-tail', requiredAccess: ['GetLiveTail'] }] : []),
 	{ icon: IconReportAnalytics, label: 'Stats', pathname: '/stats', requiredAccess: ['GetStats'] },
@@ -58,7 +56,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 
 	const [activeStream, setActiveStream] = useMountedState('');
 	const [searchValue, setSearchValue] = useMountedState('');
-	const [currentPage, setCurrentPage] = useMountedState('/query');
+	const [currentPage, setCurrentPage] = useMountedState('/logs');
 	const [deleteStream, setDeleteStream] = useMountedState('');
 	const [userSepecficStreams, setUserSepecficStreams] = useMountedState<LogStreamData | null>(null);
 	const [userSepecficAccess, setUserSepecficAccess] = useMountedState<string[] | null>(null);

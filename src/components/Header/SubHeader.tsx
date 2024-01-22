@@ -1,5 +1,5 @@
-import { Box, Header as MantineHeader } from '@mantine/core';
-import type { FC } from 'react';
+import { Box, Header as MantineHeader, px } from '@mantine/core';
+import { type FC } from 'react';
 import HeaderBreadcrumbs from './HeaderBreadcrumbs';
 import RefreshInterval from './RefreshInterval';
 import RefreshNow from './RefreshNow';
@@ -16,6 +16,8 @@ import { HEADER_HEIGHT } from '@/constants/theme';
 import { downloadDataAsCSV, downloadDataAsJson } from '@/utils/exportHelpers';
 import { useLogsPageContext } from '@/pages/Logs/Context';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
+import { ToggleButton } from '../Button/ToggleButton';
+import { IconCodeCircle } from '@tabler/icons-react';
 
 type HeaderLayoutProps = {
 	children: React.ReactNode;
@@ -35,7 +37,9 @@ const HeaderLayout: FC<HeaderLayoutProps> = (props) => {
 export const StatsHeader: FC = () => {
 	const { classes } = useLogQueryStyles();
 	const { container, innerContainer } = classes;
-
+	const {
+		methods: { resetTimeInterval },
+	} = useHeaderContext();
 	return (
 		<HeaderLayout>
 			<Box className={container}>
@@ -47,31 +51,7 @@ export const StatsHeader: FC = () => {
 
 				<Box>
 					<Box className={innerContainer}>
-						<RefreshNow />
-					</Box>
-				</Box>
-			</Box>
-		</HeaderLayout>
-	);
-};
-
-export const QueryHeader: FC = () => {
-	const { classes } = useLogQueryStyles();
-	const { container, innerContainer } = classes;
-
-	return (
-		<HeaderLayout>
-			<Box className={container}>
-				<Box>
-					<Box className={innerContainer}>
-						<HeaderBreadcrumbs crumbs={['Streams', 'streamName', 'Query']} />
-					</Box>
-				</Box>
-
-				<Box>
-					<Box className={innerContainer}>
-						<TimeRange />
-						<RefreshInterval />
+						<RefreshNow onRefresh={resetTimeInterval} />
 					</Box>
 				</Box>
 			</Box>
@@ -109,22 +89,22 @@ export const LogsHeader: FC = () => {
 	const { classes } = useLogQueryStyles();
 	const { container, innerContainer } = classes;
 	const {
-		methods: { makeExportData },
+		methods: { makeExportData, toggleShowQueryEditor },
+		state: { custQuerySearchState: {isQuerySearchActive} },
 	} = useLogsPageContext();
 	const {
 		state: { subLogQuery },
+		methods: { resetTimeInterval },
 	} = useHeaderContext();
-
 	const exportHandler = (fileType: string) => {
 		const query = subLogQuery.get();
 		const filename = `${query.streamName}-logs`;
 		if (fileType === 'CSV') {
-			downloadDataAsCSV(makeExportData('CSV'), filename)
+			downloadDataAsCSV(makeExportData('CSV'), filename);
 		} else if (fileType === 'JSON') {
-			downloadDataAsJson(makeExportData('JSON'), filename)
+			downloadDataAsJson(makeExportData('JSON'), filename);
 		}
 	};
-
 	return (
 		<HeaderLayout>
 			<Box className={container}>
@@ -137,12 +117,16 @@ export const LogsHeader: FC = () => {
 				<Box>
 					<Box className={innerContainer}>
 						<Search />
-						<RefreshNow />
-						{/* <LimitLog /> */}
-
+						<ToggleButton
+							onClick={toggleShowQueryEditor}
+							toggled={isQuerySearchActive}
+							renderIcon={() => <IconCodeCircle size={px('1.2rem')} stroke={1.5} />}
+							label="SQL"
+						/>
 						<TimeRange />
 						<RefreshInterval />
 						<Dropdown data={['JSON', 'CSV']} onChange={exportHandler} />
+						<RefreshNow onRefresh={resetTimeInterval} />
 					</Box>
 				</Box>
 			</Box>

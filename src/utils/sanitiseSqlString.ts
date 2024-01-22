@@ -1,13 +1,14 @@
 import { notify } from './notification';
+import { LOAD_LIMIT } from '@/pages/Logs/Context';
 
-export const sanitseSqlString = (sqlString: string): string => {
+export const sanitiseSqlString = (sqlString: string): string => {
 	const withoutComments = sqlString.replace(/--.*$/gm, '');
 	const withoutNewLines = withoutComments.replace(/\n/g, ' ');
 	const withoutTrailingSemicolon = withoutNewLines.replace(/;/, '');
 	const limitRegex = /limit\s+(\d+)/i;
 	if (!limitRegex.test(withoutTrailingSemicolon)) {
-		notify({ message: 'default limit used i.e - 1000' });
-		return `${withoutTrailingSemicolon.trim()} LIMIT 1000`;
+		notify({ message: `Default limit used i.e - ${LOAD_LIMIT}` });
+		return `${withoutTrailingSemicolon.trim()} LIMIT ${LOAD_LIMIT}`;
 	}
 	return withoutTrailingSemicolon;
 };

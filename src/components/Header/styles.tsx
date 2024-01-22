@@ -91,6 +91,18 @@ export const useLogQueryStyles = createStyles((theme) => {
 			},
 		},
 
+		toggleBtn: {
+			background: colors.white[0],
+			padding: '6px 12px',
+			marginRight: spacing.xs,
+			// width: '36px',
+			color: theme.colors.gray[6],
+			border: `${sizing.px} ${colors.gray[2]} solid`,
+			'&:hover': {
+				background: colors.gray[1],
+			},
+		},
+
 		timeRangeBTn: {
 			color: colors.gray[6],
 			border: `${sizing.px} ${colors.gray[2]} solid`,
@@ -101,6 +113,10 @@ export const useLogQueryStyles = createStyles((theme) => {
 			'&:hover': {
 				background: colors.gray[1],
 			},
+		},
+
+		dropdownBtn: {
+			marginRight: spacing.xs,
 		},
 
 		timeRangeContainer: {
