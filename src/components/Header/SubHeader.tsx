@@ -121,7 +121,7 @@ export const LogsHeader: FC = () => {
 							onClick={toggleShowQueryEditor}
 							toggled={isQuerySearchActive}
 							renderIcon={() => <IconCodeCircle size={px('1.2rem')} stroke={1.5} />}
-							label="Query Search"
+							label="SQL Search"
 						/>
 						<TimeRange />
 						<RefreshInterval />
