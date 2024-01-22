@@ -29,16 +29,16 @@ const ViewLog: FC = () => {
 
 	const p_metadata = useMemo(() => {
 		if (log) {
-			const metadata = log.p_metadata.split('^').filter(Boolean);
-			if (metadata.length) return metadata;
+			const metadata = log.p_metadata?.split('^').filter(Boolean);
+			if (metadata?.length) return metadata;
 		}
 		return [];
 	}, [log]);
 
 	const p_tags = useMemo(() => {
 		if (log) {
-			const tags = log.p_tags.split('^').filter(Boolean);
-			if (tags.length) return tags;
+			const tags = log.p_tags?.split('^').filter(Boolean);
+			if (tags?.length) return tags;
 		}
 		return [];
 	}, [log]);
@@ -52,17 +52,15 @@ const ViewLog: FC = () => {
 					<DataChip title="Meta Data" dataList={p_metadata} />
 					<DataChip title="Tags" dataList={p_tags} />
 					<Divider label={'Logger Message'} variant="dashed" labelPosition="center" my="lg" />
-					
+
 					<Prism
 						copyLabel="Copy"
 						language="json"
 						withLineNumbers
-						sx={{overflow: 'auto' }}
-						scrollAreaComponent={ScrollArea}
-						>
+						sx={{ overflow: 'auto' }}
+						scrollAreaComponent={ScrollArea}>
 						{JSON.stringify(log, null, 2)}
 					</Prism>
-					
 				</Box>
 			)}
 		</Drawer>
@@ -82,12 +80,15 @@ const Header: FC<HeaderProps> = (props) => {
 
 	const timeStamp = useMemo(() => dayjs(`${props.timeStamp}+00:00`).utc().format('DD/MM/YYYY (hh:mm:ss A) z'), []);
 
+	const isValidTimestamp = !isNaN(Date.parse(props.timeStamp));
 	return (
 		<Box className={headerContainer}>
-			<Box>
-				<Text className={headerTimeStampTitle}>Timestamp</Text>
-				<Text className={headerTimeStamp}>{timeStamp}</Text>
-			</Box>
+			{isValidTimestamp ? (
+				<Box>
+					<Text className={headerTimeStampTitle}>Timestamp</Text>
+					<Text className={headerTimeStamp}>{timeStamp}</Text>
+				</Box>
+			) : <Box/>}
 
 			<CloseButton iconSize={px('1.5rem')} onClick={onClose} />
 		</Box>

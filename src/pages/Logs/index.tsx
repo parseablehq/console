@@ -4,6 +4,7 @@ import { FC } from 'react';
 import LogTable from './LogTable';
 import { useLogsStyles } from './styles';
 import ViewLog from './ViewLog';
+import QueryEditor from './QueryEditor';
 // import HeaderPagination from './HeaderPagination';
 
 const Logs: FC = () => {
@@ -17,6 +18,7 @@ const Logs: FC = () => {
 			{/* <HeaderPagination /> */}
 			<LogTable />
 			<ViewLog />
+			<QueryEditor />
 		</Box>
 	);
 };

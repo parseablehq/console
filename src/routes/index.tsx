@@ -6,7 +6,6 @@ import {
 	LOGIN_ROUTE,
 	LOGS_ROUTE,
 	OIDC_NOT_CONFIGURED_ROUTE,
-	QUERY_ROUTE,
 	STATS_ROUTE,
 	USERS_MANAGEMENT_ROUTE,
 } from '@/constants/routes';
@@ -19,7 +18,6 @@ import {
 	HomeElement,
 	LoginElement,
 	LogsElement,
-	QueryElement,
 	MainLayoutElement,
 	StatsElement,
 	ConfigElement,
@@ -46,7 +44,6 @@ const AppRouter: FC = () => {
 
 						<Route element={<AccessSpecificRoute accessRequired={['Query', 'GetSchema']} />}>
 							<Route path={LOGS_ROUTE} element={<LogsElement />} />
-							<Route path={QUERY_ROUTE} element={<QueryElement />} />
 						</Route>
 						{!isSecureConnection && (
 							<Route element={<AccessSpecificRoute accessRequired={['GetLiveTail']} />}>

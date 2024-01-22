@@ -390,3 +390,102 @@ export const useCarouselSlideStyle = createStyles((theme) => {
 	}
 
 });
+
+export const useQueryStyles = createStyles((theme) => {
+	const { colors, shadows } = theme;
+	const { heights, widths } = theme.other;
+	const sColor = colors.brandSecondary[0];
+	const pColor = colors.brandPrimary[0];
+
+	return {
+		container: {
+			flex: 1,
+			display: 'flex',
+			position: 'relative',
+			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2}px)`,
+		},
+		innerContainer: {
+			position: 'relative',
+			flex: 1,
+			maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2}px)`,
+			display: 'flex',
+			flexDirection: 'column',
+			overflow: 'hidden',
+		},
+		runQueryBtn: {
+			background: pColor,
+			color: 'white',
+			height: '40px',
+			marginRight: '5px',
+			'&:hover': {
+				background: sColor,
+			},
+		},
+		actionBtn: {
+			'&:hover': {
+				color: sColor,
+			},
+			height: '25px',
+			marginRight: '5px',
+		},
+		schemaContainer: {
+			border: `${widths.px} ${colors.gray[1]} solid`,
+			boxShadow: shadows.sm,
+			maxWidth: '500px',
+		},
+	};
+});
+
+export const useQueryCodeEditorStyles = createStyles((theme) => {
+	const { colors, spacing, fontFamily, fontSizes } = theme;
+	const { fontWeights } = theme.other;
+	const sColor = colors.brandSecondary[0];
+	const pColor = colors.brandPrimary[0];
+
+	return {
+		container: {
+			display: 'flex',
+			borderBottom: `solid 1px ${colors.gray[2]}`,
+			alignItems: 'center',
+			height: '55px',
+			paddingBottom: spacing.xs,
+			width: '100%',
+			justifyContent: "space-between",
+			alignContent: "center"
+		},
+		runQueryBtn: {
+			color: pColor,
+			borderColor: colors.gray[2],
+			height: '34px',
+			'&:hover': {
+				color: sColor,
+			},
+			marginLeft: spacing.xs
+		},
+		clearQueryBtn: {
+			color: pColor,
+			borderColor: colors.gray[2],
+			height: '34px',
+			'&:hover': {
+				color: sColor,
+			},
+		},
+		actionBtn: {
+			'&:hover': {
+				color: sColor,
+			},
+			height: '34px',
+			width: '34px',
+			padding: '0px',
+			marginInlineEnd: spacing.xs,
+			color: colors.gray[5],
+			borderColor: colors.gray[2],
+		},
+		textContext: {
+			// marginRight: spacing.md,
+			fontSize: fontSizes.md,
+			fontFamily: fontFamily,
+			fontWeight: fontWeights.semibold,
+		},
+	};
+});

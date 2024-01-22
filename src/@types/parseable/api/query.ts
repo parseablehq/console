@@ -14,7 +14,7 @@ export type LogsSearch = {
 	search: string;
 	filters: Record<string, string[]>;
 	sort: {
-		field: string,
+		key: string,
 		order: SortOrder
 	}
 };

@@ -5,7 +5,7 @@ import { FIXED_DURATIONS } from '@/constants/timeConstants';
 import useSubscribeState, { SubData } from '@/hooks/useSubscribeState';
 import dayjs from 'dayjs';
 import type { FC } from 'react';
-import { ReactNode, createContext, useContext } from 'react';
+import { ReactNode, createContext, useCallback, useContext } from 'react';
 
 const Context = createContext({});
 
@@ -55,7 +55,9 @@ export type AppContext = {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface HeaderContextMethods {}
+interface HeaderContextMethods {
+	resetTimeInterval: () => void;
+}
 
 interface HeaderContextValue {
 	state: HeaderContextState;
@@ -84,7 +86,7 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 		search: '',
 		filters: {},
 		sort: {
-			field: 'p_timestamp',
+			key: 'p_timestamp',
 			order: SortOrder.DESCENDING,
 		},
 	});
@@ -115,7 +117,17 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 		subLiveTailsData,
 	};
 
-	const methods: HeaderContextMethods = {};
+	const resetTimeInterval = useCallback(() => {
+		if (subLogSelectedTimeRange.get().state==='fixed') {
+			const now = dayjs();
+			const timeDiff = subLogQuery.get().endTime.getTime() - subLogQuery.get().startTime.getTime();
+			subLogQuery.set((state) => {
+				state.startTime = now.subtract(timeDiff).toDate();
+				state.endTime = now.toDate();
+			});
+		}
+	}, []);
+	const methods: HeaderContextMethods = {resetTimeInterval};
 
 	return <Provider value={{ state, methods }}>{children}</Provider>;
 };

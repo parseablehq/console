@@ -1,5 +1,5 @@
 import { SortOrder, type Log, type LogsData, type LogsSearch } from '@/@types/parseable/api/query';
-import { getQueryLogs } from '@/api/query';
+import { getQueryLogs, getQueryResult } from '@/api/query';
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
 import { useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
@@ -12,6 +12,11 @@ type QueryLogs = {
 	endTime: Date;
 	limit: number;
 	pageOffset: number;
+};
+
+const appendOffsetToQuery = (query: string, offset: number) => {
+	const hasOffset = query.toLowerCase().includes('offset');
+	return hasOffset ? query.replace(/offset\s+\d+/i, `OFFSET ${offset}`) : `${query} OFFSET ${offset}`;
 };
 
 export const useQueryLogs = () => {
@@ -27,14 +32,16 @@ export const useQueryLogs = () => {
 		search: '',
 		filters: {},
 		sort: {
-			field: 'p_timestamp',
+			key: 'p_timestamp',
 			order: SortOrder.DESCENDING,
 		},
 	});
 	const [isPending, startTransition] = useTransition();
 	const {
-		state: { subLogQueryData },
+		state: { subLogQueryData, custQuerySearchState },
 	} = useLogsPageContext();
+
+	const { isQuerySearchActive, custSearchQuery } = custQuerySearchState;
 
 	const data: Log[] | null = useMemo(() => {
 		if (_dataRef.current) {
@@ -69,9 +76,9 @@ export const useQueryLogs = () => {
 				}
 			}
 
-			const { field, order } = sort;
+			const { key, order } = sort;
 
-			temp.sort(({ [field]: aData }, { [field]: bData }) => {
+			temp.sort(({ [key]: aData }, { [key]: bData }) => {
 				let res = 0;
 				if (aData === bData) res = 0;
 				else if (aData === null) res = -1;
@@ -145,7 +152,9 @@ export const useQueryLogs = () => {
 			setLoading(true);
 			setError(null);
 
-			const logsQueryRes = await getQueryLogs(logsQuery);
+			const logsQueryRes = isQuerySearchActive
+				? await getQueryResult({ ...logsQuery, access: [] }, appendOffsetToQuery(custSearchQuery, logsQuery.pageOffset))
+				: await getQueryLogs(logsQuery);
 
 			const data = logsQueryRes.data;
 
