@@ -134,6 +134,20 @@ export const LogsHeader: FC = () => {
 	);
 };
 
+export const HomeHeader: FC = () => {
+	const { classes } = useLogQueryStyles();
+	const { container, innerContainer } = classes;
+	return (
+		<Box className={container}>
+			<Box>
+				<Box className={innerContainer}>
+					<HeaderBreadcrumbs crumbs={['My Streams']} />
+				</Box>
+			</Box>
+		</Box>
+	);
+};
+
 export const ConfigHeader: FC = () => {
 	const { classes } = useLogQueryStyles();
 	const { container, innerContainer } = classes;

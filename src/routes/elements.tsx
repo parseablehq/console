@@ -7,13 +7,21 @@ import MainLayoutPageProvider from '@/layouts/MainLayout/Context';
 import MainLayout from '@/layouts/MainLayout';
 import {
 	ConfigHeader,
+	HomeHeader,
 	LiveTailHeader,
 	LogsHeader,
 	StatsHeader,
 	UsersManagementHeader,
 } from '@/components/Header/SubHeader';
 
-export const HomeElement: FC = () => <Home />;
+export const HomeElement: FC = () => {
+	return (
+		<SuspensePage>
+			<HomeHeader />
+			<Home />
+		</SuspensePage>
+	);
+};
 
 const Login = lazy(() => import('@/pages/Login'));
 

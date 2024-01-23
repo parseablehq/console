@@ -1,3 +1,5 @@
+import { UserRoles } from '@/layouts/MainLayout/Context';
+
 const adminAccess = [
 	'Ingest',
 	'Query',
@@ -43,11 +45,11 @@ const writerAccess = [
 const readerAccess = ['Query', 'ListStream', 'GetSchema', 'GetStats', 'GetRetention', 'GetAlert', 'GetLiveTail'];
 const ingesterAccess = ['Ingest'];
 
-const getStreamsSepcificAccess = (rolesWithRoleName: object[], stream?: string) => {
+const getStreamsSepcificAccess = (rolesWithRoleName: UserRoles, stream?: string) => {
 	let access: string[] = [];
 	let roles: any[] = [];
 	for (var prop in rolesWithRoleName) {
-		roles = [...roles, ...(rolesWithRoleName[prop] as any)];
+		roles = [...roles, ...rolesWithRoleName[prop]];
 	}
 	roles.forEach((role: any) => {
 		if (role.privilege === 'admin') {
