@@ -19,9 +19,8 @@ import { useNavbarStyles } from './styles';
 import { useLocation, useParams } from 'react-router-dom';
 import { notifications } from '@mantine/notifications';
 import { useNavigate } from 'react-router-dom';
-import { DEFAULT_FIXED_DURATIONS, useHeaderContext } from '@/layouts/MainLayout/Context';
+import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import useMountedState from '@/hooks/useMountedState';
-import dayjs from 'dayjs';
 import { useDisclosure } from '@mantine/hooks';
 import { USERS_MANAGEMENT_ROUTE } from '@/constants/routes';
 import InfoModal from './infoModal';
@@ -36,7 +35,9 @@ const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 const isSecureConnection = window.location.protocol === 'https:';
 const links = [
 	{ icon: IconTableShortcut, label: 'Explore', pathname: '/logs', requiredAccess: ['Query', 'GetSchema'] },
-	...(!isSecureConnection ? [{ icon: IconTimelineEvent, label: 'Live tail', pathname: '/live-tail', requiredAccess: ['GetLiveTail'] }] : []),
+	...(!isSecureConnection
+		? [{ icon: IconTimelineEvent, label: 'Live tail', pathname: '/live-tail', requiredAccess: ['GetLiveTail'] }]
+		: []),
 	{ icon: IconReportAnalytics, label: 'Stats', pathname: '/stats', requiredAccess: ['GetStats'] },
 	{ icon: IconSettings, label: 'Config', pathname: '/config', requiredAccess: ['PutAlert'] },
 ];
@@ -51,12 +52,14 @@ const Navbar: FC<NavbarProps> = (props) => {
 	const username = Cookies.get('username');
 
 	const {
-		state: { subNavbarTogle },
+		state: { subNavbarTogle, subAppContext },
+		methods: { streamChangeCleanup, setUserRoles, setSelectedStream },
 	} = useHeaderContext();
 
-	const [activeStream, setActiveStream] = useMountedState('');
+	const selectedStream = subAppContext.get().selectedStream;
+	// const [selectedStream, setSelectedStream] = useMountedState('');
 	const [searchValue, setSearchValue] = useMountedState('');
-	const [currentPage, setCurrentPage] = useMountedState('/logs');
+	const [currentPage, setCurrentPage] = useMountedState('/');
 	const [deleteStream, setDeleteStream] = useMountedState('');
 	const [userSepecficStreams, setUserSepecficStreams] = useMountedState<LogStreamData | null>(null);
 	const [userSepecficAccess, setUserSepecficAccess] = useMountedState<string[] | null>(null);
@@ -85,16 +88,16 @@ const Navbar: FC<NavbarProps> = (props) => {
 		window.location.href = `${baseURL}api/v1/o/logout?redirect=${window.location.origin}/login`;
 	};
 
-	const {
-		state: { subLogQuery, subLogSelectedTimeRange, subLogSearch, subRefreshInterval },
-	} = useHeaderContext();
-
 	useEffect(() => {
 		if (location.pathname.split('/')[2]) {
 			setCurrentPage(`/${location.pathname.split('/')[2]}`);
 		}
-		if (userSepecficStreams && userSepecficStreams.length === 0) {
-			setActiveStream('');
+		if (location.pathname === '/') {
+			setSelectedStream('');
+			setCurrentPage('/');
+			setUserSepecficAccess(getStreamsSepcificAccess(getUserRolesData?.data));
+		} else if (userSepecficStreams && userSepecficStreams.length === 0) {
+			setSelectedStream('');
 			setSearchValue('');
 			setDisableLink(true);
 			navigate('/');
@@ -126,33 +129,19 @@ const Navbar: FC<NavbarProps> = (props) => {
 	}, [userSepecficStreams]);
 
 	const handleChange = (value: string, page: string = currentPage) => {
-		handleChangeWithoutRiderection(value, page);
+		const targetPage = page === '/' ? '/logs' : page;
+		handleChangeWithoutRiderection(value, targetPage);
+		setUserSepecficAccess(getStreamsSepcificAccess(getUserRolesData?.data, value));
 		if (page !== '/users') {
-			navigate(`/${value}${page}`);
+			navigate(`/${value}${targetPage}`);
 		}
 	};
 
 	const handleChangeWithoutRiderection = (value: string, page: string = currentPage) => {
-		setActiveStream(value);
+		setSelectedStream(value);
 		setSearchValue(value);
 		setCurrentPage(page);
-		const now = dayjs();
-		setUserSepecficAccess(getStreamsSepcificAccess(getUserRolesData?.data, value));
-		subLogQuery.set((state) => {
-			state.streamName = value || '';
-			state.startTime = now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate();
-			state.endTime = now.toDate();
-			state.access = getStreamsSepcificAccess(getUserRolesData?.data, value);
-		});
-		subLogSelectedTimeRange.set((state) => {
-			state.state = 'fixed';
-			state.value = DEFAULT_FIXED_DURATIONS.name;
-		});
-		subLogSearch.set((state) => {
-			state.search = '';
-			state.filters = {};
-		});
-		subRefreshInterval.set(null);
+		streamChangeCleanup(value);
 		setDisableLink(false);
 	};
 	const handleCloseDelete = () => {
@@ -167,6 +156,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 
 	useEffect(() => {
 		if (getLogStreamListData?.data && getLogStreamListData?.data.length > 0 && getUserRolesData?.data) {
+			getUserRolesData?.data && setUserRoles(getUserRolesData?.data); // TODO: move user context main context
 			const userStreams = getUserSepcificStreams(getUserRolesData?.data, getLogStreamListData?.data as any);
 			setUserSepecficStreams(userStreams as any);
 		} else {
@@ -209,10 +199,10 @@ const Navbar: FC<NavbarProps> = (props) => {
 					placeholder="Pick one"
 					onChange={(value) => handleChange(value || '')}
 					nothingFound="No options"
-					value={activeStream}
+					value={selectedStream}
 					searchValue={searchValue}
 					onSearchChange={(value) => setSearchValue(value)}
-					onDropdownClose={() => setSearchValue(activeStream)}
+					onDropdownClose={() => setSearchValue(selectedStream)}
 					onDropdownOpen={() => setSearchValue('')}
 					data={userSepecficStreams?.map((stream: any) => ({ value: stream.name, label: stream.name })) ?? []}
 					searchable
@@ -231,8 +221,9 @@ const Navbar: FC<NavbarProps> = (props) => {
 				)}
 				{links.map((link) => {
 					if (
-						link.requiredAccess &&
-						!userSepecficAccess?.some((access: string) => link.requiredAccess.includes(access))
+						(link.requiredAccess &&
+							!userSepecficAccess?.some((access: string) => link.requiredAccess.includes(access))) ||
+						selectedStream === ''
 					) {
 						return null;
 					}
@@ -243,14 +234,15 @@ const Navbar: FC<NavbarProps> = (props) => {
 							sx={{ paddingLeft: 53 }}
 							disabled={disableLink}
 							onClick={() => {
-								handleChange(activeStream, link.pathname);
+								handleChange(selectedStream, link.pathname);
 							}}
 							key={link.label}
 							className={(currentPage === link.pathname && linkBtnActive) || linkBtn}
 						/>
 					);
 				})}
-				{!userSepecficAccess?.some((access: string) => ['DeleteStream'].includes(access)) ? null : (
+				{!userSepecficAccess?.some((access: string) => ['DeleteStream'].includes(access)) ||
+				selectedStream === '' ? null : (
 					<NavLink
 						label={'Delete'}
 						icon={<IconTrash size="1.3rem" stroke={1.2} />}
@@ -305,14 +297,14 @@ const Navbar: FC<NavbarProps> = (props) => {
 					onChange={(e) => {
 						setDeleteStream(e.target.value);
 					}}
-					placeholder={`Type the name of the stream to confirm. i.e. ${activeStream}`}
+					placeholder={`Type the name of the stream to confirm. i.e. ${selectedStream}`}
 					required
 				/>
 
 				<Group mt={10} position="right">
 					<Button
 						className={modalActionBtn}
-						disabled={deleteStream === activeStream ? false : true}
+						disabled={deleteStream === selectedStream ? false : true}
 						onClick={handleDelete}>
 						Delete
 					</Button>

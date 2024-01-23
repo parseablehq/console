@@ -38,3 +38,13 @@ export type LogSelectedTimeRange = {
 	state : "fixed"| "custom";
 	value : string;
 };
+
+export type UserRoles = {
+	roleName: {
+		privilege: string;
+		resource?: {
+			stream: string;
+			tag: string;
+		};
+	}[];
+};

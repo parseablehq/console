@@ -1,6 +1,7 @@
 import { AboutData } from '@/@types/parseable/api/about';
 import { SortOrder, type LogsQuery, type LogsSearch, type LogSelectedTimeRange } from '@/@types/parseable/api/query';
 import { LogStreamData } from '@/@types/parseable/api/stream';
+import { getStreamsSepcificAccess } from '@/components/Navbar/rolesHandler';
 import { FIXED_DURATIONS } from '@/constants/timeConstants';
 import useSubscribeState, { SubData } from '@/hooks/useSubscribeState';
 import dayjs from 'dayjs';
@@ -35,7 +36,7 @@ interface HeaderContextState {
 }
 
 export type UserRoles = {
-	roleName: {
+	[roleName: string]: {
 		privilege: string;
 		resource?: {
 			stream: string;
@@ -47,7 +48,7 @@ export type UserRoles = {
 export type PageOption = '/' | '/explore' | '/sql' | '/management' | '/team';
 
 export type AppContext = {
-	selectedStream: string | null;
+	selectedStream: string;
 	activePage: PageOption | null;
 	action: string[] | null;
 	userSpecificStreams: string[] | null;
@@ -57,6 +58,9 @@ export type AppContext = {
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface HeaderContextMethods {
 	resetTimeInterval: () => void;
+	streamChangeCleanup: (streamName: string) => void;
+	setUserRoles: (userRoles: UserRoles) => void;
+	setSelectedStream: (stream: string) => void;
 }
 
 interface HeaderContextValue {
@@ -70,7 +74,7 @@ interface HeaderProviderProps {
 
 const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 	const subAppContext = useSubscribeState<AppContext>({
-		selectedStream: null,
+		selectedStream: '',
 		activePage: null,
 		action: null,
 		userSpecificStreams: null,
@@ -118,7 +122,7 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 	};
 
 	const resetTimeInterval = useCallback(() => {
-		if (subLogSelectedTimeRange.get().state==='fixed') {
+		if (subLogSelectedTimeRange.get().state === 'fixed') {
 			const now = dayjs();
 			const timeDiff = subLogQuery.get().endTime.getTime() - subLogQuery.get().startTime.getTime();
 			subLogQuery.set((state) => {
@@ -127,7 +131,39 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 			});
 		}
 	}, []);
-	const methods: HeaderContextMethods = {resetTimeInterval};
+
+	const streamChangeCleanup = useCallback((stream: string) => {
+		const now = dayjs();
+		subLogQuery.set((state) => {
+			state.streamName = stream;
+			state.startTime = now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate();
+			state.endTime = now.toDate();
+			state.access = getStreamsSepcificAccess(subAppContext.get().userRoles || {}, stream);
+		});
+		subLogSelectedTimeRange.set((state) => {
+			state.state = 'fixed';
+			state.value = DEFAULT_FIXED_DURATIONS.name;
+		});
+		subLogSearch.set((state) => {
+			state.search = '';
+			state.filters = {};
+		});
+		subRefreshInterval.set(null);
+	}, []);
+
+	const setUserRoles = useCallback((userRoles: UserRoles) => {
+		subAppContext.set((state) => {
+			state.userRoles = userRoles;
+		});
+	}, []);
+
+	const setSelectedStream = useCallback((stream: string) => {
+		subAppContext.set((state) => {
+			state.selectedStream = stream;
+		});
+	}, []);
+
+	const methods: HeaderContextMethods = { resetTimeInterval, streamChangeCleanup, setUserRoles, setSelectedStream };
 
 	return <Provider value={{ state, methods }}>{children}</Provider>;
 };
