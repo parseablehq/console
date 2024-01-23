@@ -149,6 +149,9 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 			state.filters = {};
 		});
 		subRefreshInterval.set(null);
+		subAppContext.set((state) => {
+			state.selectedStream = stream;
+		});
 	}, []);
 
 	const setUserRoles = useCallback((userRoles: UserRoles) => {

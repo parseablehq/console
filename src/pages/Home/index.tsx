@@ -75,8 +75,10 @@ const BigNumber = (props: { label: string; value: any; color?: string }) => {
 	const { classes } = cardStyles();
 
 	return (
-		<Box className={classes.streamBoxCol}>
-			<Text size="xs">{props.label}</Text>
+		<Box className={classes.streamBoxCol} sx={{ width: '12%' }}>
+			<Text size="xs" style={{ color: 'black' }}>
+				{props.label}
+			</Text>
 			<Text fw={700} size={'xl'} c={props.color || 'black'}>
 				{props.value}
 			</Text>
@@ -106,6 +108,8 @@ const calcCompressionRate = (storageSize: string, ingestionSize: string) => {
 
 	if (parsedIngestionSize === null || parsedStorageSize === null) return '–';
 
+	if (parsedIngestionSize === 0) return '0%';
+
 	const rate = (100 - (parsedStorageSize / parsedIngestionSize) * 100).toPrecision(4);
 	return `${rate}%`;
 };
@@ -126,7 +130,7 @@ const StreamInfo: FC<StreamInfoProps> = (props) => {
 		data: { stats = {}, retention = [] },
 		navigateToStream,
 	} = props;
-	const streamRetention = retention?.length ? retention[0].duration : '–';
+	const streamRetention = retention?.length ? retention[0].duration : 'Not Set';
 	const ingestionCount = (stats as LogStreamStat)?.ingestion?.count;
 	const ingestionSize = (stats as LogStreamStat)?.ingestion?.size;
 	const storageSize = (stats as LogStreamStat)?.storage?.size;
@@ -138,17 +142,26 @@ const StreamInfo: FC<StreamInfoProps> = (props) => {
 			}}
 			w="100%">
 			<Box style={{ width: 200 }}>
-				<BigNumber label={'Stream'} value={stream} />
+				<Box className={classes.streamBoxCol}>
+					<Text size="xs" style={{ color: 'black' }}>
+						{'Stream'}
+					</Text>
+					<Text fw={700} size={'lg'} style={{ color: 'black' }}>
+						{stream}
+					</Text>
+				</Box>
 			</Box>
-			<BigNumber label={'Events'} value={sanitizeCount(ingestionCount)} color="blue" />
-			<BigNumber label={'Ingestion'} value={sanitizeBytes(ingestionSize)} color="blue" />
-			<BigNumber label={'Storage'} value={sanitizeBytes(storageSize)} color="orange" />
-			<BigNumber label={'Compression'} value={calcCompressionRate(storageSize, ingestionSize)} color="blue" />
-			<BigNumber label={'Retention'} value={streamRetention} color={retention?.length ? 'indigo' : 'red'} />
+			<BigNumber label={'Events'} value={sanitizeCount(ingestionCount)} />
+			<BigNumber label={'Ingestion'} value={sanitizeBytes(ingestionSize)} />
+			<BigNumber label={'Storage'} value={sanitizeBytes(storageSize)} />
+			<BigNumber label={'Compression'} value={calcCompressionRate(storageSize, ingestionSize)} />
+			<BigNumber label={'Retention'} value={streamRetention} />
 			<Flex style={{ flex: 1, justifyContent: 'flex-end' }}>
-				<ActionIcon variant="transparent" color="black" size={50}>
-					<IconChevronRight stroke={1} />
-				</ActionIcon>
+				<Box sx={{ width: '15%' }}>
+					<ActionIcon variant="transparent" color="black" size={50}>
+						<IconChevronRight stroke={1} />
+					</ActionIcon>
+				</Box>
 			</Flex>
 		</Group>
 	);
