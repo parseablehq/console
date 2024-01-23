@@ -57,7 +57,6 @@ const Navbar: FC<NavbarProps> = (props) => {
 	} = useHeaderContext();
 
 	const selectedStream = subAppContext.get().selectedStream;
-	// const [selectedStream, setSelectedStream] = useMountedState('');
 	const [searchValue, setSearchValue] = useMountedState('');
 	const [currentPage, setCurrentPage] = useMountedState('/');
 	const [deleteStream, setDeleteStream] = useMountedState('');
