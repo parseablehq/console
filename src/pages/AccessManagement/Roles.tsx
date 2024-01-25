@@ -56,7 +56,7 @@ const Roles: FC = () => {
 		};
 	}, []);
 
-	let rows =
+	const rows =
 		getRolesIsSuccess && getRolesData?.data ? (
 			getRolesData?.data.map((role: any) => {
 				return (
@@ -108,7 +108,7 @@ const Roles: FC = () => {
 	};
 
 	const handleCreateRole = () => {
-		let userRole: any = [];
+		const userRole: any = [];
 		if (selectedPrivilege === 'admin' || selectedPrivilege === 'editor') {
 			userRole?.push({
 				privilege: selectedPrivilege,
@@ -135,6 +135,7 @@ const Roles: FC = () => {
 			}
 		}
 		updateRoleMutation({ userName: createRoleInput, privilege: userRole });
+		getRolesRefetch();
 		handleClose();
 	};
 
@@ -258,7 +259,7 @@ const Roles: FC = () => {
 					</Button>
 				</Group>
 			</Modal>
-			<Modal opened={modalOpen} onClose={handleClose} title="Create user" centered className={classes.modalStyle}>
+			<Modal opened={modalOpen} onClose={handleClose} title="Create Role" centered className={classes.modalStyle}>
 				<Stack>
 					<TextInput
 						type="text"
