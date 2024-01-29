@@ -1,3 +1,4 @@
+import { signOutHandler } from '@/utils';
 import axios from 'axios';
 
 const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
@@ -12,5 +13,18 @@ instance.interceptors.request.use(
 		return Promise.reject(error);
 	},
 );
+
+instance.interceptors.response.use(
+	(response) => {
+	  return response;
+	},
+	(error) => {
+		const status = error.status || (error.response ? error.response.status : 0);
+		if (status === 403 || status === 401) {
+			signOutHandler();
+		}
+		return Promise.reject(error);
+	}
+  );
 
 export const Axios = () => instance;
