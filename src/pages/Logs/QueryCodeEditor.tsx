@@ -95,6 +95,14 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 		updateQuery(props.inputRef.current);
 	}, []);
 
+	function handleEditorDidMount(editor: any, monaco: any) {
+		editorRef.current = editor;
+		monacoRef.current = monaco;
+		editor.addCommand(monaco.KeyMod.CtrlCmd + monaco.KeyCode.Enter, async () => {
+			runQuery(props.inputRef.current);
+		});
+	}
+
 	const runQuery = (inputQuery: string) => {
 		const query = sanitiseSqlString(inputQuery);
 		const parsedQuery = query.replace(/(\r\n|\n|\r)/gm, '');
@@ -193,6 +201,7 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 						mouseWheelZoom: true,
 						padding: { top: 8 },
 					}}
+					onMount={handleEditorDidMount}
 				/>
 			</Box>
 		</Box>
@@ -214,13 +223,13 @@ const SchemaList = (props: { currentStreamName: string; fields: Field[] }) => {
 				}}>{`/* Schema for ${currentStreamName}`}</Text>
 			<Flex sx={{ alignItems: 'flex-start', padding: 6, paddingTop: 4 }}>
 				<Box sx={{ width: '50%' }}>
-					{leftColumns.map((config) => {
-						return <Text sx={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>;
+					{leftColumns.map((config, index) => {
+						return <Text key={index} sx={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>;
 					})}
 				</Box>
 				<Box sx={{ width: '50%' }}>
-					{rightColumns.map((config) => {
-						return <Text sx={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>;
+					{rightColumns.map((config, index) => {
+						return <Text key={index} sx={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>;
 					})}
 				</Box>
 			</Flex>
