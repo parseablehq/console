@@ -30,7 +30,7 @@ import Cookies from 'js-cookie';
 import { NAVBAR_WIDTH } from '@/constants/theme';
 import { useUser } from '@/hooks/useUser';
 import { useLogStream } from '@/hooks/useLogStream';
-const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
+import { signOutHandler } from '@/utils';
 
 const isSecureConnection = window.location.protocol === 'https:';
 const links = [
@@ -79,13 +79,6 @@ const Navbar: FC<NavbarProps> = (props) => {
 			listener();
 		};
 	}, [subNavbarTogle.get()]);
-
-	const onSignOut = () => {
-		Cookies.remove('session');
-		Cookies.remove('username');
-
-		window.location.href = `${baseURL}api/v1/o/logout?redirect=${window.location.origin}/login`;
-	};
 
 	useEffect(() => {
 		if (location.pathname.split('/')[2]) {
@@ -279,7 +272,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 					icon={<IconLogout size="1.3rem" stroke={1.3} />}
 					className={actionBtn}
 					component="a"
-					onClick={onSignOut}
+					onClick={signOutHandler}
 				/>
 			</MantineNavbar.Section>
 			<Modal

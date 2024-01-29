@@ -1,6 +1,9 @@
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
+import Cookies from 'js-cookie';
+
+export const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 
 export const wait = (sec = 1) => new Promise<void>((res) => setTimeout(res, sec * 1000));
 
@@ -56,4 +59,10 @@ export const generateQueryParam = (obj: object) => {
 	const base64 = btoa(stringObj);
 	const endcodedBase64 = base64.replaceAll('+', '.').replaceAll('/', '_').replaceAll('=', '-');
 	return `?q=${endcodedBase64}`;
+};
+
+export const signOutHandler = () => {
+	Cookies.remove('session');
+	Cookies.remove('username');
+	window.location.href = `${baseURL}api/v1/o/logout?redirect=${window.location.origin}/login`;
 };
