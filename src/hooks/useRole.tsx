@@ -1,6 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { IconCheck, IconFileAlert } from '@tabler/icons-react';
-import { notifyApi } from '@/utils/notification';
 import { deleteRole, getDefaultRole, getRole, getRoles, putDeafultRole, putRole } from '@/api/roles';
 import Cookies from 'js-cookie';
 
@@ -14,29 +12,7 @@ export const useRole = () => {
 		isError: updateRoleIsError,
 		isLoading: updateRoleIsLoading,
 		data: updateRoleData,
-	} = useMutation((data: { userName: string; privilege: object[] }) => putRole(data.userName, data.privilege), {
-		onSuccess: () => {
-			notifyApi({
-				color: 'green',
-				title: 'Role was udpated',
-				message: 'Successfully updated',
-				icon: <IconCheck size="1rem" />,
-				autoClose: 8000,
-			});
-		},
-		onError: () => {
-			notifyApi(
-				{
-					color: 'red',
-					title: 'Error occurred',
-					message: 'Error occurred while updating role',
-					icon: <IconFileAlert size="1rem" />,
-					autoClose: 2000,
-				},
-				true,
-			);
-		},
-	});
+	} = useMutation((data: { userName: string; privilege: object[] }) => putRole(data.userName, data.privilege), {});
 
 	const {
 		mutate: deleteRoleMutation,
@@ -44,26 +20,7 @@ export const useRole = () => {
 		isError: deleteRoleIsError,
 		isLoading: deleteRoleIsLoading,
 	} = useMutation((data: { roleName: string }) => deleteRole(data.roleName), {
-		onSuccess: () => {
-			notifyApi({
-				color: 'green',
-				title: 'Role was deleted',
-				message: 'Successfully Deleted',
-				icon: <IconCheck size="1rem" />,
-				autoClose: 8000,
-			});
-		},
 		onError: () => {
-			notifyApi(
-				{
-					color: 'red',
-					title: 'Error occurred',
-					message: 'Error occurred while deleting role',
-					icon: <IconFileAlert size="1rem" />,
-					autoClose: 2000,
-				},
-				true,
-			);
 			queryClient.invalidateQueries(['fetch-roles']);
 		},
 	});
@@ -75,14 +32,6 @@ export const useRole = () => {
 		isLoading: getRolesIsLoading,
 		refetch: getRolesRefetch,
 	} = useQuery(['fetch-roles', username, updateRoleIsSuccess, deleteRoleIsSuccess], () => getRoles(), {
-		onError: () => {
-			notifyApi({
-				color: 'red',
-				message: 'Failed to get Roles',
-				icon: <IconFileAlert size="1rem" />,
-			});
-		},
-		onSuccess: () => {},
 		retry: false,
 		refetchOnWindowFocus: false,
 	});
@@ -94,14 +43,6 @@ export const useRole = () => {
 		isLoading: getRoleIsLoading,
 		mutate: getRoleMutation,
 	} = useMutation((data: { roleName: string }) => getRole(data?.roleName), {
-		onError: () => {
-			notifyApi({
-				color: 'red',
-				message: 'Failed to get Roles',
-				icon: <IconFileAlert size="1rem" />,
-			});
-		},
-		onSuccess: () => {},
 		retry: false,
 	});
 
@@ -112,14 +53,6 @@ export const useRole = () => {
 		isLoading: updateDefaultRoleIsLoading,
 		mutate: updateDefaultRoleMutation,
 	} = useMutation((data: { roleName: string }) => putDeafultRole(data?.roleName), {
-		onError: () => {
-			notifyApi({
-				color: 'red',
-				message: 'Failed to get Roles',
-				icon: <IconFileAlert size="1rem" />,
-			});
-		},
-		onSuccess: () => {},
 		retry: false,
 	});
 
@@ -130,14 +63,6 @@ export const useRole = () => {
 		isLoading: getDefaultRoleIsLoading,
 		mutate: getDefaultRoleMutation,
 	} = useMutation(() => getDefaultRole(), {
-		onError: () => {
-			notifyApi({
-				color: 'red',
-				message: 'Failed to get Roles',
-				icon: <IconFileAlert size="1rem" />,
-			});
-		},
-		onSuccess: () => {},
 		retry: false,
 	});
 
