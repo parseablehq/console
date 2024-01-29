@@ -159,7 +159,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 			const userStreams = getUserSepcificStreams(getUserRolesData?.data, getLogStreamListData?.data as any);
 			setUserSepecficStreams(userStreams as any);
 		} else {
-			setUserSepecficStreams([]);
+			setUserSepecficStreams(null);
 			setUserSepecficAccess(getStreamsSepcificAccess(getUserRolesData?.data));
 		}
 	}, [getUserRolesData?.data, getLogStreamListData?.data]);
