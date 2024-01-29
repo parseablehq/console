@@ -99,7 +99,7 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 		editorRef.current = editor;
 		monacoRef.current = monaco;
 		editor.addCommand(monaco.KeyMod.CtrlCmd + monaco.KeyCode.Enter, async () => {
-			runQuery(query);
+			runQuery(props.inputRef.current);
 		});
 	}
 
