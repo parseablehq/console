@@ -1,7 +1,5 @@
 import { getLogStreamList } from '@/api/logStream';
 import { useQuery } from 'react-query';
-import { IconFileAlert, IconCheck } from '@tabler/icons-react';
-import { notifyApi } from '@/utils/notification';
 import { AxiosError, isAxiosError } from 'axios';
 import Cookies from 'js-cookie';
 
@@ -24,21 +22,7 @@ export const useGetLogStreamList = () => {
 				if (data.response && data.response.status === 401) {
 					logout();
 				}
-				notifyApi({
-					color: 'red',
-					message: 'Failed to get log streams alert',
-					icon: <IconFileAlert size="1rem" />,
-				});
 			}
-		},
-		onSuccess: () => {
-			notifyApi({
-				color: 'green',
-				title: 'Streams was loaded',
-				message: 'Successfully Loaded',
-				icon: <IconCheck size="1rem" />,
-				autoClose: 1000,
-			});
 		},
 		retry: false,
 		refetchOnWindowFocus: false,
