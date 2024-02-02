@@ -51,7 +51,7 @@ const Users: FC = () => {
 
 	const { getRolesData } = useRole();
 
-	let rows =
+	const rows =
 		getUserIsSuccess && getUserData?.data ? (
 			getUserData?.data.map((user: any) => {
 				return (
@@ -88,7 +88,7 @@ const Users: FC = () => {
 	};
 
 	const handleCreateUser = () => {
-		let userRole: any = [];
+		const userRole: any = [];
 		if (SelectedRole !== '') {
 			userRole.push(SelectedRole);
 		}
@@ -201,7 +201,7 @@ const Users: FC = () => {
 						color="gray"
 						className={classes.modalActionBtn}
 						onClick={handleCreateUser}
-						disabled={createVaildtion()}>
+						disabled={createVaildtion() || !!createUserData?.data}>
 						Create
 					</Button>
 					<Button onClick={handleClose} variant="outline" color="gray" className={classes.modalCancelBtn}>
