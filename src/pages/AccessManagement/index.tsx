@@ -6,7 +6,7 @@ import Roles from './Roles';
 const AccessMangement: FC = () => {
 	return (
 		<Box
-			sx={{
+			style={{
 				display: 'flex',
 				width: '100%',
 			}}>

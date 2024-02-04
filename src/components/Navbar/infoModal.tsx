@@ -43,7 +43,7 @@ const HelpCard: FC<HelpCardProps> = (props) => {
 	const { HelpIconBox } = classes;
 
 	return (
-		<Tooltip label={data.description} position="bottom" withArrow sx={{ color: 'white', backgroundColor: 'black' }}>
+		<Tooltip label={data.description} position="bottom" withArrow style={{ color: 'white', backgroundColor: 'black' }}>
 			<Button className={HelpIconBox} component={'a'} href={data.href} target="_blank">
 				<data.icon size={px('1.2rem')} stroke={1.5} />
 			</Button>

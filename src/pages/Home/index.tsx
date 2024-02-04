@@ -74,7 +74,7 @@ export default Home;
 
 const BigNumber = (props: { label: string; value: any; color?: string }) => {
 	return (
-		<Box className={cardStyles.streamBoxCol} sx={{ width: '12%' }}>
+		<Box className={cardStyles.streamBoxCol} style={{ width: '12%' }}>
 			<Text size="xs" style={{ color: 'black' }}>
 				{props.label}
 			</Text>
@@ -156,7 +156,7 @@ const StreamInfo: FC<StreamInfoProps> = (props) => {
 			<BigNumber label={'Compression'} value={calcCompressionRate(storageSize, ingestionSize)} />
 			<BigNumber label={'Retention'} value={streamRetention} />
 			<Flex style={{ flex: 1, justifyContent: 'flex-end' }}>
-				<Box sx={{ width: '15%' }}>
+				<Box style={{ width: '15%' }}>
 					<ActionIcon variant="transparent" color="black" size={50}>
 						<IconChevronRight stroke={1} />
 					</ActionIcon>

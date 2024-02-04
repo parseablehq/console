@@ -169,7 +169,7 @@ const HeaderPagination: FC = () => {
 	return (
 		<Box
 			h={105}
-			sx={{
+			style={{
 				overflow: 'hidden',
 			}}>
 			{gapMinute === 0 || queryCountLoading ? (
@@ -219,7 +219,7 @@ const HeaderPagination: FC = () => {
 
 						<Carousel.Slide>
 							<Button
-								sx={{
+								style={{
 									backgroundColor: '#fff',
 									color: '#211F1F',
 									border: '1px solid #ccc',

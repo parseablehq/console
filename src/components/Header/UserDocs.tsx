@@ -8,7 +8,7 @@ const DocsUser: FC = () => {
 	const { refreshNowBtn } = classes;
 
 	return (
-        <Tooltip label={'Docs'} sx={{ color: 'white', backgroundColor: 'black' }} withArrow position="left">
+        <Tooltip label={'Docs'} style={{ color: 'white', backgroundColor: 'black' }} withArrow position="left">
         <Button
             variant="default"
             className={refreshNowBtn}

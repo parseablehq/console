@@ -17,7 +17,7 @@ const Login: FC = () => {
 
 	return (
 		<Box
-			sx={{
+			style={{
 				display: 'flex',
 				flexDirection: 'row',
 				width: '100vw',
@@ -25,7 +25,7 @@ const Login: FC = () => {
 			<Box className={sideContainer}>
 				<Image width={250} src={logo} />
 				<Box
-					sx={{
+					style={{
 						height: '100%',
 						display: 'flex',
 						flexDirection: 'column',
@@ -77,7 +77,7 @@ const Login: FC = () => {
 
 							{/* <ForgotPassword /> */}
 
-							<Divider label=" Or  " labelPosition="center" my="md" sx={{ width: '100%' }} />
+							<Divider label=" Or  " labelPosition="center" my="md" style={{ width: '100%' }} />
 
 							<Button
 								mt={rem(10)}
@@ -85,7 +85,7 @@ const Login: FC = () => {
 								href={`${baseURL}api/v1/o/login?redirect=${window.location.origin}`}
 								variant="outline"
 								color="brandPrimary.0"
-								sx={({ colors }) => ({
+								style={({ colors }) => ({
 									color: colors.brandPrimary[0],
 									borderColor: colors.brandPrimary[0],
 									'&:hover': {

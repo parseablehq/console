@@ -175,7 +175,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				) : getUserRolesData?.data ? (
 					<>
 						{getBadges()}
-						<Tooltip label={'Add a Role'} sx={{ color: 'white', backgroundColor: 'black' }} withArrow position="right">
+						<Tooltip label={'Add a Role'} style={{ color: 'white', backgroundColor: 'black' }} withArrow position="right">
 							<Badge color="green" onClick={openEditModal}>
 								<IconPlus size={rem(10)} />
 							</Badge>
@@ -187,7 +187,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 			</td>
 			<td>
 				<Box style={{ height: '100%', width: '100%', whiteSpace: 'nowrap', textAlign: 'center' }}>
-					<Tooltip label={'Delete'} sx={{ color: 'white', backgroundColor: 'black' }} withArrow position="right">
+					<Tooltip label={'Delete'} style={{ color: 'white', backgroundColor: 'black' }} withArrow position="right">
 						<Button
 							variant="default"
 							className={classes.actionBtn}
@@ -204,7 +204,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				<Box style={{ height: '100%', width: '100%', whiteSpace: 'nowrap', textAlign: 'center' }}>
 					<Tooltip
 						label={user.method !== 'native' ? 'Cannot reset password for this user' : 'Reset Password'}
-						sx={{ color: 'white', backgroundColor: 'black' }}
+						style={{ color: 'white', backgroundColor: 'black' }}
 						withArrow
 						position="right">
 						<Button

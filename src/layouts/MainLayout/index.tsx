@@ -13,7 +13,7 @@ const MainLayout: FC = () => {
 			<Box style={{ display: 'flex', height: `calc(${heights.full} - ${HEADER_HEIGHT}px)` }}>
 				<Navbar w={NAVBAR_WIDTH} />
 				<Box
-					sx={{
+					style={{
 						width: `calc(100% - ${NAVBAR_WIDTH}px)`,
 						display: 'flex',
 						flexDirection: 'column',

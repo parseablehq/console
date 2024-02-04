@@ -41,7 +41,7 @@ const RefreshInterval: FC = () => {
 				</Button>
 			</Menu.Target>
 			<Menu.Dropdown
-				sx={{
+				style={{
 					zIndex: 1000,
 				}}>
 				{REFRESH_INTERVALS.map((interval) => {

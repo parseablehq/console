@@ -119,7 +119,7 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 				<Box style={{ height: '100%', display: 'flex', textAlign: 'right', alignItems: 'center' }}>
 					<Tooltip
 						label={'Click to exit editor and reset search'}
-						sx={{ color: 'white', backgroundColor: 'black' }}
+						style={{ color: 'white', backgroundColor: 'black' }}
 						withArrow
 						position="right">
 						<Button
@@ -133,7 +133,7 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 					</Tooltip>
 					<Tooltip
 						label={'Click to run query or ctrl + enter '}
-						sx={{ color: 'white', backgroundColor: 'black' }}
+						style={{ color: 'white', backgroundColor: 'black' }}
 						withArrow
 						position="right">
 						<Button
@@ -148,7 +148,7 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 					</Tooltip>
 				</Box>
 			</Box>
-			<Box sx={{ marginTop: 16, marginBottom: 8 }}>
+			<Box style={{ marginTop: 16, marginBottom: 8 }}>
 				{localLlmActive ? (
 					<TextInput
 						type="text"
@@ -158,7 +158,7 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 						onChange={(e) => setAiQuery(e.target.value)}
 						placeholder="Enter plain text to generate SQL query using OpenAI"
 						rightSectionWidth={'auto'}
-						sx={{
+						style={{
 							'& .mantine-Input-input': {
 								border: 'none',
 								borderRadius: 0,
@@ -186,7 +186,7 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 			<Box>
 				<SchemaList {...{ currentStreamName, fields }} />
 			</Box>
-			<Box sx={{ height: 'calc(100% - 400px)' }}>
+			<Box style={{ height: 'calc(100% - 400px)' }}>
 				<Editor
 					defaultLanguage="sql"
 					value={query}
@@ -216,24 +216,24 @@ const SchemaList = (props: { currentStreamName: string; fields: Field[] }) => {
 	return (
 		<Box>
 			<Text
-				sx={{
+				style={{
 					fontSize: 12,
 					color: '#098658',
 					fontFamily: 'monospace',
 				}}>{`/* Schema for ${currentStreamName}`}</Text>
-			<Flex sx={{ alignItems: 'flex-start', padding: 6, paddingTop: 4 }}>
-				<Box sx={{ width: '50%' }}>
+			<Flex style={{ alignItems: 'flex-start', padding: 6, paddingTop: 4 }}>
+				<Box style={{ width: '50%' }}>
 					{leftColumns.map((config, index) => {
-						return <Text key={index} sx={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>;
+						return <Text key={index} style={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>;
 					})}
 				</Box>
-				<Box sx={{ width: '50%' }}>
+				<Box style={{ width: '50%' }}>
 					{rightColumns.map((config, index) => {
-						return <Text key={index} sx={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>;
+						return <Text key={index} style={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>;
 					})}
 				</Box>
 			</Flex>
-			<Text sx={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}> */</Text>
+			<Text style={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}> */</Text>
 		</Box>
 	);
 };

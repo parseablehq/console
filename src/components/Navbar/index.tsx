@@ -192,7 +192,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 						icon={<IconReload size="1rem" stroke={1.5} />}
 						component="button"
 						onClick={() => getLogStreamListRefetch()}
-						sx={{ paddingLeft: 0 }}
+						style={{ paddingLeft: 0 }}
 					/>
 				)}
 				{links.map((link) => {
@@ -207,7 +207,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 						<NavLink
 							label={link.label}
 							icon={<link.icon size="1.3rem" stroke={1.2} />}
-							sx={{ paddingLeft: 53 }}
+							style={{ paddingLeft: 53 }}
 							disabled={disableLink}
 							onClick={() => {
 								handleChange(selectedStream, link.pathname);
@@ -222,7 +222,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 					<NavLink
 						label={'Delete'}
 						icon={<IconTrash size="1.3rem" stroke={1.2} />}
-						sx={{ paddingLeft: 53 }}
+						style={{ paddingLeft: 53 }}
 						onClick={openDelete}
 						className={styles.linkBtn}
 						disabled={disableLink}

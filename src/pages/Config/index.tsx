@@ -53,12 +53,12 @@ const Config: FC = () => {
 			/>
 			<Box className={containerWrapper}>
 				<Box className={innerContainer}>
-					<Accordion defaultValue="" variant="contained" radius="md" w={'100%'} className={accordionSt} sx={{borderColor: '#ff0000'}}>
+					<Accordion defaultValue="" variant="contained" radius="md" w={'100%'} className={accordionSt} style={{borderColor: '#ff0000'}}>
 						<Accordion.Item value="Alert">
 							<Accordion.Control>Alert</Accordion.Control>
 							<Accordion.Panel>
 								<Box>
-									<Box sx={{ height: '500px' }}>
+									<Box style={{ height: '500px' }}>
 										<Editor
 											onChange={handleAlertQueryChange}
 											value={JSON.stringify(getLogAlertData?.data, null, 2)}
@@ -90,7 +90,7 @@ const Config: FC = () => {
 								<Accordion.Control>Retention</Accordion.Control>
 								<Accordion.Panel>
 									<Box>
-										<Box sx={{ height: '500px' }}>
+										<Box style={{ height: '500px' }}>
 											<Editor
 												onChange={handleRetentionQueryChange}
 												value={JSON.stringify(getLogRetentionData?.data, null, 2)}

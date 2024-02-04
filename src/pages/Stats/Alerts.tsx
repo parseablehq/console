@@ -34,7 +34,7 @@ const Alerts: FC = () => {
 		<ScrollArea
 			className={container}
 			ref={AlertsWrapper}
-			sx={{ height: `calc(${heights.full} - ${editorHeight}px) ` }}
+			style={{ height: `calc(${heights.full} - ${editorHeight}px) ` }}
 			type="auto">
 			<Box className={headContainer}>
 				<Text className={alertsText}>Alerts</Text>

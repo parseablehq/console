@@ -22,7 +22,7 @@ const PrimaryHeader: FC<PrimaryHeaderProps> = (props) => {
 			<Box className={navContainer}>
 				<Box
 					display={'flex'}
-					sx={{
+					style={{
 						justifyContent: 'flex-end',
 						alignItems: 'center',
 						width: '100%',

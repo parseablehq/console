@@ -6,7 +6,7 @@ const ErrorText: FC<TextProps> = (props) => {
 	return (
 		<Text
 			{...props}
-			sx={({ colors }) => ({
+			style={({ colors }) => ({
 				color: colors.error[0],
 			})}
 		/>

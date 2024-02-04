@@ -84,7 +84,7 @@ const FillCarousel = ({ gapMinute, endtime, id, zoomIn }: FillCarouselProps) => 
 				position="top">
 				<Box>
 					<Button
-						sx={{
+						style={{
 							backgroundColor: '#fff',
 							color: subID === id ? '#535BEB' : '#211F1F',
 							border: subID === id ? '1px solid #535BEB' : '1px solid #ccc',

@@ -256,7 +256,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 							{getBadges(getRoleData?.data)}
 							<Tooltip
 								label={'Add a Privilege'}
-								sx={{ color: 'white', backgroundColor: 'black' }}
+								style={{ color: 'white', backgroundColor: 'black' }}
 								withArrow
 								position="right">
 								<Badge color="green">
@@ -270,7 +270,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 				</td>
 				<td>
 					<Box style={{ height: '100%', width: '100%', whiteSpace: 'nowrap', textAlign: 'center' }}>
-						<Tooltip label={'Delete'} sx={{ color: 'white', backgroundColor: 'black' }} withArrow position="right">
+						<Tooltip label={'Delete'} style={{ color: 'white', backgroundColor: 'black' }} withArrow position="right">
 							<Button
 								variant="default"
 								className={classes.actionBtn}

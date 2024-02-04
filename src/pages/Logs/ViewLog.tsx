@@ -57,7 +57,7 @@ const ViewLog: FC = () => {
 						copyLabel="Copy"
 						language="json"
 						withLineNumbers
-						sx={{ overflow: 'auto' }}
+						style={{ overflow: 'auto' }}
 						scrollAreaComponent={ScrollArea}>
 						{JSON.stringify(log, null, 2)}
 					</Prism>
