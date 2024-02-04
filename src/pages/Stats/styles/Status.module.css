@@ -1,0 +1,50 @@
+.container {
+	flex: 0 1 auto;
+}
+
+.headContainer {
+	display: flex;
+	justify-content: space-between;
+	padding: 1rem;
+	height: 55px;
+	align-items: center;
+	border-bottom: 1px solid rgba(82, 82, 82, 0.15);
+}
+
+.statusText {
+	font-size: 1rem;
+	font-weight: 600;
+	color: #141414;
+}
+
+.statusTextResult {
+	color: #00cc14;
+}
+
+.statusTextFailed {
+	color: #ff0000;
+}
+
+.genterateContiner {
+	margin-right: 0.75rem;
+}
+
+.genterateText {
+	font-size: 1rem;
+	font-weight: 600;
+	color: #141414;
+}
+
+.genterateTextResult {
+	font-size: 1rem;
+	font-weight: 400;
+	color: #141414;
+}
+
+.StatsContainer {
+    display: flex;
+    flex-direction: row;
+    padding: 1rem;
+    padding-bottom: 0;
+    justify-content: space-between;
+}

@@ -2,7 +2,7 @@ import logo from '@/assets/images/brand/logo.svg';
 import { Box, Divider, Image, Space, Text, UnstyledButton, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { FC, Fragment } from 'react';
-import { useForgetPassStyles } from './styles';
+import forgotPasswordStyles from './styles/ForgotPassword.module.css';
 
 const steps = [
 	{
@@ -22,7 +22,7 @@ const steps = [
 const ForgotPassword: FC = () => {
 	const [opened, { open, close }] = useDisclosure(false);
 
-	const { classes } = useForgetPassStyles();
+	const classes = forgotPasswordStyles;
 
 	const { forgetPassBtnText, titleStyle, descriptionStyle } = classes;
 
@@ -58,8 +58,7 @@ type StepProps = {
 
 const Step: FC<StepProps> = (props) => {
 	const { number, title, description, isLast } = props;
-	const { classes } = useForgetPassStyles();
-
+	const classes = forgotPasswordStyles;
 	const { stepContainer, stepNumberContainer, stepNumber, stepVerticalLine, stepTitle, stepDescription } = classes;
 
 	return (

@@ -5,7 +5,7 @@ import type { ImageProps } from '@mantine/core';
 import { Box, Button, Center, Group, Image, Text, Title } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import type { FC } from 'react';
-import { useErrorPageStyles } from './styles';
+import errorStyles from './styles/Errors.module.css'
 
 const Illustration: FC<ImageProps> = (props) => {
 	return <Image src={bugError} {...props} alt="Bug" mx="auto" />;
@@ -18,10 +18,9 @@ const BugPage: FC = () => {
 		window.location.href = HOME_ROUTE;
 	};
 
-	const { classes } = useErrorPageStyles();
-
+	// const { classes } = useErrorPageStyles();
+	const classes = errorStyles;
 	const { container, titleStyle, descriptionStyle, btnStyle } = classes;
-
 	return (
 		<FullPageLayout>
 			<Center className={container}>

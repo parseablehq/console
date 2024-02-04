@@ -16,9 +16,9 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlus, IconTrash, IconX } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
-import { useUsersStyles } from './styles';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import { useRole } from '@/hooks/useRole';
+import styles from './styles/AccessManagement.module.css'
 
 interface PrivilegeTRProps {
 	roleName: string;
@@ -230,7 +230,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 		return true;
 	};
 
-	const { classes } = useUsersStyles();
+	const classes = styles;
 	return (
 		<>
 			<tr className={classes.trStyle}>

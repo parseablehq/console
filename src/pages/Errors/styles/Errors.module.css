@@ -1,0 +1,30 @@
+.container {
+    flex: 1;
+    padding: 2rem;
+    height: 100vh;
+    width: 100vw;
+}
+
+.illustration {
+    fill: #10143E;
+    max-height: 250px;
+}
+
+.titleStyle {
+    text-align: center;
+    font-weight: 900;
+    font-size: 38px;
+    margin-top: 20px;
+    color: #10143E;
+}
+
+.descriptionStyle {
+    max-width: 540px;
+    margin: auto;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.btnStyle {
+	background-color: #C27D2D !important;
+}

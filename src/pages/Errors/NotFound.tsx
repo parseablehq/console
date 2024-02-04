@@ -3,7 +3,7 @@ import { Box, Button, Center, Group, Text, Title } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { ComponentPropsWithoutRef, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useErrorPageStyles } from './styles';
+import errorStyles from './styles/Errors.module.css'
 
 const Illustration: FC<ComponentPropsWithoutRef<'svg'>> = (props) => {
 	return (
@@ -22,7 +22,7 @@ const NotFound: FC = () => {
 		nav(HOME_ROUTE, { replace: true });
 	};
 
-	const { classes } = useErrorPageStyles();
+	const classes = errorStyles;
 
 	const { container, illustration, titleStyle, descriptionStyle, btnStyle } = classes;
 

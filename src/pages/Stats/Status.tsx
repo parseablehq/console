@@ -1,6 +1,5 @@
 import { FC, useEffect } from 'react';
-import { useStatCardStyles, useStatusStyles } from './styles';
-import { Box, Text, ThemeIcon, Tooltip, px } from '@mantine/core';
+import { Box, Stack, Text, ThemeIcon, Tooltip, px } from '@mantine/core';
 import dayjs from 'dayjs';
 import {
 	IconClockStop,
@@ -18,6 +17,8 @@ import { FIXED_DURATIONS } from '@/constants/timeConstants';
 import { useRetentionEditor } from '@/hooks/useRetentionEditor';
 import { useLogStreamStats } from '@/hooks/useLogStreamStats';
 import { useParams } from 'react-router-dom';
+import statusStyles from './styles/Status.module.css';
+import statCardStyles from './styles/StatsCard.module.css';
 
 const Status: FC = () => {
 	const { streamName } = useParams();
@@ -147,7 +148,7 @@ const Status: FC = () => {
 		? convertToReadableScale(getLogStreamStatsData?.data.ingestion.count)
 		: '0';
 
-	const { classes } = useStatusStyles();
+	const classes = statusStyles;
 	const {
 		container,
 		headContainer,
@@ -172,7 +173,7 @@ const Status: FC = () => {
 					</Text>
 				</Box>
 			</Box>
-			<Box className={StatsContainer}>
+			<Stack className={StatsContainer}>
 				<StatCard
 					data={{
 						Icon: IconTimelineEventText,
@@ -214,7 +215,7 @@ const Status: FC = () => {
 						title: 'Retention',
 					}}
 				/>
-			</Box>
+			</Stack>
 		</Box>
 	);
 };
@@ -225,7 +226,7 @@ type statCardProps = {
 
 const StatCard: FC<statCardProps> = (props) => {
 	const { data } = props;
-	const { classes } = useStatCardStyles();
+	const classes = statCardStyles;
 	const { statCard, statCardTitle, statCardDescription, statCardDescriptionIcon, statCardIcon, statCardTitleValue } =
 		classes;
 

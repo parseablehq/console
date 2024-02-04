@@ -5,12 +5,12 @@ import { Box, Button, Flex, Text, TextInput, Tooltip, px } from '@mantine/core';
 import { ErrorMarker, errChecker } from './ErrorMarker';
 import { IconPlayerPlayFilled, IconRotate } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
-import { useQueryCodeEditorStyles } from './styles';
 import { notify } from '@/utils/notification';
 import { usePostLLM } from '@/hooks/usePostLLM';
 import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 import { LOAD_LIMIT, useLogsPageContext } from '../Logs/Context';
 import { Field } from '@/@types/parseable/dataType';
+import queryCodeStyles from './styles/QueryCode.module.css'
 
 type QueryCodeEditorProps = {
 	inputRef: MutableRefObject<any>;
@@ -109,7 +109,7 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 		setCustSearchQuery(parsedQuery);
 	};
 
-	const { classes } = useQueryCodeEditorStyles();
+	const classes = queryCodeStyles;
 	const { container, runQueryBtn, textContext, clearQueryBtn } = classes;
 
 	return (

@@ -4,13 +4,12 @@ import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Carousel } from '@mantine/carousel';
 import { Box, Button, Text, Tooltip, px } from '@mantine/core';
 import dayjs from 'dayjs';
-import { useHeaderPaginationStyle } from './styles';
-
 import { FC, useEffect } from 'react';
 import FillCarousel from './CarouselSlide';
 import { useLogsPageContext } from './Context';
 import Loading from '@/components/Loading';
 import { IconZoomIn, IconZoomOut } from '@tabler/icons-react';
+import headerPaginationStyles from './styles/HeaderPagination.module.css';
 
 const Limit = 10000;
 const gapOptions = [1, 5, 10, 15, 20, 30, 60];
@@ -166,7 +165,7 @@ const HeaderPagination: FC = () => {
 		}
 	};
 
-	const { classes } = useHeaderPaginationStyle();
+	const classes = headerPaginationStyles;
 	return (
 		<Box
 			h={105}

@@ -1,0 +1,24 @@
+.controlBtn {
+    background-color: #FFFFFF;
+    padding: 0;
+    margin-right: 0.625rem;
+    width: 36px;
+    color: #868e96;
+    border: 1px solid #D4D4D4;
+}
+
+.controlBtn:hover {
+    background-color: #F1F3F5;
+}
+
+.controlContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    padding-top: 0.625rem;
+}
+
+.controlText {
+    margin-right: 0.625rem;
+}

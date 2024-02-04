@@ -1,0 +1,31 @@
+.container {
+    padding: 1.25rem;
+}
+
+.headerContainer {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #545BEB;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.headerTimeStampTitle {
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.headerTimeStamp {
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 300;
+}
+
+.dataChipContainer {
+    display: flex;
+    flex-wrap: wrap;
+}

@@ -19,9 +19,8 @@ import {
 } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { FC } from 'react';
-import { LOG_QUERY_LIMITS, useLogsPageContext, LOAD_LIMIT as loadLimit} from './Context';
+import { LOG_QUERY_LIMITS, useLogsPageContext, LOAD_LIMIT as loadLimit } from './Context';
 import LogRow from './LogRow';
-import { useLogTableStyles } from './styles';
 import useMountedState from '@/hooks/useMountedState';
 import ErrorText from '@/components/Text/ErrorText';
 import { IconSelector, IconGripVertical, IconPin, IconPinFilled, IconSettings } from '@tabler/icons-react';
@@ -35,7 +34,8 @@ import dayjs from 'dayjs';
 import { Log, SortOrder } from '@/@types/parseable/api/query';
 import { usePagination } from '@mantine/hooks';
 import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
-import {  } from './Context';
+import tableStyles from './styles/Logs.module.css';
+import { HEADER_HEIGHT } from '@/constants/theme';
 
 const skipFields = ['p_metadata', 'p_tags'];
 
@@ -312,21 +312,6 @@ const LogTable: FC = () => {
 		return null;
 	}, [tableHeaders, columnToggles, logs, sort, pinnedColumns]);
 
-	const { classes } = useLogTableStyles();
-
-	const {
-		container,
-		innerContainer,
-		tableContainer,
-		pinnedTableContainer,
-		tableStyle,
-		theadStyle,
-		errorContainer,
-		footerContainer,
-		theadStylePinned,
-		pinnedScrollView,
-	} = classes;
-
 	const active = useRef<'left' | 'right'>('left');
 	const leftRef = useRef<HTMLDivElement>(null);
 	const rightRef = useRef<HTMLDivElement>(null);
@@ -353,15 +338,19 @@ const LogTable: FC = () => {
 	}, [pinnedContianerRef, pinnedColumns]);
 
 	return (
-		<Box className={container}>
+		<Box
+			className={tableStyles.container}
+			style={{
+				maxHeight: `calc(100vh - ${HEADER_HEIGHT * 2}px )`,
+			}}>
 			<FilterPills />
 			{!(logStreamError || logStreamSchemaError || logsError) ? (
 				Boolean(tableHeaders.length) && Boolean(pageLogData?.data.length) ? (
-					<Box className={innerContainer}>
-						<Box className={innerContainer} style={{ display: 'flex', flexDirection: 'row' }}>
+					<Box className={tableStyles.innerContainer} style={{maxHeight: `calc(100vh - ${HEADER_HEIGHT * 2}px )`}}>
+						<Box className={tableStyles.innerContainer} style={{ display: 'flex', flexDirection: 'row', maxHeight: `calc(100vh - ${HEADER_HEIGHT * 2}px )` }}>
 							<ScrollArea
 								w={`${pinnedColumnsWidth}px`}
-								className={pinnedScrollView}
+								className={tableStyles.pinnedScrollView}
 								styles={() => ({
 									scrollbar: {
 										'&[data-orientation="vertical"] .mantine-ScrollArea-thumb': {
@@ -377,9 +366,9 @@ const LogTable: FC = () => {
 									if (active.current === 'right') return;
 									rightRef.current!.scrollTop = y;
 								}}>
-								<Box className={pinnedTableContainer} ref={pinnedContianerRef}>
-									<Table className={tableStyle}>
-										<Thead className={theadStylePinned}>{renderPinnedTh}</Thead>
+								<Box className={tableStyles.pinnedTableContainer} ref={pinnedContianerRef}>
+									<Table className={tableStyles.tableStyle}>
+										<Thead className={tableStyles.theadStylePinned}>{renderPinnedTh}</Thead>
 										<Tbody>
 											<LogRow
 												logData={pageLogData?.data || []}
@@ -400,9 +389,9 @@ const LogTable: FC = () => {
 									if (active.current === 'left') return;
 									leftRef.current!.scrollTop = y;
 								}}>
-								<Box className={tableContainer}>
-									<Table className={tableStyle}>
-										<Thead className={theadStyle}>
+								<Box className={tableStyles.tableContainer}>
+									<Table className={tableStyles.tableStyle}>
+										<Thead className={tableStyles.theadStyle}>
 											{renderTh}
 											<ThColumnMenu
 												tableHeaders={tableHeaders || []}
@@ -434,12 +423,12 @@ const LogTable: FC = () => {
 					<EmptyBox message="Select a time Slot " />
 				)
 			) : (
-				<Center className={errorContainer}>
+				<Center className={tableStyles.errorContainer}>
 					<ErrorText>{logStreamError || logStreamSchemaError || logsError}</ErrorText>
 					{(logsError || logStreamSchemaError) && <RetryBtn onClick={onRetry} mt="md" />}
 				</Center>
 			)}
-			<Box className={footerContainer}>
+			<Box className={tableStyles.footerContainer}>
 				<Box></Box>
 				{!loading && !logsLoading ? (
 					<Pagination.Root
@@ -507,7 +496,7 @@ type ThColumnMenuItemProps = {
 
 const ThColumnMenuItem: FC<ThColumnMenuItemProps> = (props) => {
 	const { header, index, toggleColumn, isColumnActive, toggleColumnPinned, isColumnPinned } = props;
-	const { classes } = useLogTableStyles();
+	const classes = tableStyles;
 	if (skipFields.includes(header)) return null;
 
 	return (
@@ -560,7 +549,7 @@ const ThColumnMenu: FC<ThColumnMenuProps> = (props) => {
 		resetColumns,
 	} = props;
 
-	const { classes } = useLogTableStyles();
+	const classes = tableStyles;
 	const { thColumnMenuBtn, thColumnMenuDropdown, thColumnMenuResetBtn } = classes;
 
 	const pinnedFields = tableHeaders.filter((tableHeader) => isColumnPinned(tableHeader));
@@ -645,7 +634,7 @@ const LimitControl: FC<LimitControlProps> = (props) => {
 		}
 	};
 
-	const { classes } = useLogTableStyles();
+	const classes = tableStyles;
 	const { limitContainer, limitBtn, limitBtnText, limitActive, limitOption } = classes;
 
 	return (

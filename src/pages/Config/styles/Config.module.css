@@ -1,0 +1,46 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin: 1.25rem;
+    gap: 1.25rem;
+}
+
+.trackStyle {
+    background-color: #545BEB;
+}
+
+.containerWrapper {
+    display: flex;
+    gap: 20px;
+}
+
+.primaryBtn {
+    margin-top: 1rem;
+    background-color: #545BEB;
+    color: #fff;
+    width: max-content;
+}
+
+.submitBtn {
+    margin-top: 1rem;
+    background-color: #545BEB;
+    color: #fff;
+}
+
+.accordionSt {
+    border-radius: 60px;
+    border: none;
+}
+
+.accordionSt {
+    .mantine-Accordion-item {
+        border: 10px #f8f9fa solid;
+    }
+}
+
+.innerContainer {
+    width: 50%;
+    justify-content: center;
+    display: flex;
+}

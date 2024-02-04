@@ -4,7 +4,7 @@ import { useLoginForm } from '@/hooks/useLoginForm';
 import { Box, Button, Divider, Image, PasswordInput, Text, TextInput, Transition, rem } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC } from 'react';
-import { useLoginStyles } from './styles';
+import loginStyles from './styles/Login.module.css'
 const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 
 const Login: FC = () => {
@@ -12,7 +12,7 @@ const Login: FC = () => {
 
 	const { getInputProps, isValid, loading, handleSubmit, error } = useLoginForm();
 
-	const { classes } = useLoginStyles();
+	const classes = loginStyles;
 	const { container, formContainer, titleStyle, formInput, loginBtnStyle, errorStyle, sideContainer } = classes;
 
 	return (

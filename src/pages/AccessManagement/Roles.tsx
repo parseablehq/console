@@ -1,12 +1,12 @@
 import { Box, Button, Group, Modal, ScrollArea, Select, Stack, Table, Text, TextInput, px } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect, useState } from 'react';
-import { useUsersStyles } from './styles';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import PrivilegeTR from './PrivilegeTR';
 import { IconPencil, IconUserPlus } from '@tabler/icons-react';
 import { useRole } from '@/hooks/useRole';
+import styles from './styles/AccessManagement.module.css'
 
 const Roles: FC = () => {
 	useDocumentTitle('Parseable | Users');
@@ -175,7 +175,7 @@ const Roles: FC = () => {
 		handleDefaultRoleModalClose();
 	};
 
-	const { classes } = useUsersStyles();
+	const classes = styles;
 	return (
 		<Box className={classes.container}>
 			<Box className={classes.header}>

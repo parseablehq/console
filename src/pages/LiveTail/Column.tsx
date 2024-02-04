@@ -1,8 +1,8 @@
 import { UnstyledButton } from '@mantine/core';
 import { type FC } from 'react';
 
-import { useTableColumnStyle } from './styles';
 import { capitalizeFirstLetter } from '@/utils/capitalizeFirstLetter';
+import styles from './styles/Column.module.css'
 
 type Column = {
 	columnName: string;
@@ -11,7 +11,7 @@ type Column = {
 const Column: FC<Column> = (props) => {
 	const { columnName } = props;
 
-	const { classes } = useTableColumnStyle();
+	const classes = styles;
 	const { labelBtn } = classes;
 
 	return (

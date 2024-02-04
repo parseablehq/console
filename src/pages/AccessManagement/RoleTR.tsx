@@ -16,11 +16,11 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlus, IconTransform, IconTrash, IconX } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
-import { useUsersStyles } from './styles';
 import { Prism } from '@mantine/prism';
 import { AxiosResponse } from 'axios';
 import { useUser } from '@/hooks/useUser';
 import { useRole } from '@/hooks/useRole';
+import styles from './styles/AccessManagement.module.css'
 
 interface RoleTRProps {
 	user: {
@@ -163,8 +163,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 		updateUserPasswordMutation({ userName: UserInput });
 	};
 
-	const { classes } = useUsersStyles();
-
+	const classes = styles;
 	return (
 		<tr key={user.id} className={classes.trStyle}>
 			<td>{user.id}</td>

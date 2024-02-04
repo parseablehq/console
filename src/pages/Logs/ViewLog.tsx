@@ -4,8 +4,8 @@ import { Prism } from '@mantine/prism';
 import type { FC } from 'react';
 import { useEffect, Fragment, useMemo } from 'react';
 import { useLogsPageContext } from './Context';
-import { useViewLogStyles } from './styles';
 import dayjs from 'dayjs';
+import viewLogStyles from './styles/ViewLogs.module.css'
 
 const ViewLog: FC = () => {
 	const {
@@ -24,7 +24,7 @@ const ViewLog: FC = () => {
 		subViewLog.set(null);
 	};
 
-	const { classes } = useViewLogStyles();
+	const classes = viewLogStyles;
 	const { container } = classes;
 
 	const p_metadata = useMemo(() => {
@@ -74,7 +74,7 @@ type HeaderProps = {
 
 const Header: FC<HeaderProps> = (props) => {
 	const { onClose } = props;
-	const { classes } = useViewLogStyles();
+	const classes = viewLogStyles
 
 	const { headerContainer, headerTimeStampTitle, headerTimeStamp } = classes;
 
@@ -102,7 +102,7 @@ type DataChipProps = {
 
 const DataChip: FC<DataChipProps> = (props) => {
 	const { dataList, title } = props;
-	const { classes } = useViewLogStyles();
+	const classes = viewLogStyles
 	const { dataChipContainer } = classes;
 
 	return dataList.length ? (

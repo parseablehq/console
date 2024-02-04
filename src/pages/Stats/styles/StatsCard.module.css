@@ -1,0 +1,39 @@
+.statCard {
+	border: 1px solid rgba(82, 82, 82, 0.15);
+	width: 100%;
+	border-radius: 8px;
+	text-align: center;
+	padding: 0.5rem 1rem;
+}
+
+.statCardDescription {
+	text-align: right;
+}
+
+.statCardDescriptionIcon {
+	color: #141414;
+}
+
+.statCardIcon {
+	background-color: #e7eeff;
+	color: #545BEB;
+}
+
+.statCardText {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.statCardTitleValue {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #545BEB;
+}
+
+.statCardTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #141414;
+}

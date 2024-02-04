@@ -1,0 +1,45 @@
+.container {
+    display: flex;
+    border-bottom: 1px solid #e9ecef;
+    align-items: center;
+    height: 55px;
+    padding-bottom: 0.625rem;
+    width: 100%;
+    justify-content: space-between;
+    align-content: center;
+}
+
+.runQueryBtn {
+    color: #545BEB;
+    border-color: #e9ecef;
+    height: 34px;
+    margin-left: 0.625rem;
+}
+
+.runQueryBtn:hover {
+    color: #FC466B;
+}
+
+.clearQueryBtn {
+    border-color: #e9ecef;
+    height: 34px;
+    color: #545BEB;
+}
+
+.clearQueryBtn:hover {
+    color: #FC466B;
+}
+
+.actionBtn {
+    height: 34px;
+    width: 34px;
+    padding: 0px;
+    margin-inline-end: 0.625rem;
+    color: #777777;
+    border-color: #e9ecef;
+}
+
+.textContext {
+    font-size: 1rem;
+    font-weight: 500;
+}
