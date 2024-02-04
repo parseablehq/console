@@ -5,10 +5,12 @@ import { IconRefresh, IconRefreshOff } from '@tabler/icons-react';
 import ms from 'ms';
 import type { FC } from 'react';
 import { useEffect, useMemo } from 'react';
-import { useLogQueryStyles } from './styles';
 import { REFRESH_INTERVALS } from '@/constants/timeConstants';
+import classes from './styles/LogQuery.module.css'
+
 
 const RefreshInterval: FC = () => {
+
 	const {
 		state: { subRefreshInterval },
 	} = useHeaderContext();
@@ -29,13 +31,12 @@ const RefreshInterval: FC = () => {
 		subRefreshInterval.set(interval);
 	};
 
-	const { classes } = useLogQueryStyles();
-	const { intervalBtn } = classes;
+	const { intervalbtn } = classes;
 
 	return (
 		<Menu withArrow>
 			<Menu.Target>
-				<Button className={intervalBtn} leftIcon={<Icon size={px('1.2rem')} stroke={1.5} />}>
+				<Button className={intervalbtn} leftIcon={<Icon size={px('1.2rem')} stroke={1.5} />}>
 					<Text>{selectedInterval ? ms(selectedInterval) : 'Off'}</Text>
 				</Button>
 			</Menu.Target>

@@ -1,20 +1,20 @@
 import logoInvert from '@/assets/images/brand/logo-invert.svg';
 import { HOME_ROUTE } from '@/constants/routes';
-import { HEADER_HEIGHT } from '@/constants/theme';
+import { HEADER_HEIGHT, NAVBAR_WIDTH } from '@/constants/theme';
 import type { HeaderProps as MantineHeaderProps } from '@mantine/core';
 import { Box, Button, Image, Header as MantineHeader, Tooltip } from '@mantine/core';
 import { FC } from 'react';
-import { useHeaderStyles } from './styles';
+import styles from './styles/Header.module.css'
 
 type PrimaryHeaderProps = Omit<MantineHeaderProps, 'children' | 'height' | 'className'>;
 
 const PrimaryHeader: FC<PrimaryHeaderProps> = (props) => {
-	const { classes } = useHeaderStyles();
+	const classes = styles;
 	const { container, logoContainer, navContainer, imageSty, actionBtn } = classes;
 
 	return (
 		<MantineHeader {...props} className={container} height={HEADER_HEIGHT} p={0} withBorder>
-			<Box className={logoContainer}>
+			<Box className={logoContainer} style={{ minWidth: NAVBAR_WIDTH }}>
 				<a href={HOME_ROUTE}>
 					<Image className={imageSty} src={logoInvert} height={32} alt="Parseable Logo" />
 				</a>

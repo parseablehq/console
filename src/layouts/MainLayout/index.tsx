@@ -1,26 +1,23 @@
 import { PrimaryHeader } from '@/components/Header';
 import Navbar from '@/components/Navbar';
-import { NAVBAR_WIDTH } from '@/constants/theme';
+import { HEADER_HEIGHT, NAVBAR_WIDTH } from '@/constants/theme';
 import { Box } from '@mantine/core';
 import type { FC } from 'react';
 import { Outlet } from 'react-router-dom';
-import { useMainLayoutStyles } from './styles';
+import { heights } from '@/components/Mantine/sizing';
 
 const MainLayout: FC = () => {
-	const { classes } = useMainLayoutStyles();
-
-	const { container, contentContainer } = classes;
-
 	return (
-		<Box className={container}>
+		<Box style={{ width: '100vw', minWidth: 1000 }}>
 			<PrimaryHeader p="xs" />
-			<Box className={contentContainer}>
+			<Box style={{ display: 'flex', height: `calc(${heights.full} - ${HEADER_HEIGHT}px)` }}>
 				<Navbar w={NAVBAR_WIDTH} />
-				<Box sx={{
-					width: `calc(100% - ${NAVBAR_WIDTH}px)`,
-					display: 'flex',
-					flexDirection: 'column',
-				}}>
+				<Box
+					sx={{
+						width: `calc(100% - ${NAVBAR_WIDTH}px)`,
+						display: 'flex',
+						flexDirection: 'column',
+					}}>
 					<Outlet />
 				</Box>
 			</Box>

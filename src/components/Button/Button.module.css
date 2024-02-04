@@ -1,0 +1,20 @@
+.retryBtn {
+    background-color: #1F288E;
+}
+
+.toggleBtn {
+    background: #FFFFFF !important;
+    padding: 6px 12px;
+    margin-right: 0.625rem;
+    color: #211F1F !important;
+    border: 1px solid #D4D4D4 !important;
+}
+
+.toggleBtn:hover {
+    background-color: #E0E0E0 !important;
+}
+
+.toggleBtnActive {
+    background-color: #545BEB !important; 
+    color: #FFFFFF !important;
+}

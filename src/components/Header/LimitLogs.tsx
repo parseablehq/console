@@ -4,9 +4,8 @@ import { Button, Menu, Text, } from '@mantine/core';
 import {  IconTableDown } from '@tabler/icons-react';
 
 import type { FC } from 'react';
+import classes from './styles/LogQuery.module.css'
 
-
-import { useLogQueryStyles } from './styles';
 
 const LimitLog: FC = () => {
 	// const {
@@ -31,7 +30,6 @@ const LimitLog: FC = () => {
 
 	// };
 
-	const { classes } = useLogQueryStyles();
 	const { intervalBtn } = classes;
 
 	return (

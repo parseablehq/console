@@ -5,26 +5,26 @@ import RefreshInterval from './RefreshInterval';
 import RefreshNow from './RefreshNow';
 import Search from './Search';
 import TimeRange from './TimeRange';
-import { useLogQueryStyles } from './styles';
 import ReloadUser from './ReloadUser';
 import DocsUser from './UserDocs';
 import StreamingButton from './StreamingButton';
 import LiveTailFilter from './LiveTailFilter';
 import Dropdown from './Dropdown';
-import { useHeaderStyles } from './styles';
 import { HEADER_HEIGHT } from '@/constants/theme';
 import { downloadDataAsCSV, downloadDataAsJson } from '@/utils/exportHelpers';
 import { useLogsPageContext } from '@/pages/Logs/Context';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { ToggleButton } from '../Button/ToggleButton';
 import { IconCodeCircle } from '@tabler/icons-react';
+import styles from './styles/LogQuery.module.css';
+import headerStyles from './styles/Header.module.css';
 
 type HeaderLayoutProps = {
 	children: React.ReactNode;
 };
 
 const HeaderLayout: FC<HeaderLayoutProps> = (props) => {
-	const { classes } = useHeaderStyles();
+	const classes = headerStyles;
 	const { container, navContainer } = classes;
 
 	return (
@@ -35,7 +35,7 @@ const HeaderLayout: FC<HeaderLayoutProps> = (props) => {
 };
 
 export const StatsHeader: FC = () => {
-	const { classes } = useLogQueryStyles();
+	const classes = styles;
 	const { container, innerContainer } = classes;
 	const {
 		methods: { resetTimeInterval },
@@ -60,7 +60,7 @@ export const StatsHeader: FC = () => {
 };
 
 export const LiveTailHeader: FC = () => {
-	const { classes } = useLogQueryStyles();
+	const classes = styles;
 	const { container, innerContainer } = classes;
 
 	return (
@@ -86,11 +86,14 @@ export const LiveTailHeader: FC = () => {
 };
 
 export const LogsHeader: FC = () => {
-	const { classes } = useLogQueryStyles();
+	// const classes = styles;
+	const classes = styles;
 	const { container, innerContainer } = classes;
 	const {
 		methods: { makeExportData, toggleShowQueryEditor },
-		state: { custQuerySearchState: {isQuerySearchActive} },
+		state: {
+			custQuerySearchState: { isQuerySearchActive },
+		},
 	} = useLogsPageContext();
 	const {
 		state: { subLogQuery },
@@ -135,7 +138,7 @@ export const LogsHeader: FC = () => {
 };
 
 export const HomeHeader: FC = () => {
-	const { classes } = useLogQueryStyles();
+	const classes = styles;
 	const { container, innerContainer } = classes;
 	return (
 		<Box className={container}>
@@ -149,7 +152,7 @@ export const HomeHeader: FC = () => {
 };
 
 export const ConfigHeader: FC = () => {
-	const { classes } = useLogQueryStyles();
+	const classes = styles;
 	const { container, innerContainer } = classes;
 
 	return (
@@ -164,7 +167,7 @@ export const ConfigHeader: FC = () => {
 };
 
 export const UsersManagementHeader: FC = () => {
-	const { classes } = useLogQueryStyles();
+	const classes = styles;
 	const { container, innerContainer } = classes;
 
 	return (
@@ -187,7 +190,7 @@ export const UsersManagementHeader: FC = () => {
 };
 
 export const AllRouteHeader: FC = () => {
-	const { classes } = useLogQueryStyles();
+	const classes = styles;
 	const { container, innerContainer } = classes;
 
 	return (

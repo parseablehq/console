@@ -1,0 +1,191 @@
+.container {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1rem;
+	/* height: 100%; */
+}
+  
+  .innerContainer {
+	display: flex;
+	height: 100%;
+	align-items: center;
+  }
+  
+  button.refreshNowBtn {
+	background: #fff;
+	padding: 0;
+	margin-right: 0.625rem;
+	width: 36px;
+	color: #211F1F;
+	border: 1px #e9ecef solid;
+  }
+  
+  button.refreshNowBtn:hover {
+	background: #f1f3f5;
+  }
+  
+  button.streamButton {
+	background: #fff;
+	margin-right: 0.625rem;
+	color: #211F1F;
+	border: 1px #e9ecef solid;
+  }
+  
+  button.intervalbtn {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: white;
+	color: #211F1F;
+	border: 1px #e9ecef solid;
+	padding: 0.625rem 1rem;
+	margin-right: 0.625rem;
+  }
+  
+  button.intervalbtn:hover {
+	background: #f1f3f5;
+  }
+  
+  .homeIcon {
+	size: 24px;
+  }
+  
+  div.timeRangeContainer {
+	display: flex;
+  }
+  
+  div.fixedRangeContainer {
+	display: flex;
+	flex-direction: column;
+  }
+  
+  button.fixedRangeBtn {
+	color: #000;
+	padding: 0.75rem;
+	font-size: 0.875rem;
+	background: #f8f9fa;
+  }
+  
+  button.fixedRangeBtn:first-of-type {
+	border-top-left-radius: 0.25rem;
+  }
+  
+  button.fixedRangeBtn:last-of-type {
+	border-bottom-left-radius: 0.25rem;
+  }
+  
+  button.fixedRangeBtn:hover {
+	background: #ced4da;
+  }
+  button.fixedRangeBtn:disabled {
+	cursor: not-allowed;
+	background: #424242;
+	font-weight: 600;
+	color: #fff;
+  }
+  
+  .customRangeContainer {
+	padding: 0.625rem 2rem;
+	min-width: 20rem;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: stretch;
+  }
+  
+  .customTimeRangeFooter {
+	display: flex;
+	margin-top: auto;
+	justify-content: flex-end;
+	align-items: center;
+  }
+  
+  div.searchContainer {
+	display: flex;
+	padding-right: 0.75rem;
+  }
+  
+  .searchTypeBtn {
+	border: 1px #f1f3f5 solid;
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	background: #545beb;
+	color: #fff;
+	border-right: none;
+	font-weight: 700;
+	padding-right: 0.75rem;
+  }
+  
+  .searchTypeActive {
+	background: #545beb;
+	font-weight: 500;
+	color: #fff;
+  }
+  
+  .searchTypeActive:hover {
+	background: #fc466b;
+  }
+  
+  div.searchInput {
+	width: 100%;
+	flex: 1;
+  }
+  
+  input.searchInput input {
+	background: #fff;
+	border: 1px #e9ecef solid;
+	border-radius: 0.25rem;
+	font-weight: 500;
+  }
+  
+  button.toggleBtn {
+	background-color: white;
+	padding: 6px 12px;
+	margin-right: 0.625rem;
+	color: #211F1F;
+	border: 1px #e9ecef solid;
+  }
+  
+  button.toggleBtn:hover {
+	background: #f1f3f5;
+  }
+  
+  button.timeRangeBTn {
+	background-color: white;
+	color: #211F1F;
+	border: 1px #e9ecef solid;
+	padding: 0.625rem 0.75rem;
+	margin-right: 0.625rem;
+  }
+  
+  button.timeRangeBTn:hover {
+	background: #f1f3f5;
+  }
+  
+  button.dropdownBtn {
+	margin-right: 0.625rem;
+  }
+  
+  .liveTailFilterContainer {
+	display: flex;
+	gap: 12px;
+	margin-right: 20px;
+  }
+  
+  button.fixedRangeBtnSelected {
+	background: #545beb !important;
+	font-weight: 500;
+	color: white;
+  }
+  
+  button.fixedRangeBtnSelected:hover {
+	background: #f1f3f5;
+  }
+  
+  button.customTimeRangeApplyBtn {
+	background: #545BEB;
+	&:hover {
+		background: #FC466B;
+	}
+}

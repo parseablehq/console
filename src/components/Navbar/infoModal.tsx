@@ -1,9 +1,9 @@
 import { Box, Button, Modal, Text, Tooltip, px } from '@mantine/core';
 import { FC, useEffect, useMemo } from 'react';
-import { useInfoModalStyles } from './styles';
 import { useAbout } from '@/hooks/useGetAbout';
 import { IconAlertCircle, IconBook2, IconBrandGithub, IconBrandSlack, IconBusinessplan } from '@tabler/icons-react';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
+import styles from './styles/InfoModal.module.css'
 
 const helpResources = [
 	{
@@ -39,7 +39,7 @@ type HelpCardProps = {
 const HelpCard: FC<HelpCardProps> = (props) => {
 	const { data } = props;
 
-	const { classes } = useInfoModalStyles();
+	const classes = styles;
 	const { HelpIconBox } = classes;
 
 	return (
@@ -78,7 +78,7 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 		}
 	}, [getAboutData?.data]);
 
-	const { classes } = useInfoModalStyles();
+	const classes = styles;
 	const {
 		container,
 		aboutTitle,

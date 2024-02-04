@@ -1,14 +1,13 @@
 import { Button, px } from '@mantine/core';
 import { IconReload } from '@tabler/icons-react';
 import type { FC } from 'react';
-import { useLogQueryStyles } from './styles';
+import classes from './styles/LogQuery.module.css'
 
 type RefreshNowProps = {
 	onRefresh: () => void;
 }
 
 const RefreshNow: FC<RefreshNowProps> = (props) => {
-	const { classes } = useLogQueryStyles();
 	const { refreshNowBtn } = classes;
 
 	return (

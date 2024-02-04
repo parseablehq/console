@@ -2,8 +2,8 @@ import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Box, Button } from '@mantine/core';
 
 import { useEffect, type FC } from 'react';
-import { useLogQueryStyles } from './styles';
 import useMountedState from '@/hooks/useMountedState';
+import classes from './styles/LogQuery.module.css';
 
 const StreamingButton: FC = () => {
 	const {
@@ -41,16 +41,13 @@ const StreamingButton: FC = () => {
 		};
 	}, [subLiveTailsData]);
 
-	const { classes } = useLogQueryStyles();
-	const { refreshNowBtn } = classes;
+	const { streamButton } = classes;
 
 	return (
-		<>
-			<Button className={refreshNowBtn} onClick={handleStreaming}>
-				<Box mr="10px">{liveTailStatus === 'streaming' ? '🔴' : '🟢'}</Box>
-				{liveTailStatus === 'streaming' ? 'Stop' : 'Start'}
-			</Button>
-		</>
+		<Button className={streamButton} onClick={handleStreaming}>
+			<Box mr="10px">{liveTailStatus === 'streaming' ? '🔴' : '🟢'}</Box>
+			{liveTailStatus === 'streaming' ? 'Stop' : 'Start'}
+		</Button>
 	);
 };
 

@@ -1,0 +1,194 @@
+/* 
+container: {
+    display: 'flex',
+    background: white,
+    flexDirection: 'column',
+    alignItems: 'center',
+    color: theme.colors.gray[7],
+    fontFamily: theme.fontFamily,
+    fontSize: fontSizes.md,
+    fontWeight: fontWeights.normal,
+    lineHeight: 'normal',
+},
+streamsBtn: {
+    padding: '14px 24px 14px 24px',
+    ':hover': { background: 'white' },
+    cursor: 'default',
+    color: theme.colors.gray[6],
+},
+userManagementBtn: {
+    padding: '14px 0px 14px 24px',
+    color: theme.colors.gray[6],
+},
+userManagementBtnActive: {
+    padding: '14px 0px 14px 24px',
+    color: pColor,
+    fontWeight: fontWeights.bold,
+},
+
+linkBtnActive: {
+    color: pColor,
+    '&:hover *': {
+        color: sColor,
+    },
+    fontWeight: fontWeights.bold,
+},
+linkBtn: {
+    color: theme.colors.gray[6],
+    '&:hover *': {
+        color: sColor,
+    },
+},
+selectStreambtn: {
+    margin: '0 24px 0 24px',
+},
+lowerContainer: {
+    marginBottom: '50px',
+},
+actionBtn: {
+    paddingLeft: '24px',
+    height: '40px',
+    color: theme.colors.gray[6],
+    '&:hover *': {
+        color: sColor,
+    },
+},
+
+userBtn: {
+    cursor: 'default',
+    paddingLeft: '24px',
+    height: '40px',
+    color: theme.colors.gray[6],
+    '&:hover ': {
+        background: white,
+    },
+},
+userContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+},
+userText: {
+    fontSize: fontSizes.sm,
+},
+modalStyle: {
+    '& .mantine-Paper-root ': {
+        overflowY: 'inherit',
+    },
+    '& .mantine-Modal-header	':{
+        borderRadius: "8px 8px 0px 0px",
+        backgroundColor: colors.gray[1],
+    },
+    '& .mantine-Modal-title	':{
+        fontWeight: 'bold',
+    },
+    "& .mantine-Modal-body ":{	
+        paddingTop: '1rem !important',
+    }
+},
+modalActionBtn: {
+    backgroundColor: theme.colors.brandSecondary[0],
+    color: "white",
+},
+modalCancelBtn: {
+    borderColor: theme.colors.gray[2],
+    color: theme.colors.gray[5]
+} */
+
+
+.container {
+    display: flex;
+    background: white;
+    flex-direction: column;
+    align-items: center;
+    color: #4d4d4d;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: normal;
+}
+
+button.streamsBtn {
+    padding: 14px 24px 14px 24px;
+    cursor: default;
+    color: #4d4d4d;
+    &:hover {
+        background-color: white;
+    }
+}
+
+
+button.userManagementBtn {
+    padding: 14px 0px 14px 24px;
+    color: #4d4d4d;
+}
+
+button.userManagementBtnActive {
+    padding: 14px 0px 14px 24px;
+    color: #545BEB;
+    font-weight: 700;
+}
+
+button.linkBtnActive {
+    color: #545BEB;
+    font-weight: 700;
+    &:hover {
+        color: #FC466B;
+    }
+}
+
+.linkBtn {
+    color: #4d4d4d;
+}
+
+.selectStreambtn {
+    margin: 0 24px 0 24px;
+}
+
+
+.lowerContainer {
+    margin-bottom: 50px;
+    padding: 0 0.675rem;
+}
+
+.actionBtn {
+    padding-left: 24px;
+    height: 40px;
+    color: #4d4d4d;
+}
+
+.userBtn {
+    cursor: default;
+    height: 40px;
+    color: #4d4d4d;
+    &:hover {
+        background-color: white;
+    }
+}
+
+.userContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.userText {
+    font-size: 14px;
+}
+
+
+.modalStyle {
+    overflow-y: inherit;
+}
+
+
+button.modalActionBtn {
+    background-color: #4d4d4d;
+    color: white;
+}
+
+button.modalCancelBtn {
+    border-color: #e0e0e0;
+    color: #9e9e9e;
+}
+

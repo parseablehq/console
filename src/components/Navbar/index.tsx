@@ -15,7 +15,6 @@ import {
 	IconTimelineEvent,
 } from '@tabler/icons-react';
 import { FC, useEffect } from 'react';
-import { useNavbarStyles } from './styles';
 import { useLocation, useParams } from 'react-router-dom';
 import { notifications } from '@mantine/notifications';
 import { useNavigate } from 'react-router-dom';
@@ -31,6 +30,7 @@ import { NAVBAR_WIDTH } from '@/constants/theme';
 import { useUser } from '@/hooks/useUser';
 import { useLogStream } from '@/hooks/useLogStream';
 import { signOutHandler } from '@/utils';
+import styles from './styles/Navbar.module.css'
 
 const isSecureConnection = window.location.protocol === 'https:';
 const links = [
@@ -161,22 +161,6 @@ const Navbar: FC<NavbarProps> = (props) => {
 		getUserRolesMutation({ userName: username ? username : '' });
 	}, [username]);
 
-	const { classes } = useNavbarStyles();
-	const {
-		container,
-		linkBtnActive,
-		linkBtn,
-		selectStreambtn,
-		streamsBtn,
-		lowerContainer,
-		actionBtn,
-		userBtn,
-		userManagementBtn,
-		userManagementBtnActive,
-		modalStyle,
-		modalActionBtn,
-		modalCancelBtn,
-	} = classes;
 	return (
 		<MantineNavbar
 			{...props}
@@ -185,8 +169,8 @@ const Navbar: FC<NavbarProps> = (props) => {
 			hiddenBreakpoint={window.outerWidth + 20}
 			hidden={isSubNavbarOpen}
 			width={{ xs: `${NAVBAR_WIDTH}px` }}>
-			<MantineNavbar.Section grow className={container}>
-				<NavLink label="Log Streams" icon={<IconBinaryTree2 size="1.5rem" stroke={1.3} />} className={streamsBtn} />
+			<MantineNavbar.Section grow className={styles.container}>
+				<NavLink label="Log Streams" icon={<IconBinaryTree2 size="1.5rem" stroke={1.3} />} className={styles.streamsBtn} />
 				<Select
 					placeholder="Pick one"
 					onChange={(value) => handleChange(value || '')}
@@ -199,7 +183,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 					data={userSepecficStreams?.map((stream: any) => ({ value: stream.name, label: stream.name })) ?? []}
 					searchable
 					required
-					className={selectStreambtn}
+					className={styles.selectStreambtn}
 				/>
 				{getLogStreamListIsError && <div>{getLogStreamListIsError}</div>}
 				{getLogStreamListIsError && (
@@ -229,7 +213,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 								handleChange(selectedStream, link.pathname);
 							}}
 							key={link.label}
-							className={(currentPage === link.pathname && linkBtnActive) || linkBtn}
+							className={(currentPage === link.pathname && styles.linkBtnActive) || styles.linkBtn}
 						/>
 					);
 				})}
@@ -240,7 +224,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 						icon={<IconTrash size="1.3rem" stroke={1.2} />}
 						sx={{ paddingLeft: 53 }}
 						onClick={openDelete}
-						className={linkBtn}
+						className={styles.linkBtn}
 						disabled={disableLink}
 					/>
 				)}
@@ -248,7 +232,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 				{!userSepecficAccess?.some((access: string) => ['ListUser'].includes(access)) ? null : (
 					<NavLink
 						pt={24}
-						className={(currentPage === USERS_MANAGEMENT_ROUTE && userManagementBtnActive) || userManagementBtn}
+						className={(currentPage === USERS_MANAGEMENT_ROUTE && styles.userManagementBtnActive) || styles.userManagementBtn}
 						label="Users"
 						icon={<IconUserCog size="1.5rem" stroke={1.3} />}
 						onClick={() => {
@@ -258,19 +242,19 @@ const Navbar: FC<NavbarProps> = (props) => {
 					/>
 				)}
 			</MantineNavbar.Section>
-			<MantineNavbar.Section className={lowerContainer}>
-				<NavLink label={username} icon={<IconUser size="1.3rem" stroke={1.3} />} className={userBtn} component="a" />
+			<MantineNavbar.Section className={styles.lowerContainer}>
+				<NavLink label={username} icon={<IconUser size="1.3rem" stroke={1.3} />} className={styles.userBtn} component="a"/>
 				<NavLink
 					label="About"
 					icon={<IconInfoCircle size="1.3rem" stroke={1.3} />}
-					className={actionBtn}
+					className={styles.actionBtn}
 					component="a"
 					onClick={open}
 				/>
 				<NavLink
 					label="Log out"
 					icon={<IconLogout size="1.3rem" stroke={1.3} />}
-					className={actionBtn}
+					className={styles.actionBtn}
 					component="a"
 					onClick={signOutHandler}
 				/>
@@ -282,7 +266,7 @@ const Navbar: FC<NavbarProps> = (props) => {
 				onClose={handleCloseDelete}
 				title={'Delete Stream'}
 				centered
-				className={modalStyle}>
+				className={styles.modalStyle}>
 				<TextInput
 					type="text"
 					label="Are you sure you want to delete this stream?"
@@ -295,12 +279,12 @@ const Navbar: FC<NavbarProps> = (props) => {
 
 				<Group mt={10} position="right">
 					<Button
-						className={modalActionBtn}
+						className={styles.modalActionBtn}
 						disabled={deleteStream === selectedStream ? false : true}
 						onClick={handleDelete}>
 						Delete
 					</Button>
-					<Button onClick={handleCloseDelete} className={modalCancelBtn}>
+					<Button onClick={handleCloseDelete} className={styles.modalCancelBtn}>
 						Cancel
 					</Button>
 				</Group>
