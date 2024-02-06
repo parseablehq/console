@@ -9,9 +9,9 @@ import { heights } from '@/components/Mantine/sizing';
 const MainLayout: FC = () => {
 	return (
 		<Box style={{ width: '100vw', minWidth: 1000 }}>
-			<PrimaryHeader p="xs" />
+			<PrimaryHeader />
 			<Box style={{ display: 'flex', height: `calc(${heights.full} - ${HEADER_HEIGHT}px)` }}>
-				<Navbar w={NAVBAR_WIDTH} />
+				<Navbar />
 				<Box
 					style={{
 						width: `calc(100% - ${NAVBAR_WIDTH}px)`,

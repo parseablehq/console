@@ -36,8 +36,8 @@ const RefreshInterval: FC = () => {
 	return (
 		<Menu withArrow>
 			<Menu.Target>
-				<Button className={intervalbtn} leftIcon={<Icon size={px('1.2rem')} stroke={1.5} />}>
-					<Text>{selectedInterval ? ms(selectedInterval) : 'Off'}</Text>
+				<Button className={intervalbtn} leftSection={<Icon size={px('1.2rem')} stroke={1.5} />}>
+					{selectedInterval ? ms(selectedInterval) : 'Off'}
 				</Button>
 			</Menu.Target>
 			<Menu.Dropdown

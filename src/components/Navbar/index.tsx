@@ -1,5 +1,4 @@
-import type { NavbarProps as MantineNavbarProps } from '@mantine/core';
-import { Navbar as MantineNavbar, NavLink, Select, Modal, Button, TextInput, Group } from '@mantine/core';
+import { NavLink, Select, Modal, Button, TextInput, Group, Box, rem, Stack } from '@mantine/core';
 import {
 	IconReportAnalytics,
 	IconFileAlert,
@@ -30,7 +29,7 @@ import { NAVBAR_WIDTH } from '@/constants/theme';
 import { useUser } from '@/hooks/useUser';
 import { useLogStream } from '@/hooks/useLogStream';
 import { signOutHandler } from '@/utils';
-import styles from './styles/Navbar.module.css'
+import styles from './styles/Navbar.module.css';
 
 const isSecureConnection = window.location.protocol === 'https:';
 const links = [
@@ -42,9 +41,7 @@ const links = [
 	{ icon: IconSettings, label: 'Config', pathname: '/config', requiredAccess: ['PutAlert'] },
 ];
 
-type NavbarProps = Omit<MantineNavbarProps, 'children'>;
-
-const Navbar: FC<NavbarProps> = (props) => {
+const Navbar: FC = () => {
 	const navigate = useNavigate();
 	const { streamName } = useParams();
 	const location = useLocation();
@@ -162,135 +159,145 @@ const Navbar: FC<NavbarProps> = (props) => {
 	}, [username]);
 
 	return (
-		<MantineNavbar
-			{...props}
-			withBorder
-			zIndex={1}
-			hiddenBreakpoint={window.outerWidth + 20}
-			hidden={isSubNavbarOpen}
-			width={{ xs: `${NAVBAR_WIDTH}px` }}>
-			<MantineNavbar.Section grow className={styles.container}>
-				<NavLink label="Log Streams" icon={<IconBinaryTree2 size="1.5rem" stroke={1.3} />} className={styles.streamsBtn} />
-				<Select
-					placeholder="Pick one"
-					onChange={(value) => handleChange(value || '')}
-					nothingFound="No options"
-					value={selectedStream}
-					searchValue={searchValue}
-					onSearchChange={(value) => setSearchValue(value)}
-					onDropdownClose={() => setSearchValue(selectedStream)}
-					onDropdownOpen={() => setSearchValue('')}
-					data={userSepecficStreams?.map((stream: any) => ({ value: stream.name, label: stream.name })) ?? []}
-					searchable
-					required
-					className={styles.selectStreambtn}
-				/>
-				{getLogStreamListIsError && <div>{getLogStreamListIsError}</div>}
-				{getLogStreamListIsError && (
-					<NavLink
-						label="Retry"
-						icon={<IconReload size="1rem" stroke={1.5} />}
-						component="button"
-						onClick={() => getLogStreamListRefetch()}
-						style={{ paddingLeft: 0 }}
-					/>
-				)}
-				{links.map((link) => {
-					if (
-						(link.requiredAccess &&
-							!userSepecficAccess?.some((access: string) => link.requiredAccess.includes(access))) ||
-						selectedStream === ''
-					) {
-						return null;
-					}
-					return (
+		<Box>
+			<nav className={styles.navbar} style={{ width: rem(200) }}>
+				<div className={styles.navbarMain}>
+					<Stack justify="center" gap={5}>
 						<NavLink
-							label={link.label}
-							icon={<link.icon size="1.3rem" stroke={1.2} />}
-							style={{ paddingLeft: 53 }}
-							disabled={disableLink}
-							onClick={() => {
-								handleChange(selectedStream, link.pathname);
-							}}
-							key={link.label}
-							className={(currentPage === link.pathname && styles.linkBtnActive) || styles.linkBtn}
+							label="Log Streams"
+							leftSection={<IconBinaryTree2 size="1.5rem" stroke={1.3} />}
+							className={styles.streamsBtn}
 						/>
-					);
-				})}
-				{!userSepecficAccess?.some((access: string) => ['DeleteStream'].includes(access)) ||
-				selectedStream === '' ? null : (
-					<NavLink
-						label={'Delete'}
-						icon={<IconTrash size="1.3rem" stroke={1.2} />}
-						style={{ paddingLeft: 53 }}
-						onClick={openDelete}
-						className={styles.linkBtn}
-						disabled={disableLink}
-					/>
-				)}
+						<Select
+							placeholder="Pick one"
+							onChange={(value) => handleChange(value || '')}
+							nothingFoundMessage="No options"
+							value={selectedStream}
+							searchValue={searchValue}
+							onSearchChange={(value) => setSearchValue(value)}
+							onDropdownClose={() => setSearchValue(selectedStream)}
+							onDropdownOpen={() => setSearchValue('')}
+							data={userSepecficStreams?.map((stream: any) => ({ value: stream.name, label: stream.name })) ?? []}
+							searchable
+							required
+							className={styles.selectStreambtn}
+							classNames={{ option: styles.option }}
+						/>
 
-				{!userSepecficAccess?.some((access: string) => ['ListUser'].includes(access)) ? null : (
-					<NavLink
-						pt={24}
-						className={(currentPage === USERS_MANAGEMENT_ROUTE && styles.userManagementBtnActive) || styles.userManagementBtn}
-						label="Users"
-						icon={<IconUserCog size="1.5rem" stroke={1.3} />}
-						onClick={() => {
-							navigate('/users');
-							setCurrentPage(USERS_MANAGEMENT_ROUTE);
-						}}
-					/>
-				)}
-			</MantineNavbar.Section>
-			<MantineNavbar.Section className={styles.lowerContainer}>
-				<NavLink label={username} icon={<IconUser size="1.3rem" stroke={1.3} />} className={styles.userBtn} component="a"/>
-				<NavLink
-					label="About"
-					icon={<IconInfoCircle size="1.3rem" stroke={1.3} />}
-					className={styles.actionBtn}
-					component="a"
-					onClick={open}
-				/>
-				<NavLink
-					label="Log out"
-					icon={<IconLogout size="1.3rem" stroke={1.3} />}
-					className={styles.actionBtn}
-					component="a"
-					onClick={signOutHandler}
-				/>
-			</MantineNavbar.Section>
-			<Modal
-				withinPortal
-				size="md"
-				opened={openedDelete}
-				onClose={handleCloseDelete}
-				title={'Delete Stream'}
-				centered
-				className={styles.modalStyle}>
-				<TextInput
-					type="text"
-					label="Are you sure you want to delete this stream?"
-					onChange={(e) => {
-						setDeleteStream(e.target.value);
-					}}
-					placeholder={`Type the name of the stream to confirm. i.e. ${selectedStream}`}
-					required
-				/>
+						{getLogStreamListIsError && <div>{getLogStreamListIsError}</div>}
+						{getLogStreamListIsError && (
+							<NavLink
+								label="Retry"
+								leftSection={<IconReload size="1rem" stroke={1.5} />}
+								component="button"
+								onClick={() => getLogStreamListRefetch()}
+								style={{ paddingLeft: 0 }}
+							/>
+						)}
+						{links.map((link) => {
+							if (
+								(link.requiredAccess &&
+									!userSepecficAccess?.some((access: string) => link.requiredAccess.includes(access))) ||
+								selectedStream === ''
+							) {
+								return null;
+							}
+							return (
+								<NavLink
+									label={link.label}
+									leftSection={<link.icon size="1.3rem" stroke={1.2} />}
+									disabled={disableLink}
+									onClick={() => {
+										handleChange(selectedStream, link.pathname);
+									}}
+									style={{ paddingLeft: 20, paddingRight: 20 }}
+									key={link.label}
+									className={(currentPage === link.pathname && styles.linkBtnActive) || styles.linkBtn}
+								/>
+							);
+						})}
+						{!userSepecficAccess?.some((access: string) => ['DeleteStream'].includes(access)) ||
+						selectedStream === '' ? null : (
+							<NavLink
+								label={'Delete'}
+								leftSection={<IconTrash size="1.3rem" stroke={1.2} />}
+								onClick={openDelete}
+								style={{ paddingLeft: 20, paddingRight: 20 }}
+								disabled={disableLink}
+							/>
+						)}
+						{!userSepecficAccess?.some((access: string) => ['ListUser'].includes(access)) ? null : (
+							<NavLink
+								className={
+									(currentPage === USERS_MANAGEMENT_ROUTE && styles.userManagementBtnActive) || styles.userManagementBtn
+								}
+								label="Users"
+								leftSection={<IconUserCog size="1.5rem" stroke={1.3} />}
+								onClick={() => {
+									navigate('/users');
+									setCurrentPage(USERS_MANAGEMENT_ROUTE);
+								}}
+							/>
+						)}
+					</Stack>
+					<Group className={styles.lowerContainer} gap={0}>
+						<NavLink
+							label={username}
+							leftSection={<IconUser size="1.3rem" stroke={1.3} />}
+							className={styles.userBtn}
+							component="a"
+						/>
+						<NavLink
+							label="About"
+							leftSection={<IconInfoCircle size="1.3rem" stroke={1.3} />}
+							className={styles.actionBtn}
+							component="a"
+							onClick={open}
+						/>
+						<NavLink
+							label="Log out"
+							leftSection={<IconLogout size="1.3rem" stroke={1.3} />}
+							className={styles.actionBtn}
+							component="a"
+							onClick={signOutHandler}
+						/>
+					</Group>
+					<Modal
+						withinPortal
+						size="md"
+						opened={openedDelete}
+						onClose={handleCloseDelete}
+						title={'Delete Stream'}
+						centered
+						className={styles.modalStyle}
+						styles={{title: {fontWeight: 700}}}
+						>
+						<TextInput
+							type="text"
+							label="Are you sure you want to delete this stream?"
+							onChange={(e) => {
+								setDeleteStream(e.target.value);
+							}}
+							placeholder={`Type the name of the stream to confirm. i.e. ${selectedStream}`}
+							required
+						/>
 
-				<Group mt={10} position="right">
-					<Button
-						className={styles.modalActionBtn}
-						disabled={deleteStream === selectedStream ? false : true}
-						onClick={handleDelete}>
-						Delete
-					</Button>
-					<Button onClick={handleCloseDelete} className={styles.modalCancelBtn}>
-						Cancel
-					</Button>
-				</Group>
-			</Modal>
-			<InfoModal opened={opened} close={close} />
-		</MantineNavbar>
+						<Group mt={10} justify="right">
+							<Button
+								className={styles.modalActionBtn}
+								disabled={deleteStream === selectedStream ? false : true}
+								onClick={handleDelete}>
+								Delete
+							</Button>
+							<Button onClick={handleCloseDelete} className={styles.modalCancelBtn}>
+								Cancel
+							</Button>
+						</Group>
+					</Modal>
+					<InfoModal opened={opened} close={close} />
+				</div>
+			</nav>
+		</Box>
 	);
 };
 

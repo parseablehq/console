@@ -32,11 +32,11 @@ const NotFound: FC = () => {
 				<Illustration className={illustration} />
 				<div>
 					<Title className={titleStyle}>Nothing to see here</Title>
-					<Text color="dimmed" size="lg" align="center" className={descriptionStyle}>
+					<Text color="dimmed" size="lg" ta="center" className={descriptionStyle}>
 						Page you are trying to open does not exist. You may have mistyped the address, or the page has been moved to
 						another URL. If you think this is an error contact support.
 					</Text>
-					<Group position="center">
+					<Group justify="center">
 						<Button className={btnStyle} size="md" onClick={onHome}>
 							Take me back to home page
 						</Button>

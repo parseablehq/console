@@ -33,7 +33,8 @@ const LiveTailFilter: FC = () => {
 		});
 	};
 
-	const handleDropdownValue = (value: string) => {
+	const handleDropdownValue = (value: string | null) => {
+		if (value === null) return;
 		setSearchField(value);
 	};
 
@@ -65,7 +66,7 @@ const LiveTailFilter: FC = () => {
 						value={searchValue}
 						onChange={onSearchValueChange}
 						placeholder="Search"
-						icon={<IconSearch size={px('1.2rem')} stroke={1.5} />}
+						leftSection={<IconSearch size={px('1.2rem')} stroke={1.5} />}
 					/>
 				</>
 			)}

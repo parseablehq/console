@@ -19,5 +19,8 @@
 	justify-content: center;
 	min-width: 130px;
 	border-right: 1px solid #e9ecef;
-	color: #545BEB;
+}
+
+.bigNo {
+	color: var(--mantine-color-brandPrimary-4);
 }

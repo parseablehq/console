@@ -16,11 +16,12 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlus, IconTransform, IconTrash, IconX } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
-import { Prism } from '@mantine/prism';
+// import { Prism } from '@mantine/prism';
 import { AxiosResponse } from 'axios';
 import { useUser } from '@/hooks/useUser';
 import { useRole } from '@/hooks/useRole';
-import styles from './styles/AccessManagement.module.css'
+import styles from './styles/AccessManagement.module.css';
+import { CodeHighlight } from '@mantine/code-highlight';
 
 interface RoleTRProps {
 	user: {
@@ -173,14 +174,18 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				) : getUserRolesIsLoading ? (
 					'loading..'
 				) : getUserRolesData?.data ? (
-					<>
+					<Stack style={{ flexDirection: 'row' }} gap={0} align="end" justify="center">
 						{getBadges()}
-						<Tooltip label={'Add a Role'} style={{ color: 'white', backgroundColor: 'black' }} withArrow position="right">
-							<Badge color="green" onClick={openEditModal}>
-								<IconPlus size={rem(10)} />
+						<Tooltip
+							label={'Add a Role'}
+							style={{ color: 'white', backgroundColor: 'black' }}
+							withArrow
+							position="right">
+							<Badge color="green" onClick={openEditModal} style={{ textAlign: 'center', alignItems: 'center' }}>
+								<IconPlus size={'1rem'} style={{ paddingTop: 6 }} />
 							</Badge>
 						</Tooltip>
-					</>
+					</Stack>
 				) : (
 					<Badge color="red">Error</Badge>
 				)}
@@ -227,7 +232,8 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				onClose={handleCloseDelete}
 				title={'Delete user'}
 				className={classes.modalStyle}
-				centered>
+				centered
+				styles={{ title: { fontWeight: 700 } }}>
 				<TextInput
 					label="Are you sure you want to delete this user?"
 					type="text"
@@ -238,7 +244,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 					required
 				/>
 
-				<Group position="right" mt={10}>
+				<Group justify="right" mt={10}>
 					<Button
 						variant="filled"
 						color="gray"
@@ -274,7 +280,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						/>
 					</Stack>
 
-					<Group position="right" mt={10}>
+					<Group justify="right" mt={10}>
 						<Button
 							variant="filled"
 							color="gray"
@@ -297,7 +303,8 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				onClose={handleCloseResetPassword}
 				title="Change user password"
 				centered
-				className={classes.modalStyle}>
+				className={classes.modalStyle}
+				styles={{ title: { fontWeight: 700 } }}>
 				<Stack>
 					<TextInput
 						label={"Are you sure you want to reset this user's password?"}
@@ -307,6 +314,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 							setUserInput(e.target.value);
 						}}
 						required
+						mb={4}
 					/>
 
 					{updateUserPasswordIsError ? (
@@ -318,13 +326,13 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 					) : udpateUserPasswordData?.data ? (
 						<Box>
 							<Text className={classes.passwordText}>Password</Text>
-							<Prism
+							<CodeHighlight
 								className={classes.passwordPrims}
-								language="markup"
+								language="text"
 								copyLabel="Copy password to clipboard"
-								copiedLabel="Password copied to clipboard">
-								{udpateUserPasswordData?.data}
-							</Prism>
+								code={udpateUserPasswordData?.data}
+								copiedLabel="Password copied to clipboard"
+							/>
 							<Text className={classes.passwordText} color="red">
 								Warning this is the only time you are able to see Password
 							</Text>
@@ -333,7 +341,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						''
 					)}
 				</Stack>
-				<Group position="right" mt={10}>
+				<Group justify="right" mt={10}>
 					{user.method === 'native' ? (
 						<Button
 							variant="filled"
@@ -363,7 +371,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						onChange={(value) => {
 							setSelectedRole(value ?? '');
 						}}
-						nothingFound="No roles found"
+						nothingFoundMessage="No roles found"
 						value={SelectedRole}
 						searchValue={roleSearchValue}
 						onSearchChange={(value) => setRoleSearchValue(value)}
@@ -376,7 +384,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 					/>
 				</Stack>
 
-				<Group position="right" mt={10}>
+				<Group justify="right" mt={10}>
 					<Button
 						variant="filled"
 						color="gray"

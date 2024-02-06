@@ -7,7 +7,7 @@ type DropdownProps = {
 	placeholder?: string;
 	searchable?: boolean;
 	value?: string | null;
-	onChange: (value: string) => void;
+	onChange: (value: string | null) => void;
 };
 
 const Dropdown: FC<DropdownProps> = (props) => {
@@ -23,6 +23,7 @@ const Dropdown: FC<DropdownProps> = (props) => {
 			onChange={onChange}
 			allowDeselect={false}
 			value={value}
+			classNames={{ option: classes.dropdownOption, input: classes.dropdownBtn }}
 		/>
 	);
 };

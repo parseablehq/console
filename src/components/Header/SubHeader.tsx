@@ -1,4 +1,4 @@
-import { Box, Header as MantineHeader, px } from '@mantine/core';
+import { Box, px } from '@mantine/core';
 import { type FC } from 'react';
 import HeaderBreadcrumbs from './HeaderBreadcrumbs';
 import RefreshInterval from './RefreshInterval';
@@ -28,9 +28,9 @@ const HeaderLayout: FC<HeaderLayoutProps> = (props) => {
 	const { container, navContainer } = classes;
 
 	return (
-		<MantineHeader {...props} className={container} height={HEADER_HEIGHT} p={0} withBorder zIndex={100}>
+		<Box className={container} style={{ height: HEADER_HEIGHT, zIndex: 100 }} p={0}>
 			<Box className={navContainer}>{props.children}</Box>
-		</MantineHeader>
+		</Box>
 	);
 };
 
@@ -86,7 +86,6 @@ export const LiveTailHeader: FC = () => {
 };
 
 export const LogsHeader: FC = () => {
-	// const classes = styles;
 	const classes = styles;
 	const { container, innerContainer } = classes;
 	const {
@@ -99,7 +98,7 @@ export const LogsHeader: FC = () => {
 		state: { subLogQuery },
 		methods: { resetTimeInterval },
 	} = useHeaderContext();
-	const exportHandler = (fileType: string) => {
+	const exportHandler = (fileType: string | null) => {
 		const query = subLogQuery.get();
 		const filename = `${query.streamName}-logs`;
 		if (fileType === 'CSV') {
@@ -156,13 +155,15 @@ export const ConfigHeader: FC = () => {
 	const { container, innerContainer } = classes;
 
 	return (
-		<Box className={container}>
-			<Box>
-				<Box className={innerContainer}>
-					<HeaderBreadcrumbs crumbs={['Streams', 'streamName', 'Config']} />
+		<HeaderLayout>
+			<Box className={container}>
+				<Box>
+					<Box className={innerContainer}>
+						<HeaderBreadcrumbs crumbs={['Streams', 'streamName', 'Config']} />
+					</Box>
 				</Box>
 			</Box>
-		</Box>
+		</HeaderLayout>
 	);
 };
 

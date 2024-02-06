@@ -37,13 +37,13 @@ const SortWidget: FC<SortWidgetProps> = (props) => {
 			<Button
 				className={fieldSortOrder === SortOrder.ASCENDING ? sortBtnActive : sortBtn}
 				onClick={toggleAscending}
-				leftIcon={<IconSortAscending stroke={fieldSortOrder === SortOrder.ASCENDING ? 2 : 1} />}>
+				leftSection={<IconSortAscending stroke={fieldSortOrder === SortOrder.ASCENDING ? 2 : 1} />}>
 				Sort by Ascending order
 			</Button>
 			<Button
 				className={fieldSortOrder === SortOrder.DESCENDING ? sortBtnActive : sortBtn}
 				onClick={toggleDescending}
-				leftIcon={<IconSortDescending stroke={fieldSortOrder === SortOrder.DESCENDING ? 2 : 1} />}>
+				leftSection={<IconSortDescending stroke={fieldSortOrder === SortOrder.DESCENDING ? 2 : 1} />}>
 				Sort by Descending order
 			</Button>
 		</Box>
@@ -129,14 +129,14 @@ const Column: FC<Column> = (props) => {
 				<Popover.Dropdown>
 					<Box>
 						<SortWidget setSortOrder={setSorting} fieldSortOrder={fieldSortOrder} />
-						<Button className={filterText} leftIcon={<IconFilter stroke={1} />}>
+						<Button className={filterText} leftSection={<IconFilter stroke={1} />}>
 							Filter by values:
 						</Button>
 
 						<TextInput
 							className={searchInputStyle}
 							placeholder="Search"
-							icon={<IconSearch size={px('0.8rem')} />}
+							leftSection={<IconSearch size={px('0.8rem')} />}
 							onChange={onSearch}
 						/>
 						{isPending ? (

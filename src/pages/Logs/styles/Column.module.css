@@ -28,11 +28,12 @@
 .filterText {
     display: flex;
     align-items: center;
-    color: #868e96;
+    color: #211F1F;
     padding: 0;
-    font-size: 0.875rem;
-    font-weight: 300;
     cursor: default;
+    background-color: white;
+    font-size: 0.875rem;
+    font-weight: 400;
 }
 
 .checkBoxStyle {
@@ -59,6 +60,15 @@
     background-color: #545beb;
 }
 
+.applyBtn:disabled {
+    background-color: var(--mantine-color-gray-3);
+}
+
+
+.applyBtn:disabled:hover {
+    background-color: var(--mantine-color-gray-3);
+}
+
 .applyBtn:hover {
     background-color: #1f288e;
 }
@@ -70,6 +80,7 @@
     padding: 0;
     font-size: 0.875rem;
     font-weight: 400;
+    background-color: white;
 }
 
 .sortBtn:hover {
@@ -83,6 +94,7 @@
     padding: 0;
     font-size: 0.875rem;
     font-weight: 500;
+    background-color: white;
 }
 
 .sortBtnActive:hover {

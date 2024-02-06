@@ -70,6 +70,7 @@
     padding: 0;
     font-size: 0.875rem;
     font-weight: 400;
+    background-color: white;
 }
 
 .sortBtn:hover {
@@ -83,6 +84,7 @@
     padding: 0;
     font-size: 0.875rem;
     font-weight: 500;
+    background-color: white;
 }
 
 .sortBtnActive:hover {

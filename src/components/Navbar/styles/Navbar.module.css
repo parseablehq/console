@@ -1,101 +1,3 @@
-/* 
-container: {
-    display: 'flex',
-    background: white,
-    flexDirection: 'column',
-    alignItems: 'center',
-    color: theme.colors.gray[7],
-    fontFamily: theme.fontFamily,
-    fontSize: fontSizes.md,
-    fontWeight: fontWeights.normal,
-    lineHeight: 'normal',
-},
-streamsBtn: {
-    padding: '14px 24px 14px 24px',
-    ':hover': { background: 'white' },
-    cursor: 'default',
-    color: theme.colors.gray[6],
-},
-userManagementBtn: {
-    padding: '14px 0px 14px 24px',
-    color: theme.colors.gray[6],
-},
-userManagementBtnActive: {
-    padding: '14px 0px 14px 24px',
-    color: pColor,
-    fontWeight: fontWeights.bold,
-},
-
-linkBtnActive: {
-    color: pColor,
-    '&:hover *': {
-        color: sColor,
-    },
-    fontWeight: fontWeights.bold,
-},
-linkBtn: {
-    color: theme.colors.gray[6],
-    '&:hover *': {
-        color: sColor,
-    },
-},
-selectStreambtn: {
-    margin: '0 24px 0 24px',
-},
-lowerContainer: {
-    marginBottom: '50px',
-},
-actionBtn: {
-    paddingLeft: '24px',
-    height: '40px',
-    color: theme.colors.gray[6],
-    '&:hover *': {
-        color: sColor,
-    },
-},
-
-userBtn: {
-    cursor: 'default',
-    paddingLeft: '24px',
-    height: '40px',
-    color: theme.colors.gray[6],
-    '&:hover ': {
-        background: white,
-    },
-},
-userContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-},
-userText: {
-    fontSize: fontSizes.sm,
-},
-modalStyle: {
-    '& .mantine-Paper-root ': {
-        overflowY: 'inherit',
-    },
-    '& .mantine-Modal-header	':{
-        borderRadius: "8px 8px 0px 0px",
-        backgroundColor: colors.gray[1],
-    },
-    '& .mantine-Modal-title	':{
-        fontWeight: 'bold',
-    },
-    "& .mantine-Modal-body ":{	
-        paddingTop: '1rem !important',
-    }
-},
-modalActionBtn: {
-    backgroundColor: theme.colors.brandSecondary[0],
-    color: "white",
-},
-modalCancelBtn: {
-    borderColor: theme.colors.gray[2],
-    color: theme.colors.gray[5]
-} */
-
-
 .container {
     display: flex;
     background: white;
@@ -106,30 +8,37 @@ modalCancelBtn: {
     font-size: 16px;
     font-weight: 400;
     line-height: normal;
+
+    & .mantine-Select-group {
+        padding: 23rem !important;
+    }
 }
 
-button.streamsBtn {
-    padding: 14px 24px 14px 24px;
+.streamsBtn {
     cursor: default;
     color: #4d4d4d;
+    padding-left: 0;
+    padding-right: 0;
     &:hover {
         background-color: white;
     }
 }
 
 
-button.userManagementBtn {
-    padding: 14px 0px 14px 24px;
+.userManagementBtn {
     color: #4d4d4d;
+    padding-left: 0;
+    padding-right: 0;
 }
 
-button.userManagementBtnActive {
-    padding: 14px 0px 14px 24px;
+.userManagementBtnActive {
     color: #545BEB;
     font-weight: 700;
+    padding-left: 0;
+    padding-right: 0;
 }
 
-button.linkBtnActive {
+.linkBtnActive {
     color: #545BEB;
     font-weight: 700;
     &:hover {
@@ -141,18 +50,7 @@ button.linkBtnActive {
     color: #4d4d4d;
 }
 
-.selectStreambtn {
-    margin: 0 24px 0 24px;
-}
-
-
-.lowerContainer {
-    margin-bottom: 50px;
-    padding: 0 0.675rem;
-}
-
 .actionBtn {
-    padding-left: 24px;
     height: 40px;
     color: #4d4d4d;
 }
@@ -182,13 +80,52 @@ button.linkBtnActive {
 }
 
 
-button.modalActionBtn {
+.modalActionBtn {
     background-color: #4d4d4d;
     color: white;
 }
 
-button.modalCancelBtn {
-    border-color: #e0e0e0;
-    color: #9e9e9e;
+.modalActionBtn:disabled {
+    background-color: var(--mantine-color-gray-4);
 }
 
+.modalActionBtn:disabled:hover {
+    background-color: var(--mantine-color-gray-4);
+}
+
+.modalCancelBtn {
+    border-color: #e0e0e0;
+    color: white;
+}
+
+.navbar {
+	height: calc(100vh - 50px);
+	padding: var(--mantine-spacing-md) var(--mantine-spacing-md);
+	display: flex;
+	flex-direction: column;
+	border-right: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+	transition: width 0.4s ease-in-out;
+	flex: '0 0 auto';
+}
+
+.navbarMain {
+    display: flex;
+    flex-direction: column;
+	flex: 1;
+    justify-content: space-between;
+}
+
+.option {
+    font-size: var(--mantine-font-size-sm);
+    &:hover {
+        color: var(--mantine-color-brandSecondary-4);
+        background-color: var(--mantine-color-gray-4);
+    }
+    border-radius: rem(6px);
+    padding: 0.5rem;
+  }
+  
+  .option[aria-selected="true"] {
+    background-color: var(--mantine-color-brandPrimary-4);
+    color: white;
+  }

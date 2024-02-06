@@ -24,7 +24,7 @@ const EmptyStreamsView: FC = () => {
 				component="a"
 				href="https://www.parseable.io/docs/category/log-ingestion"
 				className={btnStyle}
-				leftIcon={<IconExternalLink size="0.9rem" />}>
+				leftSection={<IconExternalLink size="0.9rem" />}>
 				Documentation
 			</Button>
 		</Center>
@@ -78,7 +78,7 @@ const BigNumber = (props: { label: string; value: any; color?: string }) => {
 			<Text size="xs" style={{ color: 'black' }}>
 				{props.label}
 			</Text>
-			<Text fw={700} size={'xl'} c={props.color || 'black'}>
+			<Text fw={700} size={'xl'} className={cardStyles.bigNo}>
 				{props.value}
 			</Text>
 		</Box>

@@ -11,7 +11,8 @@
 
 .runQueryBtn {
     color: #545BEB;
-    border-color: #e9ecef;
+    border-color: var(--mantine-color-gray-4);
+    border-radius: rem(8px);
     height: 34px;
     margin-left: 0.625rem;
 }
@@ -21,9 +22,18 @@
 }
 
 .clearQueryBtn {
-    border-color: #e9ecef;
+    border-color: var(--mantine-color-gray-4);
+    border-radius: rem(8px);
     height: 34px;
     color: #545BEB;
+}
+
+.clearQueryBtn:disabled {
+    color: var(--mantine-color-gray-5)
+}
+
+.clearQueryBtn:disabled:hover {
+    color: var(--mantine-color-gray-5)
 }
 
 .clearQueryBtn:hover {
@@ -36,10 +46,11 @@
     padding: 0px;
     margin-inline-end: 0.625rem;
     color: #777777;
-    border-color: #e9ecef;
+    border-color: var(--mantine-color-gray-4);
+    border-radius: rem(8px);
 }
 
 .textContext {
     font-size: 1rem;
-    font-weight: 500;
+    font-weight: 600;
 }

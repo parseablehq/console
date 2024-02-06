@@ -3,12 +3,13 @@ import { Box, Button, Modal, ScrollArea, Text, px } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { FC, useEffect, useRef } from 'react';
 import { IconArrowsMaximize } from '@tabler/icons-react';
-import { Prism } from '@mantine/prism';
+// import { Prism } from '@mantine/prism';
 import useMountedState from '@/hooks/useMountedState';
 import { heights } from '@/components/Mantine/sizing';
 import { useAlertsEditor } from '@/hooks/useAlertsEditor';
 import { useParams } from 'react-router-dom';
 import alertStyles from './styles/Alerts.module.css'
+import { CodeHighlight } from '@mantine/code-highlight';
 
 const Alerts: FC = () => {
 	const {
@@ -67,7 +68,7 @@ const Alerts: FC = () => {
 				)}
 			</Box>
 			<Modal size="auto" opened={opened} onClose={close} title={Alert.name} scrollAreaComponent={ScrollArea.Autosize}>
-				<Prism language="json">{JSON.stringify(Alert, null, 2)}</Prism>
+				<CodeHighlight code={JSON.stringify(Alert, null, 2)} language="json" />
 			</Modal>
 		</ScrollArea>
 	);

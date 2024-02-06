@@ -32,10 +32,10 @@ const OIDCNotConFigured: FC = () => {
 				<Illustration className={illustration} />
 				<div>
 					<Title className={titleStyle}>Nothing to see here</Title>
-					<Text color="dimmed" size="lg" align="center" className={descriptionStyle}>
+					<Text color="dimmed" size="lg" ta="center" className={descriptionStyle}>
 						OIDC is not configured. Please contact your administrator.
 					</Text>
-					<Group position="center">
+					<Group justify="center">
 						<Button variant="outline" color="brandPrimary.0" size="md" onClick={onHome}>
 							Take me back to home page
 						</Button>

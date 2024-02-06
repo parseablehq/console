@@ -134,7 +134,7 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 										href="https://github.com/parseablehq/parseable/releases/latest"
 										target="_blank"
 										className={actionBtnRed}
-										leftIcon={<IconAlertCircle size={px('1.2rem')} stroke={1.5} />}>
+										leftSection={<IconAlertCircle size={px('1.2rem')} stroke={1.5} />}>
 										Upgrade to latest version {getAboutData?.data.latestVersion}
 									</Button>
 								) : null}

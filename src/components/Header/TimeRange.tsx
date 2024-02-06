@@ -1,6 +1,6 @@
 import useMountedState from '@/hooks/useMountedState';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Box, Button, Menu, Text, UnstyledButton, px } from '@mantine/core';
+import { Box, Button, Menu, UnstyledButton, px } from '@mantine/core';
 import { DateTimePicker } from '@mantine/dates';
 import { IconClock } from '@tabler/icons-react';
 import dayjs from 'dayjs';
@@ -53,8 +53,8 @@ const TimeRange: FC = () => {
 	return (
 		<Menu withArrow position="top" opened={opened} onChange={setOpened}>
 			<Menu.Target>
-				<Button className={timeRangeBTn} leftIcon={<IconClock size={px('1.2rem')} stroke={1.5} />}>
-					<Text>{selectedRange}</Text>
+				<Button className={timeRangeBTn} leftSection={<IconClock size={px('1.2rem')} stroke={1.5} />}>
+					{selectedRange}
 				</Button>
 			</Menu.Target>
 			<Menu.Dropdown>

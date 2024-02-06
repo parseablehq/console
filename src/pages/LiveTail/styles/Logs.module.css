@@ -89,6 +89,8 @@
 
 	td {
 		border-top: none !important;
+    padding: 0.625rem 1rem;
+    font-size: var(--mantine-font-size-sm);
 	}	
 }
 
@@ -103,6 +105,8 @@
 	border-color: #ff0000;
 	td {
 		border-top: none !important;
+    padding: 0.625rem 1rem;
+    font-size: var(--mantine-font-size-sm);
 	}
 }
 

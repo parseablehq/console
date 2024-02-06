@@ -3,7 +3,7 @@ import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect, useState } from 'react';
 
 import { useUser } from '@/hooks/useUser';
-import { Prism } from '@mantine/prism';
+// import { Prism } from '@mantine/prism';
 
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import RoleTR from './RoleTR';
@@ -12,6 +12,7 @@ import { useRole } from '@/hooks/useRole';
 import styles from './styles/AccessManagement.module.css'
 import { heights } from '@/components/Mantine/sizing';
 import { HEADER_HEIGHT } from '@/constants/theme';
+import { CodeHighlight } from '@mantine/code-highlight';
 
 const Users: FC = () => {
 	useDocumentTitle('Parseable | Users');
@@ -111,11 +112,10 @@ const Users: FC = () => {
 		return false;
 	};
 
-	// const { classes } = useUsersStyles();
 	return (
 		<Box className={styles.container} style={{maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT*2}px - ${20}px)`}}>
 			<Box className={styles.header}>
-				<Text size="xl" weight={500}>
+				<Text size="xl" style={{fontWeight: 500}}>
 					Users
 				</Text>
 				<Button
@@ -125,7 +125,7 @@ const Users: FC = () => {
 					onClick={() => {
 						setModalOpen(true);
 					}}
-					rightIcon={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
+					rightSection={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
 					Create users
 				</Button>
 			</Box>
@@ -142,7 +142,7 @@ const Users: FC = () => {
 					<tbody>{rows}</tbody>
 				</Table>
 			</ScrollArea>
-			<Modal opened={modalOpen} onClose={handleClose} title="Create user" centered className={styles.modalStyle}>
+			<Modal opened={modalOpen} onClose={handleClose} title="Create user" centered className={styles.modalStyle} styles={{title: {fontWeight: 700}}}>
 				<Stack>
 					<TextInput
 						type="text"
@@ -160,7 +160,7 @@ const Users: FC = () => {
 						onChange={(value) => {
 							setSelectedRole(value ?? '');
 						}}
-						nothingFound="No roles found"
+						nothingFoundMessage="No roles found"
 						value={SelectedRole}
 						searchValue={roleSearchValue}
 						onSearchChange={(value) => setRoleSearchValue(value)}
@@ -181,13 +181,13 @@ const Users: FC = () => {
 					) : createUserData?.data ? (
 						<Box>
 							<Text className={styles.passwordText}>Password</Text>
-							<Prism
+														<CodeHighlight
 								className={styles.passwordPrims}
-								language="markup"
+								language="text"
 								copyLabel="Copy password to clipboard"
-								copiedLabel="Password copied to clipboard">
-								{createUserData?.data}
-							</Prism>
+								code={createUserData?.data}
+								copiedLabel="Password copied to clipboard"
+							/>
 							<Text className={styles.passwordText} color="red">
 								Warning this is the only time you are able to see Password
 							</Text>
@@ -197,7 +197,7 @@ const Users: FC = () => {
 					)}
 				</Stack>
 
-				<Group position="right" mt={10}>
+				<Group justify="right" mt={10}>
 					<Button
 						variant="filled"
 						color="gray"

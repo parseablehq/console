@@ -17,7 +17,7 @@ export const ToggleButton: FC<ToggleButtonProps> = (props) => {
 		<Button
 			className={[toggleBtn, ...(toggled ? [toggleBtnActive] : [])].join(" ")}
 			onClick={onClick}
-			{...(renderIcon && { leftIcon: renderIcon() })}>
+			{...(renderIcon && { leftSection: renderIcon() })}>
 			{label}
 		</Button>
 	);

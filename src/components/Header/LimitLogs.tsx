@@ -35,7 +35,7 @@ const LimitLog: FC = () => {
 	return (
 		<Menu withArrow>
 			<Menu.Target>
-				<Button className={intervalBtn} leftIcon={<IconTableDown/>}>
+				<Button className={intervalBtn} leftSection={<IconTableDown/>}>
 					{/* <Text>{selectedInterval ? ms(selectedInterval) : 'Off'}</Text>
 					 */}
 					<Text>{limit} rows</Text>

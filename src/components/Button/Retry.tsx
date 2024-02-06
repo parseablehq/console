@@ -13,7 +13,7 @@ export const RetryBtn: FC<RetryProps> = (props) => {
 	const { retryBtn } = classes;
 
 	return (
-		<Button className={[className, retryBtn].join(" ")} rightIcon={<IconReload size={px('0.8rem')} />} {...restProps}>
+		<Button className={[className, retryBtn].join(" ")} rightSection={<IconReload size={px('0.8rem')} />} {...restProps}>
 			Reload
 		</Button>
 	);

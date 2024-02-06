@@ -179,7 +179,7 @@ const Roles: FC = () => {
 	return (
 		<Box className={classes.container}>
 			<Box className={classes.header}>
-				<Text size="xl" weight={500}>
+				<Text size="xl" style={{fontWeight: 500}}>
 					Roles
 				</Text>
 				<Box>
@@ -190,7 +190,7 @@ const Roles: FC = () => {
 						onClick={() => {
 							setModalOpen(true);
 						}}
-						rightIcon={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
+						rightSection={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
 						Create role
 					</Button>
 					{oidcActive ? (
@@ -201,7 +201,7 @@ const Roles: FC = () => {
 							onClick={() => {
 								setDefaultRoleModalOpen(true);
 							}}
-							rightIcon={<IconPencil size={px('1.2rem')} stroke={1.5} />}>
+							rightSection={<IconPencil size={px('1.2rem')} stroke={1.5} />}>
 							Set Default OIDC Role
 						</Button>
 					) : (
@@ -236,12 +236,12 @@ const Roles: FC = () => {
 							setInputDefaultRole(value ?? '');
 						}}
 						value={inputDefaultRole}
-						nothingFound="No options"
+						nothingFoundMessage="No options"
 						searchable
 					/>
 				</Stack>
 
-				<Group position="right" mt={10}>
+				<Group justify="right" mt={10}>
 					<Button
 						variant="filled"
 						color="gray"
@@ -259,7 +259,7 @@ const Roles: FC = () => {
 					</Button>
 				</Group>
 			</Modal>
-			<Modal opened={modalOpen} onClose={handleClose} title="Create Role" centered className={classes.modalStyle}>
+			<Modal opened={modalOpen} onClose={handleClose} title="Create Role" centered className={classes.modalStyle} styles={{title: {fontWeight: 700}}}>
 				<Stack>
 					<TextInput
 						type="text"
@@ -279,17 +279,17 @@ const Roles: FC = () => {
 							setSelectedPrivilege(value ?? '');
 						}}
 						value={selectedPrivilege}
-						nothingFound="No options"
+						nothingFoundMessage="No options"
 					/>
 
 					{selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingester' ? (
 						<>
 							<Select
 								placeholder="Pick one"
+								nothingFoundMessage="No options"
 								onChange={(value) => {
 									setSelectedStream(value ?? '');
 								}}
-								nothingFound="No options"
 								value={SelectedStream}
 								searchValue={streamSearchValue}
 								onSearchChange={(value) => setStreamSearchValue(value)}
@@ -318,7 +318,7 @@ const Roles: FC = () => {
 					)}
 				</Stack>
 
-				<Group position="right" mt={10}>
+				<Group justify="right" mt={10}>
 					<Button
 						variant="filled"
 						color="gray"

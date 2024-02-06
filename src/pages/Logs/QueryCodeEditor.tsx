@@ -127,7 +127,7 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 							className={clearQueryBtn}
 							onClick={resetQuerySearch}
 							disabled={!isQuerySearchActive}
-							leftIcon={<IconRotate size={px('1rem')} stroke={2} />}>
+							leftSection={<IconRotate size={px('1rem')} stroke={2} />}>
 							Reset
 						</Button>
 					</Tooltip>
@@ -142,7 +142,7 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 							onClick={() => {
 								runQuery(query);
 							}}
-							leftIcon={<IconPlayerPlayFilled size={px('1rem')} stroke={1} />}>
+							leftSection={<IconPlayerPlayFilled size={px('1rem')} stroke={1} />}>
 							Search
 						</Button>
 					</Tooltip>
@@ -170,7 +170,7 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 							},
 						}}
 						rightSection={
-							<Button variant="filled" color="brandPrimary.0" radius={0} onClick={handleAIGenerate} h={'100%'}>
+							<Button variant="filled" color="brandPrimary.4" radius={0} onClick={handleAIGenerate} h={'100%'}>
 								✨ Generate
 							</Button>
 						}

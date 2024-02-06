@@ -438,7 +438,7 @@ const LogTable: FC = () => {
 							goToPage(page, pageLogData?.limit || 1);
 							pagination.setPage(page);
 						}}>
-						<Group spacing={5} position="center">
+						<Group gap={5} justify="center">
 							<Pagination.First
 								onClick={() => {
 									if (pageOffset !== 0) setPageOffset((value) => value - loadLimit);
