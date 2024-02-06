@@ -25,7 +25,6 @@ import InfoModal from './infoModal';
 import { getStreamsSepcificAccess, getUserSepcificStreams } from './rolesHandler';
 import { LogStreamData } from '@/@types/parseable/api/stream';
 import Cookies from 'js-cookie';
-import { NAVBAR_WIDTH } from '@/constants/theme';
 import { useUser } from '@/hooks/useUser';
 import { useLogStream } from '@/hooks/useLogStream';
 import { signOutHandler } from '@/utils';
@@ -49,7 +48,7 @@ const Navbar: FC = () => {
 	const username = Cookies.get('username');
 
 	const {
-		state: { subNavbarTogle, subAppContext },
+		state: { subAppContext },
 		methods: { streamChangeCleanup, setUserRoles, setSelectedStream },
 	} = useHeaderContext();
 
@@ -61,7 +60,6 @@ const Navbar: FC = () => {
 	const [userSepecficAccess, setUserSepecficAccess] = useMountedState<string[] | null>(null);
 
 	const [disableLink, setDisableLink] = useMountedState(false);
-	const [isSubNavbarOpen, setIsSubNavbarOpen] = useMountedState(false);
 	const [opened, { open, close }] = useDisclosure(false);
 	const [openedDelete, { close: closeDelete, open: openDelete }] = useDisclosure();
 
@@ -69,13 +67,6 @@ const Navbar: FC = () => {
 		useLogStream();
 
 	const { getUserRolesData, getUserRolesMutation } = useUser();
-
-	useEffect(() => {
-		const listener = subNavbarTogle.subscribe(setIsSubNavbarOpen);
-		return () => {
-			listener();
-		};
-	}, [subNavbarTogle.get()]);
 
 	useEffect(() => {
 		if (location.pathname.split('/')[2]) {

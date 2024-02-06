@@ -22,7 +22,6 @@ import type { FC } from 'react';
 import { LOG_QUERY_LIMITS, useLogsPageContext, LOAD_LIMIT as loadLimit } from './Context';
 import LogRow from './LogRow';
 import useMountedState from '@/hooks/useMountedState';
-import ErrorText from '@/components/Text/ErrorText';
 import { IconSelector, IconGripVertical, IconPin, IconPinFilled, IconSettings } from '@tabler/icons-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import EmptyBox from '@/components/Empty';
@@ -346,8 +345,10 @@ const LogTable: FC = () => {
 			<FilterPills />
 			{!(logStreamError || logStreamSchemaError || logsError) ? (
 				Boolean(tableHeaders.length) && Boolean(pageLogData?.data.length) ? (
-					<Box className={tableStyles.innerContainer} style={{maxHeight: `calc(100vh - ${HEADER_HEIGHT * 2}px )`}}>
-						<Box className={tableStyles.innerContainer} style={{ display: 'flex', flexDirection: 'row', maxHeight: `calc(100vh - ${HEADER_HEIGHT * 2}px )` }}>
+					<Box className={tableStyles.innerContainer} style={{ maxHeight: `calc(100vh - ${HEADER_HEIGHT * 2}px )` }}>
+						<Box
+							className={tableStyles.innerContainer}
+							style={{ display: 'flex', flexDirection: 'row', maxHeight: `calc(100vh - ${HEADER_HEIGHT * 2}px )` }}>
 							<ScrollArea
 								w={`${pinnedColumnsWidth}px`}
 								className={tableStyles.pinnedScrollView}
@@ -424,7 +425,9 @@ const LogTable: FC = () => {
 				)
 			) : (
 				<Center className={tableStyles.errorContainer}>
-					<ErrorText>{logStreamError || logStreamSchemaError || logsError}</ErrorText>
+					<Text c="red.8" style={{ fontWeight: 400 }}>
+						{logStreamError || logStreamSchemaError || logsError || 'Error'}
+					</Text>
 					{(logsError || logStreamSchemaError) && <RetryBtn onClick={onRetry} mt="md" />}
 				</Center>
 			)}
