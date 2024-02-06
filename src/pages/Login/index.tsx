@@ -84,9 +84,9 @@ const Login: FC = () => {
 								component="a"
 								href={`${baseURL}api/v1/o/login?redirect=${window.location.origin}`}
 								variant="outline"
-								color="brandPrimary.0"
+								c="brandPrimary.4"
 								style={({ colors }) => ({
-									color: colors.brandPrimary[0],
+									color: colors.brandPrimary[4],
 									borderColor: colors.brandPrimary[0],
 									'&:hover': {
 										borderColor: colors.brandSecondary[0],

@@ -61,3 +61,9 @@
 		background-color: #FC466B;
 	}
   }
+
+  .loginBtnStyle:disabled, 
+  .loginBtnStyle:disabled:hover 
+  {
+	background-color: var(--mantine-color-gray-4);
+  }
