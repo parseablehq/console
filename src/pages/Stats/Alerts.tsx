@@ -3,7 +3,6 @@ import { Box, Button, Modal, ScrollArea, Text, px } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { FC, useEffect, useRef } from 'react';
 import { IconArrowsMaximize } from '@tabler/icons-react';
-// import { Prism } from '@mantine/prism';
 import useMountedState from '@/hooks/useMountedState';
 import { heights } from '@/components/Mantine/sizing';
 import { useAlertsEditor } from '@/hooks/useAlertsEditor';

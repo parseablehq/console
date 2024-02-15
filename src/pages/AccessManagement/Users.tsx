@@ -3,7 +3,6 @@ import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect, useState } from 'react';
 
 import { useUser } from '@/hooks/useUser';
-// import { Prism } from '@mantine/prism';
 
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import RoleTR from './RoleTR';
