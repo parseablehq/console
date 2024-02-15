@@ -199,17 +199,19 @@ const QueryPills = (props: QueryPillProps) => {
 	const { query } = props;
 	const { combinator, rules: ruleSets } = query;
 	return (
-		<Stack style={{ flexDirection: 'row' }} gap={8}>
-			{ruleSets.map((ruleSet, index) => {
-				const shouldShowCombinatorPill = ruleSets.length !== 1 && index + 1 !== ruleSets.length;
-				return (
-					<Stack style={{ flexDirection: 'row' }} gap={8} key={ruleSet.id}>
-						<RuleSetPills ruleSet={ruleSet} />
-						{shouldShowCombinatorPill && <Pill className={classes.parentCombinatorPill}>{combinator}</Pill>}
-					</Stack>
-				);
-			})}
-		</Stack>
+		<ScrollArea scrollbarSize={6} scrollHideDelay={0} offsetScrollbars>
+			<Stack style={{ flexDirection: 'row' }} gap={8}>
+				{ruleSets.map((ruleSet, index) => {
+					const shouldShowCombinatorPill = ruleSets.length !== 1 && index + 1 !== ruleSets.length;
+					return (
+						<Stack style={{ flexDirection: 'row' }} gap={8} key={ruleSet.id}>
+							<RuleSetPills ruleSet={ruleSet} />
+							{shouldShowCombinatorPill && <Pill className={classes.parentCombinatorPill}>{combinator}</Pill>}
+						</Stack>
+					);
+				})}
+			</Stack>
+		</ScrollArea>
 	);
 };
 

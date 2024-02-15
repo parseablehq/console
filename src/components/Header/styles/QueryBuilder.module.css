@@ -88,10 +88,10 @@
 	border: 1px var(--mantine-color-gray-4) solid;
 	border-radius: rem(8px);
 	cursor: pointer;
-	height: 36px;
-    overflow: scroll;
+	height: 2.2rem;
+    overflow: auto;
     margin-left: -20px;
-    min-width: 50%;
+    min-width: 70%;
     max-width: 100%;
 }
 
