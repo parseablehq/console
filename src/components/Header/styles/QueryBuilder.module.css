@@ -89,7 +89,7 @@
 	border-radius: rem(8px);
 	cursor: pointer;
 	height: 2.2rem;
-    overflow: scroll;
+    overflow: auto;
     margin-left: -20px;
     min-width: 70%;
     max-width: 100%;
