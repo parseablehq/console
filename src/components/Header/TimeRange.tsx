@@ -5,9 +5,10 @@ import { DateTimePicker } from '@mantine/dates';
 import { IconClock } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import type { FC } from 'react';
-import { Fragment, useEffect, useMemo } from 'react';
+import { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { FIXED_DURATIONS } from '@/constants/timeConstants';
-import logQueryStyles from './styles/LogQuery.module.css'
+import logQueryStyles from './styles/LogQuery.module.css';
+import { useOuterClick } from '@/hooks/useOuterClick';
 
 type FixedDurations = (typeof FIXED_DURATIONS)[number];
 
@@ -16,8 +17,30 @@ const TimeRange: FC = () => {
 		state: { subLogQuery, subLogSelectedTimeRange },
 	} = useHeaderContext();
 
+	const handleOuterClick = (event: any) => {
+		const targetClassNames:  string[] = event.target?.classList || [];
+		const maybeSubmitBtnClassNames: string[] = event.target.closest('button')?.classList || [];
+		const classNames: string[] = [
+			...(typeof targetClassNames[Symbol.iterator] === 'function'  ? [...targetClassNames] : []),
+			...(typeof maybeSubmitBtnClassNames[Symbol.iterator] === 'function'  ? [...maybeSubmitBtnClassNames] : []),
+		];
+		const shouldIgnoreClick = classNames.some((className) => {
+			return (
+				className.startsWith('mantine-DateTimePicker') ||
+				className.startsWith('mantine-TimeInput') ||
+				className === 'mantine-Popover-dropdown'
+			);
+		});
+		!shouldIgnoreClick && setOpened(false);
+	};
+
+	const innerRef = useOuterClick(handleOuterClick);
 	const [opened, setOpened] = useMountedState(false);
 	const [selectedRange, setSelectedRange] = useMountedState<string>(subLogSelectedTimeRange.get().value);
+
+	const toggleMenu = useCallback(() => {
+		setOpened((prev) => !prev);
+	}, []);
 
 	useEffect(() => {
 		const listener = subLogSelectedTimeRange.subscribe((state) => {
@@ -51,31 +74,38 @@ const TimeRange: FC = () => {
 	} = logQueryStyles;
 
 	return (
-		<Menu withArrow position="top" opened={opened} onChange={setOpened}>
+		<Menu withArrow position="top" opened={opened}>
 			<Menu.Target>
-				<Button className={timeRangeBTn} leftSection={<IconClock size={px('1.2rem')} stroke={1.5} />}>
+				<Button
+					className={timeRangeBTn}
+					leftSection={<IconClock size={px('1.2rem')} stroke={1.5} />}
+					onClick={toggleMenu}>
 					{selectedRange}
 				</Button>
 			</Menu.Target>
 			<Menu.Dropdown>
-				<Box className={timeRangeContainer}>
-					<Box className={fixedRangeContainer}>
-						{FIXED_DURATIONS.map((duration) => {
-							return (
-								<UnstyledButton
-									disabled={selectedRange === duration.name}
-									className={[fixedRangeBtn, selectedRange === duration.name && fixedRangeBtnSelected].filter(Boolean).join(' ')}
-									key={duration.name}
-									onClick={() => onDurationSelect(duration)}>
-									{duration.name}
-								</UnstyledButton>
-							);
-						})}
+				<div ref={innerRef}>
+					<Box className={timeRangeContainer}>
+						<Box className={fixedRangeContainer}>
+							{FIXED_DURATIONS.map((duration) => {
+								return (
+									<UnstyledButton
+										disabled={selectedRange === duration.name}
+										className={[fixedRangeBtn, selectedRange === duration.name && fixedRangeBtnSelected]
+											.filter(Boolean)
+											.join(' ')}
+										key={duration.name}
+										onClick={() => onDurationSelect(duration)}>
+										{duration.name}
+									</UnstyledButton>
+								);
+							})}
+						</Box>
+						<Box className={customRangeContainer}>
+							<CustomTimeRange setOpened={setOpened} />
+						</Box>
 					</Box>
-					<Box className={customRangeContainer}>
-						<CustomTimeRange setOpened={setOpened} />
-					</Box>
-				</Box>
+				</div>
 			</Menu.Dropdown>
 		</Menu>
 	);
