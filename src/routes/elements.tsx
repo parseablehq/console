@@ -13,6 +13,7 @@ import {
 	StatsHeader,
 	UsersManagementHeader,
 } from '@/components/Header/SubHeader';
+import QueryFilterProvider from '@/providers/QueryFilterProvider';
 
 export const HomeElement: FC = () => {
 	return (
@@ -39,8 +40,10 @@ export const LogsElement: FC = () => {
 	return (
 		<SuspensePage>
 			<LogsPageProvider>
-				<LogsHeader />
-				<Logs />
+				<QueryFilterProvider>
+					<LogsHeader />
+					<Logs />
+				</QueryFilterProvider>
 			</LogsPageProvider>
 		</SuspensePage>
 	);

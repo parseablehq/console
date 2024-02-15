@@ -39,7 +39,7 @@ interface LogsPageContextMethods {
 	toggleShowQueryEditor: () => void;
 	resetQuerySearch: () => void;
 	setPageOffset: Dispatch<SetStateAction<number>>;
-	setCustSearchQuery: (query: string) => void;
+	setCustSearchQuery: (query: string, mode: custQuerySearchMode) => void;
 }
 
 interface LogsPageContextValue {
@@ -51,15 +51,18 @@ interface LogsPageProviderProps {
 	children: ReactNode;
 }
 
+type custQuerySearchMode = null | 'sql' | 'filters' 
+
 type CustQuerySearchState = {
 	showQueryEditor: boolean;
 	isQuerySearchActive: boolean;
 	custSearchQuery: string;
+	mode: custQuerySearchMode;
 };
 
 export const defaultQueryResult = '';
 
-const defaultCustQuerySearchState = { showQueryEditor: false, isQuerySearchActive: false, custSearchQuery: '' };
+const defaultCustQuerySearchState = { showQueryEditor: false, isQuerySearchActive: false, custSearchQuery: '', mode: null };
 
 const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 	const subLogStreamError = useSubscribeState<string | null>(null);
@@ -96,8 +99,8 @@ const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 		// setPageOffset(0); wont the LogTable handle this ?
 	}, []);
 
-	const setCustSearchQuery = useCallback((query: string) => {
-		setCustQuerySearchState((prev) => ({ ...prev, custSearchQuery: query, showQueryEditor: false, isQuerySearchActive: true }));
+	const setCustSearchQuery = useCallback((query: string, mode: custQuerySearchMode) => {
+		setCustQuerySearchState((prev) => ({ ...prev, mode, custSearchQuery: query, isQuerySearchActive: true, showQueryEditor: false}));
 	}, [])
 
 	// handlers

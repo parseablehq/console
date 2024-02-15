@@ -19,6 +19,7 @@ type QueryCodeEditorProps = {
 const genColumnConfig = (fields: Field[]) => {
 	const columnConfig = { leftColumns: [], rightColumns: [] };
 	if (fields.length === 0) return columnConfig;
+
 	const partitionIndex = (fields.length + (fields.length % 2)) / 2;
 	return fields.reduce((acc: { leftColumns: string[]; rightColumns: string[] }, field, index: number) => {
 		const { name, data_type } = field;
@@ -106,7 +107,7 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 	const runQuery = (inputQuery: string) => {
 		const query = sanitiseSqlString(inputQuery);
 		const parsedQuery = query.replace(/(\r\n|\n|\r)/gm, '');
-		setCustSearchQuery(parsedQuery);
+		setCustSearchQuery(parsedQuery, 'sql');
 	};
 
 	const classes = queryCodeStyles;

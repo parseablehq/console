@@ -1,0 +1,129 @@
+.addRuleContainer {
+    border: rem(2px) solid var(--mantine-color-gray-3);
+    height: 6rem;
+    width: 100%;
+    border-style: dashed;
+    border-spacing: 400px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border-radius: rem(6px);
+    color: var(--mantine-primary-color-3);
+    font-weight: 400;
+}
+
+.ruleSet {
+    border-radius: rem(6px);
+    padding: 1rem;
+    width: 100%;
+    background-color: var(--mantine-color-gray-1);
+}
+
+.toggleBtnContainer {
+    flex-direction: row;
+    border: 1px solid black;
+    width: fit-content;
+    border-radius: rem(6px);
+    background-color: white;
+    border-color: transparent;
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    align-self: flex-end;
+}
+
+.toggleBtnText {
+    padding: 0.2rem 0.6rem;
+    border-radius: rem(6px);
+    font-weight: 500;
+    font-size: small;
+    &.toggleBtnActive {
+        background-color: var(--mantine-primary-color-4) !important;
+        color: white;
+    }
+}
+
+.ruleContainer {
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+}
+
+.deleteRulebtn {
+    cursor: pointer;    
+}
+
+.addConditionBtn {
+    width: fit-content;
+    font-size: small;
+}
+
+.parentCombinatorToggleContainer {
+    width: fit-content;
+    background-color: var(--mantine-color-gray-2);
+    border-radius: rem(6px);
+    position: 'relative';
+    margin-left: 16px;  
+    border: 1px solid var(--mantine-color-gray-4);
+    padding: 0.2rem;
+}
+
+.ruleSetConnector {
+    width: 0;
+    height: 100%;
+    margin-left: 60px;
+    border: 1px solid var(--mantine-color-gray-4);
+}
+
+.modalHeader {
+    font-weight: 500;
+    font-size: large;
+    margin-bottom: 1rem;
+}
+
+.queryBuilderBtn {
+	background-color: white;
+	padding: 4px 12px;
+	color: #211F1F;
+	border: 1px var(--mantine-color-gray-4) solid;
+	border-radius: rem(8px);
+	cursor: pointer;
+	height: 36px;
+    overflow: scroll;
+    margin-left: -20px;
+    min-width: 50%;
+    max-width: 100%;
+}
+
+.parentCombinatorPill {
+    color: white;
+    background: var(--mantine-color-teal-4);
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.childCombinatorPill {
+    color: white;
+    background: var(--mantine-color-indigo-4);
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.footer {
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: 1rem;
+    padding-top: 0; 
+}
+
+.queryBuilderContainer {
+    border-top-left-radius: rem(6px);
+    border-top-right-radius: rem(6px);
+    border-bottom: 1px solid var(--mantine-color-gray-3);
+}
+
+.queryBuilderBtnPlaceholder {
+	color: var(--mantine-color-gray-5);
+	font-size: 1rem;
+	font-weight: 500;
+}

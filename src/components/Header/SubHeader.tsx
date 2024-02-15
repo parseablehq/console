@@ -1,4 +1,4 @@
-import { Box, px } from '@mantine/core';
+import { Box, Stack, px } from '@mantine/core';
 import { type FC } from 'react';
 import HeaderBreadcrumbs from './HeaderBreadcrumbs';
 import RefreshInterval from './RefreshInterval';
@@ -18,9 +18,11 @@ import { ToggleButton } from '../Button/ToggleButton';
 import { IconCodeCircle } from '@tabler/icons-react';
 import styles from './styles/LogQuery.module.css';
 import headerStyles from './styles/Header.module.css';
+import Querier from './Querier';
 
 type HeaderLayoutProps = {
 	children: React.ReactNode;
+	rows?: 1;
 };
 
 const HeaderLayout: FC<HeaderLayoutProps> = (props) => {
@@ -28,7 +30,7 @@ const HeaderLayout: FC<HeaderLayoutProps> = (props) => {
 	const { container, navContainer } = classes;
 
 	return (
-		<Box className={container} style={{ height: HEADER_HEIGHT, zIndex: 100 }} p={0}>
+		<Box className={container} style={{ height: HEADER_HEIGHT * (props.rows || 1), zIndex: 100 }} p={0}>
 			<Box className={navContainer}>{props.children}</Box>
 		</Box>
 	);
@@ -91,7 +93,7 @@ export const LogsHeader: FC = () => {
 	const {
 		methods: { makeExportData, toggleShowQueryEditor },
 		state: {
-			custQuerySearchState: { isQuerySearchActive },
+			custQuerySearchState: { isQuerySearchActive, mode },
 		},
 	} = useLogsPageContext();
 	const {
@@ -108,31 +110,42 @@ export const LogsHeader: FC = () => {
 		}
 	};
 	return (
-		<HeaderLayout>
-			<Box className={container}>
-				<Box>
-					<Box className={innerContainer}>
-						<HeaderBreadcrumbs crumbs={['Streams', 'streamName', 'Logs']} />
+		<>
+			<HeaderLayout>
+				<Box className={container}>
+					<Box>
+						<Box className={innerContainer}>
+							<HeaderBreadcrumbs crumbs={['Streams', 'streamName', 'Logs']} />
+						</Box>
 					</Box>
-				</Box>
 
-				<Box>
-					<Box className={innerContainer}>
-						<Search />
-						<ToggleButton
-							onClick={toggleShowQueryEditor}
-							toggled={isQuerySearchActive}
-							renderIcon={() => <IconCodeCircle size={px('1.2rem')} stroke={1.5} />}
-							label="SQL"
-						/>
-						<TimeRange />
-						<RefreshInterval />
-						<Dropdown data={['JSON', 'CSV']} onChange={exportHandler} />
-						<RefreshNow onRefresh={resetTimeInterval} />
+					<Box>
+						<Box className={innerContainer}>
+							<Search />
+							<ToggleButton
+								onClick={toggleShowQueryEditor}
+								toggled={isQuerySearchActive && mode === 'sql'}
+								renderIcon={() => <IconCodeCircle size={px('1.2rem')} stroke={1.5} />}
+								label="SQL"
+							/>
+							<TimeRange />
+							<RefreshInterval />
+							<Dropdown data={['JSON', 'CSV']} onChange={exportHandler} />
+							<RefreshNow onRefresh={resetTimeInterval} />
+						</Box>
 					</Box>
 				</Box>
-			</Box>
-		</HeaderLayout>
+			</HeaderLayout>
+			<HeaderLayout>
+				<Box className={container}>
+					<Box className={innerContainer}>
+						<Stack style={{width: "100%", flexDirection: 'row'}}>
+							<Querier/>
+						</Stack>
+					</Box>
+				</Box>
+			</HeaderLayout>
+		</>
 	);
 };
 

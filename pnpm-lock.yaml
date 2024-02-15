@@ -92,6 +92,9 @@ dependencies:
   react-query:
     specifier: ^3.39.3
     version: 3.39.3(react-dom@18.2.0)(react@18.2.0)
+  react-querybuilder:
+    specifier: ^6.5.5
+    version: 6.5.5(react@18.2.0)
   react-resizable-panels:
     specifier: ^0.0.53
     version: 0.0.53(react-dom@18.2.0)(react@18.2.0)
@@ -2305,6 +2308,10 @@ packages:
     resolution: {integrity: sha512-Rx3CqeqQ19sxUtYV9CU911Vhy8/721wRFnJv3REVGWUmoAcIwzifTsdmJte/MV+0/XpM35LZdQMBGkRIoLPwQA==}
     dev: false
 
+  /immer@10.0.3:
+    resolution: {integrity: sha512-pwupu3eWfouuaowscykeckFmVTpqbzW+rXFCX8rQLkZzM9ftBmU/++Ra+o+L27mz03zJTlyV4UUr+fdKNffo4A==}
+    dev: false
+
   /import-fresh@3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
     engines: {node: '>=6'}
@@ -3125,6 +3132,16 @@ packages:
       match-sorter: 6.3.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /react-querybuilder@6.5.5(react@18.2.0):
+    resolution: {integrity: sha512-i/MG1+XMmAaaVtdbyw5Pubxz3auwD6R2u9hfhskksniI1yuvJoyraF3mVeVgPQHPU9hM7H2HyVL8PxYUvsHZcg==}
+    peerDependencies:
+      react: '>=16.8.0'
+    dependencies:
+      clsx: 2.0.0
+      immer: 10.0.3
+      react: 18.2.0
     dev: false
 
   /react-redux@7.2.9(react-dom@18.2.0)(react@18.2.0):

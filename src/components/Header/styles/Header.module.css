@@ -10,7 +10,7 @@
     border-bottom: 1px solid var(--mantine-color-gray-3);
 }
 
-div.logoContainer {
+.logoContainer {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -19,16 +19,16 @@ div.logoContainer {
     height: 24px;
 }
 
-div.navContainer {
+.navContainer {
     width: calc(100%);
     justify-content: space-between;
 }
 
-button.actionBtn {
+.actionBtn {
     transition: transform 0.2s ease-in-out;
 }
 
-button.actionBtn:hover {
+.actionBtn:hover {
     transform: scale(1.3);
     background-color: #f8f9fa;
 }

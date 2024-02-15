@@ -68,7 +68,6 @@ const LogTable: FC = () => {
 	const {
 		state: { subLogSearch, subLogQuery, subRefreshInterval, subLogSelectedTimeRange },
 	} = useHeaderContext();
-
 	const [refreshInterval, setRefreshInterval] = useMountedState<number | null>(null);
 	const [logStreamError, setLogStreamError] = useMountedState<string | null>(null);
 	const [columnToggles, setColumnToggles] = useMountedState<Map<string, boolean>>(new Map());
@@ -340,7 +339,7 @@ const LogTable: FC = () => {
 		<Box
 			className={tableStyles.container}
 			style={{
-				maxHeight: `calc(100vh - ${HEADER_HEIGHT * 2}px )`,
+				maxHeight: `calc(100vh - ${HEADER_HEIGHT * 3}px )`,
 			}}>
 			<FilterPills />
 			{!(logStreamError || logStreamSchemaError || logsError) ? (
