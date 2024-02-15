@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { useLogsPageContext } from './Context';
 import useMountedState from '@/hooks/useMountedState';
 import { Carousel } from '@mantine/carousel';
-import { useCarouselSlideStyle } from './styles';
+import carouselStyles from './styles/CarouselSlide.module.css';
 
 type FillCarouselProps = {
 	gapMinute: number;
@@ -55,7 +55,7 @@ const FillCarousel = ({ gapMinute, endtime, id, zoomIn }: FillCarouselProps) => 
 		}
 	}, [count]);
 
-	const { classes } = useCarouselSlideStyle();
+	const classes = carouselStyles;
 
 	return (
 		<Carousel.Slide>
@@ -84,7 +84,7 @@ const FillCarousel = ({ gapMinute, endtime, id, zoomIn }: FillCarouselProps) => 
 				position="top">
 				<Box>
 					<Button
-						sx={{
+						style={{
 							backgroundColor: '#fff',
 							color: subID === id ? '#535BEB' : '#211F1F',
 							border: subID === id ? '1px solid #535BEB' : '1px solid #ccc',

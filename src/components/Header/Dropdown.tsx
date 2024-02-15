@@ -1,18 +1,17 @@
 import { type FC } from 'react';
 import { Select } from '@mantine/core';
-import { useLogQueryStyles } from './styles';
+import classes from './styles/LogQuery.module.css'
 
 type DropdownProps = {
 	data: string[];
 	placeholder?: string;
 	searchable?: boolean;
 	value?: string | null;
-	onChange: (value: string) => void;
+	onChange: (value: string | null) => void;
 };
 
 const Dropdown: FC<DropdownProps> = (props) => {
 	const { data, onChange, placeholder = "Export", searchable = false, value = null } = props;
-	const { classes } = useLogQueryStyles();
 
 	return (
 		<Select
@@ -24,6 +23,7 @@ const Dropdown: FC<DropdownProps> = (props) => {
 			onChange={onChange}
 			allowDeselect={false}
 			value={value}
+			classNames={{ option: classes.dropdownOption, input: classes.dropdownBtn }}
 		/>
 	);
 };

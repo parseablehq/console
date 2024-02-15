@@ -1,3 +1,9 @@
+import '@mantine/core/styles/global.css';
+import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
+import '@mantine/notifications/styles.css';
+import '@mantine/dates/styles.css';
+import '@mantine/code-highlight/styles.css';
 import './utils/dayjsLoader';
 import React from 'react';
 import ReactDOM from 'react-dom/client';

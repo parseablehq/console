@@ -1,0 +1,11 @@
+.controlBtn {
+    background-color: white;
+    padding: 0.625rem;
+    margin-right: 0.625rem;
+    color: #868e96;
+    border: 1px solid #e9ecef;
+}
+
+.controlBtn:hover {
+    background-color: #f1f3f5;
+}

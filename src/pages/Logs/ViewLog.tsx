@@ -1,11 +1,11 @@
 import useMountedState from '@/hooks/useMountedState';
-import { Box, Chip, CloseButton, Divider, Drawer, ScrollArea, Text, px } from '@mantine/core';
-import { Prism } from '@mantine/prism';
+import { Box, Chip, CloseButton, Divider, Drawer, Text, px } from '@mantine/core';
 import type { FC } from 'react';
 import { useEffect, Fragment, useMemo } from 'react';
 import { useLogsPageContext } from './Context';
-import { useViewLogStyles } from './styles';
 import dayjs from 'dayjs';
+import viewLogStyles from './styles/ViewLogs.module.css'
+import { CodeHighlight } from '@mantine/code-highlight';
 
 const ViewLog: FC = () => {
 	const {
@@ -24,7 +24,7 @@ const ViewLog: FC = () => {
 		subViewLog.set(null);
 	};
 
-	const { classes } = useViewLogStyles();
+	const classes = viewLogStyles;
 	const { container } = classes;
 
 	const p_metadata = useMemo(() => {
@@ -49,18 +49,10 @@ const ViewLog: FC = () => {
 
 			{Boolean(log) && (
 				<Box className={container}>
-					<DataChip title="Meta Data" dataList={p_metadata} />
+					<DataChip title="Meta Data" dataList={p_metadata}  />
 					<DataChip title="Tags" dataList={p_tags} />
-					<Divider label={'Logger Message'} variant="dashed" labelPosition="center" my="lg" />
-
-					<Prism
-						copyLabel="Copy"
-						language="json"
-						withLineNumbers
-						sx={{ overflow: 'auto' }}
-						scrollAreaComponent={ScrollArea}>
-						{JSON.stringify(log, null, 2)}
-					</Prism>
+					<Divider label={'Logger Message'} variant="dashed" labelPosition="center" my="lg" color='gray.6'/>
+					<CodeHighlight code={JSON.stringify(log, null, 2)} language="json" styles={{copy: {marginLeft: '550px'}}}/>
 				</Box>
 			)}
 		</Drawer>
@@ -74,7 +66,7 @@ type HeaderProps = {
 
 const Header: FC<HeaderProps> = (props) => {
 	const { onClose } = props;
-	const { classes } = useViewLogStyles();
+	const classes = viewLogStyles
 
 	const { headerContainer, headerTimeStampTitle, headerTimeStamp } = classes;
 
@@ -102,12 +94,12 @@ type DataChipProps = {
 
 const DataChip: FC<DataChipProps> = (props) => {
 	const { dataList, title } = props;
-	const { classes } = useViewLogStyles();
+	const classes = viewLogStyles
 	const { dataChipContainer } = classes;
 
 	return dataList.length ? (
 		<Fragment>
-			<Divider label={title} variant="dashed" labelPosition="center" my="lg" />
+			<Divider label={title} variant="dashed" labelPosition="center" my="lg" color='gray.6'/>
 			<Box className={dataChipContainer}>
 				{[...dataList].map((data, i) => {
 					return (

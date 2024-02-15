@@ -2,13 +2,13 @@ import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Box, Button, Modal, ScrollArea, Text, px } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { FC, useEffect, useRef } from 'react';
-import { useAlertsStyles } from './styles';
 import { IconArrowsMaximize } from '@tabler/icons-react';
-import { Prism } from '@mantine/prism';
 import useMountedState from '@/hooks/useMountedState';
 import { heights } from '@/components/Mantine/sizing';
 import { useAlertsEditor } from '@/hooks/useAlertsEditor';
 import { useParams } from 'react-router-dom';
+import alertStyles from './styles/Alerts.module.css'
+import { CodeHighlight } from '@mantine/code-highlight';
 
 const Alerts: FC = () => {
 	const {
@@ -27,14 +27,14 @@ const Alerts: FC = () => {
 		setEditorHeight(AlertsWrapper.current?.offsetTop ? AlertsWrapper.current?.offsetTop + 15 : 0);
 	}, [heights.full, AlertsWrapper]);
 
-	const { classes } = useAlertsStyles();
+	const classes = alertStyles;
 	const { container, headContainer, alertsText, alertsContainer, alertContainer, expandButton } = classes;
 
 	return (
 		<ScrollArea
 			className={container}
 			ref={AlertsWrapper}
-			sx={{ height: `calc(${heights.full} - ${editorHeight}px) ` }}
+			style={{ height: `calc(${heights.full} - ${editorHeight}px) ` }}
 			type="auto">
 			<Box className={headContainer}>
 				<Text className={alertsText}>Alerts</Text>
@@ -67,7 +67,7 @@ const Alerts: FC = () => {
 				)}
 			</Box>
 			<Modal size="auto" opened={opened} onClose={close} title={Alert.name} scrollAreaComponent={ScrollArea.Autosize}>
-				<Prism language="json">{JSON.stringify(Alert, null, 2)}</Prism>
+				<CodeHighlight code={JSON.stringify(Alert, null, 2)} language="json" />
 			</Modal>
 		</ScrollArea>
 	);

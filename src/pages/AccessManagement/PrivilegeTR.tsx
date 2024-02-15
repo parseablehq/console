@@ -16,9 +16,9 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlus, IconTrash, IconX } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
-import { useUsersStyles } from './styles';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import { useRole } from '@/hooks/useRole';
+import styles from './styles/AccessManagement.module.css'
 
 interface PrivilegeTRProps {
 	roleName: string;
@@ -230,7 +230,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 		return true;
 	};
 
-	const { classes } = useUsersStyles();
+	const classes = styles;
 	return (
 		<>
 			<tr className={classes.trStyle}>
@@ -256,11 +256,11 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 							{getBadges(getRoleData?.data)}
 							<Tooltip
 								label={'Add a Privilege'}
-								sx={{ color: 'white', backgroundColor: 'black' }}
+								style={{ color: 'white', backgroundColor: 'black' }}
 								withArrow
 								position="right">
-								<Badge color="green">
-									<IconPlus size={rem(10)} onClick={openUpdateRole} />
+								<Badge color="green" onClick={openUpdateRole} style={{ textAlign: 'center', alignItems: 'center' }}>
+									<IconPlus size={'1rem'} style={{ paddingTop: 6 }} />
 								</Badge>
 							</Tooltip>
 						</>
@@ -270,7 +270,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 				</td>
 				<td>
 					<Box style={{ height: '100%', width: '100%', whiteSpace: 'nowrap', textAlign: 'center' }}>
-						<Tooltip label={'Delete'} sx={{ color: 'white', backgroundColor: 'black' }} withArrow position="right">
+						<Tooltip label={'Delete'} style={{ color: 'white', backgroundColor: 'black' }} withArrow position="right">
 							<Button
 								variant="default"
 								className={classes.actionBtn}
@@ -302,7 +302,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 					required
 				/>
 
-				<Group position="right" mt={10}>
+				<Group justify="right" mt={10}>
 					<Button
 						variant="filled"
 						color="gray"
@@ -338,7 +338,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 						/>
 					</Stack>
 
-					<Group position="right" mt={10}>
+					<Group justify="right" mt={10}>
 						<Button
 							variant="filled"
 							color="gray"
@@ -374,7 +374,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 							setSelectedPrivilege(value ?? '');
 						}}
 						value={selectedPrivilege}
-						nothingFound="No options"
+						nothingFoundMessage="No options"
 					/>
 
 					{selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingester' ? (
@@ -384,7 +384,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 								onChange={(value) => {
 									setSelectedStream(value ?? '');
 								}}
-								nothingFound="No options"
+								nothingFoundMessage="No options"
 								value={SelectedStream}
 								searchValue={streamSearchValue}
 								onSearchChange={(value) => setStreamSearchValue(value)}
@@ -413,7 +413,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 					)}
 				</Stack>
 
-				<Group position="right" mt={10}>
+				<Group justify="right" mt={10}>
 					<Button
 						variant="filled"
 						color="gray"

@@ -5,12 +5,12 @@ import { Box, Button, Flex, Text, TextInput, Tooltip, px } from '@mantine/core';
 import { ErrorMarker, errChecker } from './ErrorMarker';
 import { IconPlayerPlayFilled, IconRotate } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
-import { useQueryCodeEditorStyles } from './styles';
 import { notify } from '@/utils/notification';
 import { usePostLLM } from '@/hooks/usePostLLM';
 import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 import { LOAD_LIMIT, useLogsPageContext } from '../Logs/Context';
 import { Field } from '@/@types/parseable/dataType';
+import queryCodeStyles from './styles/QueryCode.module.css'
 
 type QueryCodeEditorProps = {
 	inputRef: MutableRefObject<any>;
@@ -19,6 +19,7 @@ type QueryCodeEditorProps = {
 const genColumnConfig = (fields: Field[]) => {
 	const columnConfig = { leftColumns: [], rightColumns: [] };
 	if (fields.length === 0) return columnConfig;
+
 	const partitionIndex = (fields.length + (fields.length % 2)) / 2;
 	return fields.reduce((acc: { leftColumns: string[]; rightColumns: string[] }, field, index: number) => {
 		const { name, data_type } = field;
@@ -106,10 +107,10 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 	const runQuery = (inputQuery: string) => {
 		const query = sanitiseSqlString(inputQuery);
 		const parsedQuery = query.replace(/(\r\n|\n|\r)/gm, '');
-		setCustSearchQuery(parsedQuery);
+		setCustSearchQuery(parsedQuery, 'sql');
 	};
 
-	const { classes } = useQueryCodeEditorStyles();
+	const classes = queryCodeStyles;
 	const { container, runQueryBtn, textContext, clearQueryBtn } = classes;
 
 	return (
@@ -119,7 +120,7 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 				<Box style={{ height: '100%', display: 'flex', textAlign: 'right', alignItems: 'center' }}>
 					<Tooltip
 						label={'Click to exit editor and reset search'}
-						sx={{ color: 'white', backgroundColor: 'black' }}
+						style={{ color: 'white', backgroundColor: 'black' }}
 						withArrow
 						position="right">
 						<Button
@@ -127,13 +128,13 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 							className={clearQueryBtn}
 							onClick={resetQuerySearch}
 							disabled={!isQuerySearchActive}
-							leftIcon={<IconRotate size={px('1rem')} stroke={2} />}>
+							leftSection={<IconRotate size={px('1rem')} stroke={2} />}>
 							Reset
 						</Button>
 					</Tooltip>
 					<Tooltip
 						label={'Click to run query or ctrl + enter '}
-						sx={{ color: 'white', backgroundColor: 'black' }}
+						style={{ color: 'white', backgroundColor: 'black' }}
 						withArrow
 						position="right">
 						<Button
@@ -142,13 +143,13 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 							onClick={() => {
 								runQuery(query);
 							}}
-							leftIcon={<IconPlayerPlayFilled size={px('1rem')} stroke={1} />}>
+							leftSection={<IconPlayerPlayFilled size={px('1rem')} stroke={1} />}>
 							Search
 						</Button>
 					</Tooltip>
 				</Box>
 			</Box>
-			<Box sx={{ marginTop: 16, marginBottom: 8 }}>
+			<Box style={{ marginTop: 16, marginBottom: 8 }}>
 				{localLlmActive ? (
 					<TextInput
 						type="text"
@@ -158,7 +159,7 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 						onChange={(e) => setAiQuery(e.target.value)}
 						placeholder="Enter plain text to generate SQL query using OpenAI"
 						rightSectionWidth={'auto'}
-						sx={{
+						style={{
 							'& .mantine-Input-input': {
 								border: 'none',
 								borderRadius: 0,
@@ -170,7 +171,7 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 							},
 						}}
 						rightSection={
-							<Button variant="filled" color="brandPrimary.0" radius={0} onClick={handleAIGenerate} h={'100%'}>
+							<Button variant="filled" color="brandPrimary.4" radius={0} onClick={handleAIGenerate} h={'100%'}>
 								✨ Generate
 							</Button>
 						}
@@ -186,7 +187,7 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 			<Box>
 				<SchemaList {...{ currentStreamName, fields }} />
 			</Box>
-			<Box sx={{ height: 'calc(100% - 400px)' }}>
+			<Box style={{ height: 'calc(100% - 400px)' }}>
 				<Editor
 					defaultLanguage="sql"
 					value={query}
@@ -216,24 +217,24 @@ const SchemaList = (props: { currentStreamName: string; fields: Field[] }) => {
 	return (
 		<Box>
 			<Text
-				sx={{
+				style={{
 					fontSize: 12,
 					color: '#098658',
 					fontFamily: 'monospace',
 				}}>{`/* Schema for ${currentStreamName}`}</Text>
-			<Flex sx={{ alignItems: 'flex-start', padding: 6, paddingTop: 4 }}>
-				<Box sx={{ width: '50%' }}>
+			<Flex style={{ alignItems: 'flex-start', padding: 6, paddingTop: 4 }}>
+				<Box style={{ width: '50%' }}>
 					{leftColumns.map((config, index) => {
-						return <Text key={index} sx={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>;
+						return <Text key={index} style={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>;
 					})}
 				</Box>
-				<Box sx={{ width: '50%' }}>
+				<Box style={{ width: '50%' }}>
 					{rightColumns.map((config, index) => {
-						return <Text key={index} sx={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>;
+						return <Text key={index} style={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>;
 					})}
 				</Box>
 			</Flex>
-			<Text sx={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}> */</Text>
+			<Text style={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}> */</Text>
 		</Box>
 	);
 };

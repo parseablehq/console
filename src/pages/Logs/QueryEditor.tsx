@@ -1,10 +1,10 @@
 import { Box, Drawer } from '@mantine/core';
 import type { FC } from 'react';
 import { LOAD_LIMIT, useLogsPageContext } from './Context';
-import { useViewLogStyles } from './styles';
 import React, { useEffect } from 'react';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import QueryCodeEditor from './QueryCodeEditor';
+import viewLogStyles from './styles/ViewLogs.module.css'
 
 const QueryEditor: FC = () => {
 	const {
@@ -17,7 +17,7 @@ const QueryEditor: FC = () => {
 		state: { subLogQuery },
 	} = useHeaderContext();
 	const onClose = () => toggleShowQueryEditor();
-	const { classes } = useViewLogStyles();
+	const classes = viewLogStyles;
 	const inputRef = React.useRef<any>(); // to store input value even after the editor unmounts
 	const currentStreamName = subLogQuery.get().streamName;
 	useEffect(() => {

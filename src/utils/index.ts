@@ -66,3 +66,5 @@ export const signOutHandler = () => {
 	Cookies.remove('username');
 	window.location.href = `${baseURL}api/v1/o/logout?redirect=${window.location.origin}/login`;
 };
+
+export const generateRandomId = (length: number) => Array.from({ length }, () => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random() * 62)]).join('');

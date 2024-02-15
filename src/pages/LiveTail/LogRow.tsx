@@ -1,8 +1,8 @@
 import { parseLogData } from '@/utils';
 import { FC, Fragment } from 'react';
-import { useLiveTailTableStyles } from './styles';
 import { Log } from '@/@types/parseable/api/query';
 import { LogStreamData } from '@/@types/parseable/api/stream';
+import styles from './styles/Logs.module.css'
 
 type LogRowProps = {
 	logData: Log[];
@@ -12,7 +12,7 @@ type LogRowProps = {
 const LogRow: FC<LogRowProps> = (props) => {
 	const { logData, logsSchema } = props;
 
-	const { classes } = useLiveTailTableStyles();
+	const classes = styles;
 	const { trStyle, trEvenStyle } = classes;
 
 	return (

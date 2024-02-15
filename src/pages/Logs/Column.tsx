@@ -3,7 +3,6 @@ import { Box, Checkbox, Popover, TextInput, Tooltip, UnstyledButton, px } from '
 import { type ChangeEvent, type FC, Fragment, useTransition, useRef, useCallback, useMemo } from 'react';
 import { IconDotsVertical, IconFilter, IconSearch, IconSortAscending, IconSortDescending } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
-import { useTableColumnStyle } from './styles';
 import EmptyBox from '@/components/Empty';
 import { Button } from '@mantine/core';
 import Loading from '@/components/Loading';
@@ -12,6 +11,7 @@ import compare from 'just-compare';
 import { parseLogData } from '@/utils';
 import { useDisclosure } from '@mantine/hooks';
 import { capitalizeFirstLetter } from '@/utils/capitalizeFirstLetter';
+import columnStyles from './styles/Column.module.css'
 
 type SortWidgetProps = {
 	setSortOrder: (order: SortOrder | null) => void;
@@ -29,7 +29,7 @@ const SortWidget: FC<SortWidgetProps> = (props) => {
 	const toggleDescending = () => {
 		setSortOrder(fieldSortOrder === SortOrder.DESCENDING ? null : SortOrder.DESCENDING);
 	};
-	const { classes } = useTableColumnStyle();
+	const classes = columnStyles;
 	const { sortBtn, sortBtnActive } = classes;
 
 	return (
@@ -37,13 +37,13 @@ const SortWidget: FC<SortWidgetProps> = (props) => {
 			<Button
 				className={fieldSortOrder === SortOrder.ASCENDING ? sortBtnActive : sortBtn}
 				onClick={toggleAscending}
-				leftIcon={<IconSortAscending stroke={fieldSortOrder === SortOrder.ASCENDING ? 2 : 1} />}>
+				leftSection={<IconSortAscending stroke={fieldSortOrder === SortOrder.ASCENDING ? 2 : 1} />}>
 				Sort by Ascending order
 			</Button>
 			<Button
 				className={fieldSortOrder === SortOrder.DESCENDING ? sortBtnActive : sortBtn}
 				onClick={toggleDescending}
-				leftIcon={<IconSortDescending stroke={fieldSortOrder === SortOrder.DESCENDING ? 2 : 1} />}>
+				leftSection={<IconSortDescending stroke={fieldSortOrder === SortOrder.DESCENDING ? 2 : 1} />}>
 				Sort by Descending order
 			</Button>
 		</Box>
@@ -105,7 +105,7 @@ const Column: FC<Column> = (props) => {
 	const filterActive = useMemo(() => Boolean(appliedFilter(columnName)?.length), [selectedFilters]);
 	const canApply = useMemo(() => !compare(selectedFilters, appliedFilter(columnName)), [selectedFilters]);
 
-	const { classes, cx } = useTableColumnStyle();
+	const classes = columnStyles;
 	const { labelBtn, applyBtn, labelIcon, labelIconActive, searchInputStyle, filterText } = classes;
 
 	return (
@@ -122,23 +122,21 @@ const Column: FC<Column> = (props) => {
 						<IconDotsVertical
 							stroke={filterActive ? 3 : 1.8}
 							size={px('1rem')}
-							className={cx(labelIcon, {
-								[labelIconActive]: filterActive,
-							})}
+							className={[labelIcon, filterActive && labelIconActive].filter(Boolean).join(' ')}
 						/>
 					</UnstyledButton>
 				</Popover.Target>
 				<Popover.Dropdown>
 					<Box>
 						<SortWidget setSortOrder={setSorting} fieldSortOrder={fieldSortOrder} />
-						<Button className={filterText} leftIcon={<IconFilter stroke={1} />}>
+						<Button className={filterText} leftSection={<IconFilter stroke={1} />}>
 							Filter by values:
 						</Button>
 
 						<TextInput
 							className={searchInputStyle}
 							placeholder="Search"
-							icon={<IconSearch size={px('0.8rem')} />}
+							leftSection={<IconSearch size={px('0.8rem')} />}
 							onChange={onSearch}
 						/>
 						{isPending ? (
@@ -197,7 +195,7 @@ type CheckboxRowProps = {
 const CheckboxRow: FC<CheckboxRowProps> = (props) => {
 	const { value, label, columnName } = props;
 	const [opened, { open, close }] = useDisclosure(false);
-	const { classes } = useTableColumnStyle();
+	const classes = columnStyles;
 	const { checkBoxStyle } = classes;
 	return (
 		<Tooltip

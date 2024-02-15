@@ -7,7 +7,7 @@ import Column from './Column';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { useDoGetLiveTail } from '@/hooks/useDoGetLiveTail';
 import EmptyBox from '@/components/Empty';
-import { useLiveTailTableStyles } from './styles';
+import styles from './styles/Logs.module.css'
 
 const LogTable: FC = () => {
 	const { finalData: data, doGetLiveTail, resetData, abort, loading, schema } = useDoGetLiveTail();
@@ -84,7 +84,7 @@ const LogTable: FC = () => {
 
 	const headerRows = schema?.map((element) => <Column key={element.name} columnName={element.name} />);
 
-	const { classes } = useLiveTailTableStyles();
+	const classes = styles;
 
 	const { container, tableStyle, theadStyle, tableContainer, innerContainer } = classes;
 

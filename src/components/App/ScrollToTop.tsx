@@ -19,7 +19,7 @@ const ScrollToTop: FC = () => {
 			<Transition transition="slide-up" mounted={scroll.y > 20}>
 				{(transitionStyles) => (
 					<Button
-						leftIcon={<IconArrowUp size={16} />}
+						leftSection={<IconArrowUp size={16} />}
 						style={transitionStyles}
 						onClick={() => scrollTo({ behavior: 'smooth' })}>
 						Scroll to top

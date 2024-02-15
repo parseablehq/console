@@ -1,6 +1,6 @@
 import { Button, ButtonProps } from '@mantine/core';
 import { FC, ReactNode } from 'react';
-import { useButtonStyles } from './styles';
+import classes from './Button.module.css'
 
 type ToggleButtonProps = ButtonProps & {
 	onClick: () => void;
@@ -11,14 +11,13 @@ type ToggleButtonProps = ButtonProps & {
 
 export const ToggleButton: FC<ToggleButtonProps> = (props) => {
 	const { onClick, toggled, label = '', renderIcon } = props;
-	const { classes, cx } = useButtonStyles();
 	const { toggleBtn, toggleBtnActive } = classes;
 
 	return (
 		<Button
-			className={cx([toggleBtn, ...(toggled ? [toggleBtnActive] : [])])}
+			className={[toggleBtn, ...(toggled ? [toggleBtnActive] : [])].join(" ")}
 			onClick={onClick}
-			{...(renderIcon && { leftIcon: renderIcon() })}>
+			{...(renderIcon && { leftSection: renderIcon() })}>
 			{label}
 		</Button>
 	);

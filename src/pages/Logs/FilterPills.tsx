@@ -12,7 +12,7 @@ const RemoveButton: FC<RemoveButton> = (props) => {
 	const { onClick } = props;
 	return (
 		<ActionIcon {...props} size="xs" m={0} radius="xl" color="red" onClick={onClick}>
-			<IconX size={rem(11)} stroke={4} />
+			<IconX size={rem(8)} stroke={4} />
 		</ActionIcon>
 	);
 };
@@ -41,12 +41,12 @@ const FilterPills: FC = () => {
 	return (
 		<Fragment>
 			{filters.length ? (
-				<Group position="left" mt="md" ml="md">
+				<Group justify="left" mt="md" ml="md">
 					{filters.map((key) => {
 						return (
 							<Badge
 								key={key}
-								color="brandPrimary.0"
+								color="brandPrimary.4"
 								variant="filled"
 								pr={0}
 								rightSection={<RemoveButton onClick={() => onRemove(key)} />}>

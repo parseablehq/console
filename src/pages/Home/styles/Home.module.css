@@ -1,0 +1,27 @@
+.container {
+    flex: 1;
+    display: flex;
+    position: relative;
+    flex-direction: column;
+}
+
+.noDataViewContainer {
+    height: 100%;
+    width: calc(100% - 200px); 
+    padding-top: 2rem;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+.messageStyle {
+    margin-top: 1rem;
+    color: #D4D4D4;
+}
+
+.btnStyle {
+    margin-top: 1rem;
+    color: #FFFFFF;
+	background: #545BEB;
+}

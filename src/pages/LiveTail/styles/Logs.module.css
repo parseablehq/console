@@ -1,0 +1,204 @@
+.mycontainer {
+    flex-direction: column;
+    flex: 1 1 auto;
+    overflow: scroll;
+    align-items: flex-start;
+}
+
+.col {
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+}
+
+.myrow {
+    display: flex;
+    flex-direction: row;
+    height: 48px;
+    background-color: #e7eff5;
+    border-bottom: 1px solid red;
+}
+
+.mycell {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 48px;
+    background-color: #fff;
+    width: 300px;
+    background: transparent;
+    background-color: #f8f9fb;
+}
+
+.container {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.innerContainer {
+   position: relative;
+   flex: 1;
+   display: flex;
+   flex-direction: column;
+   overflow: hidden;
+}
+
+.tableContainer {
+    position: relative;
+}
+
+.pinnedTableContainer {
+    overflow: unset !important;
+}
+
+.pinnedScrollView {
+    overflow: unset !important;
+}
+
+.tableStyle {
+    white-space: nowrap;
+    overflow: scroll;
+    padding: 0;
+    width: 100%;
+}
+
+.theadStyle {
+    position: sticky;
+    background-color: #fff;
+    top: 0;
+}
+
+.theadStylePinned {
+    position: sticky;
+    top: 0;
+    background-color: #fff;
+}
+
+.trStyle {
+    cursor: pointer;
+    background-color: #fff;
+    height: 2.5rem;
+    &:hover {
+        background-color: #f1f3f5;
+    }
+    z-index: 2;
+	border-top: 'none !important';
+
+	td {
+		border-top: none !important;
+    padding: 0.625rem 1rem;
+    font-size: var(--mantine-font-size-sm);
+	}	
+}
+
+.trEvenStyle {
+    cursor: pointer;
+    background-color: #f8f9fa;
+    height: 2.5rem;
+    &:hover {
+        background-color: #f1f3f5;
+    }
+    z-index: 2;
+	border-color: #ff0000;
+	td {
+		border-top: none !important;
+    padding: 0.625rem 1rem;
+    font-size: var(--mantine-font-size-sm);
+	}
+}
+
+.tdArrowContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tdArrow {
+    position: sticky;
+    right: 0;
+    background: inherit;
+    box-shadow: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 0 0.625rem 0.9375rem -0.3125rem, rgba(0, 0, 0, 0.04) 0 0.4375rem 0.4375rem -0.3125rem;
+    tr:hover & {
+        background-color: #f1f3f5;
+    }
+}
+
+.thColumnMenuBtn {
+    width: 0.75rem;
+    height: 0.75rem;
+}
+
+.thColumnMenuResetBtn {
+    margin: 0.75rem;
+}
+
+.thColumnMenuDropdown {
+    /* max-height: 2rem; */
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.thColumnMenuDragHandle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #868e96;
+    padding-right: 1rem;
+}
+
+.thColumnMenuDraggable {
+    display: flex;
+}
+
+.footerContainer {
+    padding: 1rem;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-top: 0.0625rem solid rgba(0, 0, 0, 0.1);
+}
+
+.errorContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.limitActive {
+    background: #1A237E;
+    font-weight: 700;
+    color: #fff;
+    &:hover {
+        background-color: #1A237E;
+    }
+}
+
+.limitOption {
+    font-weight: 400;
+    &:hover {
+        color: #1A237E;
+    }
+}
+
+.limitBtn {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.875rem;
+    background: white;
+    padding: 0.4rem 0.625rem;
+    border: 1px solid #E0E0E0;
+    border-radius: 0.625rem;
+    &:hover {
+        background: #E0E0E0;
+    }
+}

@@ -3,16 +3,17 @@ import { Text, Button, Center, Box, Group, ActionIcon, Flex } from '@mantine/cor
 import { IconChevronRight, IconExternalLink } from '@tabler/icons-react';
 import { useEffect, type FC, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { cardStyles, useHomeStyles } from './styles';
 import { useDocumentTitle } from '@mantine/hooks';
 import { useLogStream } from '@/hooks/useLogStream';
 import { useGetStreamMetadata } from '@/hooks/useGetStreamMetadata';
 import { HumanizeNumber, formatBytes } from '@/utils/formatBytes';
 import { LogStreamRetention, LogStreamStat } from '@/@types/parseable/api/stream';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
+import cardStyles from './styles/Card.module.css';
+import homeStyles from './styles/Home.module.css'
 
 const EmptyStreamsView: FC = () => {
-	const { classes } = useHomeStyles();
+	const classes = homeStyles;
 	const { messageStyle, btnStyle, noDataViewContainer } = classes;
 	return (
 		<Center className={noDataViewContainer}>
@@ -23,7 +24,7 @@ const EmptyStreamsView: FC = () => {
 				component="a"
 				href="https://www.parseable.io/docs/category/log-ingestion"
 				className={btnStyle}
-				leftIcon={<IconExternalLink size="0.9rem" />}>
+				leftSection={<IconExternalLink size="0.9rem" />}>
 				Documentation
 			</Button>
 		</Center>
@@ -32,7 +33,7 @@ const EmptyStreamsView: FC = () => {
 
 const Home: FC = () => {
 	useDocumentTitle('Parseable | Streams');
-	const { classes } = useHomeStyles();
+	const classes = homeStyles;
 	const { container } = classes;
 	const { getLogStreamListData, getLogStreamListIsLoading, getLogStreamListIsError } = useLogStream();
 	const {
@@ -59,8 +60,8 @@ const Home: FC = () => {
 	if (streams.length === 0) return <EmptyStreamsView />;
 
 	return (
-		<Box className={container}>
-			<Group>
+		<Box className={container} style={{ display: 'flex', flex: 1 }}>
+			<Group style={{ marginRight: '1rem', marginLeft: '1rem' }}>
 				{Object.entries(metaData || {}).map(([stream, data]) => {
 					return <StreamInfo key={stream} stream={stream} data={data} navigateToStream={navigateToStream} />;
 				})}
@@ -72,14 +73,12 @@ const Home: FC = () => {
 export default Home;
 
 const BigNumber = (props: { label: string; value: any; color?: string }) => {
-	const { classes } = cardStyles();
-
 	return (
-		<Box className={classes.streamBoxCol} sx={{ width: '12%' }}>
+		<Box className={cardStyles.streamBoxCol} style={{ width: '12%' }}>
 			<Text size="xs" style={{ color: 'black' }}>
 				{props.label}
 			</Text>
-			<Text fw={700} size={'xl'} c={props.color || 'black'}>
+			<Text fw={700} size={'xl'} className={cardStyles.bigNo}>
 				{props.value}
 			</Text>
 		</Box>
@@ -124,7 +123,7 @@ type StreamInfoProps = {
 };
 
 const StreamInfo: FC<StreamInfoProps> = (props) => {
-	const { classes } = cardStyles();
+	const classes = cardStyles;
 	const {
 		stream,
 		data: { stats = {}, retention = [] },
@@ -140,7 +139,7 @@ const StreamInfo: FC<StreamInfoProps> = (props) => {
 			onClick={() => {
 				navigateToStream(stream);
 			}}
-			w="100%">
+			style={{ width: '100%' }}>
 			<Box style={{ width: 200 }}>
 				<Box className={classes.streamBoxCol}>
 					<Text size="xs" style={{ color: 'black' }}>
@@ -157,7 +156,7 @@ const StreamInfo: FC<StreamInfoProps> = (props) => {
 			<BigNumber label={'Compression'} value={calcCompressionRate(storageSize, ingestionSize)} />
 			<BigNumber label={'Retention'} value={streamRetention} />
 			<Flex style={{ flex: 1, justifyContent: 'flex-end' }}>
-				<Box sx={{ width: '15%' }}>
+				<Box style={{ width: '15%' }}>
 					<ActionIcon variant="transparent" color="black" size={50}>
 						<IconChevronRight stroke={1} />
 					</ActionIcon>

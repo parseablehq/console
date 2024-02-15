@@ -4,7 +4,7 @@ import { useLoginForm } from '@/hooks/useLoginForm';
 import { Box, Button, Divider, Image, PasswordInput, Text, TextInput, Transition, rem } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC } from 'react';
-import { useLoginStyles } from './styles';
+import loginStyles from './styles/Login.module.css'
 const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 
 const Login: FC = () => {
@@ -12,12 +12,12 @@ const Login: FC = () => {
 
 	const { getInputProps, isValid, loading, handleSubmit, error } = useLoginForm();
 
-	const { classes } = useLoginStyles();
+	const classes = loginStyles;
 	const { container, formContainer, titleStyle, formInput, loginBtnStyle, errorStyle, sideContainer } = classes;
 
 	return (
 		<Box
-			sx={{
+			style={{
 				display: 'flex',
 				flexDirection: 'row',
 				width: '100vw',
@@ -25,7 +25,7 @@ const Login: FC = () => {
 			<Box className={sideContainer}>
 				<Image width={250} src={logo} />
 				<Box
-					sx={{
+					style={{
 						height: '100%',
 						display: 'flex',
 						flexDirection: 'column',
@@ -77,16 +77,16 @@ const Login: FC = () => {
 
 							{/* <ForgotPassword /> */}
 
-							<Divider label=" Or  " labelPosition="center" my="md" sx={{ width: '100%' }} />
+							<Divider label=" Or  " labelPosition="center" my="md" style={{ width: '100%' }} />
 
 							<Button
 								mt={rem(10)}
 								component="a"
 								href={`${baseURL}api/v1/o/login?redirect=${window.location.origin}`}
 								variant="outline"
-								color="brandPrimary.0"
-								sx={({ colors }) => ({
-									color: colors.brandPrimary[0],
+								c="brandPrimary.4"
+								style={({ colors }) => ({
+									color: colors.brandPrimary[4],
 									borderColor: colors.brandPrimary[0],
 									'&:hover': {
 										borderColor: colors.brandSecondary[0],

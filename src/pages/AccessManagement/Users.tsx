@@ -3,13 +3,15 @@ import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect, useState } from 'react';
 
 import { useUser } from '@/hooks/useUser';
-import { useUsersStyles } from './styles';
-import { Prism } from '@mantine/prism';
 
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import RoleTR from './RoleTR';
 import { IconUserPlus } from '@tabler/icons-react';
 import { useRole } from '@/hooks/useRole';
+import styles from './styles/AccessManagement.module.css'
+import { heights } from '@/components/Mantine/sizing';
+import { HEADER_HEIGHT } from '@/constants/theme';
+import { CodeHighlight } from '@mantine/code-highlight';
 
 const Users: FC = () => {
 	useDocumentTitle('Parseable | Users');
@@ -109,27 +111,26 @@ const Users: FC = () => {
 		return false;
 	};
 
-	const { classes } = useUsersStyles();
 	return (
-		<Box className={classes.container}>
-			<Box className={classes.header}>
-				<Text size="xl" weight={500}>
+		<Box className={styles.container} style={{maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT*2}px - ${20}px)`}}>
+			<Box className={styles.header}>
+				<Text size="xl" style={{fontWeight: 500}}>
 					Users
 				</Text>
 				<Button
 					variant="outline"
 					color="gray"
-					className={classes.createBtn}
+					className={styles.createBtn}
 					onClick={() => {
 						setModalOpen(true);
 					}}
-					rightIcon={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
+					rightSection={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
 					Create users
 				</Button>
 			</Box>
-			<ScrollArea className={classes.tableContainer} type="always">
-				<Table striped highlightOnHover className={classes.tableStyle}>
-					<thead className={classes.theadStyle}>
+			<ScrollArea className={styles.tableContainer} type="always">
+				<Table striped highlightOnHover className={styles.tableStyle}>
+					<thead className={styles.theadStyle}>
 						<tr>
 							<th>Username</th>
 							<th>Role</th>
@@ -140,7 +141,7 @@ const Users: FC = () => {
 					<tbody>{rows}</tbody>
 				</Table>
 			</ScrollArea>
-			<Modal opened={modalOpen} onClose={handleClose} title="Create user" centered className={classes.modalStyle}>
+			<Modal opened={modalOpen} onClose={handleClose} title="Create user" centered className={styles.modalStyle} styles={{title: {fontWeight: 700}}}>
 				<Stack>
 					<TextInput
 						type="text"
@@ -158,7 +159,7 @@ const Users: FC = () => {
 						onChange={(value) => {
 							setSelectedRole(value ?? '');
 						}}
-						nothingFound="No roles found"
+						nothingFoundMessage="No roles found"
 						value={SelectedRole}
 						searchValue={roleSearchValue}
 						onSearchChange={(value) => setRoleSearchValue(value)}
@@ -171,22 +172,22 @@ const Users: FC = () => {
 					/>
 
 					{createUserIsError ? (
-						<Text className={classes.passwordText} color="red">
+						<Text className={styles.passwordText} color="red">
 							{createUserError}
 						</Text>
 					) : createUserIsLoading ? (
-						<Text className={classes.passwordText}>loading</Text>
+						<Text className={styles.passwordText}>loading</Text>
 					) : createUserData?.data ? (
 						<Box>
-							<Text className={classes.passwordText}>Password</Text>
-							<Prism
-								className={classes.passwordPrims}
-								language="markup"
+							<Text className={styles.passwordText}>Password</Text>
+														<CodeHighlight
+								className={styles.passwordPrims}
+								language="text"
 								copyLabel="Copy password to clipboard"
-								copiedLabel="Password copied to clipboard">
-								{createUserData?.data}
-							</Prism>
-							<Text className={classes.passwordText} color="red">
+								code={createUserData?.data}
+								copiedLabel="Password copied to clipboard"
+							/>
+							<Text className={styles.passwordText} color="red">
 								Warning this is the only time you are able to see Password
 							</Text>
 						</Box>
@@ -195,16 +196,16 @@ const Users: FC = () => {
 					)}
 				</Stack>
 
-				<Group position="right" mt={10}>
+				<Group justify="right" mt={10}>
 					<Button
 						variant="filled"
 						color="gray"
-						className={classes.modalActionBtn}
+						className={styles.modalActionBtn}
 						onClick={handleCreateUser}
 						disabled={createVaildtion() || !!createUserData?.data}>
 						Create
 					</Button>
-					<Button onClick={handleClose} variant="outline" color="gray" className={classes.modalCancelBtn}>
+					<Button onClick={handleClose} variant="outline" color="gray" className={styles.modalCancelBtn}>
 						Cancel
 					</Button>
 				</Group>

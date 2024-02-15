@@ -1,0 +1,26 @@
+.messageStyle {
+	margin-top: 1rem;
+	color: #868e96;
+}
+
+.streamBox {
+	border-radius: 0.5rem;
+	box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.2);
+	flex-shrink: 0;
+	height: 95px;
+	padding: 1rem;
+	cursor: pointer;
+	width: auto;
+}
+
+.streamBoxCol {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	min-width: 130px;
+	border-right: 1px solid #e9ecef;
+}
+
+.bigNo {
+	color: var(--mantine-color-brandPrimary-4);
+}

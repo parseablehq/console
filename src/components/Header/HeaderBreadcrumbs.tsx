@@ -3,7 +3,7 @@ import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Breadcrumbs, Text } from '@mantine/core';
 import type { FC } from 'react';
 import { useEffect } from 'react';
-import { useLogQueryStyles } from './styles';
+import classes from './styles/LogQuery.module.css';
 
 type HeaderBreadcrumbs = {
 	crumbs: string[];
@@ -38,7 +38,6 @@ const HeaderBreadcrumbs: FC<HeaderBreadcrumbs> = (props) => {
 };
 
 const HomeIcon: FC = () => {
-	const { classes } = useLogQueryStyles();
 	const { homeIcon } = classes;
 	return (
 		<svg className={homeIcon} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">

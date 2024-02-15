@@ -78,7 +78,7 @@ export const useLoginForm = () => {
 					}
 				}
 			} catch (err) {
-				notifyError({ id: notificationId });
+				notifyError({ message: 'Something went wrong' });
 			} finally {
 				setLoading(false);
 			}

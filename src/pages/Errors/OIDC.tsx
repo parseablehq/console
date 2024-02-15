@@ -3,7 +3,7 @@ import { Box, Button, Center, Group, Text, Title } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { ComponentPropsWithoutRef, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useErrorPageStyles } from './styles';
+import errorStyles from './styles/Errors.module.css'
 
 const Illustration: FC<ComponentPropsWithoutRef<'svg'>> = (props) => {
 	return (
@@ -22,7 +22,7 @@ const OIDCNotConFigured: FC = () => {
 		nav(HOME_ROUTE, { replace: true });
 	};
 
-	const { classes } = useErrorPageStyles();
+	const classes = errorStyles;
 
 	const { container, illustration, titleStyle, descriptionStyle } = classes;
 
@@ -32,10 +32,10 @@ const OIDCNotConFigured: FC = () => {
 				<Illustration className={illustration} />
 				<div>
 					<Title className={titleStyle}>Nothing to see here</Title>
-					<Text color="dimmed" size="lg" align="center" className={descriptionStyle}>
+					<Text color="dimmed" size="lg" ta="center" className={descriptionStyle}>
 						OIDC is not configured. Please contact your administrator.
 					</Text>
-					<Group position="center">
+					<Group justify="center">
 						<Button variant="outline" color="brandPrimary.0" size="md" onClick={onHome}>
 							Take me back to home page
 						</Button>

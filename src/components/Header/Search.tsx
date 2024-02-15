@@ -4,7 +4,7 @@ import { Box, TextInput, px } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
 import type { ChangeEvent, FC, KeyboardEvent } from 'react';
 import { useEffect } from 'react';
-import { useLogQueryStyles } from './styles';
+import classes from './styles/LogQuery.module.css'
 
 const Search: FC = () => {
 	const {
@@ -22,7 +22,6 @@ const Search: FC = () => {
 		};
 	}, []);
 
-	const { classes } = useLogQueryStyles();
 	const { searchContainer, searchInput } = classes;
 
 	const onSearchValueChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -49,7 +48,7 @@ const Search: FC = () => {
 				onKeyDown={handleKeyDown}
 				onChange={onSearchValueChange}
 				placeholder="Search"
-				icon={<IconSearch size={px('1.2rem')} stroke={1.5} />}
+				leftSection={<IconSearch size={px('1.2rem')} stroke={1.5} />}
 			/>
 		</Box>
 	);

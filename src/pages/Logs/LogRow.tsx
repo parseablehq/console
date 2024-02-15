@@ -3,8 +3,8 @@ import { Box, px } from '@mantine/core';
 import { IconArrowNarrowRight } from '@tabler/icons-react';
 import { FC, Fragment } from 'react';
 import { useLogsPageContext } from './Context';
-import { useLogTableStyles } from './styles';
 import { Log } from '@/@types/parseable/api/query';
+import tableStyles from './styles/Logs.module.css'
 
 const skipFields = ['p_metadata', 'p_tags'];
 
@@ -25,7 +25,7 @@ const LogRow: FC<LogRowProps> = (props) => {
 		subViewLog.set(log);
 	};
 
-	const { classes } = useLogTableStyles();
+	const classes = tableStyles;
 	const { trStyle, trEvenStyle } = classes;
 
 	return (
@@ -57,7 +57,7 @@ const LogRow: FC<LogRowProps> = (props) => {
 };
 
 const TdArrow: FC = () => {
-	const { classes } = useLogTableStyles();
+	const classes = tableStyles;
 	const { tdArrow, tdArrowContainer } = classes;
 
 	return (

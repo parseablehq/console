@@ -1,12 +1,12 @@
 import { Box, TextInput, px } from '@mantine/core';
 import { type FC, type ChangeEvent, useEffect } from 'react';
-import { useLogQueryStyles } from './styles';
 import useMountedState from '@/hooks/useMountedState';
 import { IconSearch } from '@tabler/icons-react';
 import Dropdown from './Dropdown';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { LogStreamData } from '@/@types/parseable/api/stream';
 import { notifyError } from '@/utils/notification';
+import classes from './styles/LogQuery.module.css'
 
 const LiveTailFilter: FC = () => {
 	const {
@@ -33,7 +33,8 @@ const LiveTailFilter: FC = () => {
 		});
 	};
 
-	const handleDropdownValue = (value: string) => {
+	const handleDropdownValue = (value: string | null) => {
+		if (value === null) return;
 		setSearchField(value);
 	};
 
@@ -47,7 +48,6 @@ const LiveTailFilter: FC = () => {
 		};
 	}, [subLiveTailsData]);
 
-	const { classes } = useLogQueryStyles();
 	const { liveTailFilterContainer, searchInput } = classes;
 
 	return (
@@ -66,7 +66,7 @@ const LiveTailFilter: FC = () => {
 						value={searchValue}
 						onChange={onSearchValueChange}
 						placeholder="Search"
-						icon={<IconSearch size={px('1.2rem')} stroke={1.5} />}
+						leftSection={<IconSearch size={px('1.2rem')} stroke={1.5} />}
 					/>
 				</>
 			)}

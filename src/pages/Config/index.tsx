@@ -2,12 +2,12 @@ import { Accordion, Box, Button, Switch } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import Editor from '@monaco-editor/react';
 import { FC, useEffect } from 'react';
-import { useConfigStyles } from './styles';
 import useMountedState from '@/hooks/useMountedState';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { useCacheToggle } from '@/hooks/useCacheToggle';
 import { useAlertsEditor } from '@/hooks/useAlertsEditor';
 import { useRetentionEditor } from '@/hooks/useRetentionEditor';
+import configStyles from './styles/Config.module.css'
 
 const Config: FC = () => {
 	useDocumentTitle('Parseable | Config');
@@ -34,7 +34,8 @@ const Config: FC = () => {
 
 	const { handleRetentionQueryChange, submitRetentionQuery, getLogRetentionData } = useRetentionEditor(streamName);
 
-	const { classes } = useConfigStyles();
+	// const { classes } = useConfigStyles();
+	const classes = configStyles;
 	const { container, submitBtn, accordionSt, innerContainer, containerWrapper, trackStyle } = classes;
 
 	const switchStyles = {
@@ -52,12 +53,12 @@ const Config: FC = () => {
 			/>
 			<Box className={containerWrapper}>
 				<Box className={innerContainer}>
-					<Accordion defaultValue="" variant="contained" radius="md" w={'100%'} className={accordionSt}>
+					<Accordion defaultValue="" variant="contained" radius="md" w={'100%'} className={accordionSt} style={{borderColor: '#ff0000'}}>
 						<Accordion.Item value="Alert">
 							<Accordion.Control>Alert</Accordion.Control>
 							<Accordion.Panel>
 								<Box>
-									<Box sx={{ height: '500px' }}>
+									<Box style={{ height: '500px' }}>
 										<Editor
 											onChange={handleAlertQueryChange}
 											value={JSON.stringify(getLogAlertData?.data, null, 2)}
@@ -89,7 +90,7 @@ const Config: FC = () => {
 								<Accordion.Control>Retention</Accordion.Control>
 								<Accordion.Panel>
 									<Box>
-										<Box sx={{ height: '500px' }}>
+										<Box style={{ height: '500px' }}>
 											<Editor
 												onChange={handleRetentionQueryChange}
 												value={JSON.stringify(getLogRetentionData?.data, null, 2)}

@@ -1,14 +1,14 @@
 import { Button, Tooltip, px } from '@mantine/core';
 import { IconBook2 } from '@tabler/icons-react';
 import type { FC } from 'react';
-import { useLogQueryStyles } from './styles';
+import styles from './styles/LogQuery.module.css';
 
 const DocsUser: FC = () => {
-	const { classes } = useLogQueryStyles();
+    const classes = styles;
 	const { refreshNowBtn } = classes;
 
 	return (
-        <Tooltip label={'Docs'} sx={{ color: 'white', backgroundColor: 'black' }} withArrow position="left">
+        <Tooltip label={'Docs'} style={{ color: 'white', backgroundColor: 'black' }} withArrow position="left">
         <Button
             variant="default"
             className={refreshNowBtn}
