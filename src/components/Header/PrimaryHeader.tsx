@@ -11,7 +11,7 @@ const PrimaryHeader: FC = () => {
 	const { container, logoContainer, navContainer, imageSty, actionBtn } = classes;
 
 	return (
-		<Box className={container} style={{height: HEADER_HEIGHT}}> 
+		<Box className={container} style={{ height: HEADER_HEIGHT }}>
 			<Box className={logoContainer} style={{ minWidth: NAVBAR_WIDTH }}>
 				<a href={HOME_ROUTE}>
 					<Image className={imageSty} src={logoInvert} height={32} alt="Parseable Logo" />
@@ -33,7 +33,8 @@ const PrimaryHeader: FC = () => {
 							component={'a'}
 							href="mailto:sales@parseable.io?subject=Production%20Support%20Query"
 							target="_blank"
-							className={actionBtn}>
+							className={actionBtn}
+							style={{ border: 'none', background: 'transparent' }}>
 							<Image height={30} fit="fill" src={'/AGPLv3_Logo.svg'} />
 						</Button>
 					</Tooltip>
