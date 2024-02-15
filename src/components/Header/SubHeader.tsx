@@ -3,7 +3,6 @@ import { type FC } from 'react';
 import HeaderBreadcrumbs from './HeaderBreadcrumbs';
 import RefreshInterval from './RefreshInterval';
 import RefreshNow from './RefreshNow';
-import Search from './Search';
 import TimeRange from './TimeRange';
 import ReloadUser from './ReloadUser';
 import DocsUser from './UserDocs';
@@ -121,7 +120,6 @@ export const LogsHeader: FC = () => {
 
 					<Box>
 						<Box className={innerContainer}>
-							<Search />
 							<ToggleButton
 								onClick={toggleShowQueryEditor}
 								toggled={isQuerySearchActive && mode === 'sql'}
@@ -139,8 +137,8 @@ export const LogsHeader: FC = () => {
 			<HeaderLayout>
 				<Box className={container}>
 					<Box className={innerContainer}>
-						<Stack style={{width: "100%", flexDirection: 'row'}}>
-							<Querier/>
+						<Stack style={{ width: '100%', flexDirection: 'row' }}>
+							<Querier />
 						</Stack>
 					</Box>
 				</Box>
@@ -153,13 +151,15 @@ export const HomeHeader: FC = () => {
 	const classes = styles;
 	const { container, innerContainer } = classes;
 	return (
-		<Box className={container}>
-			<Box>
-				<Box className={innerContainer}>
-					<HeaderBreadcrumbs crumbs={['My Streams']} />
+		<HeaderLayout>
+			<Box className={container}>
+				<Box>
+					<Box className={innerContainer}>
+						<HeaderBreadcrumbs crumbs={['My Streams']} />
+					</Box>
 				</Box>
 			</Box>
-		</Box>
+		</HeaderLayout>
 	);
 };
 

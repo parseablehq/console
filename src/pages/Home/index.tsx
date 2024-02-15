@@ -60,7 +60,7 @@ const Home: FC = () => {
 	if (streams.length === 0) return <EmptyStreamsView />;
 
 	return (
-		<Box className={container} style={{ display: 'flex', flex: 1 }}>
+		<Box className={container} style={{ display: 'flex', flex: 1, marginTop: '1rem' }}>
 			<Group style={{ marginRight: '1rem', marginLeft: '1rem' }}>
 				{Object.entries(metaData || {}).map(([stream, data]) => {
 					return <StreamInfo key={stream} stream={stream} data={data} navigateToStream={navigateToStream} />;
