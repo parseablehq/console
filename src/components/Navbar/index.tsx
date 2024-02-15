@@ -53,7 +53,6 @@ const Navbar: FC = () => {
 	} = useHeaderContext();
 
 	const selectedStream = subAppContext.get().selectedStream;
-	const [searchValue, setSearchValue] = useMountedState('');
 	const [currentPage, setCurrentPage] = useMountedState('/');
 	const [deleteStream, setDeleteStream] = useMountedState('');
 	const [userSepecficStreams, setUserSepecficStreams] = useMountedState<LogStreamData | null>(null);
@@ -78,7 +77,6 @@ const Navbar: FC = () => {
 			setUserSepecficAccess(getStreamsSepcificAccess(getUserRolesData?.data));
 		} else if (userSepecficStreams && userSepecficStreams.length === 0) {
 			setSelectedStream('');
-			setSearchValue('');
 			setDisableLink(true);
 			navigate('/');
 		} else if (streamName) {
@@ -119,7 +117,6 @@ const Navbar: FC = () => {
 
 	const handleChangeWithoutRiderection = (value: string, page: string = currentPage) => {
 		setSelectedStream(value);
-		setSearchValue(value);
 		setCurrentPage(page);
 		streamChangeCleanup(value);
 		setDisableLink(false);
@@ -161,13 +158,12 @@ const Navbar: FC = () => {
 						/>
 						<Select
 							placeholder="Pick one"
-							onChange={(value) => handleChange(value || '')}
+							onChange={(value) => {
+								const targetValue = value === null ? selectedStream : value;
+								handleChange(targetValue || '');
+							}}
 							nothingFoundMessage="No options"
 							value={selectedStream}
-							searchValue={searchValue}
-							onSearchChange={(value) => setSearchValue(value)}
-							onDropdownClose={() => setSearchValue(selectedStream)}
-							onDropdownOpen={() => setSearchValue('')}
 							data={userSepecficStreams?.map((stream: any) => ({ value: stream.name, label: stream.name })) ?? []}
 							searchable
 							required
@@ -261,8 +257,7 @@ const Navbar: FC = () => {
 						title={'Delete Stream'}
 						centered
 						className={styles.modalStyle}
-						styles={{title: {fontWeight: 700}}}
-						>
+						styles={{ title: { fontWeight: 700 } }}>
 						<TextInput
 							type="text"
 							label="Are you sure you want to delete this stream?"
