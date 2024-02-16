@@ -17,7 +17,7 @@ const TimeRange: FC = () => {
 		state: { subLogQuery, subLogSelectedTimeRange },
 	} = useHeaderContext();
 
-	const handleOuterClick = (event: any) => {
+	const handleOuterClick = useCallback((event: any) => {
 		const targetClassNames:  string[] = event.target?.classList || [];
 		const maybeSubmitBtnClassNames: string[] = event.target.closest('button')?.classList || [];
 		const classNames: string[] = [
@@ -32,7 +32,7 @@ const TimeRange: FC = () => {
 			);
 		});
 		!shouldIgnoreClick && setOpened(false);
-	};
+	}, []);
 
 	const innerRef = useOuterClick(handleOuterClick);
 	const [opened, setOpened] = useMountedState(false);
