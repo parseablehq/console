@@ -1,5 +1,4 @@
 import {
-	Popover,
 	Stack,
 	Group,
 	ScrollArea,
@@ -11,6 +10,8 @@ import {
 	Button,
 	CloseIcon,
 	Pill,
+	ActionIcon,
+	Modal,
 } from '@mantine/core';
 import { useCallback } from 'react';
 import classes from './styles/QueryBuilder.module.css';
@@ -80,9 +81,9 @@ const RuleView = (props: RuleViewType) => {
 				type={type}
 				disabled={isDisabled}
 			/>
-			<ThemeIcon className={classes.deleteRulebtn} onClick={deleteBtnHandler}>
+			<ActionIcon className={classes.deleteRulebtn} onClick={deleteBtnHandler}>
 				<CloseIcon />
-			</ThemeIcon>
+			</ActionIcon>
 		</Stack>
 	);
 };
@@ -224,28 +225,34 @@ const FilterBtnPlaceholder = () => {
 	);
 };
 
+const ModalTitle = () => {
+	return <Text style={{ fontSize: '1.2rem', fontWeight: 700, marginLeft: '0.5rem' }}>Filters</Text>;
+};
+
 const Querier = () => {
 	const { state: queryBuilderState, methods: queryBuilderMethods } = useQueryFilterContext();
 	const { isModalOpen, query, isSumbitDisabled, appliedQuery } = queryBuilderState;
-	const { createRuleGroup, toggleBuilderModal, clearFilters, applyQuery } = queryBuilderMethods;
+	const { createRuleGroup, clearFilters, applyQuery, closeBuilderModal, openBuilderModal } = queryBuilderMethods;
 	const {
 		state: { custQuerySearchState },
 		methods: {},
 	} = useLogsPageContext();
 
 	const isFiltersApplied = custQuerySearchState.mode === 'filters' && custQuerySearchState.isQuerySearchActive;
-
 	return (
-		<Popover opened={isModalOpen} offset={{ mainAxis: 8, crossAxis: 500 }} position="bottom">
-			<Popover.Target>
-				<div />
-			</Popover.Target>
-			<Group onClick={toggleBuilderModal} className={classes.queryBuilderBtn}>
+		<>
+			<Group onClick={openBuilderModal} className={classes.queryBuilderBtn}>
 				{!isFiltersApplied ? <FilterBtnPlaceholder /> : <QueryPills query={appliedQuery} />}
 			</Group>
-			<Popover.Dropdown p={0}>
+			<Modal
+				opened={isModalOpen}
+				onClose={closeBuilderModal}
+				size="auto"
+				centered
+				styles={{ body: { padding: '0 0.5rem' }, header: { padding: '1rem', paddingBottom: '0' } }}
+				title={<ModalTitle />}>
 				<Stack style={{ width: '820px', padding: '1rem' }} gap={0}>
-					<ScrollArea h={'400px'} className={classes.queryBuilderContainer} style={{ width: '100%' }}>
+					<ScrollArea h={'420px'} className={classes.queryBuilderContainer} style={{ width: '100%' }}>
 						<Stack gap={0}>
 							{query.rules.map((ruleSet) => {
 								return <RuleSet ruleSet={ruleSet} key={ruleSet.id} />;
@@ -260,8 +267,8 @@ const Querier = () => {
 						Apply
 					</Button>
 				</Stack>
-			</Popover.Dropdown>
-		</Popover>
+			</Modal>
+		</>
 	);
 };
 

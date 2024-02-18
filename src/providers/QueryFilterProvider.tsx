@@ -31,11 +31,12 @@ type QueryFilterContextMethods = {
 	deleteRuleFromGroup: (groupId: string, ruleId: string) => void;
 	updateGroupCombinator: (id: string, op: Combinator) => void;
 	updateRule: (groupId: string, ruleId: string, updateOpts: RuleUpdateOpts) => void;
-	toggleBuilderModal: () => void;
 	updateParentCombinator: (combinator: Combinator) => void;
 	parseQuery: () => string;
 	applyQuery: () => void;
 	clearFilters: () => void;
+	closeBuilderModal: () => void;
+	openBuilderModal: () => void;
 };
 
 type QueryFilterContextValue = {
@@ -249,8 +250,12 @@ const QueryFilterProvider = (props: QueryFilterProviderProps) => {
 		});
 	}, []);
 
-	const toggleBuilderModal = useCallback(() => {
-		return setModalOpen((prev) => !prev);
+	const openBuilderModal = useCallback(() => {
+		return setModalOpen(true);
+	}, []);
+
+	const closeBuilderModal = useCallback(() => {
+		return setModalOpen(false);
 	}, []);
 
 	const updateParentCombinator = useCallback((combinator: Combinator) => {
@@ -261,7 +266,7 @@ const QueryFilterProvider = (props: QueryFilterProviderProps) => {
 
 	const parseQuery = useCallback(() => {
 		// todo - custom rule processor to prevent converting number strings into numbers for text fields
-		const where = formatQuery(query, { format: 'sql', parseNumbers: true });
+		const where = formatQuery(query, { format: 'sql', parseNumbers: true, quoteFieldNamesWith: ['\"', '\"'] });
 		return `select * from ${subAppContext.get().selectedStream} where ${where} limit 9000`;
 	}, [query]);
 
@@ -279,8 +284,10 @@ const QueryFilterProvider = (props: QueryFilterProviderProps) => {
 		setQuery(defaultQuery);
 	}, []);
 
-	const schemaFields = subLogStreamSchema.get()?.fields || [];
+	const schemaFields = subLogStreamSchema.get()?.fields;
 	useEffect(() => {
+		if (!schemaFields || schemaFields?.length === 0) return;
+
 		const fields: Field[] = schemaFields
 			.filter((field) => field.name !== 'p_timestamp')
 			.map((field) => ({
@@ -299,15 +306,15 @@ const QueryFilterProvider = (props: QueryFilterProviderProps) => {
 	}, [schemaFields]);
 
 	useEffect(() => {
-		if (isModalOpen && query.rules.length === 0) {
+		if (query.rules.length === 0) {
 			createRuleGroup();
 		}
-	}, [isModalOpen]);
+	}, [fields]);
 
 	useEffect(() => {
 		const ruleSets = query.rules.map((r) => r.rules);
 		const allValues = ruleSets.flat().flatMap((rule) => {
-			return noValueOperators.indexOf(rule.operator) !== -1 ? [] : [rule.value];
+			return noValueOperators.indexOf(rule.operator) !== -1 ? [null] : [rule.value];
 		});
 
 		const shouldSumbitDisabled = allValues.length === 0 || allValues.some((value) => value === '');
@@ -349,11 +356,12 @@ const QueryFilterProvider = (props: QueryFilterProviderProps) => {
 		deleteRuleFromGroup,
 		updateGroupCombinator,
 		updateRule,
-		toggleBuilderModal,
 		updateParentCombinator,
 		parseQuery,
 		applyQuery,
 		clearFilters,
+		closeBuilderModal,
+		openBuilderModal,
 	};
 	const value = useMemo(() => ({ state, methods }), [state, methods]);
 

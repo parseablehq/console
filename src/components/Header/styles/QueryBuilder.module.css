@@ -90,7 +90,6 @@
 	cursor: pointer;
 	height: 2.2rem;
     overflow: auto;
-    margin-left: -20px;
     min-width: 70%;
     max-width: 100%;
 }
@@ -112,8 +111,8 @@
 .footer {
     flex-direction: row;
     justify-content: flex-end;
-    padding: 1rem;
-    padding-top: 0; 
+    padding: 1.5rem;
+    padding-top: 0.75rem; 
 }
 
 .queryBuilderContainer {

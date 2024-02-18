@@ -63,7 +63,7 @@ const LogTable: FC = () => {
 			custQuerySearchState: { isQuerySearchActive, custSearchQuery },
 			pageOffset,
 		},
-		methods: { setPageOffset },
+		methods: { setPageOffset, resetQuerySearch },
 	} = useLogsPageContext();
 	const {
 		state: { subLogSearch, subLogQuery, subRefreshInterval, subLogSelectedTimeRange },
@@ -99,6 +99,11 @@ const LogTable: FC = () => {
 	const appliedFilter = (key: string) => {
 		return subLogSearch.get().filters[key] ?? [];
 	};
+
+	const currentStreamName = subLogQuery.get().streamName;
+	useEffect(() => {
+		resetQuerySearch();
+	}, [currentStreamName])
 
 	const applyFilter = (key: string, value: string[]) => {
 		subLogSearch.set((state) => {
