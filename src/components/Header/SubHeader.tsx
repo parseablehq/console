@@ -18,6 +18,7 @@ import { IconCodeCircle } from '@tabler/icons-react';
 import styles from './styles/LogQuery.module.css';
 import headerStyles from './styles/Header.module.css';
 import Querier from './Querier';
+import { useStatsPageContext } from '@/pages/Stats/Context';
 
 type HeaderLayoutProps = {
 	children: React.ReactNode;
@@ -39,8 +40,8 @@ export const StatsHeader: FC = () => {
 	const classes = styles;
 	const { container, innerContainer } = classes;
 	const {
-		methods: { resetTimeInterval },
-	} = useHeaderContext();
+		methods: { resetFetchStartTime },
+	} = useStatsPageContext();
 	return (
 		<HeaderLayout>
 			<Box className={container}>
@@ -52,7 +53,7 @@ export const StatsHeader: FC = () => {
 
 				<Box>
 					<Box className={innerContainer}>
-						<RefreshNow onRefresh={resetTimeInterval} />
+						<RefreshNow onRefresh={resetFetchStartTime} />
 					</Box>
 				</Box>
 			</Box>

@@ -1,5 +1,4 @@
 import Home from '@/pages/Home';
-import LogsPageProvider from '@/pages/Logs/Context';
 import type { FC } from 'react';
 import { lazy } from 'react';
 import SuspensePage from './SuspensePage';
@@ -13,6 +12,12 @@ import {
 	StatsHeader,
 	UsersManagementHeader,
 } from '@/components/Header/SubHeader';
+
+// page-wise providers
+import LogsPageProvider from '@/pages/Logs/Context';
+import StatsPageProvider from '@/pages/Stats/Context';
+
+// component-wise providers
 import QueryFilterProvider from '@/providers/QueryFilterProvider';
 
 export const HomeElement: FC = () => {
@@ -73,8 +78,10 @@ const Stats = lazy(() => import('@/pages/Stats'));
 export const StatsElement: FC = () => {
 	return (
 		<SuspensePage>
-			<StatsHeader />
-			<Stats />
+			<StatsPageProvider>
+				<StatsHeader />
+				<Stats />
+			</StatsPageProvider>
 		</SuspensePage>
 	);
 };

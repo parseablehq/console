@@ -3,8 +3,9 @@ import { getLogStreamAlerts, putLogStreamAlerts } from '@/api/logStream';
 import { IconFileAlert } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import useMountedState from './useMountedState';
+import { Dayjs } from 'dayjs';
 
-export const useAlertsEditor = (streamName: string) => {
+export const useAlertsEditor = (streamName: string, fetchStartTime?: Dayjs) => {
 	const [alertQuery, setAlertQuery] = useMountedState<string | undefined>('');
 
 	const {
@@ -18,7 +19,7 @@ export const useAlertsEditor = (streamName: string) => {
 		isError: getLogAlertIsError,
 		isSuccess: getLogAlertIsSuccess,
 		isLoading: getLogAlertIsLoading,
-	} = useQuery(['fetch-log-stream-alert', streamName, updateLogStreamIsSuccess], () => getLogStreamAlerts(streamName), {
+	} = useQuery(['fetch-log-stream-alert', streamName, updateLogStreamIsSuccess, fetchStartTime], () => getLogStreamAlerts(streamName), {
 		onSuccess: (data) => {
 			setAlertQuery(JSON.stringify(data?.data));
 		},
