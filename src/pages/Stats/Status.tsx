@@ -19,22 +19,27 @@ import { useLogStreamStats } from '@/hooks/useLogStreamStats';
 import { useParams } from 'react-router-dom';
 import statusStyles from './styles/Status.module.css';
 import statCardStyles from './styles/StatsCard.module.css';
+import { useStatsPageContext } from './Context';
 
 const Status: FC = () => {
 	const { streamName } = useParams();
 
-	const [statusFixedDurations, setStatusFixedDurations] = useMountedState<number>(0);
+	const {
+		state: { statusFixedDurations, fetchStartTime },
+		methods: { setStatusFixedDurations },
+	} = useStatsPageContext();
+
 	const [fetchQueryStatus, setFetchQueryStatus] = useMountedState<string>('');
 
 	const { getLogRetentionIsError, getLogRetentionData, getLogRetentionIsSuccess, getLogRetentionIsLoading } =
-		useRetentionEditor(streamName || '');
+		useRetentionEditor(streamName || '', fetchStartTime);
 
 	const {
 		getLogStreamStatsData,
 		getLogStreamStatsDataIsSuccess,
 		getLogStreamStatsDataIsLoading,
 		getLogStreamStatsDataIsError,
-	} = useLogStreamStats(streamName || '');
+	} = useLogStreamStats(streamName || '', fetchStartTime);
 	const { fetchQueryMutation } = useQueryResult();
 
 	useEffect(() => {
@@ -42,15 +47,14 @@ const Status: FC = () => {
 			getStatus();
 			setStatusFixedDurations(0);
 		}
-	}, [streamName]);
+	}, [streamName, fetchStartTime]);
 
 	const getStatus = async () => {
-		const now = dayjs();
 		setStatusFixedDurations(statusFixedDurations + 1);
 		const LogQuery = {
 			streamName: streamName || '',
-			startTime: now.subtract(FIXED_DURATIONS[statusFixedDurations].milliseconds, 'milliseconds').toDate(),
-			endTime: now.toDate(),
+			startTime: fetchStartTime.subtract(FIXED_DURATIONS[statusFixedDurations].milliseconds, 'milliseconds').toDate(),
+			endTime: fetchStartTime.toDate(),
 			access: [],
 		};
 		fetchQueryMutation.mutate({

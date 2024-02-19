@@ -3,8 +3,9 @@ import { getLogStreamRetention, putLogStreamRetention } from '@/api/logStream';
 import { IconFileAlert } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import useMountedState from './useMountedState';
+import { Dayjs } from 'dayjs';
 
-export const useRetentionEditor = (streamName: string) => {
+export const useRetentionEditor = (streamName: string, fetchStartTime?: Dayjs) => {
 	const [retentionQuery, setRetentionQuery] = useMountedState<string | undefined>('');
 
 	const {
@@ -19,7 +20,7 @@ export const useRetentionEditor = (streamName: string) => {
 		isLoading: getLogRetentionIsLoading,
 		isSuccess: getLogRetentionIsSuccess,
 	} = useQuery(
-		['fetch-log-stream-retention', streamName, updateLogRetentionIsSuccess],
+		['fetch-log-stream-retention', streamName, updateLogRetentionIsSuccess, fetchStartTime],
 		() => getLogStreamRetention(streamName),
 		{
 			onSuccess: (data) => {

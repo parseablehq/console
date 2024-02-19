@@ -9,14 +9,17 @@ import { useAlertsEditor } from '@/hooks/useAlertsEditor';
 import { useParams } from 'react-router-dom';
 import alertStyles from './styles/Alerts.module.css'
 import { CodeHighlight } from '@mantine/code-highlight';
+import { useStatsPageContext } from './Context';
 
 const Alerts: FC = () => {
 	const {
 		state: { subLogQuery },
 	} = useHeaderContext();
 	const { streamName } = useParams();
-
-	const { getLogAlertData, getLogAlertIsError, getLogAlertIsLoading } = useAlertsEditor(streamName || '');
+	const {
+		state: { fetchStartTime },
+	} = useStatsPageContext();
+	const { getLogAlertData, getLogAlertIsError, getLogAlertIsLoading } = useAlertsEditor(streamName || '', fetchStartTime);
 
 	const [opened, { open, close }] = useDisclosure(false);
 	const [Alert, setAlert] = useMountedState({ name: 'Loading....' });
