@@ -53,12 +53,12 @@ const Config: FC = () => {
 			/>
 			<Box className={containerWrapper}>
 				<Box className={innerContainer}>
-					<Accordion defaultValue="" variant="contained" radius="md" w={'100%'} className={accordionSt} style={{borderColor: '#ff0000'}}>
+					{/* <Accordion defaultValue="" variant="contained" radius="md" w={'100%'} className={accordionSt} style={{borderColor: '#ff0000'}}>
 						<Accordion.Item value="Alert">
 							<Accordion.Control>Alert</Accordion.Control>
-							<Accordion.Panel>
-								<Box>
-									<Box style={{ height: '500px' }}>
+							<Accordion.Panel> */}
+								<Box w='100%'>
+									<Box style={{ height: '500px'}}>
 										<Editor
 											onChange={handleAlertQueryChange}
 											value={JSON.stringify(getLogAlertData?.data, null, 2)}
@@ -79,9 +79,9 @@ const Config: FC = () => {
 										Submit
 									</Button>
 								</Box>
-							</Accordion.Panel>
+							{/* </Accordion.Panel>
 						</Accordion.Item>
-					</Accordion>
+					</Accordion> */}
 				</Box>
 				{!subLogQuery.get().access?.some((access: string) => ['PutRetention'].includes(access)) ? null : (
 					<Box className={innerContainer}>

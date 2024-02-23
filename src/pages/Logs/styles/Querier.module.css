@@ -1,3 +1,56 @@
+.filterContainer {
+    padding-left: 0.6rem;
+	background-color: white;
+	color: #211F1F;
+	cursor: pointer;
+    flex: 1;
+	flex-direction: row;
+    overflow-y: hidden;
+    align-items: center;
+}
+
+.container {
+	background-color: white;
+	color: #211F1F;
+	border: 1px var(--mantine-color-gray-3  ) solid;
+	border-radius: rem(8px);
+	cursor: pointer;
+    flex: 1;
+    overflow-y: hidden;
+    flex-direction: row;
+    margin-right: 0.675rem;
+}
+
+.modeContainer {
+	width: 5rem;
+	height: 100%;
+	text-align: center;
+	align-items: center;
+	justify-content: center;
+	border-right: 1px solid var(--mantine-color-gray-4);
+}
+
+.modeLabel {
+	/* color: white; */
+	font-weight: 600;
+}
+
+.modeButton {
+	border-top-right-radius: 0px !important;
+	border-bottom-right-radius: 0px !important;
+	width: 6rem;
+	border-top: none !important;
+	border-left: none !important;
+	border-bottom: none !important;
+    margin: 0px !important;
+}
+
+.placeholderText {
+	color: var(--mantine-color-gray-5);
+	font-size: 1rem;
+	font-weight: 500;
+}
+
 .addRuleContainer {
     border: rem(2px) solid var(--mantine-color-gray-3);
     height: 6rem;
@@ -112,14 +165,14 @@
     flex-direction: row;
     justify-content: flex-end;
     padding: 1.5rem;
-    padding-top: 0.75rem; 
     padding-right: 0rem;
+    padding-top: 0.75rem; 
 }
 
 .queryBuilderContainer {
     border-top-left-radius: rem(6px);
     border-top-right-radius: rem(6px);
-    border-bottom: 1px solid var(--mantine-color-gray-3);
+    /* border-bottom: 1px solid var(--mantine-color-gray-3); */
 }
 
 .queryBuilderBtnPlaceholder {

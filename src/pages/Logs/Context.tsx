@@ -1,9 +1,11 @@
 import type { Log } from '@/@types/parseable/api/query';
 import useSubscribeState, { SubData } from '@/hooks/useSubscribeState';
 import type { Dispatch, FC, SetStateAction } from 'react';
-import { ReactNode, createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
 import { sanitizeCSVData } from '@/utils/exportHelpers';
+import { useHeaderContext } from '@/layouts/MainLayout/Context';
+import { useDisclosure } from '@mantine/hooks';
 
 const Context = createContext({});
 
@@ -26,6 +28,8 @@ interface LogsPageContextState {
 	subSchemaToggle: SubData<boolean>;
 	pageOffset: number;
 	custQuerySearchState: CustQuerySearchState;
+	deleteModalOpen: boolean;
+	currentStream: string;
 }
 
 type LogQueryData = {
@@ -62,7 +66,7 @@ type CustQuerySearchState = {
 
 export const defaultQueryResult = '';
 
-const defaultCustQuerySearchState = { showQueryEditor: false, isQuerySearchActive: false, custSearchQuery: '', mode: null };
+const defaultCustQuerySearchState = { showQueryEditor: false, isQuerySearchActive: false, custSearchQuery: '', mode: 'filters', viewMode: 'filters' };
 
 const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 	const subLogStreamError = useSubscribeState<string | null>(null);
@@ -76,7 +80,32 @@ const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 	const subSchemaToggle = useSubscribeState<boolean>(false);
 	const [pageOffset, setPageOffset] = useState<number>(0);
 	const [custQuerySearchState, setCustQuerySearchState] = useState<CustQuerySearchState>(defaultCustQuerySearchState);
-	
+	const [currentStream, setCurrentStream] = useState<string>('');
+	const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+	const [alertsModalOpen, setAlertsModalOpen] = useState<boolean>(false);
+	const [retentionModalOpen, setRetentionModalOpen] = useState<boolean>(false);
+
+	const [maximized, {toggle: toggleMaximize}] = useDisclosure(false)
+	const [liveTailToggled, {toggle: toggleLiveTail}] = useDisclosure(false)
+	const [builderModalOpen, {toggle: toggleBuilderModal, close: closeBuilderModal}] = useDisclosure(false)
+
+	const {
+		state: {  subLogQuery },
+	} = useHeaderContext();
+
+	// TODO: rm this after context refactor
+	useEffect(() => {
+		const streamlistener = subLogQuery.subscribe((state) => {
+			if (state.streamName) {
+				setCurrentStream(state.streamName);
+			}
+		});
+
+		return () => {
+			streamlistener();
+		};
+	}, [subLogQuery]);
+
 	// state
 	const state: LogsPageContextState = {
 		subLogStreamError,
@@ -87,6 +116,13 @@ const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 		subSchemaToggle,
 		custQuerySearchState,
 		pageOffset,
+		deleteModalOpen,
+		currentStream,
+		alertsModalOpen,
+		retentionModalOpen,
+		maximized,
+		liveTailToggled,
+		builderModalOpen
 	};
 
 	// getters & setters
@@ -95,12 +131,41 @@ const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 	}, []);
 
 	const resetQuerySearch = useCallback(() => {
-		setCustQuerySearchState(defaultCustQuerySearchState);
+		closeBuilderModal();
+		setCustQuerySearchState((prev) => ({...defaultCustQuerySearchState, viewMode: prev.viewMode}));
 		// setPageOffset(0); wont the LogTable handle this ?
 	}, []);
 
 	const setCustSearchQuery = useCallback((query: string, mode: custQuerySearchMode) => {
 		setCustQuerySearchState((prev) => ({ ...prev, mode, custSearchQuery: query, isQuerySearchActive: true, showQueryEditor: false}));
+	}, [])
+
+	const toggleCustQuerySearchMode = useCallback(( viewMode: custQuerySearchMode) => {
+		setCustQuerySearchState((prev) => ({...prev, viewMode}))
+	}, [])
+
+	const closeDeleteModal = useCallback(() => {
+		return setDeleteModalOpen(false);
+	}, [])
+
+	const openDeleteModal = useCallback(() => {
+		return setDeleteModalOpen(true);
+	}, [])
+
+	const closeAlertsModal = useCallback(() => {
+		return setAlertsModalOpen(false);
+	}, [])
+
+	const openAlertsModal = useCallback(() => {
+		return setAlertsModalOpen(true);
+	}, [])
+
+	const closeRetentionModal = useCallback(() => {
+		return setRetentionModalOpen(false);
+	}, [])
+
+	const openRetentionModal = useCallback(() => {
+		return setRetentionModalOpen(true);
 	}, [])
 
 	// handlers
@@ -131,6 +196,17 @@ const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 		resetQuerySearch,
 		setPageOffset,
 		setCustSearchQuery,
+		closeDeleteModal,
+		openDeleteModal,
+		openAlertsModal,
+		closeAlertsModal,
+		openRetentionModal,
+		closeRetentionModal,
+		toggleMaximize,
+		toggleLiveTail,
+		toggleCustQuerySearchMode,
+		toggleBuilderModal,
+		closeBuilderModal
 	};
 
 	const value = useMemo(() => ({ state, methods }), [state, methods]);

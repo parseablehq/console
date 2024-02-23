@@ -19,7 +19,7 @@ import {
 } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { FC } from 'react';
-import { LOG_QUERY_LIMITS, useLogsPageContext, LOAD_LIMIT as loadLimit } from './Context';
+import { LOG_QUERY_LIMITS, useLogsPageContext, LOAD_LIMIT as loadLimit } from './context';
 import LogRow from './LogRow';
 import useMountedState from '@/hooks/useMountedState';
 import { IconSelector, IconGripVertical, IconPin, IconPinFilled, IconSettings } from '@tabler/icons-react';
@@ -34,7 +34,8 @@ import { Log, SortOrder } from '@/@types/parseable/api/query';
 import { usePagination } from '@mantine/hooks';
 import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
 import tableStyles from './styles/Logs.module.css';
-import { HEADER_HEIGHT } from '@/constants/theme';
+import { HEADER_HEIGHT, LOGS_PRIMARY_TOOLBAR_HEIGHT, LOGS_SECONDARY_TOOLBAR_HEIGHT, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
+import { IconCodeCircle } from '@tabler/icons-react';
 
 const skipFields = ['p_metadata', 'p_tags'];
 
@@ -66,7 +67,7 @@ const LogTable: FC = () => {
 		methods: { setPageOffset, resetQuerySearch },
 	} = useLogsPageContext();
 	const {
-		state: { subLogSearch, subLogQuery, subRefreshInterval, subLogSelectedTimeRange },
+		state: { subLogSearch, subLogQuery, subRefreshInterval, subLogSelectedTimeRange, maximized },
 	} = useHeaderContext();
 	const [refreshInterval, setRefreshInterval] = useMountedState<number | null>(null);
 	const [logStreamError, setLogStreamError] = useMountedState<string | null>(null);
@@ -340,19 +341,22 @@ const LogTable: FC = () => {
 		}
 	}, [pinnedContianerRef, pinnedColumns]);
 
+	const primaryHeaderHeight = !maximized ? PRIMARY_HEADER_HEIGHT + LOGS_PRIMARY_TOOLBAR_HEIGHT + LOGS_SECONDARY_TOOLBAR_HEIGHT : 0;
+
 	return (
 		<Box
 			className={tableStyles.container}
 			style={{
-				maxHeight: `calc(100vh - ${HEADER_HEIGHT * 3}px )`,
+				maxHeight: `calc(100vh - ${primaryHeaderHeight}px )`,
+				// transition: 'width 1s ease-in-out',
 			}}>
 			<FilterPills />
 			{!(logStreamError || logStreamSchemaError || logsError) ? (
 				Boolean(tableHeaders.length) && Boolean(pageLogData?.data.length) ? (
-					<Box className={tableStyles.innerContainer} style={{ maxHeight: `calc(100vh - ${HEADER_HEIGHT * 2}px )` }}>
+					<Box className={tableStyles.innerContainer} style={{ maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
 						<Box
 							className={tableStyles.innerContainer}
-							style={{ display: 'flex', flexDirection: 'row', maxHeight: `calc(100vh - ${HEADER_HEIGHT * 2}px )` }}>
+							style={{ display: 'flex', flexDirection: 'row', maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
 							<ScrollArea
 								w={`${pinnedColumnsWidth}px`}
 								className={tableStyles.pinnedScrollView}

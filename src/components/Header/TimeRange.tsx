@@ -1,12 +1,12 @@
 import useMountedState from '@/hooks/useMountedState';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Box, Button, Menu, UnstyledButton, px } from '@mantine/core';
+import { Box, Button, Menu, Tooltip, UnstyledButton, px } from '@mantine/core';
 import { DateTimePicker } from '@mantine/dates';
 import { IconClock } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import type { FC } from 'react';
 import { Fragment, useCallback, useEffect, useMemo } from 'react';
-import { FIXED_DURATIONS } from '@/constants/timeConstants';
+import { FIXED_DURATIONS, FIXED_DURATIONS_LABEL } from '@/constants/timeConstants';
 import logQueryStyles from './styles/LogQuery.module.css';
 import { useOuterClick } from '@/hooks/useOuterClick';
 
@@ -55,7 +55,7 @@ const TimeRange: FC = () => {
 			state.value = duration.name;
 			state.state = 'fixed';
 		});
-		const now = dayjs();
+		const now = dayjs().startOf('minute');
 
 		subLogQuery.set((query) => {
 			query.startTime = now.subtract(duration.milliseconds, 'milliseconds').toDate();
@@ -76,12 +76,14 @@ const TimeRange: FC = () => {
 	return (
 		<Menu withArrow position="top" opened={opened}>
 			<Menu.Target>
-				<Button
-					className={timeRangeBTn}
-					leftSection={<IconClock size={px('1.2rem')} stroke={1.5} />}
-					onClick={toggleMenu}>
-					{selectedRange}
-				</Button>
+				<Tooltip label="Time Range">
+					<Button
+						className={timeRangeBTn}
+						leftSection={<IconClock size={px('1.2rem')} stroke={1.5} />}
+						onClick={toggleMenu}>
+						{FIXED_DURATIONS_LABEL[selectedRange] || selectedRange}
+					</Button>
+				</Tooltip>
 			</Menu.Target>
 			<Menu.Dropdown>
 				<div ref={innerRef}>

@@ -100,12 +100,13 @@
 
 .navbar {
 	height: calc(100vh - 50px);
-	padding: var(--mantine-spacing-md) var(--mantine-spacing-md);
+	padding: 0 var(--mantine-spacing-md);
 	display: flex;
 	flex-direction: column;
 	border-right: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
 	transition: width 0.4s ease-in-out;
 	flex: '0 0 auto';
+    background-color: var(--mantine-color-brandPrimary-4);
 }
 
 .navbarMain {
@@ -126,6 +127,28 @@
   }
   
   .option[aria-selected="true"] {
-    background-color: var(--mantine-color-brandPrimary-4);
+    background-color: var(--mantine-color-brandPrimary-6);
     color: white;
   }
+
+.navItemContainer {
+    border-bottom: 1px solid var(--mantine-color-gray-6);
+    width: 100%;
+    align-items: center;
+    padding: 1rem 0;
+    cursor: pointer;
+    color: var(--mantine-color-gray-5);
+}
+
+.navItemContainer:last-child {
+    border: none;
+}
+
+.navItemLabel {
+    font-size: 0.75rem;
+}
+
+.navItemActive {
+    color: white;
+    border-color: white;
+}

@@ -6,7 +6,7 @@ import { Box, Button, Text, Tooltip, px } from '@mantine/core';
 import dayjs from 'dayjs';
 import { FC, useEffect } from 'react';
 import FillCarousel from './CarouselSlide';
-import { useLogsPageContext } from './Context';
+import { useLogsPageContext } from './context';
 import Loading from '@/components/Loading';
 import { IconZoomIn, IconZoomOut } from '@tabler/icons-react';
 import headerPaginationStyles from './styles/HeaderPagination.module.css';

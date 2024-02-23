@@ -20,3 +20,36 @@
     background-color: #545BEB; 
     color: #FFFFFF;
 }
+
+.iconBtn {
+    background: #fff;
+	padding: 0;
+	width: 36px;
+	color: #211F1F;
+	border: 1px #e9ecef solid;
+    border-radius: rem(8px);
+    margin-right: 0.675rem;
+
+    &.iconBtnActive {
+        color: white;
+        background-color: var(--mantine-color-brandPrimary-4);
+    }
+}
+
+
+
+.iconBtnIcon {
+    color: var(--mantine-color-brandPrimary-6);
+}
+
+.iconBtnLabel {
+    font-size: 0.8rem;
+}
+
+.iconBtn:hover {
+    background-color: #E0E0E0;
+    &.iconBtnActive {
+        color: white;
+        background-color: var(--mantine-color-brandPrimary-4);
+    }
+}

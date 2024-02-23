@@ -1,16 +1,15 @@
 import React, { FC, MutableRefObject, useCallback, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Box, Button, Flex, Text, TextInput, Tooltip, px } from '@mantine/core';
+import { Box, Button, Flex, ScrollArea, Stack, Text, TextInput, Tooltip, px } from '@mantine/core';
 import { ErrorMarker, errChecker } from './ErrorMarker';
-import { IconPlayerPlayFilled, IconRotate } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
 import { notify } from '@/utils/notification';
 import { usePostLLM } from '@/hooks/usePostLLM';
 import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
-import { LOAD_LIMIT, useLogsPageContext } from '../Logs/Context';
+import { LOAD_LIMIT, useLogsPageContext } from './context';
 import { Field } from '@/@types/parseable/dataType';
-import queryCodeStyles from './styles/QueryCode.module.css'
+import queryCodeStyles from './styles/QueryCode.module.css';
 
 type QueryCodeEditorProps = {
 	inputRef: MutableRefObject<any>;
@@ -39,10 +38,10 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 	} = useHeaderContext();
 	const {
 		state: {
-			custQuerySearchState: { isQuerySearchActive },
+			custQuerySearchState: { isQuerySearchActive, mode },
 			subLogStreamSchema,
 		},
-		methods: { resetQuerySearch, setCustSearchQuery },
+		methods: { resetQuerySearch, setCustSearchQuery, closeBuilderModal },
 	} = useLogsPageContext();
 
 	const fields = subLogStreamSchema.get()?.fields || [];
@@ -55,11 +54,12 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 	const { data: resAIQuery, postLLMQuery } = usePostLLM();
 	const currentStreamName = subLogQuery.get().streamName;
 	const isLlmActive = !!subInstanceConfig.get()?.llmActive;
+	const isSqlSearchActive = isQuerySearchActive && mode === 'sql'
 
 	const updateQuery = useCallback((query: string) => {
 		props.inputRef.current = query;
-		setQuery(query)
-	}, [])
+		setQuery(query);
+	}, []);
 
 	const handleAIGenerate = useCallback(() => {
 		if (!aiQuery?.length) {
@@ -73,7 +73,7 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 		if (resAIQuery) {
 			const warningMsg =
 				'-- LLM generated query is experimental and may produce incorrect answers\n-- Always verify the generated SQL before executing\n\n';
-				updateQuery(warningMsg + resAIQuery);
+			updateQuery(warningMsg + resAIQuery);
 		}
 	}, [resAIQuery]);
 
@@ -86,7 +86,7 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 	useEffect(() => {
 		if (currentStreamName !== localStreamName) {
 			setlocalStreamName(currentStreamName);
-			const query = `SELECT * FROM ${currentStreamName} LIMIT ${LOAD_LIMIT}; `
+			const query = `SELECT * FROM ${currentStreamName} LIMIT ${LOAD_LIMIT}; `;
 			updateQuery(query);
 		}
 		setlocalLlmActive(isLlmActive);
@@ -108,104 +108,63 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 		const query = sanitiseSqlString(inputQuery);
 		const parsedQuery = query.replace(/(\r\n|\n|\r)/gm, '');
 		setCustSearchQuery(parsedQuery, 'sql');
+		closeBuilderModal();
 	};
 
-	const classes = queryCodeStyles;
-	const { container, runQueryBtn, textContext, clearQueryBtn } = classes;
-
 	return (
-		<Box style={{ height: '100%' }}>
-			<Box className={container}>
-				<Text className={textContext}>Search Query</Text>
-				<Box style={{ height: '100%', display: 'flex', textAlign: 'right', alignItems: 'center' }}>
-					<Tooltip
-						label={'Click to exit editor and reset search'}
-						style={{ color: 'white', backgroundColor: 'black' }}
-						withArrow
-						position="right">
-						<Button
-							variant="default"
-							className={clearQueryBtn}
-							onClick={resetQuerySearch}
-							disabled={!isQuerySearchActive}
-							leftSection={<IconRotate size={px('1rem')} stroke={2} />}>
-							Reset
-						</Button>
-					</Tooltip>
-					<Tooltip
-						label={'Click to run query or ctrl + enter '}
-						style={{ color: 'white', backgroundColor: 'black' }}
-						withArrow
-						position="right">
-						<Button
-							variant="default"
-							className={runQueryBtn}
-							onClick={() => {
-								runQuery(query);
-							}}
-							leftSection={<IconPlayerPlayFilled size={px('1rem')} stroke={1} />}>
-							Search
-						</Button>
-					</Tooltip>
-				</Box>
-			</Box>
-			<Box style={{ marginTop: 16, marginBottom: 8 }}>
-				{localLlmActive ? (
-					<TextInput
-						type="text"
-						name="ai_query"
-						id="ai_query"
-						value={aiQuery}
-						onChange={(e) => setAiQuery(e.target.value)}
-						placeholder="Enter plain text to generate SQL query using OpenAI"
-						rightSectionWidth={'auto'}
-						style={{
-							'& .mantine-Input-input': {
-								border: 'none',
-								borderRadius: 0,
-								backgroundColor: 'rgba(84,91,235,.2)',
-								'::placeholder': {},
-							},
-							'& .mantine-TextInput-rightSection	': {
-								height: '100%',
-							},
-						}}
-						rightSection={
-							<Button variant="filled" color="brandPrimary.4" radius={0} onClick={handleAIGenerate} h={'100%'}>
-								✨ Generate
-							</Button>
-						}
-					/>
-				) : (
-					<Box style={{ width: '100%' }}>
-						<Box component="a" href="https://www.parseable.com/docs/integrations/llm" target="_blank">
-							Know More: How to enable SQL generation with OpenAI ?
+		<Stack style={{ flex: 1 }}>
+			<ScrollArea>
+				<Box style={{ marginTop: 16, marginBottom: 8 }}>
+					{localLlmActive ? (
+						<TextInput
+							type="text"
+							name="ai_query"
+							id="ai_query"
+							value={aiQuery}
+							onChange={(e) => setAiQuery(e.target.value)}
+							placeholder="Enter plain text to generate SQL query using OpenAI"
+							rightSectionWidth={'auto'}
+							rightSection={
+								<Button variant="filled" color="brandPrimary.4" radius={0} onClick={handleAIGenerate} h={'100%'}>
+									✨ Generate
+								</Button>
+							}
+						/>
+					) : (
+						<Box style={{ width: '100%' }}>
+							<Box component="a" href="https://www.parseable.com/docs/integrations/llm" target="_blank">
+								Know More: How to enable SQL generation with OpenAI ?
+							</Box>
 						</Box>
-					</Box>
-				)}
-			</Box>
-			<Box>
+					)}
+				</Box>
 				<SchemaList {...{ currentStreamName, fields }} />
-			</Box>
-			<Box style={{ height: 'calc(100% - 400px)' }}>
-				<Editor
-					defaultLanguage="sql"
-					value={query}
-					onChange={handleEditorChange}
-					options={{
-						scrollBeyondLastLine: false,
-						readOnly: false,
-						fontSize: 12,
-						wordWrap: 'on',
-						minimap: { enabled: false },
-						automaticLayout: true,
-						mouseWheelZoom: true,
-						padding: { top: 8 },
-					}}
-					onMount={handleEditorDidMount}
-				/>
-			</Box>
-		</Box>
+				<Stack style={{ height: 200, flex: 1 }}>
+					<Editor
+						defaultLanguage="sql"
+						value={query}
+						onChange={handleEditorChange}
+						options={{
+							scrollBeyondLastLine: false,
+							readOnly: false,
+							fontSize: 12,
+							wordWrap: 'on',
+							minimap: { enabled: false },
+							automaticLayout: true,
+							mouseWheelZoom: true,
+							padding: { top: 8 },
+						}}
+						onMount={handleEditorDidMount}
+					/>
+				</Stack>
+			</ScrollArea>
+			<Stack className={queryCodeStyles.footer} style={{ alignItems: 'center' }}>
+				<Button onClick={resetQuerySearch} disabled={!isSqlSearchActive}>Clear</Button>
+				<Button onClick={() => runQuery(query)}>
+					Apply
+				</Button>
+			</Stack>
+		</Stack>
 	);
 };
 
@@ -225,12 +184,20 @@ const SchemaList = (props: { currentStreamName: string; fields: Field[] }) => {
 			<Flex style={{ alignItems: 'flex-start', padding: 6, paddingTop: 4 }}>
 				<Box style={{ width: '50%' }}>
 					{leftColumns.map((config, index) => {
-						return <Text key={index} style={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>;
+						return (
+							<Text
+								key={index}
+								style={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
+						);
 					})}
 				</Box>
 				<Box style={{ width: '50%' }}>
 					{rightColumns.map((config, index) => {
-						return <Text key={index} style={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>;
+						return (
+							<Text
+								key={index}
+								style={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
+						);
 					})}
 				</Box>
 			</Flex>

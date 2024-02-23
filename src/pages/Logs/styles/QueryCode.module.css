@@ -54,3 +54,11 @@
     font-size: 1rem;
     font-weight: 600;
 }
+
+.footer {
+    border-top: 1px solid var(--mantine-color-gray-4) ;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: 1.5rem;
+    padding-right: 0rem;
+}

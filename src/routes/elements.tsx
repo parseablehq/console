@@ -14,7 +14,7 @@ import {
 } from '@/components/Header/SubHeader';
 
 // page-wise providers
-import LogsPageProvider from '@/pages/Logs/Context';
+import LogsPageProvider from '@/pages/Logs/context';
 import StatsPageProvider from '@/pages/Stats/Context';
 
 // component-wise providers
@@ -46,7 +46,7 @@ export const LogsElement: FC = () => {
 		<SuspensePage>
 			<LogsPageProvider>
 				<QueryFilterProvider>
-					<LogsHeader />
+					{/* <LogsHeader /> */}
 					<Logs />
 				</QueryFilterProvider>
 			</LogsPageProvider>
