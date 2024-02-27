@@ -30,6 +30,11 @@ interface LogsPageContextState {
 	custQuerySearchState: CustQuerySearchState;
 	deleteModalOpen: boolean;
 	currentStream: string;
+	alertsModalOpen: boolean;
+	retentionModalOpen: boolean;
+	maximized: boolean;
+	liveTailToggled: boolean;
+	builderModalOpen: boolean;
 }
 
 type LogQueryData = {
@@ -44,6 +49,12 @@ interface LogsPageContextMethods {
 	resetQuerySearch: () => void;
 	setPageOffset: Dispatch<SetStateAction<number>>;
 	setCustSearchQuery: (query: string, mode: custQuerySearchMode) => void;
+	closeRetentionModal: () => void;
+	openDeleteModal: () => void;
+	openAlertsModal: () => void;
+	openRetentionModal: () => void;
+	toggleLiveTail: () => void;
+	closeAlertsModal: () => void;
 }
 
 interface LogsPageContextValue {
@@ -55,20 +66,30 @@ interface LogsPageProviderProps {
 	children: ReactNode;
 }
 
-type custQuerySearchMode = null | 'sql' | 'filters' 
+type custQuerySearchMode = 'sql' | 'filters';
 
 type CustQuerySearchState = {
 	showQueryEditor: boolean;
 	isQuerySearchActive: boolean;
 	custSearchQuery: string;
-	mode: custQuerySearchMode;
+	mode: string;
+	viewMode: string;
 };
 
 export const defaultQueryResult = '';
 
-const defaultCustQuerySearchState = { showQueryEditor: false, isQuerySearchActive: false, custSearchQuery: '', mode: 'filters', viewMode: 'filters' };
+const defaultCustQuerySearchState = {
+	showQueryEditor: false,
+	isQuerySearchActive: false,
+	custSearchQuery: '',
+	mode: 'filters',
+	viewMode: 'filters',
+};
 
 const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
+	const {
+		state: { subLogQuery },
+	} = useHeaderContext();
 	const subLogStreamError = useSubscribeState<string | null>(null);
 	const subViewLog = useSubscribeState<Log | null>(null);
 	const subGapTime = useSubscribeState<GapTime | null>(null);
@@ -80,18 +101,14 @@ const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 	const subSchemaToggle = useSubscribeState<boolean>(false);
 	const [pageOffset, setPageOffset] = useState<number>(0);
 	const [custQuerySearchState, setCustQuerySearchState] = useState<CustQuerySearchState>(defaultCustQuerySearchState);
-	const [currentStream, setCurrentStream] = useState<string>('');
+	const [currentStream, setCurrentStream] = useState<string>(subLogQuery.get().streamName);
 	const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
 	const [alertsModalOpen, setAlertsModalOpen] = useState<boolean>(false);
 	const [retentionModalOpen, setRetentionModalOpen] = useState<boolean>(false);
 
-	const [maximized, {toggle: toggleMaximize}] = useDisclosure(false)
-	const [liveTailToggled, {toggle: toggleLiveTail}] = useDisclosure(false)
-	const [builderModalOpen, {toggle: toggleBuilderModal, close: closeBuilderModal}] = useDisclosure(false)
-
-	const {
-		state: {  subLogQuery },
-	} = useHeaderContext();
+	const [maximized, { toggle: toggleMaximize }] = useDisclosure(false);
+	const [liveTailToggled, { toggle: toggleLiveTail }] = useDisclosure(false);
+	const [builderModalOpen, { toggle: toggleBuilderModal, close: closeBuilderModal }] = useDisclosure(false);
 
 	// TODO: rm this after context refactor
 	useEffect(() => {
@@ -122,7 +139,7 @@ const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 		retentionModalOpen,
 		maximized,
 		liveTailToggled,
-		builderModalOpen
+		builderModalOpen,
 	};
 
 	// getters & setters
@@ -132,63 +149,72 @@ const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 
 	const resetQuerySearch = useCallback(() => {
 		closeBuilderModal();
-		setCustQuerySearchState((prev) => ({...defaultCustQuerySearchState, viewMode: prev.viewMode}));
+		setCustQuerySearchState((prev) => ({ ...defaultCustQuerySearchState, viewMode: prev.viewMode }));
 		// setPageOffset(0); wont the LogTable handle this ?
 	}, []);
 
 	const setCustSearchQuery = useCallback((query: string, mode: custQuerySearchMode) => {
-		setCustQuerySearchState((prev) => ({ ...prev, mode, custSearchQuery: query, isQuerySearchActive: true, showQueryEditor: false}));
-	}, [])
+		setCustQuerySearchState((prev) => ({
+			...prev,
+			mode,
+			custSearchQuery: query,
+			isQuerySearchActive: true,
+			showQueryEditor: false,
+		}));
+	}, []);
 
-	const toggleCustQuerySearchMode = useCallback(( viewMode: custQuerySearchMode) => {
-		setCustQuerySearchState((prev) => ({...prev, viewMode}))
-	}, [])
+	const toggleCustQuerySearchMode = useCallback((viewMode: custQuerySearchMode) => {
+		setCustQuerySearchState((prev) => ({ ...prev, viewMode }));
+	}, []);
 
 	const closeDeleteModal = useCallback(() => {
 		return setDeleteModalOpen(false);
-	}, [])
+	}, []);
 
 	const openDeleteModal = useCallback(() => {
 		return setDeleteModalOpen(true);
-	}, [])
+	}, []);
 
 	const closeAlertsModal = useCallback(() => {
 		return setAlertsModalOpen(false);
-	}, [])
+	}, []);
 
 	const openAlertsModal = useCallback(() => {
 		return setAlertsModalOpen(true);
-	}, [])
+	}, []);
 
 	const closeRetentionModal = useCallback(() => {
 		return setRetentionModalOpen(false);
-	}, [])
+	}, []);
 
 	const openRetentionModal = useCallback(() => {
 		return setRetentionModalOpen(true);
-	}, [])
+	}, []);
 
 	// handlers
-	const makeExportData = useCallback((type: string): Log[] => {
-		const { rawData, filteredData: _filteredData } = subLogQueryData.get(); // filteredData - records filtered with in-page search
-		if (type === 'JSON') {
-			return rawData;
-		} else if (type === 'CSV') {
-			const fields = subLogStreamSchema.get()?.fields;
-			const headers = !custQuerySearchState.isQuerySearchActive
-				? Array.isArray(fields)
-					? fields.map((field) => field.name)
-					: []
-				: typeof rawData[0] === 'object'
-				? Object.keys(rawData[0])
-				: [];
+	const makeExportData = useCallback(
+		(type: string): Log[] => {
+			const { rawData, filteredData: _filteredData } = subLogQueryData.get(); // filteredData - records filtered with in-page search
+			if (type === 'JSON') {
+				return rawData;
+			} else if (type === 'CSV') {
+				const fields = subLogStreamSchema.get()?.fields;
+				const headers = !custQuerySearchState.isQuerySearchActive
+					? Array.isArray(fields)
+						? fields.map((field) => field.name)
+						: []
+					: typeof rawData[0] === 'object'
+					? Object.keys(rawData[0])
+					: [];
 
-			const sanitizedCSVData = sanitizeCSVData(rawData, headers);
-			return [headers, ...sanitizedCSVData];
-		} else {
-			return [];
-		}
-	}, [custQuerySearchState.isQuerySearchActive]);
+				const sanitizedCSVData = sanitizeCSVData(rawData, headers);
+				return [headers, ...sanitizedCSVData];
+			} else {
+				return [];
+			}
+		},
+		[custQuerySearchState.isQuerySearchActive],
+	);
 
 	const methods = {
 		makeExportData,
@@ -206,7 +232,7 @@ const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 		toggleLiveTail,
 		toggleCustQuerySearchMode,
 		toggleBuilderModal,
-		closeBuilderModal
+		closeBuilderModal,
 	};
 
 	const value = useMemo(() => ({ state, methods }), [state, methods]);

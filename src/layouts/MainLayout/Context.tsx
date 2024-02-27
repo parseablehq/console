@@ -6,7 +6,7 @@ import { FIXED_DURATIONS } from '@/constants/timeConstants';
 import useSubscribeState, { SubData } from '@/hooks/useSubscribeState';
 import { useDisclosure } from '@mantine/hooks';
 import dayjs from 'dayjs';
-import type { FC } from 'react';
+import type { Dispatch, FC, SetStateAction } from 'react';
 import { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 const Context = createContext({});
@@ -34,6 +34,10 @@ interface HeaderContextState {
 	subCreateUserModalTogle: SubData<boolean>;
 	subInstanceConfig: SubData<AboutData | null>;
 	subAppContext: SubData<AppContext>;
+	maximized: boolean;
+	userSpecficStreams: LogStreamData | null;
+	userSpecificAccessMap: { [key: string]: boolean };
+	helpModalOpen: boolean;
 }
 
 export type UserRoles = {
@@ -62,6 +66,10 @@ interface HeaderContextMethods {
 	streamChangeCleanup: (streamName: string) => void;
 	setUserRoles: (userRoles: UserRoles) => void;
 	setSelectedStream: (stream: string) => void;
+	setUserSpecficStreams: Dispatch<SetStateAction<LogStreamData | null>>;
+	toggleMaximize: () => void;
+	updateUserSpecificAccess: (accessRoles: string[] | null) => void;
+	toggleHelpModal: () => void;
 }
 
 interface HeaderContextValue {
@@ -139,7 +147,7 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 		maximized,
 		userSpecficStreams,
 		userSpecificAccessMap,
-		helpModalOpen
+		helpModalOpen,
 	};
 
 	useEffect(() => {
@@ -213,7 +221,7 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 		toggleMaximize,
 		setUserSpecficStreams,
 		updateUserSpecificAccess,
-		toggleHelpModal
+		toggleHelpModal,
 	};
 
 	return <Provider value={{ state, methods }}>{children}</Provider>;

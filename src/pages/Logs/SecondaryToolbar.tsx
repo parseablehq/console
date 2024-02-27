@@ -1,13 +1,11 @@
 import { Menu, Stack, px } from '@mantine/core';
-import StreamDropdown from '@/components/Header/StreamDropdown';
 import IconButton from '@/components/Button/IconButton';
 import { useLogsPageContext } from './context';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { downloadDataAsCSV, downloadDataAsJson } from '@/utils/exportHelpers';
 import classes from './styles/Toolbar.module.css';
-import { IconBolt, IconCodeCircle, IconDownload, IconExclamationCircle, IconMaximize, IconSettings, IconTrash } from '@tabler/icons-react';
-import { LOGS_PRIMARY_TOOLBAR_HEIGHT, LOGS_SECONDARY_TOOLBAR_HEIGHT } from '@/constants/theme';
-import { ToggleButton } from '@/components/Button/ToggleButton';
+import { IconDownload, IconMaximize } from '@tabler/icons-react';
+import { LOGS_SECONDARY_TOOLBAR_HEIGHT } from '@/constants/theme';
 import TimeRange from '@/components/Header/TimeRange';
 import RefreshInterval from '@/components/Header/RefreshInterval';
 import RefreshNow from '@/components/Header/RefreshNow';
@@ -19,21 +17,11 @@ const renderMaximizeIcon = () => <IconMaximize size={px('1.4rem')} stroke={1.5} 
 
 const SecondaryToolbar = () => {
 	const {
-		methods: {
-			makeExportData,
-			toggleShowQueryEditor,
-			openDeleteModal,
-			openAlertsModal,
-			openRetentionModal,
-			toggleLiveTail,
-		},
-		state: {
-			custQuerySearchState: { isQuerySearchActive, mode },
-			liveTailToggled,
-		},
+		methods: { makeExportData },
+		state: { liveTailToggled },
 	} = useLogsPageContext();
 	const {
-		state: { subLogQuery, maximized, userSpecificAccessMap },
+		state: { subLogQuery },
 		methods: { resetTimeInterval, toggleMaximize },
 	} = useHeaderContext();
 	const exportHandler = (fileType: string | null) => {
@@ -47,37 +35,37 @@ const SecondaryToolbar = () => {
 	};
 	return (
 		<Stack className={classes.logsSecondaryToolbar} gap={0} style={{ height: LOGS_SECONDARY_TOOLBAR_HEIGHT }}>
-				{!liveTailToggled && (
-					<Stack gap={0} style={{ flexDirection: 'row', width: '100%' }}>
-						<Querier />
-						<TimeRange />
-						<RefreshInterval />
-						<Menu position="bottom">
-							<Menu.Target>
-								<div>
-									<IconButton renderIcon={renderExportIcon} tooltipLabel='Download'/>
-								</div>
-							</Menu.Target>
-							<Menu.Dropdown style={{}}>
-								<Menu.Item onClick={() => exportHandler('CSV')} style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
-									CSV
-								</Menu.Item>
-								<Menu.Item onClick={() => exportHandler('JSON')} style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
-									JSON
-								</Menu.Item>
-							</Menu.Dropdown>
-						</Menu>
-						<IconButton renderIcon={renderMaximizeIcon} onClick={toggleMaximize} tooltipLabel='Full Screen'/>
-						<RefreshNow onRefresh={resetTimeInterval} />
-					</Stack>
-				)}
-				{liveTailToggled && (
-					<Stack gap={0} style={{ flexDirection: 'row', width: '100%', justifyContent: 'flex-end' }}>
-						<StreamingButton />
-						<IconButton renderIcon={renderMaximizeIcon} onClick={toggleMaximize} tooltipLabel='Full Screen'/>
-					</Stack>
-				)}
-			</Stack>
+			{!liveTailToggled && (
+				<Stack gap={0} style={{ flexDirection: 'row', width: '100%' }}>
+					<Querier />
+					<TimeRange />
+					<RefreshInterval />
+					<Menu position="bottom">
+						<Menu.Target>
+							<div>
+								<IconButton renderIcon={renderExportIcon} tooltipLabel="Download" />
+							</div>
+						</Menu.Target>
+						<Menu.Dropdown style={{}}>
+							<Menu.Item onClick={() => exportHandler('CSV')} style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
+								CSV
+							</Menu.Item>
+							<Menu.Item onClick={() => exportHandler('JSON')} style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
+								JSON
+							</Menu.Item>
+						</Menu.Dropdown>
+					</Menu>
+					<IconButton renderIcon={renderMaximizeIcon} onClick={toggleMaximize} tooltipLabel="Full Screen" />
+					<RefreshNow onRefresh={resetTimeInterval} />
+				</Stack>
+			)}
+			{liveTailToggled && (
+				<Stack gap={0} style={{ flexDirection: 'row', width: '100%', justifyContent: 'flex-end' }}>
+					<StreamingButton />
+					<IconButton renderIcon={renderMaximizeIcon} onClick={toggleMaximize} tooltipLabel="Full Screen" />
+				</Stack>
+			)}
+		</Stack>
 	);
 };
 

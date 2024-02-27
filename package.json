@@ -16,6 +16,7 @@
 		"@apache-arrow/ts": "^14.0.2",
 		"@emotion/react": "^11.11.1",
 		"@mantine/carousel": "^7.5.1",
+		"@mantine/charts": "^7.5.3",
 		"@mantine/code-highlight": "^7.5.1",
 		"@mantine/core": "^7.5.1",
 		"@mantine/dates": "^7.5.1",

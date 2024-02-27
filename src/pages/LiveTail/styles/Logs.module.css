@@ -161,6 +161,7 @@
     flex-direction: row;
     justify-content: space-between;
     border-top: 0.0625rem solid rgba(0, 0, 0, 0.1);
+    align-items: center;
 }
 
 .errorContainer {

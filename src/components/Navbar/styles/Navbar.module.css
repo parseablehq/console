@@ -152,3 +152,8 @@
     color: white;
     border-color: white;
 }
+
+.lowerContainer {
+    color: var(--mantine-color-gray-5);
+    align-items: center;
+}

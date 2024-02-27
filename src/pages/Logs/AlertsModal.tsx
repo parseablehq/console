@@ -1,20 +1,24 @@
-import { Box, Button, Group, Modal, Stack, TextInput } from '@mantine/core';
+import { Box, Button, Modal, Stack } from '@mantine/core';
 import { useLogsPageContext } from './context';
 import { Text } from '@mantine/core';
 import classes from './styles/Logs.module.css';
 import { Editor } from '@monaco-editor/react';
-import { useAlertsEditor } from '@/hooks/useAlertsEditor';
 
 const ModalTitle = () => {
 	return <Text style={{ fontSize: '1.2rem', fontWeight: 700, marginLeft: '0.5rem' }}>Alerts</Text>;
 };
 
-const AlertsModal = () => {
+type AlertsModalProps = {
+	data: any;
+	handleChange: (value: string | undefined) => void;
+	handleSubmit: () => void;
+};
+
+const AlertsModal = (props: AlertsModalProps) => {
 	const {
-		state: { alertsModalOpen, currentStream },
+		state: { alertsModalOpen },
 		methods: { closeAlertsModal },
 	} = useLogsPageContext();
-	const { handleAlertQueryChange, submitAlertQuery, getLogAlertData } = useAlertsEditor(currentStream);
 
 	return (
 		<Modal
@@ -26,8 +30,8 @@ const AlertsModal = () => {
 			<Stack style={{ padding: '1rem 0' }}>
 				<Box style={{ height: '500px', padding: '1rem 1rem 1rem -2rem' }}>
 					<Editor
-						onChange={handleAlertQueryChange}
-						value={JSON.stringify(getLogAlertData?.data, null, 2)}
+						onChange={props.handleChange}
+						value={JSON.stringify(props.data, null, 2)}
 						defaultLanguage="json"
 						options={{
 							scrollBeyondLastLine: false,
@@ -41,8 +45,8 @@ const AlertsModal = () => {
 						}}
 					/>
 				</Box>
-				<Stack style={{alignItems: 'flex-end'}}>
-					<Button className={classes.submitBtn} onClick={submitAlertQuery}>
+				<Stack style={{ alignItems: 'flex-end' }}>
+					<Button className={classes.submitBtn} onClick={props.handleSubmit}>
 						Submit
 					</Button>
 				</Stack>

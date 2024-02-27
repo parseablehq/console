@@ -1,21 +1,30 @@
-import { Box, Button, Group, Modal, Stack, TextInput } from '@mantine/core';
+import { Box, Button, Modal, Stack, Switch } from '@mantine/core';
 import { useLogsPageContext } from './context';
 import { Text } from '@mantine/core';
 import classes from './styles/Logs.module.css';
 import { Editor } from '@monaco-editor/react';
-import { useAlertsEditor } from '@/hooks/useAlertsEditor';
-import { useRetentionEditor } from '@/hooks/useRetentionEditor';
+import { useCacheToggle } from '@/hooks/useCacheToggle';
 
 const ModalTitle = () => {
-	return <Text style={{ fontSize: '1.2rem', fontWeight: 700, marginLeft: '0.5rem' }}>Retention</Text>;
+	return <Text style={{ fontSize: '1.2rem', fontWeight: 700, marginLeft: '0.5rem' }}>Settings</Text>;
 };
 
-const RententionModal = () => {
+type RetentionModalProps = {
+	data: any;
+	handleChange: (value: string | undefined) => void;
+	handleSubmit: () => void;
+};
+
+const RententionModal = (props: RetentionModalProps) => {
 	const {
 		state: { retentionModalOpen, currentStream },
 		methods: { closeRetentionModal },
 	} = useLogsPageContext();
-	const { handleRetentionQueryChange, submitRetentionQuery, getLogRetentionData } = useRetentionEditor(currentStream);
+	const { handleCacheToggle, isCacheEnabled } = useCacheToggle(currentStream);
+	const switchStyles = {
+		track: isCacheEnabled ? classes.trackStyle : {},
+	};
+
 	return (
 		<Modal
 			opened={retentionModalOpen}
@@ -23,11 +32,22 @@ const RententionModal = () => {
 			centered
 			styles={{ body: { padding: '0 0.5rem' }, header: { padding: '1rem', paddingBottom: '0' } }}
 			title={<ModalTitle />}>
-			<Stack style={{ padding: '1rem 0' }}>
-				<Box style={{ height: '500px', padding: '1rem 1rem 1rem -2rem' }}>
+			<Stack style={{ padding: '1rem 1rem' }}>
+				<Stack style={{ width: '100%' }}>
+					<Text style={{ fontSize: '1rem', fontWeight: 600 }}>Allow Cache</Text>
+					<Switch
+						checked={isCacheEnabled}
+						labelPosition="left"
+						onChange={handleCacheToggle}
+						label={isCacheEnabled ? 'Enabled' : 'Disabled'}
+						styles={switchStyles}
+					/>
+				</Stack>
+				<Text style={{ fontSize: '1rem', fontWeight: 600 }}>Retention</Text>
+				<Box style={{ height: '400px', margin: '0rem 0rem 1rem -1.2rem' }}>
 					<Editor
-						onChange={handleRetentionQueryChange}
-						value={JSON.stringify(getLogRetentionData?.data, null, 2)}
+						onChange={props.handleChange}
+						value={JSON.stringify(props.data, null, 2)}
 						defaultLanguage="json"
 						options={{
 							scrollBeyondLastLine: false,
@@ -42,7 +62,7 @@ const RententionModal = () => {
 					/>
 				</Box>
 				<Stack style={{ alignItems: 'flex-end' }}>
-					<Button className={classes.submitBtn} onClick={submitRetentionQuery}>
+					<Button className={classes.submitBtn} onClick={props.handleSubmit}>
 						Submit
 					</Button>
 				</Stack>
