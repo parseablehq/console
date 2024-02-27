@@ -5,7 +5,8 @@ import { IconChevronDown, IconCodeCircle, IconFilter } from '@tabler/icons-react
 import classes from './styles/Querier.module.css';
 import { Text } from '@mantine/core';
 import { FilterQueryBuilder, QueryPills } from './FilterQueryBuilder';
-import { QueryEditor, AppliedSQLQuery } from './QueryEditor';
+import { AppliedSQLQuery } from './QueryEditor';
+import QueryCodeEditor from './QueryCodeEditor';
 
 const getLabel = (mode: string | null) => {
 	return mode === 'filters' ? 'Filters' : mode === 'sql' ? 'SQL' : '';
@@ -51,7 +52,7 @@ const QuerierModal = () => {
 			styles={{ body: { padding: '0 0.5rem' }, header: { padding: '1rem', paddingBottom: '0' } }}
 			title={<ModalTitle title={getLabel(viewMode)} />}>
 			<Stack style={{ width: '820px', padding: '1rem', height: '100%' }} gap={0}>
-				{viewMode === 'filters' ? <FilterQueryBuilder /> : <QueryEditor />}
+				{viewMode === 'filters' ? <FilterQueryBuilder /> : <QueryCodeEditor />}
 			</Stack>
 		</Modal>
 	);

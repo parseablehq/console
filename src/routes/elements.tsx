@@ -45,7 +45,6 @@ export const LogsElement: FC = () => {
 		<SuspensePage>
 			<LogsPageProvider>
 				<QueryFilterProvider>
-					{/* <LogsHeader /> */}
 					<Logs />
 				</QueryFilterProvider>
 			</LogsPageProvider>

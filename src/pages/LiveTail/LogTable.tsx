@@ -8,11 +8,12 @@ import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { useDoGetLiveTail } from '@/hooks/useDoGetLiveTail';
 import EmptyBox from '@/components/Empty';
 import styles from './styles/Logs.module.css';
+import { LOGS_PRIMARY_TOOLBAR_HEIGHT, LOGS_SECONDARY_TOOLBAR_HEIGHT, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 
 const LogTable: FC = () => {
 	const { finalData: data, doGetLiveTail, resetData, abort, loading, schema } = useDoGetLiveTail();
 	const {
-		state: { subInstanceConfig, subLogQuery, subLiveTailsData },
+		state: { subInstanceConfig, subLogQuery, subLiveTailsData, maximized },
 	} = useHeaderContext();
 
 	const [grpcPort, setGrpcPort] = useMountedState<number | null>(subInstanceConfig.get()?.grpcPort ?? null);
@@ -88,10 +89,20 @@ const LogTable: FC = () => {
 
 	const { container, tableStyle, theadStyle, tableContainer, innerContainer } = classes;
 
+	const primaryHeaderHeight = !maximized
+		? PRIMARY_HEADER_HEIGHT + LOGS_PRIMARY_TOOLBAR_HEIGHT + LOGS_SECONDARY_TOOLBAR_HEIGHT
+		: 0;
+
 	return (
-		<Box className={container}>
-			<Box className={innerContainer}>
-				<Box className={innerContainer} style={{ display: 'flex', flexDirection: 'row' }}>
+		<Box
+			className={container}
+			style={{
+				maxHeight: `calc(100vh - ${primaryHeaderHeight}px )`,
+			}}>
+			<Box className={innerContainer} style={{ maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
+				<Box
+					className={innerContainer}
+					style={{ display: 'flex', flexDirection: 'row', maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
 					{data.length > 0 ? (
 						<ScrollArea
 							styles={() => ({

@@ -203,9 +203,9 @@ const RuleSetPills = (props: RuleSetPillProps) => {
 
 export const QueryPills = () => {
 	const {
-		state: { query },
+		state: { appliedQuery },
 	} = useQueryFilterContext();
-	const { combinator, rules: ruleSets } = query;
+	const { combinator, rules: ruleSets } = appliedQuery;
 	return (
 		<ScrollArea scrollbarSize={6} scrollHideDelay={0} offsetScrollbars>
 			<Stack style={{ flexDirection: 'row' }} gap={8}>

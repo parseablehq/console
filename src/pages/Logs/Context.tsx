@@ -1,7 +1,7 @@
 import type { Log } from '@/@types/parseable/api/query';
 import useSubscribeState, { SubData } from '@/hooks/useSubscribeState';
-import type { Dispatch, FC, SetStateAction } from 'react';
-import { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import type { Dispatch, FC, MutableRefObject, SetStateAction } from 'react';
+import React, { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
 import { sanitizeCSVData } from '@/utils/exportHelpers';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
@@ -35,6 +35,7 @@ interface LogsPageContextState {
 	maximized: boolean;
 	liveTailToggled: boolean;
 	builderModalOpen: boolean;
+	queryCodeEditorRef:  MutableRefObject<any>;
 }
 
 type LogQueryData = {
@@ -90,6 +91,14 @@ const defaultCustQuerySearchState = {
 	viewMode: 'filters',
 };
 
+const defaultCustSQLQuery = (streamName: string) => {
+	if (streamName && streamName.length > 0) {
+		return `SELECT * FROM ${streamName} LIMIT ${LOAD_LIMIT};`
+	} else {
+		return ''
+	}
+}
+
 const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 	const {
 		state: { subLogQuery },
@@ -113,12 +122,17 @@ const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 	const [maximized, { toggle: toggleMaximize }] = useDisclosure(false);
 	const [liveTailToggled, { toggle: toggleLiveTail }] = useDisclosure(false);
 	const [builderModalOpen, { toggle: toggleBuilderModal, close: closeBuilderModal }] = useDisclosure(false);
+	const queryCodeEditorRef = React.useRef<any>(defaultCustSQLQuery(subLogQuery.get().streamName)); // to store input value even after the editor unmounts
 
 	// TODO: rm this after context refactor
 	useEffect(() => {
 		const streamlistener = subLogQuery.subscribe((state) => {
 			if (state.streamName) {
 				setCurrentStream(state.streamName);
+				const defaultSearchQuery = `SELECT * FROM ${state.streamName} LIMIT ${LOAD_LIMIT};`;
+				queryCodeEditorRef.current = defaultSearchQuery;
+			} else {
+				queryCodeEditorRef.current = '';
 			}
 		});
 
@@ -144,6 +158,7 @@ const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 		maximized,
 		liveTailToggled,
 		builderModalOpen,
+		queryCodeEditorRef
 	};
 
 	// getters & setters

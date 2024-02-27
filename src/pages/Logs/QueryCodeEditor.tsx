@@ -1,4 +1,4 @@
-import React, { FC, MutableRefObject, useCallback, useEffect } from 'react';
+import React, { FC, useCallback, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Box, Button, Flex, ScrollArea, Stack, Text, TextInput } from '@mantine/core';
@@ -10,10 +10,6 @@ import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 import { LOAD_LIMIT, useLogsPageContext } from './context';
 import { Field } from '@/@types/parseable/dataType';
 import queryCodeStyles from './styles/QueryCode.module.css';
-
-type QueryCodeEditorProps = {
-	inputRef: MutableRefObject<any>;
-};
 
 const genColumnConfig = (fields: Field[]) => {
 	const columnConfig = { leftColumns: [], rightColumns: [] };
@@ -32,7 +28,7 @@ const genColumnConfig = (fields: Field[]) => {
 	}, columnConfig);
 };
 
-const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
+const QueryCodeEditor: FC = () => {
 	const {
 		state: { subLogQuery, subInstanceConfig },
 	} = useHeaderContext();
@@ -40,6 +36,7 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 		state: {
 			custQuerySearchState: { isQuerySearchActive, mode },
 			subLogStreamSchema,
+			queryCodeEditorRef,
 		},
 		methods: { resetQuerySearch, setCustSearchQuery, closeBuilderModal },
 	} = useLogsPageContext();
@@ -54,10 +51,10 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 	const { data: resAIQuery, postLLMQuery } = usePostLLM();
 	const currentStreamName = subLogQuery.get().streamName;
 	const isLlmActive = !!subInstanceConfig.get()?.llmActive;
-	const isSqlSearchActive = isQuerySearchActive && mode === 'sql'
+	const isSqlSearchActive = isQuerySearchActive && mode === 'sql';
 
 	const updateQuery = useCallback((query: string) => {
-		props.inputRef.current = query;
+		queryCodeEditorRef.current = query;
 		setQuery(query);
 	}, []);
 
@@ -93,14 +90,14 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 	}, [currentStreamName, isLlmActive]);
 
 	useEffect(() => {
-		updateQuery(props.inputRef.current);
+		updateQuery(queryCodeEditorRef.current);
 	}, []);
 
 	function handleEditorDidMount(editor: any, monaco: any) {
 		editorRef.current = editor;
 		monacoRef.current = monaco;
 		editor.addCommand(monaco.KeyMod.CtrlCmd + monaco.KeyCode.Enter, async () => {
-			runQuery(props.inputRef.current);
+			runQuery(queryCodeEditorRef.current);
 		});
 	}
 
@@ -159,10 +156,10 @@ const QueryCodeEditor: FC<QueryCodeEditorProps> = (props) => {
 				</Stack>
 			</ScrollArea>
 			<Stack className={queryCodeStyles.footer} style={{ alignItems: 'center' }}>
-				<Button onClick={resetQuerySearch} disabled={!isSqlSearchActive}>Clear</Button>
-				<Button onClick={() => runQuery(query)}>
-					Apply
+				<Button onClick={resetQuerySearch} disabled={!isSqlSearchActive}>
+					Clear
 				</Button>
+				<Button onClick={() => runQuery(query)}>Apply</Button>
 			</Stack>
 		</Stack>
 	);
