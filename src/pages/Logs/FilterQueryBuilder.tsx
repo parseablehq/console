@@ -1,11 +1,8 @@
 import {
 	Button,
 	Group,
-	Menu,
-	Modal,
 	ScrollArea,
 	Stack,
-	px,
 	Box,
 	ThemeIcon,
 	Select,
@@ -15,8 +12,7 @@ import {
 	ActionIcon,
 } from '@mantine/core';
 import { useLogsPageContext } from './context';
-import { ToggleButton } from '@/components/Button/ToggleButton';
-import { IconChevronDown, IconCodeCircle, IconFilter, IconPlus } from '@tabler/icons-react';
+import { IconFilter, IconPlus } from '@tabler/icons-react';
 import classes from './styles/Querier.module.css';
 import { Text } from '@mantine/core';
 import { useQueryFilterContext, operatorLabelMap } from '@/providers/QueryFilterProvider';
@@ -32,7 +28,7 @@ export const FilterPlaceholder = () => {
 
 import { useCallback } from 'react';
 import { noValueOperators, textFieldOperators, numberFieldOperators } from '@/providers/QueryFilterProvider';
-import { RuleTypeOverride, RuleGroupTypeOverride, QueryType, Combinator } from '@/providers/QueryFilterProvider';
+import { RuleTypeOverride, RuleGroupTypeOverride, Combinator } from '@/providers/QueryFilterProvider';
 
 type RuleSetProps = {
 	ruleSet: RuleGroupTypeOverride;
@@ -205,8 +201,10 @@ const RuleSetPills = (props: RuleSetPillProps) => {
 	);
 };
 
-export const QueryPills = (props: QueryPillProps) => {
-	const { state: {query}, methods: queryBuilderMethods } = useQueryFilterContext();
+export const QueryPills = () => {
+	const {
+		state: { query },
+	} = useQueryFilterContext();
 	const { combinator, rules: ruleSets } = query;
 	return (
 		<ScrollArea scrollbarSize={6} scrollHideDelay={0} offsetScrollbars>
@@ -225,42 +223,20 @@ export const QueryPills = (props: QueryPillProps) => {
 	);
 };
 
-const FilterBtnPlaceholder = () => {
-	return (
-		<Group className={classes.queryBuilderBtnPlaceholder} gap={0}>
-			<IconFilter size={'1.2rem'} stroke={1.8} style={{ marginRight: 6 }} />
-			Click to add filter
-		</Group>
-	);
-};
-
 export const FilterQueryBuilder = () => {
 	const { state: queryBuilderState, methods: queryBuilderMethods } = useQueryFilterContext();
-	const {  query, isSumbitDisabled } = queryBuilderState;
+	const { query, isSumbitDisabled } = queryBuilderState;
 	const { createRuleGroup, clearFilters, applyQuery } = queryBuilderMethods;
 	const {
-		methods: {
-			makeExportData,
-			toggleShowQueryEditor,
-			openDeleteModal,
-			openAlertsModal,
-			openRetentionModal,
-			toggleLiveTail,
-			toggleCustQuerySearchMode,
-			toggleBuilderModal,
-			closeBuilderModal
-		},
 		state: {
-			custQuerySearchState: { isQuerySearchActive, mode, viewMode },
-			liveTailToggled,
-			builderModalOpen,
+			custQuerySearchState: { isQuerySearchActive, mode },
 		},
 	} = useLogsPageContext();
 	const isFiltersApplied = isQuerySearchActive && mode === 'filters';
 
 	return (
 		<Stack style={{ height: 500 }}>
-			<ScrollArea style={{height: 400}}>
+			<ScrollArea style={{ height: 400 }}>
 				<Stack gap={0}>
 					{query.rules.map((ruleSet) => {
 						return <RuleSet ruleSet={ruleSet} key={ruleSet.id} />;
@@ -269,7 +245,9 @@ export const FilterQueryBuilder = () => {
 				</Stack>
 			</ScrollArea>
 			<Stack className={classes.footer}>
-				<Button onClick={clearFilters} disabled={!isFiltersApplied}>Clear</Button>
+				<Button onClick={clearFilters} disabled={!isFiltersApplied}>
+					Clear
+				</Button>
 				<Button onClick={applyQuery} disabled={isSumbitDisabled}>
 					Apply
 				</Button>

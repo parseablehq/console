@@ -18,4 +18,4 @@ export const PATHS = {
     config: '/:streamName/config',
     users: '/users',
     oidcNotConfigured: '/oidc-not-configured'
-}
+} as {[key: string]: string}

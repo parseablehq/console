@@ -1,6 +1,6 @@
 import { PrimaryHeader } from '@/components/Header';
 import Navbar from '@/components/Navbar';
-import { HEADER_HEIGHT, NAVBAR_WIDTH, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
+import { NAVBAR_WIDTH, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 import { Box } from '@mantine/core';
 import type { FC } from 'react';
 import { Outlet } from 'react-router-dom';

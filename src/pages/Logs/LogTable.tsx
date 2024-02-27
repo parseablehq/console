@@ -405,7 +405,6 @@ const LogTable: FC = () => {
 			className={tableStyles.container}
 			style={{
 				maxHeight: `calc(100vh - ${primaryHeaderHeight}px )`,
-				// transition: 'width 1s ease-in-out',
 			}}>
 			<FilterPills />
 			{!(logStreamError || logStreamSchemaError || logsError) ? (

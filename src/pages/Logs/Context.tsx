@@ -55,6 +55,10 @@ interface LogsPageContextMethods {
 	openRetentionModal: () => void;
 	toggleLiveTail: () => void;
 	closeAlertsModal: () => void;
+	toggleBuilderModal: () => void;
+	toggleCustQuerySearchMode: (mode: custQuerySearchMode) => void;
+	closeBuilderModal: () => void;
+	closeDeleteModal: () => void;
 }
 
 interface LogsPageContextValue {

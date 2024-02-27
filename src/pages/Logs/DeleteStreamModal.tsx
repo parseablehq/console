@@ -10,7 +10,7 @@ const DeleteStreamModal = () => {
 		methods: { closeDeleteModal },
 	} = useLogsPageContext();
 	const [confirmInputValue, setConfirmInputValue] = useState<string>('');
-	const handleInputChange = useCallback((e) => {
+	const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
 		setConfirmInputValue(e.target.value);
 	}, []);
 

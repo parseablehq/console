@@ -1,7 +1,6 @@
-import { Select, Text } from '@mantine/core';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Select } from '@mantine/core';
+import { useCallback, useEffect, useRef } from 'react';
 import classes from './styles/LogQuery.module.css';
-import { IconCaretDown } from '@tabler/icons-react';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { useNavigate, useParams } from 'react-router-dom';
 

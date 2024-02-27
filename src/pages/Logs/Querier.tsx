@@ -1,12 +1,10 @@
-import { Button, Group, Menu, Modal, ScrollArea, Stack, px } from '@mantine/core';
+import { Group, Menu, Modal, Stack, px } from '@mantine/core';
 import { useLogsPageContext } from './context';
 import { ToggleButton } from '@/components/Button/ToggleButton';
 import { IconChevronDown, IconCodeCircle, IconFilter } from '@tabler/icons-react';
 import classes from './styles/Querier.module.css';
 import { Text } from '@mantine/core';
-import { useQueryFilterContext } from '@/providers/QueryFilterProvider';
 import { FilterQueryBuilder, QueryPills } from './FilterQueryBuilder';
-import { useCallback } from 'react';
 import { QueryEditor, AppliedSQLQuery } from './QueryEditor';
 
 const getLabel = (mode: string | null) => {
@@ -37,41 +35,12 @@ const ModalTitle = ({ title }: { title: string }) => {
 
 const QuerierModal = () => {
 	const {
-		methods: {
-			makeExportData,
-			toggleShowQueryEditor,
-			openDeleteModal,
-			openAlertsModal,
-			openRetentionModal,
-			toggleLiveTail,
-			toggleCustQuerySearchMode,
-			toggleBuilderModal,
-			closeBuilderModal
-		},
+		methods: { toggleBuilderModal },
 		state: {
-			custQuerySearchState: { isQuerySearchActive, mode, viewMode },
-			liveTailToggled,
+			custQuerySearchState: { viewMode },
 			builderModalOpen,
 		},
 	} = useLogsPageContext();
-
-	const { state: queryFilterState, methods: queryFilterMethods } = useQueryFilterContext();
-	const { query, isSumbitDisabled, appliedQuery } = queryFilterState;
-	const { createRuleGroup, clearFilters, applyQuery } = queryFilterMethods;
-
-	const clearContextHandler = mode === 'filters' ?  clearFilters : mode === 'sql' ? () => {} : () => {};
-	const applyContextHandler = mode === 'filters' ? applyQuery : mode === 'sql' ? () => {} : () => {};
-	const disableSubmit = mode === 'filters' ? isSumbitDisabled : mode === 'sql' ? true : true;
-
-	const handleClear = useCallback(() => {
-		clearContextHandler();
-		closeBuilderModal();
-	}, [])
-
-	const handleApply = useCallback(() => {
-		applyContextHandler();
-		closeBuilderModal();
-	}, [])
 
 	return (
 		<Modal
@@ -82,9 +51,7 @@ const QuerierModal = () => {
 			styles={{ body: { padding: '0 0.5rem' }, header: { padding: '1rem', paddingBottom: '0' } }}
 			title={<ModalTitle title={getLabel(viewMode)} />}>
 			<Stack style={{ width: '820px', padding: '1rem', height: '100%' }} gap={0}>
-				{/* <ScrollArea h={'500px'} className={classes.queryBuilderContainer} style={{ width: '100%' }}> */}
-					{viewMode === 'filters' ? <FilterQueryBuilder /> : <QueryEditor />}
-				{/* </ScrollArea> */}
+				{viewMode === 'filters' ? <FilterQueryBuilder /> : <QueryEditor />}
 			</Stack>
 		</Modal>
 	);
@@ -92,19 +59,9 @@ const QuerierModal = () => {
 
 const Querier = () => {
 	const {
-		methods: {
-			makeExportData,
-			toggleShowQueryEditor,
-			openDeleteModal,
-			openAlertsModal,
-			openRetentionModal,
-			toggleLiveTail,
-			toggleCustQuerySearchMode,
-			toggleBuilderModal,
-		},
+		methods: { toggleCustQuerySearchMode, toggleBuilderModal },
 		state: {
 			custQuerySearchState: { isQuerySearchActive, mode, viewMode },
-			liveTailToggled,
 		},
 	} = useLogsPageContext();
 	const isFiltersApplied = mode === 'filters' && isQuerySearchActive;
@@ -139,12 +96,8 @@ const Querier = () => {
 				</Menu.Dropdown>
 			</Menu>
 			<Stack style={{ width: '100%' }} gap={0} onClick={toggleBuilderModal} className={classes.filterContainer}>
-				{ viewMode === 'filters' &&  
-					(isFiltersApplied ? <QueryPills /> : <FilterPlaceholder />)
-				} 
-				{ viewMode === 'sql' &&  
-					(isSqlSearchActive ? <AppliedSQLQuery /> : <SQLEditorPlaceholder />)
-				} 
+				{viewMode === 'filters' && (isFiltersApplied ? <QueryPills /> : <FilterPlaceholder />)}
+				{viewMode === 'sql' && (isSqlSearchActive ? <AppliedSQLQuery /> : <SQLEditorPlaceholder />)}
 			</Stack>
 		</Stack>
 	);

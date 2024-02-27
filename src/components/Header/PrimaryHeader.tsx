@@ -1,17 +1,16 @@
 import logoInvert from '@/assets/images/brand/logo-invert.svg';
 import { HOME_ROUTE } from '@/constants/routes';
-import { HEADER_HEIGHT, NAVBAR_WIDTH, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
-import { Box, Button, Image, Stack, Tooltip } from '@mantine/core';
+import { PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
+import { Box, Button, Image, Stack } from '@mantine/core';
 import { FC } from 'react';
 import styles from './styles/Header.module.css';
-import { IconHelp, IconPremiumRights, IconStackPop } from '@tabler/icons-react';
+import { IconHelp, IconStackPop } from '@tabler/icons-react';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import InfoModal from '../Navbar/infoModal';
 import HelpModal from './HelpModal';
 
 const PrimaryHeader: FC = () => {
 	const classes = styles;
-	const { container, logoContainer, navContainer, imageSty, actionBtn } = classes;
+	const { logoContainer, imageSty } = classes;
 	const {
 		state: { maximized, helpModalOpen },
 		methods: { toggleHelpModal },

@@ -36,7 +36,6 @@ type QueryFilterContextMethods = {
 	applyQuery: () => void;
 	clearFilters: () => void;
 	closeBuilderModal: () => void;
-	openBuilderModal: () => void;
 };
 
 type QueryFilterContextValue = {

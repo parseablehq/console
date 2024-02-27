@@ -1,7 +1,7 @@
 import React, { FC, MutableRefObject, useCallback, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Box, Button, Flex, ScrollArea, Stack, Text, TextInput, Tooltip, px } from '@mantine/core';
+import { Box, Button, Flex, ScrollArea, Stack, Text, TextInput } from '@mantine/core';
 import { ErrorMarker, errChecker } from './ErrorMarker';
 import useMountedState from '@/hooks/useMountedState';
 import { notify } from '@/utils/notification';

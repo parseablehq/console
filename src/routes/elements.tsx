@@ -8,7 +8,6 @@ import {
 	ConfigHeader,
 	HomeHeader,
 	LiveTailHeader,
-	LogsHeader,
 	StatsHeader,
 	UsersManagementHeader,
 } from '@/components/Header/SubHeader';

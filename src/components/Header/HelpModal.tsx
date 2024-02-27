@@ -1,9 +1,9 @@
 import { Box, Button, Modal, Text, Tooltip, px } from '@mantine/core';
-import { FC, useEffect, useMemo } from 'react';
+import { FC, useEffect } from 'react';
 import { useAbout } from '@/hooks/useGetAbout';
-import { IconAlertCircle, IconBook2, IconBrandGithub, IconBrandSlack, IconBusinessplan } from '@tabler/icons-react';
+import { IconBook2, IconBrandGithub, IconBrandSlack, IconBusinessplan } from '@tabler/icons-react';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import styles from './styles/HelpModal.module.css'
+import styles from './styles/HelpModal.module.css';
 
 const helpResources = [
 	{
@@ -62,15 +62,7 @@ const HelpModal: FC<HelpModalProps> = (props) => {
 		state: { subInstanceConfig },
 	} = useHeaderContext();
 
-	const { getAboutData, getAboutIsError, getAboutIsLoading } = useAbout();
-
-	const llmStatus = useMemo(() => {
-		let status = 'LLM API Key not set';
-		if (getAboutData?.data?.llmActive) {
-			status = `${getAboutData?.data.llmProvider} configured`;
-		}
-		return status;
-	}, [getAboutData?.data?.llmActive]);
+	const { getAboutData } = useAbout();
 
 	useEffect(() => {
 		if (getAboutData?.data) {
@@ -79,18 +71,7 @@ const HelpModal: FC<HelpModalProps> = (props) => {
 	}, [getAboutData?.data]);
 
 	const classes = styles;
-	const {
-		container,
-		aboutTitle,
-		aboutDescription,
-		actionBtn,
-		helpIconContainer,
-		aboutTextBox,
-		aboutTextKey,
-		aboutTextValue,
-		aboutTextInnerBox,
-		actionBtnRed,
-	} = classes;
+	const { container, aboutTitle, aboutDescription, helpIconContainer } = classes;
 
 	return (
 		<Modal opened={opened} onClose={close} withinPortal withCloseButton={false} size="xl" centered padding={40}>
