@@ -15,6 +15,7 @@ import styles from './styles/Navbar.module.css';
 import useCurrentRoute from '@/hooks/useCurrentRoute';
 import { NAVBAR_WIDTH, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 import UserModal from './UserModal';
+import { signOutHandler } from '@/utils';
 
 const navItems = [
 	{
@@ -149,7 +150,14 @@ const Navbar: FC = () => {
 					<Stack gap={0}>
 						{navActions.map((navAction, index) => {
 							const isActiveItem = false;
-							const onClick = navAction.key === 'about' ? toggleInfoModal : 'user' ? toggleUserModal : () => {};
+							const onClick =
+								navAction.key === 'about'
+									? toggleInfoModal
+									: navAction.key === 'user'
+									? toggleUserModal
+									: navAction.key === 'logout'
+									? signOutHandler
+									: () => {};
 							return (
 								<Stack
 									className={`${styles.navItemContainer} ${isActiveItem && styles.navItemActive}`}
@@ -158,7 +166,7 @@ const Navbar: FC = () => {
 									style={{ border: 'none', padding: '8px 0px' }}
 									key={index}>
 									<navAction.icon className={styles.navIcon} stroke={isActiveItem ? 1.8 : 1.4} size={'2rem'} />
-									<Text className={styles.navItemLabel}>{navAction.label}</Text>
+									<Text className={styles.navItemLabel}>{navAction.key === "user" ? username : navAction.label}</Text>
 								</Stack>
 							);
 						})}
