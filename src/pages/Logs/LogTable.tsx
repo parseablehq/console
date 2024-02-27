@@ -52,11 +52,10 @@ const makeHeadersFromSchema = (schema: LogStreamSchemaData | null): string[] => 
 
 const makeHeadersfromData = (schema: LogStreamSchemaData | null, custSearchQuery: string | null): string[] => {
 	const allColumns = makeHeadersFromSchema(schema);
-
 	if (custSearchQuery === null) return allColumns;
 
 	const selectClause = custSearchQuery.match(/SELECT(.*?)FROM/i)?.[1];
-	if (!selectClause) return allColumns;
+	if (!selectClause || selectClause.includes('*')) return allColumns;
 
 	const commonColumns = allColumns.filter((column) => selectClause.includes(column));
 	return commonColumns;
@@ -399,7 +398,7 @@ const LogTable: FC = () => {
 		: 0;
 
 	const totalCount = Array.isArray(fetchQueryMutation?.data) ? fetchQueryMutation.data[0]?.count : null;
-	const loadedCount = pageLogData?.data.length || null
+	const loadedCount = pageLogData?.data.length || null;
 	return (
 		<Box
 			className={tableStyles.container}
