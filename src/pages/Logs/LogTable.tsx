@@ -399,7 +399,7 @@ const LogTable: FC = () => {
 		: 0;
 
 	const totalCount = Array.isArray(fetchQueryMutation?.data) ? fetchQueryMutation.data[0]?.count : null;
-	const loadedCount = Array.isArray(pageLogData?.data) ? pageLogData.data.length : null;
+	const loadedCount = pageLogData?.data.length || null
 	return (
 		<Box
 			className={tableStyles.container}

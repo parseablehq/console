@@ -1,16 +1,16 @@
-import { Box, Button, Group, Modal, Stack, TextInput } from '@mantine/core';
+import { Box, Modal, Stack } from '@mantine/core';
 import { Text } from '@mantine/core';
-import { Editor } from '@monaco-editor/react';
-import { useAlertsEditor } from '@/hooks/useAlertsEditor';
+// import { Editor } from '@monaco-editor/react';
+// import { useAlertsEditor } from '@/hooks/useAlertsEditor';
 
 const ModalTitle = () => {
 	return <Text style={{ fontSize: '1.2rem', fontWeight: 700, marginLeft: '0.5rem' }}>User</Text>;
 };
 
-type UserInfoProps = {
-	username: string;
-	previlage: string;
-}
+// type UserInfoProps = {
+// 	username: string;
+// 	previlage: string;
+// }
 
 type UserModalProps = {
 	opened: boolean;
@@ -18,13 +18,13 @@ type UserModalProps = {
 	userData: {[key: string]: string}
 }
 
-const UserInfo = ({username, previlage}) => {
-	return (
-		<Stack> 
-			<Text></Text>
-		</Stack>
-	)
-}
+// const UserInfo = ({username, previlage}) => {
+// 	return (
+// 		<Stack> 
+// 			<Text></Text>
+// 		</Stack>
+// 	)
+// }
 
 const UserModal = (props: UserModalProps) => {
 	return (

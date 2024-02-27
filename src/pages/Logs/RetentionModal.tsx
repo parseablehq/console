@@ -3,7 +3,6 @@ import { useLogsPageContext } from './context';
 import { Text } from '@mantine/core';
 import classes from './styles/Logs.module.css';
 import { Editor } from '@monaco-editor/react';
-import { useCacheToggle } from '@/hooks/useCacheToggle';
 
 const ModalTitle = () => {
 	return <Text style={{ fontSize: '1.2rem', fontWeight: 700, marginLeft: '0.5rem' }}>Settings</Text>;
@@ -13,14 +12,16 @@ type RetentionModalProps = {
 	data: any;
 	handleChange: (value: string | undefined) => void;
 	handleSubmit: () => void;
+	handleCacheToggle: () => void;
+	isCacheEnabled: boolean;
 };
 
 const RententionModal = (props: RetentionModalProps) => {
 	const {
-		state: { retentionModalOpen, currentStream },
+		state: { retentionModalOpen },
 		methods: { closeRetentionModal },
 	} = useLogsPageContext();
-	const { handleCacheToggle, isCacheEnabled } = useCacheToggle(currentStream);
+	const { isCacheEnabled, handleCacheToggle } = props;
 	const switchStyles = {
 		track: isCacheEnabled ? classes.trackStyle : {},
 	};
