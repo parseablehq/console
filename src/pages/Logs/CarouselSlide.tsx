@@ -3,7 +3,7 @@ import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Box, Button, Modal, Text, Tooltip } from '@mantine/core';
 import dayjs from 'dayjs';
 import { useEffect } from 'react';
-import { useLogsPageContext } from './context';
+import { useLogsPageContext } from './logsContextProvider';
 import useMountedState from '@/hooks/useMountedState';
 import { Carousel } from '@mantine/carousel';
 import carouselStyles from './styles/CarouselSlide.module.css';

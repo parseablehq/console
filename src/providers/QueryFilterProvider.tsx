@@ -1,5 +1,5 @@
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { useLogsPageContext } from '@/pages/Logs/context';
+import { useLogsPageContext } from '@/pages/Logs/logsContextProvider';
 import { generateRandomId } from '@/utils';
 import { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Field, RuleGroupType, RuleType, formatQuery } from 'react-querybuilder';

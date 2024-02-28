@@ -13,7 +13,7 @@ import {
 } from '@/components/Header/SubHeader';
 
 // page-wise providers
-import LogsPageProvider from '@/pages/Logs/context';
+import LogsPageProvider from '@/pages/Logs/logsContextProvider';
 import StatsPageProvider from '@/pages/Stats/Context';
 
 // component-wise providers

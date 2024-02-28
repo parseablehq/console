@@ -1,4 +1,4 @@
-import { useLogsPageContext } from './context';
+import { useLogsPageContext } from './logsContextProvider';
 import { CodeHighlight } from '@mantine/code-highlight';
 
 export const AppliedSQLQuery = () => {

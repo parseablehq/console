@@ -1,5 +1,5 @@
 import { Button, Group, Modal, TextInput } from '@mantine/core';
-import { useLogsPageContext } from './context';
+import { useLogsPageContext } from './logsContextProvider';
 import styles from './styles/Logs.module.css';
 import { useCallback, useState } from 'react';
 import { useLogStream } from '@/hooks/useLogStream';

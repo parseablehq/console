@@ -2,7 +2,7 @@ import { Skeleton, Stack, Text } from '@mantine/core';
 import classes from './styles/EventTimeLineGraph.module.css';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import { useEffect } from 'react';
-import { useLogsPageContext } from './context';
+import { useLogsPageContext } from './logsContextProvider';
 import dayjs from 'dayjs';
 import { AreaChart } from '@mantine/charts';
 import { HumanizeNumber } from '@/utils/formatBytes';

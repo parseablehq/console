@@ -7,7 +7,7 @@ import ViewLog from './ViewLog';
 import DeleteStreamModal from './DeleteStreamModal';
 import AlertsModal from './AlertsModal';
 import RententionModal from './RetentionModal';
-import { useLogsPageContext } from './context';
+import { useLogsPageContext } from './logsContextProvider';
 import PrimaryToolbar from './PrimaryToolbar';
 import SecondaryToolbar from './SecondaryToolbar';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';

@@ -11,7 +11,7 @@ import {
 	Pill,
 	ActionIcon,
 } from '@mantine/core';
-import { useLogsPageContext } from './context';
+import { useLogsPageContext } from './logsContextProvider';
 import { IconFilter, IconPlus } from '@tabler/icons-react';
 import classes from './styles/Querier.module.css';
 import { Text } from '@mantine/core';

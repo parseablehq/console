@@ -1,5 +1,5 @@
 import { Box, Button, Modal, Stack, Switch } from '@mantine/core';
-import { useLogsPageContext } from './context';
+import { useLogsPageContext } from './logsContextProvider';
 import { Text } from '@mantine/core';
 import classes from './styles/Logs.module.css';
 import { Editor } from '@monaco-editor/react';

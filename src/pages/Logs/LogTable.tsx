@@ -20,7 +20,7 @@ import {
 } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { FC } from 'react';
-import { LOG_QUERY_LIMITS, useLogsPageContext, LOAD_LIMIT as loadLimit, LOAD_LIMIT } from './context';
+import { LOG_QUERY_LIMITS, useLogsPageContext, LOAD_LIMIT as loadLimit, LOAD_LIMIT } from './logsContextProvider';
 import LogRow from './LogRow';
 import useMountedState from '@/hooks/useMountedState';
 import { IconSelector, IconGripVertical, IconPin, IconPinFilled, IconSettings } from '@tabler/icons-react';

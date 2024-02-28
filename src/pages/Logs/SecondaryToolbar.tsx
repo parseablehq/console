@@ -1,6 +1,6 @@
 import { Menu, Stack, px } from '@mantine/core';
 import IconButton from '@/components/Button/IconButton';
-import { useLogsPageContext } from './context';
+import { useLogsPageContext } from './logsContextProvider';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { downloadDataAsCSV, downloadDataAsJson } from '@/utils/exportHelpers';
 import classes from './styles/Toolbar.module.css';

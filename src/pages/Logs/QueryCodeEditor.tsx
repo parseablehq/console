@@ -7,7 +7,7 @@ import useMountedState from '@/hooks/useMountedState';
 import { notify } from '@/utils/notification';
 import { usePostLLM } from '@/hooks/usePostLLM';
 import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
-import { LOAD_LIMIT, useLogsPageContext } from './context';
+import { LOAD_LIMIT, useLogsPageContext } from './logsContextProvider';
 import { Field } from '@/@types/parseable/dataType';
 import queryCodeStyles from './styles/QueryCode.module.css';
 
