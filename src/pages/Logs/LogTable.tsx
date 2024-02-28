@@ -146,7 +146,7 @@ const LogTable: FC = () => {
 				query,
 			});
 		}
-	}, [currentStreamName, isQuerySearchActive]);
+	}, [currentStreamName, isQuerySearchActive, custSearchQuery]);
 
 	useEffect(() => {
 		resetQuerySearch();
@@ -257,7 +257,7 @@ const LogTable: FC = () => {
 		if (pageOffset === 0 && subLogQuery.get()) {
 			fetchCount();
 		}
-	}, [currentStreamName, isQuerySearchActive]);
+	}, [currentStreamName, isQuerySearchActive, custSearchQuery]);
 
 	useEffect(() => {
 		const streamErrorListener = subLogStreamError.subscribe(setLogStreamError);
