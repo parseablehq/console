@@ -4,9 +4,16 @@ import { FC, useEffect, useState } from 'react';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import PrivilegeTR from './PrivilegeTR';
-import { IconPencil, IconUserPlus } from '@tabler/icons-react';
+import { IconBook2, IconPencil, IconUserPlus } from '@tabler/icons-react';
 import { useRole } from '@/hooks/useRole';
 import styles from './styles/AccessManagement.module.css'
+import IconButton from '@/components/Button/IconButton';
+
+const navigateToDocs = () => {
+	return window.open('https://www.parseable.io/docs/rbac', '_blank');
+}
+
+const renderDocsIcon = () => <IconBook2 stroke={1.5} size="1.4rem"/>
 
 const Roles: FC = () => {
 	useDocumentTitle('Parseable | Users');
@@ -178,37 +185,32 @@ const Roles: FC = () => {
 	const classes = styles;
 	return (
 		<Box className={classes.container}>
-			<Box className={classes.header}>
-				<Text size="xl" style={{fontWeight: 500}}>
+			<Stack className={classes.header} gap={0}>
+				<Text size="xl" style={{ fontWeight: 500 }}>
 					Roles
 				</Text>
-				<Box>
+				<Stack style={{ flexDirection: 'row' }} gap={0}>
 					<Button
-						variant="outline"
-						color="gray"
-						className={classes.createBtn}
+						className={styles.createUserBtn}
+						rightSection={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}
 						onClick={() => {
 							setModalOpen(true);
-						}}
-						rightSection={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
-						Create role
+						}}>
+						Create Role
 					</Button>
-					{oidcActive ? (
+					{oidcActive && (
 						<Button
-							variant="outline"
-							color="gray"
-							className={classes.createBtn}
+							className={styles.createUserBtn}
+							rightSection={<IconPencil size={px('1.2rem')} stroke={1.5} />}
 							onClick={() => {
 								setDefaultRoleModalOpen(true);
-							}}
-							rightSection={<IconPencil size={px('1.2rem')} stroke={1.5} />}>
-							Set Default OIDC Role
+							}}>
+							Set Default OIDC Role{' '}
 						</Button>
-					) : (
-						''
 					)}
-				</Box>
-			</Box>
+					<IconButton renderIcon={renderDocsIcon} onClick={navigateToDocs} tooltipLabel="Docs" />
+				</Stack>
+			</Stack>
 			<ScrollArea className={classes.tableContainer} type="always">
 				<Table striped highlightOnHover className={classes.tableStyle}>
 					<thead className={classes.theadStyle}>
@@ -259,7 +261,13 @@ const Roles: FC = () => {
 					</Button>
 				</Group>
 			</Modal>
-			<Modal opened={modalOpen} onClose={handleClose} title="Create Role" centered className={classes.modalStyle} styles={{title: {fontWeight: 700}}}>
+			<Modal
+				opened={modalOpen}
+				onClose={handleClose}
+				title="Create Role"
+				centered
+				className={classes.modalStyle}
+				styles={{ title: { fontWeight: 700 } }}>
 				<Stack>
 					<TextInput
 						type="text"

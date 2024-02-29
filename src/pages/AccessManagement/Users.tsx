@@ -6,12 +6,19 @@ import { useGetUser, useUser } from '@/hooks/useUser';
 
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import RoleTR from './RoleTR';
-import { IconUserPlus } from '@tabler/icons-react';
+import { IconBook2, IconUserPlus } from '@tabler/icons-react';
 import { useRole } from '@/hooks/useRole';
 import styles from './styles/AccessManagement.module.css';
 import { heights } from '@/components/Mantine/sizing';
 import { HEADER_HEIGHT } from '@/constants/theme';
 import { CodeHighlight } from '@mantine/code-highlight';
+import IconButton from '@/components/Button/IconButton';
+
+const navigateToDocs = () => {
+	return window.open('https://www.parseable.io/docs/rbac', '_blank');
+}
+
+const renderDocsIcon = () => <IconBook2 stroke={1.5} size="1.4rem"/>
 
 const Users: FC = () => {
 	useDocumentTitle('Parseable | Users');
@@ -110,25 +117,23 @@ const Users: FC = () => {
 		return false;
 	};
 
+
+
 	return (
 		<Box
 			className={styles.container}
 			style={{ maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2}px - ${20}px)` }}>
-			<Box className={styles.header}>
+			<Stack className={styles.header} gap={0}>
 				<Text size="xl" style={{ fontWeight: 500 }}>
 					Users
 				</Text>
-				<Button
-					variant="outline"
-					color="gray"
-					className={styles.createBtn}
-					onClick={() => {
-						setModalOpen(true);
-					}}
-					rightSection={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
-					Create users
-				</Button>
-			</Box>
+				<Stack style={{ flexDirection: 'row' }} gap={0}>
+					<Button className={styles.createUserBtn} onClick={() => setModalOpen(true)} rightSection={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
+						Create User
+					</Button>
+					<IconButton renderIcon={renderDocsIcon} onClick={navigateToDocs} tooltipLabel='Docs'/>
+				</Stack>
+			</Stack>
 			<ScrollArea className={styles.tableContainer} type="always">
 				<Table striped highlightOnHover className={styles.tableStyle}>
 					<thead className={styles.theadStyle}>

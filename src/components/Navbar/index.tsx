@@ -1,5 +1,5 @@
-import { Box, Stack, Text } from '@mantine/core';
-import { IconLogout, IconUser, IconBinaryTree2, IconInfoCircle, IconUserCog, IconHome } from '@tabler/icons-react';
+import { Box, Stack, Tooltip } from '@mantine/core';
+import { IconLogout, IconUser, IconBinaryTree2, IconInfoCircle, IconUserCog, IconHome, IconChevronRight, IconChevronLeft } from '@tabler/icons-react';
 import { FC, useCallback, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -13,7 +13,7 @@ import { useUser } from '@/hooks/useUser';
 import { useLogStream } from '@/hooks/useLogStream';
 import styles from './styles/Navbar.module.css';
 import useCurrentRoute from '@/hooks/useCurrentRoute';
-import { NAVBAR_WIDTH, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
+import { MAXIMIZED_NAVBAR_WIDTH, MINIMIZED_NAVABR_WIDTH, NAVBAR_WIDTH, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 import UserModal from './UserModal';
 import { signOutHandler } from '@/utils';
 
@@ -41,7 +41,7 @@ const navItems = [
 const navActions = [
 	{
 		icon: IconUser,
-		label: 'User',
+		label: 'Profile',
 		key: 'user',
 	},
 	{
@@ -128,7 +128,7 @@ const Navbar: FC = () => {
 		<Box>
 			<nav
 				className={styles.navbar}
-				style={{ width: NAVBAR_WIDTH, height: `calc(100vh - ${PRIMARY_HEADER_HEIGHT}px)` }}>
+				style={{ width: NAVBAR_WIDTH, height: `calc(100vh - ${PRIMARY_HEADER_HEIGHT}px)`, position: 'relative' }}>
 				<div className={styles.navbarMain}>
 					<Stack justify="center" align="center" gap={0}>
 						{navItems.map((navItem, index) => {
@@ -141,8 +141,9 @@ const Navbar: FC = () => {
 									gap={0}
 									onClick={() => navigateToPage(navItem.route)}
 									key={index}>
-									<navItem.icon className={styles.navIcon} stroke={isActiveItem ? 1.8 : 1.4} size={'2rem'} />
-									<Text className={styles.navItemLabel}>{navItem.label}</Text>
+									<Tooltip label={navItem.label} position="right">
+										<navItem.icon className={styles.navIcon} stroke={isActiveItem ? 1.2 : 1} size={'1.8rem'} />
+									</Tooltip>
 								</Stack>
 							);
 						})}
@@ -165,8 +166,9 @@ const Navbar: FC = () => {
 									onClick={onClick}
 									style={{ border: 'none', padding: '8px 0px' }}
 									key={index}>
-									<navAction.icon className={styles.navIcon} stroke={isActiveItem ? 1.8 : 1.4} size={'2rem'} />
-									<Text className={styles.navItemLabel}>{navAction.key === "user" ? username : navAction.label}</Text>
+									<Tooltip label={navAction.label} position="right">
+										<navAction.icon className={styles.navIcon} stroke={1.2} size={'1.8rem'} />
+									</Tooltip>
 								</Stack>
 							);
 						})}

@@ -13,13 +13,13 @@
   }
   
   .header {
-	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	padding-left: 20px;
 	padding-right: 20px;
 	height: 70px;
 	border-bottom: 1px solid light-dark(#D4D4D4, #424242);
+	flex-direction: row;
   }
   
   .createBtn {
@@ -133,3 +133,18 @@
   .actionBtn:hover {
 	color: #545BEB;
   }
+
+.createUserBtn {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: white;
+	color: #211F1F;
+	border: 1px #e9ecef solid;
+	padding: 0.625rem 1rem;
+	margin-right: 0.625rem;
+	border-radius: rem(8px);
+	&:hover {
+		background-color: #E0E0E0;
+	}
+}
