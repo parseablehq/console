@@ -21,18 +21,23 @@ const PrimaryToolbar = () => {
 	const {
 		state: { userSpecificAccessMap },
 	} = useHeaderContext();
+	const isSecureConnection = window.location.protocol === 'https:';
 	return (
 		<Stack className={classes.logsPrimaryToolbar} style={{ height: LOGS_PRIMARY_TOOLBAR_HEIGHT }}>
 			<StreamDropdown />
 			<EventTimeLineGraph />
 			<Stack gap={0} style={{ flexDirection: 'row', alignItems: 'center', marginRight: '0.675rem' }}>
-				<IconButton
-					renderIcon={renderLiveTailIcon}
-					onClick={toggleLiveTail}
-					active={liveTailToggled}
-					tooltipLabel="Live Tail"
-				/>
-				<IconButton renderIcon={renderAlertsIcon} onClick={openAlertsModal} tooltipLabel="Alerts" />
+				{!isSecureConnection && (
+					<IconButton
+						renderIcon={renderLiveTailIcon}
+						onClick={toggleLiveTail}
+						active={liveTailToggled}
+						tooltipLabel="Live Tail"
+					/>
+				)}
+				{userSpecificAccessMap.hasUpdateAlertAccess && (
+					<IconButton renderIcon={renderAlertsIcon} onClick={openAlertsModal} tooltipLabel="Alerts" />
+				)}
 				<IconButton renderIcon={renderSettingsIcon} onClick={openRetentionModal} tooltipLabel="Settings" />
 				{userSpecificAccessMap.hasDeleteAccess && (
 					<IconButton renderIcon={renderDeleteIcon} onClick={openDeleteModal} tooltipLabel="Delete" />

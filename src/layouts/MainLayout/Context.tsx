@@ -81,15 +81,20 @@ interface HeaderProviderProps {
 	children: ReactNode;
 }
 
+const accessKeyMap: { [key: string]: string } = {
+	hasUserAccess: 'ListUser',
+	hasDeleteAccess: 'DeleteStream',
+	hasUpdateAlertAccess: 'PutAlert',
+	hasGetAlertAccess: 'GetAlert',
+};
+
 const generateUserAcccessMap = (accessRoles: string[] | null) => {
-	return ['hasUserAccess', 'hasDeleteAccess'].reduce((acc, accessRequirement) => {
-		if (accessRequirement === 'hasUserAccess') {
-			return { ...acc, [accessRequirement]: accessRoles?.some((access: string) => access === 'ListUser') || false };
-		} else if (accessRequirement === 'hasDeleteAccess') {
-			return { ...acc, [accessRequirement]: accessRoles?.some((access: string) => access === 'DeleteStream') || false };
-		} else {
-			return { ...acc, [accessRequirement]: false };
-		}
+	return Object.keys(accessKeyMap).reduce((acc, accessKey: string) => {
+		return {
+			...acc,
+			[accessKey]:
+				accessRoles !== null && accessKeyMap.hasOwnProperty(accessKey) && accessRoles.includes(accessKeyMap[accessKey]),
+		};
 	}, {});
 };
 
