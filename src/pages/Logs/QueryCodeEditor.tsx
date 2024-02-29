@@ -113,20 +113,20 @@ const QueryCodeEditor: FC = () => {
 			<ScrollArea>
 				<Box style={{ marginTop: 16, marginBottom: 8 }}>
 					{localLlmActive ? (
-						<TextInput
-							type="text"
-							name="ai_query"
-							id="ai_query"
-							value={aiQuery}
-							onChange={(e) => setAiQuery(e.target.value)}
-							placeholder="Enter plain text to generate SQL query using OpenAI"
-							rightSectionWidth={'auto'}
-							rightSection={
-								<Button variant="filled" color="brandPrimary.4" radius={0} onClick={handleAIGenerate} h={'100%'}>
-									✨ Generate
-								</Button>
-							}
-						/>
+						<Stack gap={0} style={{flexDirection: 'row', width: '100%'}}>
+							<TextInput
+								type="text"
+								name="ai_query"
+								id="ai_query"
+								value={aiQuery}
+								onChange={(e) => setAiQuery(e.target.value)}
+								placeholder="Enter plain text to generate SQL query using OpenAI"
+								w="85%"
+							/>
+							<Button variant="filled" w="15%" color="brandPrimary.4" radius={0} onClick={handleAIGenerate}>
+								✨ Generate
+							</Button>
+						</Stack>
 					) : (
 						<Box style={{ width: '100%' }}>
 							<Box component="a" href="https://www.parseable.com/docs/integrations/llm" target="_blank">
