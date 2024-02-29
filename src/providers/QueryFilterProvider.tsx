@@ -1,5 +1,5 @@
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { useLogsPageContext } from '@/pages/Logs/Context';
+import { useLogsPageContext } from '@/pages/Logs/logsContextProvider';
 import { generateRandomId } from '@/utils';
 import { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Field, RuleGroupType, RuleType, formatQuery } from 'react-querybuilder';
@@ -36,7 +36,6 @@ type QueryFilterContextMethods = {
 	applyQuery: () => void;
 	clearFilters: () => void;
 	closeBuilderModal: () => void;
-	openBuilderModal: () => void;
 };
 
 type QueryFilterContextValue = {
@@ -154,11 +153,10 @@ const defaultQuery = {
 };
 
 const QueryFilterProvider = (props: QueryFilterProviderProps) => {
-	const [isModalOpen, setModalOpen] = useState<boolean>(false);
 	const [isSumbitDisabled, setSubmitDisabled] = useState<boolean>(true);
 	const {
-		state: { subLogStreamSchema, custQuerySearchState },
-		methods: { setCustSearchQuery, resetQuerySearch },
+		state: { subLogStreamSchema, custQuerySearchState, builderModalOpen: isModalOpen },
+		methods: { setCustSearchQuery, resetQuerySearch, closeBuilderModal },
 	} = useLogsPageContext();
 	const {
 		state: { subAppContext },
@@ -250,14 +248,6 @@ const QueryFilterProvider = (props: QueryFilterProviderProps) => {
 		});
 	}, []);
 
-	const openBuilderModal = useCallback(() => {
-		return setModalOpen(true);
-	}, []);
-
-	const closeBuilderModal = useCallback(() => {
-		return setModalOpen(false);
-	}, []);
-
 	const updateParentCombinator = useCallback((combinator: Combinator) => {
 		return setQuery((prev) => {
 			return { ...prev, combinator: combinator };
@@ -274,12 +264,12 @@ const QueryFilterProvider = (props: QueryFilterProviderProps) => {
 		const parsedQuery = parseQuery();
 		setCustSearchQuery(parsedQuery, 'filters');
 		setAppliedQuery(query);
-		setModalOpen(false);
+		closeBuilderModal()
 	}, [query]);
 
 	const clearFilters = useCallback(() => {
 		resetQuerySearch();
-		setModalOpen(false);
+		closeBuilderModal();
 		setAppliedQuery(defaultQuery);
 		setQuery(defaultQuery);
 	}, []);
@@ -361,7 +351,6 @@ const QueryFilterProvider = (props: QueryFilterProviderProps) => {
 		applyQuery,
 		clearFilters,
 		closeBuilderModal,
-		openBuilderModal,
 	};
 	const value = useMemo(() => ({ state, methods }), [state, methods]);
 

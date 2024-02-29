@@ -1,47 +1,51 @@
-import logoInvert from '@/assets/images/brand/logo-invert.svg';
-import { HOME_ROUTE } from '@/constants/routes';
-import { HEADER_HEIGHT, NAVBAR_WIDTH } from '@/constants/theme';
-import { Box, Button, Image, Tooltip } from '@mantine/core';
-import { FC } from 'react';
-import styles from './styles/Header.module.css'
+	import icon from '@/assets/images/brand/icon.svg';
+	import { HOME_ROUTE } from '@/constants/routes';
+	import { NAVBAR_WIDTH, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
+	import { Button, Image, Stack } from '@mantine/core';
+	import { FC } from 'react';
+	import styles from './styles/Header.module.css';
+	import { useHeaderContext } from '@/layouts/MainLayout/Context';
+	import HelpModal from './HelpModal';
 
+	const PrimaryHeader: FC = () => {
+		const classes = styles;
+		const { logoContainer, imageSty } = classes;
+		const {
+			state: { maximized, helpModalOpen },
+			methods: { toggleHelpModal },
+		} = useHeaderContext();
 
-const PrimaryHeader: FC = () => {
-	const classes = styles;
-	const { container, logoContainer, navContainer, imageSty, actionBtn } = classes;
+		if (maximized) return null;
 
-	return (
-		<Box className={container} style={{ height: HEADER_HEIGHT }}>
-			<Box className={logoContainer} style={{ minWidth: NAVBAR_WIDTH }}>
-				<a href={HOME_ROUTE}>
-					<Image className={imageSty} src={logoInvert} height={32} alt="Parseable Logo" />
-				</a>
-			</Box>
-			<Box className={navContainer}>
-				<Box
-					display={'flex'}
-					style={{
-						justifyContent: 'flex-end',
-						alignItems: 'center',
-						width: '100%',
-						paddingLeft: '1rem',
-					}}
-					pr={'xl'}>
-					<Tooltip label="Upgrade to production support" position="bottom">
-						<Button
-							variant="outline"
-							component={'a'}
-							href="mailto:sales@parseable.io?subject=Production%20Support%20Query"
-							target="_blank"
-							className={actionBtn}
-							style={{ border: 'none', background: 'transparent' }}>
-							<Image height={30} fit="fill" src={'/AGPLv3_Logo.svg'} />
-						</Button>
-					</Tooltip>
-				</Box>
-			</Box>
-		</Box>
-	);
-};
+		return (
+			<Stack
+				className={classes.primaryHeaderContainer}
+				style={{
+					height: PRIMARY_HEADER_HEIGHT,
+				}}
+				gap={0}>
+				<HelpModal opened={helpModalOpen} close={toggleHelpModal} />
+				<Stack className={logoContainer} w={NAVBAR_WIDTH}>
+					<a href={HOME_ROUTE}>
+						<Image className={imageSty} src={icon} height={32} alt="Parseable Logo" />
+					</a>
+				</Stack>
+				<Stack className={classes.rightSection} style={{ flexDirection: 'row', height: '100%',justifyContent: 'flex-end' }} gap={0}>
+					<Button
+						variant="outline"
+						style={{ border: 'none', padding: '0 1rem' }}
+						component={'a'}
+						href="mailto:sales@parseable.io?subject=Production%20Support%20Query"
+						target="_blank">
+						Upgrade
+					</Button>
+					<Stack className={classes.divider} />
+					<Button onClick={toggleHelpModal} style={{ border: 'none', padding: '0 1rem' }} variant="outline">
+						Help
+					</Button>
+				</Stack>
+			</Stack>
+		);
+	};
 
-export default PrimaryHeader;
+	export default PrimaryHeader;

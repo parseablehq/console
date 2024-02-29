@@ -10,7 +10,7 @@ const StreamingButton: FC = () => {
 		state: { subLiveTailsData },
 	} = useHeaderContext();
 
-	const [liveTailStatus, setLiveTailStatus] = useMountedState<string | undefined>('');
+	const [liveTailStatus, setLiveTailStatus] = useMountedState<string | undefined>(subLiveTailsData.get().liveTailStatus);
 	const [isClicked, setIsClicked] = useMountedState(false);
 
 	const handleStreaming = () => {

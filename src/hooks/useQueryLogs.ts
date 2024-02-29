@@ -3,7 +3,7 @@ import { getQueryLogs, getQueryResult } from '@/api/query';
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
 import { useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
-import { LOG_QUERY_LIMITS, useLogsPageContext } from '@/pages/Logs/Context';
+import { LOG_QUERY_LIMITS, useLogsPageContext } from '@/pages/Logs/logsContextProvider';
 import { parseLogData } from '@/utils';
 
 type QueryLogs = {

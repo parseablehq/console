@@ -2,7 +2,7 @@ import { parseLogData } from '@/utils';
 import { Box, px } from '@mantine/core';
 import { IconArrowNarrowRight } from '@tabler/icons-react';
 import { FC, Fragment } from 'react';
-import { useLogsPageContext } from './Context';
+import { useLogsPageContext } from './logsContextProvider';
 import { Log } from '@/@types/parseable/api/query';
 import tableStyles from './styles/Logs.module.css'
 

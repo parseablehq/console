@@ -16,15 +16,15 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
 	(response) => {
-	  return response;
+		return response;
 	},
 	(error) => {
 		const status = error.status || (error.response ? error.response.status : 0);
-		if (status === 403 || status === 401) {
+		if (status === 401) {
 			signOutHandler();
 		}
 		return Promise.reject(error);
-	}
-  );
+	},
+);
 
 export const Axios = () => instance;

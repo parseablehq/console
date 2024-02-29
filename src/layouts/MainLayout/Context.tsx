@@ -4,9 +4,10 @@ import { LogStreamData } from '@/@types/parseable/api/stream';
 import { getStreamsSepcificAccess } from '@/components/Navbar/rolesHandler';
 import { FIXED_DURATIONS } from '@/constants/timeConstants';
 import useSubscribeState, { SubData } from '@/hooks/useSubscribeState';
+import { useDisclosure } from '@mantine/hooks';
 import dayjs from 'dayjs';
-import type { FC } from 'react';
-import { ReactNode, createContext, useCallback, useContext } from 'react';
+import type { Dispatch, FC, SetStateAction } from 'react';
+import { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 const Context = createContext({});
 
@@ -33,6 +34,10 @@ interface HeaderContextState {
 	subCreateUserModalTogle: SubData<boolean>;
 	subInstanceConfig: SubData<AboutData | null>;
 	subAppContext: SubData<AppContext>;
+	maximized: boolean;
+	userSpecficStreams: LogStreamData | null;
+	userSpecificAccessMap: { [key: string]: boolean };
+	helpModalOpen: boolean;
 }
 
 export type UserRoles = {
@@ -61,6 +66,10 @@ interface HeaderContextMethods {
 	streamChangeCleanup: (streamName: string) => void;
 	setUserRoles: (userRoles: UserRoles) => void;
 	setSelectedStream: (stream: string) => void;
+	setUserSpecficStreams: Dispatch<SetStateAction<LogStreamData | null>>;
+	toggleMaximize: () => void;
+	updateUserSpecificAccess: (accessRoles: string[] | null) => void;
+	toggleHelpModal: () => void;
 }
 
 interface HeaderContextValue {
@@ -71,6 +80,23 @@ interface HeaderContextValue {
 interface HeaderProviderProps {
 	children: ReactNode;
 }
+
+const accessKeyMap: { [key: string]: string } = {
+	hasUserAccess: 'ListUser',
+	hasDeleteAccess: 'DeleteStream',
+	hasUpdateAlertAccess: 'PutAlert',
+	hasGetAlertAccess: 'GetAlert',
+};
+
+const generateUserAcccessMap = (accessRoles: string[] | null) => {
+	return Object.keys(accessKeyMap).reduce((acc, accessKey: string) => {
+		return {
+			...acc,
+			[accessKey]:
+				accessRoles !== null && accessKeyMap.hasOwnProperty(accessKey) && accessRoles.includes(accessKeyMap[accessKey]),
+		};
+	}, {});
+};
 
 const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 	const subAppContext = useSubscribeState<AppContext>({
@@ -108,6 +134,10 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 	const subNavbarTogle = useSubscribeState<boolean>(false);
 	const subCreateUserModalTogle = useSubscribeState<boolean>(false);
 	const subInstanceConfig = useSubscribeState<AboutData | null>(null);
+	const [maximized, { toggle: toggleMaximize }] = useDisclosure(false);
+	const [helpModalOpen, { toggle: toggleHelpModal }] = useDisclosure(false);
+	const [userSpecficStreams, setUserSpecficStreams] = useState<LogStreamData | null>(null);
+	const [userSpecificAccessMap, setUserSpecificMap] = useState<{ [key: string]: boolean }>({});
 
 	const state: HeaderContextState = {
 		subLogQuery,
@@ -119,7 +149,25 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 		subInstanceConfig,
 		subAppContext,
 		subLiveTailsData,
+		maximized,
+		userSpecficStreams,
+		userSpecificAccessMap,
+		helpModalOpen,
 	};
+
+	useEffect(() => {
+		const handleEscKeyPress = (event: KeyboardEvent) => {
+			if (event.key === 'Escape') {
+				maximized && toggleMaximize();
+			}
+		};
+
+		window.addEventListener('keydown', handleEscKeyPress);
+
+		return () => {
+			window.removeEventListener('keydown', handleEscKeyPress);
+		};
+	}, [maximized]);
 
 	const resetTimeInterval = useCallback(() => {
 		if (subLogSelectedTimeRange.get().state === 'fixed') {
@@ -166,7 +214,20 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 		});
 	}, []);
 
-	const methods: HeaderContextMethods = { resetTimeInterval, streamChangeCleanup, setUserRoles, setSelectedStream };
+	const updateUserSpecificAccess = useCallback((accessRoles: string[] | null) => {
+		setUserSpecificMap(generateUserAcccessMap(accessRoles));
+	}, []);
+
+	const methods: HeaderContextMethods = {
+		resetTimeInterval,
+		streamChangeCleanup,
+		setUserRoles,
+		setSelectedStream,
+		toggleMaximize,
+		setUserSpecficStreams,
+		updateUserSpecificAccess,
+		toggleHelpModal,
+	};
 
 	return <Provider value={{ state, methods }}>{children}</Provider>;
 };

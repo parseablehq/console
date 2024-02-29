@@ -2,16 +2,23 @@ import { Box, Button, Group, Modal, ScrollArea, Select, Stack, Table, Text, Text
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect, useState } from 'react';
 
-import { useUser } from '@/hooks/useUser';
+import { useGetUser, useUser } from '@/hooks/useUser';
 
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import RoleTR from './RoleTR';
-import { IconUserPlus } from '@tabler/icons-react';
+import { IconBook2, IconUserPlus } from '@tabler/icons-react';
 import { useRole } from '@/hooks/useRole';
-import styles from './styles/AccessManagement.module.css'
+import styles from './styles/AccessManagement.module.css';
 import { heights } from '@/components/Mantine/sizing';
 import { HEADER_HEIGHT } from '@/constants/theme';
 import { CodeHighlight } from '@mantine/code-highlight';
+import IconButton from '@/components/Button/IconButton';
+
+const navigateToDocs = () => {
+	return window.open('https://www.parseable.io/docs/rbac', '_blank');
+}
+
+const renderDocsIcon = () => <IconBook2 stroke={1.5} size="1.4rem"/>
 
 const Users: FC = () => {
 	useDocumentTitle('Parseable | Users');
@@ -32,9 +39,6 @@ const Users: FC = () => {
 	const [roleSearchValue, setRoleSearchValue] = useState<string>('');
 
 	const {
-		getUserData,
-		getUserIsSuccess,
-		getUserIsLoading,
 		createUserMutation,
 		createUserIsError,
 		createUserIsLoading,
@@ -50,6 +54,8 @@ const Users: FC = () => {
 		deleteUserMutation,
 		createUserReset,
 	} = useUser();
+
+	const { getUserData, getUserIsSuccess, getUserIsLoading, getUserRefetch } = useGetUser();
 
 	const { getRolesData } = useRole();
 
@@ -94,7 +100,7 @@ const Users: FC = () => {
 		if (SelectedRole !== '') {
 			userRole.push(SelectedRole);
 		}
-		createUserMutation({ userName: createUserInput, roles: userRole });
+		createUserMutation({ userName: createUserInput, roles: userRole, onSuccess: getUserRefetch });
 	};
 
 	const createVaildtion = () => {
@@ -111,23 +117,23 @@ const Users: FC = () => {
 		return false;
 	};
 
+
+
 	return (
-		<Box className={styles.container} style={{maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT*2}px - ${20}px)`}}>
-			<Box className={styles.header}>
-				<Text size="xl" style={{fontWeight: 500}}>
+		<Box
+			className={styles.container}
+			style={{ maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2}px - ${20}px)` }}>
+			<Stack className={styles.header} gap={0}>
+				<Text size="xl" style={{ fontWeight: 500 }}>
 					Users
 				</Text>
-				<Button
-					variant="outline"
-					color="gray"
-					className={styles.createBtn}
-					onClick={() => {
-						setModalOpen(true);
-					}}
-					rightSection={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
-					Create users
-				</Button>
-			</Box>
+				<Stack style={{ flexDirection: 'row' }} gap={0}>
+					<Button className={styles.createUserBtn} onClick={() => setModalOpen(true)} rightSection={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
+						Create User
+					</Button>
+					<IconButton renderIcon={renderDocsIcon} onClick={navigateToDocs} tooltipLabel='Docs'/>
+				</Stack>
+			</Stack>
 			<ScrollArea className={styles.tableContainer} type="always">
 				<Table striped highlightOnHover className={styles.tableStyle}>
 					<thead className={styles.theadStyle}>
@@ -141,7 +147,13 @@ const Users: FC = () => {
 					<tbody>{rows}</tbody>
 				</Table>
 			</ScrollArea>
-			<Modal opened={modalOpen} onClose={handleClose} title="Create user" centered className={styles.modalStyle} styles={{title: {fontWeight: 700}}}>
+			<Modal
+				opened={modalOpen}
+				onClose={handleClose}
+				title="Create user"
+				centered
+				className={styles.modalStyle}
+				styles={{ title: { fontWeight: 700 } }}>
 				<Stack>
 					<TextInput
 						type="text"
@@ -180,7 +192,7 @@ const Users: FC = () => {
 					) : createUserData?.data ? (
 						<Box>
 							<Text className={styles.passwordText}>Password</Text>
-														<CodeHighlight
+							<CodeHighlight
 								className={styles.passwordPrims}
 								language="text"
 								copyLabel="Copy password to clipboard"

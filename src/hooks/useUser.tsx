@@ -14,14 +14,20 @@ export const useUser = () => {
 		isLoading: createUserIsLoading,
 		data: createUserData,
 		reset: createUserReset,
-	} = useMutation((data: { userName: string; roles: object[] }) => postUser(data.userName, data.roles), {
-		onError: (data: AxiosError) => {
-			if (isAxiosError(data) && data.response) {
-				const error = data.response.data as string;
-				setCreateUserError(error);
-			}
+	} = useMutation(
+		(data: { userName: string; roles: object[]; onSuccess?: () => void }) => postUser(data.userName, data.roles),
+		{
+			onError: (data: AxiosError) => {
+				if (isAxiosError(data) && data.response) {
+					const error = data.response.data as string;
+					setCreateUserError(error);
+				}
+			},
+			onSuccess: (_data, variables) => {
+				variables.onSuccess && variables.onSuccess();
+			},
 		},
-	});
+	);
 
 	const {
 		mutate: deleteUserMutation,
@@ -55,16 +61,6 @@ export const useUser = () => {
 	});
 
 	const {
-		data: getUserData,
-		isError: getUserIsError,
-		isSuccess: getUserIsSuccess,
-		isLoading: getUserIsLoading,
-		refetch: getUserRefetch,
-	} = useQuery(['fetch-user', createUserIsSuccess, deleteUserIsSuccess], () => getUsers(), {
-		retry: false,
-	});
-
-	const {
 		data: getUserRolesData,
 		isError: getUserRolesIsError,
 		isSuccess: getUserRolesIsSuccess,
@@ -81,11 +77,6 @@ export const useUser = () => {
 		createUserIsLoading,
 		createUserData,
 		createUserReset,
-		getUserRefetch,
-		getUserData,
-		getUserIsError,
-		getUserIsSuccess,
-		getUserIsLoading,
 		deleteUserMutation,
 		deleteUserIsSuccess,
 		deleteUserIsError,
@@ -108,5 +99,24 @@ export const useUser = () => {
 		udpateUserPasswordData,
 		resetPasswordError,
 		createUserError,
+	};
+};
+
+export const useGetUser = () => {
+	const {
+		data: getUserData,
+		isError: getUserIsError,
+		isSuccess: getUserIsSuccess,
+		isLoading: getUserIsLoading,
+		refetch: getUserRefetch,
+	} = useQuery(['fetch-user'], () => getUsers(), {
+		retry: false,
+	});
+	return {
+		getUserRefetch,
+		getUserData,
+		getUserIsError,
+		getUserIsSuccess,
+		getUserIsLoading,
 	};
 };

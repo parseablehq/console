@@ -8,22 +8,8 @@
     font-size: 16px;
     font-weight: 400;
     line-height: normal;
-
-    & .mantine-Select-group {
-        padding: 23rem !important;
-    }
+    position: relative;
 }
-
-.streamsBtn {
-    cursor: default;
-    color: #4d4d4d;
-    padding-left: 0;
-    padding-right: 0;
-    &:hover {
-        background-color: white;
-    }
-}
-
 
 .userManagementBtn {
     color: #4d4d4d;
@@ -100,12 +86,12 @@
 
 .navbar {
 	height: calc(100vh - 50px);
-	padding: var(--mantine-spacing-md) var(--mantine-spacing-md);
 	display: flex;
 	flex-direction: column;
 	border-right: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
 	transition: width 0.4s ease-in-out;
 	flex: '0 0 auto';
+    background-color: var(--mantine-color-gray-0);
 }
 
 .navbarMain {
@@ -126,6 +112,39 @@
   }
   
   .option[aria-selected="true"] {
-    background-color: var(--mantine-color-brandPrimary-4);
+    background-color: var(--mantine-color-brandPrimary-6);
     color: white;
   }
+
+.navItemContainer {
+    width: 100%;
+    align-items: center;
+    padding: 0.8rem 0;
+    cursor: pointer;
+    color: var(--mantine-color-gray-6);
+}
+
+.navItemContainer:last-child {
+    border: none;
+}
+
+.navItemLabel {
+    font-size: 0.75rem;
+}
+
+.navItemActive {
+    /* color: #ff0000; */
+    border-color: white;
+    color: var(--mantine-color-gray-8);
+}
+
+.lowerContainer {
+    color: var(--mantine-color-gray-5);
+    align-items: center;
+}
+
+.maximizeToggleContainer {
+    top: 4%;
+    right: -14%;
+    cursor: pointer;
+}

@@ -1,0 +1,19 @@
+.graphContainer {
+    width: 100%;
+    height: 100%;
+    margin-left: -2.8rem;
+}
+
+.noDataContainer {
+    width: 98%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed var(--mantine-color-gray-4);
+}
+
+.noDataText {
+    text-align: center;
+    color: var(--mantine-color-gray-6);
+    font-size: var(--mantine-font-size-sm);
+}

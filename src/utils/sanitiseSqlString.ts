@@ -1,5 +1,5 @@
 import { notify } from './notification';
-import { LOAD_LIMIT } from '@/pages/Logs/Context';
+import { LOAD_LIMIT } from '@/pages/Logs/logsContextProvider';
 
 export const sanitiseSqlString = (sqlString: string): string => {
 	const withoutComments = sqlString.replace(/--.*$/gm, '');

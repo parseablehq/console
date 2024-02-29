@@ -208,3 +208,112 @@
 .customTimeRangeApplyBtn:disabled:hover {
 	background-color: var(--mantine-color-gray-4);
 }
+
+.streamSelectDescription {
+	font-size: 12px;
+	font-weight: 500;
+	color: var(--mantine-color-gray-6);
+}
+
+.streamInput {
+	border: none;
+	padding-left: 0;
+	padding-right: 0;
+	height: 50px;
+	font-size: 24px;
+	font-weight: 600;
+	margin-top: -10px;
+	background-color: transparent;
+	cursor: pointer;
+	width: 200px;
+}
+
+.chevronDown {
+	color: var(--mantine-color-gray-9);
+}
+
+.streamSelect {
+	margin-top: 10px; 
+	 /* adjustments for neg margin for input */
+	margin-left: 0.625rem;
+}
+
+.iconBtn {
+    cursor: pointer;
+    align-items: center;
+	/* padding: 0.25rem; */
+	border-radius: 0.25rem;
+	/* padding: 0.25rem 0; */
+}
+
+.iconBtnIcon {
+    color: var(--mantine-color-brandPrimary-6);
+	/* color: white;
+	background-color: var(--mantine-color-brandPrimary-4); */
+	border-radius: 0.25rem;
+	/* padding: 0.25rem; */
+}
+
+.iconBtnLabel {
+    font-size: 0.8rem;
+	white-space: nowrap;
+}
+
+.logsPrimaryToolbar {
+	padding: 0.625rem 0;
+	border-bottom: 1px solid var(--mantine-color-gray-3);
+	width: 100%;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.logsSecondaryToolbar {
+	width: '100%';
+	flex-direction: row;
+	padding: 1rem 0.625rem;
+}
+
+.filterContainer {
+	background-color: white;
+	/* padding: 4px 12px; */
+	color: #211F1F;
+	border: 1px var(--mantine-color-gray-4) solid;
+	border-radius: rem(8px);
+	cursor: pointer;
+	/* height: 2.2rem; */
+    overflow: auto;
+    flex: 1;
+	margin-right: 0.625rem;
+	flex-direction: row;
+	/* height: fit-content; */
+}
+
+.modeContainer {
+	width: 5rem;
+	height: 100%;
+	text-align: center;
+	align-items: center;
+	justify-content: center;
+	border-right: 1px solid var(--mantine-color-gray-4);
+}
+
+.modeLabel {
+	/* color: white; */
+	font-weight: 600;
+}
+
+.modeButton {
+	border-top-right-radius: 0px !important;
+	border-bottom-right-radius: 0px !important;
+	width: 6rem;
+	border-top: none !important;
+	border-left: none !important;
+	border-bottom: none !important;
+}
+
+.placeholderText {
+	color: var(--mantine-color-gray-5);
+	font-size: 1rem;
+	font-weight: 500;
+}

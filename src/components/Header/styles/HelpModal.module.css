@@ -1,0 +1,111 @@
+.container {
+    height: 100%;
+    width: 100%;
+}
+
+.aboutTitle {
+	font-size: 1.5rem;
+	font-weight: 600;
+    text-align: center;
+}
+
+.parseableText {
+    color: #FC466B;
+    font-weight: 600;
+}
+
+.aboutDescription {
+    font-size: 1rem;
+    text-align: center;
+    color: #868e96;
+    margin-top: 0.75rem;
+
+    &::after {
+        content: '';
+        border-radius: 0.5rem;
+        display: block;
+        background-color: #FC466B;
+        width: 6.25rem;
+        height: 0.125rem;
+        margin-top: 0.75rem;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 0.75rem;
+    }
+}
+
+.aboutTextBox {
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+    width: 100%;
+    display: flex;
+    border-radius: 0.5rem;
+    border: 0.0625rem solid rgba(0, 0, 0, 0.05);
+    padding: 1rem;
+    flex-direction: column;
+}
+
+.aboutTextInnerBox {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    margin-top: 0.625rem;
+    margin-bottom: 0.625rem;
+}
+
+.aboutTextKey {
+    font-size: 0.875rem;
+    color: #343a40;
+    line-height: normal;
+    width: 15%;
+}
+
+.aboutTextValue {
+    font-size: 0.875rem;
+    color: #868e96;
+    line-height: normal;
+    width: 85%;
+}
+
+.helpTitle {
+    font-size: 1rem;
+    text-align: center;
+    color: #495057;
+    font-weight: 700;
+}
+
+.HelpIconBox {
+    &:hover {
+        color: #1F288E;
+        transform: scale(1.4);
+    }
+    height: 34px;
+    transition: transform 0.2s ease-in-out;
+    width: 34px;
+    padding: 0;
+    margin-inline-end: 0.625rem;
+    background-color: #FFFFFF;
+    color: #495057;
+    border: 0.0625rem solid rgba(0, 0, 0, 0.05);
+}
+
+.helpIconContainer {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+}
+
+.actionBtn {
+	color: #545BEB;
+	border-radius: 0.5rem;
+	border: 1px solid #E0E0E0;
+	position: absolute;
+	right: 2.25rem;
+	transform: transform .2s ease-in-out;
+	&:hover {
+		transform: scale(1.03);
+		color: #FC466B;
+		background-color: white;
+	}
+}

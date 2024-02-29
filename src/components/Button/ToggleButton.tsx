@@ -7,17 +7,19 @@ type ToggleButtonProps = ButtonProps & {
 	toggled: boolean;
 	renderIcon?: () => ReactNode;
 	label?: string;
+	iconPosition?: 'left' | 'right';
+	customClassName?: string | null; 
 };
 
 export const ToggleButton: FC<ToggleButtonProps> = (props) => {
-	const { onClick, toggled, label = '', renderIcon } = props;
+	const { onClick, toggled, label = '', renderIcon, customClassName = '' } = props;
 	const { toggleBtn, toggleBtnActive } = classes;
-
+	const iconPosition = props.iconPosition === 'right' ? 'rightSection' : 'leftSection'
 	return (
 		<Button
-			className={[toggleBtn, ...(toggled ? [toggleBtnActive] : [])].join(" ")}
+			className={[customClassName, toggleBtn, ...(toggled ? [toggleBtnActive] : [])].join(" ")}
 			onClick={onClick}
-			{...(renderIcon && { leftSection: renderIcon() })}>
+			{...(renderIcon && { [iconPosition]: renderIcon() })}>
 			{label}
 		</Button>
 	);

@@ -1,6 +1,6 @@
 import useMountedState from '@/hooks/useMountedState';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import { Button, Menu, Text, px } from '@mantine/core';
+import { Button, Menu, Text, Tooltip, px } from '@mantine/core';
 import { IconRefresh, IconRefreshOff } from '@tabler/icons-react';
 import ms from 'ms';
 import type { FC } from 'react';
@@ -36,9 +36,11 @@ const RefreshInterval: FC = () => {
 	return (
 		<Menu withArrow>
 			<Menu.Target>
-				<Button className={intervalbtn} leftSection={<Icon size={px('1.2rem')} stroke={1.5} />}>
-					{selectedInterval ? ms(selectedInterval) : 'Off'}
-				</Button>
+				<Tooltip label="Refresh Interval">
+					<Button className={intervalbtn} leftSection={<Icon size={px('1.2rem')} stroke={1.5} />}>
+						{selectedInterval ? ms(selectedInterval) : 'Off'}
+					</Button>
+				</Tooltip>
 			</Menu.Target>
 			<Menu.Dropdown
 				style={{

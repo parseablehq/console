@@ -16,10 +16,11 @@ import {
 	Pagination,
 	Loader,
 	Group,
+	Stack,
 } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { FC } from 'react';
-import { LOG_QUERY_LIMITS, useLogsPageContext, LOAD_LIMIT as loadLimit } from './Context';
+import { LOG_QUERY_LIMITS, useLogsPageContext, LOAD_LIMIT as loadLimit, LOAD_LIMIT } from './logsContextProvider';
 import LogRow from './LogRow';
 import useMountedState from '@/hooks/useMountedState';
 import { IconSelector, IconGripVertical, IconPin, IconPinFilled, IconSettings } from '@tabler/icons-react';
@@ -30,11 +31,13 @@ import Column from './Column';
 import FilterPills from './FilterPills';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import dayjs from 'dayjs';
-import { Log, SortOrder } from '@/@types/parseable/api/query';
+import { SortOrder } from '@/@types/parseable/api/query';
 import { usePagination } from '@mantine/hooks';
 import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
 import tableStyles from './styles/Logs.module.css';
-import { HEADER_HEIGHT } from '@/constants/theme';
+import { LOGS_PRIMARY_TOOLBAR_HEIGHT, LOGS_SECONDARY_TOOLBAR_HEIGHT, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
+import { useQueryResult } from '@/hooks/useQueryResult';
+import { HumanizeNumber } from '@/utils/formatBytes';
 
 const skipFields = ['p_metadata', 'p_tags'];
 
@@ -47,12 +50,33 @@ const makeHeadersFromSchema = (schema: LogStreamSchemaData | null): string[] => 
 	}
 };
 
-const makeHeadersfromData = (data: Log[] | null): string[] => {
-	if (Array.isArray(data) && data.length > 0) {
-		return typeof data[0] === 'object' ? Object.keys(data[0]) : [];
-	} else {
-		return [];
-	}
+const makeHeadersfromData = (schema: LogStreamSchemaData | null, custSearchQuery: string | null): string[] => {
+	const allColumns = makeHeadersFromSchema(schema);
+	if (custSearchQuery === null) return allColumns;
+
+	const selectClause = custSearchQuery.match(/SELECT(.*?)FROM/i)?.[1];
+	if (!selectClause || selectClause.includes('*')) return allColumns;
+
+	const commonColumns = allColumns.filter((column) => selectClause.includes(column));
+	return commonColumns;
+};
+
+type TotalLogsCountProps = {
+	totalCount: number | null;
+	loadedCount: number | null;
+};
+
+const TotalLogsCount = (props: TotalLogsCountProps) => {
+	const { totalCount, loadedCount } = props;
+	if (typeof totalCount !== 'number' || typeof loadedCount !== 'number') return <Stack />;
+
+	return (
+		<Stack style={{ alignItems: 'center', justifyContent: 'center' }}>
+			<Text>{`Showing ${loadedCount < LOAD_LIMIT ? loadedCount : LOAD_LIMIT} out of ${HumanizeNumber(
+				totalCount,
+			)} records`}</Text>
+		</Stack>
+	);
 };
 
 const LogTable: FC = () => {
@@ -66,7 +90,7 @@ const LogTable: FC = () => {
 		methods: { setPageOffset, resetQuerySearch },
 	} = useLogsPageContext();
 	const {
-		state: { subLogSearch, subLogQuery, subRefreshInterval, subLogSelectedTimeRange },
+		state: { subLogSearch, subLogQuery, subRefreshInterval, subLogSelectedTimeRange, maximized },
 	} = useHeaderContext();
 	const [refreshInterval, setRefreshInterval] = useMountedState<number | null>(null);
 	const [logStreamError, setLogStreamError] = useMountedState<string | null>(null);
@@ -95,15 +119,38 @@ const LogTable: FC = () => {
 		sort,
 	} = useQueryLogs();
 
-	const tableHeaders = isQuerySearchActive ? makeHeadersfromData(logs) : makeHeadersFromSchema(logsSchema);
+	const tableHeaders = isQuerySearchActive
+		? makeHeadersfromData(logsSchema, custSearchQuery)
+		: makeHeadersFromSchema(logsSchema);
 	const appliedFilter = (key: string) => {
 		return subLogSearch.get().filters[key] ?? [];
 	};
 
 	const currentStreamName = subLogQuery.get().streamName;
+	const { fetchQueryMutation } = useQueryResult();
+	const fetchCount = useCallback(() => {
+		const queryContext = subLogQuery.get();
+		const defaultQuery = `select count(*) as count from ${currentStreamName}`;
+		const query = isQuerySearchActive
+			? custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM')
+			: defaultQuery;
+		if (queryContext && query?.length > 0) {
+			const logsQuery = {
+				streamName: queryContext.streamName,
+				startTime: queryContext.startTime,
+				endTime: queryContext.endTime,
+				access: [],
+			};
+			fetchQueryMutation.mutate({
+				logsQuery,
+				query,
+			});
+		}
+	}, [currentStreamName, isQuerySearchActive, custSearchQuery]);
+
 	useEffect(() => {
 		resetQuerySearch();
-	}, [currentStreamName])
+	}, [currentStreamName]);
 
 	const applyFilter = (key: string, value: string[]) => {
 		subLogSearch.set((state) => {
@@ -205,6 +252,12 @@ const LogTable: FC = () => {
 			}
 		}
 	}, [custSearchQuery]);
+
+	useEffect(() => {
+		if (pageOffset === 0 && subLogQuery.get()) {
+			fetchCount();
+		}
+	}, [currentStreamName, isQuerySearchActive, custSearchQuery]);
 
 	useEffect(() => {
 		const streamErrorListener = subLogStreamError.subscribe(setLogStreamError);
@@ -340,19 +393,25 @@ const LogTable: FC = () => {
 		}
 	}, [pinnedContianerRef, pinnedColumns]);
 
+	const primaryHeaderHeight = !maximized
+		? PRIMARY_HEADER_HEIGHT + LOGS_PRIMARY_TOOLBAR_HEIGHT + LOGS_SECONDARY_TOOLBAR_HEIGHT
+		: 0;
+
+	const totalCount = Array.isArray(fetchQueryMutation?.data) ? fetchQueryMutation.data[0]?.count : null;
+	const loadedCount = pageLogData?.data.length || null;
 	return (
 		<Box
 			className={tableStyles.container}
 			style={{
-				maxHeight: `calc(100vh - ${HEADER_HEIGHT * 3}px )`,
+				maxHeight: `calc(100vh - ${primaryHeaderHeight}px )`,
 			}}>
 			<FilterPills />
 			{!(logStreamError || logStreamSchemaError || logsError) ? (
 				Boolean(tableHeaders.length) && Boolean(pageLogData?.data.length) ? (
-					<Box className={tableStyles.innerContainer} style={{ maxHeight: `calc(100vh - ${HEADER_HEIGHT * 2}px )` }}>
+					<Box className={tableStyles.innerContainer} style={{ maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
 						<Box
 							className={tableStyles.innerContainer}
-							style={{ display: 'flex', flexDirection: 'row', maxHeight: `calc(100vh - ${HEADER_HEIGHT * 2}px )` }}>
+							style={{ display: 'flex', flexDirection: 'row', maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
 							<ScrollArea
 								w={`${pinnedColumnsWidth}px`}
 								className={tableStyles.pinnedScrollView}
@@ -436,7 +495,7 @@ const LogTable: FC = () => {
 				</Center>
 			)}
 			<Box className={tableStyles.footerContainer}>
-				<Box></Box>
+				<TotalLogsCount totalCount={totalCount} loadedCount={loadedCount} />
 				{!loading && !logsLoading ? (
 					<Pagination.Root
 						total={pageLogData?.totalPages || 1}
