@@ -1,5 +1,5 @@
 import { Box, Stack, Tooltip } from '@mantine/core';
-import { IconLogout, IconUser, IconBinaryTree2, IconInfoCircle, IconUserCog, IconHome, IconChevronRight, IconChevronLeft } from '@tabler/icons-react';
+import { IconLogout, IconUser, IconBinaryTree2, IconInfoCircle, IconUserCog, IconHome } from '@tabler/icons-react';
 import { FC, useCallback, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -13,7 +13,7 @@ import { useUser } from '@/hooks/useUser';
 import { useLogStream } from '@/hooks/useLogStream';
 import styles from './styles/Navbar.module.css';
 import useCurrentRoute from '@/hooks/useCurrentRoute';
-import { MAXIMIZED_NAVBAR_WIDTH, MINIMIZED_NAVABR_WIDTH, NAVBAR_WIDTH, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
+import { NAVBAR_WIDTH, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 import UserModal from './UserModal';
 import { signOutHandler } from '@/utils';
 
