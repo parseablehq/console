@@ -2,13 +2,13 @@ import { Box, Button, Group, Modal, ScrollArea, Select, Stack, Table, Text, Text
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect, useState } from 'react';
 
-import { useUser } from '@/hooks/useUser';
+import { useGetUser, useUser } from '@/hooks/useUser';
 
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import RoleTR from './RoleTR';
 import { IconUserPlus } from '@tabler/icons-react';
 import { useRole } from '@/hooks/useRole';
-import styles from './styles/AccessManagement.module.css'
+import styles from './styles/AccessManagement.module.css';
 import { heights } from '@/components/Mantine/sizing';
 import { HEADER_HEIGHT } from '@/constants/theme';
 import { CodeHighlight } from '@mantine/code-highlight';
@@ -32,9 +32,6 @@ const Users: FC = () => {
 	const [roleSearchValue, setRoleSearchValue] = useState<string>('');
 
 	const {
-		getUserData,
-		getUserIsSuccess,
-		getUserIsLoading,
 		createUserMutation,
 		createUserIsError,
 		createUserIsLoading,
@@ -50,6 +47,8 @@ const Users: FC = () => {
 		deleteUserMutation,
 		createUserReset,
 	} = useUser();
+
+	const { getUserData, getUserIsSuccess, getUserIsLoading, getUserRefetch } = useGetUser();
 
 	const { getRolesData } = useRole();
 
@@ -94,7 +93,7 @@ const Users: FC = () => {
 		if (SelectedRole !== '') {
 			userRole.push(SelectedRole);
 		}
-		createUserMutation({ userName: createUserInput, roles: userRole });
+		createUserMutation({ userName: createUserInput, roles: userRole, onSuccess: getUserRefetch });
 	};
 
 	const createVaildtion = () => {
@@ -112,9 +111,11 @@ const Users: FC = () => {
 	};
 
 	return (
-		<Box className={styles.container} style={{maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT*2}px - ${20}px)`}}>
+		<Box
+			className={styles.container}
+			style={{ maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2}px - ${20}px)` }}>
 			<Box className={styles.header}>
-				<Text size="xl" style={{fontWeight: 500}}>
+				<Text size="xl" style={{ fontWeight: 500 }}>
 					Users
 				</Text>
 				<Button
@@ -141,7 +142,13 @@ const Users: FC = () => {
 					<tbody>{rows}</tbody>
 				</Table>
 			</ScrollArea>
-			<Modal opened={modalOpen} onClose={handleClose} title="Create user" centered className={styles.modalStyle} styles={{title: {fontWeight: 700}}}>
+			<Modal
+				opened={modalOpen}
+				onClose={handleClose}
+				title="Create user"
+				centered
+				className={styles.modalStyle}
+				styles={{ title: { fontWeight: 700 } }}>
 				<Stack>
 					<TextInput
 						type="text"
@@ -180,7 +187,7 @@ const Users: FC = () => {
 					) : createUserData?.data ? (
 						<Box>
 							<Text className={styles.passwordText}>Password</Text>
-														<CodeHighlight
+							<CodeHighlight
 								className={styles.passwordPrims}
 								language="text"
 								copyLabel="Copy password to clipboard"
