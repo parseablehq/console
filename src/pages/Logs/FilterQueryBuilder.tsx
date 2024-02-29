@@ -90,7 +90,7 @@ const RuleView = (props: RuleViewType) => {
 				type={type}
 				disabled={isDisabled}
 			/>
-			<ActionIcon className={classes.deleteRulebtn} onClick={deleteBtnHandler}>
+			<ActionIcon className={classes.deleteRulebtn} onClick={deleteBtnHandler} variant="light">
 				<CloseIcon />
 			</ActionIcon>
 		</Stack>
@@ -245,7 +245,7 @@ export const FilterQueryBuilder = () => {
 				</Stack>
 			</ScrollArea>
 			<Stack className={classes.footer}>
-				<Button onClick={clearFilters} disabled={!isFiltersApplied}>
+				<Button onClick={clearFilters} disabled={!isFiltersApplied} variant='outline'>
 					Clear
 				</Button>
 				<Button onClick={applyQuery} disabled={isSumbitDisabled}>
