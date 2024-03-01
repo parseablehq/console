@@ -4,7 +4,6 @@ import { IconChevronRight, IconExternalLink } from '@tabler/icons-react';
 import { useEffect, type FC, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDocumentTitle } from '@mantine/hooks';
-import { useLogStream } from '@/hooks/useLogStream';
 import { useGetStreamMetadata } from '@/hooks/useGetStreamMetadata';
 import { HumanizeNumber, formatBytes } from '@/utils/formatBytes';
 import { LogStreamRetention, LogStreamStat } from '@/@types/parseable/api/stream';
@@ -35,29 +34,24 @@ const Home: FC = () => {
 	useDocumentTitle('Parseable | Streams');
 	const classes = homeStyles;
 	const { container } = classes;
-	const { getLogStreamListData, getLogStreamListIsLoading, getLogStreamListIsError } = useLogStream();
 	const {
 		methods: { streamChangeCleanup },
+		state: { userSpecficStreams }
 	} = useHeaderContext();
 	const navigate = useNavigate();
 	const { getStreamMetadata, metaData } = useGetStreamMetadata();
 
-	const streams = Array.isArray(getLogStreamListData?.data)
-		? getLogStreamListData?.data.map((stream) => stream.name) || []
-		: [];
-
 	useEffect(() => {
-		if (streams.length === 0) return;
-		getStreamMetadata(streams);
-	}, [getLogStreamListData?.data]);
+		if (!Array.isArray(userSpecficStreams) || userSpecficStreams.length === 0) return;
+		getStreamMetadata(userSpecficStreams.map((stream) => stream.name));
+	}, [userSpecficStreams]);
 
 	const navigateToStream = useCallback((stream: string) => {
 		streamChangeCleanup(stream);
 		navigate(`/${stream}/logs`);
 	}, []);
 
-	if (getLogStreamListIsError || getLogStreamListIsLoading) return null; // implement loading state
-	if (streams.length === 0) return <EmptyStreamsView />;
+	if (Array.isArray(userSpecficStreams) && userSpecficStreams.length === 0) return <EmptyStreamsView />;
 
 	return (
 		<Box className={container} style={{ display: 'flex', flex: 1, marginTop: '1rem' }}>
