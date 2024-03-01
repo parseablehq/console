@@ -74,6 +74,7 @@ const Users: FC = () => {
 						updateUserPasswordIsLoading={updateUserPasswordIsLoading}
 						udpateUserPasswordData={udpateUserPasswordData}
 						resetPasswordError={resetPasswordError}
+						getUserRefetch={getUserRefetch}
 					/>
 				);
 			})

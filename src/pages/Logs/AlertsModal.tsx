@@ -3,6 +3,7 @@ import { useLogsPageContext } from './logsContextProvider';
 import { Text } from '@mantine/core';
 import classes from './styles/Logs.module.css';
 import { Editor } from '@monaco-editor/react';
+import { useCallback } from 'react';
 
 const ModalTitle = () => {
 	return <Text style={{ fontSize: '1.2rem', fontWeight: 700, marginLeft: '0.5rem' }}>Alerts</Text>;
@@ -19,6 +20,11 @@ const AlertsModal = (props: AlertsModalProps) => {
 		state: { alertsModalOpen },
 		methods: { closeAlertsModal },
 	} = useLogsPageContext();
+
+	const onSubmit = useCallback(() => {
+		props.handleSubmit();
+		closeAlertsModal();
+	}, []);
 
 	return (
 		<Modal
@@ -46,7 +52,7 @@ const AlertsModal = (props: AlertsModalProps) => {
 					/>
 				</Box>
 				<Stack style={{ alignItems: 'flex-end' }}>
-					<Button className={classes.submitBtn} onClick={props.handleSubmit}>
+					<Button className={classes.submitBtn} onClick={onSubmit}>
 						Submit
 					</Button>
 				</Stack>

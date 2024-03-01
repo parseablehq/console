@@ -35,7 +35,11 @@ export const useUser = () => {
 		isError: deleteUserIsError,
 		isLoading: deleteUserIsLoading,
 		data: deleteUserData,
-	} = useMutation((data: { userName: string }) => deleteUser(data.userName), {});
+	} = useMutation((data: { userName: string, onSuccess?: () => void; }) => deleteUser(data.userName), {
+		onSuccess: (_data, variables) => {
+			variables.onSuccess && variables.onSuccess();
+		},
+	});
 
 	const {
 		mutate: updateUserMutation,
