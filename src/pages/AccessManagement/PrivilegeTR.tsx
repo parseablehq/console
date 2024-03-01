@@ -265,7 +265,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 							</Tooltip>
 						</>
 					) : (
-						<Badge color="red">Error</Badge>
+						<></>
 					)}
 				</td>
 				<td>
