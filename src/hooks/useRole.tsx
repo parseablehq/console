@@ -16,12 +16,12 @@ export const useRole = () => {
 		data: updateRoleData,
 	} = useMutation((data: { userName: string; privilege: object[] }) => putRole(data.userName, data.privilege), {
 		onError: (data: AxiosError) => {
-			if (data.message && typeof data.message === 'string') {
-				notifyError({ message: data.message });
-			} else if (isAxiosError(data) && data.response) {
+			if (isAxiosError(data) && data.response) {
 				const error = data.response?.data as string;
 				typeof error === 'string' && notifyError({ message: error });
-			}
+			} else if (data.message && typeof data.message === 'string') {
+				notifyError({ message: data.message });
+			}			
 		},
 	});
 
@@ -33,11 +33,11 @@ export const useRole = () => {
 	} = useMutation((data: { roleName: string }) => deleteRole(data.roleName), {
 		onError: (data: AxiosError) => {
 			queryClient.invalidateQueries(['fetch-roles']);
-			if (data.message && typeof data.message === 'string') {
-				notifyError({ message: data.message });
-			} else if (isAxiosError(data) && data.response) {
+			if (isAxiosError(data) && data.response) {
 				const error = data.response?.data as string;
 				typeof error === 'string' && notifyError({ message: error });
+			} else if (data.message && typeof data.message === 'string') {
+				notifyError({ message: data.message });
 			}
 		},
 	});
@@ -72,12 +72,12 @@ export const useRole = () => {
 	} = useMutation((data: { roleName: string }) => putDeafultRole(data?.roleName), {
 		retry: false,
 		onError: (data: AxiosError) => {
-			if (data.message && typeof data.message === 'string') {
-				notifyError({ message: data.message });
-			} else if (isAxiosError(data) && data.response) {
+			if (isAxiosError(data) && data.response) {
 				const error = data.response?.data as string;
 				typeof error === 'string' && notifyError({ message: error });
-			}
+			} else if (data.message && typeof data.message === 'string') {
+				notifyError({ message: data.message });
+			}			
 		},
 	});
 

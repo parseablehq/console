@@ -7,12 +7,12 @@ export const useRetentionEditor = (streamName: string) => {
 	const { mutate: updateLogStreamRetention } = useMutation((data: any) => putLogStreamRetention(streamName, data), {
 		onSuccess: () => notifySuccess({ message: 'Updated Successfully' }),
 		onError: (data: AxiosError) => {
-			if (data.message && typeof data.message === 'string') {
-				notifyError({ message: data.message });
-			} else if (isAxiosError(data) && data.response) {
+			if (isAxiosError(data) && data.response) {
 				const error = data.response?.data as string;
 				typeof error === 'string' && notifyError({ message: error });
-			}
+			} else if (data.message && typeof data.message === 'string') {
+				notifyError({ message: data.message });
+			}			
 		},
 	});
 

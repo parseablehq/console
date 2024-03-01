@@ -7,12 +7,12 @@ export const useAlertsEditor = (streamName: string) => {
 	const { mutate: updateLogStreamAlerts } = useMutation((data: any) => putLogStreamAlerts(streamName, data), {
 		onSuccess: () => notifySuccess({ message: 'Updated Successfully' }),
 		onError: (data: AxiosError) => {
-			if (data.message && typeof data.message === 'string') {
-				notifyError({ message: data.message });
-			} else if (isAxiosError(data) && data.response) {
+			if (isAxiosError(data) && data.response) {
 				const error = data.response?.data as string;
 				typeof error === 'string' && notifyError({ message: error });
-			}
+			} else if (data.message && typeof data.message === 'string') {
+				notifyError({ message: data.message });
+			}			
 		},
 	});
 
