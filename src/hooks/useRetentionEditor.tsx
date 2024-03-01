@@ -1,10 +1,16 @@
 import { useMutation, useQuery } from 'react-query';
 import { getLogStreamRetention, putLogStreamRetention } from '@/api/logStream';
+import { notifyError, notifySuccess } from '@/utils/notification';
+import { AxiosError } from 'axios';
 
 export const useRetentionEditor = (streamName: string) => {
 	const { mutate: updateLogStreamRetention } = useMutation((data: any) => putLogStreamRetention(streamName, data), {
-		onSuccess: () => {},
-		onError: () => {},
+		onSuccess: () => notifySuccess({ message: 'Updated Successfully' }),
+		onError: (data: AxiosError) => {
+			if (data.message) {
+				notifyError({ message: data.message });
+			}
+		},
 	});
 
 	return {

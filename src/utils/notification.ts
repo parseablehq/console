@@ -5,7 +5,7 @@ export const notifyError = (payload?: NotificationData) => {
 	const title =  payload?.title || 'Oops!';
 	const message = payload?.message || 'Something went wrong!.';
 	const color = payload?.color || 'red';
-	const autoClose = payload?.autoClose || 6000;
+	const autoClose = payload?.autoClose || 3000;
 	showNotification({
 		...payload,
 		title,
@@ -19,7 +19,7 @@ export const notifySuccess = (payload?: NotificationData) => {
 	const title = payload?.title || 'Success!';
 	const message = payload?.message || 'Done';
 	const color = payload?.color || 'green';
-	const autoClose = payload?.autoClose || 6000;
+	const autoClose = payload?.autoClose || 3000;
 	showNotification({
 		...payload,
 		title,
@@ -31,7 +31,7 @@ export const notifySuccess = (payload?: NotificationData) => {
 
 export const notify = (payload: NotificationData) => {
 	const color = payload.color || 'green';
-	const autoClose = payload.autoClose || 6000;
+	const autoClose = payload.autoClose || 3000;
 	showNotification({
 		...payload,
 		color,

@@ -1,10 +1,16 @@
 import { useMutation, useQuery } from 'react-query';
 import { getLogStreamAlerts, putLogStreamAlerts } from '@/api/logStream';
+import { notifyError, notifySuccess } from '@/utils/notification';
+import { AxiosError } from 'axios';
 
 export const useAlertsEditor = (streamName: string) => {
 	const { mutate: updateLogStreamAlerts } = useMutation((data: any) => putLogStreamAlerts(streamName, data), {
-		onSuccess: () => {},
-		onError: () => {},
+		onSuccess: () => notifySuccess({ message: 'Updated Successfully' }),
+		onError: (data: AxiosError) => {
+			if (data.message) {
+				notifyError({ message: data.message });
+			}
+		},
 	});
 
 	return {
