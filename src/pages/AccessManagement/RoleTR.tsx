@@ -174,7 +174,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				) : getUserRolesIsLoading ? (
 					'loading..'
 				) : getUserRolesData?.data ? (
-					<Stack style={{ flexDirection: 'row' }} gap={0} align="end" justify="center">
+					<Stack style={{ flexDirection: 'row' }} gap={0} align="end">
 						{getBadges()}
 						<Tooltip
 							label={'Add a Role'}
@@ -187,7 +187,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						</Tooltip>
 					</Stack>
 				) : (
-					<Badge color="red">Error</Badge>
+					<></>
 				)}
 			</td>
 			<td>
