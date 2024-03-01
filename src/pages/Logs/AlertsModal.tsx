@@ -3,28 +3,43 @@ import { useLogsPageContext } from './logsContextProvider';
 import { Text } from '@mantine/core';
 import classes from './styles/Logs.module.css';
 import { Editor } from '@monaco-editor/react';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useAlertsEditor, useGetAlerts } from '@/hooks/useAlertsEditor';
+import { notifyError } from '@/utils/notification';
 
 const ModalTitle = () => {
 	return <Text style={{ fontSize: '1.2rem', fontWeight: 700, marginLeft: '0.5rem' }}>Alerts</Text>;
 };
 
-type AlertsModalProps = {
-	data: any;
-	handleChange: (value: string | undefined) => void;
-	handleSubmit: () => void;
-};
-
-const AlertsModal = (props: AlertsModalProps) => {
+const AlertsModal = () => {
+	const [alertConfig, setAlertConfig] = useState<string | undefined>('');
 	const {
-		state: { alertsModalOpen },
+		state: { alertsModalOpen, currentStream },
 		methods: { closeAlertsModal },
 	} = useLogsPageContext();
 
+	const { getLogAlertData } = useGetAlerts(currentStream);
+	const { updateLogStreamAlerts } = useAlertsEditor(currentStream);
+
 	const onSubmit = useCallback(() => {
-		props.handleSubmit();
-		closeAlertsModal();
-	}, []);
+		if (alertConfig) {
+			let parsedConfig;
+			try {
+				parsedConfig = JSON.parse(alertConfig);
+			} catch (e) {
+				return notifyError({ message: 'Unable to parse config' });
+			}
+			updateLogStreamAlerts(parsedConfig);
+		} else {
+			return notifyError({ message: 'Unable to parse config' });
+		}
+	}, [alertConfig]);
+
+	useEffect(() => {
+		if (getLogAlertData?.data) {
+			setAlertConfig(JSON.stringify(getLogAlertData?.data, null, 2));
+		}
+	}, [getLogAlertData?.data]);
 
 	return (
 		<Modal
@@ -36,8 +51,8 @@ const AlertsModal = (props: AlertsModalProps) => {
 			<Stack style={{ padding: '1rem 0' }}>
 				<Box style={{ height: '500px', padding: '1rem 1rem 1rem -2rem' }}>
 					<Editor
-						onChange={props.handleChange}
-						value={JSON.stringify(props.data, null, 2)}
+						onChange={setAlertConfig}
+						value={alertConfig}
 						defaultLanguage="json"
 						options={{
 							scrollBeyondLastLine: false,

@@ -22,7 +22,7 @@ export const getLogStreamAlerts = (streamName: string) => {
 };
 
 export const putLogStreamAlerts = (streamName: string, data: any) => {
-	return Axios().put(LOG_STREAMS_ALERTS_URL(streamName), JSON.parse(data));
+	return Axios().put(LOG_STREAMS_ALERTS_URL(streamName), data);
 };
 
 export const getLogStreamRetention = (streamName: string) => {
@@ -30,7 +30,7 @@ export const getLogStreamRetention = (streamName: string) => {
 };
 
 export const putLogStreamRetention = (streamName: string, data: any) => {
-	return Axios().put(LOG_STREAMS_RETRNTION_URL(streamName), JSON.parse(data));
+	return Axios().put(LOG_STREAMS_RETRNTION_URL(streamName), data);
 };
 
 export const getLogStreamStats = (streamName: string) => {
