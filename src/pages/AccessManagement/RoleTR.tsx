@@ -27,7 +27,7 @@ interface RoleTRProps {
 		id: string;
 		method: string;
 	};
-	deleteUserMutation: (data: { userName: string }) => void;
+	deleteUserMutation: (data: { userName: string, onSuccess?: () => void; }) => void;
 	updateUserPasswordIsError: boolean;
 	getUserRolesIsError: boolean;
 	getUserRolesIsLoading: boolean;
@@ -35,6 +35,7 @@ interface RoleTRProps {
 	updateUserPasswordIsLoading: boolean;
 	udpateUserPasswordData: AxiosResponse | undefined;
 	resetPasswordError: string;
+	getUserRefetch: () => void;
 }
 
 const RoleTR: FC<RoleTRProps> = (props) => {
@@ -117,7 +118,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 	};
 
 	const handleDelete = () => {
-		deleteUserMutation({ userName: user.id });
+		deleteUserMutation({ userName: user.id, onSuccess: props.getUserRefetch });
 		closeDelete();
 		setUserInput('');
 	};
@@ -173,7 +174,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				) : getUserRolesIsLoading ? (
 					'loading..'
 				) : getUserRolesData?.data ? (
-					<Stack style={{ flexDirection: 'row' }} gap={0} align="end" justify="center">
+					<Stack style={{ flexDirection: 'row' }} gap={0} align="end">
 						{getBadges()}
 						<Tooltip
 							label={'Add a Role'}
@@ -186,7 +187,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						</Tooltip>
 					</Stack>
 				) : (
-					<Badge color="red">Error</Badge>
+					<></>
 				)}
 			</td>
 			<td>

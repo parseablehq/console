@@ -13,6 +13,7 @@ export const useCacheToggle = (streamName: string) => {
 		{
 			retry: false,
 			enabled: streamName !== '',
+			refetchOnWindowFocus: false
 		},
 	);
 

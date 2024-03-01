@@ -17,6 +17,7 @@ import {
 	Loader,
 	Group,
 	Stack,
+	Tooltip,
 } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { FC } from 'react';
@@ -70,11 +71,11 @@ const TotalLogsCount = (props: TotalLogsCountProps) => {
 	const { totalCount, loadedCount } = props;
 	if (typeof totalCount !== 'number' || typeof loadedCount !== 'number') return <Stack />;
 
+	const renderTotalCount = useCallback(() => (<Tooltip label={totalCount}><Text>{HumanizeNumber(totalCount)}</Text></Tooltip>), [totalCount]);
 	return (
-		<Stack style={{ alignItems: 'center', justifyContent: 'center' }}>
-			<Text>{`Showing ${loadedCount < LOAD_LIMIT ? loadedCount : LOAD_LIMIT} out of ${HumanizeNumber(
-				totalCount,
-			)} records`}</Text>
+		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }} gap={6}>
+			<Text>{`Showing ${loadedCount < LOAD_LIMIT ? loadedCount : LOAD_LIMIT} out of`}</Text>
+			{renderTotalCount()}
 		</Stack>
 	);
 };
@@ -127,6 +128,8 @@ const LogTable: FC = () => {
 	};
 
 	const currentStreamName = subLogQuery.get().streamName;
+	const startTime = subLogQuery.get().startTime;
+	const endTime = subLogQuery.get().endTime;
 	const { fetchQueryMutation } = useQueryResult();
 	const fetchCount = useCallback(() => {
 		const queryContext = subLogQuery.get();
@@ -137,8 +140,8 @@ const LogTable: FC = () => {
 		if (queryContext && query?.length > 0) {
 			const logsQuery = {
 				streamName: queryContext.streamName,
-				startTime: queryContext.startTime,
-				endTime: queryContext.endTime,
+				startTime: startTime,
+				endTime: endTime,
 				access: [],
 			};
 			fetchQueryMutation.mutate({
@@ -146,7 +149,7 @@ const LogTable: FC = () => {
 				query,
 			});
 		}
-	}, [currentStreamName, isQuerySearchActive, custSearchQuery]);
+	}, [currentStreamName, isQuerySearchActive, custSearchQuery, startTime, endTime]);
 
 	useEffect(() => {
 		resetQuerySearch();
@@ -257,7 +260,7 @@ const LogTable: FC = () => {
 		if (pageOffset === 0 && subLogQuery.get()) {
 			fetchCount();
 		}
-	}, [currentStreamName, isQuerySearchActive, custSearchQuery]);
+	}, [currentStreamName, isQuerySearchActive, custSearchQuery, startTime, endTime]);
 
 	useEffect(() => {
 		const streamErrorListener = subLogStreamError.subscribe(setLogStreamError);

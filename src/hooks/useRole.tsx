@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { deleteRole, getDefaultRole, getRole, getRoles, putDeafultRole, putRole } from '@/api/roles';
 import Cookies from 'js-cookie';
+import { AxiosError, isAxiosError } from 'axios';
+import { notifyError } from '@/utils/notification';
 
 export const useRole = () => {
 	const queryClient = useQueryClient();
@@ -12,7 +14,16 @@ export const useRole = () => {
 		isError: updateRoleIsError,
 		isLoading: updateRoleIsLoading,
 		data: updateRoleData,
-	} = useMutation((data: { userName: string; privilege: object[] }) => putRole(data.userName, data.privilege), {});
+	} = useMutation((data: { userName: string; privilege: object[] }) => putRole(data.userName, data.privilege), {
+		onError: (data: AxiosError) => {
+			if (isAxiosError(data) && data.response) {
+				const error = data.response?.data as string;
+				typeof error === 'string' && notifyError({ message: error });
+			} else if (data.message && typeof data.message === 'string') {
+				notifyError({ message: data.message });
+			}			
+		},
+	});
 
 	const {
 		mutate: deleteRoleMutation,
@@ -20,8 +31,14 @@ export const useRole = () => {
 		isError: deleteRoleIsError,
 		isLoading: deleteRoleIsLoading,
 	} = useMutation((data: { roleName: string }) => deleteRole(data.roleName), {
-		onError: () => {
+		onError: (data: AxiosError) => {
 			queryClient.invalidateQueries(['fetch-roles']);
+			if (isAxiosError(data) && data.response) {
+				const error = data.response?.data as string;
+				typeof error === 'string' && notifyError({ message: error });
+			} else if (data.message && typeof data.message === 'string') {
+				notifyError({ message: data.message });
+			}
 		},
 	});
 
@@ -54,6 +71,14 @@ export const useRole = () => {
 		mutate: updateDefaultRoleMutation,
 	} = useMutation((data: { roleName: string }) => putDeafultRole(data?.roleName), {
 		retry: false,
+		onError: (data: AxiosError) => {
+			if (isAxiosError(data) && data.response) {
+				const error = data.response?.data as string;
+				typeof error === 'string' && notifyError({ message: error });
+			} else if (data.message && typeof data.message === 'string') {
+				notifyError({ message: data.message });
+			}			
+		},
 	});
 
 	const {

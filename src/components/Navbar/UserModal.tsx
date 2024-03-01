@@ -36,7 +36,7 @@ const UserModal = (props: UserModalProps) => {
 					<Text style={{ fontSize: '1rem', fontWeight: 600 }}>Roles:</Text>
 					{Object.entries(userRoles).map(([key, value], index) => {
 						return (
-							<Text>
+							<Text key={index}>
 								{index + 1}. {key} ({value[0].privilege})
 							</Text>
 						);

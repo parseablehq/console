@@ -2,6 +2,7 @@ import { useMutation, useQuery } from 'react-query';
 import { deleteUser, getUserRoles, getUsers, postUser, postUserResetPassword, putUserRoles } from '@/api/users';
 import { isAxiosError, AxiosError } from 'axios';
 import useMountedState from './useMountedState';
+import { notifyError } from '@/utils/notification';
 
 export const useUser = () => {
 	const [resetPasswordError, setResetPasswordError] = useMountedState<string>('');
@@ -21,6 +22,7 @@ export const useUser = () => {
 				if (isAxiosError(data) && data.response) {
 					const error = data.response.data as string;
 					setCreateUserError(error);
+					typeof error === 'string' && notifyError({ message: error });
 				}
 			},
 			onSuccess: (_data, variables) => {
@@ -35,7 +37,17 @@ export const useUser = () => {
 		isError: deleteUserIsError,
 		isLoading: deleteUserIsLoading,
 		data: deleteUserData,
-	} = useMutation((data: { userName: string }) => deleteUser(data.userName), {});
+	} = useMutation((data: { userName: string; onSuccess?: () => void }) => deleteUser(data.userName), {
+		onSuccess: (_data, variables) => {
+			variables.onSuccess && variables.onSuccess();
+		},
+		onError: (data: AxiosError) => {
+			if (isAxiosError(data) && data.response) {
+				const error = data.response?.data as string;
+				typeof error === 'string' && notifyError({ message: error });
+			}
+		},
+	});
 
 	const {
 		mutate: updateUserMutation,
@@ -43,7 +55,14 @@ export const useUser = () => {
 		isError: updateUserIsError,
 		isLoading: updateUserIsLoading,
 		data: udpateUserData,
-	} = useMutation((data: { userName: string; roles: string[] }) => putUserRoles(data.userName, data.roles), {});
+	} = useMutation((data: { userName: string; roles: string[] }) => putUserRoles(data.userName, data.roles), {
+		onError: (data: AxiosError) => {
+			if (isAxiosError(data) && data.response) {
+				const error = data.response?.data as string;
+				typeof error === 'string' && notifyError({ message: error });
+			}
+		},
+	});
 
 	const {
 		mutate: updateUserPasswordMutation,
@@ -56,6 +75,7 @@ export const useUser = () => {
 			if (isAxiosError(data) && data.response) {
 				const error = data.response.data as string;
 				setResetPasswordError(error);
+				typeof error === 'string' && notifyError({ message: error });
 			}
 		},
 	});
@@ -111,6 +131,7 @@ export const useGetUser = () => {
 		refetch: getUserRefetch,
 	} = useQuery(['fetch-user'], () => getUsers(), {
 		retry: false,
+		refetchOnWindowFocus: false
 	});
 	return {
 		getUserRefetch,
