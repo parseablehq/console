@@ -39,7 +39,7 @@ const RententionModal = () => {
 		} else {
 			return notifyError({ message: 'Unable to parse config' });
 		}
-	}, []);
+	}, [retentionConfig]);
 
 	useEffect(() => {
 		if (getLogRetentionData?.data) {
