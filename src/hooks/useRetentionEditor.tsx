@@ -4,17 +4,23 @@ import { notifyError, notifySuccess } from '@/utils/notification';
 import { AxiosError, isAxiosError } from 'axios';
 
 export const useRetentionEditor = (streamName: string) => {
-	const { mutate: updateLogStreamRetention } = useMutation((data: any) => putLogStreamRetention(streamName, data), {
-		onSuccess: () => notifySuccess({ message: 'Updated Successfully' }),
-		onError: (data: AxiosError) => {
-			if (isAxiosError(data) && data.response) {
-				const error = data.response?.data as string;
-				typeof error === 'string' && notifyError({ message: error });
-			} else if (data.message && typeof data.message === 'string') {
-				notifyError({ message: data.message });
-			}			
+	const { mutate: updateLogStreamRetention } = useMutation(
+		(data: { config: any; onSuccess?: () => void }) => putLogStreamRetention(streamName, data.config),
+		{
+			onSuccess: (_data, variables) => {
+				notifySuccess({ message: 'Updated Successfully' });
+				variables.onSuccess && variables.onSuccess();
+			},
+			onError: (data: AxiosError) => {
+				if (isAxiosError(data) && data.response) {
+					const error = data.response?.data as string;
+					typeof error === 'string' && notifyError({ message: error });
+				} else if (data.message && typeof data.message === 'string') {
+					notifyError({ message: data.message });
+				}
+			},
 		},
-	});
+	);
 
 	return {
 		updateLogStreamRetention,

@@ -29,7 +29,7 @@ const AlertsModal = () => {
 			} catch (e) {
 				return notifyError({ message: 'Unable to parse config' });
 			}
-			updateLogStreamAlerts(parsedConfig);
+			updateLogStreamAlerts({config: parsedConfig, onSuccess: closeAlertsModal});
 		} else {
 			return notifyError({ message: 'Unable to parse config' });
 		}
