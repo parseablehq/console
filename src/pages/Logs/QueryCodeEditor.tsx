@@ -156,7 +156,7 @@ const QueryCodeEditor: FC = () => {
 				</Stack>
 			</ScrollArea>
 			<Stack className={queryCodeStyles.footer} style={{ alignItems: 'center' }}>
-				<Button onClick={resetQuerySearch} disabled={!isSqlSearchActive}>
+				<Button onClick={resetQuerySearch} disabled={!isSqlSearchActive} variant='outline'>
 					Clear
 				</Button>
 				<Button onClick={() => runQuery(query)}>Apply</Button>

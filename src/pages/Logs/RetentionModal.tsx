@@ -21,7 +21,7 @@ const RententionModal = () => {
 	const { handleCacheToggle, isCacheEnabled } = useCacheToggle(currentStream);
 
 	const { getLogRetentionData } = useGetRetention(currentStream);
-	const {updateLogStreamRetention} = useRetentionEditor(currentStream);
+	const { updateLogStreamRetention } = useRetentionEditor(currentStream);
 
 	const switchStyles = {
 		track: isCacheEnabled ? classes.trackStyle : {},
@@ -35,7 +35,7 @@ const RententionModal = () => {
 			} catch (e) {
 				return notifyError({ message: 'Unable to parse config' });
 			}
-			updateLogStreamRetention(parsedConfig);
+			updateLogStreamRetention({ config: parsedConfig, onSuccess: closeRetentionModal });
 		} else {
 			return notifyError({ message: 'Unable to parse config' });
 		}

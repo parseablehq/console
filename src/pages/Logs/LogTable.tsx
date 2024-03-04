@@ -73,7 +73,7 @@ const TotalLogsCount = (props: TotalLogsCountProps) => {
 
 	const renderTotalCount = useCallback(() => (<Tooltip label={totalCount}><Text>{HumanizeNumber(totalCount)}</Text></Tooltip>), [totalCount]);
 	return (
-		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }} gap={6}>
+		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row'}} gap={6}>
 			<Text>{`Showing ${loadedCount < LOAD_LIMIT ? loadedCount : LOAD_LIMIT} out of`}</Text>
 			{renderTotalCount()}
 		</Stack>
@@ -498,57 +498,64 @@ const LogTable: FC = () => {
 				</Center>
 			)}
 			<Box className={tableStyles.footerContainer}>
-				<TotalLogsCount totalCount={totalCount} loadedCount={loadedCount} />
-				{!loading && !logsLoading ? (
-					<Pagination.Root
-						total={pageLogData?.totalPages || 1}
-						value={pageLogData?.page || 1}
-						onChange={(page) => {
-							goToPage(page, pageLogData?.limit || 1);
-							pagination.setPage(page);
-						}}>
-						<Group gap={5} justify="center">
-							<Pagination.First
-								onClick={() => {
-									if (pageOffset !== 0) setPageOffset((value) => value - loadLimit);
-								}}
-								disabled={pageOffset === 0}
-							/>
-							<Pagination.Previous />
-							{pagination.range.map((page) => {
-								if (page === 'dots') {
-									return <Pagination.Dots key={page} />;
-								} else {
-									return (
-										<Pagination.Control
-											value={page}
-											key={page}
-											active={pageLogData?.page === page}
-											onClick={() => {
-												goToPage(page);
-												pagination.setPage(page);
-											}}>
-											{pageLogData?.limit ? page + pageOffset / pageLogData?.limit ?? 1 : page}
-										</Pagination.Control>
-									);
-								}
-							})}
-
-							<Pagination.Next />
-							<Pagination.Last
-								onClick={() => {
-									setPageOffset((value) => {
-										return value + loadLimit;
-									});
-								}}
-								disabled={false}
-							/>
-						</Group>
-					</Pagination.Root>
-				) : (
-					<Loader variant="dots" />
-				)}
-				<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
+				<Stack w="100%" justify="center" align="flex-start">
+					<TotalLogsCount totalCount={totalCount} loadedCount={loadedCount} />
+				</Stack>
+				<Stack w="100%" justify="center">
+					{!loading && !logsLoading ? (
+						<Pagination.Root
+							total={pageLogData?.totalPages || 1}
+							value={pageLogData?.page || 1}
+							onChange={(page) => {
+								goToPage(page, pageLogData?.limit || 1);
+								pagination.setPage(page);
+							}}>
+							<Group gap={5} justify="center">
+								<Pagination.First
+									onClick={() => {
+										if (pageOffset !== 0) setPageOffset((value) => value - loadLimit);
+									}}
+									disabled={pageOffset === 0}
+								/>
+								<Pagination.Previous />
+								{pagination.range.map((page) => {
+									if (page === 'dots') {
+										return <Pagination.Dots key={page} />;
+									} else {
+										return (
+											<Pagination.Control
+												value={page}
+												key={page}
+												active={pageLogData?.page === page}
+												onClick={() => {
+													goToPage(page);
+													pagination.setPage(page);
+												}}>
+												{pageLogData?.limit ? page + pageOffset / pageLogData?.limit ?? 1 : page}
+											</Pagination.Control>
+										);
+									}
+								})}
+								<Pagination.Next />
+								<Pagination.Last
+									onClick={() => {
+										setPageOffset((value) => {
+											return value + loadLimit;
+										});
+									}}
+									disabled={false}
+								/>
+							</Group>
+						</Pagination.Root>
+					) : (
+						<Stack w="100%" align="center">
+							<Loader variant="dots" />
+						</Stack>
+					)}
+				</Stack>
+				<Stack w="100%" align="flex-end">
+					<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
+				</Stack>
 			</Box>
 		</Box>
 	);
