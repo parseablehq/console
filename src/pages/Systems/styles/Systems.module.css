@@ -1,0 +1,106 @@
+.sectionContainer {
+    width: 100%;
+    border: 1px solid var(--mantine-color-gray-3);
+    /* margin: 1rem; */
+    padding: 0.675rem;
+    padding-bottom: 0;
+    border-radius: 0.275rem;
+}
+
+.sectionTitleContainer {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1rem 1rem 0rem 0.5rem;
+}
+
+.sectionTitle {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.usageIndicatorContainer {
+    background-color: var(--mantine-color-gray-2);
+    width: 100%;
+    height: 100%;
+    border-radius: 0.25rem;
+    height: 1.6rem;
+    justify-content: center;
+    &.ok {
+        background-color: var(--mantine-color-green-2);
+    }
+    &.alert {
+        background-color: var(--mantine-color-red-1);
+    }
+    .usageIndicatorText {
+        font-size: 0.8rem;
+        text-align: center;
+        z-index: 9;
+        font-weight: 500;
+    }
+    .usageLevelIndicator {
+        position: absolute;
+        height: 100%;
+        border-top-left-radius: 0.25rem;
+        border-bottom-left-radius: 0.25rem;
+
+        &.ok {
+            background-color: var(--mantine-color-green-5);
+        }
+        &.alert {
+            background-color: var(--mantine-color-red-3);
+        }
+    }
+}
+
+.statusChip {
+    height: 1.6rem;
+    background-color: var(--mantine-color-gray-2);
+    border-radius: var(--mantine-spacing-sm);
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    text-transform: capitalize;
+    font-size: 0.875rem;
+    font-weight: 600;
+    &.offline {
+        background-color: var(--mantine-color-gray-1);
+    }
+
+    &.online {
+        color: var(--mantine-color-green-9);
+        background-color: var(--mantine-color-green-1);
+    }
+}
+
+.noAlertsIcon {
+    color: var(--mantine-color-green-4);
+}
+
+.infoIcon {
+    background-color: transparent;
+    color: var(--mantine-color-gray-5);
+    cursor: pointer;
+}
+
+.infoDetailsContainer {
+    width: 10rem;
+}
+
+.removeIcon {
+    color: var(--mantine-color-red-3);
+    height: 1rem;
+    width: 1rem;
+    cursor: pointer;
+}
+
+.infoTitle {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+
+.infoText {
+    font-size: 0.875rem;
+    /* font-weight: 600; */
+}

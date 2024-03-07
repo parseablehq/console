@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 
-const instance = axios.create({ baseURL, withCredentials: true });
+const instance = axios.create({ baseURL, withCredentials: false });
 
 instance.interceptors.request.use(
 	(request) => {
