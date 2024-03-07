@@ -1,11 +1,11 @@
 import { Box, Stack, Tooltip } from '@mantine/core';
-import { IconLogout, IconUser, IconBinaryTree2, IconInfoCircle, IconUserCog, IconHome } from '@tabler/icons-react';
+import { IconLogout, IconUser, IconBinaryTree2, IconInfoCircle, IconUserCog, IconHome, IconServerCog } from '@tabler/icons-react';
 import { FC, useCallback, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { useDisclosure } from '@mantine/hooks';
-import { HOME_ROUTE, LOGS_ROUTE, USERS_MANAGEMENT_ROUTE } from '@/constants/routes';
+import { HOME_ROUTE, LOGS_ROUTE, SYSTEMS_ROUTE, USERS_MANAGEMENT_ROUTE } from '@/constants/routes';
 import InfoModal from './infoModal';
 import { getStreamsSepcificAccess, getUserSepcificStreams } from './rolesHandler';
 import Cookies from 'js-cookie';
@@ -36,6 +36,12 @@ const navItems = [
 		path: '/users',
 		route: USERS_MANAGEMENT_ROUTE,
 	},
+	{
+		icon: IconServerCog,
+		label: 'Systems',
+		path: '/systems',
+		route: SYSTEMS_ROUTE,
+	}
 ];
 
 const navActions = [
@@ -135,6 +141,7 @@ const Navbar: FC = () => {
 							if (navItem.route === USERS_MANAGEMENT_ROUTE && !userSpecificAccessMap.hasUserAccess) return null;
 
 							const isActiveItem = navItem.route === currentRoute;
+							console.log(navItems)
 							return (
 								<Stack
 									className={`${styles.navItemContainer} ${isActiveItem && styles.navItemActive}`}

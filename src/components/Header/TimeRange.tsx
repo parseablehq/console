@@ -50,6 +50,15 @@ const TimeRange: FC = () => {
 		return () => listener();
 	}, []);
 
+	useEffect(() => {
+		const listener = subLogQuery.subscribe((state) => {
+			console.log(state.startTime, state.endTime)
+		});
+
+		return () => listener();
+	}, []);
+
+
 	const onDurationSelect = (duration: FixedDurations) => {
 		subLogSelectedTimeRange.set((state) => {
 			state.value = duration.name;
