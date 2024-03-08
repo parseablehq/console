@@ -8,7 +8,7 @@ const PrivateRoute: FC = () => {
 	const auth = Cookies.get('session') 
 	const { pathname } = useLocation();
 
-	return auth || true ? (
+	return auth ? (
 		<Outlet />
 	) : (
 		<Navigate
