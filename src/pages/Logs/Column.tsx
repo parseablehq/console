@@ -1,17 +1,16 @@
 import { Log, SortOrder } from '@/@types/parseable/api/query';
-import { Box, Checkbox, Popover, TextInput, Tooltip, UnstyledButton, px } from '@mantine/core';
+import { Box, Checkbox, Popover, ScrollArea, Stack, TextInput, Tooltip, UnstyledButton, px } from '@mantine/core';
 import { type ChangeEvent, type FC, Fragment, useTransition, useRef, useCallback, useMemo } from 'react';
 import { IconDotsVertical, IconFilter, IconSearch, IconSortAscending, IconSortDescending } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
 import EmptyBox from '@/components/Empty';
 import { Button } from '@mantine/core';
 import Loading from '@/components/Loading';
-import { FixedSizeList as List } from 'react-window';
 import compare from 'just-compare';
 import { parseLogData } from '@/utils';
-import { useDisclosure } from '@mantine/hooks';
 import { capitalizeFirstLetter } from '@/utils/capitalizeFirstLetter';
-import columnStyles from './styles/Column.module.css'
+import columnStyles from './styles/Column.module.css';
+import { Text } from '@mantine/core';
 
 type SortWidgetProps = {
 	setSortOrder: (order: SortOrder | null) => void;
@@ -77,7 +76,7 @@ const Column: FC<Column> = (props) => {
 
 			if (values && search) {
 				return values.filter((x) => {
-					return parseLogData(x, columnName)?.toString().includes(search);
+					return x?.toString().toLowerCase().includes(search.toLowerCase());
 				});
 			}
 
@@ -91,7 +90,10 @@ const Column: FC<Column> = (props) => {
 
 	const onOpen = useCallback(() => {
 		if (!_columnValuesRef.current) {
-			_columnValuesRef.current = getColumnFilters(columnName);
+			const uniqueValues = getColumnFilters(columnName);
+			_columnValuesRef.current = Array.isArray(uniqueValues)
+				? uniqueValues?.map((val) => parseLogData(val, columnName))
+				: null;
 			startTransition(() => {
 				setColumnValues(_columnValuesRef.current);
 			});
@@ -170,48 +172,47 @@ type CheckboxVirtualListProps = {
 	setFilters: (value: string[]) => void;
 };
 
+const SLICE_OFFSET = 50;
+
 const CheckboxVirtualList: FC<CheckboxVirtualListProps> = (props) => {
-	const { list, selectedFilters, setFilters, columnName } = props;
+	const { list, selectedFilters, setFilters } = props;
+	const classes = columnStyles;
+	const totalValues = list.length;
+	const shortList = list.slice(0, SLICE_OFFSET);
+	const { checkBoxStyle } = classes;
+
+	const remainingLength = totalValues > SLICE_OFFSET ? totalValues - SLICE_OFFSET : 0;
 
 	return (
 		<Checkbox.Group value={selectedFilters} onChange={setFilters}>
-			<List itemCount={list.length} itemSize={35} height={250} width={250} overscanCount={10}>
-				{({ index }) => {
-					const label = list[index]?.toString() || '';
-
-					return <CheckboxRow key={index} value={label} label={label} columnName={columnName} />;
-				}}
-			</List>
+			<ScrollArea style={{ height: 250 }}>
+				{shortList.map((item, index) => {
+					const label = item?.toString() || '';
+					return (
+						<div key={`${label}${index}`}>
+							<Tooltip label={label} key={index} openDelay={500} maw={300} multiline>
+								<Stack style={{ width: '100%', justifyContent: 'center' }}>
+									<Checkbox
+										value={label}
+										label={label}
+										className={checkBoxStyle}
+										styles={{
+											label: { textOverflow: 'ellipsis', width: 250, whiteSpace: 'nowrap', overflow: 'hidden' },
+											body: {
+												textOverflow: 'ellipsis',
+											},
+										}}
+									/>
+								</Stack>
+							</Tooltip>
+							{index + 1 === shortList.length && remainingLength > 0 && (
+								<Text ta="center" c="gray.5" style={{ margin: '8px 0' }}>{`+${remainingLength} more`}</Text>
+							)}
+						</div>
+					);
+				})}
+			</ScrollArea>
 		</Checkbox.Group>
-	);
-};
-
-type CheckboxRowProps = {
-	label: string;
-	value: string;
-	columnName: string;
-};
-
-const CheckboxRow: FC<CheckboxRowProps> = (props) => {
-	const { value, label, columnName } = props;
-	const [opened, { open, close }] = useDisclosure(false);
-	const classes = columnStyles;
-	const { checkBoxStyle } = classes;
-	return (
-		<Tooltip
-			label={label}
-			withinPortal
-			opened={opened}
-			style={{
-				whiteSpace: 'pre-wrap',
-				maxWidth: 250,
-				color: 'black',
-				backgroundColor: 'white',
-			}}>
-			<div onMouseOver={open} onMouseOut={close}>
-				<Checkbox value={value} label={parseLogData(label, columnName)} className={checkBoxStyle} />
-			</div>
-		</Tooltip>
 	);
 };
 

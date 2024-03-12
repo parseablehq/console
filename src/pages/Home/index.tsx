@@ -1,5 +1,5 @@
 import { EmptySimple } from '@/components/Empty';
-import { Text, Button, Center, Box, Group, ActionIcon, Flex } from '@mantine/core';
+import { Text, Button, Center, Box, Group, ActionIcon, Flex, Stack, Tooltip } from '@mantine/core';
 import { IconChevronRight, IconExternalLink } from '@tabler/icons-react';
 import { useEffect, type FC, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +9,7 @@ import { HumanizeNumber, formatBytes } from '@/utils/formatBytes';
 import { LogStreamRetention, LogStreamStat } from '@/@types/parseable/api/stream';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import cardStyles from './styles/Card.module.css';
-import homeStyles from './styles/Home.module.css'
+import homeStyles from './styles/Home.module.css';
 
 const EmptyStreamsView: FC = () => {
 	const classes = homeStyles;
@@ -36,7 +36,7 @@ const Home: FC = () => {
 	const { container } = classes;
 	const {
 		methods: { streamChangeCleanup },
-		state: { userSpecficStreams }
+		state: { userSpecficStreams },
 	} = useHeaderContext();
 	const navigate = useNavigate();
 	const { getStreamMetadata, metaData } = useGetStreamMetadata();
@@ -51,7 +51,8 @@ const Home: FC = () => {
 		navigate(`/${stream}/logs`);
 	}, []);
 
-	if ((Array.isArray(userSpecficStreams) && userSpecficStreams.length === 0) || userSpecficStreams === null)
+	if (userSpecficStreams === null) return null;
+	if ((Array.isArray(userSpecficStreams) && userSpecficStreams.length === 0))
 		return <EmptyStreamsView />;
 
 	return (
@@ -69,7 +70,7 @@ export default Home;
 
 const BigNumber = (props: { label: string; value: any; color?: string }) => {
 	return (
-		<Box className={cardStyles.streamBoxCol} style={{ width: '12%' }}>
+		<Box className={cardStyles.streamBoxCol} style={{ width: '11%' }}>
 			<Text size="xs" style={{ color: 'black' }}>
 				{props.label}
 			</Text>
@@ -129,20 +130,21 @@ const StreamInfo: FC<StreamInfoProps> = (props) => {
 	const ingestionSize = (stats as LogStreamStat)?.ingestion?.size;
 	const storageSize = (stats as LogStreamStat)?.storage?.size;
 	return (
-		<Group
+		<Stack
 			className={classes.streamBox}
 			onClick={() => {
 				navigateToStream(stream);
-			}}
-			style={{ width: '100%' }}>
-			<Box style={{ width: 200 }}>
+			}}>
+			<Box style={{ width: 400 }}>
 				<Box className={classes.streamBoxCol}>
 					<Text size="xs" style={{ color: 'black' }}>
 						{'Stream'}
 					</Text>
-					<Text fw={700} size={'lg'} style={{ color: 'black' }}>
-						{stream}
-					</Text>
+					<Tooltip label={stream}>
+						<Text fw={700} size={'lg'} style={{ color: 'black' }} lineClamp={1}>
+							{stream}
+						</Text>
+					</Tooltip>
 				</Box>
 			</Box>
 			<BigNumber label={'Events'} value={sanitizeCount(ingestionCount)} />
@@ -150,13 +152,13 @@ const StreamInfo: FC<StreamInfoProps> = (props) => {
 			<BigNumber label={'Storage'} value={sanitizeBytes(storageSize)} />
 			<BigNumber label={'Compression'} value={calcCompressionRate(storageSize, ingestionSize)} />
 			<BigNumber label={'Retention'} value={streamRetention} />
-			<Flex style={{ flex: 1, justifyContent: 'flex-end' }}>
+			<Flex style={{ justifyContent: 'flex-end' }}>
 				<Box style={{ width: '15%' }}>
 					<ActionIcon variant="transparent" color="black" size={50}>
 						<IconChevronRight stroke={1} />
 					</ActionIcon>
 				</Box>
 			</Flex>
-		</Group>
+		</Stack>
 	);
 };

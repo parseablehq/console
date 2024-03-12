@@ -6,11 +6,13 @@
 .streamBox {
 	border-radius: 0.5rem;
 	box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.2);
-	flex-shrink: 0;
 	height: 95px;
 	padding: 1rem;
 	cursor: pointer;
 	width: auto;
+	flex-direction: row;
+	align-items: center;
+	width: 100%;
 }
 
 .streamBoxCol {
