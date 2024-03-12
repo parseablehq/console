@@ -101,7 +101,3 @@
 .sortBtnActive:hover {
     color: #fc466b;
 }
-
-.labell {
-    text-overflow: ellipsis;
-}
