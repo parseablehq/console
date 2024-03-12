@@ -1,12 +1,15 @@
 import { Paper, Skeleton, Stack, Text } from '@mantine/core';
 import classes from './styles/EventTimeLineGraph.module.css';
 import { useQueryResult } from '@/hooks/useQueryResult';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLogsPageContext } from './logsContextProvider';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { BarChart, ChartTooltipProps } from '@mantine/charts';
 import { HumanizeNumber } from '@/utils/formatBytes';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
+
+const START_RANGE = 30
+const END_RANGE = 2
 
 const generateCountQuery = (streamName: string, startTime: string, endTime: string) => {
 	return `SELECT DATE_TRUNC('minute', p_timestamp) AS minute_range, COUNT(*) AS log_count FROM ${streamName} WHERE p_timestamp BETWEEN '${startTime}' AND '${endTime}' GROUP BY minute_range ORDER BY minute_range`;
@@ -35,23 +38,46 @@ const calcAverage = (data: GraphRecord[]) => {
 	return parseInt(Math.abs(total / data.length).toFixed(0));
 };
 
-const parseGraphData = (data: GraphRecord[], avg: number) => {
+const getAllTimestamps = (startTime: Dayjs) => {
+	const timestamps = [];
+	for (let i = 0; i < START_RANGE; i++) {
+		// Your code to be executed 30 times goes here
+		const ts = startTime.add(i + 1, 'minute')
+		timestamps.push(ts.toISOString().split('.')[0]+"Z")
+	}
+	return timestamps;
+}
+
+// date_trunc removes tz info
+// filling data empty values where there is no rec
+const parseGraphData = (data: GraphRecord[], avg: number, startTime: Dayjs) => {
 	if (!Array.isArray(data) || data.length === 0) return [];
 
-	const parsed = data.map((d) => {
-		const aboveAvgCount = d.log_count - avg;
-		const aboveAvgPercent = parseInt(((aboveAvgCount / avg) * 100).toFixed(2));
-
-		const data = {
-			events: d.log_count,
-			belowAvgCount: aboveAvgCount >= 0 ? avg : d.log_count,
-			aboveAvgCount: aboveAvgCount <= 0 ? 0 : aboveAvgCount,
-			minute: `${d.minute_range}Z`,
-			aboveAvgPercent,
-		};
-		return data;
+	const allTimestamps = getAllTimestamps(startTime)
+	const parsedData = allTimestamps.map((ts) => {
+		const countData = data.find((d) => `${d.minute_range}Z` === ts);
+		if (!countData || typeof countData !== 'object') {
+			return {
+				events: 0,
+				belowAvgCount: 0,
+				aboveAvgCount: 0,
+				minute: ts,
+				aboveAvgPercent: 0,
+			};
+		} else {
+			const aboveAvgCount = countData.log_count - avg;
+			const aboveAvgPercent = parseInt(((aboveAvgCount / avg) * 100).toFixed(2));
+			return {
+				events: countData.log_count,
+				belowAvgCount: aboveAvgCount >= 0 ? avg : countData.log_count,
+				aboveAvgCount: aboveAvgCount <= 0 ? 0 : aboveAvgCount,
+				minute: `${countData.minute_range}Z`,
+				aboveAvgPercent,
+			};
+		}
 	});
-	return parsed;
+
+	return parsedData;
 };
 
 function ChartTooltip({ payload }: ChartTooltipProps) {
@@ -83,13 +109,19 @@ function ChartTooltip({ payload }: ChartTooltipProps) {
 	);
 }
 
+const generateTimeOpts = () => {
+	const endTime = dayjs().subtract(END_RANGE, 'minute').startOf('minute');
+	const startTime = endTime.subtract(START_RANGE, 'minute').startOf('minute');
+	return { startTime, endTime };
+};
+
 const EventTimeLineGraph = () => {
 	const { fetchQueryMutation } = useQueryResult();
 	const {
 		state: { currentStream },
 	} = useLogsPageContext();
-	const endTime = dayjs().subtract(2, 'minute').startOf('minute');
-	const startTime = endTime.subtract(30, 'minute').startOf('minute');
+	const [timeOpts, _setTimeOpts] = useState<{ startTime: Dayjs; endTime: Dayjs }>(generateTimeOpts());
+	const { endTime, startTime } = timeOpts;
 
 	useEffect(() => {
 		if (!currentStream || currentStream.length === 0) return;
@@ -109,7 +141,7 @@ const EventTimeLineGraph = () => {
 
 	const isLoading = fetchQueryMutation.isLoading;
 	const avgEventCount = useMemo(() => calcAverage(fetchQueryMutation?.data), [fetchQueryMutation?.data]);
-	const graphData = useMemo(() => parseGraphData(fetchQueryMutation?.data, avgEventCount), [fetchQueryMutation?.data]);
+	const graphData = useMemo(() => parseGraphData(fetchQueryMutation?.data, avgEventCount, startTime), [fetchQueryMutation?.data]);
 	const hasData = Array.isArray(graphData) && graphData.length !== 0;
 
 	const {

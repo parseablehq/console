@@ -52,7 +52,7 @@ const Home: FC = () => {
 	}, []);
 
 	if (userSpecficStreams === null) return null;
-	if ((Array.isArray(userSpecficStreams) && userSpecficStreams.length === 0) || userSpecficStreams === null)
+	if ((Array.isArray(userSpecficStreams) && userSpecficStreams.length === 0))
 		return <EmptyStreamsView />;
 
 	return (
