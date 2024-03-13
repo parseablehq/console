@@ -33,7 +33,6 @@ type GraphRecord = {
 const calcAverage = (data: GraphRecord[]) => {
 	if (!Array.isArray(data) || data.length === 0) return 0;
 
-	console.log(data)
 	const total = data.reduce((acc, d) => {
 		return acc + d.log_count;
 	}, 0);
