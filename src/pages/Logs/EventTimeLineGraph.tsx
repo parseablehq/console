@@ -4,7 +4,7 @@ import { useQueryResult } from '@/hooks/useQueryResult';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLogsPageContext } from './logsContextProvider';
 import dayjs, { Dayjs } from 'dayjs';
-import { BarChart, ChartTooltipProps } from '@mantine/charts';
+import {  ChartTooltipProps, AreaChart } from '@mantine/charts';
 import { HumanizeNumber } from '@/utils/formatBytes';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 
@@ -32,6 +32,8 @@ type GraphRecord = {
 
 const calcAverage = (data: GraphRecord[]) => {
 	if (!Array.isArray(data) || data.length === 0) return 0;
+
+	console.log(data)
 	const total = data.reduce((acc, d) => {
 		return acc + d.log_count;
 	}, 0);
@@ -59,8 +61,6 @@ const parseGraphData = (data: GraphRecord[], avg: number, startTime: Dayjs) => {
 		if (!countData || typeof countData !== 'object') {
 			return {
 				events: 0,
-				belowAvgCount: 0,
-				aboveAvgCount: 0,
 				minute: ts,
 				aboveAvgPercent: 0,
 			};
@@ -69,8 +69,6 @@ const parseGraphData = (data: GraphRecord[], avg: number, startTime: Dayjs) => {
 			const aboveAvgPercent = parseInt(((aboveAvgCount / avg) * 100).toFixed(2));
 			return {
 				events: countData.log_count,
-				belowAvgCount: aboveAvgCount >= 0 ? avg : countData.log_count,
-				aboveAvgCount: aboveAvgCount <= 0 ? 0 : aboveAvgCount,
 				minute: `${countData.minute_range}Z`,
 				aboveAvgPercent,
 			};
@@ -103,7 +101,7 @@ function ChartTooltip({ payload }: ChartTooltipProps) {
 			<Stack mt={4} style={{ flexDirection: 'row', justifyContent: 'center' }}>
 				<Text size="sm" c={isAboveAvg ? 'red.6' : 'green.8'}>{`${
 					isAboveAvg ? '+' : ''
-				}${aboveAvgPercent}% above avg (Last 30 mins)`}</Text>
+				}${aboveAvgPercent}% ${isAboveAvg ? 'above' : 'below'} avg (Last 30 mins)`}</Text>
 			</Stack>
 		</Paper>
 	);
@@ -177,27 +175,24 @@ const EventTimeLineGraph = () => {
 				w={isLoading ? '98%' : '100%'}
 				style={isLoading ? { marginLeft: '1.8rem', alignSelf: 'center' } : !hasData ? { marginLeft: '1rem' } : {}}>
 				{hasData ? (
-					<BarChart
+					<AreaChart
 						h="100%"
 						data={graphData}
 						dataKey="minute"
-						series={[
-							{ name: 'belowAvgCount', color: 'indigo.6', label: 'Events' },
-							{ name: 'aboveAvgCount', color: 'red.6', label: 'Events' },
-						]}
+						series={[{ name: 'events', color: 'indigo.5', label: 'Events' }]}
 						tooltipProps={{
 							content: ({ label, payload }) => <ChartTooltip label={label} payload={payload} />,
 							position: { y: -20 },
 						}}
-						type="stacked"
 						valueFormatter={(value) => new Intl.NumberFormat('en-US').format(value)}
 						withXAxis={false}
 						withYAxis={hasData}
 						yAxisProps={{ tickCount: 2, tickFormatter: (value) => `${HumanizeNumber(value)}` }}
-						referenceLines={[{ y: avgEventCount, color: 'red.5' }]}
+						referenceLines={[{ y: avgEventCount, color: 'red.6', label: 'Avg' }]}
 						tickLine="none"
-						barChartProps={{ onClick: setTimeRange }}
+						areaChartProps={{ onClick: setTimeRange, style: { cursor: 'pointer' }}}
 						gridAxis="xy"
+						fillOpacity={0.5}
 					/>
 				) : (
 					<NoDataView />
