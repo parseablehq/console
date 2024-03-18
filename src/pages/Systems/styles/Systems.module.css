@@ -79,7 +79,7 @@
 
 .infoIcon {
     background-color: transparent;
-    color: var(--mantine-color-gray-5);
+    color: var(--mantine-color-red-5);
     cursor: pointer;
 }
 
