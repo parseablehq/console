@@ -13,7 +13,7 @@ const Systems: FC = () => {
 				flexDirection: 'column',
 				padding: '1.25rem'
 			}}>
-			<Queriers />
+			{/* <Queriers /> */}
 			{/* <Divider/> */}
 			<Ingestors />
 		</Stack>
