@@ -1,3 +1,4 @@
+import { useAppStore } from '@/layouts/MainLayout/AppProvider';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { useLogsPageContext } from '@/pages/Logs/logsContextProvider';
 import { generateRandomId } from '@/utils';
@@ -158,14 +159,12 @@ const QueryFilterProvider = (props: QueryFilterProviderProps) => {
 		state: { subLogStreamSchema, custQuerySearchState, builderModalOpen: isModalOpen },
 		methods: { setCustSearchQuery, resetQuerySearch, closeBuilderModal },
 	} = useLogsPageContext();
-	const {
-		state: { subAppContext },
-	} = useHeaderContext();
 	const [fields, setFields] = useState<Field[]>([]);
 	const [query, setQuery] = useState<QueryType>(defaultQuery);
 	const [appliedQuery, setAppliedQuery] = useState<QueryType>(defaultQuery);
 	const [fieldTypeMap, setFieldTypeMap] = useState<FieldTypeMap>({});
 	const [fieldNames, setFieldNames] = useState<string[]>([]);
+	const [currentStream] = useAppStore(store => store.currentStream)
 
 	const createRuleGroup = useCallback(() => {
 		return setQuery((prevState) => {
@@ -257,7 +256,7 @@ const QueryFilterProvider = (props: QueryFilterProviderProps) => {
 	const parseQuery = useCallback(() => {
 		// todo - custom rule processor to prevent converting number strings into numbers for text fields
 		const where = formatQuery(query, { format: 'sql', parseNumbers: true, quoteFieldNamesWith: ['\"', '\"'] });
-		return `select * from ${subAppContext.get().selectedStream} where ${where} limit 9000`;
+		return `select * from ${currentStream} where ${where} limit 9000`;
 	}, [query]);
 
 	const applyQuery = useCallback(() => {

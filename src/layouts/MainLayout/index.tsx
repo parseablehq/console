@@ -6,11 +6,10 @@ import type { FC } from 'react';
 import { Outlet } from 'react-router-dom';
 import { heights } from '@/components/Mantine/sizing';
 import { useHeaderContext } from './Context';
+import { useAppStore } from './AppProvider';
 
 const MainLayout: FC = () => {
-	const {
-		state: { maximized },
-	} = useHeaderContext();
+	const [maximized] = useAppStore((store) => store.maximized);
 	const primaryHeaderHeight = !maximized ? PRIMARY_HEADER_HEIGHT : 0;
 	const navbarWidth = !maximized ? NAVBAR_WIDTH : 0;
 	return (

@@ -1,6 +1,6 @@
 import { Box } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import StaticLogTable from './LogTable';
 import LiveLogTable from '../LiveTail/LogTable';
 import ViewLog from './ViewLog';
@@ -11,16 +11,26 @@ import { useLogsPageContext } from './logsContextProvider';
 import PrimaryToolbar from './PrimaryToolbar';
 import SecondaryToolbar from './SecondaryToolbar';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
+import { useAppStore, appStoreReducers } from '@/layouts/MainLayout/AppProvider';
 
 const Logs: FC = () => {
 	useDocumentTitle('Parseable | Logs');
-	const {
-		state: { maximized },
-	} = useHeaderContext();
+	const [maximized, setAppStore] = useAppStore((store) => store.maximized);
 	const {
 		state: { liveTailToggled },
 	} = useLogsPageContext();
 
+	useEffect(() => {
+		const handleEscKeyPress = (event: KeyboardEvent) => {
+			if (event.key === 'Escape') {
+				maximized && setAppStore(appStoreReducers.toggleMaximize);
+			}
+		};
+		window.addEventListener('keydown', handleEscKeyPress);
+		return () => {
+			window.removeEventListener('keydown', handleEscKeyPress);
+		};
+	}, [maximized]);
 	return (
 		<Box style={{ flex: 1, display: 'flex', position: 'relative', flexDirection: 'column' }}>
 			<DeleteStreamModal />

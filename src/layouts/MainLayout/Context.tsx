@@ -8,6 +8,7 @@ import { useDisclosure } from '@mantine/hooks';
 import dayjs from 'dayjs';
 import type { Dispatch, FC, SetStateAction } from 'react';
 import { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { useAppStore } from './AppProvider';
 
 const Context = createContext({});
 
@@ -186,7 +187,17 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 			state.streamName = stream;
 			state.startTime = now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate();
 			state.endTime = now.toDate();
-			state.access = getStreamsSepcificAccess(subAppContext.get().userRoles || {}, stream);
+			// error
+			state.access = getStreamsSepcificAccess(
+				{
+					admin: [
+						{
+							privilege: 'admin',
+						},
+					],
+				} || {},
+				stream,
+			);
 		});
 		subLogSelectedTimeRange.set((state) => {
 			state.state = 'fixed';
