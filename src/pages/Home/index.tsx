@@ -50,10 +50,7 @@ const Home: FC = () => {
 		streamChangeCleanup(stream);
 		navigate(`/${stream}/logs`);
 	}, []);
-
-	if (userSpecficStreams === null) return null;
-	if ((Array.isArray(userSpecficStreams) && userSpecficStreams.length === 0))
-		return <EmptyStreamsView />;
+	if (Array.isArray(userSpecficStreams) && userSpecficStreams.length === 0) return <EmptyStreamsView />;
 
 	return (
 		<Box className={container} style={{ display: 'flex', flex: 1, marginTop: '1rem' }}>

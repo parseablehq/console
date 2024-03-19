@@ -63,6 +63,8 @@
     text-transform: capitalize;
     font-size: 0.875rem;
     font-weight: 600;
+    width: fit-content;
+    padding: 0 1rem;
     &.offline {
         background-color: var(--mantine-color-gray-1);
     }
