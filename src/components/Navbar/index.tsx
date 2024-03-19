@@ -87,7 +87,7 @@ const Navbar: FC = () => {
 			const userStreams = getUserSepcificStreams(getUserRolesData?.data, getLogStreamListData?.data as any);
 			setUserSpecficStreams(userStreams as any);
 		} else {
-			setUserSpecficStreams(null);
+			setUserSpecficStreams([]);
 		}
 		updateUserSpecificAccess(getStreamsSepcificAccess(getUserRolesData?.data));
 	}, [getUserRolesData?.data, getLogStreamListData?.data]);
@@ -141,7 +141,6 @@ const Navbar: FC = () => {
 							if (navItem.route === USERS_MANAGEMENT_ROUTE && !userSpecificAccessMap.hasUserAccess) return null;
 
 							const isActiveItem = navItem.route === currentRoute;
-							console.log(navItems)
 							return (
 								<Stack
 									className={`${styles.navItemContainer} ${isActiveItem && styles.navItemActive}`}

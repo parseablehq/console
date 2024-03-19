@@ -32,3 +32,6 @@ export const IS_LLM_ACTIVE_URL = `${LLM_QUERY_URL}/isactive`;
 
 // caching
 export const CACHING_STATUS_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/cache`;
+
+export const CLUSTER_INFO_URL = `${API_V1}/cluster/info`;
+export const CLUSTER_METRICS_URL = `${API_V1}/metrics`;

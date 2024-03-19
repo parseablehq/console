@@ -50,7 +50,6 @@ const Home: FC = () => {
 		streamChangeCleanup(stream);
 		navigate(`/${stream}/logs`);
 	}, []);
-
 	if (Array.isArray(userSpecficStreams) && userSpecficStreams.length === 0) return <EmptyStreamsView />;
 
 	return (
