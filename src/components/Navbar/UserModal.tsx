@@ -1,4 +1,4 @@
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
+import { useAppStore } from '@/layouts/MainLayout/AppProvider';
 import { Modal, Stack } from '@mantine/core';
 import { Text } from '@mantine/core';
 import Cookies from 'js-cookie';
@@ -14,12 +14,11 @@ type UserModalProps = {
 }
 
 const UserModal = (props: UserModalProps) => {
-	const {
-		state: { subAppContext },
-	} = useHeaderContext();
 	const username = Cookies.get('username');
 
-	const userRoles = subAppContext.get().userRoles || {};
+	const [userRoles] = useAppStore(store => store.userRoles);
+	if (!userRoles) return null;
+
 	return (
 		<Modal
 			opened={props.opened}

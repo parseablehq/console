@@ -39,6 +39,7 @@ import tableStyles from './styles/Logs.module.css';
 import { LOGS_PRIMARY_TOOLBAR_HEIGHT, LOGS_SECONDARY_TOOLBAR_HEIGHT, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import { HumanizeNumber } from '@/utils/formatBytes';
+import { useAppStore } from '@/layouts/MainLayout/AppProvider';
 
 const skipFields = ['p_metadata', 'p_tags'];
 
@@ -91,8 +92,9 @@ const LogTable: FC = () => {
 		methods: { setPageOffset, resetQuerySearch },
 	} = useLogsPageContext();
 	const {
-		state: { subLogSearch, subLogQuery, subRefreshInterval, subLogSelectedTimeRange, maximized },
+		state: { subLogSearch, subLogQuery, subRefreshInterval, subLogSelectedTimeRange },
 	} = useHeaderContext();
+	const [maximized] = useAppStore(store => store.maximized)
 	const [refreshInterval, setRefreshInterval] = useMountedState<number | null>(null);
 	const [logStreamError, setLogStreamError] = useMountedState<string | null>(null);
 	const [columnToggles, setColumnToggles] = useMountedState<Map<string, boolean>>(new Map());

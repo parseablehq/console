@@ -4,6 +4,7 @@ import { lazy } from 'react';
 import SuspensePage from './SuspensePage';
 import MainLayoutPageProvider from '@/layouts/MainLayout/Context';
 import MainLayout from '@/layouts/MainLayout';
+import { AppProvider } from '@/layouts/MainLayout/AppProvider';
 
 // page-wise providers
 import LogsPageProvider from '@/pages/Logs/logsContextProvider';
@@ -45,9 +46,11 @@ export const LogsElement: FC = () => {
 
 export const MainLayoutElement: FC = () => {
 	return (
-		<MainLayoutPageProvider>
-			<MainLayout />
-		</MainLayoutPageProvider>
+		<AppProvider>
+			<MainLayoutPageProvider>
+				<MainLayout />
+			</MainLayoutPageProvider>
+		</AppProvider>
 	);
 };
 
