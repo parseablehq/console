@@ -5,6 +5,6 @@ export type Ingestor = {
 	status: string;
 	stagingPath: string;
 	storePath: string;
-}
+};
 
-export type ClusterInfo = Ingestor[]
+export type ClusterInfo = Ingestor[];
