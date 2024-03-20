@@ -1,5 +1,5 @@
 import { EmptySimple } from '@/components/Empty';
-import { Text, Button, Center, Box, Group, ActionIcon, Flex, Stack } from '@mantine/core';
+import { Text, Button, Center, Box, Group, ActionIcon, Flex, Stack, Tooltip } from '@mantine/core';
 import { IconChevronRight, IconExternalLink, IconPlus } from '@tabler/icons-react';
 import { useEffect, type FC, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -92,7 +92,7 @@ export default Home;
 
 const BigNumber = (props: { label: string; value: any; color?: string }) => {
 	return (
-		<Box className={cardStyles.streamBoxCol} style={{ width: '12%' }}>
+		<Box className={cardStyles.streamBoxCol} style={{ width: '11%' }}>
 			<Text size="xs" style={{ color: 'black' }}>
 				{props.label}
 			</Text>
@@ -152,20 +152,21 @@ const StreamInfo: FC<StreamInfoProps> = (props) => {
 	const ingestionSize = (stats as LogStreamStat)?.ingestion?.size;
 	const storageSize = (stats as LogStreamStat)?.storage?.size;
 	return (
-		<Group
+		<Stack
 			className={classes.streamBox}
 			onClick={() => {
 				navigateToStream(stream);
-			}}
-			style={{ width: '100%' }}>
-			<Box style={{ width: 200 }}>
+			}}>
+			<Box style={{ width: 400 }}>
 				<Box className={classes.streamBoxCol}>
 					<Text size="xs" style={{ color: 'black' }}>
 						{'Stream'}
 					</Text>
-					<Text fw={700} size={'lg'} style={{ color: 'black' }}>
-						{stream}
-					</Text>
+					<Tooltip label={stream}>
+						<Text fw={700} size={'lg'} style={{ color: 'black' }} lineClamp={1}>
+							{stream}
+						</Text>
+					</Tooltip>
 				</Box>
 			</Box>
 			<BigNumber label={'Events'} value={sanitizeCount(ingestionCount)} />
@@ -173,13 +174,13 @@ const StreamInfo: FC<StreamInfoProps> = (props) => {
 			<BigNumber label={'Storage'} value={sanitizeBytes(storageSize)} />
 			<BigNumber label={'Compression'} value={calcCompressionRate(storageSize, ingestionSize)} />
 			<BigNumber label={'Retention'} value={streamRetention} />
-			<Flex style={{ flex: 1, justifyContent: 'flex-end' }}>
+			<Flex style={{ justifyContent: 'flex-end' }}>
 				<Box style={{ width: '15%' }}>
 					<ActionIcon variant="transparent" color="black" size={50}>
 						<IconChevronRight stroke={1} />
 					</ActionIcon>
 				</Box>
 			</Flex>
-		</Group>
+		</Stack>
 	);
 };
