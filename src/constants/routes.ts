@@ -10,14 +10,14 @@ export const OIDC_NOT_CONFIGURED_ROUTE = '/oidc-not-configured';
 export const SYSTEMS_ROUTE = '/systems';
 
 export const PATHS = {
-    all: '/*',
-    home: '/',
-    logs: '/:streamName/logs',
-    login: '/login',
-    liveTail: '/:streamName/live-tail',
-    stats: '/:streamName/stats',
-    config: '/:streamName/config',
-    users: '/users',
-    oidcNotConfigured: '/oidc-not-configured',
-    systems: '/systems'
-} as {[key: string]: string}
+	all: '/*',
+	home: '/',
+	logs: '/:streamName/logs',
+	login: '/login',
+	liveTail: '/:streamName/live-tail',
+	stats: '/:streamName/stats',
+	config: '/:streamName/config',
+	users: '/users',
+	oidcNotConfigured: '/oidc-not-configured',
+	systems: '/systems',
+} as { [key: string]: string };

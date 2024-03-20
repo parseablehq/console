@@ -8,4 +8,4 @@ export const getClusterInfo = () => {
 
 export const getClusterMetrics = () => {
 	return Axios().get(CLUSTER_METRICS_URL);
-}
+};
