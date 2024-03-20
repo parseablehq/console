@@ -77,9 +77,6 @@ dependencies:
   nice-grpc-web:
     specifier: ^3.3.2
     version: 3.3.2(ws@8.16.0)
-  parse-prometheus-text-format:
-    specifier: ^1.1.1
-    version: 1.1.1
   protobufjs:
     specifier: ^7.2.5
     version: 7.2.5
@@ -3038,12 +3035,6 @@ packages:
       lines-and-columns: 1.2.4
     dev: false
 
-  /parse-prometheus-text-format@1.1.1:
-    resolution: {integrity: sha512-dBlhYVACjRdSqLMFe4/Q1l/Gd3UmXm8ruvsTi7J6ul3ih45AkzkVpI5XHV4aZ37juGZW5+3dGU5lwk+QLM9XJA==}
-    dependencies:
-      shallow-equal: 1.2.1
-    dev: false
-
   /path-exists@4.0.0:
     resolution: {integrity: sha512-ak9Qy5Q7jYb2Wwcey5Fpvg2KoAc/ZIhLSLOSBmRmygPsGwkVVt0fZa0qrtMz+m6tJTAHfZQ8FnmB4MG4LWy7/w==}
     engines: {node: '>=8'}
@@ -3605,10 +3596,6 @@ packages:
     dependencies:
       lru-cache: 6.0.0
     dev: true
-
-  /shallow-equal@1.2.1:
-    resolution: {integrity: sha512-S4vJDjHHMBaiZuT9NPb616CSmLf618jawtv3sufLl6ivK8WocjAo58cXwbRV1cgqxH0Qbv+iUt6m05eqEa2IRA==}
-    dev: false
 
   /shebang-command@2.0.0:
     resolution: {integrity: sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA==}
