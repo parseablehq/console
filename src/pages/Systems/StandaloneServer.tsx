@@ -11,9 +11,19 @@ type IngestorTableRow = {
 	storePath: string;
 };
 
-const fetchIngestorMetrics = async (domain: string) => {
-	const endpoint = `${domain}/api/v1/metrics`;
-	return await fetch(endpoint);
+const fetchIngestorMetrics = async () => {
+	const endpoint = `/api/v1/metrics`;
+	const response = await fetch(endpoint, {
+		headers: {
+			Accept: 'text/plain',
+		},
+	});
+
+	if (!response.ok) {
+		throw new Error('Network response was not ok');
+	}
+
+	return response.body;
 };
 
 const TrLoadingState = () => (
@@ -29,7 +39,22 @@ const TableRow = (props: IngestorTableRow) => {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const data = await fetchIngestorMetrics(window.location.host);
+				const readableStream = await fetchIngestorMetrics();
+				const reader = readableStream?.getReader();
+				const chunks:string[] = [];
+				const readData = async () => {
+					while (reader) {
+						const { done, value } = await reader.read();
+						if (done) {
+							console.log('Stream reading complete');
+							break;
+						}
+						const chunk = new TextDecoder().decode(value);
+						chunks.push(chunk);
+					}
+				};
+				await readData();
+				const data = chunks.join('')
 				if (typeof data !== 'string') throw 'Invalid prometheus response';
 
 				const parsedMetrics: PrometheusMetricResponse | null = parsePrometheusResponse(data);
@@ -68,10 +93,8 @@ const TableRow = (props: IngestorTableRow) => {
 					<Table.Td>{props.storePath || ''}</Table.Td>
 				</>
 			)}
-			<Table.Td align='center'>
-				<Stack className={`${classes.statusChip} ${classes.online}`}>
-					{'Online'}
-				</Stack>
+			<Table.Td align="center">
+				<Stack className={`${classes.statusChip} ${classes.online}`}>{'Online'}</Stack>
 			</Table.Td>
 		</Table.Tr>
 	);
