@@ -8,6 +8,7 @@ export const LOG_STREAMS_ALERTS_URL = (streamName: string) => `${LOG_STREAM_LIST
 export const LOG_STREAMS_RETRNTION_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/retention`;
 export const LOG_STREAMS_STATS_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/stats`;
 export const DELETE_STREAMS_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}`;
+export const CREATE_STREAM_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}`;
 
 // About Parsable Instance
 export const ABOUT_URL = `${API_V1}/about`;

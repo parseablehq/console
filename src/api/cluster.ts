@@ -1,4 +1,4 @@
-import { ClusterInfo, Ingestor } from '@/@types/parseable/api/clusterInfo';
+import { Ingestor } from '@/@types/parseable/api/clusterInfo';
 import { Axios } from './axios';
 import { CLUSTER_INFO_URL, CLUSTER_METRICS_URL } from './constants';
 

@@ -146,7 +146,7 @@ const Ingestors: FC = () => {
 				</Stack>
 				<Text>{`${totalActiveMachines} / ${totalMachines} Active`}</Text>
 			</Stack>
-			<IngestorsTable ingestors={clusterInfoData?.data} />
+			{clusterInfoData?.data && <IngestorsTable ingestors={clusterInfoData?.data} />}
 		</Stack>
 	);
 };
