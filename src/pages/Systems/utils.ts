@@ -83,11 +83,13 @@ export type SanitizedMetrics = {
 };
 
 export const sanitizeIngestorData = (prometheusResponse: PrometheusMetricResponse): SanitizedMetrics | null => {
-	const {parseable_events_ingested, parseable_events_ingested_size, parseable_staging_files, parseable_storage_size, process_resident_memory_bytes} = prometheusResponse
+	const {parseable_events_ingested, parseable_staging_files, parseable_storage_size, process_resident_memory_bytes} = prometheusResponse
+	const streamWiseDataStorage = Array.isArray(parseable_storage_size) ? parseable_storage_size.filter((d) => d.type === 'data') : []
+	const streamWiseStagingStorage = Array.isArray(parseable_storage_size) ? parseable_storage_size.filter((d) => d.type === 'staging') : []
 	const totalEventsIngested = parseStreamDataMetrics(parseable_events_ingested);
-	const totalBytesIngested = parseStreamDataMetrics(parseable_events_ingested_size);
+	const totalBytesIngested = parseStreamDataMetrics(streamWiseDataStorage);
 	const stagingFilesCount = parseStreamDataMetrics(parseable_staging_files);
-	const stagingSize = parseStreamDataMetrics(parseable_storage_size);
+	const stagingSize = parseStreamDataMetrics(streamWiseStagingStorage);
 	const memoryUsage = typeof process_resident_memory_bytes === 'number' ? process_resident_memory_bytes : 0;
 	return {
 		totalEventsIngested: HumanizeNumber(totalEventsIngested),

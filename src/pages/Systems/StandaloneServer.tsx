@@ -1,8 +1,15 @@
 import { Stack, Text, Table, Tooltip, Skeleton } from '@mantine/core';
 import { FC, useEffect, useState } from 'react';
 import classes from './styles/Systems.module.css';
-import { IconHeartRateMonitor } from '@tabler/icons-react';
+import { IconBrandDatabricks } from '@tabler/icons-react';
 import { PrometheusMetricResponse, SanitizedMetrics, parsePrometheusResponse, sanitizeIngestorData } from './utils';
+import { useAbout } from '@/hooks/useGetAbout';
+import { AboutData } from '@/@types/parseable/api/about';
+
+type IngestorTableRow = {
+	stagingPath: string;
+	storePath: string;
+};
 
 const fetchIngestorMetrics = async (domain: string) => {
 	const endpoint = `${domain}/api/v1/metrics`;
@@ -10,12 +17,12 @@ const fetchIngestorMetrics = async (domain: string) => {
 };
 
 const TrLoadingState = () => (
-	<Table.Td colSpan={1}>
+	<Table.Td colSpan={7}>
 		<Skeleton height={30} />
 	</Table.Td>
 );
 
-const TableRow = () => {
+const TableRow = (props: IngestorTableRow) => {
 	const [isMetricsFetching, setMetricsFetching] = useState(true);
 	const [metrics, setMetrics] = useState<SanitizedMetrics | null>(null);
 
@@ -57,6 +64,8 @@ const TableRow = () => {
 					<Table.Td align="center">{metrics.memoryUsage}</Table.Td>
 					<Table.Td align="center">{metrics.stagingFilesCount}</Table.Td>
 					<Table.Td align="center">{metrics.stagingSize}</Table.Td>
+					<Table.Td>{props.stagingPath || ''}</Table.Td>
+					<Table.Td>{props.storePath || ''}</Table.Td>
 				</>
 			)}
 			<Table.Td align='center'>
@@ -72,36 +81,43 @@ const TableHead = () => (
 	<Table.Thead>
 		<Table.Tr>
 			<Table.Th>Domain</Table.Th>
+			<Table.Th style={{ textAlign: 'center' }}>Events Ingested</Table.Th>
+			<Table.Th style={{ textAlign: 'center' }}>Storage</Table.Th>
 			<Table.Th style={{ textAlign: 'center' }}>Memory Usage</Table.Th>
+			<Table.Th style={{ textAlign: 'center' }}>Staging Files</Table.Th>
+			<Table.Th style={{ textAlign: 'center' }}>Staging Size</Table.Th>
+			<Table.Th>Staging Path</Table.Th>
+			<Table.Th>Store</Table.Th>
 			<Table.Th style={{ textAlign: 'center' }}>Status</Table.Th>
 			<Table.Th style={{ textAlign: 'center', width: '1rem' }}></Table.Th>
 		</Table.Tr>
 	</Table.Thead>
 );
 
-const QuerierTable = () => {
+const ServerTable = (props: AboutData) => {
 	return (
 		<Table verticalSpacing="md">
 			<TableHead />
 			<Table.Tbody>
-            <TableRow />
+				<TableRow storePath={props.store.path} stagingPath={props.staging}/>
 			</Table.Tbody>
 		</Table>
 	);
 };
 
-const Querier: FC = () => {
+const StandaloneServer: FC = () => {
+	const {getAboutData} = useAbout()
 	return (
 		<Stack className={classes.sectionContainer}>
 			<Stack className={classes.sectionTitleContainer}>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={8}>
-					<IconHeartRateMonitor stroke={1.2} />
-					<Text className={classes.sectionTitle}>Querier</Text>
+					<IconBrandDatabricks stroke={1.2} />
+					<Text className={classes.sectionTitle}>Parseable Server</Text>
 				</Stack>
 			</Stack>
-			<QuerierTable />
+			{getAboutData?.data && <ServerTable {...getAboutData.data}/>}
 		</Stack>
 	);
 };
 
-export default Querier;
+export default StandaloneServer;

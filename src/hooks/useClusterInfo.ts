@@ -1,7 +1,5 @@
-import { useMutation, useQuery } from 'react-query';
-import { isAxiosError, AxiosError, AxiosResponse } from 'axios';
-import useMountedState from './useMountedState';
-import { notifyError } from '@/utils/notification';
+import { useQuery } from 'react-query';
+import {  AxiosResponse } from 'axios';
 import { getClusterInfo, getClusterMetrics } from '@/api/cluster';
 import { Ingestor } from '@/@types/parseable/api/clusterInfo';
 
