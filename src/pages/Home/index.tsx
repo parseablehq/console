@@ -52,10 +52,11 @@ const Home: FC = () => {
 		streamChangeCleanup(stream);
 		navigate(`/${stream}/logs`);
 	}, []);
+
 	const displayEmptyPlaceholder = Array.isArray(userSpecficStreams) && userSpecficStreams.length === 0
 	const toggleCreateStreamModal = useCallback(() => {
 		setCreateStreamModalOpen(prev => !prev)
-	}, [])
+	}, []);
 
 	return (
 		<Box className={container} style={{ display: 'flex', flex: 1, marginTop: '1rem' }}>

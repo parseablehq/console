@@ -13,7 +13,7 @@ const Context = createContext({});
 
 const { Provider } = Context;
 
-const now = dayjs();
+const now = dayjs().startOf('minute');
 
 export const DEFAULT_FIXED_DURATIONS = FIXED_DURATIONS[0];
 
@@ -182,7 +182,7 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 	}, []);
 
 	const streamChangeCleanup = useCallback((stream: string) => {
-		const now = dayjs();
+		const now = dayjs().startOf('minute');
 		subLogQuery.set((state) => {
 			state.streamName = stream;
 			state.startTime = now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate();
