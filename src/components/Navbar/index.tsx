@@ -16,6 +16,9 @@ import useCurrentRoute from '@/hooks/useCurrentRoute';
 import { NAVBAR_WIDTH, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 import UserModal from './UserModal';
 import { signOutHandler } from '@/utils';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/AppProvider';
+
+const {setUserRoles} = appStoreReducers;
 
 const navItems = [
 	{
@@ -68,12 +71,14 @@ const Navbar: FC = () => {
 	const location = useLocation();
 	const currentRoute = useCurrentRoute();
 	const username = Cookies.get('username');
+	const [maximized, setAppStore] = useAppStore((store) => store.maximized);
+	const [currentStream] = useAppStore((store) => store.currentStream);
+
 	const {
-		state: { subAppContext, maximized, userSpecficStreams, userSpecificAccessMap },
-		methods: { streamChangeCleanup, setUserRoles, setUserSpecficStreams, updateUserSpecificAccess },
+		state: { userSpecficStreams, userSpecificAccessMap },
+		methods: { streamChangeCleanup, setUserSpecficStreams, updateUserSpecificAccess },
 	} = useHeaderContext();
 
-	const selectedStream = subAppContext.get().selectedStream;
 	const [userModalOpened, { toggle: toggleUserModal }] = useDisclosure(false);
 	const [infoModalOpened, { toggle: toggleInfoModal }] = useDisclosure(false);
 
@@ -83,7 +88,7 @@ const Navbar: FC = () => {
 
 	useEffect(() => {
 		if (getLogStreamListData?.data && getLogStreamListData?.data.length > 0 && getUserRolesData?.data) {
-			getUserRolesData?.data && setUserRoles(getUserRolesData?.data); // TODO: move user context main context
+			getUserRolesData?.data && setAppStore((store) => setUserRoles(store, getUserRolesData?.data)); // TODO: move user context main context
 			const userStreams = getUserSepcificStreams(getUserRolesData?.data, getLogStreamListData?.data as any);
 			setUserSpecficStreams(userStreams as any);
 		} else {
@@ -106,8 +111,7 @@ const Navbar: FC = () => {
 				) {
 					return navigate('/');
 				}
-				const defaultStream =
-					selectedStream && selectedStream.length !== 0 ? selectedStream : userSpecficStreams[0].name;
+				const defaultStream = currentStream && currentStream.length !== 0 ? currentStream : userSpecficStreams[0].name;
 				const stream = !streamName || streamName.length === 0 ? defaultStream : streamName;
 				const path = `/${stream}/logs`;
 				streamChangeCleanup(stream);

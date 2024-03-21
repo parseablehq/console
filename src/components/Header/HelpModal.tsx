@@ -1,9 +1,10 @@
 import { Box, Button, Modal, Text, Tooltip, px } from '@mantine/core';
-import { FC, useEffect } from 'react';
+import { FC, useCallback, useEffect } from 'react';
 import { useAbout } from '@/hooks/useGetAbout';
 import { IconBook2, IconBrandGithub, IconBrandSlack, IconBusinessplan } from '@tabler/icons-react';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import styles from './styles/HelpModal.module.css';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/AppProvider';
 
 const helpResources = [
 	{
@@ -51,13 +52,9 @@ const HelpCard: FC<HelpCardProps> = (props) => {
 	);
 };
 
-type HelpModalProps = {
-	opened: boolean;
-	close(): void;
-};
 
-const HelpModal: FC<HelpModalProps> = (props) => {
-	const { opened, close } = props;
+const HelpModal: FC = () => {
+	const [helpModalOpen, setAppStore] = useAppStore(store => store.helpModalOpen)
 	const {
 		state: { subInstanceConfig },
 	} = useHeaderContext();
@@ -72,9 +69,10 @@ const HelpModal: FC<HelpModalProps> = (props) => {
 
 	const classes = styles;
 	const { container, aboutTitle, aboutDescription, helpIconContainer } = classes;
+	const onClose = useCallback(() => setAppStore(appStoreReducers.toggleHelpModal), [])
 
 	return (
-		<Modal opened={opened} onClose={close} withinPortal withCloseButton={false} size="xl" centered padding={40}>
+		<Modal opened={helpModalOpen} onClose={onClose} withinPortal withCloseButton={false} size="xl" centered padding={40}>
 			<Box className={container}>
 				<Text className={aboutTitle}>Need help?</Text>
 				<Text className={aboutDescription}>Ensure uninterrupted deployment</Text>

@@ -9,12 +9,14 @@ import { useDoGetLiveTail } from '@/hooks/useDoGetLiveTail';
 import EmptyBox from '@/components/Empty';
 import styles from './styles/Logs.module.css';
 import { LOGS_PRIMARY_TOOLBAR_HEIGHT, LOGS_SECONDARY_TOOLBAR_HEIGHT, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
+import { useAppStore } from '@/layouts/MainLayout/AppProvider';
 
 const LogTable: FC = () => {
 	const { finalData: data, doGetLiveTail, resetData, abort, loading, schema } = useDoGetLiveTail();
 	const {
-		state: { subInstanceConfig, subLogQuery, subLiveTailsData, maximized },
+		state: { subInstanceConfig, subLogQuery, subLiveTailsData },
 	} = useHeaderContext();
+	const [maximized] = useAppStore(store => store.maximized)
 
 	const [grpcPort, setGrpcPort] = useMountedState<number | null>(subInstanceConfig.get()?.grpcPort ?? null);
 	const [currentStreamName, setCurrentStreamName] = useMountedState<string>(subLogQuery.get().streamName ?? '');
