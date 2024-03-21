@@ -7,10 +7,12 @@ import { useDocumentTitle } from '@mantine/hooks';
 import { useGetStreamMetadata } from '@/hooks/useGetStreamMetadata';
 import { HumanizeNumber, formatBytes } from '@/utils/formatBytes';
 import { LogStreamRetention, LogStreamStat } from '@/@types/parseable/api/stream';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import cardStyles from './styles/Card.module.css';
 import homeStyles from './styles/Home.module.css';
 import CreateStreamModal from './CreateStreamModal';
+import { useAppStore, appStoreReducers } from '@/layouts/MainLayout/AppProvider';
+
+const {changeStream} = appStoreReducers;
 
 const EmptyStreamsView: FC = () => {
 	const classes = homeStyles;
@@ -35,32 +37,30 @@ const Home: FC = () => {
 	useDocumentTitle('Parseable | Streams');
 	const classes = homeStyles;
 	const { container } = classes;
-	const {
-		methods: { streamChangeCleanup },
-		state: { userSpecficStreams, userSpecificAccessMap },
-	} = useHeaderContext();
 	const navigate = useNavigate();
 	const { getStreamMetadata, metaData } = useGetStreamMetadata();
 	const [createStreamModalOpen, setCreateStreamModalOpen] = useState<boolean>(false);
+	const [userSpecificStreams, setAppStore] = useAppStore((store) => store.userSpecificStreams);
+	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
 
 	useEffect(() => {
-		if (!Array.isArray(userSpecficStreams) || userSpecficStreams.length === 0) return;
-		getStreamMetadata(userSpecficStreams.map((stream) => stream.name));
-	}, [userSpecficStreams]);
+		if (!Array.isArray(userSpecificStreams) || userSpecificStreams.length === 0) return;
+		getStreamMetadata(userSpecificStreams.map((stream) => stream.name));
+	}, [userSpecificStreams]);
 
 	const navigateToStream = useCallback((stream: string) => {
-		streamChangeCleanup(stream);
+		setAppStore(store => changeStream(store, stream))
 		navigate(`/${stream}/logs`);
 	}, []);
 
-	const displayEmptyPlaceholder = Array.isArray(userSpecficStreams) && userSpecficStreams.length === 0
+	const displayEmptyPlaceholder = Array.isArray(userSpecificStreams) && userSpecificStreams.length === 0;
 	const toggleCreateStreamModal = useCallback(() => {
-		setCreateStreamModalOpen(prev => !prev)
+		setCreateStreamModalOpen((prev) => !prev);
 	}, []);
 
 	return (
 		<Box className={container} style={{ display: 'flex', flex: 1, marginTop: '1rem' }}>
-			<CreateStreamModal opened={createStreamModalOpen} close={toggleCreateStreamModal}/>
+			<CreateStreamModal opened={createStreamModalOpen} close={toggleCreateStreamModal} />
 			<Stack
 				style={{
 					margin: '1rem',
@@ -71,8 +71,14 @@ const Home: FC = () => {
 				}}>
 				<Text fw={500}>All Streams</Text>
 				<Box>
-					{userSpecificAccessMap.hasCreateStreamAccess && (
-						<Button variant="outline" style={{border: '1px solid'}}  onClick={toggleCreateStreamModal} leftSection={<IconPlus stroke={2} />}>Create Stream</Button>
+					{userAccessMap.hasCreateStreamAccess && (
+						<Button
+							variant="outline"
+							style={{ border: '1px solid' }}
+							onClick={toggleCreateStreamModal}
+							leftSection={<IconPlus stroke={2} />}>
+							Create Stream
+						</Button>
 					)}
 				</Box>
 			</Stack>

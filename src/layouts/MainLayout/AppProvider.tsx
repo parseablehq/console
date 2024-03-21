@@ -1,3 +1,5 @@
+import { LogStreamData } from '@/@types/parseable/api/stream';
+import { getStreamsSepcificAccess } from '@/components/Navbar/rolesHandler';
 import createFastContext from '@/utils/createFastContext';
 
 export type UserRoles = {
@@ -17,6 +19,9 @@ type AppStore = {
 	helpModalOpen: boolean;
 	currentStream: null | string;
 	userRoles: UserRoles | null;
+	userSpecificStreams: null | LogStreamData;
+	userAccessMap: { [key: string]: boolean };
+	streamSpecificUserAccess: string[] | null;
 };
 
 type AppStoreReducers = {
@@ -24,16 +29,43 @@ type AppStoreReducers = {
 	toggleHelpModal: (store: AppStore) => ReducerOutput;
 	changeStream: (store: AppStore, stream: string) => ReducerOutput;
 	setUserRoles: (store: AppStore, roles: UserRoles | null) => ReducerOutput;
+	setUserSpecificStreams: (store: AppStore, userSpecficStreams: LogStreamData | null) => ReducerOutput;
+	setUserAccessMap: (store: AppStore, accessRoles: string[] | null) => ReducerOutput;
+	setStreamSpecificUserAccess: (store: AppStore) => ReducerOutput;
 };
 
 const initialState: AppStore = {
 	maximized: false,
 	helpModalOpen: false,
 	currentStream: null,
-	userRoles: null
+	userRoles: null,
+	userSpecificStreams: null,
+	userAccessMap: {},
+	streamSpecificUserAccess: null,
 };
 
 const { Provider: AppProvider, useStore: useAppStore } = createFastContext(initialState);
+
+// helpers
+const accessKeyMap: { [key: string]: string } = {
+	hasUserAccess: 'ListUser',
+	hasDeleteAccess: 'DeleteStream',
+	hasUpdateAlertAccess: 'PutAlert',
+	hasGetAlertAccess: 'GetAlert',
+	hasCreateStreamAccess: 'CreateStream',
+};
+
+const generateUserAcccessMap = (accessRoles: string[] | null) => {
+	return Object.keys(accessKeyMap).reduce((acc, accessKey: string) => {
+		return {
+			...acc,
+			[accessKey]:
+				accessRoles !== null && accessKeyMap.hasOwnProperty(accessKey) && accessRoles.includes(accessKeyMap[accessKey]),
+		};
+	}, {});
+};
+
+// reducers
 
 const toggleMaximize = (store: AppStore) => {
 	return { maximized: !store.maximized };
@@ -48,14 +80,33 @@ const changeStream = (_store: AppStore, stream: string) => {
 };
 
 const setUserRoles = (_store: AppStore, roles: UserRoles | null) => {
-	return {userRoles: roles}
-}
+	return { userRoles: roles };
+};
+
+const setUserSpecificStreams = (_store: AppStore, userSpecificStreams: null | LogStreamData) => {
+	return { userSpecificStreams };
+};
+
+const setUserAccessMap = (_store: AppStore, accessRoles: string[] | null) => {
+	return { userAccessMap: generateUserAcccessMap(accessRoles) };
+};
+
+const setStreamSpecificUserAccess = (store: AppStore) => {
+	if (store.userRoles && store.currentStream) {
+		return { streamSpecificUserAccess: getStreamsSepcificAccess(store.userRoles, store.currentStream) };
+	} else {
+		return store;
+	}
+};
 
 const appStoreReducers: AppStoreReducers = {
 	toggleMaximize,
 	toggleHelpModal,
 	changeStream,
-	setUserRoles
+	setUserRoles,
+	setUserSpecificStreams,
+	setUserAccessMap,
+	setStreamSpecificUserAccess,
 };
 
 export { AppProvider, useAppStore, appStoreReducers };

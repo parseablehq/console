@@ -118,7 +118,6 @@ const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 	const [alertsModalOpen, setAlertsModalOpen] = useState<boolean>(false);
 	const [retentionModalOpen, setRetentionModalOpen] = useState<boolean>(false);
 
-	const [maximized, { toggle: toggleMaximize }] = useDisclosure(false);
 	const [liveTailToggled, { toggle: toggleLiveTail }] = useDisclosure(false);
 	const [builderModalOpen, { toggle: toggleBuilderModal, close: closeBuilderModal }] = useDisclosure(false);
 	const queryCodeEditorRef = React.useRef<any>(defaultCustSQLQuery(currentStream || '')); // to store input value even after the editor unmounts
@@ -147,7 +146,6 @@ const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 		currentStream,
 		alertsModalOpen,
 		retentionModalOpen,
-		maximized,
 		liveTailToggled,
 		builderModalOpen,
 		queryCodeEditorRef
@@ -239,7 +237,6 @@ const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 		closeAlertsModal,
 		openRetentionModal,
 		closeRetentionModal,
-		toggleMaximize,
 		toggleLiveTail,
 		toggleCustQuerySearchMode,
 		toggleBuilderModal,

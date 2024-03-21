@@ -72,13 +72,15 @@ type LogsStore = {
 
 type LogsStoreReducers = {
 	setTimeRange: (store: LogsStore, payload: Partial<TimeRange>) => ReducerOutput;
-	resetTimeRange: () => ReducerOutput;
+	resetTimeRange: (store: LogsStore) => ReducerOutput;
 	deleteFilterItem: (store: LogsStore, key: string) => ReducerOutput;
 	addFilterItem: (store: LogsStore, key: string, value: string[]) => ReducerOutput;
 	setLiveTailStatus: (store: LogsStore, liveTailStatus: LiveTailStatus) => ReducerOutput;
 	resetLiveTailSearchState: (store: LogsStore) => ReducerOutput;
 	setLiveTailSchema: (store: LogsStore, liveTailSchemaData: LogStreamData) => ReducerOutput;
 	setRefreshInterval: (store: LogsStore, interval: number | null) => ReducerOutput;
+	resetQuickFilters: (store: LogsStore) => ReducerOutput;
+	streamChangeCleanup: (store: LogsStore) => ReducerOutput;
 };
 
 const initialState: LogsStore = {
@@ -86,7 +88,9 @@ const initialState: LogsStore = {
 	quickFilters: defaultQuickFilters,
 	liveTailConfig: defaultLiveTailConfig,
 	refreshInterval: null
+	// if adding new fields, verify streamChangeCleanup
 };
+
 
 const { Provider: LogsProvider, useStore: useLogsStore } = createFastContext(initialState);
 
@@ -95,8 +99,12 @@ const setTimeRange = (store: LogsStore, payload: Partial<TimeRange>) => {
 	return { timeRange: { ...store.timeRange, ...payload } };
 };
 
-const resetTimeRange = () => {
-	return { timeRange: getDefaultTimeRange() };
+const resetTimeRange = (store: LogsStore) => {
+	const now = dayjs();
+	const timeDiff = store.timeRange.endTime.getTime() - store.timeRange.startTime.getTime();
+	const startTime = now.subtract(timeDiff).toDate();
+	const endTime = now.toDate();
+	return store.timeRange.type === 'custom' ? store : { timeRange: { ...store.timeRange, startTime, endTime } };
 };
 
 const deleteFilterItem = (store: LogsStore, key: string) => {
@@ -110,6 +118,10 @@ const addFilterItem = (store: LogsStore, key: string, value: string[]) => {
 	const updatedFilters = { ...filters, [key]: value };
 	return { quickFilters: { ...store.quickFilters, filters: updatedFilters } };
 };
+
+const resetQuickFilters = (_store: LogsStore) => {
+	return { quickFilters: defaultQuickFilters };
+}
 
 const setLiveTailStatus = (store: LogsStore, liveTailStatus: LiveTailStatus) => {
 	const { liveTailConfig } = store;
@@ -128,6 +140,10 @@ const setRefreshInterval = (_store: LogsStore, interval: number | null) => {
 	return { refreshInterval: interval};
 }
 
+const streamChangeCleanup = (_store: LogsStore) => {
+	return {...initialState}
+}
+
 const logsStoreReducers: LogsStoreReducers = {
 	setTimeRange,
 	resetTimeRange,
@@ -136,7 +152,9 @@ const logsStoreReducers: LogsStoreReducers = {
 	setLiveTailStatus,
 	resetLiveTailSearchState,
 	setLiveTailSchema,
-	setRefreshInterval
+	setRefreshInterval,
+	resetQuickFilters,
+	streamChangeCleanup
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };

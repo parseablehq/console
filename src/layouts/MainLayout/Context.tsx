@@ -1,13 +1,12 @@
 import { AboutData } from '@/@types/parseable/api/about';
 import { SortOrder, type LogsQuery, type LogsSearch, type LogSelectedTimeRange } from '@/@types/parseable/api/query';
 import { LogStreamData } from '@/@types/parseable/api/stream';
-import { getStreamsSepcificAccess } from '@/components/Navbar/rolesHandler';
 import { FIXED_DURATIONS } from '@/constants/timeConstants';
 import useSubscribeState, { SubData } from '@/hooks/useSubscribeState';
 import { useDisclosure } from '@mantine/hooks';
 import dayjs from 'dayjs';
 import type { Dispatch, FC, SetStateAction } from 'react';
-import { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { ReactNode, createContext,  useContext, useState } from 'react';
 
 const Context = createContext({});
 
@@ -109,7 +108,7 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 		startTime: now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate(), // done
 		endTime: now.toDate(), // done
 		streamName: '', // done
-		access: null,
+		access: null, // done
 	});
 	const subLogSearch = useSubscribeState<LogsSearch>({
 		search: '', // done
@@ -131,10 +130,10 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 	});
 	const subRefreshInterval = useSubscribeState<number | null>(null); // done
 	const subInstanceConfig = useSubscribeState<AboutData | null>(null);
-	const [maximized, { toggle: toggleMaximize }] = useDisclosure(false);
-	const [helpModalOpen, { toggle: toggleHelpModal }] = useDisclosure(false);
-	const [userSpecficStreams, setUserSpecficStreams] = useState<LogStreamData | null>(null);
-	const [userSpecificAccessMap, setUserSpecificMap] = useState<{ [key: string]: boolean }>({});
+	const [maximized, { toggle: toggleMaximize }] = useDisclosure(false); // done
+	const [helpModalOpen, { toggle: toggleHelpModal }] = useDisclosure(false); // done
+	const [userSpecficStreams, setUserSpecficStreams] = useState<LogStreamData | null>(null); // done
+	const [userSpecificAccessMap, setUserSpecificMap] = useState<{ [key: string]: boolean }>({}); // done
 
 	const state: HeaderContextState = {
 		subLogQuery,
@@ -150,87 +149,87 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 		helpModalOpen,
 	};
 
-	useEffect(() => {
-		const handleEscKeyPress = (event: KeyboardEvent) => {
-			if (event.key === 'Escape') {
-				maximized && toggleMaximize();
-			}
-		};
+	// useEffect(() => {
+	// 	const handleEscKeyPress = (event: KeyboardEvent) => {
+	// 		if (event.key === 'Escape') {
+	// 			maximized && toggleMaximize();
+	// 		}
+	// 	};
 
-		window.addEventListener('keydown', handleEscKeyPress);
+	// 	window.addEventListener('keydown', handleEscKeyPress);
 
-		return () => {
-			window.removeEventListener('keydown', handleEscKeyPress);
-		};
-	}, [maximized]);
+	// 	return () => {
+	// 		window.removeEventListener('keydown', handleEscKeyPress);
+	// 	};
+	// }, [maximized]);
 
-	const resetTimeInterval = useCallback(() => {
-		if (subLogSelectedTimeRange.get().state === 'fixed') {
-			const now = dayjs();
-			const timeDiff = subLogQuery.get().endTime.getTime() - subLogQuery.get().startTime.getTime();
-			subLogQuery.set((state) => {
-				state.startTime = now.subtract(timeDiff).toDate();
-				state.endTime = now.toDate();
-			});
-		}
-	}, []);
+	// const resetTimeInterval = useCallback(() => {
+	// 	if (subLogSelectedTimeRange.get().state === 'fixed') {
+	// 		const now = dayjs();
+	// 		const timeDiff = subLogQuery.get().endTime.getTime() - subLogQuery.get().startTime.getTime();
+	// 		subLogQuery.set((state) => {
+	// 			state.startTime = now.subtract(timeDiff).toDate();
+	// 			state.endTime = now.toDate();
+	// 		});
+	// 	}
+	// }, []);
 
-	const streamChangeCleanup = useCallback((stream: string) => {
-		const now = dayjs().startOf('minute');
-		subLogQuery.set((state) => {
-			state.streamName = stream;
-			state.startTime = now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate();
-			state.endTime = now.toDate();
-			// error
-			state.access = getStreamsSepcificAccess(
-				{
-					admin: [
-						{
-							privilege: 'admin',
-						},
-					],
-				} || {},
-				stream,
-			);
-		});
-		subLogSelectedTimeRange.set((state) => {
-			state.state = 'fixed';
-			state.value = DEFAULT_FIXED_DURATIONS.name;
-		});
-		subLogSearch.set((state) => {
-			state.search = '';
-			state.filters = {};
-		});
-		subRefreshInterval.set(null);
-		subAppContext.set((state) => {
-			state.selectedStream = stream;
-		});
-	}, []);
+	// const streamChangeCleanup = useCallback((stream: string) => {
+	// 	const now = dayjs().startOf('minute');
+	// 	subLogQuery.set((state) => {
+	// 		state.streamName = stream;
+	// 		state.startTime = now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate();
+	// 		state.endTime = now.toDate();
+	// 		// error
+	// 		state.access = getStreamsSepcificAccess(
+	// 			{
+	// 				admin: [
+	// 					{
+	// 						privilege: 'admin',
+	// 					},
+	// 				],
+	// 			} || {},
+	// 			stream,
+	// 		);
+	// 	});
+	// 	subLogSelectedTimeRange.set((state) => {
+	// 		state.state = 'fixed';
+	// 		state.value = DEFAULT_FIXED_DURATIONS.name;
+	// 	});
+	// 	subLogSearch.set((state) => {
+	// 		state.search = '';
+	// 		state.filters = {};
+	// 	});
+	// 	subRefreshInterval.set(null);
+	// 	subAppContext.set((state) => {
+	// 		state.selectedStream = stream;
+	// 	});
+	// }, []);
 
-	const setUserRoles = useCallback((userRoles: UserRoles) => {
-		subAppContext.set((state) => {
-			state.userRoles = userRoles;
-		});
-	}, []);
+	// const setUserRoles = useCallback((userRoles: UserRoles) => {
+	// 	subAppContext.set((state) => {
+	// 		state.userRoles = userRoles;
+	// 	});
+	// }, []);
 
-	const setSelectedStream = useCallback((stream: string) => {
-		subAppContext.set((state) => {
-			state.selectedStream = stream;
-		});
-	}, []);
+	// const setSelectedStream = useCallback((stream: string) => {
+	// 	subAppContext.set((state) => {
+	// 		state.selectedStream = stream;
+	// 	});
+	// }, []);
 
-	const updateUserSpecificAccess = useCallback((accessRoles: string[] | null) => {
-		setUserSpecificMap(generateUserAcccessMap(accessRoles));
-	}, []);
+	// const updateUserSpecificAccess = useCallback((accessRoles: string[] | null) => { // done
+	// 	setUserSpecificMap(generateUserAcccessMap(accessRoles));
+	// }, []);
 
 	const methods: HeaderContextMethods = {
-		resetTimeInterval,
-		streamChangeCleanup,
-		setUserRoles,
-		setSelectedStream,
+		// resetTimeInterval,
+		// streamChangeCleanup,
+		// setUserRoles,
+		// setSelectedStream,
 		toggleMaximize,
 		setUserSpecficStreams,
-		updateUserSpecificAccess,
+		// updateUserSpecificAccess,
 		toggleHelpModal,
 	};
 

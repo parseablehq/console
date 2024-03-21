@@ -1,5 +1,5 @@
 import { LOGIN_ROUTE } from '@/constants/routes';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
+import { useAppStore } from '@/layouts/MainLayout/AppProvider';
 import { useEffect, type FC } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 
@@ -10,18 +10,17 @@ interface AccessSpecificRouteProps {
 const AccessSpecificRoute: FC<AccessSpecificRouteProps> = (props) => {
 	const { accessRequired } = props;
 	const navigate = useNavigate();
-	const {
-		state: { subLogQuery },
-	} = useHeaderContext();
+
+	const [streamSpecificUserAccess] = useAppStore(store => store.streamSpecificUserAccess)
 
 	useEffect(() => {
 		if (
-			subLogQuery.get().access &&
-			!subLogQuery.get().access?.some((access: string) => accessRequired.includes(access))
+			streamSpecificUserAccess &&
+			!streamSpecificUserAccess?.some((access: string) => accessRequired.includes(access))
 		) {
 			navigate(LOGIN_ROUTE);
 		}
-	}, [subLogQuery.get().access]);
+	}, [streamSpecificUserAccess]);
 
 	return <Outlet />;
 };

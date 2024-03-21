@@ -1,7 +1,6 @@
 import { Menu, Stack, px } from '@mantine/core';
 import IconButton from '@/components/Button/IconButton';
 import { useLogsPageContext } from './logsContextProvider';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { downloadDataAsCSV, downloadDataAsJson } from '@/utils/exportHelpers';
 import classes from './styles/Toolbar.module.css';
 import { IconDownload, IconMaximize } from '@tabler/icons-react';
@@ -13,7 +12,9 @@ import StreamingButton from '@/components/Header/StreamingButton';
 import Querier from './Querier';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/AppProvider';
 import { useCallback } from 'react';
+import { useLogsStore, logsStoreReducers } from './providers/LogsProvider';
 
+const { resetTimeRange } = logsStoreReducers;
 const renderExportIcon = () => <IconDownload size={px('1.4rem')} stroke={1.5} />;
 const renderMaximizeIcon = () => <IconMaximize size={px('1.4rem')} stroke={1.5} />;
 
@@ -28,10 +29,8 @@ const SecondaryToolbar = () => {
 		methods: { makeExportData },
 		state: { liveTailToggled },
 	} = useLogsPageContext();
-	const {
-		methods: { resetTimeInterval },
-	} = useHeaderContext();
 	const [currentStream] = useAppStore((store) => store.currentStream);
+	const [, setLogsStore] = useLogsStore((store) => store.timeRange);
 	const exportHandler = useCallback(
 		(fileType: string | null) => {
 			const filename = `${currentStream}-logs`;
@@ -43,6 +42,9 @@ const SecondaryToolbar = () => {
 		},
 		[currentStream],
 	);
+	const resetTimeInterval = useCallback(() => {
+		setLogsStore((store) => resetTimeRange(store));
+	}, []);
 	return (
 		<Stack className={classes.logsSecondaryToolbar} gap={0} style={{ height: LOGS_SECONDARY_TOOLBAR_HEIGHT }}>
 			{!liveTailToggled && (
@@ -79,48 +81,4 @@ const SecondaryToolbar = () => {
 	);
 };
 
-// const { Provider, useStore } = createFastContext({
-// 	text1: '',
-// 	text2: '',
-// 	sample: 'sample'
-// });
-
-// const Input1 = (props) => {
-// 	console.log('input1 rendered');
-// 	const [text, setStore] = useStore((store) => store.text1);
-// 	return <Input value={text}  onChange={(e) => setStore((store) => ({text1: store.text2 + e.target.value}))}/>
-// 	// return <Input value={text}  onChange={(e) => setText({text1: e.target.value})} />
-// }
-
-// const Input2 = (props) => {
-// 	console.log('input2 rendered');
-// 	const [text, setStore] = useStore((store) => store.text2);
-// 	return <Input value={text} onChange={(e) => setStore((store) => ({text2: e.target.value}))} />;
-// };
-
-// const Input3 = (props) => {
-// 	console.log('input3 rendered');
-// 	const [text, setStore] = useStore((store) => store.text1);
-// 	return <Input  />;
-// };
-
-// const Dummy = () => {
-// 	console.log('dummy rendered');
-// 	return <div>hello</div>;
-// };
-
-// const SecondaryToolbar = () => {
-// 	const setText = () => {}
-// 	return (
-// 		<Provider>
-// 			<Dummy />
-// 			<Input1 setText={setText}/>
-// 			<Input2 setText={setText}/>
-// 			<Input3/>
-// 		</Provider>
-// 	);
-// };
-
 export default SecondaryToolbar;
-
-// export default SecondaryToolbar;
