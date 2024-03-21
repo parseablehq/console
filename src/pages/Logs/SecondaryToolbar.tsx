@@ -1,4 +1,4 @@
-import { Input, Menu, Stack, px } from '@mantine/core';
+import { Menu, Stack, px } from '@mantine/core';
 import IconButton from '@/components/Button/IconButton';
 import { useLogsPageContext } from './logsContextProvider';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
@@ -29,18 +29,20 @@ const SecondaryToolbar = () => {
 		state: { liveTailToggled },
 	} = useLogsPageContext();
 	const {
-		state: { subLogQuery },
 		methods: { resetTimeInterval },
 	} = useHeaderContext();
-	const exportHandler = (fileType: string | null) => {
-		const query = subLogQuery.get();
-		const filename = `${query.streamName}-logs`;
-		if (fileType === 'CSV') {
-			downloadDataAsCSV(makeExportData('CSV'), filename);
-		} else if (fileType === 'JSON') {
-			downloadDataAsJson(makeExportData('JSON'), filename);
-		}
-	};
+	const [currentStream] = useAppStore((store) => store.currentStream);
+	const exportHandler = useCallback(
+		(fileType: string | null) => {
+			const filename = `${currentStream}-logs`;
+			if (fileType === 'CSV') {
+				downloadDataAsCSV(makeExportData('CSV'), filename);
+			} else if (fileType === 'JSON') {
+				downloadDataAsJson(makeExportData('JSON'), filename);
+			}
+		},
+		[currentStream],
+	);
 	return (
 		<Stack className={classes.logsSecondaryToolbar} gap={0} style={{ height: LOGS_SECONDARY_TOOLBAR_HEIGHT }}>
 			{!liveTailToggled && (

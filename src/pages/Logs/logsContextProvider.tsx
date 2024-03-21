@@ -6,6 +6,8 @@ import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
 import { sanitizeCSVData } from '@/utils/exportHelpers';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { useDisclosure } from '@mantine/hooks';
+import { useLogsStore } from './providers/LogsProvider';
+import { useAppStore } from '@/layouts/MainLayout/AppProvider';
 
 const Context = createContext({});
 
@@ -29,7 +31,7 @@ interface LogsPageContextState {
 	pageOffset: number;
 	custQuerySearchState: CustQuerySearchState;
 	deleteModalOpen: boolean;
-	currentStream: string;
+	currentStream: string | null;
 	alertsModalOpen: boolean;
 	retentionModalOpen: boolean;
 	maximized: boolean;
@@ -100,9 +102,6 @@ const defaultCustSQLQuery = (streamName: string) => {
 }
 
 const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
-	const {
-		state: { subLogQuery },
-	} = useHeaderContext();
 	const subLogStreamError = useSubscribeState<string | null>(null);
 	const subViewLog = useSubscribeState<Log | null>(null);
 	const subGapTime = useSubscribeState<GapTime | null>(null);
@@ -114,7 +113,7 @@ const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 	const subSchemaToggle = useSubscribeState<boolean>(false);
 	const [pageOffset, setPageOffset] = useState<number>(0);
 	const [custQuerySearchState, setCustQuerySearchState] = useState<CustQuerySearchState>(defaultCustQuerySearchState);
-	const [currentStream, setCurrentStream] = useState<string>(subLogQuery.get().streamName);
+	const [currentStream] = useAppStore(store => store.currentStream)
 	const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
 	const [alertsModalOpen, setAlertsModalOpen] = useState<boolean>(false);
 	const [retentionModalOpen, setRetentionModalOpen] = useState<boolean>(false);
@@ -122,24 +121,17 @@ const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 	const [maximized, { toggle: toggleMaximize }] = useDisclosure(false);
 	const [liveTailToggled, { toggle: toggleLiveTail }] = useDisclosure(false);
 	const [builderModalOpen, { toggle: toggleBuilderModal, close: closeBuilderModal }] = useDisclosure(false);
-	const queryCodeEditorRef = React.useRef<any>(defaultCustSQLQuery(subLogQuery.get().streamName)); // to store input value even after the editor unmounts
+	const queryCodeEditorRef = React.useRef<any>(defaultCustSQLQuery(currentStream || '')); // to store input value even after the editor unmounts
 
 	// TODO: rm this after context refactor
 	useEffect(() => {
-		const streamlistener = subLogQuery.subscribe((state) => {
-			if (state.streamName) {
-				setCurrentStream(state.streamName);
-				const defaultSearchQuery = `SELECT * FROM ${state.streamName} LIMIT ${LOAD_LIMIT};`;
-				queryCodeEditorRef.current = defaultSearchQuery;
-			} else {
-				queryCodeEditorRef.current = '';
-			}
-		});
-
-		return () => {
-			streamlistener();
-		};
-	}, [subLogQuery]);
+		if (currentStream) {
+			const defaultSearchQuery = `SELECT * FROM ${currentStream} LIMIT ${LOAD_LIMIT};`;
+			queryCodeEditorRef.current = defaultSearchQuery;
+		} else {
+			queryCodeEditorRef.current = '';
+		}
+	}, [currentStream]);
 
 	// state
 	const state: LogsPageContextState = {

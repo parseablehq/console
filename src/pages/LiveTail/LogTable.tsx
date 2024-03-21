@@ -10,79 +10,68 @@ import EmptyBox from '@/components/Empty';
 import styles from './styles/Logs.module.css';
 import { LOGS_PRIMARY_TOOLBAR_HEIGHT, LOGS_SECONDARY_TOOLBAR_HEIGHT, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 import { useAppStore } from '@/layouts/MainLayout/AppProvider';
+import { useLogsStore, logsStoreReducers } from '../Logs/providers/LogsProvider';
+
+const { setLiveTailStatus, setLiveTailSchema } = logsStoreReducers;
 
 const LogTable: FC = () => {
 	const { finalData: data, doGetLiveTail, resetData, abort, loading, schema } = useDoGetLiveTail();
 	const {
-		state: { subInstanceConfig, subLogQuery, subLiveTailsData },
+		state: { subInstanceConfig },
 	} = useHeaderContext();
-	const [maximized] = useAppStore(store => store.maximized)
+	const [currentStream] = useAppStore((store) => store.currentStream);
+	const [maximized] = useAppStore((store) => store.maximized);
 
 	const [grpcPort, setGrpcPort] = useMountedState<number | null>(subInstanceConfig.get()?.grpcPort ?? null);
-	const [currentStreamName, setCurrentStreamName] = useMountedState<string>(subLogQuery.get().streamName ?? '');
 	const [callAgain, setCallAgain] = useMountedState<boolean>(false);
+	const [{ liveTailStatus }, setLogsStore] = useLogsStore((store) => store.liveTailConfig);
 
 	useEffect(() => {
-		const streamlistener = subLogQuery.subscribe((state) => {
-			if (state.streamName) {
-				setCurrentStreamName(state.streamName);
-			}
-		});
 		const portListener = subInstanceConfig.subscribe((state) => {
 			if (state) {
 				setGrpcPort(state.grpcPort);
 			}
 		});
 
-		const liveTailStatus = subLiveTailsData.subscribe((value) => {
-			if (value.liveTailStatus === 'abort') {
-				abort();
-			} else if (value.liveTailStatus === 'fetch') {
-				setCallAgain(true);
-			}
-		});
+		if (liveTailStatus === 'abort') {
+			abort();
+		} else if (liveTailStatus === 'fetch') {
+			setCallAgain(true);
+		}
 
 		return () => {
-			streamlistener();
 			portListener();
-			liveTailStatus();
 		};
-	}, [subLogQuery, subInstanceConfig, subLiveTailsData]);
+	}, [subInstanceConfig, liveTailStatus]);
 
 	useEffect(() => {
-		if (currentStreamName && grpcPort) {
-			doGetLiveTail(currentStreamName, grpcPort);
+		if (currentStream && grpcPort) {
+			doGetLiveTail(currentStream, grpcPort);
 		}
 
 		return () => {
 			abort();
 			resetData();
 		};
-	}, [grpcPort, currentStreamName]);
+	}, [grpcPort, currentStream]);
 
 	useEffect(() => {
-		if (callAgain) {
-			doGetLiveTail(currentStreamName, grpcPort);
+		if (callAgain && currentStream) {
+			doGetLiveTail(currentStream, grpcPort);
 		}
 	}, [callAgain]);
 
 	useEffect(() => {
 		if (loading) {
-			subLiveTailsData.set((state) => {
-				state.liveTailStatus = 'streaming';
-			});
+			setLogsStore((store) => setLiveTailStatus(store, 'streaming'));
 		} else {
-			subLiveTailsData.set((state) => {
-				state.liveTailStatus = 'stopped';
-			});
+			setLogsStore((store) => setLiveTailStatus(store, 'stopped'));
 			setCallAgain(false);
 		}
 	}, [loading]);
 
 	useEffect(() => {
-		subLiveTailsData.set((state) => {
-			state.liveTailSchemaData = schema;
-		});
+		setLogsStore((store) => setLiveTailSchema(store, schema));
 	}, [schema]);
 
 	const headerRows = schema?.map((element) => <Column key={element.name} columnName={element.name} />);

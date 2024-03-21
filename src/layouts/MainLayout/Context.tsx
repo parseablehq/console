@@ -8,7 +8,6 @@ import { useDisclosure } from '@mantine/hooks';
 import dayjs from 'dayjs';
 import type { Dispatch, FC, SetStateAction } from 'react';
 import { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { useAppStore } from './AppProvider';
 
 const Context = createContext({});
 
@@ -31,8 +30,6 @@ interface HeaderContextState {
 	subLiveTailsData: SubData<LiveTailData>;
 	subRefreshInterval: SubData<number | null>;
 	subLogSelectedTimeRange: SubData<LogSelectedTimeRange>;
-	subNavbarTogle: SubData<boolean>;
-	subCreateUserModalTogle: SubData<boolean>;
 	subInstanceConfig: SubData<AboutData | null>;
 	subAppContext: SubData<AppContext>;
 	maximized: boolean;
@@ -102,39 +99,37 @@ const generateUserAcccessMap = (accessRoles: string[] | null) => {
 
 const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 	const subAppContext = useSubscribeState<AppContext>({
-		selectedStream: '',
-		activePage: null,
-		action: null,
-		userSpecificStreams: null,
-		userRoles: null,
+		selectedStream: '', // done
+		activePage: null, // done
+		action: null, // done
+		userSpecificStreams: null, // done
+		userRoles: null, // done
 	});
 	const subLogQuery = useSubscribeState<LogsQuery>({
-		startTime: now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate(),
-		endTime: now.toDate(),
-		streamName: '',
+		startTime: now.subtract(DEFAULT_FIXED_DURATIONS.milliseconds, 'milliseconds').toDate(), // done
+		endTime: now.toDate(), // done
+		streamName: '', // done
 		access: null,
 	});
 	const subLogSearch = useSubscribeState<LogsSearch>({
-		search: '',
-		filters: {},
-		sort: {
+		search: '', // done
+		filters: {}, // done
+		sort: { // done
 			key: 'p_timestamp',
 			order: SortOrder.DESCENDING,
 		},
 	});
 	const subLiveTailsData = useSubscribeState<LiveTailData>({
-		liveTailStatus: '',
-		liveTailSchemaData: [],
-		liveTailSearchValue: '',
-		liveTailSearchField: '',
+		liveTailStatus: '', // done
+		liveTailSchemaData: [], // done
+		liveTailSearchValue: '', // done
+		liveTailSearchField: '', // done
 	});
 	const subLogSelectedTimeRange = useSubscribeState<LogSelectedTimeRange>({
-		state: 'fixed',
-		value: DEFAULT_FIXED_DURATIONS.name,
+		state: 'fixed', // done
+		value: DEFAULT_FIXED_DURATIONS.name, // done
 	});
-	const subRefreshInterval = useSubscribeState<number | null>(null);
-	const subNavbarTogle = useSubscribeState<boolean>(false);
-	const subCreateUserModalTogle = useSubscribeState<boolean>(false);
+	const subRefreshInterval = useSubscribeState<number | null>(null); // done
 	const subInstanceConfig = useSubscribeState<AboutData | null>(null);
 	const [maximized, { toggle: toggleMaximize }] = useDisclosure(false);
 	const [helpModalOpen, { toggle: toggleHelpModal }] = useDisclosure(false);
@@ -146,8 +141,6 @@ const MainLayoutPageProvider: FC<HeaderProviderProps> = ({ children }) => {
 		subLogSearch,
 		subRefreshInterval,
 		subLogSelectedTimeRange,
-		subNavbarTogle,
-		subCreateUserModalTogle,
 		subInstanceConfig,
 		subAppContext,
 		subLiveTailsData,

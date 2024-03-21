@@ -10,6 +10,7 @@ import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 import { LOAD_LIMIT, useLogsPageContext } from './logsContextProvider';
 import { Field } from '@/@types/parseable/dataType';
 import queryCodeStyles from './styles/QueryCode.module.css';
+import { useAppStore } from '@/layouts/MainLayout/AppProvider';
 
 const genColumnConfig = (fields: Field[]) => {
 	const columnConfig = { leftColumns: [], rightColumns: [] };
@@ -30,7 +31,7 @@ const genColumnConfig = (fields: Field[]) => {
 
 const QueryCodeEditor: FC = () => {
 	const {
-		state: { subLogQuery, subInstanceConfig },
+		state: { subInstanceConfig },
 	} = useHeaderContext();
 	const {
 		state: {
@@ -44,12 +45,12 @@ const QueryCodeEditor: FC = () => {
 	const fields = subLogStreamSchema.get()?.fields || [];
 	const editorRef = React.useRef<any>();
 	const monacoRef = React.useRef<any>();
-	const [localStreamName, setlocalStreamName] = useMountedState<string>(subLogQuery.get().streamName);
+	const [currentStream] = useAppStore(store => store.currentStream)
+	const [localStreamName, setlocalStreamName] = useMountedState<string | null>(currentStream);
 	const [query, setQuery] = useMountedState<string>('');
 	const [aiQuery, setAiQuery] = useMountedState('');
 	const [localLlmActive, setlocalLlmActive] = useMountedState(subInstanceConfig.get()?.llmActive);
 	const { data: resAIQuery, postLLMQuery } = usePostLLM();
-	const currentStreamName = subLogQuery.get().streamName;
 	const isLlmActive = !!subInstanceConfig.get()?.llmActive;
 	const isSqlSearchActive = isQuerySearchActive && mode === 'sql';
 
@@ -63,7 +64,7 @@ const QueryCodeEditor: FC = () => {
 			notify({ message: 'Please enter a valid query' });
 			return;
 		}
-		postLLMQuery(aiQuery, localStreamName);
+		localStreamName && postLLMQuery(aiQuery, localStreamName);
 	}, [aiQuery]);
 
 	useEffect(() => {
@@ -75,19 +76,21 @@ const QueryCodeEditor: FC = () => {
 	}, [resAIQuery]);
 
 	const handleEditorChange = (code: any) => {
-		updateQuery(code);
-		errChecker(code, subLogQuery.get().streamName);
-		monacoRef.current?.editor.setModelMarkers(editorRef.current?.getModel(), 'owner', ErrorMarker);
+		if (currentStream) {
+			updateQuery(code);
+			errChecker(code, currentStream);
+			monacoRef.current?.editor.setModelMarkers(editorRef.current?.getModel(), 'owner', ErrorMarker);
+		}
 	};
 
 	useEffect(() => {
-		if (currentStreamName !== localStreamName) {
-			setlocalStreamName(currentStreamName);
-			const query = `SELECT * FROM ${currentStreamName} LIMIT ${LOAD_LIMIT}; `;
+		if (currentStream !== localStreamName) {
+			setlocalStreamName(currentStream);
+			const query = `SELECT * FROM ${currentStream} LIMIT ${LOAD_LIMIT}; `;
 			updateQuery(query);
 		}
 		setlocalLlmActive(isLlmActive);
-	}, [currentStreamName, isLlmActive]);
+	}, [currentStream, isLlmActive]);
 
 	useEffect(() => {
 		updateQuery(queryCodeEditorRef.current);
@@ -135,7 +138,7 @@ const QueryCodeEditor: FC = () => {
 						</Box>
 					)}
 				</Box>
-				<SchemaList {...{ currentStreamName, fields }} />
+				<SchemaList {...{ currentStream, fields }} />
 				<Stack style={{ height: 200, flex: 1 }}>
 					<Editor
 						defaultLanguage="sql"
@@ -165,8 +168,8 @@ const QueryCodeEditor: FC = () => {
 	);
 };
 
-const SchemaList = (props: { currentStreamName: string; fields: Field[] }) => {
-	const { currentStreamName, fields } = props;
+const SchemaList = (props: { currentStream: string | null; fields: Field[] }) => {
+	const { currentStream, fields } = props;
 	if (!fields || fields.length === 0) return null;
 
 	const { leftColumns, rightColumns } = genColumnConfig(fields);
@@ -177,7 +180,7 @@ const SchemaList = (props: { currentStreamName: string; fields: Field[] }) => {
 					fontSize: 12,
 					color: '#098658',
 					fontFamily: 'monospace',
-				}}>{`/* Schema for ${currentStreamName}`}</Text>
+				}}>{`/* Schema for ${currentStream}`}</Text>
 			<Flex style={{ alignItems: 'flex-start', padding: 6, paddingTop: 4 }}>
 				<Box style={{ width: '50%' }}>
 					{leftColumns.map((config, index) => {
