@@ -159,7 +159,10 @@ const LogTable: FC = () => {
 	}, [currentStream, isQuerySearchActive, custSearchQuery, startTime, endTime]);
 
 	useEffect(() => {
-		resetQuerySearch();
+		if (currentStream) {
+			resetQuerySearch();
+			getDataSchema(currentStream);
+		}
 	}, [currentStream]);
 
 	const applyFilter = (key: string, value: string[]) => {
@@ -228,6 +231,7 @@ const LogTable: FC = () => {
 		setPageOffset(0);
 
 		if (currentStream) {
+			console.log("getting 1")
 			getQueryData({
 				streamName: currentStream,
 				startTime: startTime,
@@ -243,8 +247,8 @@ const LogTable: FC = () => {
 		if (currentStream) {
 			resetColumns();
 			setPageOffset(0);
-			resetStreamData();
 			resetLogsData();
+			console.log("getting 2")
 			getQueryData({
 				streamName: currentStream,
 				startTime,
@@ -252,7 +256,6 @@ const LogTable: FC = () => {
 				limit: loadLimit,
 				pageOffset: 0,
 			});
-			getDataSchema(currentStream);
 		}
 	}, [custSearchQuery]);
 
@@ -264,23 +267,22 @@ const LogTable: FC = () => {
 
 	useEffect(() => {
 		const streamErrorListener = subLogStreamError.subscribe(setLogStreamError);
+		if (logsSchema) {
+			setPageOffset(0);
+			resetLogsData();
+			resetColumns();
+			if (currentStream) {
+			console.log("getting 3")
 
-		setPageOffset(0);
-		resetLogsData();
-		resetStreamData();
-		resetColumns();
-
-		if (currentStream) {
-			getQueryData({
-				streamName: currentStream,
-				startTime,
-				endTime,
-				limit: loadLimit,
-				pageOffset: 0,
-			});
-			getDataSchema(currentStream);
+				getQueryData({
+					streamName: currentStream,
+					startTime,
+					endTime,
+					limit: loadLimit,
+					pageOffset: 0,
+				});
+			}
 		}
-		subLogStreamSchema.set(logsSchema);
 		return () => {
 			streamErrorListener();
 		};
@@ -288,6 +290,7 @@ const LogTable: FC = () => {
 
 	useEffect(() => {
 		if (currentStream) {
+			console.log("getting 4")
 			getQueryData({
 				streamName: currentStream,
 				startTime: startTime,
@@ -482,12 +485,13 @@ const LogTable: FC = () => {
 					<EmptyBox message="Select a time Slot " />
 				)
 			) : (
-				<Center className={tableStyles.errorContainer}>
-					<Text c="red.8" style={{ fontWeight: 400 }}>
-						{logStreamError || logStreamSchemaError || logsError || 'Error'}
-					</Text>
-					{(logsError || logStreamSchemaError) && <RetryBtn onClick={onRetry} mt="md" />}
-				</Center>
+				<></>
+				// <Center className={tableStyles.errorContainer}>
+				// 	<Text c="red.8" style={{ fontWeight: 400 }}>
+				// 		{logStreamError || logStreamSchemaError || logsError || 'Error'}
+				// 	</Text>
+				// 	{(logsError || logStreamSchemaError) && <RetryBtn onClick={onRetry} mt="md" />}
+				// </Center>
 			)}
 			<Box className={tableStyles.footerContainer}>
 				<Stack w="100%" justify="center" align="flex-start">

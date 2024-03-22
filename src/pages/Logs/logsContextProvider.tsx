@@ -100,15 +100,15 @@ const defaultCustSQLQuery = (streamName: string) => {
 }
 
 const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
-	const subLogStreamError = useSubscribeState<string | null>(null);
-	const subViewLog = useSubscribeState<Log | null>(null);
-	const subGapTime = useSubscribeState<GapTime | null>(null);
-	const subLogQueryData = useSubscribeState<LogQueryData>({
+	const subLogStreamError = useSubscribeState<string | null>(null); // done
+	const subViewLog = useSubscribeState<Log | null>(null); // done
+	const subGapTime = useSubscribeState<GapTime | null>(null); // done
+	const subLogQueryData = useSubscribeState<LogQueryData>({ // done
 		rawData: [],
 		filteredData: [],
 	});
-	const subLogStreamSchema = useSubscribeState<LogStreamSchemaData | null>(null);
-	const subSchemaToggle = useSubscribeState<boolean>(false);
+	const subLogStreamSchema = useSubscribeState<LogStreamSchemaData | null>(null); // done
+	const subSchemaToggle = useSubscribeState<boolean>(false); // done
 	const [pageOffset, setPageOffset] = useState<number>(0);
 	const [custQuerySearchState, setCustQuerySearchState] = useState<CustQuerySearchState>(defaultCustQuerySearchState);
 	const [currentStream] = useAppStore(store => store.currentStream)
@@ -150,10 +150,6 @@ const LogsPageProvider: FC<LogsPageProviderProps> = ({ children }) => {
 	};
 
 	// getters & setters
-	const toggleShowQueryEditor = useCallback(() => {
-		setCustQuerySearchState((prev) => ({ ...prev, showQueryEditor: !prev.showQueryEditor }));
-	}, []);
-
 	const resetQuerySearch = useCallback(() => {
 		closeBuilderModal();
 		setCustQuerySearchState((prev) => ({ ...defaultCustQuerySearchState, viewMode: prev.viewMode }));

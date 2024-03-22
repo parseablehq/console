@@ -10,6 +10,7 @@ export const useGetLogStreamSchema = () => {
 	const [loading, setLoading] = useMountedState<boolean>(false);
 
 	const getDataSchema = async (streamName: string) => {
+		console.log("stream schema fetch")
 		try {
 			setLoading(true);
 			setError(null);

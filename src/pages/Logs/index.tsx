@@ -12,6 +12,7 @@ import PrimaryToolbar from './PrimaryToolbar';
 import SecondaryToolbar from './SecondaryToolbar';
 import { useAppStore, appStoreReducers } from '@/layouts/MainLayout/AppProvider';
 import { useLogsStore, logsStoreReducers } from './providers/LogsProvider';
+import LogTable2 from './LogTable2';
 
 const { streamChangeCleanup } = logsStoreReducers;
 const { toggleMaximize, setStreamSpecificUserAccess } = appStoreReducers;
@@ -44,6 +45,8 @@ const Logs: FC = () => {
 		}
 	}, [currentStream]);
 
+	if (!currentStream) return null;
+
 	return (
 		<Box style={{ flex: 1, display: 'flex', position: 'relative', flexDirection: 'column' }}>
 			<DeleteStreamModal />
@@ -55,7 +58,8 @@ const Logs: FC = () => {
 					<SecondaryToolbar />
 				</>
 			)}
-			{liveTailToggled ? <LiveLogTable /> : <StaticLogTable />}
+			{/* {liveTailToggled ? <LiveLogTable /> : <StaticLogTable />} */}
+			<LogTable2 />
 			{/* TODO: need to move the live logtable into the Logs folder */}
 			<ViewLog />
 		</Box>

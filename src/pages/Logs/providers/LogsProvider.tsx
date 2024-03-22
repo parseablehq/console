@@ -1,3 +1,4 @@
+import { Log } from '@/@types/parseable/api/query';
 import { LogStreamData } from '@/@types/parseable/api/stream';
 import { FIXED_DURATIONS } from '@/constants/timeConstants';
 import createFastContext from '@/utils/createFastContext';
@@ -63,11 +64,40 @@ const defaultLiveTailConfig = {
 	liveTailSearchField: '',
 };
 
+const defaultCustQuerySearchState = {
+	showQueryEditor: false,
+	isQuerySearchActive: false,
+	custSearchQuery: '',
+	mode: 'filters',
+	viewMode: 'filters',
+};
+
+type LogQueryData = {
+	rawData: Log[];
+	filteredData: Log[];
+};
+
+type CustQuerySearchState = {
+	showQueryEditor: boolean;
+	isQuerySearchActive: boolean;
+	custSearchQuery: string;
+	mode: string;
+	viewMode: string;
+};
+
 type LogsStore = {
 	timeRange: TimeRange;
 	quickFilters: QuickFilters;
 	liveTailConfig: LiveTailConfig;
 	refreshInterval: number | null;
+	selectedLog: Log | null;
+	data: LogQueryData;
+	pageOffset: number;
+	custQuerySearchState: CustQuerySearchState;
+	deleteModalOpen: boolean;
+	retentionModalOpen: boolean;
+	alertsModalOpen: boolean;
+	queryBuilderModalOpen: boolean;
 };
 
 type LogsStoreReducers = {
@@ -81,16 +111,33 @@ type LogsStoreReducers = {
 	setRefreshInterval: (store: LogsStore, interval: number | null) => ReducerOutput;
 	resetQuickFilters: (store: LogsStore) => ReducerOutput;
 	streamChangeCleanup: (store: LogsStore) => ReducerOutput;
+	toggleQueryEditor: (store: LogsStore) => ReducerOutput;
+	resetCustQuerySearchState: (store: LogsStore) => ReducerOutput;
+	setCustQuerySearchState: (store: LogsStore, payload: Partial<CustQuerySearchState>) => ReducerOutput;
+	toggleCustQuerySearchMode: (store: LogsStore) => ReducerOutput; 
+	toggleDeleteModal: (store: LogsStore) => ReducerOutput;
+	toggleAlertsModal: (store: LogsStore) => ReducerOutput;
+	toggleRetentionModal: (store: LogsStore) => ReducerOutput;
 };
 
 const initialState: LogsStore = {
 	timeRange: getDefaultTimeRange(),
 	quickFilters: defaultQuickFilters,
 	liveTailConfig: defaultLiveTailConfig,
-	refreshInterval: null
+	refreshInterval: null,
+	selectedLog: null,
+	data: {
+		rawData: [],
+		filteredData: [],
+	},
+	pageOffset: 0,
+	custQuerySearchState: defaultCustQuerySearchState,
+	deleteModalOpen: false,
+	alertsModalOpen: false,
+	retentionModalOpen: false,
+	queryBuilderModalOpen: false,
 	// if adding new fields, verify streamChangeCleanup
 };
-
 
 const { Provider: LogsProvider, useStore: useLogsStore } = createFastContext(initialState);
 
@@ -121,7 +168,7 @@ const addFilterItem = (store: LogsStore, key: string, value: string[]) => {
 
 const resetQuickFilters = (_store: LogsStore) => {
 	return { quickFilters: defaultQuickFilters };
-}
+};
 
 const setLiveTailStatus = (store: LogsStore, liveTailStatus: LiveTailStatus) => {
 	const { liveTailConfig } = store;
@@ -137,11 +184,51 @@ const setLiveTailSchema = (store: LogsStore, liveTailSchemaData: LogStreamData) 
 };
 
 const setRefreshInterval = (_store: LogsStore, interval: number | null) => {
-	return { refreshInterval: interval};
-}
+	return { refreshInterval: interval };
+};
 
 const streamChangeCleanup = (_store: LogsStore) => {
-	return {...initialState}
+	return { ...initialState };
+};
+
+const toggleQueryEditor = (store: LogsStore) => {
+	const { custQuerySearchState } = store;
+	return { custQuerySearchState: { ...custQuerySearchState, showQueryEditor: !custQuerySearchState.showQueryEditor } };
+};
+
+const resetCustQuerySearchState = (store: LogsStore) => {
+	const { custQuerySearchState } = store;
+	return { custQuerySearchState: { ...defaultCustQuerySearchState, viewMode: custQuerySearchState.viewMode } };
+};
+
+const setCustQuerySearchState = (store: LogsStore, payload: Partial<CustQuerySearchState>) => {
+	const { custQuerySearchState } = store;
+	return {
+		custQuerySearchState: { ...custQuerySearchState, ...payload, isQuerySearchActive: true, showQueryEditor: false },
+	};
+};
+
+const toggleCustQuerySearchMode = (store: LogsStore) => {
+	const { custQuerySearchState } = store;
+	const targetMode = custQuerySearchState.viewMode === 'filters' ? 'sql' : 'filters'
+	return {
+		custQuerySearchState: { ...custQuerySearchState, viewMode: targetMode},
+	};
+}
+
+const toggleDeleteModal = (store: LogsStore) => {
+	const { deleteModalOpen } = store;
+	return {deleteModalOpen: !deleteModalOpen}
+}
+
+const toggleRetentionModal = (store: LogsStore) => {
+	const { retentionModalOpen } = store;
+	return {retentionModalOpen: !retentionModalOpen}
+}
+
+const toggleAlertsModal = (store: LogsStore) => {
+	const { alertsModalOpen } = store;
+	return {alertsModalOpen: !alertsModalOpen}
 }
 
 const logsStoreReducers: LogsStoreReducers = {
@@ -154,7 +241,14 @@ const logsStoreReducers: LogsStoreReducers = {
 	setLiveTailSchema,
 	setRefreshInterval,
 	resetQuickFilters,
-	streamChangeCleanup
+	streamChangeCleanup,
+	toggleQueryEditor,
+	resetCustQuerySearchState,
+	setCustQuerySearchState,
+	toggleCustQuerySearchMode,
+	toggleAlertsModal,
+	toggleRetentionModal,
+	toggleDeleteModal
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };
