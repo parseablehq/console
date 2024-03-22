@@ -1,4 +1,4 @@
-import { Stack, Text, Table, Tooltip, Skeleton } from '@mantine/core';
+import { Stack, Text, Table, Skeleton } from '@mantine/core';
 import { FC, useEffect, useState } from 'react';
 import classes from './styles/Systems.module.css';
 import { IconHeartRateMonitor } from '@tabler/icons-react';
@@ -73,11 +73,6 @@ const TableRow = () => {
 				<TrLoadingState />
 			) : (
 				<>
-					<Table.Td align="center">
-						<Tooltip label={metrics.totalEventsIngested}>
-							<Text>{metrics.totalEventsIngested}</Text>
-						</Tooltip>
-					</Table.Td>
 					<Table.Td align="center">{metrics.memoryUsage}</Table.Td>
 				</>
 			)}

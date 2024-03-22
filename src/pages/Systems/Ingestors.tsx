@@ -11,7 +11,7 @@ type IngestorTableRow = {
 };
 
 const fetchIngestorMetrics = async (domain: string) => {
-	const endpoint = `${domain}/api/v1/metrics`;
+	const endpoint = `${domain}api/v1/metrics`;
 	const response = await fetch(endpoint, {
 		headers: {
 			Accept: 'text/plain',
