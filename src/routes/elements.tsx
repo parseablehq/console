@@ -2,10 +2,10 @@ import Home from '@/pages/Home';
 import type { FC } from 'react';
 import { lazy } from 'react';
 import SuspensePage from './SuspensePage';
-import MainLayoutPageProvider from '@/layouts/MainLayout/Context';
 import MainLayout from '@/layouts/MainLayout';
+import { AppProvider } from '@/layouts/MainLayout/AppProvider';
+import { LogsProvider } from '@/pages/Logs/providers/LogsProvider';
 
-// page-wise providers
 import LogsPageProvider from '@/pages/Logs/logsContextProvider';
 
 // component-wise providers
@@ -34,20 +34,22 @@ const Logs = lazy(() => import('@/pages/Logs'));
 export const LogsElement: FC = () => {
 	return (
 		<SuspensePage>
-			<LogsPageProvider>
-				<QueryFilterProvider>
-					<Logs />
-				</QueryFilterProvider>
-			</LogsPageProvider>
+			<LogsProvider>
+				<LogsPageProvider>
+					<QueryFilterProvider>
+						<Logs />
+					</QueryFilterProvider>
+				</LogsPageProvider>
+			</LogsProvider>
 		</SuspensePage>
 	);
 };
 
 export const MainLayoutElement: FC = () => {
 	return (
-		<MainLayoutPageProvider>
+		<AppProvider>
 			<MainLayout />
-		</MainLayoutPageProvider>
+		</AppProvider>
 	);
 };
 
@@ -57,6 +59,16 @@ export const UsersElement: FC = () => {
 	return (
 		<SuspensePage>
 			<Users />
+		</SuspensePage>
+	);
+};
+
+const Systems = lazy(() => import('@/pages/Systems'));
+
+export const SystemsElement: FC = () => {
+	return (
+		<SuspensePage>
+			<Systems />
 		</SuspensePage>
 	);
 };

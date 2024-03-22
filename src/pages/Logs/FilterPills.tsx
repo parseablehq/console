@@ -1,8 +1,9 @@
 import { ActionIcon, Badge, Group, rem } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
-import { useEffect, type FC, Fragment, useMemo } from 'react';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import useMountedState from '@/hooks/useMountedState';
+import { type FC, Fragment, useMemo, useCallback } from 'react';
+import { logsStoreReducers, useLogsStore } from './providers/LogsProvider';
+
+const { deleteFilterItem } = logsStoreReducers;
 
 type RemoveButton = {
 	onClick: () => void;
@@ -18,25 +19,11 @@ const RemoveButton: FC<RemoveButton> = (props) => {
 };
 
 const FilterPills: FC = () => {
-	const {
-		state: { subLogSearch },
-	} = useHeaderContext();
-	const [search, setSearch] = useMountedState(subLogSearch.get());
-
-	useEffect(() => {
-		const listener = subLogSearch.subscribe(setSearch);
-		return () => {
-			listener();
-		};
+	const [quickFilters, setLogsStore] = useLogsStore((store) => store.quickFilters);
+	const filters = useMemo(() => Object.keys(quickFilters.filters), [quickFilters]);
+	const onRemove = useCallback((key: string) => {
+		setLogsStore((store) => deleteFilterItem(store, key));
 	}, []);
-
-	const filters = useMemo(() => Object.keys(search.filters), [search]);
-
-	const onRemove = (key: string) => {
-		subLogSearch.set((state) => {
-			delete state.filters[key];
-		});
-	};
 
 	return (
 		<Fragment>
@@ -50,7 +37,7 @@ const FilterPills: FC = () => {
 								variant="filled"
 								pr={0}
 								rightSection={<RemoveButton onClick={() => onRemove(key)} />}>
-								{`${key} (${search.filters[key].length})`}
+								{`${key} (${quickFilters.filters[key].length})`}
 							</Badge>
 						);
 					})}

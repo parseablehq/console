@@ -5,13 +5,14 @@ import {
 	LOGS_ROUTE,
 	OIDC_NOT_CONFIGURED_ROUTE,
 	USERS_MANAGEMENT_ROUTE,
+	SYSTEMS_ROUTE
 } from '@/constants/routes';
 import FullPageLayout from '@/layouts/FullPageLayout';
 import NotFound from '@/pages/Errors/NotFound';
 import type { FC } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
-import { HomeElement, LoginElement, LogsElement, MainLayoutElement, UsersElement } from './elements';
+import { HomeElement, LoginElement, LogsElement, MainLayoutElement, SystemsElement, UsersElement } from './elements';
 import AccessSpecificRoute from './AccessSpecificRoute';
 import OIDCNotConFigured from '@/pages/Errors/OIDC';
 
@@ -28,6 +29,7 @@ const AppRouter: FC = () => {
 						<Route element={<AccessSpecificRoute accessRequired={['Query', 'GetSchema']} />}>
 							<Route path={LOGS_ROUTE} element={<LogsElement />} />
 						</Route>
+						<Route path={SYSTEMS_ROUTE} element={<SystemsElement/>} />
 					</Route>
 				</Route>
 				<Route path={LOGIN_ROUTE} element={<LoginElement />} />

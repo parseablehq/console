@@ -1,6 +1,6 @@
 import { Box } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import StaticLogTable from './LogTable';
 import LiveLogTable from '../LiveTail/LogTable';
 import ViewLog from './ViewLog';
@@ -10,16 +10,42 @@ import RententionModal from './RetentionModal';
 import { useLogsPageContext } from './logsContextProvider';
 import PrimaryToolbar from './PrimaryToolbar';
 import SecondaryToolbar from './SecondaryToolbar';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
+import { useAppStore, appStoreReducers } from '@/layouts/MainLayout/AppProvider';
+import { useLogsStore, logsStoreReducers } from './providers/LogsProvider';
+import LogTable2 from './LogTable2';
+
+const { streamChangeCleanup } = logsStoreReducers;
+const { toggleMaximize, setStreamSpecificUserAccess } = appStoreReducers;
 
 const Logs: FC = () => {
 	useDocumentTitle('Parseable | Logs');
-	const {
-		state: { maximized },
-	} = useHeaderContext();
+	const [maximized, setAppStore] = useAppStore((store) => store.maximized);
+	const [currentStream] = useAppStore((store) => store.currentStream);
+	const [, setLogsStore] = useLogsStore((_store) => null);
 	const {
 		state: { liveTailToggled },
 	} = useLogsPageContext();
+
+	useEffect(() => {
+		const handleEscKeyPress = (event: KeyboardEvent) => {
+			if (event.key === 'Escape') {
+				maximized && setAppStore(toggleMaximize);
+			}
+		};
+		window.addEventListener('keydown', handleEscKeyPress);
+		return () => {
+			window.removeEventListener('keydown', handleEscKeyPress);
+		};
+	}, [maximized]);
+
+	useEffect(() => {
+		if (currentStream) {
+			setLogsStore(streamChangeCleanup);
+			setAppStore(setStreamSpecificUserAccess);
+		}
+	}, [currentStream]);
+
+	if (!currentStream) return null;
 
 	return (
 		<Box style={{ flex: 1, display: 'flex', position: 'relative', flexDirection: 'column' }}>
@@ -32,7 +58,8 @@ const Logs: FC = () => {
 					<SecondaryToolbar />
 				</>
 			)}
-			{liveTailToggled ? <LiveLogTable /> : <StaticLogTable />}
+			{/* {liveTailToggled ? <LiveLogTable /> : <StaticLogTable />} */}
+			<LogTable2 />
 			{/* TODO: need to move the live logtable into the Logs folder */}
 			<ViewLog />
 		</Box>

@@ -2,12 +2,12 @@ import { Box, Button, Group, Modal, ScrollArea, Select, Stack, Table, Text, Text
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect, useState } from 'react';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import PrivilegeTR from './PrivilegeTR';
 import { IconBook2, IconPencil, IconUserPlus } from '@tabler/icons-react';
 import { useRole } from '@/hooks/useRole';
 import styles from './styles/AccessManagement.module.css'
 import IconButton from '@/components/Button/IconButton';
+import { useAppStore } from '@/layouts/MainLayout/AppProvider';
 
 const navigateToDocs = () => {
 	return window.open('https://www.parseable.io/docs/rbac', '_blank');
@@ -17,16 +17,12 @@ const renderDocsIcon = () => <IconBook2 stroke={1.5} size="1.4rem"/>
 
 const Roles: FC = () => {
 	useDocumentTitle('Parseable | Users');
-	const {
-		state: { subInstanceConfig },
-	} = useHeaderContext();
-
+	const [oidcActive] = useAppStore(store => store.instanceConfig?.oidcActive)
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
 
 	const [defaultRoleModalOpen, setDefaultRoleModalOpen] = useState<boolean>(false);
 	const [inputDefaultRole, setInputDefaultRole] = useState<string>('');
 	const [defaultRole, setDefaultRole] = useState<string | null>(null);
-	const [oidcActive, setOidcActive] = useState<boolean>(subInstanceConfig.get()?.oidcActive ?? false);
 	const [createRoleInput, setCreateRoleInput] = useState<string>('');
 	const [tagInput, setTagInput] = useState<string>('');
 	const [selectedPrivilege, setSelectedPrivilege] = useState<string>('');
@@ -52,15 +48,6 @@ const Roles: FC = () => {
 
 	useEffect(() => {
 		getDefaultRoleMutation();
-		const listener = subInstanceConfig.subscribe((value) => {
-			if (value) {
-				setOidcActive(value.oidcActive);
-			}
-		});
-
-		return () => {
-			listener();
-		};
 	}, []);
 
 	const rows =

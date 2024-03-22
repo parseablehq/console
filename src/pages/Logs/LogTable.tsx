@@ -30,7 +30,6 @@ import EmptyBox from '@/components/Empty';
 import { RetryBtn } from '@/components/Button/Retry';
 import Column from './Column';
 import FilterPills from './FilterPills';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import dayjs from 'dayjs';
 import { SortOrder } from '@/@types/parseable/api/query';
 import { usePagination } from '@mantine/hooks';
@@ -39,6 +38,10 @@ import tableStyles from './styles/Logs.module.css';
 import { LOGS_PRIMARY_TOOLBAR_HEIGHT, LOGS_SECONDARY_TOOLBAR_HEIGHT, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import { HumanizeNumber } from '@/utils/formatBytes';
+import { useAppStore } from '@/layouts/MainLayout/AppProvider';
+import { logsStoreReducers, useLogsStore } from './providers/LogsProvider';
+
+const { setTimeRange, addFilterItem, deleteFilterItem } = logsStoreReducers;
 
 const skipFields = ['p_metadata', 'p_tags'];
 
@@ -71,9 +74,16 @@ const TotalLogsCount = (props: TotalLogsCountProps) => {
 	const { totalCount, loadedCount } = props;
 	if (typeof totalCount !== 'number' || typeof loadedCount !== 'number') return <Stack />;
 
-	const renderTotalCount = useCallback(() => (<Tooltip label={totalCount}><Text>{HumanizeNumber(totalCount)}</Text></Tooltip>), [totalCount]);
+	const renderTotalCount = useCallback(
+		() => (
+			<Tooltip label={totalCount}>
+				<Text>{HumanizeNumber(totalCount)}</Text>
+			</Tooltip>
+		),
+		[totalCount],
+	);
 	return (
-		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row'}} gap={6}>
+		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }} gap={6}>
 			<Text>{`Showing ${loadedCount < LOAD_LIMIT ? loadedCount : LOAD_LIMIT} out of`}</Text>
 			{renderTotalCount()}
 		</Stack>
@@ -90,10 +100,9 @@ const LogTable: FC = () => {
 		},
 		methods: { setPageOffset, resetQuerySearch },
 	} = useLogsPageContext();
-	const {
-		state: { subLogSearch, subLogQuery, subRefreshInterval, subLogSelectedTimeRange, maximized },
-	} = useHeaderContext();
-	const [refreshInterval, setRefreshInterval] = useMountedState<number | null>(null);
+	const [maximized] = useAppStore((store) => store.maximized);
+	const [quickFilters] = useLogsStore((store) => store.quickFilters);
+	const [refreshInterval] = useLogsStore(store => store.refreshInterval)
 	const [logStreamError, setLogStreamError] = useMountedState<string | null>(null);
 	const [columnToggles, setColumnToggles] = useMountedState<Map<string, boolean>>(new Map());
 	const [pinnedColumns, setPinnedColumns] = useMountedState<Set<string>>(new Set());
@@ -124,22 +133,20 @@ const LogTable: FC = () => {
 		? makeHeadersfromData(logsSchema, custSearchQuery)
 		: makeHeadersFromSchema(logsSchema);
 	const appliedFilter = (key: string) => {
-		return subLogSearch.get().filters[key] ?? [];
+		return quickFilters.filters[key] ?? [];
 	};
 
-	const currentStreamName = subLogQuery.get().streamName;
-	const startTime = subLogQuery.get().startTime;
-	const endTime = subLogQuery.get().endTime;
+	const [currentStream] = useAppStore((store) => store.currentStream);
+	const [{ startTime, endTime, type: timeRangeType }, setLogsStore] = useLogsStore((store) => store.timeRange);
 	const { fetchQueryMutation } = useQueryResult();
 	const fetchCount = useCallback(() => {
-		const queryContext = subLogQuery.get();
-		const defaultQuery = `select count(*) as count from ${currentStreamName}`;
+		const defaultQuery = `select count(*) as count from ${currentStream}`;
 		const query = isQuerySearchActive
 			? custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM')
 			: defaultQuery;
-		if (queryContext && query?.length > 0) {
+		if (currentStream) {
 			const logsQuery = {
-				streamName: queryContext.streamName,
+				streamName: currentStream,
 				startTime: startTime,
 				endTime: endTime,
 				access: [],
@@ -149,19 +156,19 @@ const LogTable: FC = () => {
 				query,
 			});
 		}
-	}, [currentStreamName, isQuerySearchActive, custSearchQuery, startTime, endTime]);
+	}, [currentStream, isQuerySearchActive, custSearchQuery, startTime, endTime]);
 
 	useEffect(() => {
-		resetQuerySearch();
-	}, [currentStreamName]);
+		if (currentStream) {
+			resetQuerySearch();
+			getDataSchema(currentStream);
+		}
+	}, [currentStream]);
 
 	const applyFilter = (key: string, value: string[]) => {
-		subLogSearch.set((state) => {
-			state.filters[key] = value;
-			if (!state.filters[key].length) {
-				delete state.filters[key];
-			}
-		});
+		value.length === 0
+			? setLogsStore((store) => deleteFilterItem(store, key))
+			: setLogsStore((store) => addFilterItem(store, key, value));
 	};
 
 	const isColumnActive = useCallback(
@@ -217,106 +224,94 @@ const LogTable: FC = () => {
 		setPinnedColumns(new Set());
 		setColumnToggles(new Map());
 	};
-	const onRetry = () => {
-		const query = subLogQuery.get();
+	const onRetry = useCallback(() => {
 		resetStreamData();
 		resetLogsData();
 		resetColumns();
 		setPageOffset(0);
 
-		if (query) {
+		if (currentStream) {
+			console.log("getting 1")
 			getQueryData({
-				streamName: query.streamName,
-				startTime: query.startTime,
-				endTime: query.endTime,
+				streamName: currentStream,
+				startTime: startTime,
+				endTime: endTime,
 				limit: loadLimit,
 				pageOffset: 0,
 			});
-			getDataSchema(query.streamName);
+			getDataSchema(currentStream);
 		}
-	};
+	}, [currentStream, startTime, endTime, loadLimit]);
 
 	useEffect(() => {
-		if (subLogQuery.get()) {
-			const query = subLogQuery.get();
+		if (currentStream) {
 			resetColumns();
 			setPageOffset(0);
-			resetStreamData();
 			resetLogsData();
-			if (query) {
-				getQueryData({
-					streamName: query.streamName,
-					startTime: query.startTime,
-					endTime: query.endTime,
-					limit: loadLimit,
-					pageOffset: 0,
-				});
-				getDataSchema(query.streamName);
-			}
+			console.log("getting 2")
+			getQueryData({
+				streamName: currentStream,
+				startTime,
+				endTime,
+				limit: loadLimit,
+				pageOffset: 0,
+			});
 		}
 	}, [custSearchQuery]);
 
 	useEffect(() => {
-		if (pageOffset === 0 && subLogQuery.get()) {
+		if (pageOffset === 0 && currentStream) {
 			fetchCount();
 		}
-	}, [currentStreamName, isQuerySearchActive, custSearchQuery, startTime, endTime]);
+	}, [currentStream, isQuerySearchActive, custSearchQuery, startTime, endTime]);
 
 	useEffect(() => {
 		const streamErrorListener = subLogStreamError.subscribe(setLogStreamError);
-		const logSearchListener = subLogSearch.subscribe(setQuerySearch);
-		const refreshIntervalListener = subRefreshInterval.subscribe(setRefreshInterval);
-
-		const subLogQueryListener = subLogQuery.subscribe((state) => {
+		if (logsSchema) {
 			setPageOffset(0);
 			resetLogsData();
-			resetStreamData();
 			resetColumns();
+			if (currentStream) {
+			console.log("getting 3")
 
-			if (state) {
 				getQueryData({
-					streamName: state.streamName,
-					startTime: state.startTime,
-					endTime: state.endTime,
+					streamName: currentStream,
+					startTime,
+					endTime,
 					limit: loadLimit,
 					pageOffset: 0,
 				});
-				getDataSchema(state.streamName);
 			}
-		});
-		subLogStreamSchema.set(logsSchema);
+		}
 		return () => {
 			streamErrorListener();
-			subLogQueryListener();
-			// subID();
-			refreshIntervalListener();
-			logSearchListener();
 		};
 	}, [logsSchema]);
 
 	useEffect(() => {
-		const state = subLogQuery.get();
-		getQueryData({
-			streamName: state.streamName,
-			startTime: state.startTime,
-			endTime: state.endTime,
-			limit: loadLimit,
-			pageOffset: pageOffset,
-		});
+		if (currentStream) {
+			console.log("getting 4")
+			getQueryData({
+				streamName: currentStream,
+				startTime: startTime,
+				endTime: endTime,
+				limit: loadLimit,
+				pageOffset: pageOffset,
+			});
+		}
 	}, [pageOffset]);
 
 	useEffect(() => {
-		if (subRefreshInterval.get()) {
+		if (refreshInterval) {
 			const interval = setInterval(() => {
-				if (subLogSelectedTimeRange.get().state === 'fixed') {
+				if (timeRangeType === 'fixed') {
 					const now = dayjs().startOf('minute');
-					const timeDiff = subLogQuery.get().endTime.getTime() - subLogQuery.get().startTime.getTime();
-					subLogQuery.set((state) => {
-						state.startTime = now.subtract(timeDiff).toDate();
-						state.endTime = now.toDate();
-					});
+					const timeDiff = endTime.getTime() - startTime.getTime();
+					const newStartTime = now.subtract(timeDiff).toDate();
+					const newEndTime = now.toDate();
+					setLogsStore((store) => setTimeRange(store, { startTime: newStartTime, endTime: newEndTime }));
 				}
-			}, subRefreshInterval.get() as number);
+			}, refreshInterval as number);
 			return () => clearInterval(interval);
 		}
 	}, [refreshInterval]);
@@ -490,12 +485,13 @@ const LogTable: FC = () => {
 					<EmptyBox message="Select a time Slot " />
 				)
 			) : (
-				<Center className={tableStyles.errorContainer}>
-					<Text c="red.8" style={{ fontWeight: 400 }}>
-						{logStreamError || logStreamSchemaError || logsError || 'Error'}
-					</Text>
-					{(logsError || logStreamSchemaError) && <RetryBtn onClick={onRetry} mt="md" />}
-				</Center>
+				<></>
+				// <Center className={tableStyles.errorContainer}>
+				// 	<Text c="red.8" style={{ fontWeight: 400 }}>
+				// 		{logStreamError || logStreamSchemaError || logsError || 'Error'}
+				// 	</Text>
+				// 	{(logsError || logStreamSchemaError) && <RetryBtn onClick={onRetry} mt="md" />}
+				// </Center>
 			)}
 			<Box className={tableStyles.footerContainer}>
 				<Stack w="100%" justify="center" align="flex-start">

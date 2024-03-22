@@ -2,11 +2,11 @@ import { Stack, px } from '@mantine/core';
 import StreamDropdown from '@/components/Header/StreamDropdown';
 import IconButton from '@/components/Button/IconButton';
 import { useLogsPageContext } from './logsContextProvider';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import classes from './styles/Toolbar.module.css';
 import { IconBolt, IconExclamationCircle, IconSettings, IconTrash } from '@tabler/icons-react';
 import { LOGS_PRIMARY_TOOLBAR_HEIGHT } from '@/constants/theme';
 import EventTimeLineGraph from './EventTimeLineGraph';
+import { useAppStore } from '@/layouts/MainLayout/AppProvider';
 
 const renderAlertsIcon = () => <IconExclamationCircle size={px('1.4rem')} stroke={1.5} />;
 const renderSettingsIcon = () => <IconSettings size={px('1.4rem')} stroke={1.5} />;
@@ -18,9 +18,7 @@ const PrimaryToolbar = () => {
 		methods: { openDeleteModal, openAlertsModal, openRetentionModal, toggleLiveTail },
 		state: { liveTailToggled },
 	} = useLogsPageContext();
-	const {
-		state: { userSpecificAccessMap },
-	} = useHeaderContext();
+	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
 	const isSecureConnection = window.location.protocol === 'https:';
 	return (
 		<Stack className={classes.logsPrimaryToolbar} style={{ height: LOGS_PRIMARY_TOOLBAR_HEIGHT }}>
@@ -35,11 +33,11 @@ const PrimaryToolbar = () => {
 						tooltipLabel="Live Tail"
 					/>
 				)}
-				{userSpecificAccessMap.hasUpdateAlertAccess && (
+				{userAccessMap.hasUpdateAlertAccess && (
 					<IconButton renderIcon={renderAlertsIcon} onClick={openAlertsModal} tooltipLabel="Alerts" />
 				)}
 				<IconButton renderIcon={renderSettingsIcon} onClick={openRetentionModal} tooltipLabel="Settings" />
-				{userSpecificAccessMap.hasDeleteAccess && (
+				{userAccessMap.hasDeleteAccess && (
 					<IconButton renderIcon={renderDeleteIcon} onClick={openDeleteModal} tooltipLabel="Delete" />
 				)}
 			</Stack>

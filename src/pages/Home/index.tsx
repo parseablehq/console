@@ -1,15 +1,18 @@
 import { EmptySimple } from '@/components/Empty';
 import { Text, Button, Center, Box, Group, ActionIcon, Flex, Stack, Tooltip } from '@mantine/core';
-import { IconChevronRight, IconExternalLink } from '@tabler/icons-react';
-import { useEffect, type FC, useCallback } from 'react';
+import { IconChevronRight, IconExternalLink, IconPlus } from '@tabler/icons-react';
+import { useEffect, type FC, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDocumentTitle } from '@mantine/hooks';
 import { useGetStreamMetadata } from '@/hooks/useGetStreamMetadata';
 import { HumanizeNumber, formatBytes } from '@/utils/formatBytes';
 import { LogStreamRetention, LogStreamStat } from '@/@types/parseable/api/stream';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import cardStyles from './styles/Card.module.css';
 import homeStyles from './styles/Home.module.css';
+import CreateStreamModal from './CreateStreamModal';
+import { useAppStore, appStoreReducers } from '@/layouts/MainLayout/AppProvider';
+
+const {changeStream} = appStoreReducers;
 
 const EmptyStreamsView: FC = () => {
 	const classes = homeStyles;
@@ -34,34 +37,60 @@ const Home: FC = () => {
 	useDocumentTitle('Parseable | Streams');
 	const classes = homeStyles;
 	const { container } = classes;
-	const {
-		methods: { streamChangeCleanup },
-		state: { userSpecficStreams },
-	} = useHeaderContext();
 	const navigate = useNavigate();
 	const { getStreamMetadata, metaData } = useGetStreamMetadata();
+	const [createStreamModalOpen, setCreateStreamModalOpen] = useState<boolean>(false);
+	const [userSpecificStreams, setAppStore] = useAppStore((store) => store.userSpecificStreams);
+	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
 
 	useEffect(() => {
-		if (!Array.isArray(userSpecficStreams) || userSpecficStreams.length === 0) return;
-		getStreamMetadata(userSpecficStreams.map((stream) => stream.name));
-	}, [userSpecficStreams]);
+		if (!Array.isArray(userSpecificStreams) || userSpecificStreams.length === 0) return;
+		getStreamMetadata(userSpecificStreams.map((stream) => stream.name));
+	}, [userSpecificStreams]);
 
 	const navigateToStream = useCallback((stream: string) => {
-		streamChangeCleanup(stream);
+		setAppStore(store => changeStream(store, stream))
 		navigate(`/${stream}/logs`);
 	}, []);
 
-	if (userSpecficStreams === null) return null;
-	if ((Array.isArray(userSpecficStreams) && userSpecficStreams.length === 0))
-		return <EmptyStreamsView />;
+	const displayEmptyPlaceholder = Array.isArray(userSpecificStreams) && userSpecificStreams.length === 0;
+	const toggleCreateStreamModal = useCallback(() => {
+		setCreateStreamModalOpen((prev) => !prev);
+	}, []);
 
 	return (
 		<Box className={container} style={{ display: 'flex', flex: 1, marginTop: '1rem' }}>
-			<Group style={{ marginRight: '1rem', marginLeft: '1rem' }}>
-				{Object.entries(metaData || {}).map(([stream, data]) => {
-					return <StreamInfo key={stream} stream={stream} data={data} navigateToStream={navigateToStream} />;
-				})}
-			</Group>
+			<CreateStreamModal opened={createStreamModalOpen} close={toggleCreateStreamModal} />
+			<Stack
+				style={{
+					margin: '1rem',
+					marginTop: '0',
+					alignItems: 'center',
+					justifyContent: 'space-between',
+					flexDirection: 'row',
+				}}>
+				<Text fw={500}>All Streams</Text>
+				<Box>
+					{userAccessMap.hasCreateStreamAccess && (
+						<Button
+							variant="outline"
+							style={{ border: '1px solid' }}
+							onClick={toggleCreateStreamModal}
+							leftSection={<IconPlus stroke={2} />}>
+							Create Stream
+						</Button>
+					)}
+				</Box>
+			</Stack>
+			{displayEmptyPlaceholder ? (
+				<EmptyStreamsView />
+			) : (
+				<Group style={{ marginRight: '1rem', marginLeft: '1rem' }}>
+					{Object.entries(metaData || {}).map(([stream, data]) => {
+						return <StreamInfo key={stream} stream={stream} data={data} navigateToStream={navigateToStream} />;
+					})}
+				</Group>
+			)}
 		</Box>
 	);
 };

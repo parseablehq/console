@@ -148,6 +148,7 @@ export const useQueryLogs = () => {
 	}, [data]);
 
 	const getQueryData = async (logsQuery: QueryLogs) => {
+		console.log("getting logs for", logsQuery)
 		try {
 			setLoading(true);
 			setError(null);

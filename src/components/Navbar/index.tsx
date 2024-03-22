@@ -1,11 +1,18 @@
 import { Box, Stack, Tooltip } from '@mantine/core';
-import { IconLogout, IconUser, IconBinaryTree2, IconInfoCircle, IconUserCog, IconHome } from '@tabler/icons-react';
+import {
+	IconLogout,
+	IconUser,
+	IconBinaryTree2,
+	IconInfoCircle,
+	IconUserCog,
+	IconHome,
+	IconServerCog,
+} from '@tabler/icons-react';
 import { FC, useCallback, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { useDisclosure } from '@mantine/hooks';
-import { HOME_ROUTE, LOGS_ROUTE, USERS_MANAGEMENT_ROUTE } from '@/constants/routes';
+import { HOME_ROUTE, LOGS_ROUTE, SYSTEMS_ROUTE, USERS_MANAGEMENT_ROUTE } from '@/constants/routes';
 import InfoModal from './infoModal';
 import { getStreamsSepcificAccess, getUserSepcificStreams } from './rolesHandler';
 import Cookies from 'js-cookie';
@@ -16,6 +23,9 @@ import useCurrentRoute from '@/hooks/useCurrentRoute';
 import { NAVBAR_WIDTH, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 import UserModal from './UserModal';
 import { signOutHandler } from '@/utils';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/AppProvider';
+
+const { setUserRoles, setUserSpecificStreams, setUserAccessMap, changeStream, setInstanceConfig } = appStoreReducers;
 
 const navItems = [
 	{
@@ -35,6 +45,12 @@ const navItems = [
 		label: 'Users',
 		path: '/users',
 		route: USERS_MANAGEMENT_ROUTE,
+	},
+	{
+		icon: IconServerCog,
+		label: 'Systems',
+		path: '/systems',
+		route: SYSTEMS_ROUTE,
 	},
 ];
 
@@ -62,49 +78,27 @@ const Navbar: FC = () => {
 	const location = useLocation();
 	const currentRoute = useCurrentRoute();
 	const username = Cookies.get('username');
-	const {
-		state: { subAppContext, maximized, userSpecficStreams, userSpecificAccessMap },
-		methods: { streamChangeCleanup, setUserRoles, setUserSpecficStreams, updateUserSpecificAccess },
-	} = useHeaderContext();
-
-	const selectedStream = subAppContext.get().selectedStream;
+	const [maximized, setAppStore] = useAppStore((store) => store.maximized);
+	const [currentStream] = useAppStore((store) => store.currentStream);
+	const [userSpecificStreams] = useAppStore((store) => store.userSpecificStreams);
+	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
 	const [userModalOpened, { toggle: toggleUserModal }] = useDisclosure(false);
 	const [infoModalOpened, { toggle: toggleInfoModal }] = useDisclosure(false);
-
 	const { getLogStreamListData } = useLogStream();
-
 	const { getUserRolesData, getUserRolesMutation } = useUser();
-
-	useEffect(() => {
-		if (getLogStreamListData?.data && getLogStreamListData?.data.length > 0 && getUserRolesData?.data) {
-			getUserRolesData?.data && setUserRoles(getUserRolesData?.data); // TODO: move user context main context
-			const userStreams = getUserSepcificStreams(getUserRolesData?.data, getLogStreamListData?.data as any);
-			setUserSpecficStreams(userStreams as any);
-		} else {
-			setUserSpecficStreams(null);
-		}
-		updateUserSpecificAccess(getStreamsSepcificAccess(getUserRolesData?.data));
-	}, [getUserRolesData?.data, getLogStreamListData?.data]);
-
-	useEffect(() => {
-		getUserRolesMutation({ userName: username ? username : '' });
-	}, [username]);
-
 	const navigateToPage = useCallback(
 		(route: string) => {
 			if (route === LOGS_ROUTE) {
-				if (
-					!userSpecficStreams ||
-					userSpecficStreams.length === 0 ||
-					(streamName && !userSpecficStreams.find((stream: any) => stream.name === streamName))
-				) {
-					return navigate('/');
-				}
-				const defaultStream =
-					selectedStream && selectedStream.length !== 0 ? selectedStream : userSpecficStreams[0].name;
+				const hasAccessToStream =
+					userSpecificStreams &&
+					userSpecificStreams.length !== 0 &&
+					userSpecificStreams.find((stream: any) => stream.name === streamName);
+				if (!hasAccessToStream) return navigate('/');
+
+				const defaultStream = currentStream && currentStream.length !== 0 ? currentStream : userSpecificStreams[0].name;
 				const stream = !streamName || streamName.length === 0 ? defaultStream : streamName;
 				const path = `/${stream}/logs`;
-				streamChangeCleanup(stream);
+				setAppStore((store) => changeStream(store, stream));
 
 				if (path !== location.pathname) {
 					navigate(path);
@@ -113,14 +107,29 @@ const Navbar: FC = () => {
 				return navigate(route);
 			}
 		},
-		[userSpecficStreams, streamName],
+		[userSpecificStreams, streamName],
 	);
 
 	useEffect(() => {
-		if (streamName && streamName.length !== 0 && userSpecficStreams && userSpecficStreams.length !== 0) {
+		if (getLogStreamListData?.data && getLogStreamListData?.data.length > 0 && getUserRolesData?.data) {
+			getUserRolesData?.data && setAppStore((store) => setUserRoles(store, getUserRolesData?.data)); // TODO: move user context main context
+			const userStreams = getUserSepcificStreams(getUserRolesData?.data, getLogStreamListData?.data as any);
+			setAppStore((store) => setUserSpecificStreams(store, userStreams));
+		} else {
+			setAppStore((store) => setUserSpecificStreams(store, null));
+		}
+		setAppStore((store) => setUserAccessMap(store, getStreamsSepcificAccess(getUserRolesData?.data)));
+	}, [getUserRolesData?.data, getLogStreamListData?.data]);
+
+	useEffect(() => {
+		getUserRolesMutation({ userName: username ? username : '' });
+	}, [username]);
+
+	useEffect(() => {
+		if (streamName && streamName.length !== 0 && userSpecificStreams && userSpecificStreams.length !== 0) {
 			navigateToPage(LOGS_ROUTE);
 		}
-	}, [streamName, userSpecficStreams]);
+	}, [streamName, userSpecificStreams]);
 
 	if (maximized) return null;
 
@@ -132,7 +141,7 @@ const Navbar: FC = () => {
 				<div className={styles.navbarMain}>
 					<Stack justify="center" align="center" gap={0}>
 						{navItems.map((navItem, index) => {
-							if (navItem.route === USERS_MANAGEMENT_ROUTE && !userSpecificAccessMap.hasUserAccess) return null;
+							if (navItem.route === USERS_MANAGEMENT_ROUTE && !userAccessMap.hasUserAccess) return null;
 
 							const isActiveItem = navItem.route === currentRoute;
 							return (

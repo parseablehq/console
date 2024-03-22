@@ -6,7 +6,8 @@ import { useLogsPageContext } from './logsContextProvider';
 import dayjs, { Dayjs } from 'dayjs';
 import {  ChartTooltipProps, AreaChart } from '@mantine/charts';
 import { HumanizeNumber } from '@/utils/formatBytes';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
+import { logsStoreReducers, useLogsStore } from './providers/LogsProvider';
+const {setTimeRange} = logsStoreReducers
 
 const START_RANGE = 30
 const END_RANGE = 2
@@ -140,12 +141,8 @@ const EventTimeLineGraph = () => {
 	const avgEventCount = useMemo(() => calcAverage(fetchQueryMutation?.data), [fetchQueryMutation?.data]);
 	const graphData = useMemo(() => parseGraphData(fetchQueryMutation?.data, avgEventCount, startTime), [fetchQueryMutation?.data]);
 	const hasData = Array.isArray(graphData) && graphData.length !== 0;
-
-	const {
-		state: { subLogQuery, subLogSelectedTimeRange },
-	} = useHeaderContext();
-
-	const setTimeRange = useCallback((barValue: any) => {
+	const [, setLogsStore] = useLogsStore(store => store.timeRange)
+	const setTimeRangeFromGraph = useCallback((barValue: any) => {
 		const activePayload = barValue?.activePayload;
 		if (!Array.isArray(activePayload) || activePayload.length === 0) return;
 
@@ -155,15 +152,10 @@ const EventTimeLineGraph = () => {
 		const { minute } = samplePayload.payload || {};
 		const startTime = dayjs(minute);
 		const endTime = dayjs(minute).add(59, 'seconds');
-		subLogQuery.set((query) => {
-			query.startTime = startTime.toDate();
-			query.endTime = endTime.toDate();
-		});
-
-		subLogSelectedTimeRange.set((state) => {
-			state.state = 'custom';
-			state.value = `${startTime.format('DD-MM-YY HH:mm:ss')} - ${endTime.format('DD-MM-YY HH:mm:ss')}`;
-		});
+		const label = `${startTime.format('DD-MM-YY HH:mm:ss')} - ${endTime.format('DD-MM-YY HH:mm:ss')}`;
+		setLogsStore((store) =>
+			setTimeRange(store, { label, type: 'custom', startTime: startTime.toDate(), endTime: endTime.toDate() }),
+		);
 	}, []);
 
 	return (
@@ -189,7 +181,7 @@ const EventTimeLineGraph = () => {
 						yAxisProps={{ tickCount: 2, tickFormatter: (value) => `${HumanizeNumber(value)}` }}
 						referenceLines={[{ y: avgEventCount, color: 'red.6', label: 'Avg' }]}
 						tickLine="none"
-						areaChartProps={{ onClick: setTimeRange, style: { cursor: 'pointer' }}}
+						areaChartProps={{ onClick: setTimeRangeFromGraph, style: { cursor: 'pointer' } }}
 						gridAxis="xy"
 						fillOpacity={0.5}
 					/>
