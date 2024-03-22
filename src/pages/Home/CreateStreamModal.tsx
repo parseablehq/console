@@ -15,9 +15,15 @@ const CreateStreamModal: FC<CreateStreamModalProps> = (props) => {
 	const { container, aboutTitle } = classes;
 
 	const { createLogStreamMutation } = useLogStream();
+	const { getLogStreamListRefetch } = useLogStream();
+
+	const onSuccessCallback = useCallback(() => {
+		close();
+		getLogStreamListRefetch();
+	}, []);
 
 	const onSubmit = useCallback(() => {
-		createLogStreamMutation({ streamName });
+		createLogStreamMutation({ streamName, onSuccess: onSuccessCallback });
 	}, [streamName]);
 
 	return (

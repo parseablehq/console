@@ -78,10 +78,7 @@ const TableRow = () => {
 							<Text>{metrics.totalEventsIngested}</Text>
 						</Tooltip>
 					</Table.Td>
-					<Table.Td align="center">{metrics.totalBytesIngested}</Table.Td>
 					<Table.Td align="center">{metrics.memoryUsage}</Table.Td>
-					<Table.Td align="center">{metrics.stagingFilesCount}</Table.Td>
-					<Table.Td align="center">{metrics.stagingSize}</Table.Td>
 				</>
 			)}
 			<Table.Td align='center'>

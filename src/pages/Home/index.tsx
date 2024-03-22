@@ -1,5 +1,5 @@
 import { EmptySimple } from '@/components/Empty';
-import { Text, Button, Center, Box, Group, ActionIcon, Flex, Stack, Tooltip } from '@mantine/core';
+import { Text, Button, Center, Box, Group, ActionIcon, Flex, Stack, Tooltip, ScrollArea } from '@mantine/core';
 import { IconChevronRight, IconExternalLink, IconPlus } from '@tabler/icons-react';
 import { useEffect, type FC, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -52,39 +52,47 @@ const Home: FC = () => {
 		streamChangeCleanup(stream);
 		navigate(`/${stream}/logs`);
 	}, []);
-	const displayEmptyPlaceholder = Array.isArray(userSpecficStreams) && userSpecficStreams.length === 0
+	const displayEmptyPlaceholder = Array.isArray(userSpecficStreams) && userSpecficStreams.length === 0;
 	const toggleCreateStreamModal = useCallback(() => {
-		setCreateStreamModalOpen(prev => !prev)
-	}, [])
+		setCreateStreamModalOpen((prev) => !prev);
+	}, []);
 
 	return (
-		<Box className={container} style={{ display: 'flex', flex: 1, marginTop: '1rem' }}>
-			<CreateStreamModal opened={createStreamModalOpen} close={toggleCreateStreamModal}/>
-			<Stack
-				style={{
-					margin: '1rem',
-					marginTop: '0',
-					alignItems: 'center',
-					justifyContent: 'space-between',
-					flexDirection: 'row',
-				}}>
-				<Text fw={500}>All Streams</Text>
-				<Box>
-					{userSpecificAccessMap.hasCreateStreamAccess && (
-						<Button variant="outline" style={{border: '1px solid'}}  onClick={toggleCreateStreamModal} leftSection={<IconPlus stroke={2} />}>Create Stream</Button>
-					)}
-				</Box>
-			</Stack>
-			{displayEmptyPlaceholder ? (
-				<EmptyStreamsView />
-			) : (
-				<Group style={{ marginRight: '1rem', marginLeft: '1rem' }}>
-					{Object.entries(metaData || {}).map(([stream, data]) => {
-						return <StreamInfo key={stream} stream={stream} data={data} navigateToStream={navigateToStream} />;
-					})}
-				</Group>
-			)}
-		</Box>
+		<ScrollArea>
+			<Box className={container} style={{ display: 'flex', flex: 1, marginTop: '1rem', paddingBottom: '3rem' }}>
+				<CreateStreamModal opened={createStreamModalOpen} close={toggleCreateStreamModal} />
+				<Stack
+					style={{
+						margin: '1rem',
+						marginTop: '0',
+						alignItems: 'center',
+						justifyContent: 'space-between',
+						flexDirection: 'row',
+					}}>
+					<Text fw={500}>All Streams</Text>
+					<Box>
+						{userSpecificAccessMap.hasCreateStreamAccess && (
+							<Button
+								variant="outline"
+								style={{ border: '1px solid' }}
+								onClick={toggleCreateStreamModal}
+								leftSection={<IconPlus stroke={2} />}>
+								Create Stream
+							</Button>
+						)}
+					</Box>
+				</Stack>
+				{displayEmptyPlaceholder ? (
+					<EmptyStreamsView />
+				) : (
+					<Group style={{ marginRight: '1rem', marginLeft: '1rem' }}>
+						{Object.entries(metaData || {}).map(([stream, data]) => {
+							return <StreamInfo key={stream} stream={stream} data={data} navigateToStream={navigateToStream} />;
+						})}
+					</Group>
+				)}
+			</Box>
+		</ScrollArea>
 	);
 };
 

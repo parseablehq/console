@@ -16,13 +16,14 @@ export const useLogStream = () => {
 		isSuccess: createLogStreamIsSuccess,
 		isError: createLogStreamIsError,
 		isLoading: createLogStreamIsLoading,
-	} = useMutation((data: { streamName: string;}) => createLogStream(data.streamName), {
+	} = useMutation((data: { streamName: string, onSuccess: () => void}) => createLogStream(data.streamName), {
 		onError: (data: AxiosError) => {
 			if (isAxiosError(data) && typeof data.message === 'string') {
 				notifyError({ message: data.message });
 			}
 		},
 		onSuccess: (_data, variables) => {
+			variables.onSuccess && variables.onSuccess();
 			notifySuccess({message: `Stream ${variables.streamName} created successfully`})
 		},
 	});

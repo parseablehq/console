@@ -10,8 +10,8 @@ type IngestorTableRow = {
 	ingestor: Ingestor;
 };
 
-const fetchIngestorMetrics = async () => {
-	const endpoint = `/api/v1/metrics`;
+const fetchIngestorMetrics = async (domain: string) => {
+	const endpoint = `${domain}/api/v1/metrics`;
 	const response = await fetch(endpoint, {
 		headers: {
 			Accept: 'text/plain',
@@ -39,7 +39,7 @@ const TableRow = (props: IngestorTableRow) => {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const readableStream = await fetchIngestorMetrics();
+				const readableStream = await fetchIngestorMetrics(ingestor.domain_name);
 				const reader = readableStream?.getReader();
 				const chunks:string[] = [];
 				const readData = async () => {
