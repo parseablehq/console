@@ -4,7 +4,6 @@ import { Tbody, Thead } from '@/components/Table';
 import LogRow from './LogRow';
 import useMountedState from '@/hooks/useMountedState';
 import Column from './Column';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { useDoGetLiveTail } from '@/hooks/useDoGetLiveTail';
 import EmptyBox from '@/components/Empty';
 import styles from './styles/Logs.module.css';
@@ -16,33 +15,20 @@ const { setLiveTailStatus, setLiveTailSchema } = logsStoreReducers;
 
 const LogTable: FC = () => {
 	const { finalData: data, doGetLiveTail, resetData, abort, loading, schema } = useDoGetLiveTail();
-	const {
-		state: { subInstanceConfig },
-	} = useHeaderContext();
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [maximized] = useAppStore((store) => store.maximized);
+	const [grpcPort] = useAppStore((store) => store.instanceConfig?.grpcPort);
 
-	const [grpcPort, setGrpcPort] = useMountedState<number | null>(subInstanceConfig.get()?.grpcPort ?? null);
 	const [callAgain, setCallAgain] = useMountedState<boolean>(false);
 	const [{ liveTailStatus }, setLogsStore] = useLogsStore((store) => store.liveTailConfig);
 
 	useEffect(() => {
-		const portListener = subInstanceConfig.subscribe((state) => {
-			if (state) {
-				setGrpcPort(state.grpcPort);
-			}
-		});
-
 		if (liveTailStatus === 'abort') {
 			abort();
 		} else if (liveTailStatus === 'fetch') {
 			setCallAgain(true);
 		}
-
-		return () => {
-			portListener();
-		};
-	}, [subInstanceConfig, liveTailStatus]);
+	}, [liveTailStatus]);
 
 	useEffect(() => {
 		if (currentStream && grpcPort) {
@@ -57,7 +43,7 @@ const LogTable: FC = () => {
 
 	useEffect(() => {
 		if (callAgain && currentStream) {
-			doGetLiveTail(currentStream, grpcPort);
+			doGetLiveTail(currentStream, grpcPort || null);
 		}
 	}, [callAgain]);
 

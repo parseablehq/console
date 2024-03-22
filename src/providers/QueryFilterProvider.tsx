@@ -1,5 +1,4 @@
 import { useAppStore } from '@/layouts/MainLayout/AppProvider';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { useLogsPageContext } from '@/pages/Logs/logsContextProvider';
 import { generateRandomId } from '@/utils';
 import { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';

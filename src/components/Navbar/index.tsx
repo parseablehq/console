@@ -25,7 +25,7 @@ import UserModal from './UserModal';
 import { signOutHandler } from '@/utils';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/AppProvider';
 
-const { setUserRoles, setUserSpecificStreams, setUserAccessMap, changeStream } = appStoreReducers;
+const { setUserRoles, setUserSpecificStreams, setUserAccessMap, changeStream, setInstanceConfig } = appStoreReducers;
 
 const navItems = [
 	{
@@ -81,14 +81,34 @@ const Navbar: FC = () => {
 	const [maximized, setAppStore] = useAppStore((store) => store.maximized);
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [userSpecificStreams] = useAppStore((store) => store.userSpecificStreams);
-	const [userAccessMap] = useAppStore(store => store.userAccessMap)
-
+	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
 	const [userModalOpened, { toggle: toggleUserModal }] = useDisclosure(false);
 	const [infoModalOpened, { toggle: toggleInfoModal }] = useDisclosure(false);
-
 	const { getLogStreamListData } = useLogStream();
-
 	const { getUserRolesData, getUserRolesMutation } = useUser();
+	const navigateToPage = useCallback(
+		(route: string) => {
+			if (route === LOGS_ROUTE) {
+				const hasAccessToStream =
+					userSpecificStreams &&
+					userSpecificStreams.length !== 0 &&
+					userSpecificStreams.find((stream: any) => stream.name === streamName);
+				if (!hasAccessToStream) return navigate('/');
+
+				const defaultStream = currentStream && currentStream.length !== 0 ? currentStream : userSpecificStreams[0].name;
+				const stream = !streamName || streamName.length === 0 ? defaultStream : streamName;
+				const path = `/${stream}/logs`;
+				setAppStore((store) => changeStream(store, stream));
+
+				if (path !== location.pathname) {
+					navigate(path);
+				}
+			} else {
+				return navigate(route);
+			}
+		},
+		[userSpecificStreams, streamName],
+	);
 
 	useEffect(() => {
 		if (getLogStreamListData?.data && getLogStreamListData?.data.length > 0 && getUserRolesData?.data) {
@@ -104,31 +124,6 @@ const Navbar: FC = () => {
 	useEffect(() => {
 		getUserRolesMutation({ userName: username ? username : '' });
 	}, [username]);
-
-	const navigateToPage = useCallback(
-		(route: string) => {
-			if (route === LOGS_ROUTE) {
-				if (
-					!userSpecificStreams ||
-					userSpecificStreams.length === 0 ||
-					(streamName && !userSpecificStreams.find((stream: any) => stream.name === streamName))
-				) {
-					return navigate('/');
-				}
-				const defaultStream = currentStream && currentStream.length !== 0 ? currentStream : userSpecificStreams[0].name;
-				const stream = !streamName || streamName.length === 0 ? defaultStream : streamName;
-				const path = `/${stream}/logs`;
-				setAppStore(store => changeStream(store, stream))
-
-				if (path !== location.pathname) {
-					navigate(path);
-				}
-			} else {
-				return navigate(route);
-			}
-		},
-		[userSpecificStreams, streamName],
-	);
 
 	useEffect(() => {
 		if (streamName && streamName.length !== 0 && userSpecificStreams && userSpecificStreams.length !== 0) {

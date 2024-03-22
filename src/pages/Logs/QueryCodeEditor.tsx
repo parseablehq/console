@@ -1,6 +1,5 @@
 import React, { FC, useCallback, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Box, Button, Flex, ScrollArea, Stack, Text, TextInput } from '@mantine/core';
 import { ErrorMarker, errChecker } from './ErrorMarker';
 import useMountedState from '@/hooks/useMountedState';
@@ -30,9 +29,7 @@ const genColumnConfig = (fields: Field[]) => {
 };
 
 const QueryCodeEditor: FC = () => {
-	const {
-		state: { subInstanceConfig },
-	} = useHeaderContext();
+	const [llmActive] = useAppStore(store => store.instanceConfig?.llmActive)
 	const {
 		state: {
 			custQuerySearchState: { isQuerySearchActive, mode },
@@ -49,9 +46,9 @@ const QueryCodeEditor: FC = () => {
 	const [localStreamName, setlocalStreamName] = useMountedState<string | null>(currentStream);
 	const [query, setQuery] = useMountedState<string>('');
 	const [aiQuery, setAiQuery] = useMountedState('');
-	const [localLlmActive, setlocalLlmActive] = useMountedState(subInstanceConfig.get()?.llmActive);
+	const [localLlmActive, setlocalLlmActive] = useMountedState(llmActive);
 	const { data: resAIQuery, postLLMQuery } = usePostLLM();
-	const isLlmActive = !!subInstanceConfig.get()?.llmActive;
+	const isLlmActive = !!llmActive;
 	const isSqlSearchActive = isQuerySearchActive && mode === 'sql';
 
 	const updateQuery = useCallback((query: string) => {

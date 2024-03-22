@@ -2,12 +2,10 @@ import Home from '@/pages/Home';
 import type { FC } from 'react';
 import { lazy } from 'react';
 import SuspensePage from './SuspensePage';
-import MainLayoutPageProvider from '@/layouts/MainLayout/Context';
 import MainLayout from '@/layouts/MainLayout';
 import { AppProvider } from '@/layouts/MainLayout/AppProvider';
 import { LogsProvider } from '@/pages/Logs/providers/LogsProvider';
 
-// page-wise providers
 import LogsPageProvider from '@/pages/Logs/logsContextProvider';
 
 // component-wise providers
@@ -50,9 +48,7 @@ export const LogsElement: FC = () => {
 export const MainLayoutElement: FC = () => {
 	return (
 		<AppProvider>
-			<MainLayoutPageProvider>
-				<MainLayout />
-			</MainLayoutPageProvider>
+			<MainLayout />
 		</AppProvider>
 	);
 };

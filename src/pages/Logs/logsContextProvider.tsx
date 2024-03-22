@@ -4,9 +4,7 @@ import type { Dispatch, FC, MutableRefObject, SetStateAction } from 'react';
 import React, { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
 import { sanitizeCSVData } from '@/utils/exportHelpers';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { useDisclosure } from '@mantine/hooks';
-import { useLogsStore } from './providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/AppProvider';
 
 const Context = createContext({});

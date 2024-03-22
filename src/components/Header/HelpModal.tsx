@@ -1,8 +1,6 @@
 import { Box, Button, Modal, Text, Tooltip, px } from '@mantine/core';
-import { FC, useCallback, useEffect } from 'react';
-import { useAbout } from '@/hooks/useGetAbout';
+import { FC, useCallback } from 'react';
 import { IconBook2, IconBrandGithub, IconBrandSlack, IconBusinessplan } from '@tabler/icons-react';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import styles from './styles/HelpModal.module.css';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/AppProvider';
 
@@ -55,18 +53,6 @@ const HelpCard: FC<HelpCardProps> = (props) => {
 
 const HelpModal: FC = () => {
 	const [helpModalOpen, setAppStore] = useAppStore(store => store.helpModalOpen)
-	const {
-		state: { subInstanceConfig },
-	} = useHeaderContext();
-
-	const { getAboutData } = useAbout();
-
-	useEffect(() => {
-		if (getAboutData?.data) {
-			subInstanceConfig.set(getAboutData?.data);
-		}
-	}, [getAboutData?.data]);
-
 	const classes = styles;
 	const { container, aboutTitle, aboutDescription, helpIconContainer } = classes;
 	const onClose = useCallback(() => setAppStore(appStoreReducers.toggleHelpModal), [])

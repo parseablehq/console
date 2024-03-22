@@ -1,6 +1,7 @@
 import { LogStreamData } from '@/@types/parseable/api/stream';
 import { getStreamsSepcificAccess } from '@/components/Navbar/rolesHandler';
 import createFastContext from '@/utils/createFastContext';
+import { AboutData } from '@/@types/parseable/api/about';
 
 export type UserRoles = {
 	[roleName: string]: {
@@ -22,6 +23,7 @@ type AppStore = {
 	userSpecificStreams: null | LogStreamData;
 	userAccessMap: { [key: string]: boolean };
 	streamSpecificUserAccess: string[] | null;
+	instanceConfig: AboutData | null;
 };
 
 type AppStoreReducers = {
@@ -32,6 +34,7 @@ type AppStoreReducers = {
 	setUserSpecificStreams: (store: AppStore, userSpecficStreams: LogStreamData | null) => ReducerOutput;
 	setUserAccessMap: (store: AppStore, accessRoles: string[] | null) => ReducerOutput;
 	setStreamSpecificUserAccess: (store: AppStore) => ReducerOutput;
+	setInstanceConfig: (store: AppStore, instanceConfig: AboutData) => ReducerOutput;
 };
 
 const initialState: AppStore = {
@@ -42,6 +45,7 @@ const initialState: AppStore = {
 	userSpecificStreams: null,
 	userAccessMap: {},
 	streamSpecificUserAccess: null,
+	instanceConfig: null,
 };
 
 const { Provider: AppProvider, useStore: useAppStore } = createFastContext(initialState);
@@ -99,6 +103,10 @@ const setStreamSpecificUserAccess = (store: AppStore) => {
 	}
 };
 
+const setInstanceConfig = (_store: AppStore, instanceConfig: AboutData | null) => {
+	return { instanceConfig };
+};
+
 const appStoreReducers: AppStoreReducers = {
 	toggleMaximize,
 	toggleHelpModal,
@@ -107,6 +115,7 @@ const appStoreReducers: AppStoreReducers = {
 	setUserSpecificStreams,
 	setUserAccessMap,
 	setStreamSpecificUserAccess,
+	setInstanceConfig
 };
 
 export { AppProvider, useAppStore, appStoreReducers };

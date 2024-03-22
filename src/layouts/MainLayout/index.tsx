@@ -5,7 +5,6 @@ import { Box } from '@mantine/core';
 import type { FC } from 'react';
 import { Outlet } from 'react-router-dom';
 import { heights } from '@/components/Mantine/sizing';
-import { useHeaderContext } from './Context';
 import { useAppStore } from './AppProvider';
 
 const MainLayout: FC = () => {
