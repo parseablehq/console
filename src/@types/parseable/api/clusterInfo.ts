@@ -3,8 +3,9 @@ export type Ingestor = {
 	reachable: boolean;
 	error: string | null;
 	status: string;
-	stagingPath: string;
-	storePath: string;
+	staging_path: string;
+	storage_path: string;
+	storage_mode: string;
 };
 
 export type ClusterInfo = Ingestor[];

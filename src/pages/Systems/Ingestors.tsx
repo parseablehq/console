@@ -26,7 +26,7 @@ const fetchIngestorMetrics = async (domain: string) => {
 };
 
 const TrLoadingState = () => (
-	<Table.Td colSpan={7}>
+	<Table.Td colSpan={9}>
 		<Skeleton height={30} />
 	</Table.Td>
 );
@@ -101,8 +101,9 @@ const TableRow = (props: IngestorTableRow) => {
 					<Table.Td align="center">{metrics.memoryUsage}</Table.Td>
 					<Table.Td align="center">{metrics.stagingFilesCount}</Table.Td>
 					<Table.Td align="center">{metrics.stagingSize}</Table.Td>
-					<Table.Td>{ingestor.stagingPath || ''}</Table.Td>
-					<Table.Td>{ingestor.storePath || ''}</Table.Td>
+					<Table.Td>{ingestor.staging_path || ''}</Table.Td>
+					<Table.Td>{ingestor.storage_mode || ''}</Table.Td>
+					<Table.Td>{ingestor.storage_path || ''}</Table.Td>
 				</>
 			)}
 			<Table.Td align='center'>
@@ -135,7 +136,8 @@ const TableHead = () => (
 			<Table.Th style={{ textAlign: 'center' }}>Staging Files</Table.Th>
 			<Table.Th style={{ textAlign: 'center' }}>Staging Size</Table.Th>
 			<Table.Th>Staging Path</Table.Th>
-			<Table.Th>Store</Table.Th>
+			<Table.Th>Storage Mode</Table.Th>
+			<Table.Th>Storage Path</Table.Th>
 			<Table.Th style={{ textAlign: 'center' }}>Status</Table.Th>
 			<Table.Th style={{ textAlign: 'center', width: '1rem' }}></Table.Th>
 		</Table.Tr>
