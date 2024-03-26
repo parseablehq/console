@@ -5,7 +5,6 @@ export type Ingestor = {
 	status: string;
 	staging_path: string;
 	storage_path: string;
-	storage_mode: string;
 };
 
 export type ClusterInfo = Ingestor[];
