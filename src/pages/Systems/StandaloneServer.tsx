@@ -41,7 +41,7 @@ const TableRow = (props: IngestorTableRow) => {
 			try {
 				const readableStream = await fetchIngestorMetrics();
 				const reader = readableStream?.getReader();
-				const chunks:string[] = [];
+				const chunks: string[] = [];
 				const readData = async () => {
 					while (reader) {
 						const { done, value } = await reader.read();
@@ -54,7 +54,7 @@ const TableRow = (props: IngestorTableRow) => {
 					}
 				};
 				await readData();
-				const data = chunks.join('')
+				const data = chunks.join('');
 				if (typeof data !== 'string') throw 'Invalid prometheus response';
 
 				const parsedMetrics: PrometheusMetricResponse | null = parsePrometheusResponse(data);
@@ -82,7 +82,7 @@ const TableRow = (props: IngestorTableRow) => {
 				<>
 					<Table.Td align="center">
 						<Tooltip label={metrics.totalEventsIngested}>
-							<Text>{metrics.totalEventsIngested}</Text>
+							<Text style={{ fontSize: 14 }}>{metrics.totalEventsIngested}</Text>
 						</Tooltip>
 					</Table.Td>
 					<Table.Td align="center">{metrics.totalBytesIngested}</Table.Td>
@@ -122,14 +122,14 @@ const ServerTable = (props: AboutData) => {
 		<Table verticalSpacing="md">
 			<TableHead />
 			<Table.Tbody>
-				<TableRow storePath={props.store.path} stagingPath={props.staging}/>
+				<TableRow storePath={props.store.path} stagingPath={props.staging} />
 			</Table.Tbody>
 		</Table>
 	);
 };
 
 const StandaloneServer: FC = () => {
-	const {getAboutData} = useAbout()
+	const { getAboutData } = useAbout();
 	return (
 		<Stack className={classes.sectionContainer}>
 			<Stack className={classes.sectionTitleContainer}>
@@ -138,7 +138,7 @@ const StandaloneServer: FC = () => {
 					<Text className={classes.sectionTitle}>Parseable Server</Text>
 				</Stack>
 			</Stack>
-			{getAboutData?.data && <ServerTable {...getAboutData.data}/>}
+			{getAboutData?.data && <ServerTable {...getAboutData.data} />}
 		</Stack>
 	);
 };

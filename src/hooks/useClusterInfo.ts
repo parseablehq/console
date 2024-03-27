@@ -1,7 +1,7 @@
 import { useQuery } from 'react-query';
 import {  AxiosResponse } from 'axios';
 import { getClusterInfo, getClusterMetrics } from '@/api/cluster';
-import { Ingestor } from '@/@types/parseable/api/clusterInfo';
+import { Ingestor, IngestorMetrics } from '@/@types/parseable/api/clusterInfo';
 
 export const useClusterInfo = () => {
 	const {
@@ -25,17 +25,17 @@ export const useClusterInfo = () => {
 
 export const useClusterMetrics = () => {
 	const {
-		data: clusterMetricsData,
+		data: clusterMetrics,
 		isError: getClusterMetricsError,
 		isSuccess: getClusterMetricsSuccess,
 		isLoading: getClusterMetricsLoading,
 		refetch: getClusterMetricsRefetch,
-	} = useQuery(['fetch-cluster-metrics'], () => getClusterMetrics(), {
+	} = useQuery<AxiosResponse<IngestorMetrics[]>>(['fetch-cluster-metrics'], () => getClusterMetrics(), {
 		retry: false,
 		refetchOnWindowFocus: false,
 	});
 	return {
-		clusterMetricsData,
+		clusterMetrics,
 		getClusterMetricsError,
 		getClusterMetricsSuccess,
 		getClusterMetricsLoading,

@@ -1,28 +1,14 @@
 import { Stack, Text, Table, Tooltip, ThemeIcon, Popover, Skeleton } from '@mantine/core';
-import { FC, useEffect, useState } from 'react';
+import { FC } from 'react';
 import classes from './styles/Systems.module.css';
 import { IconAlertCircle, IconBrandDatabricks, IconX } from '@tabler/icons-react';
-import { useClusterInfo } from '@/hooks/useClusterInfo';
-import { Ingestor } from '@/@types/parseable/api/clusterInfo';
-import { PrometheusMetricResponse, SanitizedMetrics, parsePrometheusResponse, sanitizeIngestorData } from './utils';
+import { useClusterInfo, useClusterMetrics } from '@/hooks/useClusterInfo';
+import { Ingestor, IngestorMetrics } from '@/@types/parseable/api/clusterInfo';
+import { HumanizeNumber, formatBytes } from '@/utils/formatBytes';
 
 type IngestorTableRow = {
 	ingestor: Ingestor;
-};
-
-const fetchIngestorMetrics = async (domain: string) => {
-	const endpoint = `${domain}api/v1/metrics`;
-	const response = await fetch(endpoint, {
-		headers: {
-			Accept: 'text/plain',
-		},
-	});
-
-	if (!response.ok) {
-		throw new Error('Network response was not ok');
-	}
-
-	return response.body;
+	metrics: IngestorMetrics | undefined;
 };
 
 const TrLoadingState = () => (
@@ -32,42 +18,7 @@ const TrLoadingState = () => (
 );
 
 const TableRow = (props: IngestorTableRow) => {
-	const { ingestor } = props;
-	const [isMetricsFetching, setMetricsFetching] = useState(true);
-	const [metrics, setMetrics] = useState<SanitizedMetrics | null>(null);
-
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const readableStream = await fetchIngestorMetrics(ingestor.domain_name);
-				const reader = readableStream?.getReader();
-				const chunks:string[] = [];
-				const readData = async () => {
-					while (reader) {
-						const { done, value } = await reader.read();
-						if (done) {
-							console.log('Stream reading complete');
-							break;
-						}
-						const chunk = new TextDecoder().decode(value);
-						chunks.push(chunk);
-					}
-				};
-				await readData();
-				const data = chunks.join('')
-				if (typeof data !== 'string') throw 'Invalid prometheus response';
-
-				const parsedMetrics: PrometheusMetricResponse | null = parsePrometheusResponse(data);
-				const sanitizedMetrics = parsedMetrics === null ? null : sanitizeIngestorData(parsedMetrics);
-				setMetrics(sanitizedMetrics);
-				setMetricsFetching(false);
-			} catch (error) {
-				console.log('Error fetching metrics', error);
-			}
-		};
-
-		fetchData();
-	}, []);
+	const { ingestor, metrics } = props;
 
 	return (
 		<Table.Tr key={ingestor.domain_name}>
@@ -88,24 +39,24 @@ const TableRow = (props: IngestorTableRow) => {
 					)}
 				</Stack>
 			</Table.Td>
-			{isMetricsFetching || metrics === null ? (
+			{!metrics ? (
 				<TrLoadingState />
 			) : (
 				<>
 					<Table.Td align="center">
-						<Tooltip label={metrics.totalEventsIngested}>
-							<Text>{metrics.totalEventsIngested}</Text>
+						<Tooltip label={metrics.parseable_events_ingested}>
+							<Text style={{fontSize: 14}}>{HumanizeNumber(metrics.parseable_events_ingested)}</Text>
 						</Tooltip>
 					</Table.Td>
-					<Table.Td align="center">{metrics.totalBytesIngested}</Table.Td>
-					<Table.Td align="center">{metrics.memoryUsage}</Table.Td>
-					<Table.Td align="center">{metrics.stagingFilesCount}</Table.Td>
-					<Table.Td align="center">{metrics.stagingSize}</Table.Td>
+					<Table.Td align="center">{formatBytes(metrics.parseable_storage_size.data)}</Table.Td>
+					<Table.Td align="center">{formatBytes(metrics.process_resident_memory_bytes)}</Table.Td>
+					<Table.Td align="center">{HumanizeNumber(metrics.parseable_staging_files)}</Table.Td>
+					<Table.Td align="center">{formatBytes(metrics.parseable_storage_size.staging)}</Table.Td>
 					<Table.Td>{ingestor.staging_path || ''}</Table.Td>
 					<Table.Td>{ingestor.storage_path || ''}</Table.Td>
 				</>
 			)}
-			<Table.Td align='center'>
+			<Table.Td align="center">
 				<Stack className={`${classes.statusChip} ${ingestor.reachable ? classes.online : classes.offline}`}>
 					{ingestor.reachable ? 'Online' : 'Offline'}
 				</Stack>
@@ -123,6 +74,7 @@ const TableRow = (props: IngestorTableRow) => {
 
 type IngestorTable = {
 	ingestors: Ingestor[];
+	allMetrics: IngestorMetrics[];
 };
 
 const TableHead = () => (
@@ -143,13 +95,14 @@ const TableHead = () => (
 );
 
 const IngestorsTable = (props: IngestorTable) => {
-	const { ingestors } = props;
+	const { ingestors, allMetrics } = props;
 	return (
 		<Table verticalSpacing="md">
 			<TableHead />
 			<Table.Tbody>
 				{ingestors.map((ingestor) => {
-					return <TableRow ingestor={ingestor} />;
+					const metrics = allMetrics.find((ingestorMetric) => ingestorMetric.address === ingestor.domain_name);
+					return <TableRow ingestor={ingestor} metrics={metrics} />;
 				})}
 			</Table.Tbody>
 		</Table>
@@ -158,7 +111,13 @@ const IngestorsTable = (props: IngestorTable) => {
 
 const Ingestors: FC = () => {
 	const { clusterInfoData, getClusterInfoSuccess } = useClusterInfo();
-	if (!getClusterInfoSuccess || !Array.isArray(clusterInfoData?.data)) return null;
+	const { clusterMetrics, getClusterMetricsSuccess } = useClusterMetrics();
+	const showTable =
+		getClusterInfoSuccess &&
+		getClusterMetricsSuccess &&
+		Array.isArray(clusterInfoData?.data) &&
+		Array.isArray(clusterMetrics?.data);
+	if (!showTable) return null;
 
 	const totalActiveMachines = clusterInfoData?.data.filter((ingestor) => ingestor.reachable).length;
 	const totalMachines = clusterInfoData?.data.length;
@@ -171,7 +130,7 @@ const Ingestors: FC = () => {
 				</Stack>
 				<Text>{`${totalActiveMachines} / ${totalMachines} Active`}</Text>
 			</Stack>
-			{clusterInfoData?.data && <IngestorsTable ingestors={clusterInfoData?.data} />}
+			<IngestorsTable ingestors={clusterInfoData?.data} allMetrics={clusterMetrics?.data} />
 		</Stack>
 	);
 };
