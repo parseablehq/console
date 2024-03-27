@@ -73,8 +73,8 @@ const TableRow = (props: IngestorTableRow) => {
 };
 
 type IngestorTable = {
-	ingestors: Ingestor[];
-	allMetrics: IngestorMetrics[];
+	ingestors: Ingestor[] | undefined;
+	allMetrics: IngestorMetrics[] | undefined;
 };
 
 const TableHead = () => (
@@ -96,6 +96,8 @@ const TableHead = () => (
 
 const IngestorsTable = (props: IngestorTable) => {
 	const { ingestors, allMetrics } = props;
+	if (!ingestors || !allMetrics) return null;
+
 	return (
 		<Table verticalSpacing="md">
 			<TableHead />
