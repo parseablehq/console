@@ -86,6 +86,7 @@ const accessKeyMap: { [key: string]: string } = {
 	hasDeleteAccess: 'DeleteStream',
 	hasUpdateAlertAccess: 'PutAlert',
 	hasGetAlertAccess: 'GetAlert',
+	hasCreateStreamAccess: 'CreateStream'
 };
 
 const generateUserAcccessMap = (accessRoles: string[] | null) => {
