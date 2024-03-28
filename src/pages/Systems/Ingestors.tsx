@@ -1,7 +1,7 @@
-import { Stack, Text, Table, Tooltip, ThemeIcon, Popover, Skeleton } from '@mantine/core';
+import { Stack, Text, Table, Tooltip, ThemeIcon, Skeleton } from '@mantine/core';
 import { FC } from 'react';
 import classes from './styles/Systems.module.css';
-import { IconAlertCircle, IconBrandDatabricks, IconX } from '@tabler/icons-react';
+import { IconAlertCircle, IconBrandDatabricks } from '@tabler/icons-react';
 import { useClusterInfo, useClusterMetrics } from '@/hooks/useClusterInfo';
 import { Ingestor, IngestorMetrics } from '@/@types/parseable/api/clusterInfo';
 import { HumanizeNumber, formatBytes } from '@/utils/formatBytes';
@@ -12,48 +12,53 @@ type IngestorTableRow = {
 };
 
 const TrLoadingState = () => (
-	<Table.Td colSpan={8}>
+	<Table.Td colSpan={7}>
 		<Skeleton height={30} />
 	</Table.Td>
 );
 
 const TableRow = (props: IngestorTableRow) => {
 	const { ingestor, metrics } = props;
-
+	const isOfflineIngestor = !ingestor.reachable;
 	return (
 		<Table.Tr key={ingestor.domain_name}>
 			<Table.Td>
 				<Stack style={{ flexDirection: 'row' }} gap={8}>
 					{ingestor.domain_name}
-					{ingestor.status === 'offline' && (
-						<Popover>
-							<Popover.Target>
-								<ThemeIcon className={classes.infoIcon} variant="filled" size="sm">
-									<IconAlertCircle stroke={1.5} />
-								</ThemeIcon>
-							</Popover.Target>
-							<Popover.Dropdown style={{ pointerEvents: 'none' }}>
-								<Text className={classes.infoText}>{ingestor.error}</Text>
-							</Popover.Dropdown>
-						</Popover>
+					{!ingestor.reachable && (
+						<Tooltip label={ingestor.error}>
+							<ThemeIcon className={classes.infoIcon} variant="filled" size="sm">
+								<IconAlertCircle stroke={1.5} />
+							</ThemeIcon>
+						</Tooltip>
 					)}
 				</Stack>
 			</Table.Td>
-			{!metrics ? (
+			{!metrics && !isOfflineIngestor ? (
 				<TrLoadingState />
 			) : (
 				<>
 					<Table.Td align="center">
-						<Tooltip label={metrics.parseable_events_ingested}>
-							<Text style={{fontSize: 14}}>{HumanizeNumber(metrics.parseable_events_ingested)}</Text>
+						<Tooltip label={metrics?.parseable_events_ingested}>
+							<Text style={{ fontSize: 14 }}>
+								{isOfflineIngestor ? '–' : HumanizeNumber(metrics?.parseable_events_ingested || 0)}
+							</Text>
 						</Tooltip>
 					</Table.Td>
-					<Table.Td align="center">{formatBytes(metrics.parseable_storage_size.data)}</Table.Td>
-					<Table.Td align="center">{formatBytes(metrics.process_resident_memory_bytes)}</Table.Td>
-					<Table.Td align="center">{HumanizeNumber(metrics.parseable_staging_files)}</Table.Td>
-					<Table.Td align="center">{formatBytes(metrics.parseable_storage_size.staging)}</Table.Td>
-					<Table.Td>{ingestor.staging_path || ''}</Table.Td>
-					<Table.Td>{ingestor.storage_path || ''}</Table.Td>
+					<Table.Td align="center">
+						{isOfflineIngestor ? '–' : formatBytes(metrics?.parseable_storage_size.data || 0)}
+					</Table.Td>
+					<Table.Td align="center">
+						{isOfflineIngestor ? '–' : formatBytes(metrics?.process_resident_memory_bytes || 0)}
+					</Table.Td>
+					<Table.Td align="center">
+						{isOfflineIngestor ? '–' : HumanizeNumber(metrics?.parseable_staging_files || 0)}
+					</Table.Td>
+					<Table.Td align="center">
+						{isOfflineIngestor ? '–' : formatBytes(metrics?.parseable_storage_size.staging || 0)}
+					</Table.Td>
+					<Table.Td>{ingestor.staging_path || 'Unknown'}</Table.Td>
+					<Table.Td> {ingestor.storage_path || 'Unknown'}</Table.Td>
 				</>
 			)}
 			<Table.Td align="center">
@@ -61,13 +66,13 @@ const TableRow = (props: IngestorTableRow) => {
 					{ingestor.reachable ? 'Online' : 'Offline'}
 				</Stack>
 			</Table.Td>
-			<Table.Td align="center">
+			{/* <Table.Td align="center">
 				{!ingestor.reachable ? (
 					<Tooltip label="Remove">
 						<IconX className={classes.removeIcon} stroke={2} />
 					</Tooltip>
 				) : null}
-			</Table.Td>
+			</Table.Td> */}
 		</Table.Tr>
 	);
 };
@@ -86,8 +91,8 @@ const TableHead = () => (
 			<Table.Th style={{ textAlign: 'center' }}>Memory Usage</Table.Th>
 			<Table.Th style={{ textAlign: 'center' }}>Staging Files</Table.Th>
 			<Table.Th style={{ textAlign: 'center' }}>Staging Size</Table.Th>
-			<Table.Th>Staging Path</Table.Th>
-			<Table.Th>Storage Path</Table.Th>
+			<Table.Th style={{ maxWidth: 100 }}>Staging Path</Table.Th>
+			<Table.Th style={{ maxWidth: 100 }}>Storage Path</Table.Th>
 			<Table.Th style={{ textAlign: 'center' }}>Status</Table.Th>
 			<Table.Th style={{ textAlign: 'center', width: '1rem' }}></Table.Th>
 		</Table.Tr>
