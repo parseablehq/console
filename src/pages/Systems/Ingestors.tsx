@@ -1,8 +1,8 @@
-import { Stack, Text, Table, Tooltip, ThemeIcon, Skeleton } from '@mantine/core';
+import { Stack, Text, Table, Tooltip, ThemeIcon, Skeleton, Box, Loader } from '@mantine/core';
 import { FC } from 'react';
 import classes from './styles/Systems.module.css';
-import { IconAlertCircle, IconBrandDatabricks } from '@tabler/icons-react';
-import { useClusterInfo, useClusterMetrics } from '@/hooks/useClusterInfo';
+import { IconAlertCircle, IconBrandDatabricks, IconX } from '@tabler/icons-react';
+import { useClusterInfo, useClusterMetrics, useDeleteIngestor } from '@/hooks/useClusterInfo';
 import { Ingestor, IngestorMetrics } from '@/@types/parseable/api/clusterInfo';
 import { HumanizeNumber, formatBytes } from '@/utils/formatBytes';
 
@@ -17,9 +17,21 @@ const TrLoadingState = () => (
 	</Table.Td>
 );
 
+function removeProtocol(url: string) {
+    if (url.startsWith("http://")) {
+        return url.slice(7);
+    } else if (url.startsWith("https://")) {
+        return url.slice(8);
+    } else {
+        return url;
+    }
+}
+
 const TableRow = (props: IngestorTableRow) => {
 	const { ingestor, metrics } = props;
 	const isOfflineIngestor = !ingestor.reachable;
+	const { deleteIngestorMutation, deleteIngestorIsLoading } = useDeleteIngestor();
+	const {getClusterInfoRefetch} = useClusterInfo()
 	return (
 		<Table.Tr key={ingestor.domain_name}>
 			<Table.Td>
@@ -66,13 +78,19 @@ const TableRow = (props: IngestorTableRow) => {
 					{ingestor.reachable ? 'Online' : 'Offline'}
 				</Stack>
 			</Table.Td>
-			{/* <Table.Td align="center">
+			<Table.Td align="center">
 				{!ingestor.reachable ? (
-					<Tooltip label="Remove">
-						<IconX className={classes.removeIcon} stroke={2} />
-					</Tooltip>
+					<Box onClick={() => deleteIngestorMutation({ ingestorUrl: removeProtocol(ingestor.domain_name), onSuccess: getClusterInfoRefetch })}>
+						{deleteIngestorIsLoading ? (
+							<Loader size="sm" />
+						) : (
+							<Tooltip label="Remove">
+								<IconX className={classes.removeIcon} stroke={2} />
+							</Tooltip>
+						)}
+					</Box>
 				) : null}
-			</Table.Td> */}
+			</Table.Td>
 		</Table.Tr>
 	);
 };
