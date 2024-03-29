@@ -17,14 +17,18 @@ const TrLoadingState = () => (
 	</Table.Td>
 );
 
-function removeProtocol(url: string) {
+function sanitizeIngestorUrl(url: string) {
     if (url.startsWith("http://")) {
-        return url.slice(7);
+        url = url.slice(7);
     } else if (url.startsWith("https://")) {
-        return url.slice(8);
-    } else {
-        return url;
+        url = url.slice(8);
     }
+    
+    if (url.endsWith("/")) {
+        url = url.slice(0, -1);
+    }
+    
+    return url;
 }
 
 const TableRow = (props: IngestorTableRow) => {
@@ -80,7 +84,7 @@ const TableRow = (props: IngestorTableRow) => {
 			</Table.Td>
 			<Table.Td align="center">
 				{!ingestor.reachable ? (
-					<Box onClick={() => deleteIngestorMutation({ ingestorUrl: removeProtocol(ingestor.domain_name), onSuccess: getClusterInfoRefetch })}>
+					<Box onClick={() => deleteIngestorMutation({ ingestorUrl: sanitizeIngestorUrl(ingestor.domain_name), onSuccess: getClusterInfoRefetch })}>
 						{deleteIngestorIsLoading ? (
 							<Loader size="sm" />
 						) : (
