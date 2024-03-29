@@ -59,7 +59,7 @@ export const useDeleteIngestor = () => {
 		},
 		onSuccess: (_data, variables) => {
 			variables.onSuccess && variables.onSuccess();
-			notifySuccess({ message: 'Ingestor removed successfullys' });
+			notifySuccess({ message: 'Ingestor removed successfully' });
 		},
 	});
 
