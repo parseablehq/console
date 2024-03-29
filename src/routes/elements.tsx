@@ -60,3 +60,13 @@ export const UsersElement: FC = () => {
 		</SuspensePage>
 	);
 };
+
+const Systems = lazy(() => import('@/pages/Systems'));
+
+export const SystemsElement: FC = () => {
+	return (
+		<SuspensePage>
+			<Systems />
+		</SuspensePage>
+	);
+};

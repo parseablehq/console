@@ -8,6 +8,7 @@ export const LOG_STREAMS_ALERTS_URL = (streamName: string) => `${LOG_STREAM_LIST
 export const LOG_STREAMS_RETRNTION_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/retention`;
 export const LOG_STREAMS_STATS_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/stats`;
 export const DELETE_STREAMS_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}`;
+export const CREATE_STREAM_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}`;
 
 // About Parsable Instance
 export const ABOUT_URL = `${API_V1}/about`;
@@ -32,3 +33,7 @@ export const IS_LLM_ACTIVE_URL = `${LLM_QUERY_URL}/isactive`;
 
 // caching
 export const CACHING_STATUS_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/cache`;
+
+export const CLUSTER_INFO_URL = `${API_V1}/cluster/info`;
+export const CLUSTER_METRICS_URL = `${API_V1}/cluster/metrics`;
+export const INGESTOR_DELETE_URL = (ingestorUrl: string) => `${API_V1}/cluster/${ingestorUrl}`;

@@ -1,5 +1,7 @@
 import { useMutation, useQuery } from 'react-query';
-import { deleteLogStream, getLogStreamList } from '@/api/logStream';
+import { deleteLogStream, getLogStreamList, createLogStream } from '@/api/logStream';
+import { AxiosError, isAxiosError } from 'axios';
+import { notifyError, notifySuccess } from '@/utils/notification';
 
 export const useLogStream = () => {
 	const {
@@ -10,12 +12,29 @@ export const useLogStream = () => {
 	} = useMutation((data: { deleteStream: string }) => deleteLogStream(data.deleteStream), {});
 
 	const {
+		mutate: createLogStreamMutation,
+		isSuccess: createLogStreamIsSuccess,
+		isError: createLogStreamIsError,
+		isLoading: createLogStreamIsLoading,
+	} = useMutation((data: { streamName: string, onSuccess: () => void}) => createLogStream(data.streamName), {
+		onError: (data: AxiosError) => {
+			if (isAxiosError(data) && typeof data.message === 'string') {
+				notifyError({ message: data.message });
+			}
+		},
+		onSuccess: (_data, variables) => {
+			variables.onSuccess && variables.onSuccess();
+			notifySuccess({message: `Stream ${variables.streamName} created successfully`})
+		},
+	});
+
+	const {
 		data: getLogStreamListData,
 		isError: getLogStreamListIsError,
 		isSuccess: getLogStreamListIsSuccess,
 		isLoading: getLogStreamListIsLoading,
 		refetch: getLogStreamListRefetch,
-	} = useQuery(['fetch-log-stream-list', deleteLogStreamIsSuccess], () => getLogStreamList(), {
+	} = useQuery(['fetch-log-stream-list', deleteLogStreamIsSuccess, createLogStreamIsSuccess], () => getLogStreamList(), {
 		retry: false,
 		refetchOnWindowFocus: false,
 		refetchOnMount: false,
@@ -43,5 +62,9 @@ export const useLogStream = () => {
 		getLogStreamListIsSuccess,
 		getLogStreamListIsLoading,
 		getLogStreamListRefetch,
+		createLogStreamMutation,
+		createLogStreamIsSuccess,
+		createLogStreamIsError,
+		createLogStreamIsLoading
 	};
 };

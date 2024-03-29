@@ -5,7 +5,7 @@ export type AboutData = {
 	license: string;
 	mode: string;
 	staging: string;
-	store: string;
+	store: { type: string; path: string };
 	updateAvailable: boolean;
 	version: string;
 	llmActive: boolean;
