@@ -18,6 +18,7 @@ const adminAccess = [
 	'DeleteUser',
 	'PutRoles',
 	'GetRole',
+	'Cluster'
 ];
 const editorAccess = [
 	'Ingest',

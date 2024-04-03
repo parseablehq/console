@@ -1,11 +1,11 @@
-import { Box, Stack, Tooltip } from '@mantine/core';
+import { Box, Divider, Stack, Tooltip } from '@mantine/core';
 import { IconLogout, IconUser, IconBinaryTree2, IconInfoCircle, IconUserCog, IconHome, IconServerCog } from '@tabler/icons-react';
 import { FC, useCallback, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { useDisclosure } from '@mantine/hooks';
-import { HOME_ROUTE, LOGS_ROUTE, SYSTEMS_ROUTE, USERS_MANAGEMENT_ROUTE } from '@/constants/routes';
+import { HOME_ROUTE, LOGS_ROUTE, CLUSTER_ROUTE, USERS_MANAGEMENT_ROUTE } from '@/constants/routes';
 import InfoModal from './infoModal';
 import { getStreamsSepcificAccess, getUserSepcificStreams } from './rolesHandler';
 import Cookies from 'js-cookie';
@@ -30,6 +30,9 @@ const navItems = [
 		path: '/logs',
 		route: LOGS_ROUTE,
 	},
+];
+
+const previlagedActions = [
 	{
 		icon: IconUserCog,
 		label: 'Users',
@@ -38,11 +41,11 @@ const navItems = [
 	},
 	{
 		icon: IconServerCog,
-		label: 'Systems',
-		path: '/systems',
-		route: SYSTEMS_ROUTE,
+		label: 'Cluster',
+		path: '/cluster',
+		route: CLUSTER_ROUTE,
 	}
-];
+]
 
 const navActions = [
 	{
@@ -138,7 +141,8 @@ const Navbar: FC = () => {
 				<div className={styles.navbarMain}>
 					<Stack justify="center" align="center" gap={0}>
 						{navItems.map((navItem, index) => {
-							if (navItem.route === USERS_MANAGEMENT_ROUTE && !userSpecificAccessMap.hasUserAccess) return null;
+							// if (navItem.route === USERS_MANAGEMENT_ROUTE && !userSpecificAccessMap.hasUserAccess) return null;
+							// if (navItem.route === CLUSTER_ROUTE && !userSpecificAccessMap.hasUserAccess) return null;
 
 							const isActiveItem = navItem.route === currentRoute;
 							return (
@@ -154,7 +158,25 @@ const Navbar: FC = () => {
 							);
 						})}
 					</Stack>
-					<Stack gap={0}>
+					<Stack gap={4}>
+						{previlagedActions.map((navItem, index) => {
+							if (navItem.route === USERS_MANAGEMENT_ROUTE && !userSpecificAccessMap.hasUserAccess) return null;
+							if (navItem.route === CLUSTER_ROUTE && !userSpecificAccessMap.hasUserAccess) return null;
+
+							const isActiveItem = navItem.route === currentRoute;
+							return (
+								<Stack
+									className={`${styles.navItemContainer} ${isActiveItem && styles.navItemActive}`}
+									gap={0}
+									onClick={() => navigateToPage(navItem.route)}
+									key={index}>
+									<Tooltip label={navItem.label} position="right">
+										<navItem.icon className={styles.navIcon} stroke={isActiveItem ? 1.2 : 1} size={'1.8rem'} />
+									</Tooltip>
+								</Stack>
+							);
+						})}
+						<Divider />
 						{navActions.map((navAction, index) => {
 							const isActiveItem = false;
 							const onClick =

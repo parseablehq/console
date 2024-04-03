@@ -54,27 +54,54 @@ const TableRow = (props: IngestorTableRow) => {
 				<TrLoadingState />
 			) : (
 				<>
-					<Table.Td align="center">
+					<Table.Td align="center" style={{ borderRight: '1px solid #dcdcdc' }}>
 						<Tooltip label={metrics?.parseable_events_ingested}>
 							<Text style={{ fontSize: 14 }}>
 								{isOfflineIngestor ? '–' : HumanizeNumber(metrics?.parseable_events_ingested || 0)}
 							</Text>
 						</Tooltip>
 					</Table.Td>
-					<Table.Td align="center">
-						{isOfflineIngestor ? '–' : formatBytes(metrics?.parseable_storage_size.data || 0)}
+					<Table.Td style={{ borderRight: '1px solid #dcdcdc' }}>
+						<Stack style={{ flexDirection: 'row', justifyContent: 'space-around' }} gap={30}>
+							<Stack gap={10}>
+								<Text className={classes.cellTitle}>Size</Text>
+								<Text className={classes.cellText}>
+									{isOfflineIngestor ? '–' : formatBytes(metrics?.parseable_storage_size.data || 0)}
+								</Text>
+							</Stack>
+							<Stack gap={10}>
+								<Text className={classes.cellTitle}>Path</Text>
+								<Text className={classes.cellText}>{ingestor.storage_path || 'Unknown'}</Text>
+							</Stack>
+						</Stack>
 					</Table.Td>
-					<Table.Td align="center">
-						{isOfflineIngestor ? '–' : formatBytes(metrics?.process_resident_memory_bytes || 0)}
+					<Table.Td style={{ borderRight: '1px solid #dcdcdc' }}>
+						<Stack style={{ flexDirection: 'row', justifyContent: 'space-around' }} gap={30}>
+							<Stack gap={10}>
+								<Text className={classes.cellTitle}>Files</Text>
+								<Text className={classes.cellText}>
+									{isOfflineIngestor ? '–' : HumanizeNumber(metrics?.parseable_staging_files || 0)}
+								</Text>
+							</Stack>
+							<Stack gap={10}>
+								<Text className={classes.cellTitle}>Size</Text>
+								<Text className={classes.cellText}>
+									{isOfflineIngestor ? '–' : formatBytes(metrics?.parseable_storage_size.staging || 0)}
+								</Text>
+							</Stack>
+							<Stack gap={10}>
+								<Text className={classes.cellTitle}>Path</Text>
+								<Text className={classes.cellText}>{ingestor.staging_path || 'Unknown'}</Text>
+							</Stack>
+						</Stack>
 					</Table.Td>
-					<Table.Td align="center">
-						{isOfflineIngestor ? '–' : HumanizeNumber(metrics?.parseable_staging_files || 0)}
+					<Table.Td align="center" style={{ borderRight: '1px solid #dcdcdc' }}>
+						<Tooltip label={metrics?.parseable_events_ingested}>
+							<Text style={{ fontSize: 14 }}>
+								{isOfflineIngestor ? '–' : formatBytes(metrics?.process_resident_memory_bytes || 0)}
+							</Text>
+						</Tooltip>
 					</Table.Td>
-					<Table.Td align="center">
-						{isOfflineIngestor ? '–' : formatBytes(metrics?.parseable_storage_size.staging || 0)}
-					</Table.Td>
-					<Table.Td>{ingestor.staging_path || 'Unknown'}</Table.Td>
-					<Table.Td> {ingestor.storage_path || 'Unknown'}</Table.Td>
 				</>
 			)}
 			<Table.Td align="center">
@@ -84,7 +111,13 @@ const TableRow = (props: IngestorTableRow) => {
 			</Table.Td>
 			<Table.Td align="center">
 				{!ingestor.reachable ? (
-					<Box onClick={() => deleteIngestorMutation({ ingestorUrl: sanitizeIngestorUrl(ingestor.domain_name), onSuccess: getClusterInfoRefetch })}>
+					<Box
+						onClick={() =>
+							deleteIngestorMutation({
+								ingestorUrl: sanitizeIngestorUrl(ingestor.domain_name),
+								onSuccess: getClusterInfoRefetch,
+							})
+						}>
 						{deleteIngestorIsLoading ? (
 							<Loader size="sm" />
 						) : (
@@ -108,13 +141,10 @@ const TableHead = () => (
 	<Table.Thead>
 		<Table.Tr>
 			<Table.Th>Domain</Table.Th>
-			<Table.Th style={{ textAlign: 'center' }}>Events Ingested</Table.Th>
-			<Table.Th style={{ textAlign: 'center' }}>Storage</Table.Th>
-			<Table.Th style={{ textAlign: 'center' }}>Memory Usage</Table.Th>
-			<Table.Th style={{ textAlign: 'center' }}>Staging Files</Table.Th>
-			<Table.Th style={{ textAlign: 'center' }}>Staging Size</Table.Th>
-			<Table.Th style={{ maxWidth: 100 }}>Staging Path</Table.Th>
-			<Table.Th style={{ maxWidth: 100 }}>Storage Path</Table.Th>
+			<Table.Th style={{ textAlign: 'center', borderRight: '1px solid #dcdcdc' }}>Events Ingested</Table.Th>
+			<Table.Th style={{ textAlign: 'center', borderRight: '1px solid #dcdcdc' }}>S3</Table.Th>
+			<Table.Th style={{ textAlign: 'center', borderRight: '1px solid #dcdcdc' }}>Staging</Table.Th>
+			<Table.Th style={{ textAlign: 'center', borderRight: '1px solid #dcdcdc' }}>Memory Usage</Table.Th>
 			<Table.Th style={{ textAlign: 'center' }}>Status</Table.Th>
 			<Table.Th style={{ textAlign: 'center', width: '1rem' }}></Table.Th>
 		</Table.Tr>
@@ -126,7 +156,7 @@ const IngestorsTable = (props: IngestorTable) => {
 	if (!ingestors || !allMetrics) return null;
 
 	return (
-		<Table verticalSpacing="md">
+		<Table verticalSpacing="md" border={1}>
 			<TableHead />
 			<Table.Tbody>
 				{ingestors.map((ingestor) => {

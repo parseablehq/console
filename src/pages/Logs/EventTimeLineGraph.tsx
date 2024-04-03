@@ -42,7 +42,6 @@ const calcAverage = (data: GraphRecord[]) => {
 const getAllTimestamps = (startTime: Dayjs) => {
 	const timestamps = [];
 	for (let i = 0; i < START_RANGE; i++) {
-		// Your code to be executed 30 times goes here
 		const ts = startTime.add(i + 1, 'minute')
 		timestamps.push(ts.toISOString().split('.')[0]+"Z")
 	}
@@ -87,7 +86,7 @@ function ChartTooltip({ payload }: ChartTooltipProps) {
 	const { minute, aboveAvgPercent } = payload[0]?.payload || {};
 	const isAboveAvg = aboveAvgPercent > 0;
 	const startTime = dayjs(minute).utc(true);
-	const endTime = dayjs(minute).add(59, 'seconds');
+	const endTime = dayjs(minute).add(60, 'seconds');
 	return (
 		<Paper px="md" py="sm" withBorder shadow="md" radius="md">
 			<Text fw={600} mb={5}>
@@ -154,7 +153,7 @@ const EventTimeLineGraph = () => {
 
 		const { minute } = samplePayload.payload || {};
 		const startTime = dayjs(minute);
-		const endTime = dayjs(minute).add(59, 'seconds');
+		const endTime = dayjs(minute).add(60, 'seconds');
 		subLogQuery.set((query) => {
 			query.startTime = startTime.toDate();
 			query.endTime = endTime.toDate();
