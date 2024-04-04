@@ -141,9 +141,6 @@ const Navbar: FC = () => {
 				<div className={styles.navbarMain}>
 					<Stack justify="center" align="center" gap={0}>
 						{navItems.map((navItem, index) => {
-							// if (navItem.route === USERS_MANAGEMENT_ROUTE && !userSpecificAccessMap.hasUserAccess) return null;
-							// if (navItem.route === CLUSTER_ROUTE && !userSpecificAccessMap.hasUserAccess) return null;
-
 							const isActiveItem = navItem.route === currentRoute;
 							return (
 								<Stack
