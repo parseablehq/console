@@ -7,7 +7,7 @@ export const STATS_ROUTE = '/:streamName/stats';
 export const CONFIG_ROUTE = '/:streamName/config';
 export const USERS_MANAGEMENT_ROUTE = '/users';
 export const OIDC_NOT_CONFIGURED_ROUTE = '/oidc-not-configured';
-export const SYSTEMS_ROUTE = '/systems';
+export const CLUSTER_ROUTE = '/cluster';
 
 export const PATHS = {
 	all: '/*',
@@ -19,5 +19,5 @@ export const PATHS = {
 	config: '/:streamName/config',
 	users: '/users',
 	oidcNotConfigured: '/oidc-not-configured',
-	systems: '/systems',
+	cluster: '/cluster',
 } as { [key: string]: string };

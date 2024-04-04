@@ -5,7 +5,7 @@ import {
 	LOGS_ROUTE,
 	OIDC_NOT_CONFIGURED_ROUTE,
 	USERS_MANAGEMENT_ROUTE,
-	SYSTEMS_ROUTE
+	CLUSTER_ROUTE
 } from '@/constants/routes';
 import FullPageLayout from '@/layouts/FullPageLayout';
 import NotFound from '@/pages/Errors/NotFound';
@@ -29,7 +29,9 @@ const AppRouter: FC = () => {
 						<Route element={<AccessSpecificRoute accessRequired={['Query', 'GetSchema']} />}>
 							<Route path={LOGS_ROUTE} element={<LogsElement />} />
 						</Route>
-						<Route path={SYSTEMS_ROUTE} element={<SystemsElement/>} />
+						<Route element={<AccessSpecificRoute accessRequired={['Cluster']} />}>
+							<Route path={CLUSTER_ROUTE} element={<SystemsElement />} />
+						</Route>
 					</Route>
 				</Route>
 				<Route path={LOGIN_ROUTE} element={<LoginElement />} />

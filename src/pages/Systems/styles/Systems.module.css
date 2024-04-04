@@ -106,3 +106,13 @@
     font-size: 0.875rem;
     /* font-weight: 600; */
 }
+
+.cellTitle {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 0.5rem 1.25rem;
+}
+
+.cellText {
+    font-size: 14px;
+}
