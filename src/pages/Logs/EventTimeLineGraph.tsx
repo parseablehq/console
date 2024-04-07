@@ -9,7 +9,7 @@ import { HumanizeNumber } from '@/utils/formatBytes';
 import { useHeaderContext } from '@/layouts/MainLayout/Context';
 
 const START_RANGE = 30
-const END_RANGE = 2
+const END_RANGE = 0
 
 const generateCountQuery = (streamName: string, startTime: string, endTime: string) => {
 	return `SELECT DATE_TRUNC('minute', p_timestamp) AS minute_range, COUNT(*) AS log_count FROM ${streamName} WHERE p_timestamp BETWEEN '${startTime}' AND '${endTime}' GROUP BY minute_range ORDER BY minute_range`;
