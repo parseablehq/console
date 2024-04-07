@@ -400,7 +400,7 @@ const LogTable: FC = () => {
 		? PRIMARY_HEADER_HEIGHT + LOGS_PRIMARY_TOOLBAR_HEIGHT + LOGS_SECONDARY_TOOLBAR_HEIGHT
 		: 0;
 
-	const totalCount = Array.isArray(fetchQueryMutation?.data) ? fetchQueryMutation.data[0]?.["COUNT(*)"] : null;
+	const totalCount = Array.isArray(fetchQueryMutation?.data) ? fetchQueryMutation.data[0]?.count : null;
 	const loadedCount = pageLogData?.data.length || null;
 	return (
 		<Box
