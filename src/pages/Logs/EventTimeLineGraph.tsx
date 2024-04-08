@@ -80,6 +80,7 @@ function ChartTooltip({ payload }: ChartTooltipProps) {
 	if (!payload || (Array.isArray(payload) && payload.length === 0)) return null;
 
 	const totalEvents = payload.reduce((acc, item: any) => {
+		acc = 0;
 		return acc + item.value;
 	}, 0);
 
