@@ -44,7 +44,7 @@ const writerAccess = [
 	'GetLiveTail',
 ];
 const readerAccess = ['Query', 'ListStream', 'GetSchema', 'GetStats', 'GetRetention', 'GetAlert', 'GetLiveTail'];
-const ingesterAccess = ['Ingest'];
+const ingestorAccess = ['Ingest'];
 
 const getStreamsSepcificAccess = (rolesWithRoleName: UserRoles, stream?: string) => {
 	let access: string[] = [];
@@ -81,10 +81,10 @@ const getStreamsSepcificAccess = (rolesWithRoleName: UserRoles, stream?: string)
 				}
 			});
 		}
-		if (role.privilege === 'ingester' && role.resource.stream === stream) {
-			ingesterAccess.forEach((ingesterAction: string) => {
-				if (!access.includes(ingesterAction)) {
-					access.push(ingesterAction);
+		if (role.privilege === 'ingestor' && role.resource.stream === stream) {
+			ingestorAccess.forEach((ingestorAction: string) => {
+				if (!access.includes(ingestorAction)) {
+					access.push(ingestorAction);
 				}
 			});
 		}
