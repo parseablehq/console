@@ -157,7 +157,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 				privilege: selectedPrivilege,
 			});
 		}
-		if (selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingester') {
+		if (selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingestor') {
 			if (getLogStreamListData?.data?.find((stream) => stream.name === SelectedStream)) {
 				if (tagInput !== '' && tagInput !== undefined && selectedPrivilege === 'reader') {
 					getRoleData?.data?.push({
@@ -210,7 +210,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 			}
 			return true;
 		}
-		if (selectedPrivilege === 'writer' || selectedPrivilege === 'ingester') {
+		if (selectedPrivilege === 'writer' || selectedPrivilege === 'ingestor') {
 			if (
 				getRoleData?.data?.find(
 					(role: any) => role.privilege === selectedPrivilege && role.resource?.stream === SelectedStream,
@@ -369,7 +369,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 					<Select
 						placeholder="Select privilege"
 						label="Select a privilege to assign"
-						data={['admin', 'editor', 'writer', 'reader', 'ingester']}
+						data={['admin', 'editor', 'writer', 'reader', 'ingestor']}
 						onChange={(value) => {
 							setSelectedPrivilege(value ?? '');
 						}}
@@ -377,7 +377,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 						nothingFoundMessage="No options"
 					/>
 
-					{selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingester' ? (
+					{selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingestor' ? (
 						<>
 							<Select
 								placeholder="Pick one"
