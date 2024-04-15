@@ -2,8 +2,10 @@ import { Box, Button, Modal, Text, px } from '@mantine/core';
 import { FC, useEffect, useMemo } from 'react';
 import { useAbout } from '@/hooks/useGetAbout';
 import { IconAlertCircle } from '@tabler/icons-react';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import styles from './styles/InfoModal.module.css'
+import styles from './styles/InfoModal.module.css';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+
+const { setInstanceConfig } = appStoreReducers;
 
 type InfoModalProps = {
 	opened: boolean;
@@ -12,12 +14,9 @@ type InfoModalProps = {
 
 const InfoModal: FC<InfoModalProps> = (props) => {
 	const { opened, close } = props;
-	const {
-		state: { subInstanceConfig },
-	} = useHeaderContext();
 
 	const { getAboutData, getAboutIsError, getAboutIsLoading } = useAbout();
-
+	const [, setAppStore] = useAppStore((_store) => null);
 	const llmStatus = useMemo(() => {
 		let status = 'LLM API Key not set';
 		if (getAboutData?.data?.llmActive) {
@@ -28,7 +27,7 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 
 	useEffect(() => {
 		if (getAboutData?.data) {
-			subInstanceConfig.set(getAboutData?.data);
+			setAppStore((store) => setInstanceConfig(store, getAboutData?.data));
 		}
 	}, [getAboutData?.data]);
 

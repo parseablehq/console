@@ -5,6 +5,7 @@ import SuspensePage from './SuspensePage';
 import MainLayoutPageProvider from '@/layouts/MainLayout/Context';
 import MainLayout from '@/layouts/MainLayout';
 import { AppProvider } from '@/layouts/MainLayout/providers/AppProvider';
+import { LogsProvider } from '@/pages/Logs/providers/LogsProvider';
 
 // page-wise providers
 import LogsPageProvider from '@/pages/Logs/logsContextProvider';
@@ -35,11 +36,13 @@ const Logs = lazy(() => import('@/pages/Logs'));
 export const LogsElement: FC = () => {
 	return (
 		<SuspensePage>
-			<LogsPageProvider>
-				<QueryFilterProvider>
-					<Logs />
-				</QueryFilterProvider>
-			</LogsPageProvider>
+			<LogsProvider>
+				<LogsPageProvider>
+					<QueryFilterProvider>
+						<Logs />
+					</QueryFilterProvider>
+				</LogsPageProvider>
+			</LogsProvider>
 		</SuspensePage>
 	);
 };

@@ -1,17 +1,15 @@
 import { Select } from '@mantine/core';
 import { useCallback, useEffect, useRef } from 'react';
 import classes from './styles/LogQuery.module.css';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const StreamDropdown = () => {
-	const {
-		state: {  userSpecficStreams, subLogQuery },
-	} = useHeaderContext();
 	const { streamName } = useParams();
 
-	const selectedStream = subLogQuery.get().streamName;
-	const valueRef = useRef<string | null>(selectedStream);
+	const [currentStream] = useAppStore(store => store.currentStream)
+	const [userSpecificStreams] = useAppStore(store => store.userSpecificStreams)
+	const valueRef = useRef<string | null>(currentStream);
 	const navigate = useNavigate();
 
 	const handleChange: (value: string | null) => void = useCallback((value: string | null) => {
@@ -34,7 +32,7 @@ const StreamDropdown = () => {
 			description="Stream"
 			className={classes.streamSelect}
 			onChange={handleChange}
-			data={userSpecficStreams?.map((stream: any) => ({ value: stream.name, label: stream.name })) ?? []}
+			data={userSpecificStreams?.map((stream: any) => ({ value: stream.name, label: stream.name })) ?? []}
 		/>
 	);
 };
