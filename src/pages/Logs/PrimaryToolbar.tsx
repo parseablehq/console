@@ -19,6 +19,9 @@ const PrimaryToolbar = () => {
 		state: { liveTailToggled },
 	} = useLogsPageContext();
 	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
+	const [maximized] = useAppStore((store) => store.maximized);
+
+	if (maximized) return null;
 	return (
 		<Stack className={classes.logsPrimaryToolbar} style={{ height: LOGS_PRIMARY_TOOLBAR_HEIGHT }}>
 			<StreamDropdown />

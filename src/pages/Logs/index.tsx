@@ -10,28 +10,19 @@ import RententionModal from './RetentionModal';
 import { useLogsPageContext } from './logsContextProvider';
 import PrimaryToolbar from './PrimaryToolbar';
 import SecondaryToolbar from './SecondaryToolbar';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
 
 const Logs: FC = () => {
 	useDocumentTitle('Parseable | Logs');
 	const {
-		state: { maximized },
-	} = useHeaderContext();
-	const {
 		state: { liveTailToggled },
 	} = useLogsPageContext();
-
 	return (
 		<Box style={{ flex: 1, display: 'flex', position: 'relative', flexDirection: 'column' }}>
 			<DeleteStreamModal />
 			<AlertsModal />
 			<RententionModal />
-			{!maximized && (
-				<>
-					<PrimaryToolbar />
-					<SecondaryToolbar />
-				</>
-			)}
+			<PrimaryToolbar />
+			<SecondaryToolbar />
 			{liveTailToggled ? <LiveLogTable /> : <StaticLogTable />}
 			{/* TODO: need to move the live logtable into the Logs folder */}
 			<ViewLog />

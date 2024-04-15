@@ -30,6 +30,7 @@ const SecondaryToolbar = () => {
 		state: { liveTailToggled },
 	} = useLogsPageContext();
 	const [currentStream] = useAppStore((store) => store.currentStream);
+	const [maximized] = useAppStore((store) => store.maximized);
 	const [, setLogsStore] = useLogsStore((store) => store.timeRange);
 	const exportHandler = useCallback(
 		(fileType: string | null) => {
@@ -45,6 +46,8 @@ const SecondaryToolbar = () => {
 	const resetTimeInterval = useCallback(() => {
 		setLogsStore((store) => resetTimeRange(store));
 	}, []);
+
+	if (maximized) return null;
 	return (
 		<Stack className={classes.logsSecondaryToolbar} gap={0} style={{ height: LOGS_SECONDARY_TOOLBAR_HEIGHT }}>
 			{!liveTailToggled && (
