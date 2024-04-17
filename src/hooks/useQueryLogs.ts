@@ -3,8 +3,11 @@ import { getQueryLogs, getQueryResult } from '@/api/query';
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
 import { useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
-import { LOG_QUERY_LIMITS, useLogsPageContext } from '@/pages/Logs/logsContextProvider';
+import { LOG_TABLE_PER_PAGE, useLogsPageContext } from '@/pages/Logs/logsContextProvider';
 import { parseLogData } from '@/utils';
+import { useLogsStore, logsStoreReducers } from '@/pages/Logs/providers/LogsProvider';
+
+const {setData} = logsStoreReducers;
 
 type QueryLogs = {
 	streamName: string;
@@ -40,7 +43,7 @@ export const useQueryLogs = () => {
 	const {
 		state: { subLogQueryData, custQuerySearchState },
 	} = useLogsPageContext();
-
+	const [dataInStore, setLogsStore] = useLogsStore(store => store.data)
 	const { isQuerySearchActive, custSearchQuery } = custQuerySearchState;
 
 	const data: Log[] | null = useMemo(() => {
@@ -92,6 +95,9 @@ export const useQueryLogs = () => {
 				state.filteredData = temp;
 				state.rawData = logs;
 			});
+
+			// remove
+			setLogsStore(store => setData(store, {rawData: logs, filteredData: temp}))
 			return temp;
 		}
 
@@ -118,7 +124,7 @@ export const useQueryLogs = () => {
 		[_dataRef.current],
 	);
 
-	const goToPage = (page = 1, limit: number = LOG_QUERY_LIMITS[0]) => {
+	const goToPage = (page = 1, limit: number = LOG_TABLE_PER_PAGE[0]) => {
 		const firstPageIndex = (page - 1) * limit;
 		const lastPageIndex = firstPageIndex + limit;
 

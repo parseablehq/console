@@ -10,12 +10,16 @@ import RententionModal from './RetentionModal';
 import { useLogsPageContext } from './logsContextProvider';
 import PrimaryToolbar from './PrimaryToolbar';
 import SecondaryToolbar from './SecondaryToolbar';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const Logs: FC = () => {
 	useDocumentTitle('Parseable | Logs');
 	const {
 		state: { liveTailToggled },
 	} = useLogsPageContext();
+	const [currentStream] = useAppStore(store => store.currentStream)
+
+	if (!currentStream) return null;
 	return (
 		<Box style={{ flex: 1, display: 'flex', position: 'relative', flexDirection: 'column' }}>
 			<DeleteStreamModal />

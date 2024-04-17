@@ -19,9 +19,9 @@ import {
 	Stack,
 	Tooltip,
 } from '@mantine/core';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
-import type { FC } from 'react';
-import { LOG_QUERY_LIMITS, useLogsPageContext, LOAD_LIMIT as loadLimit, LOAD_LIMIT } from './logsContextProvider';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { FC, ReactNode } from 'react';
+import { LOG_TABLE_PER_PAGE, useLogsPageContext, LOAD_LIMIT as loadLimit, LOAD_LIMIT } from './logsContextProvider';
 import LogRow from './LogRow';
 import useMountedState from '@/hooks/useMountedState';
 import { IconSelector, IconGripVertical, IconPin, IconPinFilled, IconSettings } from '@tabler/icons-react';
@@ -39,8 +39,12 @@ import tableStyles from './styles/Logs.module.css';
 import { LOGS_PRIMARY_TOOLBAR_HEIGHT, LOGS_SECONDARY_TOOLBAR_HEIGHT, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import { HumanizeNumber } from '@/utils/formatBytes';
+import { useLogsStore, logsStoreReducers } from './providers/LogsProvider';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const skipFields = ['p_metadata', 'p_tags'];
+
+const {togglePinnedColumns, toggleDisabledColumns, setPerPage, setCurrentPage, setCurrentOffset} = logsStoreReducers;
 
 const makeHeadersFromSchema = (schema: LogStreamSchemaData | null): string[] => {
 	if (schema) {
@@ -67,18 +71,311 @@ type TotalLogsCountProps = {
 	loadedCount: number | null;
 };
 
-const TotalLogsCount = (props: TotalLogsCountProps) => {
-	const { totalCount, loadedCount } = props;
-	if (typeof totalCount !== 'number' || typeof loadedCount !== 'number') return <Stack />;
+const TotalLogsCount = () => {
+	const [{ displayedCount, totalCount }] = useLogsStore((store) => store.tableOpts);
+	if (typeof totalCount !== 'number' || typeof displayedCount !== 'number') return <Stack />;
 
-	const renderTotalCount = useCallback(() => (<Tooltip label={totalCount}><Text>{HumanizeNumber(totalCount)}</Text></Tooltip>), [totalCount]);
+	const renderTotalCount = useCallback(
+		() => (
+			<Tooltip label={totalCount}>
+				<Text>{HumanizeNumber(totalCount)}</Text>
+			</Tooltip>
+		),
+		[totalCount],
+	);
 	return (
-		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row'}} gap={6}>
-			<Text>{`Showing ${loadedCount < LOAD_LIMIT ? loadedCount : LOAD_LIMIT} out of`}</Text>
+		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }} gap={6}>
+			<Text>{`Showing ${displayedCount < LOAD_LIMIT ? displayedCount : LOAD_LIMIT} out of`}</Text>
 			{renderTotalCount()}
 		</Stack>
 	);
 };
+
+const TableContainer = (props: { children: ReactNode }) => {
+	const [maximized] = useAppStore((store) => store.maximized);
+	const primaryHeaderHeight = !maximized
+		? PRIMARY_HEADER_HEIGHT + LOGS_PRIMARY_TOOLBAR_HEIGHT + LOGS_SECONDARY_TOOLBAR_HEIGHT
+		: 0;
+
+	return (
+		<Box
+			className={tableStyles.container}
+			style={{
+				maxHeight: `calc(100vh - ${primaryHeaderHeight}px )`,
+			}}>
+			{props.children}
+		</Box>
+	);
+};
+
+const PinnedColumns = (props) => {
+	const { containerRefs } = props;
+	const { leftSectionRef, rightSectionRef, activeSectionRef, pinnedContianerRef } = containerRefs;
+
+	const [{ pinnedColumns }] = useLogsStore((store) => store.tableOpts);
+	const [pinnedColumnsWidth, setPinnedColumnsWidth] = useMountedState(0);
+
+	useEffect(() => {
+		if (
+			pinnedContianerRef.current?.offsetWidth &&
+			pinnedContianerRef.current?.clientWidth < 500 &&
+			pinnedColumns.length > 0
+		) {
+			setPinnedColumnsWidth(pinnedContianerRef.current?.clientWidth);
+		} else if (
+			pinnedContianerRef.current?.offsetWidth &&
+			pinnedContianerRef.current?.clientWidth > 500 &&
+			pinnedColumns.length > 0
+		) {
+			setPinnedColumnsWidth(500);
+		} else {
+			setPinnedColumnsWidth(0);
+		}
+	}, [pinnedContianerRef, pinnedColumns]);
+
+
+	{/* {pinnedColumnsWidth > 0 && <Box style={{ height: '100%', borderLeft: '1px solid #ccc' }} />} */}
+
+	return (
+		<ScrollArea
+			w={`${pinnedColumnsWidth}px`}
+			className={tableStyles.pinnedScrollView}
+			styles={() => ({
+				scrollbar: {
+					'&[data-orientation="vertical"] .mantine-ScrollArea-thumb': {
+						display: 'none',
+					},
+				},
+			})}
+			onMouseEnter={() => {
+				activeSectionRef.current = 'left';
+			}}
+			viewportRef={leftSectionRef}
+			onScrollPositionChange={({ y }) => {
+				if (activeSectionRef.current === 'right') return;
+				rightSectionRef.current!.scrollTop = y;
+			}}>
+			<Box className={tableStyles.pinnedTableContainer} ref={pinnedContianerRef}>
+				<Table className={tableStyles.tableStyle}>
+					<Thead className={tableStyles.theadStylePinned}>
+						<TableHeader isPinned />
+					</Thead>
+					<Tbody>
+						<LogRow isPinned />
+					</Tbody>
+				</Table>
+			</Box>
+		</ScrollArea>
+	);
+};
+
+const Columns = (props) => {
+	const {
+		reorderSchemaFields,
+		resetColumns,
+		containerRefs
+	} = props;
+	const { leftSectionRef, rightSectionRef, activeSectionRef } = containerRefs;
+	return (
+		<ScrollArea
+			onMouseEnter={() => {
+				activeSectionRef.current = 'right';
+			}}
+			viewportRef={rightSectionRef}
+			onScrollPositionChange={({ y }) => {
+				if (activeSectionRef.current === 'left') return;
+				leftSectionRef.current!.scrollTop = y;
+			}}>
+			<Box className={tableStyles.tableContainer}>
+				<Table className={tableStyles.tableStyle}>
+					<Thead className={tableStyles.theadStyle}>
+						<TableHeader />
+						<ThColumnMenu
+							reorderColumn={reorderSchemaFields}
+							resetColumns={resetColumns}
+						/>
+					</Thead>
+					<Tbody>
+						<LogRow rowArrows />
+					</Tbody>
+				</Table>
+			</Box>
+		</ScrollArea>
+	);
+};
+
+const ErrorView = (props) => {
+	const { message, onRetry } = props;
+	return (
+		<Center className={tableStyles.errorContainer}>
+			<Text c="red.8" style={{ fontWeight: 400 }}>
+				{message || 'Error'}
+			</Text>
+			{(logsError || logStreamSchemaError) && <RetryBtn onClick={onRetry} mt="md" />}
+		</Center>
+	);
+};
+
+const LoadingView = () => {
+	return (
+		<Stack w="100%" align="center" h="100%" style={{ alignItems: 'center', justifyContent: 'center' }}>
+			<Loader variant="dots" />
+		</Stack>
+	);
+};
+
+const Footer = (props) => {
+	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
+	const { totalPages, currentOffset, currentPage, perPage } = tableOpts;
+	console.log(tableOpts)
+	const onPageChange = useCallback((page) => {
+		setLogsStore((store) => setCurrentPage(store, page));
+	}, []);
+	const pagination = usePagination({ total: totalPages ?? 1, initialPage: 1, onChange: onPageChange });
+	const onChangeOffset = useCallback(
+		(key: 'prev' | 'next') => {
+			if (key === 'prev') {
+				const targetOffset = currentOffset - 9000;
+				if (currentOffset < 0) return;
+
+				setLogsStore((store) => setCurrentOffset(store, targetOffset));
+			} else {
+				// should limit with total count ?
+				setLogsStore((store) => setCurrentOffset(store, currentOffset + 9000));
+			}
+		},
+		[currentOffset],
+	);
+
+	return (
+		<Box className={tableStyles.footerContainer}>
+			<Stack w="100%" justify="center" align="flex-start">
+				<TotalLogsCount />
+			</Stack>
+			<Stack w="100%" justify="center">
+				{true ? (
+					<Pagination.Root
+						total={totalPages}
+						value={currentPage}
+						onChange={(page) => {
+							pagination.setPage(page);
+						}}>
+						<Group gap={5} justify="center">
+							<Pagination.First
+								onClick={() => {
+									currentOffset !== 0 && onChangeOffset('prev');
+								}}
+								disabled={currentOffset === 0}
+							/>
+							<Pagination.Previous />
+							{pagination.range.map((page) => {
+								if (page === 'dots') {
+									return <Pagination.Dots key={page} />;
+								} else {
+									return (
+										<Pagination.Control
+											value={page}
+											key={page}
+											active={currentPage === page}
+											onClick={() => {
+												pagination.setPage(page);
+											}}>
+											{perPage ? page + currentOffset / perPage ?? 1 : page}
+										</Pagination.Control>
+									);
+								}
+							})}
+							<Pagination.Next />
+							<Pagination.Last
+								onClick={() => {
+									onChangeOffset('next');
+								}}
+								disabled={false} // do not rmv
+							/>
+						</Group>
+					</Pagination.Root>
+				) : null}
+			</Stack>
+			<Stack w="100%" align="flex-end">
+				<LimitControl />
+			</Stack>
+		</Box>
+	);
+};
+
+const TableHeader = (props) => {
+	const [{headers, disabledColumns, pinnedColumns}] = useLogsStore(store => store.tableOpts);
+
+	if (headers.length > 0) {
+		return headers
+			.filter((tableHeader) => !disabledColumns.includes(tableHeader) && !skipFields.includes(tableHeader))
+			.filter((tableHeader) =>
+				props.isPinned ? pinnedColumns.includes(tableHeader) : !pinnedColumns.includes(tableHeader),
+			)
+			.map((tableHeader) => {
+				return (
+					<Column
+						key={tableHeader}
+						columnName={tableHeader}
+						appliedFilter={() => {}}
+						applyFilter={() => {}}
+						getColumnFilters={() => {}}
+						setSorting={() => {}}
+						fieldSortOrder={() => {}}
+					/>
+				);
+			});
+	}
+
+	return null;
+};
+
+const LogTable2 = () =>{
+	const [store] = useLogsStore(store => store)
+	console.log(store)
+	const errorMessage = null;
+	const hasContentLoaded = true;
+	const [containerRefs, _setContainerRefs] = useState({
+		activeSectionRef: useRef<'left' | 'right'>('left'),
+		leftSectionRef: useRef<HTMLDivElement>(null),
+		rightSectionRef: useRef<HTMLDivElement>(null),
+		pinnedContianerRef: useRef<HTMLDivElement>(null),
+	});
+
+	const [maximized] = useAppStore((store) => store.maximized);
+	const primaryHeaderHeight = !maximized
+		? PRIMARY_HEADER_HEIGHT + LOGS_PRIMARY_TOOLBAR_HEIGHT + LOGS_SECONDARY_TOOLBAR_HEIGHT
+		: 0;
+
+	return (
+		<TableContainer>
+			<FilterPills />
+			{!errorMessage ? (
+				hasContentLoaded ? (
+					<Box className={tableStyles.innerContainer} style={{ maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
+						<Box
+							className={tableStyles.innerContainer}
+							style={{ display: 'flex', flexDirection: 'row', maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
+							<PinnedColumns containerRefs={containerRefs} />
+							<Columns
+								reorderSchemaFields={() => {}} // check
+								resetColumns={() => {}} // check
+								containerRefs={containerRefs}
+							/>
+						</Box>
+					</Box>
+				) : false ? ( // check
+					<EmptyBox message="No Data Available" />
+				) : (
+					<LoadingView />
+				)
+			) : (
+				<ErrorView message={errorMessage} onRetry={() => {}} /> // check
+			)}
+			<Footer />
+		</TableContainer>
+	);
+}
 
 const LogTable: FC = () => {
 	const {
@@ -96,7 +393,12 @@ const LogTable: FC = () => {
 	const [refreshInterval, setRefreshInterval] = useMountedState<number | null>(null);
 	const [logStreamError, setLogStreamError] = useMountedState<string | null>(null);
 	const [columnToggles, setColumnToggles] = useMountedState<Map<string, boolean>>(new Map());
-	const [pinnedColumns, setPinnedColumns] = useMountedState<Set<string>>(new Set());
+	const [containerRefs, _setContainerRefs] = useState({
+		activeSectionRef: useRef<'left' | 'right'>('left'),
+		leftSectionRef: useRef<HTMLDivElement>(null),
+		rightSectionRef: useRef<HTMLDivElement>(null),
+		pinnedContianerRef: useRef<HTMLDivElement>(null),
+	});
 	const {
 		data: logsSchema,
 		getDataSchema,
@@ -127,6 +429,7 @@ const LogTable: FC = () => {
 		return subLogSearch.get().filters[key] ?? [];
 	};
 
+	
 	const currentStreamName = subLogQuery.get().streamName;
 	const startTime = subLogQuery.get().startTime;
 	const endTime = subLogQuery.get().endTime;
@@ -199,29 +502,11 @@ const LogTable: FC = () => {
 		};
 	};
 
-	const isColumnPinned = useCallback((columnName: string) => pinnedColumns.has(columnName), [pinnedColumns]);
-
-	const toggleColumnPinned = (columnName: string) => {
-		setPinnedColumns((prev) => {
-			if (prev.has(columnName)) {
-				prev.delete(columnName);
-			} else {
-				prev.add(columnName);
-			}
-
-			return new Set(prev);
-		});
-	};
-
-	const resetColumns = () => {
-		setPinnedColumns(new Set());
-		setColumnToggles(new Map());
-	};
 	const onRetry = () => {
 		const query = subLogQuery.get();
 		resetStreamData();
 		resetLogsData();
-		resetColumns();
+		// resetColumns();
 		setPageOffset(0);
 
 		if (query) {
@@ -232,14 +517,14 @@ const LogTable: FC = () => {
 				limit: loadLimit,
 				pageOffset: 0,
 			});
-			getDataSchema(query.streamName);
+			getDataSchema();
 		}
 	};
 
 	useEffect(() => {
 		if (subLogQuery.get()) {
 			const query = subLogQuery.get();
-			resetColumns();
+			// resetColumns();
 			setPageOffset(0);
 			resetStreamData();
 			resetLogsData();
@@ -251,7 +536,7 @@ const LogTable: FC = () => {
 					limit: loadLimit,
 					pageOffset: 0,
 				});
-				getDataSchema(query.streamName);
+				getDataSchema();
 			}
 		}
 	}, [custSearchQuery]);
@@ -271,7 +556,7 @@ const LogTable: FC = () => {
 			setPageOffset(0);
 			resetLogsData();
 			resetStreamData();
-			resetColumns();
+			// resetColumns();
 
 			if (state) {
 				getQueryData({
@@ -281,14 +566,13 @@ const LogTable: FC = () => {
 					limit: loadLimit,
 					pageOffset: 0,
 				});
-				getDataSchema(state.streamName);
+				getDataSchema();
 			}
 		});
 		subLogStreamSchema.set(logsSchema);
 		return () => {
 			streamErrorListener();
 			subLogQueryListener();
-			// subID();
 			refreshIntervalListener();
 			logSearchListener();
 		};
@@ -321,260 +605,114 @@ const LogTable: FC = () => {
 		}
 	}, [refreshInterval]);
 
-	const renderTh = useMemo(() => {
-		if (tableHeaders) {
-			return tableHeaders
-				.filter(
-					(tableHeader) =>
-						isColumnActive(tableHeader) && !isColumnPinned(tableHeader) && !skipFields.includes(tableHeader),
-				)
-				.map((tableHeader) => {
-					return (
-						<Column
-							key={tableHeader}
-							columnName={tableHeader}
-							appliedFilter={appliedFilter}
-							applyFilter={applyFilter}
-							getColumnFilters={getColumnFilters}
-							setSorting={sortingSetter(tableHeader)}
-							fieldSortOrder={sort.key === tableHeader ? sort.order : null}
-						/>
-					);
-				});
-		}
+	// const renderTh = useMemo(() => {
+	// 	if (tableHeaders) {
+	// 		return tableHeaders
+	// 			.filter(
+	// 				(tableHeader) =>
+	// 					!disabledColumns.includes(tableHeader) && !pinnedColumns2.includes(tableHeader) && !skipFields.includes(tableHeader),
+	// 			)
+	// 			.map((tableHeader) => {
+	// 				return (
+	// 					<Column
+	// 						key={tableHeader}
+	// 						columnName={tableHeader}
+	// 						appliedFilter={appliedFilter}
+	// 						applyFilter={applyFilter}
+	// 						getColumnFilters={getColumnFilters}
+	// 						setSorting={sortingSetter(tableHeader)}
+	// 						fieldSortOrder={sort.key === tableHeader ? sort.order : null}
+	// 					/>
+	// 				);
+	// 			});
+	// 	}
 
-		return null;
-	}, [tableHeaders, columnToggles, logs, sort, pinnedColumns]);
+	// 	return null;
+	// }, [tableHeaders, columnToggles, logs, sort, pinnedColumns, pinnedColumns2]);
 
-	const renderPinnedTh = useMemo(() => {
-		if (tableHeaders) {
-			return tableHeaders
-				.filter(
-					(tableHeader) =>
-						isColumnActive(tableHeader) && isColumnPinned(tableHeader) && !skipFields.includes(tableHeader),
-				)
-				.map((tableHeader) => {
-					return (
-						<Column
-							key={tableHeader}
-							columnName={tableHeader}
-							appliedFilter={appliedFilter}
-							applyFilter={applyFilter}
-							getColumnFilters={getColumnFilters}
-							setSorting={sortingSetter(tableHeader)}
-							fieldSortOrder={sort.key === tableHeader ? sort.order : null}
-						/>
-					);
-				});
-		}
+	// const renderPinnedTh = useMemo(() => {
+	// 	if (tableHeaders) {
+	// 		return tableHeaders
+	// 			.filter(
+	// 				(tableHeader) =>
+	// 				!disabledColumns.includes(tableHeader) && pinnedColumns2.includes(tableHeader) && !skipFields.includes(tableHeader),
+	// 			)
+	// 			.map((tableHeader) => {
+	// 				return (
+	// 					<Column
+	// 						key={tableHeader}
+	// 						columnName={tableHeader}
+	// 						appliedFilter={appliedFilter}
+	// 						applyFilter={applyFilter}
+	// 						getColumnFilters={getColumnFilters}
+	// 						setSorting={sortingSetter(tableHeader)}
+	// 						fieldSortOrder={sort.key === tableHeader ? sort.order : null}
+	// 					/>
+	// 				);
+	// 			});
+	// 	}
 
-		return null;
-	}, [tableHeaders, columnToggles, logs, sort, pinnedColumns]);
-
-	const active = useRef<'left' | 'right'>('left');
-	const leftRef = useRef<HTMLDivElement>(null);
-	const rightRef = useRef<HTMLDivElement>(null);
-	const pinnedContianerRef = useRef<HTMLDivElement>(null);
-	const [pinnedColumnsWidth, setPinnedColumnsWidth] = useMountedState(0);
-	const pagination = usePagination({ total: pageLogData?.totalPages ?? 1, initialPage: 1 });
-
-	useEffect(() => {
-		if (
-			pinnedContianerRef.current?.offsetWidth &&
-			pinnedContianerRef.current?.clientWidth < 500 &&
-			pinnedColumns.size > 0
-		) {
-			setPinnedColumnsWidth(pinnedContianerRef.current?.clientWidth);
-		} else if (
-			pinnedContianerRef.current?.offsetWidth &&
-			pinnedContianerRef.current?.clientWidth > 500 &&
-			pinnedColumns.size > 0
-		) {
-			setPinnedColumnsWidth(500);
-		} else {
-			setPinnedColumnsWidth(0);
-		}
-	}, [pinnedContianerRef, pinnedColumns]);
+	// 	return null;
+	// }, [tableHeaders, columnToggles, logs, sort, pinnedColumns, pinnedColumns2]);
 
 	const primaryHeaderHeight = !maximized
 		? PRIMARY_HEADER_HEIGHT + LOGS_PRIMARY_TOOLBAR_HEIGHT + LOGS_SECONDARY_TOOLBAR_HEIGHT
 		: 0;
 
-	const totalCount = Array.isArray(fetchQueryMutation?.data) ? fetchQueryMutation.data[0]?.count : null;
-	const loadedCount = pageLogData?.data.length || null;
+	const errorMessage = logStreamError || logStreamSchemaError || logsError
+	const hasContentLoaded = !!tableHeaders.length && !!pageLogData?.data.length
 	return (
-		<Box
-			className={tableStyles.container}
-			style={{
-				maxHeight: `calc(100vh - ${primaryHeaderHeight}px )`,
-			}}>
+		<TableContainer>
 			<FilterPills />
-			{!(logStreamError || logStreamSchemaError || logsError) ? (
-				Boolean(tableHeaders.length) && Boolean(pageLogData?.data.length) ? (
+			{!errorMessage ? (
+				hasContentLoaded ? (
 					<Box className={tableStyles.innerContainer} style={{ maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
 						<Box
 							className={tableStyles.innerContainer}
 							style={{ display: 'flex', flexDirection: 'row', maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
-							<ScrollArea
-								w={`${pinnedColumnsWidth}px`}
-								className={tableStyles.pinnedScrollView}
-								styles={() => ({
-									scrollbar: {
-										'&[data-orientation="vertical"] .mantine-ScrollArea-thumb': {
-											display: 'none',
-										},
-									},
-								})}
-								onMouseEnter={() => {
-									active.current = 'left';
-								}}
-								viewportRef={leftRef}
-								onScrollPositionChange={({ y }) => {
-									if (active.current === 'right') return;
-									rightRef.current!.scrollTop = y;
-								}}>
-								<Box className={tableStyles.pinnedTableContainer} ref={pinnedContianerRef}>
-									<Table className={tableStyles.tableStyle}>
-										<Thead className={tableStyles.theadStylePinned}>{renderPinnedTh}</Thead>
-										<Tbody>
-											<LogRow
-												logData={pageLogData?.data || []}
-												headers={tableHeaders.filter((tableHeader) => isColumnPinned(tableHeader)) || []}
-												isColumnActive={isColumnActive}
-											/>
-										</Tbody>
-									</Table>
-								</Box>
-							</ScrollArea>
-							{pinnedColumnsWidth > 0 && <Box style={{ height: '100%', borderLeft: '1px solid #ccc' }} />}
-							<ScrollArea
-								onMouseEnter={() => {
-									active.current = 'right';
-								}}
-								viewportRef={rightRef}
-								onScrollPositionChange={({ y }) => {
-									if (active.current === 'left') return;
-									leftRef.current!.scrollTop = y;
-								}}>
-								<Box className={tableStyles.tableContainer}>
-									<Table className={tableStyles.tableStyle}>
-										<Thead className={tableStyles.theadStyle}>
-											{renderTh}
-											<ThColumnMenu
-												tableHeaders={tableHeaders || []}
-												columnToggles={columnToggles}
-												toggleColumn={toggleColumn}
-												isColumnActive={isColumnActive}
-												reorderColumn={reorderSchemaFields}
-												isColumnPinned={isColumnPinned}
-												toggleColumnPinned={toggleColumnPinned}
-												resetColumns={resetColumns}
-											/>
-										</Thead>
-										<Tbody>
-											<LogRow
-												logData={pageLogData?.data || []}
-												headers={tableHeaders.filter((tableHeader) => !isColumnPinned(tableHeader)) || []}
-												isColumnActive={isColumnActive}
-												rowArrows={true}
-											/>
-										</Tbody>
-									</Table>
-								</Box>
-							</ScrollArea>
+							<PinnedColumns containerRefs={containerRefs} />
+							<Columns
+								reorderSchemaFields={reorderSchemaFields}
+								// resetColumns={resetColumns}
+								resetColumns={() => {}}
+								containerRefs={containerRefs}
+							/>
 						</Box>
 					</Box>
 				) : pageLogData?.data.length === 0 ? (
 					<EmptyBox message="No Data Available" />
 				) : (
-					<EmptyBox message="Select a time Slot " />
+					<LoadingView />
 				)
 			) : (
-				<Center className={tableStyles.errorContainer}>
-					<Text c="red.8" style={{ fontWeight: 400 }}>
-						{logStreamError || logStreamSchemaError || logsError || 'Error'}
-					</Text>
-					{(logsError || logStreamSchemaError) && <RetryBtn onClick={onRetry} mt="md" />}
-				</Center>
+				<ErrorView message={errorMessage} onRetry={onRetry} />
 			)}
-			<Box className={tableStyles.footerContainer}>
-				<Stack w="100%" justify="center" align="flex-start">
-					<TotalLogsCount totalCount={totalCount} loadedCount={loadedCount} />
-				</Stack>
-				<Stack w="100%" justify="center">
-					{!loading && !logsLoading ? (
-						<Pagination.Root
-							total={pageLogData?.totalPages || 1}
-							value={pageLogData?.page || 1}
-							onChange={(page) => {
-								goToPage(page, pageLogData?.limit || 1);
-								pagination.setPage(page);
-							}}>
-							<Group gap={5} justify="center">
-								<Pagination.First
-									onClick={() => {
-										if (pageOffset !== 0) setPageOffset((value) => value - loadLimit);
-									}}
-									disabled={pageOffset === 0}
-								/>
-								<Pagination.Previous />
-								{pagination.range.map((page) => {
-									if (page === 'dots') {
-										return <Pagination.Dots key={page} />;
-									} else {
-										return (
-											<Pagination.Control
-												value={page}
-												key={page}
-												active={pageLogData?.page === page}
-												onClick={() => {
-													goToPage(page);
-													pagination.setPage(page);
-												}}>
-												{pageLogData?.limit ? page + pageOffset / pageLogData?.limit ?? 1 : page}
-											</Pagination.Control>
-										);
-									}
-								})}
-								<Pagination.Next />
-								<Pagination.Last
-									onClick={() => {
-										setPageOffset((value) => {
-											return value + loadLimit;
-										});
-									}}
-									disabled={false}
-								/>
-							</Group>
-						</Pagination.Root>
-					) : (
-						<Stack w="100%" align="center">
-							<Loader variant="dots" />
-						</Stack>
-					)}
-				</Stack>
-				<Stack w="100%" align="flex-end">
-					<LimitControl value={pageLogData?.limit || 0} onChange={setPageLimit} />
-				</Stack>
-			</Box>
-		</Box>
+			<Footer />
+		</TableContainer>
 	);
 };
 
 type ThColumnMenuItemProps = {
 	header: string;
 	index: number;
-	toggleColumn: (columnName: string, value: boolean) => void;
-	isColumnActive: (columnName: string) => boolean;
 	isColumnPinned: boolean;
-	toggleColumnPinned: (columnName: string) => void;
+	isColumnDisabled: boolean;
 };
 
 const ThColumnMenuItem: FC<ThColumnMenuItemProps> = (props) => {
-	const { header, index, toggleColumn, isColumnActive, toggleColumnPinned, isColumnPinned } = props;
+	const { header, index, isColumnPinned, isColumnDisabled, toggleColumnPinned } = props;
 	const classes = tableStyles;
-	if (skipFields.includes(header)) return null;
+	const [, setLogsStore] = useLogsStore(_store => null)
+	
+	const togglePinnedStatus = useCallback(() => {
+		setLogsStore(store => togglePinnedColumns(store, header))
+	}, [])
+	
+	const toggleDisabledStatus = useCallback(() => {
+		setLogsStore(store => toggleDisabledColumns(store, header))
+	}, [])
 
+	if (skipFields.includes(header)) return null;
 	return (
 		<Draggable key={header} index={index} draggableId={header}>
 			{(provided) => (
@@ -593,8 +731,8 @@ const ThColumnMenuItem: FC<ThColumnMenuItemProps> = (props) => {
 						<Checkbox
 							color="red"
 							label={header}
-							checked={isColumnActive(header)}
-							onChange={(event) => toggleColumn(header, event.currentTarget.checked)}
+							checked={!isColumnDisabled}
+							onChange={toggleDisabledStatus}
 						/>
 					</Flex>
 				</Menu.Item>
@@ -605,7 +743,6 @@ const ThColumnMenuItem: FC<ThColumnMenuItemProps> = (props) => {
 
 type ThColumnMenuProps = {
 	tableHeaders: Array<string>;
-	columnToggles: Map<string, boolean>;
 	toggleColumn: (columnName: string, value: boolean) => void;
 	reorderColumn: (destination: number, source: number) => void;
 	isColumnActive: (columnName: string) => boolean;
@@ -615,20 +752,25 @@ type ThColumnMenuProps = {
 };
 
 const ThColumnMenu: FC<ThColumnMenuProps> = (props) => {
-	const {
-		tableHeaders,
-		isColumnActive,
-		toggleColumn,
-		reorderColumn,
-		toggleColumnPinned,
-		isColumnPinned,
-		resetColumns,
-	} = props;
+	const { reorderColumn, resetColumns } = props;
 
 	const classes = tableStyles;
 	const { thColumnMenuBtn, thColumnMenuDropdown, thColumnMenuResetBtn } = classes;
 
-	const pinnedFields = tableHeaders.filter((tableHeader) => isColumnPinned(tableHeader));
+	const [{ pinnedColumns, disabledColumns, headers }, setLogsStore] = useLogsStore((store) => store.tableOpts);
+	const isColumnPinned = useCallback(
+		(column: string) => {
+			return pinnedColumns.includes(column);
+		},
+		[pinnedColumns],
+	);
+
+	const isColumnDisabled = useCallback(
+		(column: string) => {
+			return disabledColumns.includes(column);
+		},
+		[disabledColumns],
+	);
 
 	return (
 		<th>
@@ -642,12 +784,12 @@ const ThColumnMenu: FC<ThColumnMenuProps> = (props) => {
 				</Center>
 				<DragDropContext
 					onDragEnd={({ destination, source }) => {
-						const tableHeader = tableHeaders[source.index];
+						const tableHeader = headers[source.index];
 						const destIndex = destination?.index || 0;
-
 						// Disallow dragging pinned to unpinned area and vice versa
-						if (isColumnPinned(tableHeader) && destIndex >= pinnedFields.length) return;
-						if (!isColumnPinned(tableHeader) && destIndex < pinnedFields.length) return;
+						if (isColumnPinned(tableHeader) && destIndex >= pinnedColumns.length) return;
+						if (!isColumnPinned(tableHeader) && destIndex < pinnedColumns.length) return;
+
 						reorderColumn(destIndex, source.index);
 					}}>
 					<Menu.Dropdown className={thColumnMenuDropdown}>
@@ -659,20 +801,21 @@ const ThColumnMenu: FC<ThColumnMenuProps> = (props) => {
 						<Droppable droppableId="dnd-list" direction="vertical">
 							{(provided) => (
 								<div {...provided.droppableProps} ref={provided.innerRef}>
-									{tableHeaders.map((tableHeader, index) => {
+									{headers.map((tableHeader, index) => {
 										return (
 											<ThColumnMenuItem
 												header={tableHeader}
 												index={index}
 												key={tableHeader}
-												toggleColumn={toggleColumn}
-												isColumnActive={isColumnActive}
+												// toggleColumn={toggleColumn}
+												// isColumnActive={isColumnActive}
+												isColumnDisabled={isColumnDisabled(tableHeader)}
 												toggleColumnPinned={(columnName) => {
 													const isPinned = isColumnPinned(columnName);
-													toggleColumnPinned(columnName);
+													setLogsStore((store) => togglePinnedColumns(store, tableHeader));
 
 													// Place the field in correct order
-													if (isPinned) reorderColumn(pinnedFields.length - 1, index);
+													if (isPinned) reorderColumn(pinnedColumns.length - 1, index);
 													else reorderColumn(0, index);
 												}}
 												isColumnPinned={isColumnPinned(tableHeader)}
@@ -696,17 +839,16 @@ type LimitControlProps = {
 };
 
 const LimitControl: FC<LimitControlProps> = (props) => {
-	const { value, onChange } = props;
-
 	const [opened, setOpened] = useMountedState(false);
+	const [perPage, setLogsStore] = useLogsStore(store => store.perPage)
 
 	const toggle = () => {
 		setOpened(!opened);
 	};
 
 	const onSelect = (limit: number) => {
-		if (value !== limit) {
-			onChange(limit);
+		if (perPage !== limit) {
+			setLogsStore(store => setPerPage(store, limit))
 		}
 	};
 
@@ -719,16 +861,16 @@ const LimitControl: FC<LimitControlProps> = (props) => {
 				<Center>
 					<Menu.Target>
 						<Box onClick={toggle} className={limitBtn}>
-							<Text className={limitBtnText}>{value}</Text>
+							<Text className={limitBtnText}>{perPage}</Text>
 							<IconSelector size={px('1rem')} />
 						</Box>
 					</Menu.Target>
 				</Center>
 				<Menu.Dropdown>
-					{LOG_QUERY_LIMITS.map((limit) => {
+					{LOG_TABLE_PER_PAGE.map((limit) => {
 						return (
 							<Menu.Item
-								className={limit === value ? limitActive : limitOption}
+								className={limit === perPage ? limitActive : limitOption}
 								key={limit}
 								onClick={() => onSelect(limit)}>
 								<Center>
@@ -743,4 +885,4 @@ const LimitControl: FC<LimitControlProps> = (props) => {
 	);
 };
 
-export default LogTable;
+export default LogTable2;

@@ -11,7 +11,7 @@ const Context = createContext({});
 
 const { Provider } = Context;
 
-export const LOG_QUERY_LIMITS = [30, 50, 100, 150, 200];
+export const LOG_TABLE_PER_PAGE = [30, 50, 100, 150, 200];
 export const LOAD_LIMIT = 9000;
 
 type GapTime = {
