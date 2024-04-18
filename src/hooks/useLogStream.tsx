@@ -9,7 +9,12 @@ export const useLogStream = () => {
 		isSuccess: deleteLogStreamIsSuccess,
 		isError: deleteLogStreamIsError,
 		isLoading: deleteLogStreamIsLoading,
-	} = useMutation((data: { deleteStream: string }) => deleteLogStream(data.deleteStream), {});
+	} = useMutation((data: { deleteStream: string, onSuccess: () => void }) => deleteLogStream(data.deleteStream), {
+		onSuccess: (_data, variables) => {
+			variables.onSuccess && variables.onSuccess();
+			notifySuccess({message: `Stream ${variables.deleteStream} deleted successfully`})
+		},
+	});
 
 	const {
 		mutate: createLogStreamMutation,

@@ -17,7 +17,7 @@ const DeleteStreamModal = () => {
 	const { deleteLogStreamMutation } = useLogStream();
 
 	const handleDeleteStream = useCallback(() => {
-		deleteLogStreamMutation({ deleteStream: currentStream });
+		deleteLogStreamMutation({ deleteStream: currentStream, onSuccess: closeDeleteModal });
 	}, [currentStream]);
 
 	return (
