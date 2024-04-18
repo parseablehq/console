@@ -56,7 +56,7 @@ const RententionModal = () => {
 					<Switch
 						checked={isCacheEnabled}
 						labelPosition="left"
-						onChange={handleCacheToggle}
+						onChange={(event) => handleCacheToggle(event.currentTarget.checked)}
 						label={isCacheEnabled ? 'Enabled' : 'Disabled'}
 					/>
 				</Stack>
