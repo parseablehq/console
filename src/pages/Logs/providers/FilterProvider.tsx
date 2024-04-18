@@ -1,5 +1,5 @@
 import { generateRandomId } from '@/utils';
-import createFastContext from '@/utils/createFastContext';
+import initContext from '@/utils/initContext';
 import { Field, RuleGroupType, RuleType, formatQuery } from 'react-querybuilder';
 
 export type RuleTypeOverride = Omit<RuleType, 'id'> & {
@@ -47,7 +47,7 @@ const initialState: FilterStore = {
 	appliedQuery: defaultQuery,
 };
 
-const { Provider: FilterProvider, useStore: useFilterStore } = createFastContext(initialState);
+const { Provider: FilterProvider, useStore: useFilterStore } = initContext(initialState);
 
 const filterStoreReducers = {};
 
@@ -135,8 +135,8 @@ const updateParentCombinator = (store: FilterStore, combinator: Combinator) => {
 
 // todo - custom rule processor to prevent converting number strings into numbers for text fields
 const parseQuery = (query) => {
-    const 
-	const where = formatQuery(query, { format: 'sql', parseNumbers: true, quoteFieldNamesWith: ['"', '"'] });
+    // const 
+	// const where = formatQuery(query, { format: 'sql', parseNumbers: true, quoteFieldNamesWith: ['"', '"'] });
 	// error
 };
 

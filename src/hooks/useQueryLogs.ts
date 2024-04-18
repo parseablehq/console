@@ -6,8 +6,10 @@ import { useCallback, useEffect, useMemo, useRef, useTransition } from 'react';
 import { LOG_TABLE_PER_PAGE, useLogsPageContext } from '@/pages/Logs/logsContextProvider';
 import { parseLogData } from '@/utils';
 import { useLogsStore, logsStoreReducers } from '@/pages/Logs/providers/LogsProvider';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { useQueryResult } from './useQueryResult';
 
-const {setData} = logsStoreReducers;
+const {setData, setTotalCount} = logsStoreReducers;
 
 type QueryLogs = {
 	streamName: string;
@@ -43,7 +45,8 @@ export const useQueryLogs = () => {
 	const {
 		state: { subLogQueryData, custQuerySearchState },
 	} = useLogsPageContext();
-	const [dataInStore, setLogsStore] = useLogsStore(store => store.data)
+	const [currentStream] = useAppStore(store => store.currentStream)
+	const [{timeRange, tableOpts: {currentOffset}}, setLogsStore] = useLogsStore(store => store)
 	const { isQuerySearchActive, custSearchQuery } = custQuerySearchState;
 
 	const data: Log[] | null = useMemo(() => {
@@ -153,7 +156,15 @@ export const useQueryLogs = () => {
 		}
 	}, [data]);
 
-	const getQueryData = async (logsQuery: QueryLogs) => {
+	// refactor
+	const defaultQueryOpts = {
+		streamName: currentStream || '',
+		startTime: timeRange.startTime,
+		endTime: timeRange.endTime,
+		limit: 9000,
+		pageOffset: currentOffset
+	}
+	const getQueryData = async (logsQuery: QueryLogs = defaultQueryOpts) => {
 		try {
 			setLoading(true);
 			setError(null);
@@ -180,6 +191,36 @@ export const useQueryLogs = () => {
 		}
 	};
 
+	const { fetchQueryMutation } = useQueryResult();
+	useEffect(() => {
+		if (fetchQueryMutation?.data?.count) {
+			setLogsStore((store) => setTotalCount(store, fetchQueryMutation.data.count));
+		}
+	}, [fetchQueryMutation.data]);
+
+	const fetchCount = () => {
+		try {
+			const defaultQuery = `select count(*) as count from ${currentStream}`;
+			const query = isQuerySearchActive
+				? custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM')
+				: defaultQuery;
+			if (currentStream && query?.length > 0) {
+				const logsQuery = {
+					streamName: currentStream,
+					startTime: timeRange.startTime,
+					endTime: timeRange.endTime,
+					access: [],
+				};
+				fetchQueryMutation.mutate({
+					logsQuery,
+					query,
+				});
+			}
+		} catch (e) {
+			console.log(e);
+		}
+	};
+
 	const resetData = () => {
 		_dataRef.current = null;
 		setPageLogData(null);
@@ -198,5 +239,6 @@ export const useQueryLogs = () => {
 		resetData,
 		goToPage,
 		setPageLimit,
+		fetchCount
 	};
 };

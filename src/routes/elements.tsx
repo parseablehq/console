@@ -6,6 +6,7 @@ import MainLayoutPageProvider from '@/layouts/MainLayout/Context';
 import MainLayout from '@/layouts/MainLayout';
 import { AppProvider } from '@/layouts/MainLayout/providers/AppProvider';
 import { LogsProvider } from '@/pages/Logs/providers/LogsProvider';
+import { FilterProvider } from '@/pages/Logs/providers/FilterProvider';
 
 // page-wise providers
 import LogsPageProvider from '@/pages/Logs/logsContextProvider';
@@ -37,11 +38,13 @@ export const LogsElement: FC = () => {
 	return (
 		<SuspensePage>
 			<LogsProvider>
-				<LogsPageProvider>
-					<QueryFilterProvider>
-						<Logs />
-					</QueryFilterProvider>
-				</LogsPageProvider>
+				<FilterProvider>
+					<LogsPageProvider>
+						<QueryFilterProvider>
+							<Logs />
+						</QueryFilterProvider>
+					</LogsPageProvider>
+				</FilterProvider>
 			</LogsProvider>
 		</SuspensePage>
 	);

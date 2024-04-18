@@ -7,6 +7,7 @@ import { Text } from '@mantine/core';
 import { FilterQueryBuilder, QueryPills } from './FilterQueryBuilder';
 import { AppliedSQLQuery } from './QueryEditor';
 import QueryCodeEditor from './QueryCodeEditor';
+import { useLogsStore } from './providers/LogsProvider';
 
 const getLabel = (mode: string | null) => {
 	return mode === 'filters' ? 'Filters' : mode === 'sql' ? 'SQL' : '';
@@ -42,6 +43,8 @@ const QuerierModal = () => {
 			builderModalOpen,
 		},
 	} = useLogsPageContext();
+
+	const [custQuerySearchState] = useLogsStore(store => store.custQuerySearchState)
 
 	return (
 		<Modal

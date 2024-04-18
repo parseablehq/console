@@ -145,6 +145,8 @@ type LogsStoreReducers = {
 	setCurrentOffset: (store: LogsStore, offset: number) => ReducerOutput;
 	setPerPage: (store: LogsStore, perPage: number) => ReducerOutput;
 	setCurrentPage: (store: LogsStore, page: number) => ReducerOutput;
+	setTotalCount: (store: LogsStore, totalCount: number) => ReducerOutput;
+	setPageAndPageData: (store: LogsStore, pageNo: number) => ReducerOutput;
 
 	// data reducers
 	setData: (store: LogsStore, newData: {rawData?: Log[], filteredData?: Log[]}) => ReducerOutput;
@@ -174,7 +176,7 @@ const initialState: LogsStore = {
 		totalCount: 0,
 		displayedCount: 0,
 		totalPages: 300,
-		currentPage: 1,
+		currentPage: 0,
 		currentOffset: 0,
 		headers: [],
 	},
@@ -303,7 +305,8 @@ const togglePinnedColumns = (store: LogsStore, columnName: string) => {
 const setData = (store: LogsStore, newData: {rawData?: Log[], filteredData?: Log[]}) => {
 	const { data: existingData, custQuerySearchState, tableOpts } = store;
 	const { rawData, filteredData } = newData;
-	const newPageSlice = filteredData && getPageSlice(tableOpts.currentPage, tableOpts.perPage, filteredData);
+	const currentPage = tableOpts.currentPage === 0 ? 1 : tableOpts.currentPage
+	const newPageSlice = filteredData && getPageSlice(currentPage, tableOpts.perPage, filteredData);
 
 	// only if pageoffset is 1
 	const newHeaders =
@@ -316,6 +319,7 @@ const setData = (store: LogsStore, newData: {rawData?: Log[], filteredData?: Log
 			...store.tableOpts,
 			...(newPageSlice ? { pageData: newPageSlice } : {}),
 			...(newHeaders ? { headers: newHeaders } : {}),
+			currentPage
 		},
 		data: { ...existingData, ...(rawData ? { rawData } : {}), ...(filteredData ? { filteredData } : {}) },
 	};
@@ -357,6 +361,31 @@ const setCurrentOffset = (store: LogsStore, currentOffset: number) => {
 	};
 };
 
+const setTotalCount = (store: LogsStore, totalCount: number) => {
+	return {
+		tableOpts: {
+			...store.tableOpts,
+			totalCount,
+		},
+	};
+};
+
+const setPageAndPageData = (store: LogsStore, pageNo: number) => {
+	const {
+		data: { filteredData },
+		tableOpts,
+	} = store;
+	const newPageSlice = filteredData && getPageSlice(pageNo, tableOpts.perPage, filteredData);
+
+	return {
+		tableOpts: {
+			...store.tableOpts,
+			pageData: newPageSlice,
+			currentPage: pageNo,
+		},
+	};
+};
+
 const logsStoreReducers: LogsStoreReducers = {
 	setTimeRange,
 	resetTimeRange,
@@ -381,7 +410,9 @@ const logsStoreReducers: LogsStoreReducers = {
 	setStreamSchema,
 	setPerPage,
 	setCurrentPage,
-	setCurrentOffset
+	setCurrentOffset,
+	setTotalCount,
+	setPageAndPageData
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };

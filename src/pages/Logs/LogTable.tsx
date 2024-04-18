@@ -44,7 +44,7 @@ import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const skipFields = ['p_metadata', 'p_tags'];
 
-const {togglePinnedColumns, toggleDisabledColumns, setPerPage, setCurrentPage, setCurrentOffset} = logsStoreReducers;
+const {togglePinnedColumns, toggleDisabledColumns, setPerPage, setCurrentPage, setCurrentOffset, setPageAndPageData} = logsStoreReducers;
 
 const makeHeadersFromSchema = (schema: LogStreamSchemaData | null): string[] => {
 	if (schema) {
@@ -229,7 +229,7 @@ const Footer = (props) => {
 	const { totalPages, currentOffset, currentPage, perPage } = tableOpts;
 	console.log(tableOpts)
 	const onPageChange = useCallback((page) => {
-		setLogsStore((store) => setCurrentPage(store, page));
+		setLogsStore((store) => setPageAndPageData(store, page));
 	}, []);
 	const pagination = usePagination({ total: totalPages ?? 1, initialPage: 1, onChange: onPageChange });
 	const onChangeOffset = useCallback(
@@ -238,6 +238,10 @@ const Footer = (props) => {
 				const targetOffset = currentOffset - 9000;
 				if (currentOffset < 0) return;
 
+				if (targetOffset === 0 && currentOffset > 0) {
+					// hack to initiate fetch
+					setLogsStore((store) => setCurrentPage(store, 0));
+				}
 				setLogsStore((store) => setCurrentOffset(store, targetOffset));
 			} else {
 				// should limit with total count ?
@@ -331,10 +335,6 @@ const TableHeader = (props) => {
 };
 
 const LogTable2 = () =>{
-	const [store] = useLogsStore(store => store)
-	console.log(store)
-	const errorMessage = null;
-	const hasContentLoaded = true;
 	const [containerRefs, _setContainerRefs] = useState({
 		activeSectionRef: useRef<'left' | 'right'>('left'),
 		leftSectionRef: useRef<HTMLDivElement>(null),
@@ -347,6 +347,31 @@ const LogTable2 = () =>{
 		? PRIMARY_HEADER_HEIGHT + LOGS_PRIMARY_TOOLBAR_HEIGHT + LOGS_SECONDARY_TOOLBAR_HEIGHT
 		: 0;
 
+	const { getDataSchema, loading: schemaLoading, error: logStreamSchemaError } = useGetLogStreamSchema();
+	const { getQueryData, loading: logsLoading, error: logsError, fetchCount } = useQueryLogs();
+
+	const { fetchQueryMutation } = useQueryResult();
+	const [currentPage] = useLogsStore(store => store.tableOpts.currentPage)
+	const [currentOffset] = useLogsStore(store => store.tableOpts.currentOffset)
+
+	useEffect(() => {
+		getDataSchema();
+	}, []);
+
+	useEffect(() => {
+		if (currentPage === 0) {
+			getQueryData();
+			fetchCount();
+		} else if (currentOffset !== 0) {
+			getQueryData();
+		}
+	}, [currentPage, currentOffset]);
+
+	const [pageData] = useLogsStore(store => store.tableOpts.pageData)
+	const hasContentLoaded = !schemaLoading && !logsLoading;
+	const errorMessage = logStreamSchemaError || logsError;
+	const hasNoData = hasContentLoaded && !errorMessage && pageData.length === 0;
+	console.log(pageData)
 	return (
 		<TableContainer>
 			<FilterPills />
@@ -364,7 +389,7 @@ const LogTable2 = () =>{
 							/>
 						</Box>
 					</Box>
-				) : false ? ( // check
+				) : hasNoData ? ( // check
 					<EmptyBox message="No Data Available" />
 				) : (
 					<LoadingView />
