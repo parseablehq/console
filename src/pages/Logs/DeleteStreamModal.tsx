@@ -3,6 +3,7 @@ import { useLogsPageContext } from './logsContextProvider';
 import styles from './styles/Logs.module.css';
 import { useCallback, useState } from 'react';
 import { useLogStream } from '@/hooks/useLogStream';
+import { useNavigate } from 'react-router-dom';
 
 const DeleteStreamModal = () => {
 	const {
@@ -15,9 +16,15 @@ const DeleteStreamModal = () => {
 	}, []);
 
 	const { deleteLogStreamMutation } = useLogStream();
+	const navigate = useNavigate();
+
+	const onDeleteSuccess = useCallback(() => {
+		closeDeleteModal();
+		navigate('/');
+	}, [])
 
 	const handleDeleteStream = useCallback(() => {
-		deleteLogStreamMutation({ deleteStream: currentStream, onSuccess: closeDeleteModal });
+		deleteLogStreamMutation({ deleteStream: currentStream, onSuccess: onDeleteSuccess });
 	}, [currentStream]);
 
 	return (
