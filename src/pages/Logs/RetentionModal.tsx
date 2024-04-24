@@ -1,5 +1,4 @@
 import { Box, Button, Modal, Stack, Switch } from '@mantine/core';
-import { useLogsPageContext } from './logsContextProvider';
 import { Text } from '@mantine/core';
 import classes from './styles/Logs.module.css';
 import { Editor } from '@monaco-editor/react';
@@ -7,6 +6,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { useCacheToggle } from '@/hooks/useCacheToggle';
 import { useGetRetention, useRetentionEditor } from '@/hooks/useRetentionEditor';
 import { notifyError } from '@/utils/notification';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { useLogsStore, logsStoreReducers } from './providers/LogsProvider';
+
+const { toggleRetentionModal } = logsStoreReducers;
 
 const ModalTitle = () => {
 	return <Text style={{ fontSize: '1.2rem', fontWeight: 700, marginLeft: '0.5rem' }}>Settings</Text>;
@@ -14,18 +17,16 @@ const ModalTitle = () => {
 
 const RententionModal = () => {
 	const [retentionConfig, setRetentionConfig] = useState<string | undefined>('');
-	const {
-		state: { retentionModalOpen, currentStream },
-		methods: { closeRetentionModal },
-	} = useLogsPageContext();
-	const { handleCacheToggle, isCacheEnabled } = useCacheToggle(currentStream);
+	const [currentStream] = useAppStore((store) => store.currentStream || '');
 
+	const { handleCacheToggle, isCacheEnabled } = useCacheToggle(currentStream);
 	const { getLogRetentionData } = useGetRetention(currentStream);
 	const { updateLogStreamRetention } = useRetentionEditor(currentStream);
+	const [retentionModalOpen, setLogsStore] = useLogsStore((store) => store.modalOpts.retentionModalOpen);
 
-	const switchStyles = {
-		track: isCacheEnabled ? classes.trackStyle : {},
-	};
+	const onToggleRetentionModal = useCallback(() => {
+		setLogsStore((store) => toggleRetentionModal(store));
+	}, []);
 
 	const onSubmit = useCallback(() => {
 		if (retentionConfig) {
@@ -35,7 +36,7 @@ const RententionModal = () => {
 			} catch (e) {
 				return notifyError({ message: 'Unable to parse config' });
 			}
-			updateLogStreamRetention({ config: parsedConfig, onSuccess: closeRetentionModal });
+			updateLogStreamRetention({ config: parsedConfig, onSuccess: onToggleRetentionModal });
 		} else {
 			return notifyError({ message: 'Unable to parse config' });
 		}
@@ -50,7 +51,7 @@ const RententionModal = () => {
 	return (
 		<Modal
 			opened={retentionModalOpen}
-			onClose={closeRetentionModal}
+			onClose={onToggleRetentionModal}
 			centered
 			styles={{ body: { padding: '0 0.5rem' }, header: { padding: '1rem', paddingBottom: '0' } }}
 			title={<ModalTitle />}>
@@ -60,9 +61,7 @@ const RententionModal = () => {
 					<Switch
 						checked={isCacheEnabled}
 						labelPosition="left"
-						onChange={handleCacheToggle}
-						label={isCacheEnabled ? 'Enabled' : 'Disabled'}
-						styles={switchStyles}
+						onChange={(event) => handleCacheToggle(event.currentTarget.checked)}						label={isCacheEnabled ? 'Enabled' : 'Disabled'}
 					/>
 				</Stack>
 				<Text style={{ fontSize: '1rem', fontWeight: 600 }}>Retention</Text>

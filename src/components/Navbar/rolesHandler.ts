@@ -1,4 +1,4 @@
-import { UserRoles } from '@/layouts/MainLayout/Context';
+import { UserRoles } from "@/layouts/MainLayout/providers/AppProvider";
 
 const adminAccess = [
 	'Ingest',

@@ -2,14 +2,15 @@ import { Paper, Skeleton, Stack, Text } from '@mantine/core';
 import classes from './styles/EventTimeLineGraph.module.css';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useLogsPageContext } from './logsContextProvider';
 import dayjs, { Dayjs } from 'dayjs';
-import {  ChartTooltipProps, AreaChart } from '@mantine/charts';
+import { ChartTooltipProps, AreaChart } from '@mantine/charts';
 import { HumanizeNumber } from '@/utils/formatBytes';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
+import { logsStoreReducers, useLogsStore } from './providers/LogsProvider';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+const { setTimeRange } = logsStoreReducers;
 
-const START_RANGE = 30
-const END_RANGE = 0
+const START_RANGE = 30;
+const END_RANGE = 0;
 
 const generateCountQuery = (streamName: string, startTime: string, endTime: string) => {
 	return `SELECT DATE_TRUNC('minute', p_timestamp) AS minute_range, COUNT(*) AS log_count FROM ${streamName} WHERE p_timestamp BETWEEN '${startTime}' AND '${endTime}' GROUP BY minute_range ORDER BY minute_range`;
@@ -42,18 +43,18 @@ const calcAverage = (data: GraphRecord[]) => {
 const getAllTimestamps = (startTime: Dayjs) => {
 	const timestamps = [];
 	for (let i = 0; i < START_RANGE; i++) {
-		const ts = startTime.add(i + 1, 'minute')
-		timestamps.push(ts.toISOString().split('.')[0]+"Z")
+		const ts = startTime.add(i + 1, 'minute');
+		timestamps.push(ts.toISOString().split('.')[0] + 'Z');
 	}
 	return timestamps;
-}
+};
 
 // date_trunc removes tz info
 // filling data empty values where there is no rec
 const parseGraphData = (data: GraphRecord[], avg: number, startTime: Dayjs) => {
 	if (!Array.isArray(data) || data.length === 0) return [];
 
-	const allTimestamps = getAllTimestamps(startTime)
+	const allTimestamps = getAllTimestamps(startTime);
 	const parsedData = allTimestamps.map((ts) => {
 		const countData = data.find((d) => `${d.minute_range}Z` === ts);
 		if (!countData || typeof countData !== 'object') {
@@ -80,7 +81,6 @@ function ChartTooltip({ payload }: ChartTooltipProps) {
 	if (!payload || (Array.isArray(payload) && payload.length === 0)) return null;
 
 	const totalEvents = payload.reduce((acc, item: any) => {
-		acc = 0;
 		return acc + item.value;
 	}, 0);
 
@@ -98,9 +98,9 @@ function ChartTooltip({ payload }: ChartTooltipProps) {
 				<Text>{totalEvents}</Text>
 			</Stack>
 			<Stack mt={4} style={{ flexDirection: 'row', justifyContent: 'center' }}>
-				<Text size="sm" c={isAboveAvg ? 'red.6' : 'green.8'}>{`${
-					isAboveAvg ? '+' : ''
-				}${aboveAvgPercent}% ${isAboveAvg ? 'above' : 'below'} avg (Last 30 mins)`}</Text>
+				<Text size="sm" c={isAboveAvg ? 'red.6' : 'green.8'}>{`${isAboveAvg ? '+' : ''}${aboveAvgPercent}% ${
+					isAboveAvg ? 'above' : 'below'
+				} avg (Last 30 mins)`}</Text>
 			</Stack>
 		</Paper>
 	);
@@ -114,9 +114,7 @@ const generateTimeOpts = () => {
 
 const EventTimeLineGraph = () => {
 	const { fetchQueryMutation } = useQueryResult();
-	const {
-		state: { currentStream },
-	} = useLogsPageContext();
+	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [timeOpts, _setTimeOpts] = useState<{ startTime: Dayjs; endTime: Dayjs }>(generateTimeOpts());
 	const { endTime, startTime } = timeOpts;
 
@@ -138,14 +136,13 @@ const EventTimeLineGraph = () => {
 
 	const isLoading = fetchQueryMutation.isLoading;
 	const avgEventCount = useMemo(() => calcAverage(fetchQueryMutation?.data), [fetchQueryMutation?.data]);
-	const graphData = useMemo(() => parseGraphData(fetchQueryMutation?.data, avgEventCount, startTime), [fetchQueryMutation?.data]);
+	const graphData = useMemo(
+		() => parseGraphData(fetchQueryMutation?.data, avgEventCount, startTime),
+		[fetchQueryMutation?.data],
+	);
 	const hasData = Array.isArray(graphData) && graphData.length !== 0;
-
-	const {
-		state: { subLogQuery, subLogSelectedTimeRange },
-	} = useHeaderContext();
-
-	const setTimeRange = useCallback((barValue: any) => {
+	const [, setLogsStore] = useLogsStore((store) => store.timeRange);
+	const setTimeRangeFromGraph = useCallback((barValue: any) => {
 		const activePayload = barValue?.activePayload;
 		if (!Array.isArray(activePayload) || activePayload.length === 0) return;
 
@@ -155,15 +152,10 @@ const EventTimeLineGraph = () => {
 		const { minute } = samplePayload.payload || {};
 		const startTime = dayjs(minute);
 		const endTime = dayjs(minute).add(60, 'seconds');
-		subLogQuery.set((query) => {
-			query.startTime = startTime.toDate();
-			query.endTime = endTime.toDate();
-		});
-
-		subLogSelectedTimeRange.set((state) => {
-			state.state = 'custom';
-			state.value = `${startTime.format('DD-MM-YY HH:mm:ss')} - ${endTime.format('DD-MM-YY HH:mm:ss')}`;
-		});
+		const label = `${startTime.format('DD-MM-YY HH:mm:ss')} - ${endTime.format('DD-MM-YY HH:mm:ss')}`;
+		setLogsStore((store) =>
+			setTimeRange(store, { label, type: 'custom', startTime: startTime.toDate(), endTime: endTime.toDate() }),
+		);
 	}, []);
 
 	return (
@@ -189,7 +181,7 @@ const EventTimeLineGraph = () => {
 						yAxisProps={{ tickCount: 2, tickFormatter: (value) => `${HumanizeNumber(value)}` }}
 						referenceLines={[{ y: avgEventCount, color: 'red.6', label: 'Avg' }]}
 						tickLine="none"
-						areaChartProps={{ onClick: setTimeRange, style: { cursor: 'pointer' }}}
+						areaChartProps={{ onClick: setTimeRangeFromGraph, style: { cursor: 'pointer' } }}
 						gridAxis="xy"
 						fillOpacity={0.5}
 					/>

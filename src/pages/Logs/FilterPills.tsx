@@ -1,8 +1,10 @@
 import { ActionIcon, Badge, Group, rem } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
-import { useEffect, type FC, Fragment, useMemo } from 'react';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import useMountedState from '@/hooks/useMountedState';
+import { type FC, Fragment, useCallback } from 'react';
+import { logsStoreReducers, useLogsStore } from './providers/LogsProvider';
+import _ from 'lodash';
+
+const { setAndFilterData } = logsStoreReducers;
 
 type RemoveButton = {
 	onClick: () => void;
@@ -18,39 +20,24 @@ const RemoveButton: FC<RemoveButton> = (props) => {
 };
 
 const FilterPills: FC = () => {
-	const {
-		state: { subLogSearch },
-	} = useHeaderContext();
-	const [search, setSearch] = useMountedState(subLogSearch.get());
-
-	useEffect(() => {
-		const listener = subLogSearch.subscribe(setSearch);
-		return () => {
-			listener();
-		};
+	const [filters, setLogsStore] = useLogsStore((store) => store.tableOpts.filters);
+	const onRemove = useCallback((key: string) => {
+		setLogsStore((store) => setAndFilterData(store, key, [], true));
 	}, []);
-
-	const filters = useMemo(() => Object.keys(search.filters), [search]);
-
-	const onRemove = (key: string) => {
-		subLogSearch.set((state) => {
-			delete state.filters[key];
-		});
-	};
 
 	return (
 		<Fragment>
-			{filters.length ? (
+			{!_.isEmpty(filters) ? (
 				<Group justify="left" mt="md" ml="md">
-					{filters.map((key) => {
+					{_.map(filters, (_v, k) => {
 						return (
 							<Badge
-								key={key}
+								key={k}
 								color="brandPrimary.4"
 								variant="filled"
 								pr={0}
-								rightSection={<RemoveButton onClick={() => onRemove(key)} />}>
-								{`${key} (${search.filters[key].length})`}
+								rightSection={<RemoveButton onClick={() => onRemove(k)} />}>
+								{`${k} (${filters[k].length})`}
 							</Badge>
 						);
 					})}

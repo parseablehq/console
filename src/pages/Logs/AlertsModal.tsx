@@ -1,25 +1,28 @@
 import { Box, Button, Modal, Stack } from '@mantine/core';
-import { useLogsPageContext } from './logsContextProvider';
 import { Text } from '@mantine/core';
 import classes from './styles/Logs.module.css';
 import { Editor } from '@monaco-editor/react';
 import { useCallback, useEffect, useState } from 'react';
 import { useAlertsEditor, useGetAlerts } from '@/hooks/useAlertsEditor';
 import { notifyError } from '@/utils/notification';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { useLogsStore, logsStoreReducers } from './providers/LogsProvider';
+import _ from 'lodash';
 
 const ModalTitle = () => {
 	return <Text style={{ fontSize: '1.2rem', fontWeight: 700, marginLeft: '0.5rem' }}>Alerts</Text>;
 };
 
+const { toggleAlertsModal } = logsStoreReducers;
+
 const AlertsModal = () => {
 	const [alertConfig, setAlertConfig] = useState<string | undefined>('');
-	const {
-		state: { alertsModalOpen, currentStream },
-		methods: { closeAlertsModal },
-	} = useLogsPageContext();
+	const [currentStream] = useAppStore((store) => store.currentStream);
+	const [alertsModalOpen, setLogsStore] = useLogsStore((store) => store.modalOpts.alertsModalOpen);
 
-	const { getLogAlertData } = useGetAlerts(currentStream);
-	const { updateLogStreamAlerts } = useAlertsEditor(currentStream);
+	const onToggleModal = useCallback(() => {
+		setLogsStore((store) => toggleAlertsModal(store));
+	}, []);
 
 	const onSubmit = useCallback(() => {
 		if (alertConfig) {
@@ -29,11 +32,14 @@ const AlertsModal = () => {
 			} catch (e) {
 				return notifyError({ message: 'Unable to parse config' });
 			}
-			updateLogStreamAlerts({config: parsedConfig, onSuccess: closeAlertsModal});
+			updateLogStreamAlerts({ config: parsedConfig, onSuccess: onToggleModal });
 		} else {
 			return notifyError({ message: 'Unable to parse config' });
 		}
 	}, [alertConfig]);
+
+	const { getLogAlertData = null } = !currentStream ? {} : useGetAlerts(currentStream);
+	const { updateLogStreamAlerts = _.noop } = !currentStream ? {} : useAlertsEditor(currentStream);
 
 	useEffect(() => {
 		if (getLogAlertData?.data) {
@@ -44,7 +50,7 @@ const AlertsModal = () => {
 	return (
 		<Modal
 			opened={alertsModalOpen}
-			onClose={closeAlertsModal}
+			onClose={onToggleModal}
 			centered
 			styles={{ body: { padding: '0 0.5rem' }, header: { padding: '1rem', paddingBottom: '0' } }}
 			title={<ModalTitle />}>

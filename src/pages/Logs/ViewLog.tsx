@@ -1,58 +1,57 @@
-import useMountedState from '@/hooks/useMountedState';
 import { Box, Chip, CloseButton, Divider, Drawer, Text, px } from '@mantine/core';
 import type { FC } from 'react';
-import { useEffect, Fragment, useMemo } from 'react';
-import { useLogsPageContext } from './logsContextProvider';
+import { Fragment, useMemo, useCallback } from 'react';
 import dayjs from 'dayjs';
-import viewLogStyles from './styles/ViewLogs.module.css'
+import viewLogStyles from './styles/ViewLogs.module.css';
 import { CodeHighlight } from '@mantine/code-highlight';
+import { useLogsStore, logsStoreReducers } from './providers/LogsProvider';
+
+const { setSelectedLog } = logsStoreReducers;
 
 const ViewLog: FC = () => {
-	const {
-		state: { subViewLog },
-	} = useLogsPageContext();
-
-	const [log, setLog] = useMountedState(subViewLog.get());
-
-	useEffect(() => {
-		const listener = subViewLog.subscribe(setLog);
-
-		return () => listener();
+	const [selectedLog, setLogsStore] = useLogsStore((store) => store.selectedLog);
+	const onClose = useCallback(() => {
+		setLogsStore((store) => setSelectedLog(store, null));
 	}, []);
-
-	const onClose = () => {
-		subViewLog.set(null);
-	};
-
 	const classes = viewLogStyles;
 	const { container } = classes;
 
 	const p_metadata = useMemo(() => {
-		if (log) {
-			const metadata = log.p_metadata?.split('^').filter(Boolean);
+		if (selectedLog) {
+			const metadata = selectedLog.p_metadata?.split('^').filter(Boolean);
 			if (metadata?.length) return metadata;
 		}
 		return [];
-	}, [log]);
+	}, [selectedLog]);
 
 	const p_tags = useMemo(() => {
-		if (log) {
-			const tags = log.p_tags?.split('^').filter(Boolean);
+		if (selectedLog) {
+			const tags = selectedLog.p_tags?.split('^').filter(Boolean);
 			if (tags?.length) return tags;
 		}
 		return [];
-	}, [log]);
+	}, [selectedLog]);
 
 	return (
-		<Drawer opened={Boolean(log)} onClose={onClose} position="right" size="lg" withCloseButton={false} padding={0}>
-			<Header timeStamp={log?.p_timestamp ?? ''} onClose={onClose} />
+		<Drawer
+			opened={Boolean(selectedLog)}
+			onClose={onClose}
+			position="right"
+			size="lg"
+			withCloseButton={false}
+			padding={0}>
+			<Header timeStamp={selectedLog?.p_timestamp ?? ''} onClose={onClose} />
 
-			{Boolean(log) && (
+			{Boolean(selectedLog) && (
 				<Box className={container}>
-					<DataChip title="Meta Data" dataList={p_metadata}  />
+					<DataChip title="Meta Data" dataList={p_metadata} />
 					<DataChip title="Tags" dataList={p_tags} />
-					<Divider label={'Logger Message'} variant="dashed" labelPosition="center" my="lg" color='gray.6'/>
-					<CodeHighlight code={JSON.stringify(log, null, 2)} language="json" styles={{copy: {marginLeft: '550px'}}}/>
+					<Divider label={'Logger Message'} variant="dashed" labelPosition="center" my="lg" color="gray.6" />
+					<CodeHighlight
+						code={JSON.stringify(selectedLog, null, 2)}
+						language="json"
+						styles={{ copy: { marginLeft: '550px' } }}
+					/>
 				</Box>
 			)}
 		</Drawer>
@@ -66,7 +65,7 @@ type HeaderProps = {
 
 const Header: FC<HeaderProps> = (props) => {
 	const { onClose } = props;
-	const classes = viewLogStyles
+	const classes = viewLogStyles;
 
 	const { headerContainer, headerTimeStampTitle, headerTimeStamp } = classes;
 
@@ -80,7 +79,9 @@ const Header: FC<HeaderProps> = (props) => {
 					<Text className={headerTimeStampTitle}>Timestamp</Text>
 					<Text className={headerTimeStamp}>{timeStamp}</Text>
 				</Box>
-			) : <Box/>}
+			) : (
+				<Box />
+			)}
 
 			<CloseButton iconSize={px('1.5rem')} onClick={onClose} />
 		</Box>
@@ -94,12 +95,12 @@ type DataChipProps = {
 
 const DataChip: FC<DataChipProps> = (props) => {
 	const { dataList, title } = props;
-	const classes = viewLogStyles
+	const classes = viewLogStyles;
 	const { dataChipContainer } = classes;
 
 	return dataList.length ? (
 		<Fragment>
-			<Divider label={title} variant="dashed" labelPosition="center" my="lg" color='gray.6'/>
+			<Divider label={title} variant="dashed" labelPosition="center" my="lg" color="gray.6" />
 			<Box className={dataChipContainer}>
 				{[...dataList].map((data, i) => {
 					return (

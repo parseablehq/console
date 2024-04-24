@@ -3,9 +3,10 @@ import { AsyncRecordBatchStreamReader } from '@apache-arrow/ts';
 import { FlightServiceDefinition, FlightData } from '@/assets/arrow';
 import useMountedState from './useMountedState';
 import { useEffect, useRef } from 'react';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { LogStreamData } from '@/@types/parseable/api/stream';
+import { useLogsStore, logsStoreReducers } from '@/pages/Logs/providers/LogsProvider';
 
+const { resetLiveTailSearchState } = logsStoreReducers;
 const TOTAL_LOGS_TO_SHOW = 500;
 
 function flightDataToUint8Array(data: FlightData): Uint8Array {
@@ -26,10 +27,6 @@ function createFlightDataReadableStream(dataIterable: AsyncIterable<FlightData>)
 }
 
 export const useDoGetLiveTail = () => {
-	const {
-		state: { subLiveTailsData },
-	} = useHeaderContext();
-
 	const [data, setData] = useMountedState<any[]>([]);
 	const [finalData, setFinalData] = useMountedState<any[]>([]);
 	const [error, setError] = useMountedState<string | null>(null);
@@ -37,7 +34,7 @@ export const useDoGetLiveTail = () => {
 	const [schema, setSchema] = useMountedState<LogStreamData>([]);
 	const [field, setField] = useMountedState<string>('');
 	const [search, setSearch] = useMountedState<string>('');
-
+	const [{ liveTailSearchField, liveTailSearchValue }, setLogsStore] = useLogsStore((store) => store.liveTailConfig);
 	const abortControllerRef = useRef(new AbortController());
 
 	// Handles initiating the live tail stream
@@ -109,15 +106,9 @@ export const useDoGetLiveTail = () => {
 	const resetData = () => setData([]);
 
 	useEffect(() => {
-		const liveTailSchema = subLiveTailsData.subscribe((value) => {
-			setSearch(value.liveTailSearchValue);
-			setField(value.liveTailSearchField);
-		});
-
-		return () => {
-			liveTailSchema();
-		};
-	}, [subLiveTailsData]);
+		setSearch(liveTailSearchValue);
+		setField(liveTailSearchField);
+	}, [liveTailSearchField, liveTailSearchField]);
 
 	useEffect(() => {
 		if (field && search) {
@@ -133,11 +124,7 @@ export const useDoGetLiveTail = () => {
 	}, [field, search, data]);
 
 	useEffect(() => {
-		subLiveTailsData.set((state) => {
-			state.liveTailSearchValue = '';
-			state.liveTailSearchField = '';
-		});
-
+		setLogsStore((store) => resetLiveTailSearchState(store));
 		return () => {
 			abortControllerRef.current.abort();
 		};

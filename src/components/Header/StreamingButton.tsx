@@ -1,29 +1,22 @@
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import { Box, Button } from '@mantine/core';
-
-import { useEffect, type FC } from 'react';
+import { type FC } from 'react';
 import useMountedState from '@/hooks/useMountedState';
 import classes from './styles/LogQuery.module.css';
+import { logsStoreReducers, useLogsStore } from '@/pages/Logs/providers/LogsProvider';
+
+const { setLiveTailStatus } = logsStoreReducers;
 
 const StreamingButton: FC = () => {
-	const {
-		state: { subLiveTailsData },
-	} = useHeaderContext();
-
-	const [liveTailStatus, setLiveTailStatus] = useMountedState<string | undefined>(subLiveTailsData.get().liveTailStatus);
+	const [liveTailConfig, setLogsStore] = useLogsStore((store) => store.liveTailConfig);
 	const [isClicked, setIsClicked] = useMountedState(false);
 
 	const handleStreaming = () => {
 		if (!isClicked) {
 			setIsClicked(true);
-			if (liveTailStatus === 'streaming') {
-				subLiveTailsData.set((state) => {
-					state.liveTailStatus = 'abort';
-				});
+			if (liveTailConfig.liveTailStatus === 'streaming') {
+				setLogsStore((store) => setLiveTailStatus(store, 'abort'));
 			} else {
-				subLiveTailsData.set((state) => {
-					state.liveTailStatus = 'fetch';
-				});
+				setLogsStore((store) => setLiveTailStatus(store, 'fetch'));
 			}
 			setTimeout(() => {
 				setIsClicked(false);
@@ -31,22 +24,12 @@ const StreamingButton: FC = () => {
 		}
 	};
 
-	useEffect(() => {
-		const liveTailStreaming = subLiveTailsData.subscribe((state) => {
-			setLiveTailStatus(state?.liveTailStatus);
-		});
-
-		return () => {
-			liveTailStreaming();
-		};
-	}, [subLiveTailsData]);
-
 	const { streamButton } = classes;
 
 	return (
 		<Button className={streamButton} onClick={handleStreaming}>
-			<Box mr="10px">{liveTailStatus === 'streaming' ? '🔴' : '🟢'}</Box>
-			{liveTailStatus === 'streaming' ? 'Stop' : 'Start'}
+			<Box mr="10px">{liveTailConfig.liveTailStatus === 'streaming' ? '🔴' : '🟢'}</Box>
+			{liveTailConfig.liveTailStatus === 'streaming' ? 'Stop' : 'Start'}
 		</Button>
 	);
 };

@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-type FixedDuration = {
+export type FixedDuration = {
 	name: string;
 	milliseconds: number;
 	label: string;

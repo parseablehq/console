@@ -1,9 +1,11 @@
-import { Box, Button, Modal, Text, px } from '@mantine/core';
+import { Box, Button, Modal, Stack, Text, Tooltip, px } from '@mantine/core';
 import { FC, useEffect, useMemo } from 'react';
 import { useAbout } from '@/hooks/useGetAbout';
-import { IconAlertCircle } from '@tabler/icons-react';
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
-import styles from './styles/InfoModal.module.css'
+import { IconAlertCircle, IconInfoCircle } from '@tabler/icons-react';
+import styles from './styles/InfoModal.module.css';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+
+const { setInstanceConfig } = appStoreReducers;
 
 type InfoModalProps = {
 	opened: boolean;
@@ -12,12 +14,9 @@ type InfoModalProps = {
 
 const InfoModal: FC<InfoModalProps> = (props) => {
 	const { opened, close } = props;
-	const {
-		state: { subInstanceConfig },
-	} = useHeaderContext();
 
 	const { getAboutData, getAboutIsError, getAboutIsLoading } = useAbout();
-
+	const [, setAppStore] = useAppStore((_store) => null);
 	const llmStatus = useMemo(() => {
 		let status = 'LLM API Key not set';
 		if (getAboutData?.data?.llmActive) {
@@ -28,7 +27,7 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 
 	useEffect(() => {
 		if (getAboutData?.data) {
-			subInstanceConfig.set(getAboutData?.data);
+			setAppStore((store) => setInstanceConfig(store, getAboutData?.data));
 		}
 	}, [getAboutData?.data]);
 
@@ -106,13 +105,20 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 								<Text className={aboutTextKey}>Mode</Text>
 								<Text className={aboutTextValue}>{getAboutData?.data.mode}</Text>
 							</Box>
-							<Box className={aboutTextInnerBox}>
-								<Text className={aboutTextKey}>Staging</Text>
-								<Text className={aboutTextValue}>{getAboutData?.data.staging}</Text>
-							</Box>
+							{getAboutData?.data.staging && (
+								<Box className={aboutTextInnerBox}>
+									<Text className={aboutTextKey}>Staging</Text>``
+									<Text className={aboutTextValue}>{getAboutData?.data.staging}</Text>
+								</Box>
+							)}
 							<Box className={aboutTextInnerBox}>
 								<Text className={aboutTextKey}>Store</Text>
-								<Text className={aboutTextValue}>{getAboutData?.data?.store?.type}</Text>
+								<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={4}>
+									<Text className={aboutTextValue}>{getAboutData?.data?.store?.type}</Text>
+									<Tooltip label={getAboutData?.data?.store?.path}>
+										<IconInfoCircle style={{ cursor: 'pointer' }} color="gray" stroke={1.5} />
+									</Tooltip>
+								</Stack>
 							</Box>
 							<Box className={aboutTextInnerBox}>
 								<Text className={aboutTextKey}>Cache</Text>

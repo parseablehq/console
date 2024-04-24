@@ -19,6 +19,7 @@ const CreateStreamModal: FC<CreateStreamModalProps> = (props) => {
 
 	const onSuccessCallback = useCallback(() => {
 		close();
+		setStreamName("");
 		getLogStreamListRefetch();
 	}, []);
 
