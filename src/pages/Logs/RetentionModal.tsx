@@ -27,7 +27,6 @@ const RententionModal = () => {
 	const onToggleRetentionModal = useCallback(() => {
 		setLogsStore((store) => toggleRetentionModal(store));
 	}, []);
-
 	const onSubmit = useCallback(() => {
 		if (retentionConfig) {
 			let parsedConfig;
@@ -61,7 +60,8 @@ const RententionModal = () => {
 					<Switch
 						checked={isCacheEnabled}
 						labelPosition="left"
-						onChange={(event) => handleCacheToggle(event.currentTarget.checked)}						label={isCacheEnabled ? 'Enabled' : 'Disabled'}
+						onChange={(event) => handleCacheToggle(event.currentTarget.checked)}						
+            label={isCacheEnabled ? 'Enabled' : 'Disabled'}
 					/>
 				</Stack>
 				<Text style={{ fontSize: '1rem', fontWeight: 600 }}>Retention</Text>

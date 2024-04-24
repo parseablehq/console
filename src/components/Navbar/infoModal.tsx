@@ -2,10 +2,12 @@ import { Box, Button, Modal, Stack, Text, Tooltip, px } from '@mantine/core';
 import { FC, useEffect, useMemo } from 'react';
 import { useAbout } from '@/hooks/useGetAbout';
 import { IconAlertCircle, IconInfoCircle } from '@tabler/icons-react';
+
 import styles from './styles/InfoModal.module.css';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const { setInstanceConfig } = appStoreReducers;
+
 
 type InfoModalProps = {
 	opened: boolean;
