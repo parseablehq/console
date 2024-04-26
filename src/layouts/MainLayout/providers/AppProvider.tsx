@@ -18,6 +18,7 @@ type ReducerOutput = Partial<AppStore>;
 type AppStore = {
 	maximized: boolean;
 	helpModalOpen: boolean;
+	createStreamModalOpen: boolean;
 	currentStream: null | string;
 	userRoles: UserRoles | null;
 	userSpecificStreams: null | LogStreamData;
@@ -35,6 +36,7 @@ type AppStoreReducers = {
 	setUserAccessMap: (store: AppStore, accessRoles: string[] | null) => ReducerOutput;
 	setStreamSpecificUserAccess: (store: AppStore) => ReducerOutput;
 	setInstanceConfig: (store: AppStore, instanceConfig: AboutData) => ReducerOutput;
+	toggleCreateStreamModal: (store: AppStore) => ReducerOutput;
 };
 
 const initialState: AppStore = {
@@ -46,6 +48,7 @@ const initialState: AppStore = {
 	userAccessMap: {},
 	streamSpecificUserAccess: null,
 	instanceConfig: null,
+	createStreamModalOpen: false,
 };
 
 const { Provider: AppProvider, useStore: useAppStore } = initContext(initialState);
@@ -77,6 +80,10 @@ const toggleMaximize = (store: AppStore) => {
 
 const toggleHelpModal = (store: AppStore) => {
 	return { helpModalOpen: !store.helpModalOpen };
+};
+
+const toggleCreateStreamModal = (store: AppStore) => {
+	return { createStreamModalOpen: !store.createStreamModalOpen };
 };
 
 const changeStream = (_store: AppStore, stream: string) => {
@@ -115,7 +122,8 @@ const appStoreReducers: AppStoreReducers = {
 	setUserSpecificStreams,
 	setUserAccessMap,
 	setStreamSpecificUserAccess,
-	setInstanceConfig
+	setInstanceConfig,
+	toggleCreateStreamModal,
 };
 
 export { AppProvider, useAppStore, appStoreReducers };
