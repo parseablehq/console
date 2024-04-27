@@ -110,7 +110,7 @@ const PartitionField = (props: {
 }) => {
 	const [data, setData] = useState<string[]>([]);
 	useEffect(() => {
-		setData(props.partitionFields);
+		setData((prev) => _.uniq([...prev, ...props.partitionFields]));
 	}, [props.partitionFields]);
 
 	const onFieldChange = useCallback((value: string) => {
