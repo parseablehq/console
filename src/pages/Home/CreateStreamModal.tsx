@@ -155,7 +155,7 @@ const getStringFieldNames = (fields: FieldType[]) => {
 
 const useCreateStreamForm = () => {
 	const form = useForm({
-		mode: 'uncontrolled',
+		mode: 'controlled',
 		initialValues: {
 			name: '',
 			fields: [defaultFieldValue],
@@ -297,7 +297,7 @@ const CreateStreamModal: FC = () => {
 			title="Create Stream"
 			classNames={{ title: aboutTitle }}>
 			<Stack className={container}>
-				<CreateStreamForm toggleModal={toggleModal}/>
+				<CreateStreamForm toggleModal={toggleModal} />
 			</Stack>
 		</Modal>
 	);

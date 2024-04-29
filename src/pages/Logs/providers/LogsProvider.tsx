@@ -130,6 +130,12 @@ type LogsStore = {
 	data: LogQueryData & {
 		schema: LogStreamSchemaData | null;
 	};
+
+	retention: {
+		action: 'delete';
+		duration: number;
+		description: string;
+	};
 };
 
 type LogsStoreReducers = {
@@ -171,6 +177,7 @@ type LogsStoreReducers = {
 	applyCustomQuery: (store: LogsStore, query: string, mode: 'filters' | 'sql') => ReducerOutput;
 	getUniqueValues: (data: Log[], key: string) => string[];
 	makeExportData: (data: Log[], headers: string[], type: string) => Log[];
+	setRetention: (store: LogsStore, retention: { description: string; duration: string }) => ReducerOutput;
 };
 
 const initialState: LogsStore = {
@@ -209,6 +216,12 @@ const initialState: LogsStore = {
 		rawData: [],
 		filteredData: [],
 		schema: null,
+	},
+
+	retention: {
+		action: 'delete',
+		description: '',
+		duration: 0,
 	},
 	// if adding new fields, verify streamChangeCleanup
 };
@@ -270,7 +283,7 @@ const setLiveTailSchema = (store: LogsStore, liveTailSchemaData: LogStreamData) 
 
 const toggleLiveTail = (store: LogsStore) => {
 	return { liveTailConfig: { ...defaultLiveTailConfig, showLiveTail: !store.liveTailConfig.showLiveTail } };
-}; 
+};
 
 const setRefreshInterval = (_store: LogsStore, interval: number | null) => {
 	return { refreshInterval: interval };
@@ -438,7 +451,7 @@ const setPageAndPageData = (store: LogsStore, pageNo: number, perPage?: number) 
 		data: { filteredData },
 		tableOpts,
 	} = store;
-	const updatedPerPage = perPage || tableOpts.perPage
+	const updatedPerPage = perPage || tableOpts.perPage;
 	const newPageSlice = filteredData && getPageSlice(pageNo, updatedPerPage, filteredData);
 
 	return {
@@ -447,7 +460,7 @@ const setPageAndPageData = (store: LogsStore, pageNo: number, perPage?: number) 
 			pageData: newPageSlice,
 			currentPage: pageNo,
 			totalPages: getTotalPages(filteredData, updatedPerPage),
-			perPage: updatedPerPage
+			perPage: updatedPerPage,
 		},
 	};
 };
@@ -557,6 +570,19 @@ const makeExportData = (data: Log[], headers: string[], type: string): Log[] => 
 	}
 };
 
+const setRetention = (_store: LogsStore, retention: { duration?: string; description?: string }) => {
+	const durationInNumber = _.isString(retention.duration)
+		? _.chain(retention.duration).split('d').head().toInteger().value()
+		: 0;
+	return {
+		retention: {
+			duration: durationInNumber,
+			description: retention.description || '',
+			action: 'delete' as 'delete',
+		},
+	};
+};
+
 const logsStoreReducers: LogsStoreReducers = {
 	setTimeRange,
 	// resetTimeRange,
@@ -591,7 +617,8 @@ const logsStoreReducers: LogsStoreReducers = {
 	getCleanStoreForRefetch,
 	toggleLiveTail,
 	setSelectedLog,
-	makeExportData
+	makeExportData,
+	setRetention,
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };
