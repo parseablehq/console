@@ -23,3 +23,8 @@
     padding: var(--mantine-spacing-md);
     border-radius: 0.2rem;
 }
+
+.infoTooltipIcon {
+    color: var(--mantine-color-gray-5);
+    cursor: pointer;
+}

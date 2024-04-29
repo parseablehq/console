@@ -100,9 +100,10 @@ const RetentionForm = (props: { onToggleRetentionModal: () => void; getLogRetent
 };
 
 const RententionModal = () => {
-	const [currentStream] = useAppStore((store) => store.currentStream || '');
-	const { isCacheEnabled, getCacheError, updateCacheStatus } = useCacheToggle(currentStream);
-	const { getLogRetentionData, getLogRetentionIsSuccess, getLogRetentionDataRefetch } = useGetRetention(currentStream);
+	const [currentStream] = useAppStore((store) => store.currentStream);
+	const [isStandAloneMode] = useAppStore((store) => store.isStandAloneMode);
+	const { isCacheEnabled, getCacheError, updateCacheStatus } = useCacheToggle(currentStream || '');
+	const { getLogRetentionData, getLogRetentionIsSuccess, getLogRetentionDataRefetch } = useGetRetention(currentStream || '');
 	const [retentionModalOpen, setLogsStore] = useLogsStore((store) => store.modalOpts.retentionModalOpen);
 	const onToggleRetentionModal = useCallback(() => {
 		setLogsStore((store) => toggleRetentionModal(store));
@@ -123,7 +124,12 @@ const RententionModal = () => {
 			<Stack>
 				<Stack
 					className={classes.fieldsContainer}
-					style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+					style={{
+						flexDirection: 'row',
+						alignItems: 'center',
+						justifyContent: 'space-between',
+						...(isStandAloneMode ? {} : { display: 'none' }),
+					}}>
 					<Text className={classes.fieldTitle}>Caching</Text>
 					<Stack style={{}}>
 						{getCacheError ? (

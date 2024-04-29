@@ -18,6 +18,7 @@ const renderDeleteIcon = () => <IconTrash size={px('1.4rem')} stroke={1.5} />;
 
 const PrimaryToolbar = () => {
 	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
+	const [isStandAloneMode] = useAppStore((store) => store.isStandAloneMode);
 	const [maximized] = useAppStore((store) => store.maximized);
 	const [showLiveTail, setLogsStore] = useLogsStore((store) => store.liveTailConfig.showLiveTail);
 
@@ -50,7 +51,7 @@ const PrimaryToolbar = () => {
 					active={showLiveTail}
 					tooltipLabel="Live Tail"
 				/>
-				{userAccessMap.hasUpdateAlertAccess && (
+				{userAccessMap.hasUpdateAlertAccess && isStandAloneMode && (
 					<IconButton renderIcon={renderAlertsIcon} onClick={onToggleAlertsModal} tooltipLabel="Alerts" />
 				)}
 				<IconButton renderIcon={renderSettingsIcon} onClick={onToggleRetentionModal} tooltipLabel="Settings" />

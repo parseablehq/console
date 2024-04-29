@@ -1,9 +1,21 @@
-import { ActionIcon, Box, Button, CloseIcon, Modal, Select, Stack, Text, TextInput, ThemeIcon } from '@mantine/core';
+import {
+	ActionIcon,
+	Box,
+	Button,
+	CloseIcon,
+	Modal,
+	Select,
+	Stack,
+	Text,
+	TextInput,
+	ThemeIcon,
+	Tooltip,
+} from '@mantine/core';
 import { FC, useCallback, useEffect, useState } from 'react';
 import styles from './styles/CreateStreamModal.module.css';
 import { useLogStream } from '@/hooks/useLogStream';
 import { useForm } from '@mantine/form';
-import { IconPlus } from '@tabler/icons-react';
+import { IconInfoCircleFilled, IconPlus } from '@tabler/icons-react';
 import _ from 'lodash';
 import { CreatableSelect } from '@/components/Misc/CreatableSelect';
 import { useAppStore, appStoreReducers } from '@/layouts/MainLayout/providers/AppProvider';
@@ -23,7 +35,7 @@ const isValidStreamName = (val: string) => {
 	}
 };
 
-const reservedFieldNames = ["p_metadata", "p_tags", "p_timestamp"]
+const reservedFieldNames = ['p_metadata', 'p_tags', 'p_timestamp'];
 
 const isValidFieldName = (val: string, existingNames: string[]) => {
 	if (val.length === 0) {
@@ -97,7 +109,17 @@ const SchemaTypeField = (props: { inputProps: GetInputPropsReturnType }) => {
 	return (
 		<Stack gap={2} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
 			<Stack gap={1}>
-				<Text className={styles.fieldTitle}>Schema Type</Text>
+				<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={4}>
+					<Text className={styles.fieldTitle}>Schema Type</Text>
+					<Tooltip
+						multiline
+						w={220}
+						withArrow
+						transitionProps={{ duration: 200 }}
+						label="Placeholder for multiline tooltip - Schema type">
+						<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={18} width={18} />
+					</Tooltip>
+				</Stack>
 				<Text className={styles.fieldDescription}>Description for schema type</Text>
 			</Stack>
 			<Select data={[dynamicType, staticType]} {...props.inputProps} />
@@ -129,7 +151,17 @@ const PartitionField = (props: {
 	return (
 		<Stack gap={2} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
 			<Stack gap={1}>
-				<Text className={styles.fieldTitle}>Partition Field</Text>
+				<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={4}>
+					<Text className={styles.fieldTitle}>Partition Field</Text>
+					<Tooltip
+						multiline
+						w={220}
+						withArrow
+						transitionProps={{ duration: 200 }}
+						label="Placeholder for multiline tooltip - Partition Field">
+						<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={18} width={18} />
+					</Tooltip>
+				</Stack>
 				<Text className={styles.fieldDescription}>Description for partition field</Text>
 			</Stack>
 			<CreatableSelect

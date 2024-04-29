@@ -25,6 +25,7 @@ type AppStore = {
 	userAccessMap: { [key: string]: boolean };
 	streamSpecificUserAccess: string[] | null;
 	instanceConfig: AboutData | null;
+	isStandAloneMode: boolean | null; 
 };
 
 type AppStoreReducers = {
@@ -49,6 +50,7 @@ const initialState: AppStore = {
 	streamSpecificUserAccess: null,
 	instanceConfig: null,
 	createStreamModalOpen: false,
+	isStandAloneMode: null
 };
 
 const { Provider: AppProvider, useStore: useAppStore } = initContext(initialState);
@@ -111,7 +113,8 @@ const setStreamSpecificUserAccess = (store: AppStore) => {
 };
 
 const setInstanceConfig = (_store: AppStore, instanceConfig: AboutData | null) => {
-	return { instanceConfig };
+	const { mode } = instanceConfig || {};
+	return { instanceConfig, isStandAloneMode: mode === 'All' };
 };
 
 const appStoreReducers: AppStoreReducers = {
