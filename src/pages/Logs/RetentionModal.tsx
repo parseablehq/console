@@ -11,7 +11,7 @@ import _ from 'lodash';
 
 const { toggleRetentionModal, setRetention } = logsStoreReducers;
 
-const RetentionForm = (props: { onToggleRetentionModal: () => void }) => {
+const RetentionForm = (props: { onToggleRetentionModal: () => void; getLogRetentionDataRefetch: () => void }) => {
 	const [retention] = useLogsStore((store) => store.retention);
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const form = useForm({
@@ -28,12 +28,24 @@ const RetentionForm = (props: { onToggleRetentionModal: () => void }) => {
 		validateInputOnBlur: true,
 	});
 
+	useEffect(() => {
+		form.setValues({
+			duration: retention.duration,
+			description: retention.description,
+		});
+	}, [retention]);
+
 	const { updateLogStreamRetention } = useRetentionEditor(currentStream || '');
+
+	const onSuccess = useCallback(() => {
+		props.getLogRetentionDataRefetch();
+		props.onToggleRetentionModal();
+	}, []);
 
 	const onSubmit = useCallback(
 		({ reset }: { reset?: boolean }) => {
 			if (reset) {
-				updateLogStreamRetention({ config: [], onSuccess: props.onToggleRetentionModal });
+				updateLogStreamRetention({ config: [], onSuccess });
 			} else {
 				const { hasErrors } = form.validate();
 				if (hasErrors) return;
@@ -41,7 +53,7 @@ const RetentionForm = (props: { onToggleRetentionModal: () => void }) => {
 				const parsedDuration = `${form.values.duration}d`;
 				updateLogStreamRetention({
 					config: [{ ...form.values, duration: parsedDuration }],
-					onSuccess: props.onToggleRetentionModal,
+					onSuccess,
 				});
 			}
 		},
@@ -90,7 +102,7 @@ const RetentionForm = (props: { onToggleRetentionModal: () => void }) => {
 const RententionModal = () => {
 	const [currentStream] = useAppStore((store) => store.currentStream || '');
 	const { isCacheEnabled, getCacheError, updateCacheStatus } = useCacheToggle(currentStream);
-	const { getLogRetentionData, getLogRetentionIsSuccess } = useGetRetention(currentStream);
+	const { getLogRetentionData, getLogRetentionIsSuccess, getLogRetentionDataRefetch } = useGetRetention(currentStream);
 	const [retentionModalOpen, setLogsStore] = useLogsStore((store) => store.modalOpts.retentionModalOpen);
 	const onToggleRetentionModal = useCallback(() => {
 		setLogsStore((store) => toggleRetentionModal(store));
@@ -130,7 +142,12 @@ const RententionModal = () => {
 				</Stack>
 				<Stack className={classes.fieldsContainer}>
 					<Text className={classes.fieldTitle}>Retention</Text>
-					{getLogRetentionIsSuccess && <RetentionForm onToggleRetentionModal={onToggleRetentionModal} />}
+					{getLogRetentionIsSuccess && (
+						<RetentionForm
+							onToggleRetentionModal={onToggleRetentionModal}
+							getLogRetentionDataRefetch={getLogRetentionDataRefetch}
+						/>
+					)}
 				</Stack>
 			</Stack>
 		</Modal>

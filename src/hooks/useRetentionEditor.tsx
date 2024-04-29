@@ -33,6 +33,7 @@ export const useGetRetention = (streamName: string) => {
 		isError: getLogRetentionIsError,
 		isLoading: getLogRetentionIsLoading,
 		isSuccess: getLogRetentionIsSuccess,
+		refetch: getLogRetentionDataRefetch
 	} = useQuery(['fetch-log-stream-retention', streamName], () => getLogStreamRetention(streamName), {
 		onSuccess: () => {},
 		retry: false,
@@ -44,5 +45,6 @@ export const useGetRetention = (streamName: string) => {
 		getLogRetentionIsLoading,
 		getLogRetentionIsError,
 		getLogRetentionIsSuccess,
+		getLogRetentionDataRefetch
 	};
 };

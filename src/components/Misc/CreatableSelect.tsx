@@ -3,25 +3,30 @@ import { Combobox, InputBase, useCombobox } from '@mantine/core';
 
 type Props = {
 	data: string[];
-	setData: React.Dispatch<React.SetStateAction<string[]>>
+	setData: React.Dispatch<React.SetStateAction<string[]>>;
 	value: string;
-	setValue: (val: string) => void; 
+	setValue: (val: string) => void;
 	placeholder: string;
 	error: string;
-}
-
+};
 
 export function CreatableSelect(props: Props) {
 	const combobox = useCombobox({
 		onDropdownClose: () => combobox.resetSelectedOption(),
 	});
 
-    const {data, setData, value, setValue} = props; 
+	const { data, setData, value, setValue } = props;
 	const [search, setSearch] = useState('');
 
-    useEffect(() => {
-        setSearch(value || '');
-    }, [value])
+	useEffect(() => {
+		setSearch(value || '');
+	}, [value]);
+
+	useEffect(() => {
+		if (combobox.dropdownOpened) {
+			setSearch('');
+		}
+	}, [combobox.dropdownOpened]);
 
 	const exactOptionMatch = data.some((item) => item === search);
 	const filteredOptions = exactOptionMatch

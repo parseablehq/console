@@ -137,7 +137,7 @@ const PartitionField = (props: {
 				setData={setData}
 				value={props.value}
 				setValue={(value: string) => onFieldChange(value)}
-				placeholder="Select or Create"
+				placeholder="Select or Add"
 				error={props.error}
 			/>
 		</Stack>
