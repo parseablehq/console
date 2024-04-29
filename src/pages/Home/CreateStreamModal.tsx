@@ -23,9 +23,13 @@ const isValidStreamName = (val: string) => {
 	}
 };
 
+const reservedFieldNames = ["p_metadata", "p_tags", "p_timestamp"]
+
 const isValidFieldName = (val: string, existingNames: string[]) => {
 	if (val.length === 0) {
 		return 'Name cannot be empty';
+	} else if (_.includes(reservedFieldNames, val)) {
+		return `${val} is a reserved field`;
 	} else if (_.filter(existingNames, (name) => name === val).length > 1) {
 		return 'Name already exists';
 	} else {

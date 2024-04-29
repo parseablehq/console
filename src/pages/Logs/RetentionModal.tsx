@@ -40,7 +40,7 @@ const RetentionForm = (props: { onToggleRetentionModal: () => void }) => {
 
 				const parsedDuration = `${form.values.duration}d`;
 				updateLogStreamRetention({
-					config: { ...form.values, duration: parsedDuration },
+					config: [{ ...form.values, duration: parsedDuration }],
 					onSuccess: props.onToggleRetentionModal,
 				});
 			}
