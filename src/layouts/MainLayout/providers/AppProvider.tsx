@@ -114,7 +114,7 @@ const setStreamSpecificUserAccess = (store: AppStore) => {
 
 const setInstanceConfig = (_store: AppStore, instanceConfig: AboutData | null) => {
 	const { mode } = instanceConfig || {};
-	return { instanceConfig, isStandAloneMode: mode === 'All' };
+	return { instanceConfig, isStandAloneMode: mode === 'Standalone' };
 };
 
 const appStoreReducers: AppStoreReducers = {
