@@ -18,6 +18,20 @@ export function CreatableSelect(props: Props) {
 	const { data, setData, value, setValue } = props;
 	const [search, setSearch] = useState('');
 
+	const exactOptionMatch = data.some((item) => item === search);
+	const filteredOptions = exactOptionMatch
+		? data
+		: data.filter((item) => item.toLowerCase().includes(search.toLowerCase().trim()));
+    const canAddValueAsOption = !exactOptionMatch && search.trim().length > 0 
+	
+	const handleEnterKeyPress = (event: KeyboardEvent) => {
+		if (event.key === 'Enter' && canAddValueAsOption) {
+			setData((prev) => [...prev, search])
+			setValue(search);
+			combobox.closeDropdown();
+		}
+	};
+
 	useEffect(() => {
 		setSearch(value || '');
 	}, [value]);
@@ -28,11 +42,15 @@ export function CreatableSelect(props: Props) {
 		}
 	}, [combobox.dropdownOpened]);
 
-	const exactOptionMatch = data.some((item) => item === search);
-	const filteredOptions = exactOptionMatch
-		? data
-		: data.filter((item) => item.toLowerCase().includes(search.toLowerCase().trim()));
-
+	useEffect(() => {
+		if (combobox.dropdownOpened) {
+			window.addEventListener('keydown', handleEnterKeyPress);
+		}
+		return () => {
+			window.removeEventListener('keydown', handleEnterKeyPress);
+		};
+	}, [canAddValueAsOption, search]);
+	
 	const options = filteredOptions.map((item) => (
 		<Combobox.Option value={item} key={item}>
 			{item}
@@ -69,16 +87,15 @@ export function CreatableSelect(props: Props) {
 						combobox.closeDropdown();
 						setSearch(value || '');
 					}}
-					placeholder={props.placeholder || 'Search or Choose'}
+					placeholder={props.placeholder || 'Search or Type'}
 					rightSectionPointerEvents="none"
 					error={props.error}
 				/>
 			</Combobox.Target>
-
 			<Combobox.Dropdown>
 				<Combobox.Options>
 					{options}
-					{!exactOptionMatch && search.trim().length > 0 ? (
+					{ canAddValueAsOption ? (
 						<Combobox.Option value="$create">+ Create {search}</Combobox.Option>
 					) : (
 						<Combobox.Option disabled value="$create">

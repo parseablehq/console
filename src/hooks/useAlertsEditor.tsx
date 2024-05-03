@@ -33,6 +33,7 @@ export const useGetAlerts = (streamName: string) => {
 		isError: getLogAlertIsError,
 		isSuccess: getLogAlertIsSuccess,
 		isLoading: getLogAlertIsLoading,
+		refetch: getLogAlertDataRefetch
 	} = useQuery(['fetch-log-stream-alert', streamName], () => getLogStreamAlerts(streamName), {
 		retry: false,
 		enabled: streamName !== '',
@@ -44,5 +45,6 @@ export const useGetAlerts = (streamName: string) => {
 		getLogAlertIsError,
 		getLogAlertIsSuccess,
 		getLogAlertIsLoading,
+		getLogAlertDataRefetch
 	};
 };

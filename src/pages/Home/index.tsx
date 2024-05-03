@@ -40,7 +40,7 @@ const Home: FC = () => {
 	const navigate = useNavigate();
 	const { getStreamMetadata, metaData } = useGetStreamMetadata();
 	const [userSpecificStreams, setAppStore] = useAppStore((store) => store.userSpecificStreams);
-	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
+	const [userAccessMap] = useAppStore((store) => store.userAccessMap);	
 
 	useEffect(() => {
 		if (!Array.isArray(userSpecificStreams) || userSpecificStreams.length === 0) return;

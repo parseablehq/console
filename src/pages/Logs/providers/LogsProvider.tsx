@@ -14,6 +14,69 @@ export const LOAD_LIMIT = 9000;
 
 type ReducerOutput = Partial<LogsStore>;
 
+export type ConfigType = {
+	column: string;
+	operator: string;
+	value: string | number;
+	repeats: number;
+	ignore_case?: boolean;
+}
+
+export interface RuleConfig {
+	type: string;
+	config: ConfigType;
+}
+
+export interface Target {
+	type: string;
+	endpoint: string;
+	username?: string;
+	password?: string;
+	headers?: Record<string, string>;
+	skip_tls_check: boolean;
+	repeat: {
+		interval: string;
+		times: number;
+	};
+}
+
+export interface TransformedTarget {
+	type: string;
+	endpoint: string;
+	username?: string;
+	password?: string;
+	headers?: Record<string, string>[];
+	skip_tls_check: boolean;
+	repeat: {
+		interval: string;
+		times: number;
+	};
+}
+
+export interface Alert {
+	name: string;
+	message: string;
+	rule: RuleConfig;
+	targets: Target[];
+}
+
+export interface TransformedAlert {
+	name: string;
+	message: string;
+	rule: RuleConfig;
+	targets: TransformedTarget[];
+}
+
+export interface AlertsResponse {
+	version: string;
+	alerts: Alert[];
+}
+
+export type TransformedAlerts = {
+	version: string;
+	alerts: TransformedAlert[];
+}
+
 type TimeRange = {
 	startTime: Date;
 	endTime: Date;
@@ -136,6 +199,8 @@ type LogsStore = {
 		duration: number;
 		description: string;
 	};
+
+	alerts: TransformedAlerts;
 };
 
 type LogsStoreReducers = {
@@ -178,6 +243,8 @@ type LogsStoreReducers = {
 	getUniqueValues: (data: Log[], key: string) => string[];
 	makeExportData: (data: Log[], headers: string[], type: string) => Log[];
 	setRetention: (store: LogsStore, retention: { description: string; duration: string }) => ReducerOutput;
+	setAlerts: (store: LogsStore, alertsResponse: AlertsResponse) => ReducerOutput;
+	transformAlerts: (alerts: TransformedAlert[]) => Alert[]
 };
 
 const initialState: LogsStore = {
@@ -222,6 +289,11 @@ const initialState: LogsStore = {
 		action: 'delete',
 		description: '',
 		duration: 0,
+	},
+
+	alerts: {
+		version: '',
+		alerts: []
 	},
 	// if adding new fields, verify streamChangeCleanup
 };
@@ -583,6 +655,58 @@ const setRetention = (_store: LogsStore, retention: { duration?: string; descrip
 	};
 };
 
+// transforms alerts data for forms
+const santizeAlerts = (alerts: Alert[]): TransformedAlert[] => {
+	// @ts-ignore
+	return _.reduce(alerts, (acc: Alert[], alert: Alert) => {
+		const {targets = []} = alert;
+		const updatedTargets = _.map(targets, target => {
+			if (target.type === "webhook") {
+				const {headers = {}} = target;
+				const headersAsArray = _.map(headers, (v, k) => ({header: k, value: v}))
+				return {...target, headers: headersAsArray}
+			} else {
+				return target
+			}
+		})
+		return [...acc, {...alert, targets: updatedTargets}]
+	}, [] as TransformedAlert[])
+}
+
+const transformAlerts = (alerts: TransformedAlert[]): Alert[] => {
+	return _.reduce(
+		alerts,
+		// @ts-ignore
+		(acc: Alert[], alert) => {
+			const { targets = [] } = alert;
+			const updatedTargets = _.map(targets, (target) => {
+				if (target.type === 'webhook') {
+					const { headers = {} } = target;
+					const transformedHeaders: { [key: string]: string } = {};
+					if (_.isArray(headers)) {
+						_.map(headers, (h: { header: string; value: string }) => {
+							transformedHeaders[h.header] = h.value;
+						});
+					}
+					return { ...target, headers: transformedHeaders };
+				} else {
+					return target;
+				}
+			});
+			return [...acc, { ...alert, targets: updatedTargets }];
+		},
+		[] as Alert[],
+	);
+};
+
+const setAlerts = (_store: LogsStore, alertsResponse: AlertsResponse) => {
+	const { alerts } = alertsResponse;
+	const sanitizedAlerts: TransformedAlert[] = santizeAlerts(alerts);
+	return {
+		alerts: {...alertsResponse, alerts: sanitizedAlerts},
+	};
+}
+
 const logsStoreReducers: LogsStoreReducers = {
 	setTimeRange,
 	// resetTimeRange,
@@ -619,6 +743,8 @@ const logsStoreReducers: LogsStoreReducers = {
 	setSelectedLog,
 	makeExportData,
 	setRetention,
+	setAlerts,
+	transformAlerts
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };

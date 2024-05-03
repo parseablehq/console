@@ -2,7 +2,7 @@ import { PrimaryHeader } from '@/components/Header';
 import Navbar from '@/components/Navbar';
 import { NAVBAR_WIDTH, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 import { Box } from '@mantine/core';
-import { useEffect, type FC } from 'react';
+import { useCallback, useEffect, type FC } from 'react';
 import { Outlet } from 'react-router-dom';
 import { heights } from '@/components/Mantine/sizing';
 import { useAppStore, appStoreReducers } from './providers/AppProvider';
@@ -14,12 +14,13 @@ const MainLayout: FC = () => {
 	const primaryHeaderHeight = !maximized ? PRIMARY_HEADER_HEIGHT : 0;
 	const navbarWidth = !maximized ? NAVBAR_WIDTH : 0;
 
+	const handleEscKeyPress = useCallback((event: KeyboardEvent) => {
+		if (event.key === 'Escape') {
+			maximized && setAppStore(toggleMaximize);
+		}
+	}, [maximized]);
+
 	useEffect(() => {
-		const handleEscKeyPress = (event: KeyboardEvent) => {
-			if (event.key === 'Escape') {
-				maximized && setAppStore(toggleMaximize);
-			}
-		};
 		window.addEventListener('keydown', handleEscKeyPress);
 		return () => {
 			window.removeEventListener('keydown', handleEscKeyPress);
