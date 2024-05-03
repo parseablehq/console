@@ -20,7 +20,7 @@ export type ConfigType = {
 	value: string | number;
 	repeats: number;
 	ignore_case?: boolean;
-}
+};
 
 export interface RuleConfig {
 	type: string;
@@ -75,7 +75,7 @@ export interface AlertsResponse {
 export type TransformedAlerts = {
 	version: string;
 	alerts: TransformedAlert[];
-}
+};
 
 type TimeRange = {
 	startTime: Date;
@@ -244,7 +244,7 @@ type LogsStoreReducers = {
 	makeExportData: (data: Log[], headers: string[], type: string) => Log[];
 	setRetention: (store: LogsStore, retention: { description: string; duration: string }) => ReducerOutput;
 	setAlerts: (store: LogsStore, alertsResponse: AlertsResponse) => ReducerOutput;
-	transformAlerts: (alerts: TransformedAlert[]) => Alert[]
+	transformAlerts: (alerts: TransformedAlert[]) => Alert[];
 };
 
 const initialState: LogsStore = {
@@ -293,7 +293,7 @@ const initialState: LogsStore = {
 
 	alerts: {
 		version: '',
-		alerts: []
+		alerts: [],
 	},
 	// if adding new fields, verify streamChangeCleanup
 };
@@ -658,20 +658,25 @@ const setRetention = (_store: LogsStore, retention: { duration?: string; descrip
 // transforms alerts data for forms
 const santizeAlerts = (alerts: Alert[]): TransformedAlert[] => {
 	// @ts-ignore
-	return _.reduce(alerts, (acc: Alert[], alert: Alert) => {
-		const {targets = []} = alert;
-		const updatedTargets = _.map(targets, target => {
-			if (target.type === "webhook") {
-				const {headers = {}} = target;
-				const headersAsArray = _.map(headers, (v, k) => ({header: k, value: v}))
-				return {...target, headers: headersAsArray}
-			} else {
-				return target
-			}
-		})
-		return [...acc, {...alert, targets: updatedTargets}]
-	}, [] as TransformedAlert[])
-}
+	return _.reduce(
+		alerts,
+		// @ts-ignore
+		(acc: Alert[], alert: Alert) => {
+			const { targets = [] } = alert;
+			const updatedTargets = _.map(targets, (target) => {
+				if (target.type === 'webhook') {
+					const { headers = {} } = target;
+					const headersAsArray = _.map(headers, (v, k) => ({ header: k, value: v }));
+					return { ...target, headers: headersAsArray };
+				} else {
+					return target;
+				}
+			});
+			return [...acc, { ...alert, targets: updatedTargets }];
+		},
+		[] as TransformedAlert[],
+	);
+};
 
 const transformAlerts = (alerts: TransformedAlert[]): Alert[] => {
 	return _.reduce(
@@ -681,14 +686,20 @@ const transformAlerts = (alerts: TransformedAlert[]): Alert[] => {
 			const { targets = [] } = alert;
 			const updatedTargets = _.map(targets, (target) => {
 				if (target.type === 'webhook') {
-					const { headers = {} } = target;
+					const { headers = {}, endpoint, skip_tls_check, repeat, type } = target;
 					const transformedHeaders: { [key: string]: string } = {};
 					if (_.isArray(headers)) {
 						_.map(headers, (h: { header: string; value: string }) => {
 							transformedHeaders[h.header] = h.value;
 						});
 					}
-					return { ...target, headers: transformedHeaders };
+					return { type, endpoint, skip_tls_check, repeat, headers: transformedHeaders };
+				} else if (target.type === 'slack') {
+					const { repeat, endpoint, type } = target;
+					return { repeat, endpoint, type };
+				} else if (target.type === 'alertmanager') {
+					const { endpoint, skip_tls_check, repeat, type, username, password } = target;
+					return { type, endpoint, skip_tls_check, repeat, username, password };
 				} else {
 					return target;
 				}
@@ -703,9 +714,9 @@ const setAlerts = (_store: LogsStore, alertsResponse: AlertsResponse) => {
 	const { alerts } = alertsResponse;
 	const sanitizedAlerts: TransformedAlert[] = santizeAlerts(alerts);
 	return {
-		alerts: {...alertsResponse, alerts: sanitizedAlerts},
+		alerts: { ...alertsResponse, alerts: sanitizedAlerts },
 	};
-}
+};
 
 const logsStoreReducers: LogsStoreReducers = {
 	setTimeRange,
@@ -744,7 +755,7 @@ const logsStoreReducers: LogsStoreReducers = {
 	makeExportData,
 	setRetention,
 	setAlerts,
-	transformAlerts
+	transformAlerts,
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };

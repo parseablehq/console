@@ -264,6 +264,11 @@ type RepeatConfigProps = {
 
 const RepeatConfig = (props: RepeatConfigProps) => {
 	const { form, targetsPath } = props;
+	const setReapeats = useCallback((val: string) => {
+		val === ''
+			? form.setFieldValue(`${targetsPath}.repeat.times`, null)
+			: form.setFieldValue(`${targetsPath}.repeat.times`, _.toInteger(val));
+	}, []);
 	return (
 		<Stack style={{ flexDirection: 'row' }}>
 			<TextInput
@@ -284,6 +289,7 @@ const RepeatConfig = (props: RepeatConfigProps) => {
 				key="times"
 				type="number"
 				{...form.getInputProps(`${targetsPath}.repeat.times`)}
+				onChange={(e) => setReapeats(e.target.value)}
 			/>
 		</Stack>
 	);
@@ -757,7 +763,7 @@ const AlertsModal2 = () => {
 		}
 		const parsedAlerts = transformAlerts(form.values.alerts);
 		updateLogStreamAlerts({ config: { ...form.values, alerts: parsedAlerts }, onSuccess: onSuccess });
-	}, [form, onSuccess]);
+	}, [form]);
 
 	const onResetAllAlerts = useCallback(() => {
 		updateLogStreamAlerts({ config: { ...form.values, alerts: [] }, onSuccess: onSuccess });
