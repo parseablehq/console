@@ -109,7 +109,7 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 							</Box>
 							{getAboutData?.data.staging && (
 								<Box className={aboutTextInnerBox}>
-									<Text className={aboutTextKey}>Staging</Text>``
+									<Text className={aboutTextKey}>Staging</Text>
 									<Text className={aboutTextValue}>{getAboutData?.data.staging}</Text>
 								</Box>
 							)}
