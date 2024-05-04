@@ -43,6 +43,9 @@
 	border-left: none !important;
 	border-bottom: none !important;
     margin: 0px !important;
+    &:hover {
+		color: black;
+	}
 }
 
 .placeholderText {

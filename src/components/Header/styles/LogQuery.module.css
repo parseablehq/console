@@ -19,6 +19,9 @@
 	color: #211F1F;
 	border: 1px #e9ecef solid;
     border-radius: rem(8px);
+	&:hover {
+		color: black;
+	}
   }
 
   .refreshNowBtn:hover {
@@ -42,6 +45,9 @@
 	padding: 0.625rem 1rem;
 	margin-right: 0.625rem;
     border-radius: rem(8px);
+	&:hover {
+		color: black;
+	}
   }
   
   .intervalbtn:hover {
@@ -67,6 +73,10 @@
 	font-size: 0.875rem;
 	background: #f8f9fa;
 	text-transform: capitalize;
+	&:hover {
+		color: black !important;
+		display: none;
+	}
   }
   
   .fixedRangeBtn:first-of-type {
@@ -80,6 +90,7 @@
   .fixedRangeBtn:hover {
 	background: #ced4da;
   }
+
   .fixedRangeBtn:disabled {
 	cursor: not-allowed;
 	background: #424242;
@@ -165,6 +176,7 @@
   
   .timeRangeBTn:hover {
     background-color: #E0E0E0;
+	color: black;
   }
   
   .dropdownBtn {
