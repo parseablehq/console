@@ -80,11 +80,7 @@ const parseGraphData = (data: GraphRecord[], avg: number, startTime: Dayjs) => {
 function ChartTooltip({ payload }: ChartTooltipProps) {
 	if (!payload || (Array.isArray(payload) && payload.length === 0)) return null;
 
-	const totalEvents = payload.reduce((acc, item: any) => {
-		return acc + item.value;
-	}, 0);
-
-	const { minute, aboveAvgPercent } = payload[0]?.payload || {};
+	const { minute, aboveAvgPercent, events } = payload[0]?.payload || {};
 	const isAboveAvg = aboveAvgPercent > 0;
 	const startTime = dayjs(minute).utc(true);
 	const endTime = dayjs(minute).add(60, 'seconds');
@@ -95,7 +91,7 @@ function ChartTooltip({ payload }: ChartTooltipProps) {
 			</Text>
 			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 				<Text>Events</Text>
-				<Text>{totalEvents}</Text>
+				<Text>{events}</Text>
 			</Stack>
 			<Stack mt={4} style={{ flexDirection: 'row', justifyContent: 'center' }}>
 				<Text size="sm" c={isAboveAvg ? 'red.6' : 'green.8'}>{`${isAboveAvg ? '+' : ''}${aboveAvgPercent}% ${
