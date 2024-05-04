@@ -214,13 +214,13 @@ type LogsStoreReducers = {
 	setRefreshInterval: (store: LogsStore, interval: number | null) => ReducerOutput;
 	resetQuickFilters: (store: LogsStore) => ReducerOutput;
 	streamChangeCleanup: (store: LogsStore) => ReducerOutput;
-	toggleQueryBuilder: (store: LogsStore) => ReducerOutput;
+	toggleQueryBuilder: (store: LogsStore, val?: boolean) => ReducerOutput;
 	resetCustQuerySearchState: (store: LogsStore) => ReducerOutput;
 	setCustQuerySearchState: (store: LogsStore, payload: Partial<CustQuerySearchState>) => ReducerOutput;
 	toggleCustQuerySearchViewMode: (store: LogsStore, targetMode: 'sql' | 'filters') => ReducerOutput;
-	toggleDeleteModal: (store: LogsStore) => ReducerOutput;
-	toggleAlertsModal: (store: LogsStore) => ReducerOutput;
-	toggleRetentionModal: (store: LogsStore) => ReducerOutput;
+	toggleDeleteModal: (store: LogsStore, val?: boolean) => ReducerOutput;
+	toggleAlertsModal: (store: LogsStore, val?: boolean) => ReducerOutput;
+	toggleRetentionModal: (store: LogsStore, val?: boolean) => ReducerOutput;
 	toggleLiveTail: (store: LogsStore) => ReducerOutput;
 	setSelectedLog: (store: LogsStore, log: Log | null) => ReducerOutput;
 
@@ -365,10 +365,13 @@ const streamChangeCleanup = (_store: LogsStore) => {
 	return { ...initialState };
 };
 
-const toggleQueryBuilder = (store: LogsStore) => {
+const toggleQueryBuilder = (store: LogsStore, val?: boolean) => {
 	const { custQuerySearchState } = store;
 	return {
-		custQuerySearchState: { ...custQuerySearchState, showQueryBuilder: !custQuerySearchState.showQueryBuilder },
+		custQuerySearchState: {
+			...custQuerySearchState,
+			showQueryBuilder: _.isBoolean(val) ? val : !custQuerySearchState.showQueryBuilder,
+		},
 	};
 };
 
@@ -395,19 +398,19 @@ const toggleCustQuerySearchViewMode = (store: LogsStore, targetMode: 'filters' |
 	};
 };
 
-const toggleDeleteModal = (store: LogsStore) => {
+const toggleDeleteModal = (store: LogsStore, val?: boolean) => {
 	const { modalOpts } = store;
-	return { modalOpts: { ...modalOpts, deleteModalOpen: !modalOpts.deleteModalOpen } };
+	return { modalOpts: { ...modalOpts, deleteModalOpen: _.isBoolean(val) ? val : !modalOpts.deleteModalOpen } };
 };
 
-const toggleRetentionModal = (store: LogsStore) => {
+const toggleRetentionModal = (store: LogsStore, val?: boolean) => {
 	const { modalOpts } = store;
-	return { modalOpts: { ...modalOpts, retentionModalOpen: !modalOpts.retentionModalOpen } };
+	return { modalOpts: { ...modalOpts, retentionModalOpen: _.isBoolean(val) ? val : !modalOpts.retentionModalOpen } };
 };
 
-const toggleAlertsModal = (store: LogsStore) => {
+const toggleAlertsModal = (store: LogsStore, val?: boolean) => {
 	const { modalOpts } = store;
-	return { modalOpts: { ...modalOpts, alertsModalOpen: !modalOpts.alertsModalOpen } };
+	return { modalOpts: { ...modalOpts, alertsModalOpen: _.isBoolean(val) ? val : !modalOpts.alertsModalOpen } };
 };
 
 const toggleDisabledColumns = (store: LogsStore, columnName: string) => {

@@ -78,8 +78,8 @@ const Navbar: FC = () => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [userSpecificStreams] = useAppStore((store) => store.userSpecificStreams);
 	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
-	const [userModalOpened, { toggle: toggleUserModal }] = useDisclosure(false);
-	const [infoModalOpened, { toggle: toggleInfoModal }] = useDisclosure(false);
+	const [userModalOpened, { toggle: toggleUserModal, close: closeUserModal }] = useDisclosure(false);
+	const [infoModalOpened, { toggle: toggleInfoModal, close: closeInfoModal }] = useDisclosure(false);
 	const { getLogStreamListData } = useLogStream();
 	const { getUserRolesData, getUserRolesMutation } = useUser();
 	const navigateToPage = useCallback(
@@ -191,8 +191,8 @@ const Navbar: FC = () => {
 							);
 						})}
 					</Stack>
-					<InfoModal opened={infoModalOpened} close={toggleInfoModal} />
-					<UserModal opened={userModalOpened} onClose={toggleUserModal} userData={getUserRolesData?.data || {}} />
+					<InfoModal opened={infoModalOpened} close={closeInfoModal} />
+					<UserModal opened={userModalOpened} onClose={closeUserModal} userData={getUserRolesData?.data || {}} />
 				</div>
 			</nav>
 		</Box>

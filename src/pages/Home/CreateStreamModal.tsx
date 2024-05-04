@@ -318,14 +318,14 @@ const CreateStreamModal: FC = () => {
 	const classes = styles;
 	const [createStreamModalOpen, setAppStore] = useAppStore((store) => store.createStreamModalOpen);
 	const { container, aboutTitle } = classes;
-	const toggleModal = useCallback(() => {
-		setAppStore((store) => toggleCreateStreamModal(store));
+	const closeModal = useCallback(() => {
+		setAppStore((store) => toggleCreateStreamModal(store, false));
 	}, []);
 
 	return (
 		<Modal
 			opened={createStreamModalOpen}
-			onClose={toggleModal}
+			onClose={closeModal}
 			withinPortal
 			size="lg"
 			centered
@@ -333,7 +333,7 @@ const CreateStreamModal: FC = () => {
 			title="Create Stream"
 			classNames={{ title: aboutTitle }}>
 			<Stack className={container}>
-				<CreateStreamForm toggleModal={toggleModal} />
+				<CreateStreamForm toggleModal={closeModal} />
 			</Stack>
 		</Modal>
 	);

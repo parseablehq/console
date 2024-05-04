@@ -14,14 +14,14 @@ const DeleteStreamModal = () => {
 	const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
 		setConfirmInputValue(e.target.value);
 	}, []);
-	const onToggleModal = useCallback(() => {
-		setLogsStore((store) => toggleDeleteModal(store));
+	const onCloseModal = useCallback(() => {
+		setLogsStore((store) => toggleDeleteModal(store, false));
 	}, []);
 	const { deleteLogStreamMutation } = useLogStream();
 	const navigate = useNavigate();
 
 	const onDeleteSuccess = useCallback(() => {
-		onToggleModal();
+		onCloseModal();
 		navigate('/');
 	}, [])
 	const [currentStream] = useAppStore((store) => store.currentStream);
@@ -37,7 +37,7 @@ const DeleteStreamModal = () => {
 			withinPortal
 			size="md"
 			opened={deleteModalOpen}
-			onClose={onToggleModal}
+			onClose={onCloseModal}
 			title={'Delete Stream'}
 			centered
 			className={styles.modalStyle}
@@ -51,7 +51,7 @@ const DeleteStreamModal = () => {
 				value={confirmInputValue}
 			/>
 			<Group mt={10} justify="right">
-				<Button onClick={onToggleModal} className={styles.modalCancelBtn}>
+				<Button onClick={onCloseModal} className={styles.modalCancelBtn}>
 					Cancel
 				</Button>
 				<Button

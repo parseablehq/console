@@ -48,7 +48,7 @@ const QuerierModal = (props: {
 }) => {
 	const [{ showQueryBuilder, viewMode }, setLogsStore] = useLogsStore((store) => store.custQuerySearchState);
 	const onClose = useCallback(() => {
-		setLogsStore((store) => toggleQueryBuilder(store));
+		setLogsStore((store) => toggleQueryBuilder(store, false));
 	}, []);
 	const queryCodeEditorRef = useRef<any>(''); // to store input value even after the editor unmounts
 

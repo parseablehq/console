@@ -105,8 +105,8 @@ const RententionModal = () => {
 	const { isCacheEnabled, getCacheError, updateCacheStatus } = useCacheToggle(currentStream || '');
 	const { getLogRetentionData, getLogRetentionIsSuccess, getLogRetentionDataRefetch } = useGetRetention(currentStream || '');
 	const [retentionModalOpen, setLogsStore] = useLogsStore((store) => store.modalOpts.retentionModalOpen);
-	const onToggleRetentionModal = useCallback(() => {
-		setLogsStore((store) => toggleRetentionModal(store));
+	const onCloseModal = useCallback(() => {
+		setLogsStore((store) => toggleRetentionModal(store, false));
 	}, []);
 	useEffect(() => {
 		if (getLogRetentionData?.data) {
@@ -117,7 +117,7 @@ const RententionModal = () => {
 	return (
 		<Modal
 			opened={retentionModalOpen}
-			onClose={onToggleRetentionModal}
+			onClose={onCloseModal}
 			centered
 			title="Settings"
 			classNames={{ title: classes.modalTitle }}>
@@ -139,7 +139,7 @@ const RententionModal = () => {
 								checked={isCacheEnabled}
 								labelPosition="left"
 								onChange={(event) =>
-									updateCacheStatus({ type: event.currentTarget.checked, onSuccess: onToggleRetentionModal })
+									updateCacheStatus({ type: event.currentTarget.checked, onSuccess: onCloseModal })
 								}
 								label={isCacheEnabled ? 'Enabled' : 'Disabled'}
 							/>
@@ -150,7 +150,7 @@ const RententionModal = () => {
 					<Text className={classes.fieldTitle}>Retention</Text>
 					{getLogRetentionIsSuccess && (
 						<RetentionForm
-							onToggleRetentionModal={onToggleRetentionModal}
+							onToggleRetentionModal={onCloseModal}
 							getLogRetentionDataRefetch={getLogRetentionDataRefetch}
 						/>
 					)}

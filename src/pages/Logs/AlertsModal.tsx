@@ -730,23 +730,23 @@ const AlertsForm = ({ form }: { form: AlertsFormType }) => {
 	);
 };
 
-const AlertsModal2 = () => {
+const AlertsModal = () => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [alertsModalOpen, setLogsStore] = useLogsStore((store) => store.modalOpts.alertsModalOpen);
 	const { form } = useCreateAlertsForm();
 
-	const onToggleModal = useCallback(() => {
-		setLogsStore((store) => toggleAlertsModal(store));
+	const onCloseModal = useCallback(() => {
+		setLogsStore((store) => toggleAlertsModal(store, false));
 	}, []);
 
 	const { getLogAlertData, getLogAlertDataRefetch } = useGetAlerts(currentStream || '');
 	const { updateLogStreamAlerts } = useAlertsEditor(currentStream || '');
 
 	const onSuccess = useCallback(() => {
-		onToggleModal();
+		onCloseModal();
 		notifySuccess({ message: 'Alerts updated sucessfully' });
 		getLogAlertDataRefetch();
-		updateLogStreamAlerts({ config: form.values, onSuccess: onToggleModal });
+		updateLogStreamAlerts({ config: form.values, onSuccess: onCloseModal });
 	}, []);
 
 	useEffect(() => {
@@ -772,7 +772,7 @@ const AlertsModal2 = () => {
 	return (
 		<Modal
 			opened={alertsModalOpen}
-			onClose={onToggleModal}
+			onClose={onCloseModal}
 			centered
 			size="lg"
 			title="Alerts"
@@ -795,4 +795,4 @@ const AlertsModal2 = () => {
 	);
 };
 
-export default AlertsModal2;
+export default AlertsModal;
