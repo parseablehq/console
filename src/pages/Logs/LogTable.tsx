@@ -240,14 +240,14 @@ const Footer = () => {
 								disabled={currentOffset === 0}
 							/>
 							<Pagination.Previous />
-							{pagination.range.map((page) => {
+							{pagination.range.map((page, index) => {
 								if (page === 'dots') {
-									return <Pagination.Dots key={page} />;
+									return <Pagination.Dots key={index} />;
 								} else {
 									return (
 										<Pagination.Control
 											value={page}
-											key={page}
+											key={index}
 											active={currentPage === page}
 											onClick={() => {
 												pagination.setPage(page);
