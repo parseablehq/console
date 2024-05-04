@@ -308,7 +308,7 @@ interface SectionRefs {
 	rightSectionRef: HTMLDivRef;
 	pinnedContainerRef: HTMLDivRef;
 }
-const LogTable2 = () => {
+const LogTable = () => {
 	const [containerRefs, _setContainerRefs] = useState<SectionRefs>({
 		activeSectionRef: useRef<'left' | 'right'>('left'),
 		leftSectionRef: useRef<HTMLDivElement>(null),
@@ -347,12 +347,13 @@ const LogTable2 = () => {
 	const hasContentLoaded = !schemaLoading && !logsLoading;
 	const errorMessage = logStreamSchemaError || logsError;
 	const hasNoData = hasContentLoaded && !errorMessage && pageData.length === 0;
+	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
 
 	return (
 		<TableContainer>
 			<FilterPills />
 			{!errorMessage ? (
-				hasContentLoaded ? (
+				showTable ? (
 					<Box className={tableStyles.innerContainer} style={{ maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
 						<Box
 							className={tableStyles.innerContainer}
@@ -469,11 +470,8 @@ const ThColumnMenu: FC = () => {
 												header={tableHeader}
 												index={index}
 												key={tableHeader}
-												// toggleColumn={toggleColumn}
-												// isColumnActive={isColumnActive}
 												isColumnDisabled={isColumnDisabled(tableHeader)}
 												toggleColumnPinned={(_columnName: string) => {
-													// const isPinned = isColumnPinned(columnName);
 													setLogsStore((store) => togglePinnedColumns(store, tableHeader));
 
 													// Place the field in correct order
@@ -542,4 +540,4 @@ const LimitControl: FC = () => {
 	);
 };
 
-export default LogTable2;
+export default LogTable;
