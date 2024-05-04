@@ -39,7 +39,15 @@ import _ from 'lodash';
 
 const skipFields = ['p_metadata', 'p_tags'];
 
-const {togglePinnedColumns, toggleDisabledColumns, setCurrentPage, setCurrentOffset, setPageAndPageData, getCleanStoreForRefetch} = logsStoreReducers;
+const {
+	togglePinnedColumns,
+	toggleDisabledColumns,
+	setCurrentPage,
+	setCurrentOffset,
+	setPageAndPageData,
+	getCleanStoreForRefetch,
+	setCleanStoreForStreamChange,
+} = logsStoreReducers;
 
 const TotalLogsCount = () => {
 	const [{ totalCount, perPage, pageData }] = useLogsStore((store) => store.tableOpts);
@@ -81,7 +89,7 @@ const TableContainer = (props: { children: ReactNode }) => {
 	);
 };
 
-const PinnedColumns = (props: {containerRefs: SectionRefs}) => {
+const PinnedColumns = (props: { containerRefs: SectionRefs }) => {
 	const { containerRefs } = props;
 	const { leftSectionRef, rightSectionRef, activeSectionRef, pinnedContainerRef } = containerRefs;
 
@@ -139,7 +147,7 @@ const PinnedColumns = (props: {containerRefs: SectionRefs}) => {
 	);
 };
 
-const Columns = (props: {containerRefs: SectionRefs}) => {
+const Columns = (props: { containerRefs: SectionRefs }) => {
 	const { containerRefs } = props;
 	const { leftSectionRef, rightSectionRef, activeSectionRef } = containerRefs;
 	return (
@@ -167,8 +175,8 @@ const Columns = (props: {containerRefs: SectionRefs}) => {
 	);
 };
 
-const ErrorView = (props: {message: string}) => {
-	const [, setLogsStore] = useLogsStore(_store => null);
+const ErrorView = (props: { message: string }) => {
+	const [, setLogsStore] = useLogsStore((_store) => null);
 	const { message } = props;
 	const onRetry = useCallback(() => {
 		setLogsStore((store) => getCleanStoreForRefetch(store));
@@ -295,19 +303,19 @@ const TableHeader = (props: { isPinned?: boolean }) => {
 type HTMLDivRef = RefObject<HTMLDivElement>;
 
 interface SectionRefs {
-  activeSectionRef: MutableRefObject<string>;
-  leftSectionRef: HTMLDivRef;
-  rightSectionRef: HTMLDivRef;
-  pinnedContainerRef: HTMLDivRef;
+	activeSectionRef: MutableRefObject<string>;
+	leftSectionRef: HTMLDivRef;
+	rightSectionRef: HTMLDivRef;
+	pinnedContainerRef: HTMLDivRef;
 }
-const LogTable2 = () =>{
+const LogTable2 = () => {
 	const [containerRefs, _setContainerRefs] = useState<SectionRefs>({
 		activeSectionRef: useRef<'left' | 'right'>('left'),
 		leftSectionRef: useRef<HTMLDivElement>(null),
 		rightSectionRef: useRef<HTMLDivElement>(null),
 		pinnedContainerRef: useRef<HTMLDivElement>(null),
 	});
-
+	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [maximized] = useAppStore((store) => store.maximized);
 	const primaryHeaderHeight = !maximized
 		? PRIMARY_HEADER_HEIGHT + LOGS_PRIMARY_TOOLBAR_HEIGHT + LOGS_SECONDARY_TOOLBAR_HEIGHT
@@ -316,12 +324,15 @@ const LogTable2 = () =>{
 	const { getDataSchema, loading: schemaLoading, error: logStreamSchemaError } = useGetLogStreamSchema();
 	const { getQueryData, loading: logsLoading, error: logsError, fetchCount } = useQueryLogs();
 
-	const [currentPage] = useLogsStore(store => store.tableOpts.currentPage)
-	const [currentOffset] = useLogsStore(store => store.tableOpts.currentOffset)
+	const [currentPage, setLogsStore] = useLogsStore((store) => store.tableOpts.currentPage);
+	const [currentOffset] = useLogsStore((store) => store.tableOpts.currentOffset);
 
 	useEffect(() => {
-		getDataSchema();
-	}, []);
+		if (!_.isEmpty(currentStream)) {
+			setLogsStore(setCleanStoreForStreamChange);
+			getDataSchema();
+		}
+	}, [currentStream]);
 
 	useEffect(() => {
 		if (currentPage === 0) {
@@ -332,7 +343,7 @@ const LogTable2 = () =>{
 		}
 	}, [currentPage, currentOffset]);
 
-	const [pageData] = useLogsStore(store => store.tableOpts.pageData)
+	const [pageData] = useLogsStore((store) => store.tableOpts.pageData);
 	const hasContentLoaded = !schemaLoading && !logsLoading;
 	const errorMessage = logStreamSchemaError || logsError;
 	const hasNoData = hasContentLoaded && !errorMessage && pageData.length === 0;
@@ -361,8 +372,7 @@ const LogTable2 = () =>{
 			<Footer />
 		</TableContainer>
 	);
-}
-
+};
 
 type ThColumnMenuItemProps = {
 	header: string;
@@ -375,11 +385,11 @@ type ThColumnMenuItemProps = {
 const ThColumnMenuItem: FC<ThColumnMenuItemProps> = (props) => {
 	const { header, index, isColumnPinned, isColumnDisabled, toggleColumnPinned } = props;
 	const classes = tableStyles;
-	const [, setLogsStore] = useLogsStore(_store => null)
-	
+	const [, setLogsStore] = useLogsStore((_store) => null);
+
 	const toggleDisabledStatus = useCallback(() => {
-		setLogsStore(store => toggleDisabledColumns(store, header))
-	}, [])
+		setLogsStore((store) => toggleDisabledColumns(store, header));
+	}, []);
 
 	if (skipFields.includes(header)) return null;
 	return (
@@ -397,12 +407,7 @@ const ThColumnMenuItem: FC<ThColumnMenuItemProps> = (props) => {
 						<Box className={classes.thColumnMenuDragHandle} {...provided.dragHandleProps}>
 							<IconGripVertical size="1.05rem" stroke={1.5} />
 						</Box>
-						<Checkbox
-							color="red"
-							label={header}
-							checked={!isColumnDisabled}
-							onChange={toggleDisabledStatus}
-						/>
+						<Checkbox color="red" label={header} checked={!isColumnDisabled} onChange={toggleDisabledStatus} />
 					</Flex>
 				</Menu.Item>
 			)}
@@ -492,7 +497,7 @@ const ThColumnMenu: FC = () => {
 
 const LimitControl: FC = () => {
 	const [opened, setOpened] = useMountedState(false);
-	const [perPage, setLogsStore] = useLogsStore(store => store.tableOpts.perPage)
+	const [perPage, setLogsStore] = useLogsStore((store) => store.tableOpts.perPage);
 
 	const toggle = () => {
 		setOpened(!opened);
@@ -500,7 +505,7 @@ const LimitControl: FC = () => {
 
 	const onSelect = (limit: number) => {
 		if (perPage !== limit) {
-			setLogsStore(store => setPageAndPageData(store, 1, limit))
+			setLogsStore((store) => setPageAndPageData(store, 1, limit));
 		}
 	};
 

@@ -245,6 +245,8 @@ type LogsStoreReducers = {
 	setRetention: (store: LogsStore, retention: { description: string; duration: string }) => ReducerOutput;
 	setAlerts: (store: LogsStore, alertsResponse: AlertsResponse) => ReducerOutput;
 	transformAlerts: (alerts: TransformedAlert[]) => Alert[];
+
+	setCleanStoreForStreamChange: (store: LogsStore) => ReducerOutput;
 };
 
 const initialState: LogsStore = {
@@ -566,6 +568,27 @@ const getCleanStoreForRefetch = (store: LogsStore) => {
 	};
 };
 
+const setCleanStoreForStreamChange = (store: LogsStore) => {
+	const {tableOpts, timeRange} = store;
+	const { interval, type } = timeRange;
+	const duration = _.find(FIXED_DURATIONS, (duration) => duration.name === timeRange.label);
+	const updatedTimeRange = interval && type === 'fixed' ? { timeRange: getDefaultTimeRange(duration) } : {};
+	return {
+		...initialState,
+		tableOpts: {
+			...tableOpts,
+			pageData: [],
+			totalCount: 0,
+			displayedCount: 0,
+			currentPage: 0,
+			currentOffset: 0,
+			headers: [],
+			totalPages: 0,
+		},
+		...updatedTimeRange,
+	}
+}
+
 const applyCustomQuery = (store: LogsStore, query: string, mode: 'filters' | 'sql') => {
 	const { custQuerySearchState } = store;
 	return {
@@ -759,6 +782,7 @@ const logsStoreReducers: LogsStoreReducers = {
 	setRetention,
 	setAlerts,
 	transformAlerts,
+	setCleanStoreForStreamChange
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };
