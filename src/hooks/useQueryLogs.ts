@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useLogsStore, logsStoreReducers } from '@/pages/Logs/providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useQueryResult } from './useQueryResult';
+import _ from 'lodash';
 
 const { setData, setTotalCount } = logsStoreReducers;
 
@@ -104,8 +105,10 @@ export const useQueryLogs = () => {
 
 	const { fetchQueryMutation } = useQueryResult();
 	useEffect(() => {
-		if (fetchQueryMutation?.data?.count) {
-			setLogsStore((store) => setTotalCount(store, fetchQueryMutation.data.count));
+		const response = _.first(fetchQueryMutation?.data) as { count: number };
+		if (response) {
+			console.log(response, 'total count');
+			setLogsStore((store) => setTotalCount(store, response?.count));
 		}
 	}, [fetchQueryMutation.data]);
 

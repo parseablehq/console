@@ -76,6 +76,12 @@
     }
 }
 
+.liveTheadStyle {
+    position: sticky;
+    background-color: #fff;
+    top: 0;
+}
+
 .theadStylePinned {
     position: sticky;
     top: 0;

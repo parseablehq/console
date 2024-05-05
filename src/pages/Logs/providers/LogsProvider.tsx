@@ -136,6 +136,7 @@ const defaultLiveTailConfig = {
 	liveTailSearchValue: '',
 	liveTailSearchField: '',
 	showLiveTail: false,
+	grpcPort: null
 };
 
 const defaultCustQuerySearchState = {

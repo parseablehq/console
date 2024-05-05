@@ -21,7 +21,7 @@ import {
 } from '@mantine/core';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FC, MutableRefObject, ReactNode, RefObject } from 'react';
-import LogRow from './LogRow';
+import LogRow from './StaticLogRow';
 import useMountedState from '@/hooks/useMountedState';
 import { IconSelector, IconGripVertical, IconPin, IconPinFilled, IconSettings } from '@tabler/icons-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
@@ -202,6 +202,7 @@ const LoadingView = () => {
 const Footer = () => {
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const { totalPages, currentOffset, currentPage, perPage, totalCount } = tableOpts;
+	console.log("table opts", tableOpts)
 	const onPageChange = useCallback((page: number) => {
 		setLogsStore((store) => setPageAndPageData(store, page));
 	}, []);

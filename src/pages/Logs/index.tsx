@@ -1,7 +1,8 @@
 import { Box } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC } from 'react';
-import StaticLogTable from './LogTable';
+import StaticLogTable from './StaticLogTable';
+import LiveLogTable from './LiveLogTable';
 import ViewLog from './ViewLog';
 import DeleteStreamModal from './DeleteStreamModal';
 import AlertsModal from './AlertsModal';
@@ -23,7 +24,7 @@ const Logs: FC = () => {
 			<RententionModal />
 			<PrimaryToolbar />
 			<SecondaryToolbar />
-			{showLiveTail ? <StaticLogTable /> : <StaticLogTable />}
+			{showLiveTail ? <LiveLogTable /> : <StaticLogTable />}
 			<ViewLog />
 		</Box>
 	);
