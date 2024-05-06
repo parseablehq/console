@@ -136,7 +136,7 @@ const defaultLiveTailConfig = {
 	liveTailSearchValue: '',
 	liveTailSearchField: '',
 	showLiveTail: false,
-	grpcPort: null
+	grpcPort: null,
 };
 
 const defaultCustQuerySearchState = {
@@ -570,7 +570,7 @@ const getCleanStoreForRefetch = (store: LogsStore) => {
 };
 
 const setCleanStoreForStreamChange = (store: LogsStore) => {
-	const {tableOpts, timeRange} = store;
+	const { tableOpts, timeRange } = store;
 	const { interval, type } = timeRange;
 	const duration = _.find(FIXED_DURATIONS, (duration) => duration.name === timeRange.label);
 	const updatedTimeRange = interval && type === 'fixed' ? { timeRange: getDefaultTimeRange(duration) } : {};
@@ -587,8 +587,8 @@ const setCleanStoreForStreamChange = (store: LogsStore) => {
 			totalPages: 0,
 		},
 		...updatedTimeRange,
-	}
-}
+	};
+};
 
 const applyCustomQuery = (store: LogsStore, query: string, mode: 'filters' | 'sql') => {
 	const { custQuerySearchState } = store;
@@ -682,6 +682,20 @@ const setRetention = (_store: LogsStore, retention: { duration?: string; descrip
 	};
 };
 
+const operatorLabelMap = {
+	lessThanEquals: '<=',
+	greaterThanEquals: '>=',
+	lessThan: '<',
+	greaterThan: '>',
+	equalTo: '=',
+	notEqualTo: '!=',
+	exact: '=',
+	notExact: '!=',
+	contains: '=%',
+	notContains: '!%',
+	regex: '~',
+};
+
 // transforms alerts data for forms
 const santizeAlerts = (alerts: Alert[]): TransformedAlert[] => {
 	// @ts-ignore
@@ -689,7 +703,22 @@ const santizeAlerts = (alerts: Alert[]): TransformedAlert[] => {
 		alerts,
 		// @ts-ignore
 		(acc: Alert[], alert: Alert) => {
-			const { targets = [] } = alert;
+			const { targets = [], rule } = alert;
+			const updatedRule = (() => {
+				const { type, config } = rule;
+				if (type === 'column') {
+					const updatedOperator = _.get(operatorLabelMap, config.operator, config.operator);
+					return {
+						type,
+						config: {
+							...config,
+							operator: updatedOperator,
+						},
+					};
+				} else {
+					return rule;
+				}
+			})();
 			const updatedTargets = _.map(targets, (target) => {
 				if (target.type === 'webhook') {
 					const { headers = {} } = target;
@@ -699,7 +728,8 @@ const santizeAlerts = (alerts: Alert[]): TransformedAlert[] => {
 					return target;
 				}
 			});
-			return [...acc, { ...alert, targets: updatedTargets }];
+
+			return [...acc, { ...alert, targets: updatedTargets, rule: updatedRule }];
 		},
 		[] as TransformedAlert[],
 	);
@@ -783,7 +813,7 @@ const logsStoreReducers: LogsStoreReducers = {
 	setRetention,
 	setAlerts,
 	transformAlerts,
-	setCleanStoreForStreamChange
+	setCleanStoreForStreamChange,
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };

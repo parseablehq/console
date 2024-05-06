@@ -3,7 +3,7 @@ import { Text } from '@mantine/core';
 import classes from './styles/Logs.module.css';
 import { useCallback, useEffect, useState } from 'react';
 import { useAlertsEditor, useGetAlerts } from '@/hooks/useAlertsEditor';
-import { notifyError, notifySuccess } from '@/utils/notification';
+import { notifyError } from '@/utils/notification';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import {
 	useLogsStore,
@@ -37,7 +37,6 @@ const numericalOperators = [
 	{ value: '>=', label: 'greater than or equal to' },
 	{ value: '<', label: 'less than' },
 	{ value: '<=', label: 'less than or equal to' },
-	{ value: '~', label: 'regex' },
 ];
 
 const targetTypeSpecialFields = {
@@ -265,9 +264,13 @@ type RepeatConfigProps = {
 const RepeatConfig = (props: RepeatConfigProps) => {
 	const { form, targetsPath } = props;
 	const setReapeats = useCallback((val: string) => {
-		val === ''
-			? form.setFieldValue(`${targetsPath}.repeat.times`, null)
-			: form.setFieldValue(`${targetsPath}.repeat.times`, _.toInteger(val));
+		const path = `${targetsPath}.repeat.times`;
+		const parsedValue = val === '' ? null : _.toInteger(val);
+		form.setFieldValue(path, parsedValue);
+
+		!_.isNumber(parsedValue) || parsedValue < 0
+			? form.setFieldError(path, 'Must be a number greater than 0')
+			: form.clearFieldError(path);
 	}, []);
 	return (
 		<Stack style={{ flexDirection: 'row' }}>
@@ -290,6 +293,7 @@ const RepeatConfig = (props: RepeatConfigProps) => {
 				type="number"
 				{...form.getInputProps(`${targetsPath}.repeat.times`)}
 				onChange={(e) => setReapeats(e.target.value)}
+				onWheel={numberInputOnWheelPreventChange}
 			/>
 		</Stack>
 	);
@@ -441,6 +445,13 @@ type ColumnRuleProps = {
 	config: ConfigType;
 };
 
+const numberInputOnWheelPreventChange = (e: React.WheelEvent<HTMLInputElement>) => {
+	// @ts-ignore
+	// which event doesnt have a target without blur ?
+	e.target.blur();
+	e.stopPropagation();
+};
+
 const ColumnRule = (props: ColumnRuleProps) => {
 	const { form, config, alertIndex } = props;
 	const [fieldNames] = useFilterStore((store) => store.fieldNames);
@@ -466,10 +477,24 @@ const ColumnRule = (props: ColumnRuleProps) => {
 	}, [columnDataType, config.operator]);
 
 	const setReapeats = useCallback((val: string) => {
-		val === ''
-			? form.setFieldValue(`${configPath}.repeats`, null)
-			: form.setFieldValue(`${configPath}.repeats`, _.toInteger(val));
+		const path = `${configPath}.repeats`;
+		const parsedValue = val === '' ? null : _.toInteger(val);
+		form.setFieldValue(path, parsedValue);
+
+		!_.isNumber(parsedValue) || parsedValue < 0
+			? form.setFieldError(path, 'Must be a number greater than 0')
+			: form.clearFieldError(path);
 	}, []);
+
+	const setValue = useCallback(
+		(val: string) => {
+			const path = `alerts.${alertIndex}.rule.config.value`;
+			const parsedValue = columnDataType === 'text' ? val : _.toNumber(val);
+			form.setFieldValue(path, parsedValue);
+		},
+		[columnDataType],
+	);
+
 	return (
 		<Stack>
 			<Stack style={{ flexDirection: 'row' }}>
@@ -495,7 +520,9 @@ const ColumnRule = (props: ColumnRuleProps) => {
 					placeholder="Value"
 					key="value"
 					type={columnDataType === 'text' ? 'text' : 'number'}
+					{...(columnDataType === 'number' ? { onWheel: numberInputOnWheelPreventChange } : {})}
 					{...form.getInputProps(`alerts.${alertIndex}.rule.config.value`)}
+					onChange={(e) => setValue(e.target.value)}
 				/>
 			</Stack>
 			<Stack style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -507,6 +534,7 @@ const ColumnRule = (props: ColumnRuleProps) => {
 					key="repeats"
 					{...form.getInputProps(`alerts.${alertIndex}.rule.config.repeats`)}
 					type={'number'}
+					onWheel={numberInputOnWheelPreventChange}
 					onChange={(e) => setReapeats(e.target.value)}
 				/>
 				<Stack gap={8}>
@@ -745,9 +773,7 @@ const AlertsModal = () => {
 
 	const onSuccess = useCallback(() => {
 		onCloseModal();
-		notifySuccess({ message: 'Alerts updated sucessfully' });
 		getLogAlertDataRefetch();
-		updateLogStreamAlerts({ config: form.values, onSuccess: onCloseModal });
 	}, []);
 
 	useEffect(() => {
@@ -768,7 +794,7 @@ const AlertsModal = () => {
 
 	const onResetAllAlerts = useCallback(() => {
 		updateLogStreamAlerts({ config: { ...form.values, alerts: [] }, onSuccess: onSuccess });
-	}, [])
+	}, []);
 
 	return (
 		<Modal
@@ -785,7 +811,9 @@ const AlertsModal = () => {
 				</Stack>
 				<Stack style={{ flexDirection: 'row', marginBottom: '1.2rem', justifyContent: 'flex-end' }}>
 					<Box>
-						<Button onClick={onResetAllAlerts} variant="outline">Reset All Alerts</Button>
+						<Button onClick={onResetAllAlerts} variant="outline">
+							Reset All Alerts
+						</Button>
 					</Box>
 					<Box>
 						<Button onClick={onSubmit}>Save</Button>
