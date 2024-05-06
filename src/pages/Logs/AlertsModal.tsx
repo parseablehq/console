@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, Modal, Select, Stack, TextInput } from '@mantine/core';
+import { Box, Button, Checkbox, Modal, Select, Stack, TextInput, Tooltip } from '@mantine/core';
 import { Text } from '@mantine/core';
 import classes from './styles/Logs.module.css';
 import { useCallback, useEffect, useState } from 'react';
@@ -15,7 +15,7 @@ import {
 } from './providers/LogsProvider';
 import _ from 'lodash';
 import { UseFormReturnType, useForm } from '@mantine/form';
-import { IconChevronDown, IconChevronUp, IconPlus, IconTrash } from '@tabler/icons-react';
+import { IconChevronDown, IconChevronUp, IconInfoCircleFilled, IconPlus, IconTrash } from '@tabler/icons-react';
 import { useFilterStore } from './providers/FilterProvider';
 
 const { toggleAlertsModal, setAlerts, transformAlerts } = logsStoreReducers;
@@ -261,6 +261,22 @@ type RepeatConfigProps = {
 	targetsPath: string;
 };
 
+const RepeatIntervalLabel = () => {
+	return (
+		<Stack style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>
+			<Text className={classes.fieldTitle}>Repeat Interval</Text>
+			<Tooltip
+				multiline
+				w={220}
+				withArrow
+				transitionProps={{ duration: 200 }}
+				label="Interval should be in Go duration format. For eg: '20s' or '1h 1m 1s'">
+				<IconInfoCircleFilled className={classes.infoTooltipIcon} stroke={1.4} height={18} width={18} />
+			</Tooltip>
+		</Stack>
+	);
+};
+
 const RepeatConfig = (props: RepeatConfigProps) => {
 	const { form, targetsPath } = props;
 	const setReapeats = useCallback((val: string) => {
@@ -278,7 +294,7 @@ const RepeatConfig = (props: RepeatConfigProps) => {
 				classNames={{ label: classes.fieldTitle }}
 				w="50%"
 				styles={{ label: { marginBottom: 8 } }}
-				label="Repeat Interval"
+				label={<RepeatIntervalLabel/>}
 				placeholder="Repeat Interval"
 				key="interval"
 				{...form.getInputProps(`${targetsPath}.repeat.interval`)}

@@ -268,3 +268,9 @@
         color: #211F1F;
     }
   }
+
+
+.infoTooltipIcon {
+    color: var(--mantine-color-gray-5);
+    cursor: pointer;
+}
