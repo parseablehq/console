@@ -34,6 +34,10 @@
         color: white;
         background-color: var(--mantine-color-brandPrimary-4);
     }
+
+    &:hover {
+        color: black;
+    }
 }
 
 

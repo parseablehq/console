@@ -67,4 +67,20 @@ export const signOutHandler = () => {
 	window.location.href = `${baseURL}api/v1/o/logout?redirect=${window.location.origin}/login`;
 };
 
-export const generateRandomId = (length: number) => Array.from({ length }, () => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random() * 62)]).join('');
+export const generateRandomId = (length: number) =>
+	Array.from(
+		{ length },
+		() => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random() * 62)],
+	).join('');
+
+export const addOrRemoveElement = (array: any[], element: any) => {
+	const dup = array.slice();
+	const index = array.indexOf(element);
+	if (index === -1) {
+		dup.push(element);
+		return dup;
+	} else {
+		dup.splice(index, 1);
+		return dup;
+	}
+};

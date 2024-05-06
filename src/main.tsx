@@ -6,7 +6,6 @@ import '@mantine/dates/styles.css';
 import '@mantine/code-highlight/styles.css';
 import '@mantine/charts/styles.css';
 import './utils/dayjsLoader';
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from '@/components/App';
 import Mantine from '@/components/Mantine';
@@ -17,7 +16,6 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-	<React.StrictMode>
 		<QueryClientProvider client={queryClient}>
 			<Mantine>
 				<ErrorBoundary>
@@ -27,5 +25,4 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 				</ErrorBoundary>
 			</Mantine>
 		</QueryClientProvider>
-	</React.StrictMode>,
 );

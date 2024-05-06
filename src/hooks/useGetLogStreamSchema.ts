@@ -3,23 +3,32 @@ import { getLogStreamSchema } from '@/api/logStream';
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
 import { Field } from '@/@types/parseable/dataType';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { useLogsStore, logsStoreReducers } from '@/pages/Logs/providers/LogsProvider';
+
+const {setStreamSchema} = logsStoreReducers;
 
 export const useGetLogStreamSchema = () => {
 	const [data, setData] = useMountedState<LogStreamSchemaData | null>(null);
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
+	const [currentStream] = useAppStore((store) => store.currentStream);
+	const [, setLogsStore] = useLogsStore(_store => null)
 
-	const getDataSchema = async (streamName: string) => {
+	const getDataSchema = async (stream: string | null = currentStream) => {
 		try {
 			setLoading(true);
 			setError(null);
-			const res = await getLogStreamSchema(streamName);
+			if (!stream) throw 'Current stream context is missing';
+
+			const res = await getLogStreamSchema(stream);
 
 			switch (res.status) {
 				case StatusCodes.OK: {
-					const streams = res.data;
+					const schema = res.data;
 
-					setData(streams);
+					setData(schema);
+					setLogsStore(store => setStreamSchema(store, schema))
 					break;
 				}
 				default: {

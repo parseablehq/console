@@ -7,3 +7,24 @@
 	font-size: 1.2rem;
 	font-weight: 600;
 }
+
+.fieldTitle {
+    font-size: var(--mantine-font-size-sm);
+    font-weight: 500;
+}
+
+.fieldDescription {
+    font-size: var(--mantine-font-size-sm);
+    color: var(--mantine-color-gray-6);
+}
+
+.fieldsContainer {
+    border: 1px solid var(--mantine-color-gray-4);
+    padding: var(--mantine-spacing-md);
+    border-radius: 0.2rem;
+}
+
+.infoTooltipIcon {
+    color: var(--mantine-color-gray-5);
+    cursor: pointer;
+}

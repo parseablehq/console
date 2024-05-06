@@ -1,12 +1,8 @@
-import { useLogsPageContext } from './logsContextProvider';
 import { CodeHighlight } from '@mantine/code-highlight';
+import { useLogsStore } from './providers/LogsProvider';
 
 export const AppliedSQLQuery = () => {
-	const {
-		state: {
-			custQuerySearchState: { custSearchQuery },
-		},
-	} = useLogsPageContext();
+	const [custSearchQuery] = useLogsStore(store => store.custQuerySearchState.custSearchQuery)
 	return (
 		<CodeHighlight
 			withCopyButton={false}

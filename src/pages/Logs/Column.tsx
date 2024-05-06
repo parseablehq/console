@@ -1,48 +1,48 @@
-import { Log, SortOrder } from '@/@types/parseable/api/query';
+import { Log } from '@/@types/parseable/api/query';
 import { Box, Checkbox, Popover, ScrollArea, Stack, TextInput, Tooltip, UnstyledButton, px } from '@mantine/core';
-import { type ChangeEvent, type FC, Fragment, useTransition, useRef, useCallback, useMemo } from 'react';
+import { type ChangeEvent, type FC, Fragment, useRef, useCallback, useState, useEffect } from 'react';
 import { IconDotsVertical, IconFilter, IconSearch, IconSortAscending, IconSortDescending } from '@tabler/icons-react';
-import useMountedState from '@/hooks/useMountedState';
 import EmptyBox from '@/components/Empty';
 import { Button } from '@mantine/core';
-import Loading from '@/components/Loading';
-import compare from 'just-compare';
-import { parseLogData } from '@/utils';
 import { capitalizeFirstLetter } from '@/utils/capitalizeFirstLetter';
 import columnStyles from './styles/Column.module.css';
 import { Text } from '@mantine/core';
+import { useLogsStore, logsStoreReducers } from './providers/LogsProvider';
+import _ from 'lodash';
 
 type SortWidgetProps = {
-	setSortOrder: (order: SortOrder | null) => void;
-	fieldSortOrder: SortOrder | null;
+	columnName: string;
 };
+
+const { setAndSortData, getUniqueValues, setAndFilterData } = logsStoreReducers;
 
 /**
  * Component that allows selecting sorting by a given field
  */
 const SortWidget: FC<SortWidgetProps> = (props) => {
-	const { setSortOrder, fieldSortOrder } = props;
-	const toggleAscending = () => {
-		setSortOrder(fieldSortOrder === SortOrder.ASCENDING ? null : SortOrder.ASCENDING);
-	};
-	const toggleDescending = () => {
-		setSortOrder(fieldSortOrder === SortOrder.DESCENDING ? null : SortOrder.DESCENDING);
-	};
+	const { columnName } = props;
+	const [, setLogsStore] = useLogsStore((_store) => null);
+	const toggleSort = useCallback((order: 'asc' | 'desc') => {
+		setLogsStore((store) => setAndSortData(store, columnName, order));
+	}, []);
+
 	const classes = columnStyles;
 	const { sortBtn, sortBtnActive } = classes;
-
+	const [sortKey] = useLogsStore((store) => store.tableOpts.sortKey);
+	const [sortOrder] = useLogsStore((store) => store.tableOpts.sortOrder);
+	const isSortActive = sortKey === columnName;
 	return (
 		<Box>
 			<Button
-				className={fieldSortOrder === SortOrder.ASCENDING ? sortBtnActive : sortBtn}
-				onClick={toggleAscending}
-				leftSection={<IconSortAscending stroke={fieldSortOrder === SortOrder.ASCENDING ? 2 : 1} />}>
+				className={isSortActive && sortOrder === 'asc' ? sortBtnActive : sortBtn}
+				onClick={() => toggleSort('asc')}
+				leftSection={<IconSortAscending stroke={1} />}>
 				Sort by Ascending order
 			</Button>
 			<Button
-				className={fieldSortOrder === SortOrder.DESCENDING ? sortBtnActive : sortBtn}
-				onClick={toggleDescending}
-				leftSection={<IconSortDescending stroke={fieldSortOrder === SortOrder.DESCENDING ? 2 : 1} />}>
+				className={isSortActive && sortOrder === 'desc' ? sortBtnActive : sortBtn}
+				onClick={() => toggleSort('desc')}
+				leftSection={<IconSortDescending stroke={1} />}>
 				Sort by Descending order
 			</Button>
 		</Box>
@@ -51,65 +51,46 @@ const SortWidget: FC<SortWidgetProps> = (props) => {
 
 type Column = {
 	columnName: string;
-	getColumnFilters: (columnName: string) => Log[number][] | null;
-	appliedFilter: (columnName: string) => string[];
-	applyFilter: (columnName: string, value: string[]) => void;
-	setSorting: (order: SortOrder | null) => void;
-	fieldSortOrder: SortOrder | null;
 };
 
 const Column: FC<Column> = (props) => {
-	const { columnName, getColumnFilters, appliedFilter, applyFilter, setSorting, fieldSortOrder } = props;
+	const { columnName } = props;
+	const [uniqueValues, setUniqueValues] = useState<string[]>([]);
+	const [filteredValues, setFilteredValues] = useState<string[]>([]);
+	const [selectedValues, setSelectedValues] = useState<string[]>([]);
+	const [rawData, setLogsStore] = useLogsStore((store) => store.data.rawData);
+	const inputValueRef = useRef('');
 
-	// columnValues ref will always have the unfiltered data.
-	const _columnValuesRef = useRef<Log[number][] | null>(null);
+	useEffect(() => {
+		const uniqueValues = getUniqueValues(rawData, columnName);
+		setUniqueValues(uniqueValues);
+	}, [rawData]);
 
-	const [columnValues, setColumnValues] = useMountedState<Log[number][] | null>(null);
-	const [selectedFilters, setSelectedFilters] = useMountedState<string[]>(appliedFilter(columnName));
-	const [isPending, startTransition] = useTransition();
+	const onSearch = useCallback(
+		(e: ChangeEvent<HTMLInputElement>) => {
+			const searchStr = e.target.value.trim();
+			inputValueRef.current = searchStr;
+			const regexPattern = new RegExp(searchStr, 'i');
+			const matches = _.chain(uniqueValues)
+				.filter((uniqueValue) => regexPattern.test(uniqueValue))
+				.value();
+			setFilteredValues(matches);
+		},
+		[uniqueValues],
+	);
 
-	const onSearch = (e: ChangeEvent<HTMLInputElement>) => {
-		const search = e.target.value.trim();
-
-		setColumnValues(() => {
-			const values = _columnValuesRef.current;
-
-			if (values && search) {
-				return values.filter((x) => {
-					return x?.toString().toLowerCase().includes(search.toLowerCase());
-				});
-			}
-
-			return values;
-		});
-	};
-
-	const setFilters = (filters: string[]) => {
-		setSelectedFilters(filters);
-	};
-
-	const onOpen = useCallback(() => {
-		if (!_columnValuesRef.current) {
-			const uniqueValues = getColumnFilters(columnName);
-			_columnValuesRef.current = Array.isArray(uniqueValues)
-				? uniqueValues?.map((val) => parseLogData(val, columnName))
-				: null;
-			startTransition(() => {
-				setColumnValues(_columnValuesRef.current);
-			});
-		}
+	const onSelect = useCallback((values: string[]) => {
+		setSelectedValues(values);
 	}, []);
 
 	const onApply = () => {
-		applyFilter(columnName, selectedFilters);
+		setLogsStore((store) => setAndFilterData(store, columnName, selectedValues));
 	};
-
-	const filterActive = useMemo(() => Boolean(appliedFilter(columnName)?.length), [selectedFilters]);
-	const canApply = useMemo(() => !compare(selectedFilters, appliedFilter(columnName)), [selectedFilters]);
-
 	const classes = columnStyles;
-	const { labelBtn, applyBtn, labelIcon, labelIconActive, searchInputStyle, filterText } = classes;
+	const { labelBtn, applyBtn, labelIcon, searchInputStyle, filterText } = classes;
 
+	const checkboxList =
+		filteredValues.length === 0 ? (inputValueRef.current.length === 0 ? uniqueValues : []) : filteredValues;
 	return (
 		<th
 			style={{
@@ -117,20 +98,16 @@ const Column: FC<Column> = (props) => {
 				padding: 0,
 				textAlign: 'left',
 			}}>
-			<Popover position="bottom" withArrow withinPortal shadow="md" zIndex={2} onOpen={onOpen}>
+			<Popover position="bottom" withArrow withinPortal shadow="md" zIndex={2}>
 				<Popover.Target>
 					<UnstyledButton className={labelBtn}>
 						<span>{capitalizeFirstLetter(columnName)}</span>
-						<IconDotsVertical
-							stroke={filterActive ? 3 : 1.8}
-							size={px('1rem')}
-							className={[labelIcon, filterActive && labelIconActive].filter(Boolean).join(' ')}
-						/>
+						<IconDotsVertical size={px('1rem')} className={[labelIcon].filter(Boolean).join(' ')} />
 					</UnstyledButton>
 				</Popover.Target>
 				<Popover.Dropdown>
 					<Box>
-						<SortWidget setSortOrder={setSorting} fieldSortOrder={fieldSortOrder} />
+						<SortWidget columnName={columnName} />
 						<Button className={filterText} leftSection={<IconFilter stroke={1} />}>
 							Filter by values:
 						</Button>
@@ -141,17 +118,15 @@ const Column: FC<Column> = (props) => {
 							leftSection={<IconSearch size={px('0.8rem')} />}
 							onChange={onSearch}
 						/>
-						{isPending ? (
-							<Loading visible position="relative" variant="oval" my="xl" />
-						) : columnValues?.length ? (
+						{checkboxList.length ? (
 							<Fragment>
 								<CheckboxVirtualList
 									columnName={columnName}
-									list={columnValues}
-									selectedFilters={selectedFilters}
-									setFilters={setFilters}
+									list={checkboxList}
+									selectedFilters={selectedValues}
+									onSelect={onSelect}
 								/>
-								<Button className={applyBtn} onClick={onApply} disabled={!canApply}>
+								<Button className={applyBtn} onClick={onApply} disabled={selectedValues.length === 0}>
 									Apply
 								</Button>
 							</Fragment>
@@ -169,13 +144,13 @@ type CheckboxVirtualListProps = {
 	columnName: string;
 	list: Log[number][];
 	selectedFilters: string[];
-	setFilters: (value: string[]) => void;
+	onSelect: (value: string[]) => void;
 };
 
 const SLICE_OFFSET = 50;
 
 const CheckboxVirtualList: FC<CheckboxVirtualListProps> = (props) => {
-	const { list, selectedFilters, setFilters } = props;
+	const { list, selectedFilters, onSelect } = props;
 	const classes = columnStyles;
 	const totalValues = list.length;
 	const shortList = list.slice(0, SLICE_OFFSET);
@@ -184,7 +159,7 @@ const CheckboxVirtualList: FC<CheckboxVirtualListProps> = (props) => {
 	const remainingLength = totalValues > SLICE_OFFSET ? totalValues - SLICE_OFFSET : 0;
 
 	return (
-		<Checkbox.Group value={selectedFilters} onChange={setFilters}>
+		<Checkbox.Group value={selectedFilters} onChange={onSelect}>
 			<ScrollArea style={{ height: 250 }}>
 				{shortList.map((item, index) => {
 					const label = item?.toString() || '';

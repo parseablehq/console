@@ -2,14 +2,10 @@ import Home from '@/pages/Home';
 import type { FC } from 'react';
 import { lazy } from 'react';
 import SuspensePage from './SuspensePage';
-import MainLayoutPageProvider from '@/layouts/MainLayout/Context';
 import MainLayout from '@/layouts/MainLayout';
-
-// page-wise providers
-import LogsPageProvider from '@/pages/Logs/logsContextProvider';
-
-// component-wise providers
-import QueryFilterProvider from '@/providers/QueryFilterProvider';
+import { AppProvider } from '@/layouts/MainLayout/providers/AppProvider';
+import { LogsProvider } from '@/pages/Logs/providers/LogsProvider';
+import { FilterProvider } from '@/pages/Logs/providers/FilterProvider';
 
 export const HomeElement: FC = () => {
 	return (
@@ -34,20 +30,20 @@ const Logs = lazy(() => import('@/pages/Logs'));
 export const LogsElement: FC = () => {
 	return (
 		<SuspensePage>
-			<LogsPageProvider>
-				<QueryFilterProvider>
+			<LogsProvider>
+				<FilterProvider>
 					<Logs />
-				</QueryFilterProvider>
-			</LogsPageProvider>
+				</FilterProvider>
+			</LogsProvider>
 		</SuspensePage>
 	);
 };
 
 export const MainLayoutElement: FC = () => {
 	return (
-		<MainLayoutPageProvider>
+		<AppProvider>
 			<MainLayout />
-		</MainLayoutPageProvider>
+		</AppProvider>
 	);
 };
 

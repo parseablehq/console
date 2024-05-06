@@ -1,10 +1,7 @@
 import { Box, Button, Group, Modal, ScrollArea, Select, Stack, Table, Text, TextInput, px } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
-import { FC, useEffect, useState } from 'react';
-
+import { FC, useState } from 'react';
 import { useGetUser, useUser } from '@/hooks/useUser';
-
-import { useHeaderContext } from '@/layouts/MainLayout/Context';
 import RoleTR from './RoleTR';
 import { IconBook2, IconUserPlus } from '@tabler/icons-react';
 import { useRole } from '@/hooks/useRole';
@@ -22,17 +19,6 @@ const renderDocsIcon = () => <IconBook2 stroke={1.5} size="1.4rem"/>
 
 const Users: FC = () => {
 	useDocumentTitle('Parseable | Users');
-	const {
-		state: { subCreateUserModalTogle },
-	} = useHeaderContext();
-
-	useEffect(() => {
-		const listener = subCreateUserModalTogle.subscribe(setModalOpen);
-		return () => {
-			listener();
-		};
-	}, [subCreateUserModalTogle.get()]);
-
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
 	const [createUserInput, setCreateUserInput] = useState<string>('');
 	const [SelectedRole, setSelectedRole] = useState<string>('');

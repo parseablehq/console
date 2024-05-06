@@ -42,6 +42,6 @@ export const deleteLogStream = (streamName: string) => {
 	return Axios().delete(DELETE_STREAMS_URL(streamName));
 };
 
-export const createLogStream = (streamName: string) => {
-	return Axios().put(CREATE_STREAM_URL(streamName));
-}
+export const createLogStream = (streamName: string, data: any, headers: any) => {
+	return Axios().put(CREATE_STREAM_URL(streamName), data, { headers });
+};

@@ -3,17 +3,24 @@ import { deleteLogStream, getLogStreamList, createLogStream } from '@/api/logStr
 import { AxiosError, isAxiosError } from 'axios';
 import { notifyError, notifySuccess } from '@/utils/notification';
 
+type CreateStreamOpts = {
+	streamName: string;
+	fields: Record<string, string>;
+	headers: Record<string, string | boolean>;
+	onSuccess: () => void;
+};
+
 export const useLogStream = () => {
 	const {
 		mutate: deleteLogStreamMutation,
 		isSuccess: deleteLogStreamIsSuccess,
 		isError: deleteLogStreamIsError,
 		isLoading: deleteLogStreamIsLoading,
-	} = useMutation((data: { deleteStream: string, onSuccess: () => void }) => deleteLogStream(data.deleteStream), {
+	} = useMutation((data: { deleteStream: string; onSuccess: () => void }) => deleteLogStream(data.deleteStream), {
 		onSuccess: (_data, variables) => {
 			getLogStreamListRefetch();
 			variables.onSuccess && variables.onSuccess();
-			notifySuccess({message: `Stream ${variables.deleteStream} deleted successfully`})
+			notifySuccess({ message: `Stream ${variables.deleteStream} deleted successfully` });
 		},
 	});
 
@@ -22,7 +29,7 @@ export const useLogStream = () => {
 		isSuccess: createLogStreamIsSuccess,
 		isError: createLogStreamIsError,
 		isLoading: createLogStreamIsLoading,
-	} = useMutation((data: { streamName: string, onSuccess: () => void}) => createLogStream(data.streamName), {
+	} = useMutation((data: CreateStreamOpts) => createLogStream(data.streamName, { fields: data.fields }, data.headers), {
 		onError: (data: AxiosError) => {
 			if (isAxiosError(data) && typeof data.message === 'string') {
 				notifyError({ message: data.message });
@@ -30,7 +37,7 @@ export const useLogStream = () => {
 		},
 		onSuccess: (_data, variables) => {
 			variables.onSuccess && variables.onSuccess();
-			notifySuccess({message: `Stream ${variables.streamName} created successfully`})
+			notifySuccess({ message: `Stream ${variables.streamName} created successfully` });
 		},
 	});
 
@@ -40,11 +47,15 @@ export const useLogStream = () => {
 		isSuccess: getLogStreamListIsSuccess,
 		isLoading: getLogStreamListIsLoading,
 		refetch: getLogStreamListRefetch,
-	} = useQuery(['fetch-log-stream-list', deleteLogStreamIsSuccess, createLogStreamIsSuccess], () => getLogStreamList(), {
-		retry: false,
-		refetchOnWindowFocus: false,
-		refetchOnMount: false,
-	});
+	} = useQuery(
+		['fetch-log-stream-list', deleteLogStreamIsSuccess, createLogStreamIsSuccess],
+		() => getLogStreamList(),
+		{
+			retry: false,
+			refetchOnWindowFocus: false,
+			refetchOnMount: false,
+		},
+	);
 
 	getLogStreamListData?.data.sort((a, b) => {
 		const nameA = a.name.toUpperCase();
@@ -71,6 +82,6 @@ export const useLogStream = () => {
 		createLogStreamMutation,
 		createLogStreamIsSuccess,
 		createLogStreamIsError,
-		createLogStreamIsLoading
+		createLogStreamIsLoading,
 	};
 };

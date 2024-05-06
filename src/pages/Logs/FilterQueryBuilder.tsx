@@ -11,12 +11,9 @@ import {
 	Pill,
 	ActionIcon,
 } from '@mantine/core';
-import { useLogsPageContext } from './logsContextProvider';
 import { IconFilter, IconPlus } from '@tabler/icons-react';
 import classes from './styles/Querier.module.css';
 import { Text } from '@mantine/core';
-import { useQueryFilterContext, operatorLabelMap } from '@/providers/QueryFilterProvider';
-
 export const FilterPlaceholder = () => {
 	return (
 		<Group className={classes.placeholderText} gap={0}>
@@ -26,9 +23,17 @@ export const FilterPlaceholder = () => {
 	);
 };
 
-import { useCallback } from 'react';
-import { noValueOperators, textFieldOperators, numberFieldOperators } from '@/providers/QueryFilterProvider';
-import { RuleTypeOverride, RuleGroupTypeOverride, Combinator } from '@/providers/QueryFilterProvider';
+import { useCallback, useEffect } from 'react';
+import { useFilterStore, filterStoreReducers, operatorLabelMap } from './providers/FilterProvider';
+import { useLogsStore } from './providers/LogsProvider';
+import {
+	noValueOperators,
+	textFieldOperators,
+	numberFieldOperators,
+	RuleGroupTypeOverride,
+	RuleTypeOverride,
+	Combinator,
+} from './providers/FilterProvider';
 
 type RuleSetProps = {
 	ruleSet: RuleGroupTypeOverride;
@@ -36,6 +41,15 @@ type RuleSetProps = {
 
 const activeBtnClass = `${classes.toggleBtnText} ${classes.toggleBtnActive}`;
 const inActiveBtnClass = classes.toggleBtnText;
+
+const {
+	createRuleGroup,
+	addRuleToGroup,
+	deleteRuleFromGroup,
+	updateGroupCombinator,
+	updateParentCombinator,
+	updateRule,
+} = filterStoreReducers;
 
 type RuleViewType = {
 	rule: RuleTypeOverride;
@@ -45,27 +59,23 @@ type RuleViewType = {
 
 const RuleView = (props: RuleViewType) => {
 	const { rule, type, groupId } = props;
-	const {
-		state: { fieldNames },
-		methods: { deleteRuleFromGroup, updateRule },
-	} = useQueryFilterContext();
+	const [fieldNames, setFilterStore] = useFilterStore((store) => store.fieldNames);
 	const onFieldChange = useCallback((field: string | null) => {
 		if (field === null) return;
-		updateRule(groupId, rule.id, { field });
+		setFilterStore((store) => updateRule(store, groupId, rule.id, { field }));
 	}, []);
 
 	const onOperatorChange = useCallback((operator: string | null) => {
 		if (operator === null) return;
-
-		updateRule(groupId, rule.id, { operator });
+		setFilterStore((store) => updateRule(store, groupId, rule.id, { operator }));
 	}, []);
 
 	const onValueChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-		updateRule(groupId, rule.id, { value: e.target.value });
+		setFilterStore((store) => updateRule(store, groupId, rule.id, { value: e.target.value }));
 	}, []);
 
 	const deleteBtnHandler = useCallback(() => {
-		deleteRuleFromGroup(groupId, rule.id);
+		setFilterStore((store) => deleteRuleFromGroup(store, groupId, rule.id));
 	}, []);
 
 	const isDisabled = noValueOperators.indexOf(rule.operator) !== -1;
@@ -117,15 +127,20 @@ const CombinatorToggle = (props: CombinatorToggleType) => {
 };
 
 const RuleSet = (props: RuleSetProps) => {
-	const { state: queryBuilderState, methods: queryBuilderMethods } = useQueryFilterContext();
-	const { fieldTypeMap, query } = queryBuilderState;
-	const { addRuleToGroup, updateGroupCombinator, updateParentCombinator } = queryBuilderMethods;
+	const [{ query, fieldTypeMap }, setFilterStore] = useFilterStore((store) => store);
 	const { ruleSet } = props;
 	const { combinator: ruleSetCombinator, id, rules } = ruleSet;
 
-	const onCombinatorChange = useCallback((combinator: Combinator) => updateGroupCombinator(id, combinator), []);
+	const onCombinatorChange = useCallback(
+		(combinator: Combinator) => setFilterStore((store) => updateGroupCombinator(store, id, combinator)),
+		[],
+	);
+	const onParentCombinatorChange = useCallback(
+		(combinator: Combinator) => setFilterStore((store) => updateParentCombinator(store, combinator)),
+		[],
+	);
 	const addCondtionBtnHandler = useCallback(() => {
-		addRuleToGroup(id);
+		setFilterStore((store) => addRuleToGroup(store, id));
 	}, []);
 
 	return (
@@ -151,7 +166,7 @@ const RuleSet = (props: RuleSetProps) => {
 				<Stack className={classes.ruleSetConnector} />
 				<Stack style={{ position: 'absolute', height: 80, alignItems: 'center', justifyContent: 'center' }}>
 					<Stack className={classes.parentCombinatorToggleContainer}>
-						<CombinatorToggle isOrSelected={query.combinator === 'or'} onCombinatorChange={updateParentCombinator} />
+						<CombinatorToggle isOrSelected={query.combinator === 'or'} onCombinatorChange={onParentCombinatorChange} />
 					</Stack>
 				</Stack>
 			</Stack>
@@ -159,18 +174,24 @@ const RuleSet = (props: RuleSetProps) => {
 	);
 };
 
-const AddRuleGroupBtn = ({ createRuleGroup }: { createRuleGroup: () => void }) => (
-	<Stack className={classes.addRuleContainer} onClick={createRuleGroup}>
-		<Stack style={{ flexDirection: 'row' }} align="center" gap={8}>
-			<ThemeIcon radius="lg" size="sm" p={4}>
-				<IconPlus stroke={3} />
-			</ThemeIcon>
-			<Text size="md" fw={600}>
-				Add
-			</Text>
+const AddRuleGroupBtn = () => {
+	const [, setFilterStore] = useFilterStore((_store) => null);
+	const onClick = useCallback(() => {
+		setFilterStore((store) => createRuleGroup(store));
+	}, []);
+	return (
+		<Stack className={classes.addRuleContainer} onClick={onClick}>
+			<Stack style={{ flexDirection: 'row' }} align="center" gap={8}>
+				<ThemeIcon radius="lg" size="sm" p={4}>
+					<IconPlus stroke={3} />
+				</ThemeIcon>
+				<Text size="md" fw={600}>
+					Add
+				</Text>
+			</Stack>
 		</Stack>
-	</Stack>
-);
+	);
+};
 
 type RuleSetPillProps = {
 	ruleSet: RuleGroupTypeOverride;
@@ -179,10 +200,11 @@ type RuleSetPillProps = {
 const RuleSetPills = (props: RuleSetPillProps) => {
 	const { ruleSet } = props;
 	const { rules, combinator } = ruleSet;
-	const {
-		methods: { deleteRuleFromGroup },
-	} = useQueryFilterContext();
 
+	const [, setFilterStore] = useFilterStore((_store) => null);
+	const onDeleteRule = useCallback((ruleId: string) => {
+		setFilterStore((store) => deleteRuleFromGroup(store, ruleSet.id, ruleId));
+	}, []);
 	return (
 		<Pill>
 			{rules.map((rule, index) => {
@@ -190,7 +212,7 @@ const RuleSetPills = (props: RuleSetPillProps) => {
 				const operatorLabel = operatorLabelMap[rule.operator] || rule.operator;
 				return (
 					<span key={rule.id}>
-						<Pill withRemoveButton onRemove={() => deleteRuleFromGroup(ruleSet.id, rule.id)}>
+						<Pill withRemoveButton onRemove={() => onDeleteRule(rule.id)}>
 							{rule.field} {operatorLabel} {rule.value}
 						</Pill>
 						{shouldShowCombinatorPill && <Pill className={classes.childCombinatorPill}>{combinator}</Pill>}
@@ -202,9 +224,7 @@ const RuleSetPills = (props: RuleSetPillProps) => {
 };
 
 export const QueryPills = () => {
-	const {
-		state: { appliedQuery },
-	} = useQueryFilterContext();
+	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
 	const { combinator, rules: ruleSets } = appliedQuery;
 	return (
 		<ScrollArea scrollbarSize={6} scrollHideDelay={0} offsetScrollbars>
@@ -223,16 +243,17 @@ export const QueryPills = () => {
 	);
 };
 
-export const FilterQueryBuilder = () => {
-	const { state: queryBuilderState, methods: queryBuilderMethods } = useQueryFilterContext();
-	const { query, isSumbitDisabled } = queryBuilderState;
-	const { createRuleGroup, clearFilters, applyQuery } = queryBuilderMethods;
-	const {
-		state: {
-			custQuerySearchState: { isQuerySearchActive, mode },
-		},
-	} = useLogsPageContext();
-	const isFiltersApplied = isQuerySearchActive && mode === 'filters';
+export const FilterQueryBuilder = (props: { onClear: () => void; onApply: () => void }) => {
+	const [{ query, isSumbitDisabled, fields }, setFilterStore] = useFilterStore((store) => store);
+	const [{ isQuerySearchActive, viewMode }] = useLogsStore((store) => store.custQuerySearchState);
+	const isFiltersApplied = isQuerySearchActive && viewMode === 'filters';
+
+	useEffect(() => {
+		// init first rule
+		if (query.rules.length === 0 && fields.length !== 0) {
+			setFilterStore((store) => createRuleGroup(store));
+		}
+	}, [query.rules, fields]);
 
 	return (
 		<Stack style={{ height: 500 }}>
@@ -241,14 +262,14 @@ export const FilterQueryBuilder = () => {
 					{query.rules.map((ruleSet) => {
 						return <RuleSet ruleSet={ruleSet} key={ruleSet.id} />;
 					})}
-					<AddRuleGroupBtn createRuleGroup={createRuleGroup} />
+					<AddRuleGroupBtn />
 				</Stack>
 			</ScrollArea>
 			<Stack className={classes.footer}>
-				<Button onClick={clearFilters} disabled={!isFiltersApplied} variant='outline'>
+				<Button onClick={props.onClear} disabled={!isFiltersApplied} variant="outline">
 					Clear
 				</Button>
-				<Button onClick={applyQuery} disabled={isSumbitDisabled}>
+				<Button onClick={() => props.onApply()} disabled={isSumbitDisabled}>
 					Apply
 				</Button>
 			</Stack>
