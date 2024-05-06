@@ -1,5 +1,13 @@
 import { Box, Divider, Stack, Tooltip } from '@mantine/core';
-import { IconLogout, IconUser, IconBinaryTree2, IconInfoCircle, IconUserCog, IconHome, IconServerCog } from '@tabler/icons-react';
+import {
+	IconLogout,
+	IconUser,
+	IconBinaryTree2,
+	IconInfoCircle,
+	IconUserCog,
+	IconHome,
+	IconServerCog,
+} from '@tabler/icons-react';
 import { FC, useCallback, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -47,8 +55,8 @@ const previlagedActions = [
 		label: 'Cluster',
 		path: '/cluster',
 		route: CLUSTER_ROUTE,
-	}
-]
+	},
+];
 
 const navActions = [
 	{
@@ -103,12 +111,14 @@ const Navbar: FC = () => {
 	);
 
 	useEffect(() => {
-		if (getLogStreamListData?.data && getLogStreamListData?.data.length > 0 && getUserRolesData?.data) {
+		if (getUserRolesData?.data) {
 			getUserRolesData?.data && setAppStore((store) => setUserRoles(store, getUserRolesData?.data)); // TODO: move user context main context
-			const userStreams = getUserSepcificStreams(getUserRolesData?.data, getLogStreamListData?.data as any);
-			setAppStore((store) => setUserSpecificStreams(store, userStreams));
-		} else {
-			setAppStore((store) => setUserSpecificStreams(store, null));
+			if (getLogStreamListData?.data && getLogStreamListData?.data.length > 0) {
+				const userStreams = getUserSepcificStreams(getUserRolesData?.data, getLogStreamListData?.data as any);
+				setAppStore((store) => setUserSpecificStreams(store, userStreams));
+			} else {
+				setAppStore((store) => setUserSpecificStreams(store, null));
+			}
 		}
 		setAppStore((store) => setUserAccessMap(store, getStreamsSepcificAccess(getUserRolesData?.data)));
 	}, [getUserRolesData?.data, getLogStreamListData?.data]);

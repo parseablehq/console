@@ -107,7 +107,6 @@ export const useQueryLogs = () => {
 	useEffect(() => {
 		const response = _.first(fetchQueryMutation?.data) as { count: number };
 		if (response) {
-			console.log(response, 'total count');
 			setLogsStore((store) => setTotalCount(store, response?.count));
 		}
 	}, [fetchQueryMutation.data]);

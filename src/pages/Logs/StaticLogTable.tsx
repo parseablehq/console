@@ -202,7 +202,6 @@ const LoadingView = () => {
 const Footer = () => {
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const { totalPages, currentOffset, currentPage, perPage, totalCount } = tableOpts;
-	console.log("table opts", tableOpts)
 	const onPageChange = useCallback((page: number) => {
 		setLogsStore((store) => setPageAndPageData(store, page));
 	}, []);
