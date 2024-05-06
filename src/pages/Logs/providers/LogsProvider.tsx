@@ -570,7 +570,7 @@ const getCleanStoreForRefetch = (store: LogsStore) => {
 };
 
 const setCleanStoreForStreamChange = (store: LogsStore) => {
-	const { tableOpts, timeRange } = store;
+	const { tableOpts, timeRange, alerts } = store;
 	const { interval, type } = timeRange;
 	const duration = _.find(FIXED_DURATIONS, (duration) => duration.name === timeRange.label);
 	const updatedTimeRange = interval && type === 'fixed' ? { timeRange: getDefaultTimeRange(duration) } : {};
@@ -587,6 +587,7 @@ const setCleanStoreForStreamChange = (store: LogsStore) => {
 			totalPages: 0,
 		},
 		...updatedTimeRange,
+		alerts
 	};
 };
 
