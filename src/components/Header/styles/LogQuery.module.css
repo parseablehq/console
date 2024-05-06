@@ -75,7 +75,9 @@
 	text-transform: capitalize;
 	&:hover {
 		color: black !important;
-		display: none;
+		&:disabled {
+			color: white !important;
+		}
 	}
   }
   
@@ -96,6 +98,7 @@
 	background: #424242;
 	font-weight: 600;
 	color: #fff;
+
   }
   
   .customRangeContainer {
