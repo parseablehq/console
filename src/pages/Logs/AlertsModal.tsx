@@ -478,6 +478,7 @@ const ColumnRule = (props: ColumnRuleProps) => {
 					styles={{ label: { marginBottom: 8 } }}
 					label="Column"
 					data={fieldNames}
+					searchable
 					{...form.getInputProps(`alerts.${alertIndex}.rule.config.column`)}
 				/>
 				<Select
