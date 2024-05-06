@@ -49,24 +49,24 @@ const {
 	setCleanStoreForStreamChange,
 } = logsStoreReducers;
 
+const TotalCount = (props: { totalCount: number }) => {
+	return (
+		<Tooltip label={props.totalCount}>
+			<Text>{HumanizeNumber(props.totalCount)}</Text>
+		</Tooltip>
+	);
+};
+
 const TotalLogsCount = () => {
 	const [{ totalCount, perPage, pageData }] = useLogsStore((store) => store.tableOpts);
 	const displayedCount = _.size(pageData);
 	const showingCount = displayedCount < perPage ? displayedCount : perPage;
 	if (typeof totalCount !== 'number' || typeof displayedCount !== 'number') return <Stack />;
 
-	const renderTotalCount = useCallback(
-		() => (
-			<Tooltip label={totalCount}>
-				<Text>{HumanizeNumber(totalCount)}</Text>
-			</Tooltip>
-		),
-		[totalCount],
-	);
 	return (
 		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }} gap={6}>
 			<Text>{`Showing ${showingCount} out of`}</Text>
-			{renderTotalCount()}
+			<TotalCount totalCount={totalCount}/>
 			<Text>records</Text>
 		</Stack>
 	);
