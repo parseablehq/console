@@ -116,11 +116,11 @@ const SchemaTypeField = (props: { inputProps: GetInputPropsReturnType }) => {
 						w={220}
 						withArrow
 						transitionProps={{ duration: 200 }}
-						label="Placeholder for multiline tooltip - Schema type">
+						label="Dynamic schema allows new fields to be added to a stream later. Static schema is fixed for the lifetime of the stream.">
 						<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={18} width={18} />
 					</Tooltip>
 				</Stack>
-				<Text className={styles.fieldDescription}>Description for schema type</Text>
+				<Text className={styles.fieldDescription}>Choose dynamic, evolving schema or fixed, static schema.</Text>
 			</Stack>
 			<Select data={[dynamicType, staticType]} {...props.inputProps} />
 		</Stack>
@@ -158,11 +158,11 @@ const PartitionField = (props: {
 						w={220}
 						withArrow
 						transitionProps={{ duration: 200 }}
-						label="Placeholder for multiline tooltip - Partition Field">
+						label="This allows querying events based on custom timestamp selected here.">
 						<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={18} width={18} />
 					</Tooltip>
 				</Stack>
-				<Text className={styles.fieldDescription}>Description for partition field</Text>
+				<Text className={styles.fieldDescription}>Select the time column to partition log events.</Text>
 			</Stack>
 			<CreatableSelect
 				data={data}
