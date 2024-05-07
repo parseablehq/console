@@ -464,7 +464,7 @@ const setData = (store: LogsStore, data: Log[]) => {
 	// only if pageoffset is 1
 	const newHeaders =
 		filteredData && existingData.schema && custQuerySearchState.isQuerySearchActive
-			? makeHeadersfromData(existingData.schema, custQuerySearchState.custSearchQuery)
+			? makeHeadersfromData(filteredData)
 			: makeHeadersFromSchema(existingData.schema);
 
 	return {
