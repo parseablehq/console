@@ -16,13 +16,19 @@ export const makeHeadersFromSchema = (schema: LogStreamSchemaData | null): strin
 	}
 };
 
-export const makeHeadersfromData = (schema: LogStreamSchemaData, custSearchQuery: string | null): string[] => {
-	const allColumns = makeHeadersFromSchema(schema);
-	if (custSearchQuery === null) return allColumns;
+export const makeHeadersfromData = (data: Log[]): string[] => {
+	const allKeys: string[] = [];
 
-	const selectClause = custSearchQuery.match(/SELECT(.*?)FROM/i)?.[1];
-	if (!selectClause || selectClause.includes('*')) return allColumns;
+	// cannot parse cust search query and get the possible keys. 
+	// and also its not necessary that each record will have all the specified columns
+	// so go through all the records and get the keys
+	data.forEach((obj) => {
+		Object.keys(obj).forEach((key) => {
+			if (!allKeys.includes(key)) {
+				allKeys.push(key);
+			}
+		});
+	});
 
-	const commonColumns = allColumns.filter((column) => selectClause.includes(column));
-	return commonColumns;
+	return allKeys;
 };
