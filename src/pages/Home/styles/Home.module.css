@@ -25,3 +25,18 @@
     color: #FFFFFF;
 	background: #545BEB;
 }
+
+.createStreamButton {
+    background-color: white;
+    color: #211F1F;
+    border: 1px #e9ecef solid;
+    padding: 0.625rem 0.75rem;
+    margin-right: 0.625rem;
+    border-radius: rem(8px);
+    text-transform: capitalize;
+
+    &:hover {
+        background-color: #E0E0E0;
+        color: black;
+    }
+}

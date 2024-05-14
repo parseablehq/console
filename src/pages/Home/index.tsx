@@ -36,11 +36,11 @@ const EmptyStreamsView: FC = () => {
 const Home: FC = () => {
 	useDocumentTitle('Parseable | Streams');
 	const classes = homeStyles;
-	const { container } = classes;
+	const { container, createStreamButton } = classes;
 	const navigate = useNavigate();
 	const { getStreamMetadata, metaData } = useGetStreamMetadata();
 	const [userSpecificStreams, setAppStore] = useAppStore((store) => store.userSpecificStreams);
-	const [userAccessMap] = useAppStore((store) => store.userAccessMap);	
+	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
 
 	useEffect(() => {
 		if (!Array.isArray(userSpecificStreams) || userSpecificStreams.length === 0) return;
@@ -54,7 +54,7 @@ const Home: FC = () => {
 
 	const displayEmptyPlaceholder = Array.isArray(userSpecificStreams) && userSpecificStreams.length === 0;
 	const openCreateStreamModal = useCallback(() => {
-		setAppStore(store => toggleCreateStreamModal(store))
+		setAppStore((store) => toggleCreateStreamModal(store));
 	}, []);
 
 	return (
@@ -74,7 +74,7 @@ const Home: FC = () => {
 						{userAccessMap.hasCreateStreamAccess && (
 							<Button
 								variant="outline"
-								style={{ border: '1px solid' }}
+								className={createStreamButton}
 								onClick={openCreateStreamModal}
 								leftSection={<IconPlus stroke={2} />}>
 								Create Stream
