@@ -167,7 +167,7 @@ type LogsStore = {
 	refreshInterval: number | null;
 	selectedLog: Log | null;
 	custQuerySearchState: CustQuerySearchState;
-
+	sideBarOpen: boolean;
 	modalOpts: {
 		deleteModalOpen: boolean;
 		alertsModalOpen: boolean;
@@ -224,6 +224,7 @@ type LogsStoreReducers = {
 	toggleRetentionModal: (store: LogsStore, val?: boolean) => ReducerOutput;
 	toggleLiveTail: (store: LogsStore) => ReducerOutput;
 	setSelectedLog: (store: LogsStore, log: Log | null) => ReducerOutput;
+	toggleSideBar: (store: LogsStore) => ReducerOutput;
 
 	// table opts reducers
 	toggleDisabledColumns: (store: LogsStore, columnName: string) => ReducerOutput;
@@ -257,7 +258,7 @@ const initialState: LogsStore = {
 	refreshInterval: null,
 	selectedLog: null,
 	custQuerySearchState: defaultCustQuerySearchState,
-
+	sideBarOpen: true,
 	modalOpts: {
 		deleteModalOpen: false,
 		alertsModalOpen: false,
@@ -776,6 +777,12 @@ const setAlerts = (_store: LogsStore, alertsResponse: AlertsResponse) => {
 	};
 };
 
+const toggleSideBar = (store: LogsStore) => {
+	return {
+		sideBarOpen: !store.sideBarOpen
+	}
+}
+
 const logsStoreReducers: LogsStoreReducers = {
 	setTimeRange,
 	// resetTimeRange,
@@ -815,6 +822,7 @@ const logsStoreReducers: LogsStoreReducers = {
 	setAlerts,
 	transformAlerts,
 	setCleanStoreForStreamChange,
+	toggleSideBar
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };

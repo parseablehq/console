@@ -1,0 +1,16 @@
+.container {
+    flex: 1;
+    padding: 0.25rem 1rem;
+    border-right: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+
+.menuItemContainer {
+    gap: 0;
+    flex-direction: row;
+    align-items: center;
+    /* border: 1px solid; */
+    cursor: pointer;
+    &:hover {
+
+    }
+}
