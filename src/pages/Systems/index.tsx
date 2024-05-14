@@ -6,6 +6,7 @@ import StandaloneServer from './StandaloneServer';
 import { useAbout } from '@/hooks/useGetAbout';
 import { IconBook2 } from '@tabler/icons-react';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import Redesign from './Redesign';
 
 const navigateToDistributedDocs = () => {
 	window.open('https://www.parseable.com/docs/installation-distributed', '_blank');
@@ -23,7 +24,7 @@ const Systems: FC = () => {
 				width: '100%',
 				height: '100%',
 				flexDirection: 'column',
-				padding: '1.25rem',
+				padding: '3rem',
 			}}>
 			{isStandAloneMode ? (
 				<Stack>
@@ -40,10 +41,12 @@ const Systems: FC = () => {
 					<StandaloneServer />
 				</Stack>
 			) : (
-				<>
-					<Queriers />
-					<Ingestors />
-				</>
+				<Redesign/>
+			// 	<>
+			// 	<Queriers />
+			// 	<Ingestors />
+			// </>
+
 			)}
 		</Stack>
 	);

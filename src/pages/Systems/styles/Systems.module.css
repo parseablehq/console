@@ -116,3 +116,96 @@
 .cellText {
     font-size: 14px;
 }
+
+.container {
+    flex-direction: row;
+    flex: 1;
+    border-radius: 0.6rem;
+    border: 1px solid var(--mantine-color-gray-2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adjust shadow parameters as needed */
+}
+
+.sectionContainerr {
+    flex: 1;
+}
+
+.leftSectionTitle {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.totalMachines {
+    font-size: 1.2rem;
+    color: var(--mantine-color-gray-6)
+}
+
+.serverItem {
+    padding: 1.2rem 1.6rem;
+    border-top: 1px solid var(--mantine-color-gray-2);
+    /* border-bottom: 1px solid var(--mantine-color-gray-2); */
+    cursor: pointer;
+    &:hover {
+        background-color: var(--mantine-color-gray-1);
+    }
+    /* &.serverItemActive {
+        background-color: var(--mantine-color-brandPrimary-3);
+    } */
+
+    .liveIcon {
+        color: var(--mantine-color-green-6);
+        background: var(--mantine-color-green-1);
+        border-radius: 50%;
+        padding: 0.2rem;
+    }
+
+    .serverDownIcon {
+        color: var(--mantine-color-red-6);
+        background: var(--mantine-color-red-1);
+        border-radius: 50%;
+        padding: 0.2rem;
+    }
+
+    .serverDomain {
+        font-size: 1rem;
+        color: var(--mantine-color-gray-7);
+    }
+}
+
+.bigNoSection {
+    width: 100%;
+    flex-direction: row;
+}
+
+.bigNoContainer {
+    border: 1px solid var(--mantine-color-gray-3);
+    padding: 0.5rem 1rem;
+    /* padding: 1rem 4rem 1rem 1rem; */
+    flex: 1;
+    border-radius: 0.3rem;
+    gap: 0.4rem;
+    .bigNoTitle {
+       color: var(--mantine-color-gray-6);
+    }
+
+    .bigNoText {
+        font-size: 1.4rem;
+        font-weight: 500;
+    }
+}
+
+.graphSectionContainer {
+    .graphTitleContaier {
+        flex-direction: row;
+        margin-bottom: 1rem;
+        .graphTitleFiller {
+            border: 1px solid var(--mantine-color-gray-3);
+            flex: 1;
+            height: 1px;
+            align-self: center;
+        }
+    }
+
+    .graphContainer {
+        padding: 0.5rem;
+    }
+}
