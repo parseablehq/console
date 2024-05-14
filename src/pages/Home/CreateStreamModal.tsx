@@ -353,7 +353,7 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 			...(partitionField !== defaultPartitionField ? { 'X-P-Time-Partition': partitionField } : {}),
 			...(isStatic ? { 'X-P-Static-Schema-Flag': true } : {}),
 			...(_.isEmpty(customPartitionFields) ? {} : { 'X-P-Custom-Partition': _.join(customPartitionFields, ',') }),
-			...(!_.isInteger(partitionLimit) ? {} : { 'X-P-Time-Partition-Limit': `${partitionLimit}d` }),
+			...(partitionField === defaultPartitionField || !_.isInteger(partitionLimit) ? {} : { 'X-P-Time-Partition-Limit': `${partitionLimit}d` }),
 		};
 		const schmaFields = isStatic ? fields : {};
 		createLogStreamMutation({
@@ -395,7 +395,9 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 				value={form.values.partitionField}
 				error={_.toString(form.errors.partitionField)}
 			/>
-			<PartitionLimitField inputProps={form.getInputProps('partitionLimit')}/>
+			{form.values.partitionField !== defaultPartitionField && (
+				<PartitionLimitField inputProps={form.getInputProps('partitionLimit')} />
+			)}
 			<CustomPartitionField
 				partitionFields={customPartitionFields}
 				isStaticSchema={isStaticSchema}
