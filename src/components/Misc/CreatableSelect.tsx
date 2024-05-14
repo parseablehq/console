@@ -8,6 +8,7 @@ type Props = {
 	setValue: (val: string) => void;
 	placeholder: string;
 	error: string;
+	style?: Record<string, string | number>
 };
 
 export function CreatableSelect(props: Props) {
@@ -15,7 +16,7 @@ export function CreatableSelect(props: Props) {
 		onDropdownClose: () => combobox.resetSelectedOption(),
 	});
 
-	const { data, setData, value, setValue } = props;
+	const { data, setData, value, setValue, style = {}} = props;
 	const [search, setSearch] = useState('');
 
 	const exactOptionMatch = data.some((item) => item === search);
@@ -71,7 +72,8 @@ export function CreatableSelect(props: Props) {
 				}
 
 				combobox.closeDropdown();
-			}}>
+			}}
+			>
 			<Combobox.Target>
 				<InputBase
 					rightSection={<Combobox.Chevron />}
@@ -90,6 +92,7 @@ export function CreatableSelect(props: Props) {
 					placeholder={props.placeholder || 'Search or Type'}
 					rightSectionPointerEvents="none"
 					error={props.error}
+					style={style}
 				/>
 			</Combobox.Target>
 			<Combobox.Dropdown>

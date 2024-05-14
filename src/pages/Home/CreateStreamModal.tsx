@@ -4,6 +4,7 @@ import {
 	Button,
 	CloseIcon,
 	Modal,
+	NumberInput,
 	Select,
 	Stack,
 	TagsInput,
@@ -124,7 +125,29 @@ const SchemaTypeField = (props: { inputProps: GetInputPropsReturnType }) => {
 				</Stack>
 				<Text className={styles.fieldDescription}>Choose dynamic, evolving schema or fixed, static schema.</Text>
 			</Stack>
-			<Select data={[dynamicType, staticType]} {...props.inputProps} />
+			<Select w={200} data={[dynamicType, staticType]} {...props.inputProps} />
+		</Stack>
+	);
+};
+
+const PartitionLimitField = (props: { inputProps: GetInputPropsReturnType }) => {
+	return (
+		<Stack gap={2} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+			<Stack gap={1}>
+				<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={4}>
+					<Text className={styles.fieldTitle}>Partition Limit</Text>
+					<Tooltip
+						multiline
+						w={220}
+						withArrow
+						transitionProps={{ duration: 200 }}
+						label="Dynamic schema allows new fields to be added to a stream later. Static schema is fixed for the lifetime of the stream.">
+						<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={18} width={18} />
+					</Tooltip>
+				</Stack>
+				<Text className={styles.fieldDescription}>Default value is set to 30 days.</Text>
+			</Stack>
+			<NumberInput w={200} styles={{section: {"--section-size": 'none', padding: 12}}} {...props.inputProps} rightSection={<Text>Days</Text>}/>
 		</Stack>
 	);
 };
@@ -173,6 +196,7 @@ const PartitionField = (props: {
 				setValue={(value: string) => onFieldChange(value)}
 				placeholder="Select or Add"
 				error={props.error}
+				style={{width: 200}}
 			/>
 		</Stack>
 	);
@@ -242,6 +266,7 @@ const useCreateStreamForm = () => {
 			fields: [defaultFieldValue],
 			schemaType: dynamicType,
 			partitionField: defaultPartitionField,
+			partitionLimit: 30,
 			customPartitionFields: [],
 		},
 		validate: {
@@ -272,6 +297,7 @@ const useCreateStreamForm = () => {
 					return !_.isEmpty(invalidColumnNames) ? 'Unknown Field Included' : null;
 				}
 			},
+			partitionLimit: (val) => (!_.isInteger(val) ? 'Must be a number' : null),
 		},
 		validateInputOnChange: true,
 		validateInputOnBlur: true,
@@ -319,7 +345,7 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 
 	const onSubmit = useCallback(() => {
 		const { hasErrors } = form.validate();
-		const { schemaType, fields, partitionField, customPartitionFields } = form.values;
+		const { schemaType, fields, partitionField, customPartitionFields, partitionLimit } = form.values;
 		const isStatic = schemaType === staticType;
 		if (hasErrors || (isStatic && _.isEmpty(fields))) return;
 
@@ -327,6 +353,7 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 			...(partitionField !== defaultPartitionField ? { 'X-P-Time-Partition': partitionField } : {}),
 			...(isStatic ? { 'X-P-Static-Schema-Flag': true } : {}),
 			...(_.isEmpty(customPartitionFields) ? {} : { 'X-P-Custom-Partition': _.join(customPartitionFields, ',') }),
+			...(!_.isInteger(partitionLimit) ? {} : { 'X-P-Time-Partition-Limit': `${partitionLimit}d` }),
 		};
 		const schmaFields = isStatic ? fields : {};
 		createLogStreamMutation({
@@ -368,6 +395,7 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 				value={form.values.partitionField}
 				error={_.toString(form.errors.partitionField)}
 			/>
+			<PartitionLimitField inputProps={form.getInputProps('partitionLimit')}/>
 			<CustomPartitionField
 				partitionFields={customPartitionFields}
 				isStaticSchema={isStaticSchema}
