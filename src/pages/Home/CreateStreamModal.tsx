@@ -27,7 +27,7 @@ const { toggleCreateStreamModal } = appStoreReducers;
 
 const isValidStreamName = (val: string) => {
 	if (!/[A-Za-z]/.test(val)) {
-		return 'Name should contain atleast one letter';
+		return 'Name should contain at least one letter';
 	} else if (_.includes(val, ' ')) {
 		return 'Name should not contain whitespace';
 	} else if (!/^[a-zA-Z0-9]+$/.test(val)) {
@@ -123,7 +123,7 @@ const SchemaTypeField = (props: { inputProps: GetInputPropsReturnType }) => {
 						<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={18} width={18} />
 					</Tooltip>
 				</Stack>
-				<Text className={styles.fieldDescription}>Choose dynamic, evolving schema or fixed, static schema.</Text>
+				<Text className={styles.fieldDescription}>Choose dynamic or static schema</Text>
 			</Stack>
 			<Select w={200} data={[dynamicType, staticType]} {...props.inputProps} />
 		</Stack>
@@ -135,17 +135,17 @@ const PartitionLimitField = (props: { inputProps: GetInputPropsReturnType }) => 
 		<Stack gap={2} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
 			<Stack gap={1}>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={4}>
-					<Text className={styles.fieldTitle}>Partition Limit</Text>
+					<Text className={styles.fieldTitle}>Maximum Historical Difference</Text>
 					<Tooltip
 						multiline
 						w={220}
 						withArrow
 						transitionProps={{ duration: 200 }}
-						label="Dynamic schema allows new fields to be added to a stream later. Static schema is fixed for the lifetime of the stream.">
+						label="Maximum difference between current server time and timestamp in the custom time partition field" >
 						<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={18} width={18} />
 					</Tooltip>
 				</Stack>
-				<Text className={styles.fieldDescription}>Default value is set to 30 days.</Text>
+				<Text className={styles.fieldDescription}>Default limit is set to 30 days</Text>
 			</Stack>
 			<NumberInput w={200} styles={{section: {"--section-size": 'none', padding: 12}}} {...props.inputProps} rightSection={<Text>Days</Text>}/>
 		</Stack>
@@ -177,7 +177,7 @@ const PartitionField = (props: {
 		<Stack gap={2} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
 			<Stack gap={1}>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={4}>
-					<Text className={styles.fieldTitle}>Partition Field</Text>
+					<Text className={styles.fieldTitle}>Time Partition Field</Text>
 					<Tooltip
 						multiline
 						w={220}
@@ -187,7 +187,7 @@ const PartitionField = (props: {
 						<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={18} width={18} />
 					</Tooltip>
 				</Stack>
-				<Text className={styles.fieldDescription}>Select the time column to partition log events.</Text>
+				<Text className={styles.fieldDescription}>Select the time field to partition log events</Text>
 			</Stack>
 			<CreatableSelect
 				data={data}
@@ -221,11 +221,11 @@ const CustomPartitionField = (props: {
 						w={220}
 						withArrow
 						transitionProps={{ duration: 200 }}
-						label="This allows querying events based on custom timestamp selected here.">
+						label="Partition data storage based on fields and their values">
 						<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={18} width={18} />
 					</Tooltip>
 				</Stack>
-				<Text className={styles.fieldDescription}>Upto 3 columns</Text>
+				<Text className={styles.fieldDescription}>Select 3 columns to partition the events</Text>
 			</Stack>
 			<TagsInput
 				placeholder={
