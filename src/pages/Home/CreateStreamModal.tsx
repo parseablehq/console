@@ -6,6 +6,7 @@ import {
 	Modal,
 	Select,
 	Stack,
+	TagsInput,
 	Text,
 	TextInput,
 	ThemeIcon,
@@ -98,7 +99,8 @@ const AddFieldButton = ({ onClick }: { onClick: () => void }) => {
 						<IconPlus stroke={2} />
 					</ThemeIcon>
 				}
-				onClick={onClick}>
+				onClick={onClick}
+				style={{ padding: 12, fontSize: '0.8rem' }}>
 				Add Field
 			</Button>
 		</Box>
@@ -176,6 +178,49 @@ const PartitionField = (props: {
 	);
 };
 
+const CustomPartitionField = (props: {
+	partitionFields: string[];
+	onChangeValue: (key: string, field: string[]) => void;
+	isStaticSchema: boolean;
+	error: string;
+	value: string[];
+}) => {
+	const shouldDisable = _.isEmpty(props.partitionFields);
+
+	return (
+		<Stack gap={2} style={{ justifyContent: 'space-between' }}>
+			<Stack gap={1}>
+				<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={4}>
+					<Text className={styles.fieldTitle}>Custom Partition Field</Text>
+					<Tooltip
+						multiline
+						w={220}
+						withArrow
+						transitionProps={{ duration: 200 }}
+						label="This allows querying events based on custom timestamp selected here.">
+						<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={18} width={18} />
+					</Tooltip>
+				</Stack>
+				<Text className={styles.fieldDescription}>Upto 3 columns</Text>
+			</Stack>
+			<TagsInput
+				placeholder={
+					props.isStaticSchema
+						? shouldDisable
+							? 'Add Columns to the Schema'
+							: 'Select column from the list'
+						: 'Add upto 3 columns'
+				}
+				data={props.partitionFields}
+				mt={6}
+				onChange={(val) => props.onChangeValue('customPartitionFields', val)}
+				maxTags={3}
+				error={props.error}
+			/>
+		</Stack>
+	);
+};
+
 type FieldType = {
 	data_type: string;
 	name: string;
@@ -197,6 +242,7 @@ const useCreateStreamForm = () => {
 			fields: [defaultFieldValue],
 			schemaType: dynamicType,
 			partitionField: defaultPartitionField,
+			customPartitionFields: [],
 		},
 		validate: {
 			name: (value) => isValidStreamName(value),
@@ -217,6 +263,15 @@ const useCreateStreamForm = () => {
 				return schemaType === staticType && !_.includes(allStringFieldNames, val) ? 'Unknown Field' : null;
 			},
 			schemaType: (val) => (_.includes([dynamicType, staticType], val) ? null : 'Choose either Dynamic or Static'),
+			customPartitionFields: (val, allValues) => {
+				if (_.isEmpty(val) || allValues.schemaType !== staticType) {
+					return null;
+				} else {
+					const allFieldNames = _.map(allValues.fields, (field) => field.name);
+					const invalidColumnNames = _.difference(val, allFieldNames);
+					return !_.isEmpty(invalidColumnNames) ? 'Unknown Field Included' : null;
+				}
+			},
 		},
 		validateInputOnChange: true,
 		validateInputOnBlur: true,
@@ -238,6 +293,7 @@ const useCreateStreamForm = () => {
 
 	const onChangeValue = useCallback((key: string, value: any) => {
 		form.setFieldValue(key, value);
+		form.validateField(key);
 	}, []);
 
 	return { form, onAddField, onRemoveField, onChangeValue };
@@ -248,6 +304,12 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 	const stringFields = getStringFieldNames(form.values.fields);
 	const isStaticSchema = form.values.schemaType === staticType;
 	const partitionFields = [defaultPartitionField, ...(isStaticSchema ? stringFields : [])];
+	const customPartitionFields = !isStaticSchema
+		? []
+		: _.chain(form.values.fields)
+				.map((field) => field.name)
+				.compact()
+				.value();
 	const { createLogStreamMutation } = useLogStream();
 	const { getLogStreamListRefetch } = useLogStream();
 	const onSuccessCallback = useCallback(() => {
@@ -257,13 +319,14 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 
 	const onSubmit = useCallback(() => {
 		const { hasErrors } = form.validate();
-		const { schemaType, fields, partitionField } = form.values;
+		const { schemaType, fields, partitionField, customPartitionFields } = form.values;
 		const isStatic = schemaType === staticType;
 		if (hasErrors || (isStatic && _.isEmpty(fields))) return;
 
 		const headers = {
 			...(partitionField !== defaultPartitionField ? { 'X-P-Time-Partition': partitionField } : {}),
 			...(isStatic ? { 'X-P-Static-Schema-Flag': true } : {}),
+			...(_.isEmpty(customPartitionFields) ? {} : { 'X-P-Custom-Partition': _.join(customPartitionFields, ',') }),
 		};
 		const schmaFields = isStatic ? fields : {};
 		createLogStreamMutation({
@@ -304,6 +367,13 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 				onChangeValue={onChangeValue}
 				value={form.values.partitionField}
 				error={_.toString(form.errors.partitionField)}
+			/>
+			<CustomPartitionField
+				partitionFields={customPartitionFields}
+				isStaticSchema={isStaticSchema}
+				onChangeValue={onChangeValue}
+				value={form.values.customPartitionFields}
+				error={_.toString(form.errors.customPartitionFields)}
 			/>
 			<Stack style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
 				<Box>
