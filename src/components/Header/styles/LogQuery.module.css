@@ -43,7 +43,6 @@
 	color: #211F1F;
 	border: 1px #e9ecef solid;
 	padding: 0.625rem 1rem;
-	margin-right: 0.625rem;
     border-radius: rem(8px);
 	&:hover {
 		color: black;
@@ -65,6 +64,12 @@
   .fixedRangeContainer {
 	display: flex;
 	flex-direction: column;
+	background: #f8f9fa;
+	margin-left: 0.5rem;
+	border-radius: 0.25rem;
+	margin-top: 0.5rem;
+	margin-bottom: 0.5rem;
+	overflow: hidden;
   }
   
   .fixedRangeBtn {
@@ -72,21 +77,13 @@
 	padding: 0.75rem;
 	font-size: 0.875rem;
 	background: #f8f9fa;
-	text-transform: capitalize;
+	/* text-transform: capitalize; */
 	&:hover {
 		color: black !important;
 		&:disabled {
 			color: white !important;
 		}
 	}
-  }
-  
-  .fixedRangeBtn:first-of-type {
-	border-top-left-radius: 0.25rem;
-  }
-  
-  .fixedRangeBtn:last-of-type {
-	border-bottom-left-radius: 0.25rem;
   }
   
   .fixedRangeBtn:hover {
@@ -102,7 +99,7 @@
   }
   
   .customRangeContainer {
-	padding: 0.625rem 2rem;
+	padding: 0.625rem 1rem;
 	min-width: 20rem;
 	flex: 1;
 	display: flex;
@@ -169,12 +166,11 @@
   
   .timeRangeBTn {
 	background-color: white;
-	color: #211F1F;
-	border: 1px #e9ecef solid;
-	padding: 0.625rem 0.75rem;
-	margin-right: 0.625rem;
-	border-radius: rem(8px);
-	text-transform: capitalize;
+	color: var(--mantine-color-gray-7);
+	padding: 0 0.5rem;
+	border-radius: 0;
+	border-right: 1px solid var(--mantine-color-gray-2);
+	border-left: 1px solid var(--mantine-color-gray-2);
   }
   
   .timeRangeBTn:hover {
@@ -231,16 +227,20 @@
 }
 
 .streamInput {
-	border: none;
-	padding-left: 0;
-	padding-right: 30px;
-	height: 50px;
-	font-size: 24px;
-	font-weight: 600;
-	margin-top: -10px;
-	background-color: transparent;
+	/* border: none; */
+	/* padding-left: 0; */
+	/* padding-right: 30px; */
+	/* height: 50px; */
+	/* font-size: 24px; */
+	/* font-weight: 600; */
+	/* margin-top: -10px; */
+	/* background-color: transparent; */
 	cursor: pointer;
-	width: 200px;
+	border: 1px var(--mantine-color-gray-2) solid;
+	border-radius: rem(8px);
+
+	/* width: 200px; */
+
 }
 
 .chevronDown {
@@ -248,9 +248,9 @@
 }
 
 .streamSelect {
-	margin-top: 10px; 
+	/* margin-top: 10px;  */
 	 /* adjustments for neg margin for input */
-	margin-left: 0.625rem;
+	/* margin-left: 0.625rem; */
 }
 
 .iconBtn {
@@ -331,4 +331,38 @@
 	color: var(--mantine-color-gray-5);
 	font-size: 1rem;
 	font-weight: 500;
+}
+
+.timeRangeBtnContainer {
+	flex-direction: row;
+	gap: 0;
+	border: 1px solid var(--mantine-color-gray-3);
+	overflow: hidden;
+	border-radius: rem(8px);
+}
+
+.timeRangeCtrlIcon {
+	height: 100%;
+	align-items: center; 
+	justify-content: center;	
+	&:hover {
+		background-color: #E0E0E0;
+		color: black;
+	}
+	padding: 0 0.25rem;
+	color: var(--mantine-color-gray-7);
+	cursor: pointer;
+}
+
+.changeIntervalContainer {
+	flex-direction: row;
+	margin-top: 0.5rem;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.changeIntervalLabel {
+	font-size: 0.9rem;
+	font-weight: 500;
+	text-align: center;
 }

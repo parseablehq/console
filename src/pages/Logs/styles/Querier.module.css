@@ -12,13 +12,12 @@
 .container {
 	background-color: white;
 	color: #211F1F;
-	border: 1px var(--mantine-color-gray-3  ) solid;
+	border: 1px var(--mantine-color-gray-2) solid;
 	border-radius: rem(8px);
 	cursor: pointer;
     flex: 1;
     overflow-y: hidden;
     flex-direction: row;
-    margin-right: 0.675rem;
 }
 
 .modeContainer {

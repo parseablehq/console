@@ -6,6 +6,8 @@ import MainLayout from '@/layouts/MainLayout';
 import { AppProvider } from '@/layouts/MainLayout/providers/AppProvider';
 import { LogsProvider } from '@/pages/Logs/providers/LogsProvider';
 import { FilterProvider } from '@/pages/Logs/providers/FilterProvider';
+import { ManagementProvider } from '@/pages/Logs/providers/ManageProvider';
+import { StreamProvider } from '@/pages/Logs/providers/StreamProvider';
 
 export const HomeElement: FC = () => {
 	return (
@@ -30,11 +32,15 @@ const Logs = lazy(() => import('@/pages/Logs'));
 export const LogsElement: FC = () => {
 	return (
 		<SuspensePage>
-			<LogsProvider>
-				<FilterProvider>
-					<Logs />
-				</FilterProvider>
-			</LogsProvider>
+			<StreamProvider>
+				<LogsProvider>
+					<FilterProvider>
+						<ManagementProvider>
+							<Logs />
+						</ManagementProvider>
+					</FilterProvider>
+				</LogsProvider>
+			</StreamProvider>
 		</SuspensePage>
 	);
 };

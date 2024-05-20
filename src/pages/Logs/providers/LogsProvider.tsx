@@ -2,7 +2,7 @@ import { Log } from '@/@types/parseable/api/query';
 import { LogStreamData, LogStreamSchemaData } from '@/@types/parseable/api/stream';
 import { FIXED_DURATIONS, FixedDuration } from '@/constants/timeConstants';
 import initContext from '@/utils/initContext';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { addOrRemoveElement } from '@/utils';
 import { getPageSlice, makeHeadersFromSchema, makeHeadersfromData } from '../utils';
 import _ from 'lodash';
@@ -82,7 +82,8 @@ type TimeRange = {
 	endTime: Date;
 	type: 'fixed' | 'custom';
 	label: string;
-	interval: number | null;
+	interval: number;
+	changeInterval: number;
 };
 
 enum SortOrder {
@@ -111,13 +112,19 @@ type LiveTailConfig = {
 
 const getDefaultTimeRange = (duration: FixedDuration = DEFAULT_FIXED_DURATIONS) => {
 	const now = dayjs().startOf('minute');
-	const { milliseconds, name } = duration;
+	const { milliseconds } = duration;
+
+	const startTime = now.subtract(milliseconds, 'milliseconds');
+	const endTime = now;
+	const startTimeLabel = dayjs(startTime).format('HH:mm A DD MMM YY');
+	const endTimeLabel = dayjs(endTime).format('HH:mm A DD MMM YY');
 	return {
-		startTime: now.subtract(milliseconds, 'milliseconds').toDate(),
+		startTime: startTime.toDate(),
 		endTime: now.toDate(),
 		type: 'fixed' as 'fixed',
-		label: name,
+		label: `${startTimeLabel} - ${endTimeLabel}`,
 		interval: milliseconds,
+		changeInterval: 1,
 	};
 };
 
@@ -160,6 +167,8 @@ type CustQuerySearchState = {
 	activeMode: null | 'filters' | 'sql';
 };
 
+export type currentView = 'explore' | 'live-tail' | 'manage';
+
 type LogsStore = {
 	timeRange: TimeRange;
 	quickFilters: QuickFilters;
@@ -174,6 +183,7 @@ type LogsStore = {
 		retentionModalOpen: boolean;
 		queryBuilderModalOpen: boolean;
 	};
+	currentView: currentView;
 
 	tableOpts: {
 		disabledColumns: string[];
@@ -202,10 +212,12 @@ type LogsStore = {
 	};
 
 	alerts: TransformedAlerts;
+	
 };
 
 type LogsStoreReducers = {
-	setTimeRange: (store: LogsStore, payload: Partial<TimeRange>) => ReducerOutput;
+	setTimeRange: (store: LogsStore, payload: { startTime: dayjs.Dayjs, endTime: dayjs.Dayjs, type: 'fixed' | 'custom' }) => ReducerOutput;
+	setChangeInterval: (store: LogsStore, interval: number) => ReducerOutput;
 	// resetTimeRange: (store: LogsStore) => ReducerOutput;
 	deleteFilterItem: (store: LogsStore, key: string) => ReducerOutput;
 	addFilterItem: (store: LogsStore, key: string, value: string[]) => ReducerOutput;
@@ -225,6 +237,7 @@ type LogsStoreReducers = {
 	toggleLiveTail: (store: LogsStore) => ReducerOutput;
 	setSelectedLog: (store: LogsStore, log: Log | null) => ReducerOutput;
 	toggleSideBar: (store: LogsStore) => ReducerOutput;
+	toggleCurrentView: (store: LogsStore, currentView: currentView) => ReducerOutput;
 
 	// table opts reducers
 	toggleDisabledColumns: (store: LogsStore, columnName: string) => ReducerOutput;
@@ -258,7 +271,8 @@ const initialState: LogsStore = {
 	refreshInterval: null,
 	selectedLog: null,
 	custQuerySearchState: defaultCustQuerySearchState,
-	sideBarOpen: true,
+	sideBarOpen: false,
+	currentView: 'manage',
 	modalOpts: {
 		deleteModalOpen: false,
 		alertsModalOpen: false,
@@ -313,12 +327,22 @@ const setSelectedLog = (_store: LogsStore, log: Log | null) => {
 };
 
 // reducers
-const setTimeRange = (store: LogsStore, payload: Partial<TimeRange>) => {
-	const { label } = payload;
-	const duration = _.find(FIXED_DURATIONS, (duration) => duration.name === label);
-	const interval = duration?.milliseconds || null;
-	return { ...getCleanStoreForRefetch(store), timeRange: { ...store.timeRange, ...payload, interval } };
+const setTimeRange = (store: LogsStore, payload: { startTime: dayjs.Dayjs, endTime: Dayjs , type: 'fixed' | 'custom'}) => {
+	const {startTime, endTime, type} = payload
+	const label = `${startTime.format('HH:mm A DD MMM YY')} to ${endTime.format('HH:mm A DD MMM YY')}`;
+	const interval = endTime.diff(startTime, 'milliseconds');
+	return { ...getCleanStoreForRefetch(store), timeRange: { ...store.timeRange, label, interval, type } };
 };
+
+const setChangeInterval = (store: LogsStore, interval: number) => {
+	const {timeRange} = store;
+	return {
+		timeRange: {
+			...timeRange,
+			changeInterval: interval
+		}
+	}
+}
 
 // const resetTimeRange = (store: LogsStore) => {
 // 	const now = dayjs();
@@ -783,8 +807,15 @@ const toggleSideBar = (store: LogsStore) => {
 	}
 }
 
+const toggleCurrentView = (_store: LogsStore, currentView: currentView) => {
+	return {
+		currentView
+	}
+}
+
 const logsStoreReducers: LogsStoreReducers = {
 	setTimeRange,
+	setChangeInterval,
 	// resetTimeRange,
 	deleteFilterItem,
 	addFilterItem,
@@ -822,7 +853,8 @@ const logsStoreReducers: LogsStoreReducers = {
 	setAlerts,
 	transformAlerts,
 	setCleanStoreForStreamChange,
-	toggleSideBar
+	toggleSideBar,
+	toggleCurrentView
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };

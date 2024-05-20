@@ -101,7 +101,7 @@ const Column: FC<Column> = (props) => {
 			<Popover position="bottom" withArrow withinPortal shadow="md" zIndex={2}>
 				<Popover.Target>
 					<UnstyledButton className={labelBtn}>
-						<span>{capitalizeFirstLetter(columnName)}</span>
+						<span>{columnName}</span>
 						<IconDotsVertical size={px('1rem')} className={[labelIcon].filter(Boolean).join(' ')} />
 					</UnstyledButton>
 				</Popover.Target>

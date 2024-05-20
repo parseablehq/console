@@ -784,19 +784,19 @@ const AlertsModal = () => {
 		setLogsStore((store) => toggleAlertsModal(store, false));
 	}, []);
 
-	const { getLogAlertData, getLogAlertDataRefetch } = useGetAlerts(currentStream || '');
+	// const { getLogAlertData, getLogAlertDataRefetch } = useGetAlerts(currentStream || '');
 	const { updateLogStreamAlerts } = useAlertsEditor(currentStream || '');
 
 	const onSuccess = useCallback(() => {
 		onCloseModal();
-		getLogAlertDataRefetch();
+		// getLogAlertDataRefetch();
 	}, []);
 
-	useEffect(() => {
-		if (getLogAlertData?.data) {
-			setLogsStore((store) => setAlerts(store, getLogAlertData?.data));
-		}
-	}, [getLogAlertData?.data]);
+	// useEffect(() => {
+	// 	if (getLogAlertData?.data) {
+	// 		setLogsStore((store) => setAlerts(store, getLogAlertData?.data));
+	// 	}
+	// }, [getLogAlertData?.data]);
 
 	const onSubmit = useCallback(() => {
 		const { hasErrors } = form.validate();

@@ -1,16 +1,13 @@
 import { Paper, Skeleton, Stack, Text } from '@mantine/core';
 import classes from './styles/EventTimeLineGraph.module.css';
 import { useQueryResult } from '@/hooks/useQueryResult';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import { ChartTooltipProps, AreaChart } from '@mantine/charts';
 import { HumanizeNumber } from '@/utils/formatBytes';
 import { logsStoreReducers, useLogsStore } from './providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 const { setTimeRange } = logsStoreReducers;
-
-const START_RANGE = 30;
-const END_RANGE = 0;
 
 const generateCountQuery = (streamName: string, startTime: string, endTime: string) => {
 	return `SELECT DATE_TRUNC('minute', p_timestamp) AS minute_range, COUNT(*) AS log_count FROM ${streamName} WHERE p_timestamp BETWEEN '${startTime}' AND '${endTime}' GROUP BY minute_range ORDER BY minute_range`;
@@ -40,9 +37,10 @@ const calcAverage = (data: GraphRecord[]) => {
 	return parseInt(Math.abs(total / data.length).toFixed(0));
 };
 
-const getAllTimestamps = (startTime: Dayjs) => {
+const getAllTimestamps = (startTime: Dayjs, interval: number) => {
 	const timestamps = [];
-	for (let i = 0; i < START_RANGE; i++) {
+	const totalMinutes = interval / (1000 * 60)
+	for (let i = 0; i < totalMinutes; i++) {
 		const ts = startTime.add(i + 1, 'minute');
 		timestamps.push(ts.toISOString().split('.')[0] + 'Z');
 	}
@@ -51,10 +49,11 @@ const getAllTimestamps = (startTime: Dayjs) => {
 
 // date_trunc removes tz info
 // filling data empty values where there is no rec
-const parseGraphData = (data: GraphRecord[], avg: number, startTime: Dayjs) => {
+const parseGraphData = (data: GraphRecord[], avg: number, startTime: Dayjs, interval: number) => {
 	if (!Array.isArray(data) || data.length === 0) return [];
 
-	const allTimestamps = getAllTimestamps(startTime);
+	const allTimestamps = getAllTimestamps(startTime, interval);
+	console.log(allTimestamps)
 	const parsedData = allTimestamps.map((ts) => {
 		const countData = data.find((d) => `${d.minute_range}Z` === ts);
 		if (!countData || typeof countData !== 'object') {
@@ -102,25 +101,18 @@ function ChartTooltip({ payload }: ChartTooltipProps) {
 	);
 }
 
-const generateTimeOpts = () => {
-	const endTime = dayjs().subtract(END_RANGE, 'minute').startOf('minute');
-	const startTime = endTime.subtract(START_RANGE, 'minute').startOf('minute');
-	return { startTime, endTime };
-};
-
 const EventTimeLineGraph = () => {
 	const { fetchQueryMutation } = useQueryResult();
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const [timeOpts, _setTimeOpts] = useState<{ startTime: Dayjs; endTime: Dayjs }>(generateTimeOpts());
-	const { endTime, startTime } = timeOpts;
+	const [{interval, startTime, endTime}] = useLogsStore(store => store.timeRange)
 
 	useEffect(() => {
 		if (!currentStream || currentStream.length === 0) return;
 
 		const logsQuery = {
 			streamName: currentStream,
-			startTime: startTime.toDate(),
-			endTime: endTime.toDate(),
+			startTime,
+			endTime,
 			access: [],
 		};
 		const query = generateCountQuery(currentStream, startTime.toISOString(), endTime.toISOString());
@@ -133,8 +125,8 @@ const EventTimeLineGraph = () => {
 	const isLoading = fetchQueryMutation.isLoading;
 	const avgEventCount = useMemo(() => calcAverage(fetchQueryMutation?.data), [fetchQueryMutation?.data]);
 	const graphData = useMemo(
-		() => parseGraphData(fetchQueryMutation?.data, avgEventCount, startTime),
-		[fetchQueryMutation?.data],
+		() => parseGraphData(fetchQueryMutation?.data, avgEventCount, dayjs(startTime), interval),
+		[fetchQueryMutation?.data, interval],
 	);
 	const hasData = Array.isArray(graphData) && graphData.length !== 0;
 	const [, setLogsStore] = useLogsStore((store) => store.timeRange);
@@ -148,9 +140,8 @@ const EventTimeLineGraph = () => {
 		const { minute } = samplePayload.payload || {};
 		const startTime = dayjs(minute);
 		const endTime = dayjs(minute).add(60, 'seconds');
-		const label = `${startTime.format('DD-MM-YY HH:mm:ss')} - ${endTime.format('DD-MM-YY HH:mm:ss')}`;
 		setLogsStore((store) =>
-			setTimeRange(store, { label, type: 'custom', startTime: startTime.toDate(), endTime: endTime.toDate() }),
+			setTimeRange(store, { type: 'custom', startTime: startTime, endTime: endTime }),
 		);
 	}, []);
 
@@ -164,6 +155,7 @@ const EventTimeLineGraph = () => {
 				{hasData ? (
 					<AreaChart
 						h="100%"
+						w="100%"
 						data={graphData}
 						dataKey="minute"
 						series={[{ name: 'events', color: 'indigo.5', label: 'Events' }]}

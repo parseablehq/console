@@ -1,16 +1,69 @@
 .container {
     flex: 1;
-    padding: 0.25rem 1rem;
+    gap: 1rem;
     border-right: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
 }
 
 .menuItemContainer {
-    gap: 0;
+    gap: 0.5rem;
     flex-direction: row;
     align-items: center;
-    /* border: 1px solid; */
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--mantine-color-gray-2);
+    border-radius: 0.45rem;
+    &:hover {
+        background-color: var(--mantine-color-gray-0);
+    }
+
+    &.shrink {
+    justify-content: center;
+
+    }
+
+    &.activeMenuItem {
+        background-color: var(--mantine-color-brandPrimary-4);
+        color: white;
+    }
+}
+
+.menuListContainer {
+    gap: 0.8rem;
+    padding: 0 1.25rem;
+}
+
+.menuIconContainer {
+    background-color: transparent;
+    color: var(--mantine-color-gray-7);
+}
+
+.menuLabel {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.streamDropdownContainer {
+    margin-top: 0.5rem;
+    padding: 0 1.25rem;
+    position: relative;
+}
+
+.sideBarToggleContainer {
+    position: absolute; 
+    left: 93%;
+    top: 30%;
+    align-items: center;
+    justify-content: center;
+    z-index: 999999;
+}
+
+.sideBarToggleIconContainer {
+    padding: 2rem;
+    border-radius: 50%;
+    background-color: white;
+    border: 1px solid var(--mantine-color-gray-2);
     cursor: pointer;
     &:hover {
-
+        
     }
 }

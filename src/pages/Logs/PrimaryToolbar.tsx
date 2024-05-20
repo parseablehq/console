@@ -42,9 +42,9 @@ const PrimaryToolbar = () => {
 
 	return (
 		<Stack className={classes.logsPrimaryToolbar} style={{ height: LOGS_PRIMARY_TOOLBAR_HEIGHT }}>
-			<StreamDropdown />
+			{/* <StreamDropdown /> */}
 			<EventTimeLineGraph />
-			<Stack gap={0} style={{ flexDirection: 'row', alignItems: 'center', marginRight: '0.675rem' }}>
+			{/* <Stack gap={0} style={{ flexDirection: 'row', alignItems: 'center', marginRight: '0.675rem' }}>
 				<IconButton
 					renderIcon={renderLiveTailIcon}
 					onClick={onToggleLiveTail}
@@ -58,7 +58,7 @@ const PrimaryToolbar = () => {
 				{userAccessMap.hasDeleteAccess && (
 					<IconButton renderIcon={renderDeleteIcon} onClick={onToggleDeleteModal} tooltipLabel="Delete" />
 				)}
-			</Stack>
+			</Stack> */}
 		</Stack>
 	);
 };

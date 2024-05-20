@@ -23,7 +23,14 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FC, MutableRefObject, ReactNode, RefObject } from 'react';
 import LogRow from './StaticLogRow';
 import useMountedState from '@/hooks/useMountedState';
-import { IconSelector, IconGripVertical, IconPin, IconPinFilled, IconSettings } from '@tabler/icons-react';
+import {
+	IconSelector,
+	IconGripVertical,
+	IconPin,
+	IconPinFilled,
+	IconSettings,
+	IconDownload,
+} from '@tabler/icons-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import EmptyBox from '@/components/Empty';
 import { RetryBtn } from '@/components/Button/Retry';
@@ -36,6 +43,8 @@ import { HumanizeNumber } from '@/utils/formatBytes';
 import { useLogsStore, logsStoreReducers, LOG_QUERY_LIMITS } from './providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
+import IconButton from '@/components/Button/IconButton';
+import { downloadDataAsCSV, downloadDataAsJson } from '@/utils/exportHelpers';
 
 const skipFields = ['p_metadata', 'p_tags'];
 
@@ -47,6 +56,7 @@ const {
 	setPageAndPageData,
 	getCleanStoreForRefetch,
 	setCleanStoreForStreamChange,
+	makeExportData,
 } = logsStoreReducers;
 
 const TotalCount = (props: { totalCount: number }) => {
@@ -57,6 +67,8 @@ const TotalCount = (props: { totalCount: number }) => {
 	);
 };
 
+const renderExportIcon = () => <IconDownload size={px('1.4rem')} stroke={1.5} />;
+
 const TotalLogsCount = () => {
 	const [{ totalCount, perPage, pageData }] = useLogsStore((store) => store.tableOpts);
 	const displayedCount = _.size(pageData);
@@ -66,7 +78,7 @@ const TotalLogsCount = () => {
 	return (
 		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }} gap={6}>
 			<Text>{`Showing ${showingCount} out of`}</Text>
-			<TotalCount totalCount={totalCount}/>
+			<TotalCount totalCount={totalCount} />
 			<Text>records</Text>
 		</Stack>
 	);
@@ -201,10 +213,12 @@ const LoadingView = () => {
 
 const Footer = () => {
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
-	const { totalPages, currentOffset, currentPage, perPage, totalCount } = tableOpts;
+	const [filteredData] = useLogsStore((store) => store.data.filteredData);
+	const { totalPages, currentOffset, currentPage, perPage, totalCount, headers } = tableOpts;
 	const onPageChange = useCallback((page: number) => {
 		setLogsStore((store) => setPageAndPageData(store, page));
 	}, []);
+	const [currentStream] = useAppStore((store) => store.currentStream);
 	const pagination = usePagination({ total: totalPages ?? 1, initialPage: 1, onChange: onPageChange });
 	const onChangeOffset = useCallback(
 		(key: 'prev' | 'next') => {
@@ -227,8 +241,20 @@ const Footer = () => {
 		[currentOffset],
 	);
 
+	const exportHandler = useCallback(
+		(fileType: string | null) => {
+			const filename = `${currentStream}-logs`;
+			if (fileType === 'CSV') {
+				downloadDataAsCSV(makeExportData(filteredData, headers, 'CSV'), filename);
+			} else if (fileType === 'JSON') {
+				downloadDataAsJson(makeExportData(filteredData, headers, 'JSON'), filename);
+			}
+		},
+		[currentStream],
+	);
+
 	return (
-		<Box className={tableStyles.footerContainer}>
+		<Stack className={tableStyles.footerContainer} gap={0}>
 			<Stack w="100%" justify="center" align="flex-start">
 				<TotalLogsCount />
 			</Stack>
@@ -276,10 +302,25 @@ const Footer = () => {
 					</Pagination.Root>
 				) : null}
 			</Stack>
-			<Stack w="100%" align="flex-end">
+			<Stack w="100%" align="flex-end" style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+				<Menu position="top">
+					<Menu.Target>
+						<div>
+							<IconButton renderIcon={renderExportIcon} />
+						</div>
+					</Menu.Target>
+					<Menu.Dropdown style={{}}>
+						<Menu.Item onClick={() => exportHandler('CSV')} style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
+							CSV
+						</Menu.Item>
+						<Menu.Item onClick={() => exportHandler('JSON')} style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
+							JSON
+						</Menu.Item>
+					</Menu.Dropdown>
+				</Menu>
 				<LimitControl />
 			</Stack>
-		</Box>
+		</Stack>
 	);
 };
 

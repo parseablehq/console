@@ -28,7 +28,6 @@
 	color: #211F1F;
 	border: 1px #e9ecef solid;
     border-radius: rem(8px);
-    margin-right: 0.675rem;
 
     &.iconBtnActive {
         color: white;
