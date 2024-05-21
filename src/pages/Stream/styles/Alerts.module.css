@@ -1,9 +1,8 @@
 .container {
     width: 50%;
-    height: 400px;
     border: 1px solid var(--mantine-color-gray-3);
     border-radius: 0.5rem;
-    margin-top: 4rem;
+    height: 100%;
 }
 
 .headerContainer {

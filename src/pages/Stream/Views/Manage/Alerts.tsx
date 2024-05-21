@@ -1,5 +1,5 @@
 import { Button, Stack, Text, Box, Tooltip, Modal, TextInput, Select, Checkbox, NumberInput } from '@mantine/core';
-import classes from '../../styles/Alerts.module.css';
+import classes from '../../styles/Management.module.css';
 import { TransformedAlert } from '../../providers/LogsProvider';
 import _ from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -527,7 +527,7 @@ const Header = (props: { selectAlert: selectAlert }) => {
 		<Stack className={classes.headerContainer}>
 			<Text className={classes.title}>Alerts</Text>
 			<Box>
-				<Button variant="outline" onClick={() => props.selectAlert('')}>
+				<Button variant="outline" onClick={() => props.selectAlert('')} h={'2rem'} leftSection={<IconPlus stroke={2}/>}>
 					New Alert
 				</Button>
 			</Box>
@@ -583,7 +583,7 @@ const Alerts = () => {
 	}, []);
 
 	return (
-		<Stack className={classes.container} gap={0}>
+		<Stack className={classes.sectionContainer} gap={0}>
 			<AlertsModal open={alertModalOpen} alertName={alertName} onClose={closeModal} />
 			<Header selectAlert={selectAlert} />
 			<AlertList selectAlert={selectAlert} />

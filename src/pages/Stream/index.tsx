@@ -54,11 +54,12 @@ const Logs: FC = () => {
 				w={contentWidth}
 				style={{
 					maxHeight: `calc(100vh - ${maximized ? 0 : PRIMARY_HEADER_HEIGHT}px )`,
+					overflow: 'scroll',
 				}}>
 				<PrimaryToolbar />
 				{currentView === 'explore' && <SecondaryToolbar />}
 				{currentView === 'explore' ? (
-					<StaticLogTable schemaLoading={schemaLoading}/>
+					<StaticLogTable schemaLoading={schemaLoading} />
 				) : currentView === 'live-tail' ? (
 					<LiveLogTable />
 				) : (
