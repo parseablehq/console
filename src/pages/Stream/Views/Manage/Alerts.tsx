@@ -1,12 +1,12 @@
 import { Button, Stack, Text, Box, Tooltip, Modal, TextInput, Select, Checkbox, NumberInput } from '@mantine/core';
-import classes from './styles/Alerts.module.css';
-import { TransformedAlert } from './providers/LogsProvider';
+import classes from '../../styles/Alerts.module.css';
+import { TransformedAlert } from '../../providers/LogsProvider';
 import _ from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { IconEdit, IconInfoCircleFilled, IconPlus, IconTrash } from '@tabler/icons-react';
 import { UseFormReturnType, useForm } from '@mantine/form';
-import { managementStoreReducers } from './providers/ManageProvider';
-import { useStreamStore, ConfigType } from './providers/StreamProvider';
+import { managementStoreReducers } from '../../providers/ManageProvider';
+import { useStreamStore, ConfigType } from '../../providers/StreamProvider';
 
 const {} = managementStoreReducers;
 const defaultColumnTypeConfig = { column: '', operator: '=', value: '', repeats: 1, ignoreCase: false };

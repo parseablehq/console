@@ -2,9 +2,9 @@ import { Box, Chip, CloseButton, Divider, Drawer, Text, px } from '@mantine/core
 import type { FC } from 'react';
 import { Fragment, useMemo, useCallback } from 'react';
 import dayjs from 'dayjs';
-import viewLogStyles from './styles/ViewLogs.module.css';
+import viewLogStyles from '../styles/ViewLogs.module.css';
 import { CodeHighlight } from '@mantine/code-highlight';
-import { useLogsStore, logsStoreReducers } from './providers/LogsProvider';
+import { useLogsStore, logsStoreReducers } from '../providers/LogsProvider';
 
 const { setSelectedLog } = logsStoreReducers;
 

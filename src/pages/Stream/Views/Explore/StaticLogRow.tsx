@@ -3,8 +3,8 @@ import { Box, px } from '@mantine/core';
 import { IconArrowNarrowRight } from '@tabler/icons-react';
 import { FC, Fragment, useCallback } from 'react';
 import { Log } from '@/@types/parseable/api/query';
-import tableStyles from './styles/Logs.module.css';
-import { useLogsStore, logsStoreReducers } from './providers/LogsProvider';
+import tableStyles from '../../styles/Logs.module.css';
+import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 
 const columnsToSkip = ['p_metadata', 'p_tags'];
 

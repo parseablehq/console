@@ -4,10 +4,10 @@ import { lazy } from 'react';
 import SuspensePage from './SuspensePage';
 import MainLayout from '@/layouts/MainLayout';
 import { AppProvider } from '@/layouts/MainLayout/providers/AppProvider';
-import { LogsProvider } from '@/pages/Logs/providers/LogsProvider';
-import { FilterProvider } from '@/pages/Logs/providers/FilterProvider';
-import { ManagementProvider } from '@/pages/Logs/providers/ManageProvider';
-import { StreamProvider } from '@/pages/Logs/providers/StreamProvider';
+import { LogsProvider } from '@/pages/Stream/providers/LogsProvider';
+import { FilterProvider } from '@/pages/Stream/providers/FilterProvider';
+import { ManagementProvider } from '@/pages/Stream/providers/ManageProvider';
+import { StreamProvider } from '@/pages/Stream/providers/StreamProvider';
 
 export const HomeElement: FC = () => {
 	return (
@@ -27,7 +27,7 @@ export const LoginElement: FC = () => {
 	);
 };
 
-const Logs = lazy(() => import('@/pages/Logs'));
+const Logs = lazy(() => import('@/pages/Stream'));
 
 export const LogsElement: FC = () => {
 	return (

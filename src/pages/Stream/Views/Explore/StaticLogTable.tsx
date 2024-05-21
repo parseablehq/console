@@ -34,13 +34,13 @@ import {
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import EmptyBox from '@/components/Empty';
 import { RetryBtn } from '@/components/Button/Retry';
-import Column from './Column';
-import FilterPills from './FilterPills';
+import Column from '../../components/Column';
+import FilterPills from '../../components/FilterPills';
 import { usePagination } from '@mantine/hooks';
-import tableStyles from './styles/Logs.module.css';
+import tableStyles from '../../styles/Logs.module.css';
 import { LOGS_PRIMARY_TOOLBAR_HEIGHT, LOGS_SECONDARY_TOOLBAR_HEIGHT, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 import { HumanizeNumber } from '@/utils/formatBytes';
-import { useLogsStore, logsStoreReducers, LOG_QUERY_LIMITS } from './providers/LogsProvider';
+import { useLogsStore, logsStoreReducers, LOG_QUERY_LIMITS } from '../../providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
 import IconButton from '@/components/Button/IconButton';

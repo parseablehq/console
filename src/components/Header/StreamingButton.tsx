@@ -2,7 +2,7 @@ import { Box, Button } from '@mantine/core';
 import { type FC } from 'react';
 import useMountedState from '@/hooks/useMountedState';
 import classes from './styles/LogQuery.module.css';
-import { logsStoreReducers, useLogsStore } from '@/pages/Logs/providers/LogsProvider';
+import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
 
 const { setLiveTailStatus } = logsStoreReducers;
 

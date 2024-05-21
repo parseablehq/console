@@ -2,7 +2,7 @@ import { parseLogData } from '@/utils';
 import { FC, Fragment } from 'react';
 import { Log } from '@/@types/parseable/api/query';
 import { LogStreamData } from '@/@types/parseable/api/stream';
-import styles from './styles/Logs.module.css'
+import styles from '../../styles/Logs.module.css'
 
 type LogRowProps = {
 	logData: Log[];

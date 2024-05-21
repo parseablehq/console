@@ -5,7 +5,7 @@ import type { FC } from 'react';
 import { useMemo } from 'react';
 import { REFRESH_INTERVALS } from '@/constants/timeConstants';
 import classes from './styles/LogQuery.module.css'
-import { useLogsStore, logsStoreReducers } from '@/pages/Logs/providers/LogsProvider';
+import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsProvider';
 
 const {setRefreshInterval} = logsStoreReducers;
 const RefreshInterval: FC = () => {

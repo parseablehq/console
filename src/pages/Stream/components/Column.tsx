@@ -4,10 +4,9 @@ import { type ChangeEvent, type FC, Fragment, useRef, useCallback, useState, use
 import { IconDotsVertical, IconFilter, IconSearch, IconSortAscending, IconSortDescending } from '@tabler/icons-react';
 import EmptyBox from '@/components/Empty';
 import { Button } from '@mantine/core';
-import { capitalizeFirstLetter } from '@/utils/capitalizeFirstLetter';
-import columnStyles from './styles/Column.module.css';
+import columnStyles from '../styles/Column.module.css';
 import { Text } from '@mantine/core';
-import { useLogsStore, logsStoreReducers } from './providers/LogsProvider';
+import { useLogsStore, logsStoreReducers } from '../providers/LogsProvider';
 import _ from 'lodash';
 
 type SortWidgetProps = {

@@ -1,7 +1,7 @@
 import { Menu, Stack, px } from '@mantine/core';
 import IconButton from '@/components/Button/IconButton';
 import { downloadDataAsCSV, downloadDataAsJson } from '@/utils/exportHelpers';
-import classes from './styles/Toolbar.module.css';
+import classes from '../styles/Toolbar.module.css';
 import { IconDownload, IconMaximize } from '@tabler/icons-react';
 import { LOGS_SECONDARY_TOOLBAR_HEIGHT, STREAM_PRIMARY_TOOLBAR_HEIGHT } from '@/constants/theme';
 import TimeRange from '@/components/Header/TimeRange';
@@ -11,7 +11,7 @@ import StreamingButton from '@/components/Header/StreamingButton';
 import Querier from './Querier';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useCallback, useEffect } from 'react';
-import { useLogsStore, logsStoreReducers } from './providers/LogsProvider';
+import { useLogsStore, logsStoreReducers } from '../providers/LogsProvider';
 import StreamDropdown from '@/components/Header/StreamDropdown';
 import { notifications } from '@mantine/notifications';
 

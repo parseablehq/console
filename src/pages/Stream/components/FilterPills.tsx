@@ -1,8 +1,8 @@
 import { ActionIcon, Badge, Group, rem } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import { type FC, Fragment, useCallback } from 'react';
-import { logsStoreReducers, useLogsStore } from './providers/LogsProvider';
 import _ from 'lodash';
+import { useLogsStore, logsStoreReducers } from '../providers/LogsProvider';
 
 const { setAndFilterData } = logsStoreReducers;
 

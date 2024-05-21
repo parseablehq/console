@@ -3,7 +3,7 @@ import { getQueryLogs, getQueryResult } from '@/api/query';
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
 import { useCallback, useEffect, useRef } from 'react';
-import { useLogsStore, logsStoreReducers } from '@/pages/Logs/providers/LogsProvider';
+import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useQueryResult } from './useQueryResult';
 import _ from 'lodash';

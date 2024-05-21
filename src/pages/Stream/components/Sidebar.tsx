@@ -1,7 +1,7 @@
 import { Stack, Text, ThemeIcon, px } from '@mantine/core';
-import classes from './styles/SideBar.module.css';
+import classes from '../styles/SideBar.module.css';
 import StreamDropdown from '@/components/Header/StreamDropdown';
-import { useLogsStore, logsStoreReducers, currentView } from './providers/LogsProvider';
+import { useLogsStore, logsStoreReducers, currentView } from '../providers/LogsProvider';
 import {
 	IconBolt,
 	IconChevronLeft,

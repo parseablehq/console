@@ -1,7 +1,7 @@
 import { Box, Button, Stack, Switch, TextInput } from "@mantine/core"
-import classes from './styles/Alerts.module.css';
+import classes from '../../styles/Alerts.module.css';
 import { Text } from "@mantine/core";
-import { useLogsStore } from "./providers/LogsProvider";
+import { useLogsStore } from "../../providers/LogsProvider";
 import { useAppStore } from "@/layouts/MainLayout/providers/AppProvider";
 import { useForm } from "@mantine/form";
 import _ from "lodash";

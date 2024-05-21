@@ -8,7 +8,7 @@ import { Fragment, useCallback, useMemo } from 'react';
 import { FIXED_DURATIONS, FIXED_DURATIONS_LABEL } from '@/constants/timeConstants';
 import classes from './styles/LogQuery.module.css';
 import { useOuterClick } from '@/hooks/useOuterClick';
-import { logsStoreReducers, useLogsStore } from '@/pages/Logs/providers/LogsProvider';
+import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
 
 const {setTimeRange, setChangeInterval} = logsStoreReducers;
 type FixedDurations = (typeof FIXED_DURATIONS)[number];

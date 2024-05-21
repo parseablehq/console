@@ -1,8 +1,8 @@
 import { Button, Group, Modal, TextInput } from '@mantine/core';
-import styles from './styles/Logs.module.css';
+import styles from '../styles/Logs.module.css';
 import { useCallback, useState } from 'react';
 import { useLogStream } from '@/hooks/useLogStream';
-import { useLogsStore, logsStoreReducers } from './providers/LogsProvider';
+import { useLogsStore, logsStoreReducers } from '../providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useNavigate } from 'react-router-dom';
 

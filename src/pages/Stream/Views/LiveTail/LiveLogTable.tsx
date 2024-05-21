@@ -2,12 +2,12 @@ import { FC, useEffect, useState } from 'react';
 import { ScrollArea, Table, Box } from '@mantine/core';
 import { Tbody, Thead } from '@/components/Table';
 import LogRow from './LiveLogRow';
-import Column from './Column';
+import Column from '../../components/Column';
 import { useDoGetLiveTail } from '@/hooks/useDoGetLiveTail';
 import EmptyBox from '@/components/Empty';
-import styles from './styles/Logs.module.css';
+import styles from '../../styles/Logs.module.css';
 import { LOGS_PRIMARY_TOOLBAR_HEIGHT, LOGS_SECONDARY_TOOLBAR_HEIGHT, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
-import { useLogsStore, logsStoreReducers } from './providers/LogsProvider';
+import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
 

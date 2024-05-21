@@ -4,8 +4,8 @@ import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
 import { Field } from '@/@types/parseable/dataType';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { useLogsStore, logsStoreReducers } from '@/pages/Logs/providers/LogsProvider';
-import { useStreamStore, streamStoreReducers } from '@/pages/Logs/providers/StreamProvider';
+import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsProvider';
+import { useStreamStore, streamStoreReducers } from '@/pages/Stream/providers/StreamProvider';
 
 const {setStreamSchema} = streamStoreReducers;
 

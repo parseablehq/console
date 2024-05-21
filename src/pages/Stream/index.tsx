@@ -1,22 +1,21 @@
 import { Box, Stack, Text } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect, useMemo } from 'react';
-import StaticLogTable from './StaticLogTable';
-import LiveLogTable from './LiveLogTable';
-import ViewLog from './ViewLog';
-import DeleteStreamModal from './DeleteStreamModal';
-import AlertsModal from './AlertsModal';
-import RententionModal from './RetentionModal';
+import StaticLogTable from './Views/Explore/StaticLogTable'
+import LiveLogTable from './Views/LiveTail/LiveLogTable';
+import ViewLog from './components/ViewLog';
+import DeleteStreamModal from './components/DeleteStreamModal';
+import RententionModal from './components/RetentionModal';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useLogsStore } from './providers/LogsProvider';
-import SideBar from './Sidebar';
-import Management from './Management';
+import SideBar from './components/Sidebar';
+import Management from './Views/Manage/Management';
 import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useStreamStore, streamStoreReducers, currentView } from './providers/StreamProvider';
 import _ from 'lodash';
-import SecondaryToolbar from './SecondaryToolbar';
+import SecondaryToolbar from './components/SecondaryToolbar';
 import { LOGS_PRIMARY_TOOLBAR_HEIGHT, LOGS_SECONDARY_TOOLBAR_HEIGHT, PRIMARY_HEADER_HEIGHT, STREAM_PRIMARY_TOOLBAR_HEIGHT, STREAM_SECONDARY_TOOLBAR_HRIGHT } from '@/constants/theme';
-import PrimaryToolbar from './PrimaryToolbar';
+import PrimaryToolbar from './components/PrimaryToolbar';
 
 const {setCleanStoreForStreamChange} = streamStoreReducers;
 
@@ -44,7 +43,6 @@ const Logs: FC = () => {
 	return (
 		<Box style={{ flex: 1, display: 'flex', position: 'relative', flexDirection: 'row', width: '100%' }}>
 			<DeleteStreamModal />
-			<AlertsModal />
 			<RententionModal />
 			<ViewLog />
 			<Stack w={sideBarWidth} miw={100}>

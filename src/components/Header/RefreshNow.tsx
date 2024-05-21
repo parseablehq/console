@@ -2,7 +2,7 @@ import { Button, Tooltip, px } from '@mantine/core';
 import { IconReload } from '@tabler/icons-react';
 import { useCallback, type FC } from 'react';
 import classes from './styles/LogQuery.module.css';
-import { useLogsStore, logsStoreReducers } from '@/pages/Logs/providers/LogsProvider';
+import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsProvider';
 
 const { getCleanStoreForRefetch } = logsStoreReducers;
 

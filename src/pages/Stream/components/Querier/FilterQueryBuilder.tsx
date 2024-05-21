@@ -12,7 +12,7 @@ import {
 	ActionIcon,
 } from '@mantine/core';
 import { IconFilter, IconPlus } from '@tabler/icons-react';
-import classes from './styles/Querier.module.css';
+import classes from '../../styles/Querier.module.css';
 import { Text } from '@mantine/core';
 export const FilterPlaceholder = () => {
 	return (
@@ -24,8 +24,8 @@ export const FilterPlaceholder = () => {
 };
 
 import { useCallback, useEffect } from 'react';
-import { useFilterStore, filterStoreReducers, operatorLabelMap } from './providers/FilterProvider';
-import { useLogsStore } from './providers/LogsProvider';
+import { useFilterStore, filterStoreReducers, operatorLabelMap } from '../../providers/FilterProvider';
+import { useLogsStore } from '../../providers/LogsProvider';
 import {
 	noValueOperators,
 	textFieldOperators,
@@ -33,7 +33,7 @@ import {
 	RuleGroupTypeOverride,
 	RuleTypeOverride,
 	Combinator,
-} from './providers/FilterProvider';
+} from '../../providers/FilterProvider';
 
 type RuleSetProps = {
 	ruleSet: RuleGroupTypeOverride;

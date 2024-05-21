@@ -1,11 +1,11 @@
 import { Button, Modal, Stack, Switch, TextInput } from '@mantine/core';
 import { Text } from '@mantine/core';
-import classes from './styles/Logs.module.css';
+import classes from '../styles/Logs.module.css';
 import { useCallback, useEffect } from 'react';
 import { useCacheToggle } from '@/hooks/useCacheToggle';
 import { useGetRetention, useRetentionEditor } from '@/hooks/useRetentionEditor';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { useLogsStore, logsStoreReducers } from './providers/LogsProvider';
+import { useLogsStore, logsStoreReducers } from '../providers/LogsProvider';
 import { useForm } from '@mantine/form';
 import _ from 'lodash';
 

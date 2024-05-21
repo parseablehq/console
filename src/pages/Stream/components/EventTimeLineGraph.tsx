@@ -1,11 +1,11 @@
 import { Paper, Skeleton, Stack, Text } from '@mantine/core';
-import classes from './styles/EventTimeLineGraph.module.css';
+import classes from '../styles/EventTimeLineGraph.module.css';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import { useCallback, useEffect, useMemo } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import { ChartTooltipProps, AreaChart } from '@mantine/charts';
 import { HumanizeNumber } from '@/utils/formatBytes';
-import { logsStoreReducers, useLogsStore } from './providers/LogsProvider';
+import { logsStoreReducers, useLogsStore } from '../providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 const { setTimeRange } = logsStoreReducers;
 

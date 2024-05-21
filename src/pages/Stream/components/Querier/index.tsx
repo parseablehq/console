@@ -1,14 +1,14 @@
 import { Box, Group, Menu, Modal, Stack, px } from '@mantine/core';
 import { ToggleButton } from '@/components/Button/ToggleButton';
 import { IconChevronDown, IconCodeCircle, IconFilter } from '@tabler/icons-react';
-import classes from './styles/Querier.module.css';
+import classes from '../../styles/Querier.module.css';
 import { Text } from '@mantine/core';
 import { FilterQueryBuilder, QueryPills } from './FilterQueryBuilder';
 import { AppliedSQLQuery } from './QueryEditor';
 import QueryCodeEditor from './QueryCodeEditor';
-import { useLogsStore, logsStoreReducers } from './providers/LogsProvider';
+import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { useCallback, useEffect, useRef } from 'react';
-import { filterStoreReducers, noValueOperators, useFilterStore } from './providers/FilterProvider';
+import { filterStoreReducers, noValueOperators, useFilterStore } from '../../providers/FilterProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const { setFields, parseQuery, storeAppliedQuery, resetFilters, toggleSubmitBtn } = filterStoreReducers;

@@ -1,16 +1,16 @@
 import React, { FC, MutableRefObject, useCallback, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { Box, Button, Flex, ScrollArea, Stack, Text, TextInput } from '@mantine/core';
-import { ErrorMarker, errChecker } from './ErrorMarker';
+import { ErrorMarker, errChecker } from '../ErrorMarker';
 import useMountedState from '@/hooks/useMountedState';
 import { notify } from '@/utils/notification';
 import { usePostLLM } from '@/hooks/usePostLLM';
 import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 import { Field } from '@/@types/parseable/dataType';
-import queryCodeStyles from './styles/QueryCode.module.css';
+import queryCodeStyles from '../../styles/QueryCode.module.css';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { useFilterStore } from './providers/FilterProvider';
-import { LOAD_LIMIT, useLogsStore } from './providers/LogsProvider';
+import { useFilterStore } from '../../providers/FilterProvider';
+import { LOAD_LIMIT, useLogsStore } from '../../providers/LogsProvider';
 
 const genColumnConfig = (fields: Field[]) => {
 	const columnConfig = { leftColumns: [], rightColumns: [] };
