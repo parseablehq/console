@@ -83,7 +83,7 @@ type TimeRange = {
 	type: 'fixed' | 'custom';
 	label: string;
 	interval: number;
-	changeInterval: number;
+	shiftInterval: number;
 };
 
 enum SortOrder {
@@ -124,7 +124,7 @@ const getDefaultTimeRange = (duration: FixedDuration = DEFAULT_FIXED_DURATIONS) 
 		type: 'fixed' as 'fixed',
 		label: `${startTimeLabel} - ${endTimeLabel}`,
 		interval: milliseconds,
-		changeInterval: 1,
+		shiftInterval: 1,
 	};
 };
 
@@ -218,7 +218,7 @@ type LogsStoreReducers = {
 		store: LogsStore,
 		payload: { startTime: dayjs.Dayjs; endTime: dayjs.Dayjs; type: 'fixed' | 'custom' },
 	) => ReducerOutput;
-	setChangeInterval: (store: LogsStore, interval: number) => ReducerOutput;
+	setshiftInterval: (store: LogsStore, interval: number) => ReducerOutput;
 	// resetTimeRange: (store: LogsStore) => ReducerOutput;
 	deleteFilterItem: (store: LogsStore, key: string) => ReducerOutput;
 	addFilterItem: (store: LogsStore, key: string, value: string[]) => ReducerOutput;
@@ -326,22 +326,28 @@ const setSelectedLog = (_store: LogsStore, log: Log | null) => {
 };
 
 // reducers
-const setTimeRange = (store: LogsStore, payload: { startTime: dayjs.Dayjs, endTime: Dayjs , type: 'fixed' | 'custom'}) => {
-	const {startTime, endTime, type} = payload
+const setTimeRange = (
+	store: LogsStore,
+	payload: { startTime: dayjs.Dayjs; endTime: Dayjs; type: 'fixed' | 'custom' },
+) => {
+	const { startTime, endTime, type } = payload;
 	const label = `${startTime.format('HH:mm A DD MMM YY')} to ${endTime.format('HH:mm A DD MMM YY')}`;
 	const interval = endTime.diff(startTime, 'milliseconds');
-	return { ...getCleanStoreForRefetch(store), timeRange: { ...store.timeRange, label, interval, type } };
+	return {
+		...getCleanStoreForRefetch(store),
+		timeRange: { ...store.timeRange, startTime: startTime.toDate(), endTime: endTime.toDate(), label, interval, type },
+	};
 };
 
-const setChangeInterval = (store: LogsStore, interval: number) => {
-	const {timeRange} = store;
+const setshiftInterval = (store: LogsStore, interval: number) => {
+	const { timeRange } = store;
 	return {
 		timeRange: {
 			...timeRange,
-			changeInterval: interval
-		}
-	}
-}
+			shiftInterval: interval,
+		},
+	};
+};
 
 // const resetTimeRange = (store: LogsStore) => {
 // 	const now = dayjs();
@@ -741,7 +747,7 @@ const toggleCurrentView = (_store: LogsStore, currentView: currentView) => {
 
 const logsStoreReducers: LogsStoreReducers = {
 	setTimeRange,
-	setChangeInterval,
+	setshiftInterval,
 	// resetTimeRange,
 	deleteFilterItem,
 	addFilterItem,

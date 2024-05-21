@@ -10,7 +10,7 @@ import classes from './styles/LogQuery.module.css';
 import { useOuterClick } from '@/hooks/useOuterClick';
 import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
 
-const {setTimeRange, setChangeInterval} = logsStoreReducers;
+const {setTimeRange, setshiftInterval} = logsStoreReducers;
 type FixedDurations = (typeof FIXED_DURATIONS)[number];
 
 const {
@@ -20,12 +20,12 @@ const {
 	fixedRangeBtn,
 	fixedRangeBtnSelected,
 	customRangeContainer,
-	changeIntervalContainer
+	shiftIntervalContainer
 } = classes;
 
 const TimeRange: FC = () => {
 	const [timeRange, setLogsStore] = useLogsStore(store => store.timeRange);
-	const {label, changeInterval, interval, startTime, endTime} = timeRange;
+	const {label, shiftInterval, interval, startTime, endTime} = timeRange;
 	const handleOuterClick = useCallback((event: any) => {
 		const targetClassNames:  string[] = event.target?.classList || [];
 		const maybeSubmitBtnClassNames: string[] = event.target.closest('button')?.classList || [];
@@ -58,28 +58,28 @@ const TimeRange: FC = () => {
 		setOpened(false);
 	};
 
-	const onSetChangeInterval = useCallback((val: number | string) => {
+	const onSetShiftInterval = useCallback((val: number | string) => {
 		if (typeof val === 'number') {
-			setLogsStore(store => setChangeInterval(store, val))
+			setLogsStore(store => setshiftInterval(store, val))
 		}
 	}, [])
 
-	const shiftTimeRange = useCallback((direction: 'left' | 'right') => {
-		const changeInMs = changeInterval * 60 * 1000;
+	const shiftTimeRange = (direction: 'left' | 'right') => {
+		const changeInMs = shiftInterval * 60 * 1000;
 		if (direction === 'left') {
 			const newStartTime = new Date(startTime.getTime() - changeInMs);
-			const newEndTime = new Date(newStartTime.getTime() + interval);
+			const newEndTime = new Date(endTime.getTime() - changeInMs);
 			setLogsStore((store) =>
 				setTimeRange(store, { startTime: dayjs(newStartTime), endTime: dayjs(newEndTime), type: 'custom' }),
 			);
 		} else {
-			const newStartTime = new Date(endTime.getTime());
-			const newEndTime = new Date(newStartTime.getTime() + interval);
+			const newStartTime = new Date(startTime.getTime() + changeInMs);
+			const newEndTime = new Date(endTime.getTime() + changeInMs);
 			setLogsStore((store) =>
 				setTimeRange(store, { startTime: dayjs(newStartTime), endTime: dayjs(newEndTime), type: 'custom' }),
 			);
 		}
-	}, [timeRange])
+	}
 
 	return (
 		<Menu withArrow position="top" opened={opened}>
@@ -118,11 +118,11 @@ const TimeRange: FC = () => {
 							})}
 						</Box>
 						<Stack className={customRangeContainer}>
-							<Stack className={changeIntervalContainer}>
-								<Text className={classes.changeIntervalLabel} ta="center">
+							<Stack className={shiftIntervalContainer}>
+								<Text className={classes.shiftIntervalLabel} ta="center">
 									Jump Interval
 								</Text>
-								<NumberInput w={100} min={1} value={changeInterval} onChange={onSetChangeInterval} />
+								<NumberInput w={100} min={1} value={shiftInterval} onChange={onSetShiftInterval} />
 							</Stack>
 							<Divider mt={3} />
 							<CustomTimeRange setOpened={setOpened} />
