@@ -92,7 +92,6 @@ const Navbar: FC = () => {
 	const { getUserRolesData, getUserRolesMutation } = useUser();
 	const navigateToPage = useCallback(
 		(route: string) => {
-			console.log(route, streamName, view)
 			if (route === STREAM_ROUTE) {
 				if (_.isEmpty(userSpecificStreams) || _.isNil(userSpecificStreams)) return navigate('/');
 

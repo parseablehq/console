@@ -201,9 +201,7 @@ type LogsStore = {
 		filters: Record<string, string[]>;
 	};
 
-	data: LogQueryData & {
-		schema: LogStreamSchemaData | null;
-	};
+	data: LogQueryData;
 
 	retention: {
 		action: 'delete';
@@ -216,7 +214,10 @@ type LogsStore = {
 };
 
 type LogsStoreReducers = {
-	setTimeRange: (store: LogsStore, payload: { startTime: dayjs.Dayjs, endTime: dayjs.Dayjs, type: 'fixed' | 'custom' }) => ReducerOutput;
+	setTimeRange: (
+		store: LogsStore,
+		payload: { startTime: dayjs.Dayjs; endTime: dayjs.Dayjs; type: 'fixed' | 'custom' },
+	) => ReducerOutput;
 	setChangeInterval: (store: LogsStore, interval: number) => ReducerOutput;
 	// resetTimeRange: (store: LogsStore) => ReducerOutput;
 	deleteFilterItem: (store: LogsStore, key: string) => ReducerOutput;
@@ -252,14 +253,13 @@ type LogsStoreReducers = {
 	getCleanStoreForRefetch: (store: LogsStore) => ReducerOutput;
 
 	// data reducers
-	setData: (store: LogsStore, data: Log[]) => ReducerOutput;
+	setData: (store: LogsStore, data: Log[], schema: LogStreamSchemaData | null) => ReducerOutput;
 	setStreamSchema: (store: LogsStore, schema: LogStreamSchemaData) => ReducerOutput;
 	applyCustomQuery: (store: LogsStore, query: string, mode: 'filters' | 'sql') => ReducerOutput;
 	getUniqueValues: (data: Log[], key: string) => string[];
 	makeExportData: (data: Log[], headers: string[], type: string) => Log[];
 	setRetention: (store: LogsStore, retention: { description: string; duration: string }) => ReducerOutput;
-	setAlerts: (store: LogsStore, alertsResponse: AlertsResponse) => ReducerOutput;
-	transformAlerts: (alerts: TransformedAlert[]) => Alert[];
+	setTableHeaders: (store: LogsStore, schema: LogStreamSchemaData) => ReducerOutput;
 
 	setCleanStoreForStreamChange: (store: LogsStore) => ReducerOutput;
 };
@@ -300,7 +300,6 @@ const initialState: LogsStore = {
 	data: {
 		rawData: [],
 		filteredData: [],
-		schema: null,
 	},
 
 	retention: {
@@ -480,23 +479,31 @@ const filterAndSortData = (
 	return sortedData;
 };
 
-const setData = (store: LogsStore, data: Log[]) => {
+const setTableHeaders = (store: LogsStore, schema: LogStreamSchemaData) => {
 	const { data: existingData, custQuerySearchState, tableOpts } = store;
+	const {filteredData} = existingData;
+	const newHeaders =
+	filteredData && custQuerySearchState.isQuerySearchActive
+		? makeHeadersfromData(filteredData)
+		: makeHeadersFromSchema(schema);
+	return {
+		tableOpts: {
+			...tableOpts,
+			headers: newHeaders
+		}
+	}
+}
+
+const setData = (store: LogsStore, data: Log[]) => {
+	const { data: existingData,  tableOpts } = store;
 	const currentPage = tableOpts.currentPage === 0 ? 1 : tableOpts.currentPage;
 	const filteredData = filterAndSortData(tableOpts, data);
 	const newPageSlice = filteredData && getPageSlice(currentPage, tableOpts.perPage, filteredData);
-
-	// only if pageoffset is 1
-	const newHeaders =
-		filteredData && existingData.schema && custQuerySearchState.isQuerySearchActive
-			? makeHeadersfromData(filteredData)
-			: makeHeadersFromSchema(existingData.schema);
 
 	return {
 		tableOpts: {
 			...store.tableOpts,
 			...(newPageSlice ? { pageData: newPageSlice } : {}),
-			...(newHeaders ? { headers: newHeaders } : {}),
 			currentPage,
 			totalPages: getTotalPages(filteredData, tableOpts.perPage),
 		},
@@ -582,7 +589,6 @@ const getCleanStoreForRefetch = (store: LogsStore) => {
 			displayedCount: 0,
 			currentPage: 0,
 			currentOffset: 0,
-			headers: [],
 			totalPages: 0,
 		},
 		data: {
@@ -608,7 +614,6 @@ const setCleanStoreForStreamChange = (store: LogsStore) => {
 			displayedCount: 0,
 			currentPage: 0,
 			currentOffset: 0,
-			headers: [],
 			totalPages: 0,
 		},
 		...updatedTimeRange,
@@ -722,85 +727,6 @@ const operatorLabelMap = {
 	regex: '~',
 };
 
-// transforms alerts data for forms
-const santizeAlerts = (alerts: Alert[]): TransformedAlert[] => {
-	// @ts-ignore
-	return _.reduce(
-		alerts,
-		// @ts-ignore
-		(acc: Alert[], alert: Alert) => {
-			const { targets = [], rule } = alert;
-			const updatedRule = (() => {
-				const { type, config } = rule;
-				if (type === 'column') {
-					const updatedOperator = _.get(operatorLabelMap, config.operator, config.operator);
-					return {
-						type,
-						config: {
-							...config,
-							operator: updatedOperator,
-						},
-					};
-				} else {
-					return rule;
-				}
-			})();
-			const updatedTargets = _.map(targets, (target) => {
-				if (target.type === 'webhook') {
-					const { headers = {} } = target;
-					const headersAsArray = _.map(headers, (v, k) => ({ header: k, value: v }));
-					return { ...target, headers: headersAsArray };
-				} else {
-					return target;
-				}
-			});
-
-			return [...acc, { ...alert, targets: updatedTargets, rule: updatedRule }];
-		},
-		[] as TransformedAlert[],
-	);
-};
-
-const transformAlerts = (alerts: TransformedAlert[]): Alert[] => {
-	return _.reduce(
-		alerts,
-		// @ts-ignore
-		(acc: Alert[], alert) => {
-			const { targets = [] } = alert;
-			const updatedTargets = _.map(targets, (target) => {
-				if (target.type === 'webhook') {
-					const { headers = {}, endpoint, skip_tls_check, repeat, type } = target;
-					const transformedHeaders: { [key: string]: string } = {};
-					if (_.isArray(headers)) {
-						_.map(headers, (h: { header: string; value: string }) => {
-							transformedHeaders[h.header] = h.value;
-						});
-					}
-					return { type, endpoint, skip_tls_check, repeat, headers: transformedHeaders };
-				} else if (target.type === 'slack') {
-					const { repeat, endpoint, type } = target;
-					return { repeat, endpoint, type };
-				} else if (target.type === 'alertmanager') {
-					const { endpoint, skip_tls_check, repeat, type, username, password } = target;
-					return { type, endpoint, skip_tls_check, repeat, username, password };
-				} else {
-					return target;
-				}
-			});
-			return [...acc, { ...alert, targets: updatedTargets }];
-		},
-		[] as Alert[],
-	);
-};
-
-const setAlerts = (_store: LogsStore, alertsResponse: AlertsResponse) => {
-	const { alerts } = alertsResponse;
-	const sanitizedAlerts: TransformedAlert[] = santizeAlerts(alerts);
-	return {
-		alerts: { ...alertsResponse, alerts: sanitizedAlerts },
-	};
-};
-
 const toggleSideBar = (store: LogsStore) => {
 	return {
 		sideBarOpen: !store.sideBarOpen
@@ -850,11 +776,10 @@ const logsStoreReducers: LogsStoreReducers = {
 	setSelectedLog,
 	makeExportData,
 	setRetention,
-	setAlerts,
-	transformAlerts,
 	setCleanStoreForStreamChange,
 	toggleSideBar,
-	toggleCurrentView
+	toggleCurrentView,
+	setTableHeaders
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };

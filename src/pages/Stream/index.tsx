@@ -7,7 +7,7 @@ import ViewLog from './components/ViewLog';
 import DeleteStreamModal from './components/DeleteStreamModal';
 import RententionModal from './components/RetentionModal';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { useLogsStore } from './providers/LogsProvider';
+import { useLogsStore, logsStoreReducers } from './providers/LogsProvider';
 import SideBar from './components/Sidebar';
 import Management from './Views/Manage/Management';
 import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
@@ -17,12 +17,12 @@ import SecondaryToolbar from './components/SecondaryToolbar';
 import { LOGS_PRIMARY_TOOLBAR_HEIGHT, LOGS_SECONDARY_TOOLBAR_HEIGHT, PRIMARY_HEADER_HEIGHT, STREAM_PRIMARY_TOOLBAR_HEIGHT, STREAM_SECONDARY_TOOLBAR_HRIGHT } from '@/constants/theme';
 import PrimaryToolbar from './components/PrimaryToolbar';
 
-const {setCleanStoreForStreamChange} = streamStoreReducers;
+const {setCleanStoreForStreamChange: setCleanStreamStoreForStreamChange } = streamStoreReducers;
 
 const Logs: FC = () => {
 	useDocumentTitle('Parseable | Logs');
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const [currentView] = useLogsStore((store) => store.currentView);
+	const [currentView, setLogsStore] = useLogsStore((store) => store.currentView);
 	const [maximized] = useAppStore((store) => store.maximized);
 	const [sideBarOpen] = useLogsStore((store) => store.sideBarOpen);
 	const [, setStreamStore] = useStreamStore((store) => null);
@@ -31,12 +31,13 @@ const Logs: FC = () => {
 
 	useEffect(() => {
 		if (!_.isEmpty(currentStream)) {
-			setStreamStore(setCleanStoreForStreamChange);
+			setStreamStore(setCleanStreamStoreForStreamChange);
 			getDataSchema();
 		}
 	}, [currentStream]);
 
 	if (!currentStream) return null;
+
 	const sideBarWidth = sideBarOpen ? '13%' : '5%';
 	const contentWidth = sideBarOpen ? '87%' : '95%';
 
@@ -45,7 +46,7 @@ const Logs: FC = () => {
 			<DeleteStreamModal />
 			<RententionModal />
 			<ViewLog />
-			<Stack w={sideBarWidth} miw={100}>
+			<Stack w={sideBarWidth}>
 				<SideBar open={sideBarOpen} />
 			</Stack>
 			<Stack
@@ -57,7 +58,7 @@ const Logs: FC = () => {
 				<PrimaryToolbar />
 				{currentView === 'explore' && <SecondaryToolbar />}
 				{currentView === 'explore' ? (
-					<StaticLogTable />
+					<StaticLogTable schemaLoading={schemaLoading}/>
 				) : currentView === 'live-tail' ? (
 					<LiveLogTable />
 				) : (

@@ -27,16 +27,16 @@ export const LoginElement: FC = () => {
 	);
 };
 
-const Logs = lazy(() => import('@/pages/Stream'));
+const Stream = lazy(() => import('@/pages/Stream'));
 
-export const LogsElement: FC = () => {
+export const StreamElement: FC = () => {
 	return (
 		<SuspensePage>
 			<StreamProvider>
 				<LogsProvider>
 					<FilterProvider>
 						<ManagementProvider>
-							<Logs />
+							<Stream />
 						</ManagementProvider>
 					</FilterProvider>
 				</LogsProvider>

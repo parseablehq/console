@@ -7,6 +7,7 @@ import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsPr
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useQueryResult } from './useQueryResult';
 import _ from 'lodash';
+import { useStreamStore } from '@/pages/Stream/providers/StreamProvider';
 
 const { setData, setTotalCount } = logsStoreReducers;
 
@@ -39,6 +40,7 @@ export const useQueryLogs = () => {
 		},
 	});
 	const [currentStream] = useAppStore((store) => store.currentStream);
+	const [schema] = useStreamStore(store => store.schema)
 	const [
 		{
 			timeRange,
@@ -89,15 +91,15 @@ export const useQueryLogs = () => {
 			const data = logsQueryRes.data;
 
 			if (logsQueryRes.status === StatusCodes.OK) {
-				return setLogsStore((store) => setData(store, data));
+				return setLogsStore((store) => setData(store, data, schema));
 			}
 			if (typeof data === 'string' && data.includes('Stream is not initialized yet')) {
-				return setLogsStore((store) => setData(store, []));
+				return setLogsStore((store) => setData(store, [], schema));
 			}
 			setError('Failed to query log');
 		} catch {
 			setError('Failed to query log');
-			return setLogsStore((store) => setData(store, []));
+			return setLogsStore((store) => setData(store, [], schema));
 		} finally {
 			setLoading(false);
 		}

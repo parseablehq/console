@@ -29,7 +29,6 @@ const StreamDropdown = () => {
 			limit={20}
 			value={valueRef.current}
 			classNames={{ input: classes.streamInput, description: classes.streamSelectDescription }}
-			// description="Stream"
 			className={classes.streamSelect}
 			onChange={handleChange}
 			data={userSpecificStreams?.map((stream: any) => ({ value: stream.name, label: stream.name })) ?? []}

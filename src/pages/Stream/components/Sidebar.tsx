@@ -28,9 +28,9 @@ const renderlogsIcon = (isactive: boolean) => {
 			viewBox="0 0 24 24"
 			fill="none"
 			stroke={isactive ? 'white' : 'currentColor'}
-			stroke-width="2"
-			stroke-linecap="round"
-			stroke-linejoin="round">
+			strokeWidth="2"
+			strokeLinecap="round"
+			strokeLinejoin="round">
 			<path stroke="none" d="M0 0h24v24H0z" fill="none" />
 			<path d="M4 12h.01" />
 			<path d="M4 6h.01" />

@@ -294,7 +294,7 @@ const Footer = () => {
 					</Pagination.Root>
 				) : null}
 			</Stack>
-			<Stack w="100%" align="flex-end" style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+			<Stack w="100%" align="flex-end" style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
 				<Menu position="top">
 					<Menu.Target>
 						<div>
@@ -341,30 +341,26 @@ interface SectionRefs {
 	rightSectionRef: HTMLDivRef;
 	pinnedContainerRef: HTMLDivRef;
 }
-const LogTable = () => {
+
+const LogTable = (props: { schemaLoading: boolean }) => {
 	const [containerRefs, _setContainerRefs] = useState<SectionRefs>({
 		activeSectionRef: useRef<'left' | 'right'>('left'),
 		leftSectionRef: useRef<HTMLDivElement>(null),
 		rightSectionRef: useRef<HTMLDivElement>(null),
 		pinnedContainerRef: useRef<HTMLDivElement>(null),
 	});
-	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [maximized] = useAppStore((store) => store.maximized);
+	const [currentStream] = useAppStore((store) => store.currentStream);
 	const primaryHeaderHeight = !maximized
 		? PRIMARY_HEADER_HEIGHT + LOGS_PRIMARY_TOOLBAR_HEIGHT + LOGS_SECONDARY_TOOLBAR_HEIGHT
 		: 0;
 
-	const { getDataSchema, loading: schemaLoading, error: logStreamSchemaError } = useGetLogStreamSchema();
 	const { getQueryData, loading: logsLoading, error: logsError, fetchCount } = useQueryLogs();
-
-	const [currentPage, setLogsStore] = useLogsStore((store) => store.tableOpts.currentPage);
-	const [currentOffset] = useLogsStore((store) => store.tableOpts.currentOffset);
+	const [currentPage] = useLogsStore((store) => store.tableOpts.currentPage);
+	const [currentOffset, setLogsStore] = useLogsStore((store) => store.tableOpts.currentOffset);
 
 	useEffect(() => {
-		if (!_.isEmpty(currentStream)) {
-			setLogsStore(setCleanStoreForStreamChange);
-			getDataSchema();
-		}
+		setLogsStore(setCleanStoreForStreamChange);
 	}, [currentStream]);
 
 	useEffect(() => {
@@ -377,8 +373,9 @@ const LogTable = () => {
 	}, [currentPage, currentOffset]);
 
 	const [pageData] = useLogsStore((store) => store.tableOpts.pageData);
-	const hasContentLoaded = !schemaLoading && !logsLoading;
-	const errorMessage = logStreamSchemaError || logsError;
+	const [headers] = useLogsStore((store) => store.tableOpts.headers);
+	const hasContentLoaded = props.schemaLoading === false && logsLoading === false && headers.length !== 0;
+	const errorMessage = logsError;
 	const hasNoData = hasContentLoaded && !errorMessage && pageData.length === 0;
 	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
 

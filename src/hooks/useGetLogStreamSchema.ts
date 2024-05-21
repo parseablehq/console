@@ -8,6 +8,7 @@ import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsPr
 import { useStreamStore, streamStoreReducers } from '@/pages/Stream/providers/StreamProvider';
 
 const {setStreamSchema} = streamStoreReducers;
+const {setTableHeaders} = logsStoreReducers;
 
 export const useGetLogStreamSchema = () => {
 	const [data, setData] = useMountedState<LogStreamSchemaData | null>(null);
@@ -31,6 +32,7 @@ export const useGetLogStreamSchema = () => {
 
 					setData(schema);
 					setStreamStore(store => setStreamSchema(store, schema))
+					setLogsStore(store => setTableHeaders(store, schema))
 					break;
 				}
 				default: {

@@ -2,7 +2,6 @@ import {
 	ALL_ROUTE,
 	HOME_ROUTE,
 	LOGIN_ROUTE,
-	EXPLORE_ROUTE,
 	OIDC_NOT_CONFIGURED_ROUTE,
 	USERS_MANAGEMENT_ROUTE,
 	CLUSTER_ROUTE,
@@ -13,7 +12,7 @@ import NotFound from '@/pages/Errors/NotFound';
 import type { FC } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
-import { HomeElement, LoginElement, LogsElement, MainLayoutElement, SystemsElement, UsersElement } from './elements';
+import { HomeElement, LoginElement, StreamElement, MainLayoutElement, SystemsElement, UsersElement } from './elements';
 import AccessSpecificRoute from './AccessSpecificRoute';
 import OIDCNotConFigured from '@/pages/Errors/OIDC';
 
@@ -28,7 +27,7 @@ const AppRouter: FC = () => {
 							<Route path={USERS_MANAGEMENT_ROUTE} element={<UsersElement />} />
 						</Route>
 						<Route element={<AccessSpecificRoute accessRequired={['Query', 'GetSchema']} />}>
-							<Route path={STREAM_ROUTE} element={<LogsElement />} />
+							<Route path={STREAM_ROUTE} element={<StreamElement />} />
 						</Route>
 						<Route element={<AccessSpecificRoute accessRequired={['Cluster']} />}>
 							<Route path={CLUSTER_ROUTE} element={<SystemsElement />} />
