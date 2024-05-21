@@ -17,8 +17,7 @@
     }
 
     &.shrink {
-    justify-content: center;
-
+        justify-content: center;
     }
 
     &.activeMenuItem {
@@ -63,7 +62,4 @@
     background-color: white;
     border: 1px solid var(--mantine-color-gray-2);
     cursor: pointer;
-    &:hover {
-        
-    }
 }

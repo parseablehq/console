@@ -90,15 +90,7 @@ const TableContainer = (props: { children: ReactNode }) => {
 		? PRIMARY_HEADER_HEIGHT + LOGS_PRIMARY_TOOLBAR_HEIGHT + LOGS_SECONDARY_TOOLBAR_HEIGHT
 		: 0;
 
-	return (
-		<Box
-			className={tableStyles.container}
-			style={{
-				maxHeight: `calc(100vh - ${primaryHeaderHeight}px )`,
-			}}>
-			{props.children}
-		</Box>
-	);
+	return <Box className={tableStyles.container}>{props.children}</Box>;
 };
 
 const PinnedColumns = (props: { containerRefs: SectionRefs }) => {

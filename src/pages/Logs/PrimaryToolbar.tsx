@@ -1,64 +1,66 @@
-import { Stack, px } from '@mantine/core';
-import StreamDropdown from '@/components/Header/StreamDropdown';
+import { Menu, Stack, px } from '@mantine/core';
 import IconButton from '@/components/Button/IconButton';
+import { downloadDataAsCSV, downloadDataAsJson } from '@/utils/exportHelpers';
 import classes from './styles/Toolbar.module.css';
-import { IconBolt, IconExclamationCircle, IconSettings, IconTrash } from '@tabler/icons-react';
-import { LOGS_PRIMARY_TOOLBAR_HEIGHT } from '@/constants/theme';
-import EventTimeLineGraph from './EventTimeLineGraph';
-import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { IconDownload, IconMaximize } from '@tabler/icons-react';
+import { LOGS_SECONDARY_TOOLBAR_HEIGHT, STREAM_PRIMARY_TOOLBAR_HEIGHT } from '@/constants/theme';
+import TimeRange from '@/components/Header/TimeRange';
+import RefreshInterval from '@/components/Header/RefreshInterval';
+import RefreshNow from '@/components/Header/RefreshNow';
+import StreamingButton from '@/components/Header/StreamingButton';
+import Querier from './Querier';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { useCallback, useEffect } from 'react';
 import { useLogsStore, logsStoreReducers } from './providers/LogsProvider';
-import { useCallback } from 'react';
+import StreamDropdown from '@/components/Header/StreamDropdown';
+import { notifications } from '@mantine/notifications';
 
-const { toggleLiveTail, toggleAlertsModal, toggleRetentionModal, toggleDeleteModal } = logsStoreReducers;
+const { makeExportData } = logsStoreReducers;
+const renderExportIcon = () => <IconDownload size={px('1.4rem')} stroke={1.5} />;
+const renderMaximizeIcon = () => <IconMaximize size={px('1.4rem')} stroke={1.5} />;
 
-const renderAlertsIcon = () => <IconExclamationCircle size={px('1.4rem')} stroke={1.5} />;
-const renderSettingsIcon = () => <IconSettings size={px('1.4rem')} stroke={1.5} />;
-const renderLiveTailIcon = () => <IconBolt size={px('1.4rem')} stroke={1.5} />;
-const renderDeleteIcon = () => <IconTrash size={px('1.4rem')} stroke={1.5} />;
+const MaximizeButton = () => {
+	const [_appStore, setAppStore] = useAppStore((_store) => null);
+	const onClick = useCallback(() => setAppStore(appStoreReducers.toggleMaximize), []);
+	return <IconButton renderIcon={renderMaximizeIcon} onClick={onClick} tooltipLabel="Full Screen" />;
+};
 
 const PrimaryToolbar = () => {
-	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
-	const [isStandAloneMode] = useAppStore((store) => store.isStandAloneMode);
+	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [maximized] = useAppStore((store) => store.maximized);
-	const [showLiveTail, setLogsStore] = useLogsStore((store) => store.liveTailConfig.showLiveTail);
+	const [showLiveTail] = useLogsStore((store) => store.liveTailConfig.showLiveTail);
+	const [headers] = useLogsStore((store) => store.tableOpts.headers);
+	const [filteredData] = useLogsStore((store) => store.data.filteredData);
+	const exportHandler = useCallback(
+		(fileType: string | null) => {
+			const filename = `${currentStream}-logs`;
+			if (fileType === 'CSV') {
+				downloadDataAsCSV(makeExportData(filteredData, headers, 'CSV'), filename);
+			} else if (fileType === 'JSON') {
+				downloadDataAsJson(makeExportData(filteredData, headers, 'JSON'), filename);
+			}
+		},
+		[currentStream],
+	);
 
-	const onToggleLiveTail = useCallback(() => {
-		setLogsStore((store) => toggleLiveTail(store));
-	}, []);
-
-	const onToggleAlertsModal = useCallback(() => {
-		setLogsStore((store) => toggleAlertsModal(store));
-	}, []);
-
-	const onToggleRetentionModal = useCallback(() => {
-		setLogsStore((store) => toggleRetentionModal(store));
-	}, []);
-
-	const onToggleDeleteModal = useCallback(() => {
-		setLogsStore((store) => toggleDeleteModal(store));
-	}, []);
-
-	if (maximized) return null;
+	useEffect(() => {
+		if (maximized) {
+			notifications.show({
+				message: 'Press Esc to exit full screen',
+				withBorder: true,
+				autoClose: 2000,
+			});
+		}
+	}, [maximized]);
 
 	return (
-		<Stack className={classes.logsPrimaryToolbar} style={{ height: LOGS_PRIMARY_TOOLBAR_HEIGHT }}>
-			{/* <StreamDropdown /> */}
-			<EventTimeLineGraph />
-			{/* <Stack gap={0} style={{ flexDirection: 'row', alignItems: 'center', marginRight: '0.675rem' }}>
-				<IconButton
-					renderIcon={renderLiveTailIcon}
-					onClick={onToggleLiveTail}
-					active={showLiveTail}
-					tooltipLabel="Live Tail"
-				/>
-				{userAccessMap.hasUpdateAlertAccess && isStandAloneMode && (
-					<IconButton renderIcon={renderAlertsIcon} onClick={onToggleAlertsModal} tooltipLabel="Alerts" />
-				)}
-				<IconButton renderIcon={renderSettingsIcon} onClick={onToggleRetentionModal} tooltipLabel="Settings" />
-				{userAccessMap.hasDeleteAccess && (
-					<IconButton renderIcon={renderDeleteIcon} onClick={onToggleDeleteModal} tooltipLabel="Delete" />
-				)}
-			</Stack> */}
+		<Stack className={classes.logsSecondaryToolbar} gap="0.675rem" style={{ height: STREAM_PRIMARY_TOOLBAR_HEIGHT }}>
+			<StreamDropdown />
+			<Querier />
+			<TimeRange />
+			<RefreshInterval />
+			<MaximizeButton />
+			<RefreshNow />
 		</Stack>
 	);
 };

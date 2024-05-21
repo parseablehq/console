@@ -2,7 +2,9 @@ import { useMutation, useQuery } from 'react-query';
 import { getLogStreamAlerts, putLogStreamAlerts } from '@/api/logStream';
 import { notifyError, notifySuccess } from '@/utils/notification';
 import { AxiosError, isAxiosError } from 'axios';
+import { useStreamStore, streamStoreReducers, AlertsResponse, Alert } from '@/pages/Logs/providers/StreamProvider';
 
+const { setAlertsConfig } = streamStoreReducers;
 export const useAlertsEditor = (streamName: string) => {
 	const { mutate: updateLogStreamAlerts } = useMutation(
 		(data: { config: any; onSuccess?: () => void }) => putLogStreamAlerts(streamName, data.config),
@@ -28,23 +30,25 @@ export const useAlertsEditor = (streamName: string) => {
 };
 
 export const useGetAlerts = (streamName: string) => {
-	const {
-		data: getLogAlertData,
-		isError: getLogAlertIsError,
-		isSuccess: getLogAlertIsSuccess,
-		isLoading: getLogAlertIsLoading,
-		refetch: getLogAlertDataRefetch
-	} = useQuery(['fetch-log-stream-alert', streamName], () => getLogStreamAlerts(streamName), {
-		retry: false,
-		enabled: streamName !== '',
-		refetchOnWindowFocus: false,
-	});
+	const [, setStreamStore] = useStreamStore((store) => null);
+	const { data, isError, isSuccess, isLoading, refetch } = useQuery(
+		['fetch-log-stream-alert', streamName],
+		() => getLogStreamAlerts(streamName),
+		{
+			retry: false,
+			enabled: streamName !== '',
+			refetchOnWindowFocus: false,
+			onSuccess: (data) => {
+				setStreamStore((store) => setAlertsConfig(store, data));
+			},
+		},
+	);
 
 	return {
-		getLogAlertData,
-		getLogAlertIsError,
-		getLogAlertIsSuccess,
-		getLogAlertIsLoading,
-		getLogAlertDataRefetch
+		data,
+		isError,
+		isSuccess,
+		isLoading,
+		refetch,
 	};
 };

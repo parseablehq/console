@@ -1,4 +1,4 @@
-import { Group, Menu, Modal, Stack, px } from '@mantine/core';
+import { Box, Group, Menu, Modal, Stack, px } from '@mantine/core';
 import { ToggleButton } from '@/components/Button/ToggleButton';
 import { IconChevronDown, IconCodeCircle, IconFilter } from '@tabler/icons-react';
 import classes from './styles/Querier.module.css';
@@ -149,11 +149,11 @@ const Querier = () => {
 	}, []);
 
 	return (
-		<Stack gap={0} className={classes.container}>
+		<Stack gap={0} style={{flexDirection: 'row'}} className={classes.container}>
 			<QuerierModal  onSqlSearchApply={onSqlSearchApply} onFiltersApply={onFiltersApply} onClear={onClear} />
 			<Menu position="bottom">
 				<Menu.Target>
-					<div style={{ width: 'fit-content' }}>
+						<Box>
 						<ToggleButton
 							onClick={() => {}}
 							toggled={false}
@@ -161,8 +161,8 @@ const Querier = () => {
 							label={getLabel(viewMode)}
 							iconPosition="right"
 							customClassName={classes.modeButton}
-						/>
-					</div>
+							/>
+							</Box>
 				</Menu.Target>
 				<Menu.Dropdown>
 					<Menu.Item

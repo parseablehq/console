@@ -30,7 +30,7 @@
 	border-bottom: 1px solid var(--mantine-color-gray-3);
 	width: 100%;
 	flex-direction: row;
-	justify-content: space-between;
+	justify-content: center;
 	align-items: center;
 }
 

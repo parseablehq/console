@@ -24,7 +24,7 @@ export type ConfigType = {
 
 export interface RuleConfig {
 	type: string;
-	config: ConfigType;
+	config: ConfigType | string;
 }
 
 export interface Target {
@@ -272,7 +272,7 @@ const initialState: LogsStore = {
 	selectedLog: null,
 	custQuerySearchState: defaultCustQuerySearchState,
 	sideBarOpen: false,
-	currentView: 'manage',
+	currentView: 'explore',
 	modalOpts: {
 		deleteModalOpen: false,
 		alertsModalOpen: false,

@@ -16,7 +16,7 @@ const StreamDropdown = () => {
 		if (value === null) return;
 
 		valueRef.current = value;
-		navigate(`/${value}/logs`);
+		navigate(`/${value}/explore`);
 	}, []);
 
 	useEffect(() => {

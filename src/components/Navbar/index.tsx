@@ -12,7 +12,7 @@ import { FC, useCallback, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
-import { HOME_ROUTE, LOGS_ROUTE, CLUSTER_ROUTE, USERS_MANAGEMENT_ROUTE } from '@/constants/routes';
+import { HOME_ROUTE, EXPLORE_ROUTE, CLUSTER_ROUTE, USERS_MANAGEMENT_ROUTE, STREAM_ROUTE } from '@/constants/routes';
 import InfoModal from './infoModal';
 import { getStreamsSepcificAccess, getUserSepcificStreams } from './rolesHandler';
 import Cookies from 'js-cookie';
@@ -38,8 +38,8 @@ const navItems = [
 	{
 		icon: IconBinaryTree2,
 		label: 'Stream',
-		path: '/logs',
-		route: LOGS_ROUTE,
+		path: '/explore',
+		route: EXPLORE_ROUTE,
 	},
 ];
 
@@ -78,7 +78,7 @@ const navActions = [
 
 const Navbar: FC = () => {
 	const navigate = useNavigate();
-	const { streamName } = useParams();
+	const { streamName, view } = useParams();
 	const location = useLocation();
 	const currentRoute = useCurrentRoute();
 	const username = Cookies.get('username');
@@ -92,12 +92,13 @@ const Navbar: FC = () => {
 	const { getUserRolesData, getUserRolesMutation } = useUser();
 	const navigateToPage = useCallback(
 		(route: string) => {
-			if (route === LOGS_ROUTE) {
+			console.log(route, streamName, view)
+			if (route === STREAM_ROUTE) {
 				if (_.isEmpty(userSpecificStreams) || _.isNil(userSpecificStreams)) return navigate('/');
 
 				const defaultStream = currentStream && currentStream.length !== 0 ? currentStream : userSpecificStreams[0].name;
 				const stream = !streamName || streamName.length === 0 ? defaultStream : streamName;
-				const path = `/${stream}/logs`;
+				const path = `/${stream}${view ? '/' + view : ""}`;
 				setAppStore((store) => changeStream(store, stream));
 
 				if (path !== location.pathname) {
@@ -130,7 +131,7 @@ const Navbar: FC = () => {
 	useEffect(() => {
 		if (streamName && streamName.length !== 0 && userSpecificStreams && userSpecificStreams.length !== 0) {
 			const hasAccessToStream = userSpecificStreams.find((stream: any) => stream.name === streamName);
-			return hasAccessToStream ? navigateToPage(LOGS_ROUTE) : navigateToPage('/');
+			return hasAccessToStream ? navigateToPage(STREAM_ROUTE) : navigateToPage('/');
 		}
 	}, [streamName, userSpecificStreams]);
 

@@ -1,8 +1,7 @@
 import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
-import { FIXED_DURATIONS, FixedDuration } from '@/constants/timeConstants';
 import initContext from '@/utils/initContext';
-import dayjs from 'dayjs';
 import _ from 'lodash';
+import { AxiosResponse } from 'axios';
 
 type ReducerOutput = Partial<StreamStore>;
 
@@ -14,10 +13,12 @@ export type ConfigType = {
 	ignore_case?: boolean;
 };
 
-export interface RuleConfig {
-	type: string;
-	config: ConfigType;
-}
+export type RuleType = 'column' | 'composite';
+export type RuleConfig = { type: 'column'; config: ConfigType } | { type: 'composite'; config: string };
+
+type FieldTypeMap = {
+	[key: string]: 'text' | 'number';
+};
 
 export interface Target {
 	type: string;
@@ -72,7 +73,12 @@ export type TransformedAlerts = {
 export type currentView = 'explore' | 'live-tail' | 'manage';
 
 type StreamStore = {
+	// meta
 	schema: LogStreamSchemaData | null;
+	fieldNames: string[];
+	fieldTypeMap: FieldTypeMap;
+
+	// configs
 	retention: {
 		action: 'delete';
 		duration: number;
@@ -86,13 +92,15 @@ type LogsStoreReducers = {
 	getCleanStoreForRefetch: (store: StreamStore) => ReducerOutput;
 	setStreamSchema: (store: StreamStore, schema: LogStreamSchemaData) => ReducerOutput;
 	setRetention: (store: StreamStore, retention: { description: string; duration: string }) => ReducerOutput;
-	setAlertsConfig: (store: StreamStore, alertsResponse: AlertsResponse) => ReducerOutput;
+	setAlertsConfig: (store: StreamStore, alertsResponse: AxiosResponse<AlertsResponse>) => ReducerOutput;
 	transformAlerts: (alerts: TransformedAlert[]) => Alert[];
 	setCleanStoreForStreamChange: (store: StreamStore) => ReducerOutput;
 };
 
 const initialState: StreamStore = {
 	schema: null,
+	fieldNames: [],
+	fieldTypeMap: {},
 	retention: {
 		action: 'delete',
 		description: '',
@@ -110,9 +118,28 @@ const streamChangeCleanup = (_store: StreamStore) => {
 	return { ...initialState };
 };
 
+const parseType = (type: any): 'text' | 'number' => {
+	if (typeof type === 'object') {
+		// console.error('Error finding type for an object', type);
+		return 'text';
+	}
+	const lowercaseType = type.toLowerCase();
+	if (lowercaseType.startsWith('int') || lowercaseType.startsWith('float') || lowercaseType.startsWith('double')) {
+		return 'number';
+	} else {
+		return 'text';
+	}
+};
+
 const setStreamSchema = (_store: StreamStore, schema: LogStreamSchemaData) => {
+	const fieldNames = schema.fields.map((field) => field.name);
+	const fieldTypeMap = schema.fields.reduce((acc, field) => {
+		return { ...acc, [field.name]: parseType(field.data_type) };
+	}, {});
 	return {
 		schema,
+		fieldNames,
+		fieldTypeMap,
 	};
 };
 
@@ -144,7 +171,7 @@ const getCleanStoreForRefetch = (store: StreamStore) => {
 };
 
 const setCleanStoreForStreamChange = (store: StreamStore) => {
-	return initialState
+	return initialState;
 };
 
 const setRetention = (_store: StreamStore, retention: { duration?: string; description?: string }) => {
@@ -184,7 +211,7 @@ const santizeAlerts = (alerts: Alert[]): TransformedAlert[] => {
 			const { targets = [], rule } = alert;
 			const updatedRule = (() => {
 				const { type, config } = rule;
-				if (type === 'column') {
+				if (type === 'column' && typeof config !== 'string' && config.operator) {
 					const updatedOperator = _.get(operatorLabelMap, config.operator, config.operator);
 					return {
 						type,
@@ -245,11 +272,15 @@ const transformAlerts = (alerts: TransformedAlert[]): Alert[] => {
 	);
 };
 
-const setAlertsConfig = (_store: StreamStore, alertsResponse: AlertsResponse) => {
-	const { alerts } = alertsResponse;
+const setAlertsConfig = (_store: StreamStore, alertsResponse: AxiosResponse<AlertsResponse>) => {
+	if (!alertsResponse.data?.alerts) {
+		return {};
+	}
+
+	const { alerts } = alertsResponse.data;
 	const sanitizedAlerts: TransformedAlert[] = santizeAlerts(alerts);
 	return {
-		alertsConfig: { ...alertsResponse, alerts: sanitizedAlerts },
+		alertsConfig: { ...alertsResponse.data, alerts: sanitizedAlerts },
 	};
 };
 

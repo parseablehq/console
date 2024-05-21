@@ -274,14 +274,6 @@
 	white-space: nowrap;
 }
 
-.logsPrimaryToolbar {
-	padding: 0.625rem 0;
-	border-bottom: 1px solid var(--mantine-color-gray-3);
-	width: 100%;
-	flex-direction: row;
-	justify-content: space-between;
-	align-items: center;
-}
 
 .logsSecondaryToolbar {
 	width: '100%';

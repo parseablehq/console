@@ -1,18 +1,14 @@
 import { Button, Stack, Text, Box, Tooltip, Modal, TextInput, Select, Checkbox, NumberInput } from '@mantine/core';
 import classes from './styles/Alerts.module.css';
-import { useLogsStore, logsStoreReducers, TransformedAlert, TransformedTarget } from './providers/LogsProvider';
+import { TransformedAlert } from './providers/LogsProvider';
 import _ from 'lodash';
-import { useGetAlerts } from '@/hooks/useAlertsEditor';
-import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { IconEdit, IconInfoCircleFilled, IconPlus, IconTrash } from '@tabler/icons-react';
 import { UseFormReturnType, useForm } from '@mantine/form';
-import { useManagementStore, managementStoreReducers } from './providers/ManageProvider';
-import { useStreamStore, streamStoreReducers } from './providers/StreamProvider';
+import { managementStoreReducers } from './providers/ManageProvider';
+import { useStreamStore, ConfigType } from './providers/StreamProvider';
 
-const { setAlerts } = logsStoreReducers;
 const {} = managementStoreReducers;
-const {setAlertsConfig} = streamStoreReducers;
 const defaultColumnTypeConfig = { column: '', operator: '=', value: '', repeats: 1, ignoreCase: false };
 const defaultColumnTypeRule = { type: 'column', config: defaultColumnTypeConfig };
 
@@ -82,26 +78,32 @@ const validateRepeatInterval = (value: string) => {
 };
 
 type FormOpts = {
-    formValues: TransformedAlert,
-    allAlertNames: string[];
-}
+	formValues: TransformedAlert;
+	allAlertNames: string[];
+};
+
+const validateRuleConfig = (config: ConfigType | string) => {
+	if (_.isString(config)) {
+		return _.isEmpty(config) ? 'Cannot be empty' : null;
+	} else {
+		return {
+			column: _.isEmpty(config.column) ? 'Unknown Column' : null,
+			operator: _.isEmpty(config.operator) ? 'Unknown Operator' : null,
+			value: _.isString(config.value) || _.isNumber(config.value) ? null : 'Value cannot be empty',
+			repeats: _.isNumber(config.repeats) && config.repeats > 0 ? null : 'Must be an integer',
+		};
+	}
+};
 
 const useAlertsForm = (opts: FormOpts) => {
 	const form = useForm<TransformedAlert>({
 		mode: 'controlled',
 		initialValues: opts.formValues,
 		validate: {
-			// alerts: {
 			name: (value) => isValidName(value, opts.allAlertNames || []),
 			message: (value) => (_.isEmpty(value) ? 'Message cannot be empty' : null),
 			rule: {
 				type: (value) => (_.includes([columnRuleType, compositeRuleType], value) ? null : 'Unknown rule type'),
-				config: {
-					column: (value) => (_.isEmpty(value) ? 'Unknown Column' : null),
-					operator: (value) => (_.isEmpty(value) ? 'Unknown Operator' : null),
-					value: (value) => (_.isString(value) || _.isNumber(value) ? null : 'Value cannot be empty'),
-					repeats: (value) => (_.isNumber(value) && value > 0 ? null : 'Must be an integer'),
-				},
 			},
 			targets: {
 				endpoint: (value) => (_.isEmpty(value) ? 'Cannot be empty' : null),
@@ -130,14 +132,9 @@ const useAlertsForm = (opts: FormOpts) => {
 	return { form, onAddField, onRemoveField, onChangeValue };
 };
 
-type AlertNameProps = {
-	form: AlertsFormType;
-	alertIndex: number;
-};
-
 type RuleSectionHeaderProps = {
-    form: AlertsFormType;
-}
+	form: AlertsFormType;
+};
 
 const RuleSectionHeader = (props: RuleSectionHeaderProps) => {
 	const { form } = props;
@@ -147,111 +144,92 @@ const RuleSectionHeader = (props: RuleSectionHeaderProps) => {
 				<Text className={classes.fieldTitle}>Rule</Text>
 				<Text className={classes.fieldDescription}>Description for rule</Text>
 			</Stack>
-			<Select
-				w="30%"
-				data={[columnRuleType, compositeRuleType]}
-				{...form.getInputProps('rule.type')}
-			/>
+			<Select w="30%" data={[columnRuleType, compositeRuleType]} {...form.getInputProps('rule.type')} />
 		</Stack>
 	);
 };
-
 
 type ColumnRuleProps = {
 	form: AlertsFormType;
 };
 
-const numberInputOnWheelPreventChange = (e: React.WheelEvent<HTMLInputElement>) => {
-	// @ts-ignore
-	// which event doesnt have a target without blur ?
-	e.target.blur();
-	e.stopPropagation();
+const getInputComponent = (type: 'text' | 'number') => {
+	return type === 'text' ? TextInput : NumberInput;
 };
 
-const getInputComponent = (type: 'text' | 'number') => {
-    return type === 'text' ? TextInput : NumberInput;
-}
-
 const ColumnRule = (props: ColumnRuleProps) => {
-    const {form} = props;
-	// const [fieldNames] = useFilterStore((store) => store.fieldNames);
-    const fieldNames = ["status"]
-    const fieldTypeMap = {
-        "status": "number"
-    }
-    const {rule: {config}} = form.getValues();
-	const columnDataType = _.get(fieldTypeMap, [config?.column], null);
+	const { form } = props;
+	const [fieldNames] = useStreamStore((store) => store.fieldNames);
+	const [fieldTypeMap] = useStreamStore((store) => store.fieldTypeMap);
 
-    console.log(form.getValues())
+	const {
+		rule: { config },
+	} = form.getValues();
+	const columnDataType = _.isString(config) ? 'text' : _.get(fieldTypeMap, [config?.column], 'text');
 
-    const InputComponent = useMemo(() => getInputComponent(columnDataType),  [columnDataType])
+	const InputComponent = useMemo(() => getInputComponent(columnDataType), [columnDataType]);
 
-    // rule.config.column
-    // todo: above as creatable select
-
-    return (
-			<Stack>
-				<Stack style={{ flexDirection: 'row' }}>
-					<Select
-						classNames={{ label: classes.fieldTitle }}
+	return (
+		<Stack>
+			<Stack style={{ flexDirection: 'row' }}>
+				<Select
+					classNames={{ label: classes.fieldTitle }}
+					styles={{ label: { marginBottom: 8 } }}
+					label="Column"
+					data={fieldNames}
+					searchable
+					{...form.getInputProps('rule.config.column')}
+				/>
+				<Select
+					label="Operator"
+					classNames={{ label: classes.fieldTitle }}
+					styles={{ label: { marginBottom: 8 } }}
+					data={columnDataType === 'text' ? stringOperators : numericalOperators}
+					{...form.getInputProps('rule.config.operator')}
+				/>
+				<InputComponent
+					classNames={{ label: classes.fieldTitle }}
+					styles={{ label: { marginBottom: 8 } }}
+					label="Value"
+					placeholder="Value"
+					key="value"
+					{...form.getInputProps('rule.config.value')}
+				/>
+			</Stack>
+			<Stack style={{ flexDirection: 'row', alignItems: 'center' }}>
+				<NumberInput
+					classNames={{ label: classes.fieldTitle }}
+					styles={{ label: { marginBottom: 8 } }}
+					label="Repeats"
+					placeholder="Repeats"
+					key="repeats"
+					{...form.getInputProps('rule.config.repeats')}
+					min={1}
+				/>
+				<Stack gap={8}>
+					<Text className={classes.fieldTitle} style={{ marginBottom: 8 }}>
+						Case sensitive
+					</Text>
+					<Checkbox
+						label={_.isString(config) || config.ignore_case ? 'Ignored' : 'Enabled'}
 						styles={{ label: { marginBottom: 8 } }}
-						label="Column"
-						data={['status']}
-						searchable
-						{...form.getInputProps('rule.config.column')}
-					/>
-					<Select
-						label="Operator"
 						classNames={{ label: classes.fieldTitle }}
-						styles={{ label: { marginBottom: 8 } }}
-						data={columnDataType === 'text' ? stringOperators : numericalOperators}
-						{...form.getInputProps('rule.config.operator')}
+						key="ignore_case"
+						{...form.getInputProps('rule.config.ignore_case')}
+						{...(columnDataType === 'text' ? {} : { disabled: true, checked: true })}
+						onChange={(e) => {
+							form.setFieldValue('rule.config.ignore_case', e.target.checked);
+						}}
 					/>
-					<InputComponent
-						classNames={{ label: classes.fieldTitle }}
-						styles={{ label: { marginBottom: 8 } }}
-						label="Value"
-						placeholder="Value"
-						key="value"
-						{...form.getInputProps('rule.config.value')}
-					/>
-				</Stack>
-				<Stack style={{ flexDirection: 'row', alignItems: 'center' }}>
-					<NumberInput
-						classNames={{ label: classes.fieldTitle }}
-						styles={{ label: { marginBottom: 8 } }}
-						label="Repeats"
-						placeholder="Repeats"
-						key="repeats"
-						{...form.getInputProps('rule.config.repeats')}
-					/>
-					<Stack gap={8}>
-						<Text className={classes.fieldTitle} style={{ marginBottom: 8 }}>
-							Case sensitive
-						</Text>
-						<Checkbox
-							label={config.ignore_case ? 'Ignored' : 'Enabled'}
-							styles={{ label: { marginBottom: 8 } }}
-							classNames={{ label: classes.fieldTitle }}
-							key="ignore_case"
-							{...form.getInputProps('rule.config.ignore_case')}
-							{...(columnDataType === 'text' ? {} : { disabled: true, checked: true })}
-							onChange={(e) => {
-								form.setFieldValue('rule.config.ignore_case', e.target.checked);
-							}}
-						/>
-					</Stack>
 				</Stack>
 			</Stack>
-		);
-}
+		</Stack>
+	);
+};
 
 type TargetsSectionProps = {
 	form: AlertsFormType;
-	alertIndex: number;
-	targets: TransformedTarget[];
 };
-
 
 const TargetsHeader = () => {
 	return (
@@ -274,28 +252,33 @@ const getSpecialFieldsConfig = (type: string) => {
 };
 
 const TargetsSection = (props: TargetsSectionProps) => {
-	const {  form } = props;
-    const {targets} = form.getValues();
+	const { form } = props;
+	const { targets } = form.getValues();
 	const addTarget = useCallback(() => {
 		form.insertListItem('targets', defaultTarget, _.size(targets));
 	}, [targets]);
-    const createHeader = useCallback((path: string) => {
-        form.setFieldValue(`${path}`, defaultHeader);
-    }, []);
-    const deleteHeader = useCallback(() => {}, [])
+
+	const createHeader = useCallback((path: string) => {
+		form.setFieldValue(`${path}`, defaultHeader);
+	}, []);
+
+	const deleteHeader = useCallback((headersPath: string, index: number) => {
+		form.removeListItem(headersPath, index);
+	}, []);
+
 	return (
 		<Stack className={classes.fieldsContainer} gap={2} mt={10}>
 			<TargetsHeader />
 			<Stack>
 				{_.map(targets, (target, targetIndex) => {
-					const { type, headers = [], skip_tls_check, username = '', password = '' } = target;
+					const { type, headers = [], skip_tls_check } = target;
 					const targetsPath = `targets.${targetIndex}`;
-                    const headersPath = `${target}.headers`
+					const headersPath = `${targetsPath}.headers`;
 					const specialFieldsConfig = getSpecialFieldsConfig(type);
 					const removeTarget = () => {
 						form.removeListItem('targets', targetIndex);
 					};
-                    
+
 					return (
 						<Stack gap={12} className={classes.targetContainer}>
 							<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -368,6 +351,7 @@ const TargetsSection = (props: TargetsSectionProps) => {
 									label="Repeat Times"
 									placeholder="Repeat Times"
 									key="times"
+									min={1}
 									{...form.getInputProps(`${targetsPath}.repeat.times`)}
 								/>
 							</Stack>
@@ -398,7 +382,7 @@ const TargetsSection = (props: TargetsSectionProps) => {
 													key="password"
 													{...form.getInputProps(`${targetsPath}.headers.${headerIndex}.value`)}
 												/>
-												<IconTrash stroke={1.2} onClick={() => deleteHeader(headerIndex)} color="gray" />
+												<IconTrash stroke={1.2} onClick={() => deleteHeader(headersPath, headerIndex)} color="gray" />
 											</Stack>
 										);
 									})}
@@ -423,7 +407,7 @@ const TargetsSection = (props: TargetsSectionProps) => {
 
 const RepeatIntervalLabel = () => {
 	return (
-		<Stack style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>
+		<Stack style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
 			<Text className={classes.fieldTitle}>Repeat Interval</Text>
 			<Tooltip
 				multiline
@@ -439,7 +423,18 @@ const RepeatIntervalLabel = () => {
 
 const AlertForm = (props: { form: AlertsFormType }) => {
 	const { form } = props;
-    const {rule: {type}} = form.getValues();
+	const {
+		rule: { type },
+	} = form.getValues();
+
+	useEffect(() => {
+		if (type === 'column') {
+			form.setFieldValue('rule.config', defaultColumnTypeConfig);
+		} else {
+			form.setFieldValue('rule.config', '');
+		}
+	}, [type]);
+
 	return (
 		<Stack gap={8}>
 			<TextInput
@@ -473,47 +468,48 @@ const AlertForm = (props: { form: AlertsFormType }) => {
 					/>
 				)}
 			</Stack>
-            <TargetsSection form={form}/>
+			<TargetsSection form={form} />
 		</Stack>
 	);
 };
 
 type AlertsFormType = UseFormReturnType<TransformedAlert, (values: TransformedAlert) => TransformedAlert>;
 
-const AlertsModal = () => {
-	const [alertsConfig] = useLogsStore((store) => store.alerts);
+const AlertsModal = (props: { open: boolean; alertName: string; onClose: () => void }) => {
+	const { open, alertName, onClose } = props;
+	const [alertsConfig] = useStreamStore((store) => store.alertsConfig);
 	const { alerts } = alertsConfig;
-	const alert = alerts[0];
-	// todo - send default if new
-	const { form } = useAlertsForm({formValues: alert, allAlertNames: []});
+	const alert = _.find(alerts, (alert) => alert.name === alertName);
+	const { form } = useAlertsForm({ formValues: defaultAlert, allAlertNames: [] });
 
-    useEffect(() => {
-        if (!_.isEmpty(alerts)) {
-            form.setValues(alert)
-        }
-    }, [alert])
+	useEffect(() => {
+		if (!_.isEmpty(alert)) {
+			form.setValues(alert);
+		} else {
+			form.setValues(defaultAlert);
+		}
+	}, [alert]);
 
-	if (_.isEmpty(alerts)) return null;
-
-    // todo
-    // modal title
+	// todo
+	// check alerts title if uniq
 
 	return (
 		<Modal
-			opened={true}
-			onClose={() => {}}
+			opened={open}
+			onClose={onClose}
 			centered
 			size="lg"
-			title={"Edit Alert"}
+			title={!_.isEmpty(alertName) ? 'Edit Alert' : 'New Alert'}
 			styles={{ body: { padding: '0 1rem' }, header: { padding: '1rem', paddingBottom: '0' } }}
 			classNames={{ title: classes.modalTitle }}>
 			<Stack gap={0}>
-				<Stack mih={400}>
+				<Stack mih={400} style={{ maxHeight: 600, overflow: 'scroll' }}>
+					{/* @ts-ignore */}
 					<AlertForm form={form} />
 				</Stack>
-				<Stack style={{ flexDirection: 'row', marginBottom: '1.2rem', justifyContent: 'flex-end' }}>
+				<Stack style={{ flexDirection: 'row', margin: '1.2rem 0', justifyContent: 'flex-end' }}>
 					<Box>
-						<Button onClick={() => {}} variant="outline">
+						<Button onClick={onClose} variant="outline">
 							Cancel
 						</Button>
 					</Box>
@@ -526,23 +522,25 @@ const AlertsModal = () => {
 	);
 };
 
-const Header = () => {
+const Header = (props: { selectAlert: selectAlert }) => {
 	return (
 		<Stack className={classes.headerContainer}>
 			<Text className={classes.title}>Alerts</Text>
 			<Box>
-				<Button variant="outline">New Alert</Button>
+				<Button variant="outline" onClick={() => props.selectAlert('')}>
+					New Alert
+				</Button>
 			</Box>
 		</Stack>
 	);
 };
 
-const AlertItem = (props: { alert: TransformedAlert }) => {
-	const { alert } = props;
+const AlertItem = (props: { alert: TransformedAlert; selectAlert: selectAlert }) => {
+	const { alert, selectAlert } = props;
 	const { name } = alert;
 
 	return (
-		<Stack className={classes.alertItemContainer}>
+		<Stack className={classes.alertItemContainer} onClick={() => selectAlert(name)}>
 			<Text className={classes.alertName}>{name}</Text>
 			<Stack className={classes.alertActionsContainer}>
 				<Tooltip label="Edit">
@@ -556,39 +554,39 @@ const AlertItem = (props: { alert: TransformedAlert }) => {
 	);
 };
 
-const AlertList = () => {
-	const [alertsConfig] = useLogsStore((store) => store.alerts);
+type selectAlert = (title: string) => void;
+
+const AlertList = (props: { selectAlert: selectAlert }) => {
+	const [alertsConfig] = useStreamStore((store) => store.alertsConfig);
 	const { alerts } = alertsConfig;
 	return (
 		<Stack className={classes.listContainer}>
 			{_.map(alerts, (alert) => {
-				return <AlertItem alert={alert} />;
+				return <AlertItem alert={alert} selectAlert={props.selectAlert} />;
 			})}
 		</Stack>
 	);
 };
 
 const Alerts = () => {
-	const [currentStream] = useAppStore((store) => store.currentStream);
-	const [, setLogsStore] = useLogsStore((store) => null);
-	const [, setManangementStore] = useManagementStore(store => null);
-	const [streamStore, setStreamStore] = useStreamStore(store => store);
-	const { getLogAlertData, getLogAlertDataRefetch } = useGetAlerts(currentStream || '');
-
-	useEffect(() => {
-		if (getLogAlertData?.data) {
-			setStreamStore((store) => setAlertsConfig(store, getLogAlertData?.data));
-		}
-	}, [getLogAlertData?.data]);
-
-	console.log(streamStore.alertsConfig)
-
 	// todo: implement loading state & no data state
+	const [alertName, setAlertName] = useState<string>('');
+	const [alertModalOpen, setAlertModalOpen] = useState<boolean>(false);
+
+	const selectAlert = useCallback((title: string) => {
+		setAlertName(title);
+		setAlertModalOpen(true);
+	}, []);
+
+	const closeModal = useCallback(() => {
+		setAlertModalOpen(false);
+	}, []);
+
 	return (
 		<Stack className={classes.container} gap={0}>
-			<AlertsModal />
-			<Header />
-			<AlertList />
+			<AlertsModal open={alertModalOpen} alertName={alertName} onClose={closeModal} />
+			<Header selectAlert={selectAlert} />
+			<AlertList selectAlert={selectAlert} />
 		</Stack>
 	);
 };

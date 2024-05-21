@@ -69,7 +69,7 @@ const AllLogsButton = (props: MenuItemProps) => {
 		<Stack
 			onClick={() => props.setCurrentView(viewName)}
 			className={`${classes.menuItemContainer} ${additionalClassNames}`}>
-			<ThemeIcon className={classes.menuIconContainer}>{renderlogsIcon(props.currentView === viewName)}</ThemeIcon>
+			<ThemeIcon size={32} className={classes.menuIconContainer}>{renderlogsIcon(props.currentView === viewName)}</ThemeIcon>
 			{props.sideBarOpen && <Text style={additionalStyles} className={classes.menuLabel}>Explore</Text>}
 		</Stack>
 	);

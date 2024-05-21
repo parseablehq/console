@@ -53,7 +53,6 @@ const parseGraphData = (data: GraphRecord[], avg: number, startTime: Dayjs, inte
 	if (!Array.isArray(data) || data.length === 0) return [];
 
 	const allTimestamps = getAllTimestamps(startTime, interval);
-	console.log(allTimestamps)
 	const parsedData = allTimestamps.map((ts) => {
 		const countData = data.find((d) => `${d.minute_range}Z` === ts);
 		if (!countData || typeof countData !== 'object') {

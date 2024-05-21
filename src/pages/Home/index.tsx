@@ -49,7 +49,7 @@ const Home: FC = () => {
 
 	const navigateToStream = useCallback((stream: string) => {
 		setAppStore((store) => changeStream(store, stream));
-		navigate(`/${stream}/logs`);
+		navigate(`/${stream}/explore`);
 	}, []);
 
 	const displayEmptyPlaceholder = Array.isArray(userSpecificStreams) && userSpecificStreams.length === 0;
