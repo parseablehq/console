@@ -1,8 +1,9 @@
 .viewConatiner {
     width: 100%;
     height: 100%;
-    gap: 0;
-    padding: 0 1.5rem;
+    gap: 12;
+    padding: 0 1.5rem 1.5rem 1.5rem;
+
 }
 
 .sectionContainer {
@@ -58,7 +59,6 @@
 } 
 
 .fieldTitle {
-    font-size: var(--mantine-font-size-sm);
     font-weight: 500;
 }
 
@@ -105,4 +105,44 @@
     padding: 1rem;
     border-radius: 0.5rem;
     background-color: var(--mantine-color-gray-1);
+}
+
+.statsTableContainer {
+    flex: 1;
+    padding: 1.5rem;
+    padding-bottom: 0;
+}
+
+.statsRowContainer {
+    flex: 1;
+   justify-content: center;
+   flex-direction: row;
+}
+
+.rowTitleContainer {
+    width: '40%'
+}   
+
+.statsTableHeaderRowContainer {
+    flex-direction: row;
+}
+
+.bigNoText {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.compressionText {
+    color: var(--mantine-color-green-7);
+    font-weight: 700;
+}
+
+.infoTitle {
+    font-size: 0.8rem;
+    color: var(--mantine-color-gray-6);
+}
+
+.infoText {
+    font-size: 1rem;
+    font-weight: 400;
 }

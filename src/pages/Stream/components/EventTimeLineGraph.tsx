@@ -119,7 +119,7 @@ const EventTimeLineGraph = () => {
 			logsQuery,
 			query,
 		});
-	}, [currentStream]);
+	}, [currentStream, startTime, endTime]);
 
 	const isLoading = fetchQueryMutation.isLoading;
 	const avgEventCount = useMemo(() => calcAverage(fetchQueryMutation?.data), [fetchQueryMutation?.data]);

@@ -1,4 +1,4 @@
-import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
+import { LogStreamSchemaData, LogStreamStat, StreamInfo } from '@/@types/parseable/api/stream';
 import initContext from '@/utils/initContext';
 import _ from 'lodash';
 import { AxiosResponse } from 'axios';
@@ -77,7 +77,7 @@ type StreamStore = {
 	schema: LogStreamSchemaData | null;
 	fieldNames: string[];
 	fieldTypeMap: FieldTypeMap;
-
+	stats: LogStreamStat | {};
 	// configs
 	retention: {
 		action: 'delete';
@@ -85,6 +85,7 @@ type StreamStore = {
 		description: string;
 	};
 	alertsConfig: TransformedAlerts;
+	info: StreamInfo;
 };
 
 type LogsStoreReducers = {
@@ -93,6 +94,7 @@ type LogsStoreReducers = {
 	setStreamSchema: (store: StreamStore, schema: LogStreamSchemaData) => ReducerOutput;
 	setRetention: (store: StreamStore, retention: { description: string; duration: string }) => ReducerOutput;
 	setAlertsConfig: (store: StreamStore, alertsResponse: AxiosResponse<AlertsResponse>) => ReducerOutput;
+	setStats: (store: StreamStore, alertsResponse: AxiosResponse<LogStreamStat>) => ReducerOutput;
 	transformAlerts: (alerts: TransformedAlert[]) => Alert[];
 	setCleanStoreForStreamChange: (store: StreamStore) => ReducerOutput;
 };
@@ -101,6 +103,7 @@ const initialState: StreamStore = {
 	schema: null,
 	fieldNames: [],
 	fieldTypeMap: {},
+	stats: {},
 	retention: {
 		action: 'delete',
 		description: '',
@@ -110,6 +113,13 @@ const initialState: StreamStore = {
 		version: '',
 		alerts: [],
 	},
+	info: {
+		"created-at": "2024-04-21T03:51:57.302942942+00:00",
+		"first-event-at": "2024-04-21T03:59:52.579+00:00", //Optional - dont display in console if API response does not have this field
+		"cache_enabled": true,
+		"time_partition": "log_date", //Optional - dont display in console if API response does not have this field
+		 "static_schema_flag": true //Optional - dont display in console if API response does not have this field
+	}
 };
 
 const { Provider: StreamProvider, useStore: useStreamStore } = initContext(initialState);
@@ -284,6 +294,12 @@ const setAlertsConfig = (_store: StreamStore, alertsResponse: AxiosResponse<Aler
 	};
 };
 
+const setStats = (_store: StreamStore, stats: AxiosResponse<LogStreamStat>) => {
+	return {
+		stats: stats.data,
+	};
+};
+
 const streamStoreReducers: LogsStoreReducers = {
 	streamChangeCleanup,
 	setStreamSchema,
@@ -292,6 +308,7 @@ const streamStoreReducers: LogsStoreReducers = {
 	setAlertsConfig,
 	transformAlerts,
 	setCleanStoreForStreamChange,
+	setStats
 };
 
 export { StreamProvider, useStreamStore, streamStoreReducers };

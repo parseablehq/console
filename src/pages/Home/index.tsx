@@ -5,7 +5,7 @@ import { useEffect, type FC, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDocumentTitle } from '@mantine/hooks';
 import { useGetStreamMetadata } from '@/hooks/useGetStreamMetadata';
-import { HumanizeNumber, formatBytes } from '@/utils/formatBytes';
+import { HumanizeNumber, calcCompressionRate, formatBytes, sanitizeEventsCount } from '@/utils/formatBytes';
 import { LogStreamRetention, LogStreamStat } from '@/@types/parseable/api/stream';
 import cardStyles from './styles/Card.module.css';
 import homeStyles from './styles/Home.module.css';
@@ -127,18 +127,6 @@ const sanitizeCount = (val: any) => {
 	return typeof val === 'number' ? HumanizeNumber(val) : '–';
 };
 
-const calcCompressionRate = (storageSize: string, ingestionSize: string) => {
-	const parsedStorageSize = sizetoInteger(storageSize);
-	const parsedIngestionSize = sizetoInteger(ingestionSize);
-
-	if (parsedIngestionSize === null || parsedStorageSize === null) return '–';
-
-	if (parsedIngestionSize === 0) return '0%';
-
-	const rate = (100 - (parsedStorageSize / parsedIngestionSize) * 100).toPrecision(4);
-	return `${rate}%`;
-};
-
 type StreamInfoProps = {
 	stream: string;
 	data: {
@@ -177,7 +165,7 @@ const StreamInfo: FC<StreamInfoProps> = (props) => {
 					</Tooltip>
 				</Box>
 			</Box>
-			<BigNumber label={'Events'} value={sanitizeCount(ingestionCount)} />
+			<BigNumber label={'Events'} value={sanitizeEventsCount(ingestionCount)} />
 			<BigNumber label={'Ingestion'} value={sanitizeBytes(ingestionSize)} />
 			<BigNumber label={'Storage'} value={sanitizeBytes(storageSize)} />
 			<BigNumber label={'Compression'} value={calcCompressionRate(storageSize, ingestionSize)} />

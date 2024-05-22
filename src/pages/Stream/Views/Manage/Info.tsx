@@ -1,0 +1,55 @@
+import { Stack, Text } from '@mantine/core';
+import classes from '../../styles/Management.module.css';
+import { useStreamStore } from '../../providers/StreamProvider';
+import _ from 'lodash';
+import { calcCompressionRate, sanitizeBytes, sanitizeEventsCount } from '@/utils/formatBytes';
+import { IconArrowDown } from '@tabler/icons-react';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import dayjs from 'dayjs';
+
+const Header = (props) => {
+	return (
+		<Stack className={classes.headerContainer}>
+			<Text className={classes.title}>Info</Text>
+		</Stack>
+	);
+};
+
+const InfoItem = (props) => {
+	return (
+		<Stack w="33%" gap={0}>
+			<Text className={classes.fieldDescription}>{props.title}</Text>
+			<Text className={classes.fieldTitle}>{props.value}</Text>
+		</Stack>
+	)
+}
+
+const InfoData = () => {
+	const [info] = useStreamStore(store => store.info);
+	const [currentStream] = useAppStore(store => store.currentStream)
+	return (
+		<Stack style={{ flex: 1, padding: '1.5rem' }} gap={20}>
+			<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+				<InfoItem title="Name" value={currentStream} />
+				<InfoItem title="Created At" value={dayjs(info['created-at']).format('HH:mm A DD MMM YYYY')} />
+				<InfoItem title="First Event At" value={dayjs(info['first-event-at']).format('HH:mm A DD MMM YYYY')} />
+			</Stack>
+			<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between'	 }}>
+				<InfoItem title="Time Partition" value={info['time_partition'] || '-'} />
+				<InfoItem title="Schema Type" value={info['static_schema_flag'] === true ? "Static" : info['static_schema_flag'] === false ? "Dynamic" : '-'} />
+				<Stack w="33%"/>
+			</Stack>
+		</Stack>
+	);
+}
+
+const Info = () => {
+	return (
+		<Stack className={classes.sectionContainer} gap={0}>
+			<Header />
+			<InfoData/>
+		</Stack>
+	);
+};
+
+export default Info;
