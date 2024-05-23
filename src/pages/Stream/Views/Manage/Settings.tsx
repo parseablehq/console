@@ -1,12 +1,11 @@
 import { Button, Loader, NumberInput, Stack, Switch, TextInput } from '@mantine/core';
 import classes from '../../styles/Management.module.css';
 import { Text } from '@mantine/core';
-import { useLogsStore } from '../../providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useForm } from '@mantine/form';
 import _ from 'lodash';
 import { useCallback, useEffect } from 'react';
-import { useRetentionEditor } from '@/hooks/useRetentionEditor';
+import { useStreamStore } from '../../providers/StreamProvider';
 
 const Header = () => {
 	return (
@@ -16,9 +15,8 @@ const Header = () => {
 	);
 };
 
-const RetentionForm = (props: { onToggleRetentionModal: () => void; getLogRetentionDataRefetch: () => void }) => {
-	const [retention] = useLogsStore((store) => store.retention);
-	const [currentStream] = useAppStore((store) => store.currentStream);
+const RetentionForm = (props: { updateRetentionConfig: ({ config }: { config: any }) => void }) => {
+	const [retention] = useStreamStore((store) => store.retention);
 	const form = useForm({
 		mode: 'controlled',
 		initialValues: {
@@ -40,25 +38,17 @@ const RetentionForm = (props: { onToggleRetentionModal: () => void; getLogRetent
 		});
 	}, [retention]);
 
-	const { updateLogStreamRetention } = useRetentionEditor(currentStream || '');
-
-	const onSuccess = useCallback(() => {
-		props.getLogRetentionDataRefetch();
-		props.onToggleRetentionModal();
-	}, []);
-
 	const onSubmit = useCallback(
 		({ reset }: { reset?: boolean }) => {
 			if (reset) {
-				updateLogStreamRetention({ config: [], onSuccess });
+				props.updateRetentionConfig({ config: [] });
 			} else {
 				const { hasErrors } = form.validate();
 				if (hasErrors) return;
 
 				const parsedDuration = `${form.values.duration}d`;
-				updateLogStreamRetention({
+				props.updateRetentionConfig({
 					config: [{ ...form.values, duration: parsedDuration }],
-					onSuccess,
 				});
 			}
 		},
@@ -99,7 +89,11 @@ const RetentionForm = (props: { onToggleRetentionModal: () => void; getLogRetent
 				/>
 			</Stack>
 			<Stack style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-				<Button className={classes.submitBtn} onClick={() => onSubmit({ reset: true })} variant="outline" disabled={retention.duration === 0}>
+				<Button
+					className={classes.submitBtn}
+					onClick={() => onSubmit({ reset: true })}
+					variant="outline"
+					disabled={retention.duration === 0}>
 					Reset Retention
 				</Button>
 				<Button className={classes.submitBtn} onClick={() => onSubmit({ reset: false })} disabled={!form.isDirty()}>
@@ -110,11 +104,18 @@ const RetentionForm = (props: { onToggleRetentionModal: () => void; getLogRetent
 	);
 };
 
-const Settings = (props: {isLoading: boolean}) => {
+const Settings = (props: {
+	isLoading: boolean;
+	getCacheError: boolean;
+	updateCacheStatus: ({ type }: { type: boolean }) => void;
+	updateRetentionConfig: ({ config }: { config: any }) => void;
+}) => {
+	const [isStandAloneMode] = useAppStore((store) => store.isStandAloneMode);
+	const [cacheEnabled] = useStreamStore((store) => store.cacheEnabled);
 	return (
 		<Stack className={classes.sectionContainer} gap={0}>
 			<Header />
-			<Stack gap={0} h="100%">
+			<Stack gap={0} h="100%" pr="0.65rem" pl="0.65rem">
 				{props.isLoading ? (
 					<Stack style={{ flex: 1, width: '100%', alignItems: 'centrer', justifyContent: 'center' }}>
 						<Stack style={{ alignItems: 'center' }}>
@@ -129,28 +130,29 @@ const Settings = (props: {isLoading: boolean}) => {
 								flexDirection: 'row',
 								alignItems: 'center',
 								justifyContent: 'space-between',
-								border: 'none',
-								...(true ? {} : { display: 'none' }),
+								borderColor: 'transparent',
+								borderBottomColor: '#dee2e6',
+								...(isStandAloneMode ? {} : { display: 'none' }),
 							}}>
 							<Text className={classes.fieldTitle}>Caching</Text>
 							<Stack style={{}}>
-								{false ? (
+								{props.getCacheError ? (
 									<Text className={classes.fieldDescription}>Global cache not set</Text>
 								) : (
-									<Switch
-										checked={false}
-										labelPosition="left"
-										// onChange={(event) =>
-										// 	updateCacheStatus({ type: event.currentTarget.checked, onSuccess: onCloseModal })
-										// }
-										label={false ? 'Enabled' : 'Disabled'}
-									/>
+									_.isBoolean(cacheEnabled) && (
+										<Switch
+											checked={cacheEnabled}
+											labelPosition="left"
+											onChange={(event) => props.updateCacheStatus({ type: event.currentTarget.checked })}
+											label={cacheEnabled ? 'Enabled' : 'Disabled'}
+										/>
+									)
 								)}
 							</Stack>
 						</Stack>
 						<Stack className={classes.fieldsContainer} style={{ border: 'none', flex: 1 }}>
 							<Text className={classes.fieldTitle}>Retention</Text>
-							{true && <RetentionForm onToggleRetentionModal={_.noop} getLogRetentionDataRefetch={_.noop} />}
+							<RetentionForm updateRetentionConfig={props.updateRetentionConfig} />
 						</Stack>
 					</>
 				)}

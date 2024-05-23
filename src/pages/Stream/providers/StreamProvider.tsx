@@ -85,6 +85,7 @@ type StreamStore = {
 	alertsConfig: TransformedAlerts;
 	info: StreamInfo;
 	sideBarOpen: boolean;
+	cacheEnabled: boolean | null;
 };
 
 type LogsStoreReducers = {
@@ -97,6 +98,7 @@ type LogsStoreReducers = {
 	transformAlerts: (alerts: TransformedAlert[]) => Alert[];
 	setCleanStoreForStreamChange: (store: StreamStore) => ReducerOutput;
 	toggleSideBar: (store: StreamStore) => ReducerOutput;
+	setCacheEnabled: (store: StreamStore, enabled: boolean) => ReducerOutput;
 };
 
 const initialState: StreamStore = {
@@ -121,7 +123,7 @@ const initialState: StreamStore = {
 		 "static_schema_flag": true //Optional - dont display in console if API response does not have this field
 	},
 	sideBarOpen: false,
-
+	cacheEnabled: null
 };
 
 const { Provider: StreamProvider, useStore: useStreamStore } = initContext(initialState);
@@ -136,6 +138,11 @@ const toggleSideBar = (store: StreamStore) => {
 	}
 }
 
+const setCacheEnabled = (_store: StreamStore, enabled: boolean) => {
+	return {
+		cacheEnabled: enabled
+	}
+}
 
 const parseType = (type: any): 'text' | 'number' => {
 	if (typeof type === 'object') {
@@ -318,7 +325,8 @@ const streamStoreReducers: LogsStoreReducers = {
 	transformAlerts,
 	setCleanStoreForStreamChange,
 	setStats,
-	toggleSideBar
+	toggleSideBar,
+	setCacheEnabled
 };
 
 export { StreamProvider, useStreamStore, streamStoreReducers };
