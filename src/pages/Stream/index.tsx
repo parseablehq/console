@@ -27,7 +27,7 @@ const Logs: FC = () => {
 	const [maximized] = useAppStore((store) => store.maximized);
 	const [sideBarOpen, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
 
-	const { getDataSchema, loading: schemaLoading } = useGetLogStreamSchema();
+	const { getDataSchema, loading, error } = useGetLogStreamSchema();
 
 	useEffect(() => {
 		if (!_.isEmpty(currentStream)) {
@@ -41,6 +41,9 @@ const Logs: FC = () => {
 	
 	if (!currentStream) return null;
 	if (!_.includes(STREAM_VIEWS, view)) return null;
+
+	const isSchemaLoading = !error && loading;
+	// todo - have separate ui components for loading and error states
 
 	return (
 		<Box style={{ flex: 1, display: 'flex', position: 'relative', flexDirection: 'row', width: '100%' }}>
@@ -58,11 +61,11 @@ const Logs: FC = () => {
 				<PrimaryToolbar />
 				{view === 'explore' && <SecondaryToolbar />}
 				{view === 'explore' ? (
-					<StaticLogTable schemaLoading={schemaLoading} />
+					<StaticLogTable schemaLoading={isSchemaLoading} />
 				) : view === 'live-tail' ? (
 					<LiveLogTable />
 				) : (
-					<Management schemaLoading={schemaLoading} />
+					<Management schemaLoading={isSchemaLoading} />
 				)}
 			</Stack>
 		</Box>

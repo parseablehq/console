@@ -12,15 +12,19 @@ const Management = (props: {schemaLoading: boolean}) => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const getStreamAlertsConfig = useGetAlerts(currentStream || '');
 	const getStreamStats = useLogStreamStats(currentStream || '')
+
+	// todo - handle loading and error states separately
+	const isStatsLoading = getStreamStats.getLogStreamStatsDataIsLoading || getStreamStats.getLogStreamStatsDataIsError
+	const isAlertsLoading = getStreamAlertsConfig.isError || getStreamAlertsConfig.isLoading
 	return (
 		<Stack className={classes.viewConatiner}>
 			<Stack style={{ flexDirection: 'row', height: '50%' }} gap={24}>
-				<Stats isLoading={getStreamStats.getLogStreamStatsDataIsLoading} />
+				<Stats isLoading={isStatsLoading} />
 				<Info isLoading={false} />
 			</Stack>
 			<Stack style={{ flexDirection: 'row', height: '50%' }} gap={24}>
 				<Settings isLoading={false}/>
-				<Alerts isLoading={getStreamAlertsConfig.isLoading} isError={getStreamAlertsConfig.isError} schemaLoading={props.schemaLoading}/>
+				<Alerts isLoading={isAlertsLoading} schemaLoading={props.schemaLoading}/>
 			</Stack>
 		</Stack>
 	);

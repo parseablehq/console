@@ -246,12 +246,6 @@
 	color: var(--mantine-color-gray-9);
 }
 
-.streamSelect {
-	/* margin-top: 10px;  */
-	 /* adjustments for neg margin for input */
-	/* margin-left: 0.625rem; */
-}
-
 .iconBtn {
     cursor: pointer;
     align-items: center;

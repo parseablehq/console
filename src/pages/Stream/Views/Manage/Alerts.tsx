@@ -5,10 +5,8 @@ import _ from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { IconEdit, IconInfoCircleFilled, IconPlus, IconTrash } from '@tabler/icons-react';
 import { UseFormReturnType, useForm } from '@mantine/form';
-import { managementStoreReducers } from '../../providers/ManageProvider';
 import { useStreamStore } from '../../providers/StreamProvider';
 
-const {} = managementStoreReducers;
 const defaultColumnTypeConfig = { column: '', operator: '=', value: '', repeats: 1, ignoreCase: false };
 const defaultColumnTypeRule = { type: 'column', config: defaultColumnTypeConfig };
 
@@ -584,8 +582,7 @@ const AlertList = (props: { selectAlert: selectAlert, isLoading: boolean }) => {
 	);
 };
 
-const Alerts = (props: {isLoading: boolean, isError: boolean, schemaLoading: boolean}) => {
-	// todo: implement loading state & no data state
+const Alerts = (props: {isLoading: boolean, schemaLoading: boolean}) => {
 	const [alertName, setAlertName] = useState<string>('');
 	const [alertModalOpen, setAlertModalOpen] = useState<boolean>(false);
 

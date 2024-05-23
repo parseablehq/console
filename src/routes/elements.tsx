@@ -6,7 +6,6 @@ import MainLayout from '@/layouts/MainLayout';
 import { AppProvider } from '@/layouts/MainLayout/providers/AppProvider';
 import { LogsProvider } from '@/pages/Stream/providers/LogsProvider';
 import { FilterProvider } from '@/pages/Stream/providers/FilterProvider';
-import { ManagementProvider } from '@/pages/Stream/providers/ManageProvider';
 import { StreamProvider } from '@/pages/Stream/providers/StreamProvider';
 
 export const HomeElement: FC = () => {
@@ -35,9 +34,7 @@ export const StreamElement: FC = () => {
 			<StreamProvider>
 				<LogsProvider>
 					<FilterProvider>
-						<ManagementProvider>
-							<Stream />
-						</ManagementProvider>
+						<Stream />
 					</FilterProvider>
 				</LogsProvider>
 			</StreamProvider>
