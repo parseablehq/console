@@ -123,7 +123,7 @@ const TimeRange: FC = () => {
 						<Stack className={customRangeContainer}>
 							<Stack className={shiftIntervalContainer}>
 								<Text className={classes.shiftIntervalLabel} ta="center">
-									Jump Interval
+									Shift Interval (In Mins)
 								</Text>
 								<NumberInput w={100} min={1} value={shiftInterval} onChange={onSetShiftInterval} />
 							</Stack>

@@ -118,6 +118,7 @@ const getDefaultTimeRange = (duration: FixedDuration = DEFAULT_FIXED_DURATIONS) 
 	const endTime = now;
 	const startTimeLabel = dayjs(startTime).format('HH:mm A DD MMM YY');
 	const endTimeLabel = dayjs(endTime).format('HH:mm A DD MMM YY');
+
 	return {
 		startTime: startTime.toDate(),
 		endTime: now.toDate(),
@@ -580,7 +581,8 @@ const getCleanStoreForRefetch = (store: LogsStore) => {
 	const { tableOpts, data, timeRange } = store;
 	const { interval, type } = timeRange;
 
-	const duration = _.find(FIXED_DURATIONS, (duration) => duration.name === timeRange.label);
+	const duration = _.find(FIXED_DURATIONS, (duration) => duration.milliseconds === timeRange.interval);
+
 	const updatedTimeRange = interval && type === 'fixed' ? { timeRange: getDefaultTimeRange(duration) } : {};
 	return {
 		tableOpts: {
