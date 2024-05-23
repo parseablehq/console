@@ -21,17 +21,17 @@ const StatsTableHeaderRow = () => {
 		<Stack style={{ flexDirection: 'row'}}>
 			<Stack w={titleWidth} />
 			<Stack w={bigNoWidth}>
-				<Text ta="center" className={classes.description}>
+				<Text ta="center" className={classes.fieldDescription} style={{fontSize:'0.9rem'}}>
 					Active
 				</Text>
 			</Stack>
 			<Stack w={bigNoWidth}>
-				<Text ta="center" className={classes.description}>
+				<Text ta="center" className={classes.fieldDescription} style={{fontSize:'0.9rem'}}>
 					Lifetime
 				</Text>
 			</Stack>
 			<Stack w={bigNoWidth}>
-				<Text ta="center" className={classes.description}>
+				<Text ta="center" className={classes.fieldDescription} style={{fontSize:'0.9rem'}}>
 					Deleted
 				</Text>
 			</Stack>
@@ -84,7 +84,6 @@ const defaultIngestedSizeData = {
 
 const IngestedSizeRow = () => {
 	const [stats] = useStreamStore((store) => store.stats);
-	console.log(stats, 'stats');
 	const ingestionData = _.chain(stats)
 		.get('ingestion', {})
 		.thru((e: {}) => ({ ...defaultIngestedSizeData, ...e }))
@@ -122,7 +121,6 @@ const defaultStorageData = {
 
 const StorageSizeRow = () => {
 	const [stats] = useStreamStore((store) => store.stats);
-	console.log(stats, 'stats');
 	const storageData = _.chain(stats)
 		.get('storage', {})
 		.thru((e: {}) => ({ ...defaultStorageData, ...e }))

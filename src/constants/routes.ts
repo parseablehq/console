@@ -11,16 +11,18 @@ export const OIDC_NOT_CONFIGURED_ROUTE = '/oidc-not-configured';
 export const CLUSTER_ROUTE = '/cluster';
 export const STREAM_ROUTE = '/:streamName/:view?'
 
+export const STREAM_VIEWS = ['explore', 'manage', 'live-tail']
+
 export const PATHS = {
 	all: '/*',
 	home: '/',
-	explore: '/:streamName/explore',
+	explore: '/:streamName/:view?',
 	login: '/login',
-	liveTail: '/:streamName/live-tail',
+	liveTail: '/:streamName/:view?',
 	stats: '/:streamName/stats',
 	config: '/:streamName/config',
 	users: '/users',
 	oidcNotConfigured: '/oidc-not-configured',
 	cluster: '/cluster',
-	manage: '/:streamName/manage',
+	manage: '/:streamName/:view?',
 } as { [key: string]: string };

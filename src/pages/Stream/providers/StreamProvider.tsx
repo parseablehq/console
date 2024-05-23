@@ -70,8 +70,6 @@ export type TransformedAlerts = {
 	alerts: TransformedAlert[];
 };
 
-export type currentView = 'explore' | 'live-tail' | 'manage';
-
 type StreamStore = {
 	// meta
 	schema: LogStreamSchemaData | null;
@@ -86,6 +84,7 @@ type StreamStore = {
 	};
 	alertsConfig: TransformedAlerts;
 	info: StreamInfo;
+	sideBarOpen: boolean;
 };
 
 type LogsStoreReducers = {
@@ -97,6 +96,7 @@ type LogsStoreReducers = {
 	setStats: (store: StreamStore, alertsResponse: AxiosResponse<LogStreamStat>) => ReducerOutput;
 	transformAlerts: (alerts: TransformedAlert[]) => Alert[];
 	setCleanStoreForStreamChange: (store: StreamStore) => ReducerOutput;
+	toggleSideBar: (store: StreamStore) => ReducerOutput;
 };
 
 const initialState: StreamStore = {
@@ -119,14 +119,23 @@ const initialState: StreamStore = {
 		"cache_enabled": true,
 		"time_partition": "log_date", //Optional - dont display in console if API response does not have this field
 		 "static_schema_flag": true //Optional - dont display in console if API response does not have this field
-	}
+	},
+	sideBarOpen: false,
+
 };
 
 const { Provider: StreamProvider, useStore: useStreamStore } = initContext(initialState);
 
-const streamChangeCleanup = (_store: StreamStore) => {
-	return { ...initialState };
+const streamChangeCleanup = (store: StreamStore) => {
+	return { ...initialState, sideBarOpen: store.sideBarOpen };
 };
+
+const toggleSideBar = (store: StreamStore) => {
+	return {
+		sideBarOpen: !store.sideBarOpen
+	}
+}
+
 
 const parseType = (type: any): 'text' | 'number' => {
 	if (typeof type === 'object') {
@@ -308,7 +317,8 @@ const streamStoreReducers: LogsStoreReducers = {
 	setAlertsConfig,
 	transformAlerts,
 	setCleanStoreForStreamChange,
-	setStats
+	setStats,
+	toggleSideBar
 };
 
 export { StreamProvider, useStreamStore, streamStoreReducers };

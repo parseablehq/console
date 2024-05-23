@@ -9,9 +9,9 @@ import RefreshNow from '@/components/Header/RefreshNow';
 import Querier from './Querier';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useCallback, useEffect } from 'react';
-import { useLogsStore } from '../providers/LogsProvider';
 import StreamDropdown from '@/components/Header/StreamDropdown';
 import { notifications } from '@mantine/notifications';
+import { useParams } from 'react-router-dom';
 
 const renderMaximizeIcon = () => <IconMaximize size={px('1.4rem')} stroke={1.5} />;
 const renderDeleteIcon = () => <IconTrash size={px('1.4rem')} stroke={1.5} />;
@@ -30,7 +30,7 @@ const DeleteStreamButton = () => {
 
 const PrimaryToolbar = () => {
 	const [maximized] = useAppStore((store) => store.maximized);
-	const [currentView] = useLogsStore((store) => store.currentView);
+	const {view} = useParams();
 
 	useEffect(() => {
 		if (maximized) {
@@ -45,7 +45,7 @@ const PrimaryToolbar = () => {
 	return (
 		<Stack className={classes.logsSecondaryToolbar} gap="0.675rem" style={{ height: STREAM_PRIMARY_TOOLBAR_HEIGHT }}>
 			<StreamDropdown />
-			{currentView === 'manage' ? (
+			{view === 'manage' ? (
 				<DeleteStreamButton />
 			) : (
 				<>

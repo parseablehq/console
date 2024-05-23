@@ -39,7 +39,7 @@ const navItems = [
 		icon: IconBinaryTree2,
 		label: 'Stream',
 		path: '/explore',
-		route: EXPLORE_ROUTE,
+		route: STREAM_ROUTE,
 	},
 ];
 
@@ -97,7 +97,7 @@ const Navbar: FC = () => {
 
 				const defaultStream = currentStream && currentStream.length !== 0 ? currentStream : userSpecificStreams[0].name;
 				const stream = !streamName || streamName.length === 0 ? defaultStream : streamName;
-				const path = `/${stream}${view ? '/' + view : ""}`;
+				const path = `/${stream}${view ? '/' + view : "/explore"}`;
 				setAppStore((store) => changeStream(store, stream));
 
 				if (path !== location.pathname) {
@@ -145,6 +145,7 @@ const Navbar: FC = () => {
 					<Stack justify="center" align="center" gap={0}>
 						{navItems.map((navItem, index) => {
 							const isActiveItem = navItem.route === currentRoute;
+							console.log({currentRoute, "dk": navItem.route})
 							return (
 								<Stack
 									className={`${styles.navItemContainer} ${isActiveItem && styles.navItemActive}`}
@@ -164,6 +165,7 @@ const Navbar: FC = () => {
 							if (navItem.route === CLUSTER_ROUTE && !userAccessMap.hasUserAccess) return null;
 
 							const isActiveItem = navItem.route === currentRoute;
+							
 							return (
 								<Stack
 									className={`${styles.navItemContainer} ${isActiveItem && styles.navItemActive}`}

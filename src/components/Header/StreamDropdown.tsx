@@ -3,9 +3,11 @@ import { useCallback, useEffect, useRef } from 'react';
 import classes from './styles/LogQuery.module.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { STREAM_VIEWS } from '@/constants/routes';
+import _ from 'lodash';
 
 const StreamDropdown = () => {
-	const { streamName } = useParams();
+	const { streamName, view } = useParams();
 
 	const [currentStream] = useAppStore(store => store.currentStream)
 	const [userSpecificStreams] = useAppStore(store => store.userSpecificStreams)
@@ -16,8 +18,10 @@ const StreamDropdown = () => {
 		if (value === null) return;
 
 		valueRef.current = value;
-		navigate(`/${value}/explore`);
-	}, []);
+
+		const targetView = _.includes(STREAM_VIEWS, view) ? view : 'explore'
+		navigate(`/${value}/${targetView}`);
+	}, [view]);
 
 	useEffect(() => {
 		valueRef.current = streamName || null;

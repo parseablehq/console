@@ -167,8 +167,6 @@ type CustQuerySearchState = {
 	activeMode: null | 'filters' | 'sql';
 };
 
-export type currentView = 'explore' | 'live-tail' | 'manage';
-
 type LogsStore = {
 	timeRange: TimeRange;
 	quickFilters: QuickFilters;
@@ -183,7 +181,6 @@ type LogsStore = {
 		retentionModalOpen: boolean;
 		queryBuilderModalOpen: boolean;
 	};
-	currentView: currentView;
 
 	tableOpts: {
 		disabledColumns: string[];
@@ -238,7 +235,6 @@ type LogsStoreReducers = {
 	toggleLiveTail: (store: LogsStore) => ReducerOutput;
 	setSelectedLog: (store: LogsStore, log: Log | null) => ReducerOutput;
 	toggleSideBar: (store: LogsStore) => ReducerOutput;
-	toggleCurrentView: (store: LogsStore, currentView: currentView) => ReducerOutput;
 
 	// table opts reducers
 	toggleDisabledColumns: (store: LogsStore, columnName: string) => ReducerOutput;
@@ -272,7 +268,6 @@ const initialState: LogsStore = {
 	selectedLog: null,
 	custQuerySearchState: defaultCustQuerySearchState,
 	sideBarOpen: false,
-	currentView: 'explore',
 	modalOpts: {
 		deleteModalOpen: false,
 		alertsModalOpen: false,
@@ -739,12 +734,6 @@ const toggleSideBar = (store: LogsStore) => {
 	}
 }
 
-const toggleCurrentView = (_store: LogsStore, currentView: currentView) => {
-	return {
-		currentView
-	}
-}
-
 const logsStoreReducers: LogsStoreReducers = {
 	setTimeRange,
 	setshiftInterval,
@@ -784,7 +773,6 @@ const logsStoreReducers: LogsStoreReducers = {
 	setRetention,
 	setCleanStoreForStreamChange,
 	toggleSideBar,
-	toggleCurrentView,
 	setTableHeaders
 };
 

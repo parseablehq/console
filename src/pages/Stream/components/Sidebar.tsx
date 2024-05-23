@@ -1,7 +1,5 @@
 import { Stack, Text, ThemeIcon, px } from '@mantine/core';
 import classes from '../styles/SideBar.module.css';
-import StreamDropdown from '@/components/Header/StreamDropdown';
-import { useLogsStore, logsStoreReducers, currentView } from '../providers/LogsProvider';
 import {
 	IconBolt,
 	IconChevronLeft,
@@ -9,16 +7,17 @@ import {
 	IconFileSettings,
 	IconExclamationCircle,
 	IconFileInvoice,
-	IconFileStack,
 	IconSettings,
 	IconTrash,
 } from '@tabler/icons-react';
-import IconButton from '@/components/Button/IconButton';
 import { useCallback } from 'react';
-import { IconLogs } from '@tabler/icons-react';
+import { useStreamStore, streamStoreReducers } from '../providers/StreamProvider';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { STREAM_VIEWS } from '@/constants/routes';
+import _ from 'lodash';
 
-const { toggleAlertsModal, toggleLiveTail, toggleSideBar, toggleCurrentView } = logsStoreReducers;
-
+const { toggleSideBar } = streamStoreReducers;
 const renderlogsIcon = (isactive: boolean) => {
 	return (
 		<svg
@@ -45,32 +44,29 @@ const renderlogsIcon = (isactive: boolean) => {
 	);
 };
 
-type SideBarProps = {
-	open: boolean;
-};
-const renderAlertsIcon = () => <IconExclamationCircle size={px('1.4rem')} stroke={1.5} />;
-const renderSettingsIcon = () => <IconSettings size={px('1.4rem')} stroke={1.5} />;
-const renderLiveTailIcon = () => <IconBolt size={px('1.4rem')} stroke={1.5} />;
-const renderDeleteIcon = () => <IconTrash size={px('1.4rem')} stroke={1.5} />;
-const renderInfoIcon = () => <IconFileInvoice size={px('1.4rem')} stroke={1.5} />;
-
 type MenuItemProps = {
 	sideBarOpen: boolean;
-	setCurrentView: (view: currentView) => void;
-	currentView: currentView;
+	setCurrentView: (view: string) => void;
+	currentView: string;
 };
 
 const AllLogsButton = (props: MenuItemProps) => {
 	const viewName = 'explore';
 	const isActive = props.currentView === viewName;
 	const additionalClassNames = `${!props.sideBarOpen ? classes.shrink : ''} ${isActive ? classes.activeMenuItem : ''}`;
-	const additionalStyles = isActive ? {color: 'white'} : {};
+	const additionalStyles = isActive ? { color: 'white' } : {};
 	return (
 		<Stack
 			onClick={() => props.setCurrentView(viewName)}
 			className={`${classes.menuItemContainer} ${additionalClassNames}`}>
-			<ThemeIcon size={32} className={classes.menuIconContainer}>{renderlogsIcon(props.currentView === viewName)}</ThemeIcon>
-			{props.sideBarOpen && <Text style={additionalStyles} className={classes.menuLabel}>Explore</Text>}
+			<ThemeIcon size={32} className={classes.menuIconContainer}>
+				{renderlogsIcon(props.currentView === viewName)}
+			</ThemeIcon>
+			{props.sideBarOpen && (
+				<Text style={additionalStyles} className={classes.menuLabel}>
+					Explore
+				</Text>
+			)}
 		</Stack>
 	);
 };
@@ -79,7 +75,7 @@ const ConfigButton = (props: MenuItemProps) => {
 	const viewName = 'manage';
 	const isActive = props.currentView === viewName;
 	const additionalClassNames = `${!props.sideBarOpen ? classes.shrink : ''} ${isActive ? classes.activeMenuItem : ''}`;
-	const additionalStyles = isActive ? {color: 'white'} : {};
+	const additionalStyles = isActive ? { color: 'white' } : {};
 	return (
 		<Stack
 			onClick={() => props.setCurrentView(viewName)}
@@ -87,7 +83,11 @@ const ConfigButton = (props: MenuItemProps) => {
 			<ThemeIcon className={classes.menuIconContainer}>
 				<IconFileSettings style={additionalStyles} size={px('1.4rem')} stroke={1.5} />
 			</ThemeIcon>
-			{props.sideBarOpen && <Text style={additionalStyles} className={classes.menuLabel}>Manage</Text>}
+			{props.sideBarOpen && (
+				<Text style={additionalStyles} className={classes.menuLabel}>
+					Manage
+				</Text>
+			)}
 		</Stack>
 	);
 };
@@ -96,28 +96,36 @@ const LiveTailMenu = (props: MenuItemProps) => {
 	const viewName = 'live-tail';
 	const isActive = props.currentView === viewName;
 	const additionalClassNames = `${!props.sideBarOpen ? classes.shrink : ''} ${isActive ? classes.activeMenuItem : ''}`;
-	const additionalStyles = isActive ? {color: 'white'} : {};
+	const additionalStyles = isActive ? { color: 'white' } : {};
 	return (
 		<Stack
 			onClick={() => props.setCurrentView(viewName)}
 			className={`${classes.menuItemContainer} ${additionalClassNames}`}>
 			<ThemeIcon className={classes.menuIconContainer}>
-				<IconBolt size={px('1.4rem')} stroke={1.5} style={additionalStyles}/>
+				<IconBolt size={px('1.4rem')} stroke={1.5} style={additionalStyles} />
 			</ThemeIcon>
-			{props.sideBarOpen && <Text style={additionalStyles} className={classes.menuLabel}>Live Tail</Text>}
+			{props.sideBarOpen && (
+				<Text style={additionalStyles} className={classes.menuLabel}>
+					Live Tail
+				</Text>
+			)}
 		</Stack>
 	);
 };
 
-const SideBar = (props: SideBarProps) => {
-	const [sideBarOpen, setLogsStore] = useLogsStore((store) => store.sideBarOpen);
-	const [currentView] = useLogsStore((store) => store.currentView);
+const SideBar = () => {
+	const [sideBarOpen, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
+	const [currentStream] = useAppStore(store => store.currentStream)
+	const {view} = useParams();
 	const onToggle = useCallback(() => {
-		setLogsStore((store) => toggleSideBar(store));
+		setStreamStore((store) => toggleSideBar(store));
 	}, []);
+	const navigate = useNavigate();
 
-	const setCurrentView = useCallback((view: currentView) => {
-		setLogsStore((store) => toggleCurrentView(store, view));
+	const setCurrentView = useCallback((view: string) => {
+		if (_.includes(STREAM_VIEWS, view)) {
+			navigate(`/${currentStream}/${view}`);
+		}
 	}, []);
 
 	return (
@@ -135,9 +143,9 @@ const SideBar = (props: SideBarProps) => {
 				</Stack>
 			</Stack>
 			<Stack className={classes.menuListContainer}>
-				<AllLogsButton sideBarOpen={sideBarOpen} setCurrentView={setCurrentView} currentView={currentView} />
-				<LiveTailMenu sideBarOpen={sideBarOpen} setCurrentView={setCurrentView} currentView={currentView} />
-				<ConfigButton sideBarOpen={sideBarOpen} setCurrentView={setCurrentView} currentView={currentView} />
+				<AllLogsButton sideBarOpen={sideBarOpen} setCurrentView={setCurrentView} currentView={view || ''} />
+				<LiveTailMenu sideBarOpen={sideBarOpen} setCurrentView={setCurrentView} currentView={view || ''} />
+				<ConfigButton sideBarOpen={sideBarOpen} setCurrentView={setCurrentView} currentView={view || ''} />
 			</Stack>
 		</Stack>
 	);

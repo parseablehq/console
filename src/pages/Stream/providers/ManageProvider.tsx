@@ -69,8 +69,6 @@ export type TransformedAlerts = {
 	alerts: TransformedAlert[];
 };
 
-export type currentView = 'explore' | 'live-tail' | 'manage';
-
 type ManagementStore = {
 	modalOpts: {
 		deleteModalOpen: boolean;
