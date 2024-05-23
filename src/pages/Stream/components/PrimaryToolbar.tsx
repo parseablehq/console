@@ -13,6 +13,7 @@ import StreamDropdown from '@/components/Header/StreamDropdown';
 import { notifications } from '@mantine/notifications';
 import { useParams } from 'react-router-dom';
 import _ from 'lodash';
+import StreamingButton from '@/components/Header/StreamingButton';
 
 const renderMaximizeIcon = () => <IconMaximize size={px('1.4rem')} stroke={1.5} />;
 const renderDeleteIcon = () => <IconTrash size={px('1.4rem')} stroke={1.5} />;
@@ -43,6 +44,7 @@ const ExploreToolbar = () => (
 const LiveTailToolbar = () => (
 	<>
 		<StreamDropdown />
+		<StreamingButton />
 		<MaximizeButton />
 	</>
 );
