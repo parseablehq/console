@@ -36,8 +36,8 @@ const Logs: FC = () => {
 		}
 	}, [currentStream]);
 	
-	const sideBarWidth = sideBarOpen ? '13%' : '5%';
-	const contentWidth = sideBarOpen ? '87%' : '95%';
+	const sideBarWidth = sideBarOpen ? '10%' : '5%';
+	const contentWidth = sideBarOpen ? '90%' : '95%';
 	
 	if (!currentStream) return null;
 	if (!_.includes(STREAM_VIEWS, view)) return null;

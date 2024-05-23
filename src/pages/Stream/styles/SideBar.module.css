@@ -7,17 +7,19 @@
 .menuItemContainer {
     gap: 0.5rem;
     flex-direction: row;
-    align-items: center;
     cursor: pointer;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 1.5rem;
     border: 1px solid var(--mantine-color-gray-2);
     border-radius: 0.45rem;
+    align-items: center;
+    width: fit-content;
     &:hover {
         background-color: var(--mantine-color-gray-0);
     }
 
     &.shrink {
         justify-content: center;
+        padding: 0.5rem 1rem;
     }
 
     &.activeMenuItem {
@@ -28,7 +30,7 @@
 
 .menuListContainer {
     gap: 0.8rem;
-    padding: 0 1.25rem;
+    align-items: center;
 }
 
 .menuIconContainer {
