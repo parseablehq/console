@@ -1,7 +1,7 @@
 import { Stack } from '@mantine/core';
 import classes from '../../styles/Management.module.css';
 import Alerts from './Alerts';
-import { useGetAlerts } from '@/hooks/useAlertsEditor';
+import useAlertsQuery from '@/hooks/useAlertsEditor';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import Settings from './Settings';
 import Stats from './Stats';
@@ -13,7 +13,7 @@ import { useCacheToggle } from '@/hooks/useCacheToggle';
 
 const Management = (props: { schemaLoading: boolean }) => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const getStreamAlertsConfig = useGetAlerts(currentStream || '');
+	const getStreamAlertsConfig = useAlertsQuery(currentStream || '');
 	const getStreamStats = useLogStreamStats(currentStream || '');
 	const getRetentionConfig = useRetentionQuery(currentStream || '');
 	const { getCacheError, updateCacheStatus } = useCacheToggle(currentStream || '');
@@ -36,7 +36,11 @@ const Management = (props: { schemaLoading: boolean }) => {
 					updateCacheStatus={updateCacheStatus}
 					updateRetentionConfig={getRetentionConfig.updateLogStreamRetention}
 				/>
-				<Alerts isLoading={isAlertsLoading} schemaLoading={props.schemaLoading} />
+				<Alerts
+					isLoading={isAlertsLoading}
+					schemaLoading={props.schemaLoading}
+					updateAlerts={getStreamAlertsConfig.updateLogStreamAlerts}
+				/>
 			</Stack>
 		</Stack>
 	);

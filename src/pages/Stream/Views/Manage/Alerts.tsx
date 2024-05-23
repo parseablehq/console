@@ -1,14 +1,15 @@
 import { Button, Stack, Text, Box, Tooltip, Modal, TextInput, Select, Checkbox, NumberInput, Loader } from '@mantine/core';
 import classes from '../../styles/Management.module.css';
-import { TransformedAlert } from '../../providers/LogsProvider';
+import { TransformedAlert } from '../../providers/StreamProvider';
 import _ from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { IconEdit, IconInfoCircleFilled, IconPlus, IconTrash } from '@tabler/icons-react';
 import { UseFormReturnType, useForm } from '@mantine/form';
-import { useStreamStore } from '../../providers/StreamProvider';
+import { useStreamStore, streamStoreReducers } from '../../providers/StreamProvider';
 
 const defaultColumnTypeConfig = { column: '', operator: '=', value: '', repeats: 1, ignoreCase: false };
-const defaultColumnTypeRule = { type: 'column', config: defaultColumnTypeConfig };
+const defaultColumnTypeRule = { type: 'column' as 'column', config: defaultColumnTypeConfig };
+const {transformAlerts} = streamStoreReducers;
 
 const stringOperators = [
 	{ value: '=', label: 'equals to' },
@@ -101,7 +102,7 @@ const useAlertsForm = (opts: FormOpts) => {
 			name: (value) => isValidName(value, opts.allAlertNames || []),
 			message: (value) => (_.isEmpty(value) ? 'Message cannot be empty' : null),
 			rule: {
-				type: (value) => (_.includes([columnRuleType, compositeRuleType], value) ? null : 'Unknown rule type'),
+				type: (value: 'column' | 'composite') => (_.includes([columnRuleType, compositeRuleType], value) ? null : 'Unknown rule type'),
 			},
 			targets: {
 				endpoint: (value) => (_.isEmpty(value) ? 'Cannot be empty' : null),
@@ -142,7 +143,7 @@ const RuleSectionHeader = (props: RuleSectionHeaderProps) => {
 				<Text className={classes.fieldTitle}>Rule</Text>
 				<Text className={classes.fieldDescription}>Description for rule</Text>
 			</Stack>
-			<Select w="30%" data={[columnRuleType, compositeRuleType]} {...form.getInputProps('rule.type')} />
+			<Select w="30%" data={[columnRuleType as 'column', compositeRuleType as 'composite']} {...form.getInputProps('rule.type')} />
 		</Stack>
 	);
 };
@@ -473,12 +474,13 @@ const AlertForm = (props: { form: AlertsFormType }) => {
 
 type AlertsFormType = UseFormReturnType<TransformedAlert, (values: TransformedAlert) => TransformedAlert>;
 
-const AlertsModal = (props: { open: boolean; alertName: string; onClose: () => void }) => {
-	const { open, alertName, onClose } = props;
+const AlertsModal = (props: { open: boolean; alertName: string; onClose: () => void, updateAlerts: ({ config, onSuccess }: { config: any, onSuccess: () => void }) => void; }) => {
+	const { open, alertName, onClose, updateAlerts } = props;
 	const [alertsConfig] = useStreamStore((store) => store.alertsConfig);
 	const { alerts } = alertsConfig;
 	const alert = _.find(alerts, (alert) => alert.name === alertName);
-	const { form } = useAlertsForm({ formValues: defaultAlert, allAlertNames: [] });
+	const allAlertNames = _.map(alerts, (alert) => alert.name);
+	const { form } = useAlertsForm({ formValues: defaultAlert, allAlertNames });
 
 	useEffect(() => {
 		if (!_.isEmpty(alert)) {
@@ -488,8 +490,24 @@ const AlertsModal = (props: { open: boolean; alertName: string; onClose: () => v
 		}
 	}, [alert]);
 
-	// todo
-	// check alerts title if uniq
+	const onSubmit = useCallback(() => {
+		const errors = form.validate()
+		if (!errors.hasErrors) {
+			const formValues = form.values;
+			const allAlerts = (() => {
+				if (alert) {
+					const alertIndex = _.findIndex(alerts, alert => alert.name === formValues.name)
+					const modifiedAlerts = _.clone(alerts);
+					modifiedAlerts[alertIndex] = formValues; 
+					return modifiedAlerts;
+				} else {
+					return [...alerts, formValues]
+				}
+			})()
+			const transformedAlerts = transformAlerts(allAlerts)
+			updateAlerts({config: {...alertsConfig, alerts: transformedAlerts}, onSuccess: onClose})
+		}
+	}, [updateAlerts, form, alertsConfig, alert])
 
 	return (
 		<Modal
@@ -512,7 +530,7 @@ const AlertsModal = (props: { open: boolean; alertName: string; onClose: () => v
 						</Button>
 					</Box>
 					<Box>
-						<Button onClick={() => {}}>Save</Button>
+						<Button onClick={onSubmit}>Save</Button>
 					</Box>
 				</Stack>
 			</Stack>
@@ -539,18 +557,18 @@ const Header = (props: { selectAlert: selectAlert, isLoading: boolean }) => {
 	);
 };
 
-const AlertItem = (props: { alert: TransformedAlert; selectAlert: selectAlert }) => {
+const AlertItem = (props: { alert: TransformedAlert; selectAlert: selectAlert, onDeleteAlert: (name: string) => void; }) => {
 	const { alert, selectAlert } = props;
 	const { name } = alert;
 
 	return (
-		<Stack className={classes.alertItemContainer} onClick={() => selectAlert(name)}>
+		<Stack className={classes.alertItemContainer}>
 			<Text className={classes.alertName}>{name}</Text>
 			<Stack className={classes.alertActionsContainer}>
 				<Tooltip label="Edit">
-					<IconEdit stroke={1.2} />
+					<IconEdit stroke={1.2} onClick={() => selectAlert(name)} />
 				</Tooltip>
-				<Tooltip label="Delete">
+				<Tooltip label="Delete" onClick={() => props.onDeleteAlert(name)}>
 					<IconTrash stroke={1.2} />
 				</Tooltip>
 			</Stack>
@@ -560,9 +578,21 @@ const AlertItem = (props: { alert: TransformedAlert; selectAlert: selectAlert })
 
 type selectAlert = (title: string) => void;
 
-const AlertList = (props: { selectAlert: selectAlert, isLoading: boolean }) => {
+const AlertList = (props: { selectAlert: selectAlert, isLoading: boolean, updateAlerts: ({ config }: { config: any }) => void; }) => {
 	const [alertsConfig] = useStreamStore((store) => store.alertsConfig);
 	const { alerts } = alertsConfig;
+
+	const onDeleteAlert = useCallback(
+		(alertName: string) => {
+			const alertIndex = _.findIndex(alerts, (alert) => alert.name === alertName);
+			const modifiedAlerts = _.clone(alerts);
+			modifiedAlerts.splice(alertIndex, 1);
+			const transformedAlerts = transformAlerts(modifiedAlerts)
+			props.updateAlerts({ config: { ...alertsConfig, alerts: transformedAlerts } });
+		},
+		[alertsConfig],
+	);
+
 	return (
 		<Stack className={classes.listContainer}>
 			{props.isLoading ? (
@@ -574,7 +604,7 @@ const AlertList = (props: { selectAlert: selectAlert, isLoading: boolean }) => {
 			) : (
 				<>
 					{_.map(alerts, (alert) => {
-						return <AlertItem alert={alert} selectAlert={props.selectAlert} />;
+						return <AlertItem alert={alert} selectAlert={props.selectAlert} onDeleteAlert={onDeleteAlert}/>;
 					})}
 				</>
 			)}
@@ -582,7 +612,11 @@ const AlertList = (props: { selectAlert: selectAlert, isLoading: boolean }) => {
 	);
 };
 
-const Alerts = (props: {isLoading: boolean, schemaLoading: boolean}) => {
+const Alerts = (props: {
+	isLoading: boolean;
+	schemaLoading: boolean;
+	updateAlerts: ({ config, onSuccess }: { config: any, onSuccess?: () => void; }) => void;
+}) => {
 	const [alertName, setAlertName] = useState<string>('');
 	const [alertModalOpen, setAlertModalOpen] = useState<boolean>(false);
 
@@ -597,9 +631,9 @@ const Alerts = (props: {isLoading: boolean, schemaLoading: boolean}) => {
 
 	return (
 		<Stack className={classes.sectionContainer} gap={0}>
-			<AlertsModal open={alertModalOpen} alertName={alertName} onClose={closeModal} />
+			<AlertsModal open={alertModalOpen} alertName={alertName} onClose={closeModal} updateAlerts={props.updateAlerts}/>
 			<Header selectAlert={selectAlert} isLoading={props.isLoading} />
-			<AlertList selectAlert={selectAlert} isLoading={props.isLoading}/>
+			<AlertList selectAlert={selectAlert} isLoading={props.isLoading} updateAlerts={props.updateAlerts}/>
 		</Stack>
 	);
 };
