@@ -122,7 +122,7 @@ const SideBar = () => {
 		if (_.includes(STREAM_VIEWS, view)) {
 			navigate(`/${currentStream}/${view}`);
 		}
-	}, []);
+	}, [currentStream]);
 
 	return (
 		<Stack className={classes.container}>
