@@ -197,7 +197,7 @@ const LoadingView = () => {
 	);
 };
 
-const Footer = () => {
+const Footer = (props: { loaded: boolean }) => {
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const [filteredData] = useLogsStore((store) => store.data.filteredData);
 	const { totalPages, currentOffset, currentPage, perPage, totalCount, headers } = tableOpts;
@@ -242,10 +242,10 @@ const Footer = () => {
 	return (
 		<Stack className={tableStyles.footerContainer} gap={0}>
 			<Stack w="100%" justify="center" align="flex-start">
-				<TotalLogsCount />
+				{!props.loaded ? null : <TotalLogsCount />}
 			</Stack>
 			<Stack w="100%" justify="center">
-				{true ? (
+				{props.loaded ? (
 					<Pagination.Root
 						total={totalPages}
 						value={currentPage}
@@ -289,21 +289,23 @@ const Footer = () => {
 				) : null}
 			</Stack>
 			<Stack w="100%" align="flex-end" style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-				<Menu position="top">
-					<Menu.Target>
-						<div>
-							<IconButton renderIcon={renderExportIcon} />
-						</div>
-					</Menu.Target>
-					<Menu.Dropdown style={{}}>
-						<Menu.Item onClick={() => exportHandler('CSV')} style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
-							CSV
-						</Menu.Item>
-						<Menu.Item onClick={() => exportHandler('JSON')} style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
-							JSON
-						</Menu.Item>
-					</Menu.Dropdown>
-				</Menu>
+				{props.loaded && (
+					<Menu position="top">
+						<Menu.Target>
+							<div>
+								<IconButton renderIcon={renderExportIcon} />
+							</div>
+						</Menu.Target>
+						<Menu.Dropdown style={{}}>
+							<Menu.Item onClick={() => exportHandler('CSV')} style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
+								CSV
+							</Menu.Item>
+							<Menu.Item onClick={() => exportHandler('JSON')} style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
+								JSON
+							</Menu.Item>
+						</Menu.Dropdown>
+					</Menu>
+				)}
 				<LimitControl />
 			</Stack>
 		</Stack>
@@ -394,7 +396,7 @@ const LogTable = (props: { schemaLoading: boolean }) => {
 			) : (
 				<ErrorView message={errorMessage} />
 			)}
-			<Footer />
+			<Footer loaded={showTable}/>
 		</TableContainer>
 	);
 };

@@ -25,7 +25,7 @@ const {
 
 const TimeRange: FC = () => {
 	const [timeRange, setLogsStore] = useLogsStore(store => store.timeRange);
-	const {label, shiftInterval, interval, startTime, endTime} = timeRange;
+	const {label, shiftInterval, interval, startTime, endTime, type} = timeRange;
 	const handleOuterClick = useCallback((event: any) => {
 		const targetClassNames:  string[] = event.target?.classList || [];
 		const maybeSubmitBtnClassNames: string[] = event.target.closest('button')?.classList || [];
@@ -106,8 +106,11 @@ const TimeRange: FC = () => {
 							{FIXED_DURATIONS.map((duration) => {
 								return (
 									<UnstyledButton
-										disabled={interval === duration.milliseconds}
-										className={[fixedRangeBtn, interval === duration.milliseconds && fixedRangeBtnSelected]
+										disabled={interval === duration.milliseconds && type === 'fixed'}
+										className={[
+											fixedRangeBtn,
+											interval === duration.milliseconds && type === 'fixed' && fixedRangeBtnSelected,
+										]
 											.filter(Boolean)
 											.join(' ')}
 										key={duration.name}

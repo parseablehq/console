@@ -4,8 +4,6 @@ import { FC, useEffect } from 'react';
 import StaticLogTable from './Views/Explore/StaticLogTable'
 import LiveLogTable from './Views/LiveTail/LiveLogTable';
 import ViewLog from './components/ViewLog';
-import DeleteStreamModal from './components/DeleteStreamModal';
-import RententionModal from './components/RetentionModal';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import SideBar from './components/Sidebar';
 import Management from './Views/Manage/Management';
@@ -46,8 +44,6 @@ const Logs: FC = () => {
 
 	return (
 		<Box style={{ flex: 1, display: 'flex', position: 'relative', flexDirection: 'row', width: '100%' }}>
-			<DeleteStreamModal />
-			<RententionModal />
 			<ViewLog />
 			<Stack w={sideBarWidth}>
 				<SideBar />
@@ -66,7 +62,7 @@ const Logs: FC = () => {
 				) : view === 'live-tail' ? (
 					<LiveLogTable />
 				) : (
-					<Management />
+					<Management schemaLoading={schemaLoading} />
 				)}
 			</Stack>
 		</Box>

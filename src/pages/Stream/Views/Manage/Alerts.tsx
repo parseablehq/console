@@ -1,4 +1,4 @@
-import { Button, Stack, Text, Box, Tooltip, Modal, TextInput, Select, Checkbox, NumberInput } from '@mantine/core';
+import { Button, Stack, Text, Box, Tooltip, Modal, TextInput, Select, Checkbox, NumberInput, Loader } from '@mantine/core';
 import classes from '../../styles/Management.module.css';
 import { TransformedAlert } from '../../providers/LogsProvider';
 import _ from 'lodash';
@@ -522,15 +522,21 @@ const AlertsModal = (props: { open: boolean; alertName: string; onClose: () => v
 	);
 };
 
-const Header = (props: { selectAlert: selectAlert }) => {
+const Header = (props: { selectAlert: selectAlert, isLoading: boolean }) => {
 	return (
 		<Stack className={classes.headerContainer}>
 			<Text className={classes.title}>Alerts</Text>
-			<Box>
-				<Button variant="outline" onClick={() => props.selectAlert('')} h={'2rem'} leftSection={<IconPlus stroke={2}/>}>
-					New Alert
-				</Button>
-			</Box>
+			{!props.isLoading && (
+				<Box>
+					<Button
+						variant="outline"
+						onClick={() => props.selectAlert('')}
+						h={'2rem'}
+						leftSection={<IconPlus stroke={2} />}>
+						New Alert
+					</Button>
+				</Box>
+			)}
 		</Stack>
 	);
 };
@@ -556,20 +562,29 @@ const AlertItem = (props: { alert: TransformedAlert; selectAlert: selectAlert })
 
 type selectAlert = (title: string) => void;
 
-const AlertList = (props: { selectAlert: selectAlert }) => {
+const AlertList = (props: { selectAlert: selectAlert, isLoading: boolean }) => {
 	const [alertsConfig] = useStreamStore((store) => store.alertsConfig);
 	const { alerts } = alertsConfig;
 	return (
 		<Stack className={classes.listContainer}>
-			{_.map(alerts, (alert) => {
-				return <AlertItem alert={alert} selectAlert={props.selectAlert} />;
-			})}
+			{props.isLoading ? (
+				<Stack style={{ flex: 1, width: '100%', alignItems: 'centrer', justifyContent: 'center' }}>
+					<Stack style={{ alignItems: 'center' }}>
+						<Loader />
+					</Stack>
+				</Stack>
+			) : (
+				<>
+					{_.map(alerts, (alert) => {
+						return <AlertItem alert={alert} selectAlert={props.selectAlert} />;
+					})}
+				</>
+			)}
 		</Stack>
 	);
 };
 
-const Alerts = (props: {isLoading: boolean, isError: boolean}) => {
-	console.log(props)
+const Alerts = (props: {isLoading: boolean, isError: boolean, schemaLoading: boolean}) => {
 	// todo: implement loading state & no data state
 	const [alertName, setAlertName] = useState<string>('');
 	const [alertModalOpen, setAlertModalOpen] = useState<boolean>(false);
@@ -586,8 +601,8 @@ const Alerts = (props: {isLoading: boolean, isError: boolean}) => {
 	return (
 		<Stack className={classes.sectionContainer} gap={0}>
 			<AlertsModal open={alertModalOpen} alertName={alertName} onClose={closeModal} />
-			<Header selectAlert={selectAlert} />
-			<AlertList selectAlert={selectAlert} />
+			<Header selectAlert={selectAlert} isLoading={props.isLoading} />
+			<AlertList selectAlert={selectAlert} isLoading={props.isLoading}/>
 		</Stack>
 	);
 };

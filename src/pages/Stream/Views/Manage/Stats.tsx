@@ -1,4 +1,4 @@
-import { Stack, Text } from '@mantine/core';
+import { Loader, Stack, Text } from '@mantine/core';
 import classes from '../../styles/Management.module.css';
 import { useStreamStore } from '../../providers/StreamProvider';
 import _ from 'lodash';
@@ -168,23 +168,32 @@ const StorageSizeRow = () => {
 	);
 };
 
-const StatsTable = () => {
+const StatsTable = (props: {isLoading: boolean}) => {
 	return (
 		<Stack className={classes.statsTableContainer} gap={0}>
-			<StatsTableHeaderRow />
-			<EventsCountRow />
-			<IngestedSizeRow />
-			<StorageSizeRow />
+			{props.isLoading ? (
+				<Stack style={{ flex: 1, width: '100%', alignItems: 'centrer', justifyContent: 'center' }}>
+					<Stack style={{ alignItems: 'center' }}>
+						<Loader />
+					</Stack>
+				</Stack>
+			) : (
+				<>
+					<StatsTableHeaderRow />
+					<EventsCountRow />
+					<IngestedSizeRow />
+					<StorageSizeRow />
+				</>
+			)}
 		</Stack>
 	);
 };
 
 const Stats = (props: {isLoading: boolean}) => {
-	console.log(props.isLoading)
 	return (
 		<Stack className={classes.sectionContainer} gap={0}>
 			<Header />
-			<StatsTable />
+			<StatsTable isLoading={props.isLoading} />
 		</Stack>
 	);
 };

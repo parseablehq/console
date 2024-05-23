@@ -1,4 +1,4 @@
-import { Button, NumberInput, Stack, Switch, TextInput } from '@mantine/core';
+import { Button, Loader, NumberInput, Stack, Switch, TextInput } from '@mantine/core';
 import classes from '../../styles/Management.module.css';
 import { Text } from '@mantine/core';
 import { useLogsStore } from '../../providers/LogsProvider';
@@ -110,40 +110,50 @@ const RetentionForm = (props: { onToggleRetentionModal: () => void; getLogRetent
 	);
 };
 
-const Settings = () => {
+const Settings = (props: {isLoading: boolean}) => {
 	return (
 		<Stack className={classes.sectionContainer} gap={0}>
 			<Header />
 			<Stack gap={0} h="100%">
-				<Stack
-					className={classes.fieldsContainer}
-					style={{
-						flexDirection: 'row',
-						alignItems: 'center',
-						justifyContent: 'space-between',
-						border: 'none',
-						...(true ? {} : { display: 'none' }),
-					}}>
-					<Text className={classes.fieldTitle}>Caching</Text>
-					<Stack style={{}}>
-						{false ? (
-							<Text className={classes.fieldDescription}>Global cache not set</Text>
-						) : (
-							<Switch
-								checked={false}
-								labelPosition="left"
-								// onChange={(event) =>
-								// 	updateCacheStatus({ type: event.currentTarget.checked, onSuccess: onCloseModal })
-								// }
-								label={false ? 'Enabled' : 'Disabled'}
-							/>
-						)}
+				{props.isLoading ? (
+					<Stack style={{ flex: 1, width: '100%', alignItems: 'centrer', justifyContent: 'center' }}>
+						<Stack style={{ alignItems: 'center' }}>
+							<Loader />
+						</Stack>
 					</Stack>
-				</Stack>
-				<Stack className={classes.fieldsContainer} style={{ border: 'none', flex: 1 }}>
-					<Text className={classes.fieldTitle}>Retention</Text>
-					{true && <RetentionForm onToggleRetentionModal={_.noop} getLogRetentionDataRefetch={_.noop} />}
-				</Stack>
+				) : (
+					<>
+						<Stack
+							className={classes.fieldsContainer}
+							style={{
+								flexDirection: 'row',
+								alignItems: 'center',
+								justifyContent: 'space-between',
+								border: 'none',
+								...(true ? {} : { display: 'none' }),
+							}}>
+							<Text className={classes.fieldTitle}>Caching</Text>
+							<Stack style={{}}>
+								{false ? (
+									<Text className={classes.fieldDescription}>Global cache not set</Text>
+								) : (
+									<Switch
+										checked={false}
+										labelPosition="left"
+										// onChange={(event) =>
+										// 	updateCacheStatus({ type: event.currentTarget.checked, onSuccess: onCloseModal })
+										// }
+										label={false ? 'Enabled' : 'Disabled'}
+									/>
+								)}
+							</Stack>
+						</Stack>
+						<Stack className={classes.fieldsContainer} style={{ border: 'none', flex: 1 }}>
+							<Text className={classes.fieldTitle}>Retention</Text>
+							{true && <RetentionForm onToggleRetentionModal={_.noop} getLogRetentionDataRefetch={_.noop} />}
+						</Stack>
+					</>
+				)}
 			</Stack>
 		</Stack>
 	);

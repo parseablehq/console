@@ -106,6 +106,7 @@ const EventTimeLineGraph = () => {
 	const [{interval, startTime, endTime}] = useLogsStore(store => store.timeRange)
 
 	useEffect(() => {
+		console.log({currentStream, startTime, endTime}, "po9")
 		if (!currentStream || currentStream.length === 0) return;
 
 		const logsQuery = {
@@ -119,7 +120,7 @@ const EventTimeLineGraph = () => {
 			logsQuery,
 			query,
 		});
-	}, [currentStream, startTime, endTime]);
+	}, [currentStream, startTime.toISOString(), endTime.toISOString()]);
 
 	const isLoading = fetchQueryMutation.isLoading;
 	const avgEventCount = useMemo(() => calcAverage(fetchQueryMutation?.data), [fetchQueryMutation?.data]);

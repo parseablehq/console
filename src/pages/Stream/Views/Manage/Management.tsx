@@ -8,7 +8,7 @@ import Stats from './Stats';
 import { useLogStreamStats } from '@/hooks/useLogStreamStats';
 import Info from './Info';
 
-const Management = () => {
+const Management = (props: {schemaLoading: boolean}) => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const getStreamAlertsConfig = useGetAlerts(currentStream || '');
 	const getStreamStats = useLogStreamStats(currentStream || '')
@@ -16,11 +16,11 @@ const Management = () => {
 		<Stack className={classes.viewConatiner}>
 			<Stack style={{ flexDirection: 'row', height: '50%' }} gap={24}>
 				<Stats isLoading={getStreamStats.getLogStreamStatsDataIsLoading} />
-				<Info />
+				<Info isLoading={false} />
 			</Stack>
 			<Stack style={{ flexDirection: 'row', height: '50%' }} gap={24}>
-				<Settings />
-				<Alerts isLoading={getStreamAlertsConfig.isLoading} isError={getStreamAlertsConfig.isError} />
+				<Settings isLoading={false}/>
+				<Alerts isLoading={getStreamAlertsConfig.isLoading} isError={getStreamAlertsConfig.isError} schemaLoading={props.schemaLoading}/>
 			</Stack>
 		</Stack>
 	);

@@ -145,7 +145,6 @@ const Navbar: FC = () => {
 					<Stack justify="center" align="center" gap={0}>
 						{navItems.map((navItem, index) => {
 							const isActiveItem = navItem.route === currentRoute;
-							console.log({currentRoute, "dk": navItem.route})
 							return (
 								<Stack
 									className={`${styles.navItemContainer} ${isActiveItem && styles.navItemActive}`}
