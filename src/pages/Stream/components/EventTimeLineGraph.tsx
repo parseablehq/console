@@ -11,9 +11,9 @@ const { setTimeRange } = logsStoreReducers;
 
 const getCompactType = (interval: number) => {
 	const totalMinutes = interval / (1000 * 60);
-	if (totalMinutes <= 360) { // 6 hours
+	if (totalMinutes <= 60) { // 1 hour
 		return 'minute'
-	} else if (totalMinutes <= 7200) { // 5 days
+	} else if (totalMinutes <= 4320) { // 3 days
 		return 'hour'
 	} else {
 		return 'day'
