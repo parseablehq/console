@@ -7,6 +7,7 @@ import Settings from './Settings';
 import Stats from './Stats';
 import { useLogStreamStats } from '@/hooks/useLogStreamStats';
 import Info from './Info';
+import DeleteStreamModal from '../../components/DeleteStreamModal';
 
 const Management = (props: {schemaLoading: boolean}) => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
@@ -18,6 +19,7 @@ const Management = (props: {schemaLoading: boolean}) => {
 	const isAlertsLoading = getStreamAlertsConfig.isError || getStreamAlertsConfig.isLoading
 	return (
 		<Stack className={classes.viewConatiner}>
+			<DeleteStreamModal/>
 			<Stack style={{ flexDirection: 'row', height: '50%' }} gap={24}>
 				<Stats isLoading={isStatsLoading} />
 				<Info isLoading={false} />

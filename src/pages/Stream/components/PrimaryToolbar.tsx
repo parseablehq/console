@@ -14,7 +14,9 @@ import { notifications } from '@mantine/notifications';
 import { useParams } from 'react-router-dom';
 import _ from 'lodash';
 import StreamingButton from '@/components/Header/StreamingButton';
+import { useLogsStore, logsStoreReducers } from '../providers/LogsProvider';
 
+const {toggleDeleteModal} = logsStoreReducers;
 const renderMaximizeIcon = () => <IconMaximize size={px('1.4rem')} stroke={1.5} />;
 const renderDeleteIcon = () => <IconTrash size={px('1.4rem')} stroke={1.5} />;
 
@@ -25,8 +27,8 @@ const MaximizeButton = () => {
 };
 
 const DeleteStreamButton = () => {
-	const [_appStore, setAppStore] = useAppStore((_store) => null);
-	const onClick = useCallback(() => setAppStore(appStoreReducers.toggleMaximize), []);
+	const [_appStore, setLogsStore] = useLogsStore((_store) => null);
+	const onClick = useCallback(() => setLogsStore(toggleDeleteModal), []);
 	return <IconButton renderIcon={renderDeleteIcon} onClick={onClick} tooltipLabel="Delete" />;
 };
 

@@ -23,14 +23,14 @@ const DeleteStreamModal = () => {
 	const onDeleteSuccess = useCallback(() => {
 		onCloseModal();
 		navigate('/');
-	}, [])
+	}, []);
 	const [currentStream] = useAppStore((store) => store.currentStream);
 
 	const handleDeleteStream = useCallback(() => {
 		if (!currentStream) return;
 
-		deleteLogStreamMutation({ deleteStream: currentStream , onSuccess: onDeleteSuccess});
-	}, [currentStream])
+		deleteLogStreamMutation({ deleteStream: currentStream, onSuccess: onDeleteSuccess });
+	}, [currentStream]);
 
 	return (
 		<Modal
