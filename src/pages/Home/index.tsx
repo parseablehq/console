@@ -5,7 +5,7 @@ import { useEffect, type FC, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDocumentTitle } from '@mantine/hooks';
 import { useGetStreamMetadata } from '@/hooks/useGetStreamMetadata';
-import { HumanizeNumber, calcCompressionRate, formatBytes, sanitizeEventsCount } from '@/utils/formatBytes';
+import { calcCompressionRate, formatBytes, sanitizeEventsCount } from '@/utils/formatBytes';
 import { LogStreamRetention, LogStreamStat } from '@/@types/parseable/api/stream';
 import cardStyles from './styles/Card.module.css';
 import homeStyles from './styles/Home.module.css';
@@ -121,10 +121,6 @@ const sizetoInteger = (str: string) => {
 const sanitizeBytes = (str: any) => {
 	const size = sizetoInteger(str);
 	return size ? formatBytes(size) : '–';
-};
-
-const sanitizeCount = (val: any) => {
-	return typeof val === 'number' ? HumanizeNumber(val) : '–';
 };
 
 type StreamInfoProps = {

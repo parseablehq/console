@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { calcCompressionRate, sanitizeBytes, sanitizeEventsCount } from '@/utils/formatBytes';
 import { IconArrowDown } from '@tabler/icons-react';
 
-const Header = (props) => {
+const Header = () => {
 	return (
 		<Stack className={classes.headerContainer}>
 			<Text className={classes.title}>Stats</Text>
@@ -179,7 +179,8 @@ const StatsTable = () => {
 	);
 };
 
-const Stats = () => {
+const Stats = (props: {isLoading: boolean}) => {
+	console.log(props.isLoading)
 	return (
 		<Stack className={classes.sectionContainer} gap={0}>
 			<Header />

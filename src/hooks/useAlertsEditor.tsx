@@ -2,7 +2,7 @@ import { useMutation, useQuery } from 'react-query';
 import { getLogStreamAlerts, putLogStreamAlerts } from '@/api/logStream';
 import { notifyError, notifySuccess } from '@/utils/notification';
 import { AxiosError, isAxiosError } from 'axios';
-import { useStreamStore, streamStoreReducers, AlertsResponse, Alert } from '@/pages/Stream/providers/StreamProvider';
+import { useStreamStore, streamStoreReducers } from '@/pages/Stream/providers/StreamProvider';
 
 const { setAlertsConfig } = streamStoreReducers;
 export const useAlertsEditor = (streamName: string) => {
@@ -30,7 +30,7 @@ export const useAlertsEditor = (streamName: string) => {
 };
 
 export const useGetAlerts = (streamName: string) => {
-	const [, setStreamStore] = useStreamStore((store) => null);
+	const [, setStreamStore] = useStreamStore((_store) => null);
 	const { data, isError, isSuccess, isLoading, refetch } = useQuery(
 		['fetch-log-stream-alert', streamName],
 		() => getLogStreamAlerts(streamName),

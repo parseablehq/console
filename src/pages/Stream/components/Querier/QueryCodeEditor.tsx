@@ -11,6 +11,7 @@ import queryCodeStyles from '../../styles/QueryCode.module.css';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useFilterStore } from '../../providers/FilterProvider';
 import { LOAD_LIMIT, useLogsStore } from '../../providers/LogsProvider';
+import { useStreamStore } from '../../providers/StreamProvider';
 
 const genColumnConfig = (fields: Field[]) => {
 	const columnConfig = { leftColumns: [], rightColumns: [] };
@@ -41,7 +42,7 @@ const QueryCodeEditor: FC<{ queryCodeEditorRef: MutableRefObject<any>, onSqlSear
 	const [llmActive] = useAppStore((store) => store.instanceConfig?.llmActive);
 	const [] = useFilterStore((store) => store);
 	const [{ isQuerySearchActive, activeMode }] = useLogsStore((store) => store.custQuerySearchState);
-	const [schema] = useLogsStore((store) => store.data.schema);
+	const [schema] = useStreamStore((store) => store.schema);
 	const fields = schema?.fields || [];
 	const editorRef = React.useRef<any>();
 	const monacoRef = React.useRef<any>();

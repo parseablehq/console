@@ -714,20 +714,6 @@ const setRetention = (_store: LogsStore, retention: { duration?: string; descrip
 	};
 };
 
-const operatorLabelMap = {
-	lessThanEquals: '<=',
-	greaterThanEquals: '>=',
-	lessThan: '<',
-	greaterThan: '>',
-	equalTo: '=',
-	notEqualTo: '!=',
-	exact: '=',
-	notExact: '!=',
-	contains: '=%',
-	notContains: '!%',
-	regex: '~',
-};
-
 const toggleSideBar = (store: LogsStore) => {
 	return {
 		sideBarOpen: !store.sideBarOpen

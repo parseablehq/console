@@ -10,6 +10,7 @@ import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { useCallback, useEffect, useRef } from 'react';
 import { filterStoreReducers, noValueOperators, useFilterStore } from '../../providers/FilterProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { useStreamStore } from '../../providers/StreamProvider';
 
 const { setFields, parseQuery, storeAppliedQuery, resetFilters, toggleSubmitBtn } = filterStoreReducers;
 const { toggleQueryBuilder, toggleCustQuerySearchViewMode, applyCustomQuery, resetCustQuerySearchState } =
@@ -83,7 +84,7 @@ const Querier = () => {
 	const openBuilderModal = useCallback(() => {
 		setLogsStore((store) => toggleQueryBuilder(store));
 	}, []);
-	const [schema] = useLogsStore((store) => store.data.schema);
+	const [schema] = useStreamStore((store) => store.schema);
 	const [{ query, isSumbitDisabled }, setFilterStore] = useFilterStore((store) => store);
 
 	useEffect(() => {

@@ -1,7 +1,7 @@
 import useMountedState from '@/hooks/useMountedState';
-import { Box, Button, Divider, Menu, NumberInput, Stack, Text, Tooltip, UnstyledButton, px } from '@mantine/core';
+import { Box, Button, Divider, Menu, NumberInput, Stack, Text, UnstyledButton, px } from '@mantine/core';
 import { DateTimePicker } from '@mantine/dates';
-import { IconArrowLeft, IconCaretDown, IconCaretUp, IconChevronCompactUp, IconChevronLeft, IconChevronRight, IconClock } from '@tabler/icons-react';
+import { IconChevronLeft, IconChevronRight, IconClock } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import type { FC } from 'react';
 import { Fragment, useCallback, useMemo } from 'react';

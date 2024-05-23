@@ -1,7 +1,5 @@
 import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
-import { FIXED_DURATIONS, FixedDuration } from '@/constants/timeConstants';
 import initContext from '@/utils/initContext';
-import dayjs from 'dayjs';
 import _ from 'lodash';
 
 type ReducerOutput = Partial<ManagementStore>;
@@ -126,7 +124,7 @@ const setStreamSchema = (_store: ManagementStore, schema: LogStreamSchemaData) =
 	};
 };
 
-const getCleanStoreForRefetch = (store: ManagementStore) => {
+const getCleanStoreForRefetch = (_store: ManagementStore) => {
 	// const { tableOpts, data, timeRange } = store;
 	// const { interval, type } = timeRange;
 
@@ -153,7 +151,7 @@ const getCleanStoreForRefetch = (store: ManagementStore) => {
 	return initialState;
 };
 
-const setCleanStoreForStreamChange = (store: ManagementStore) => {
+const setCleanStoreForStreamChange = (_store: ManagementStore) => {
 	return initialState
 };
 

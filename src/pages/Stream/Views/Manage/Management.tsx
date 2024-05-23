@@ -20,7 +20,7 @@ const Management = () => {
 			</Stack>
 			<Stack style={{ flexDirection: 'row', height: '50%' }} gap={24}>
 				<Settings />
-				<Alerts isLoading={getStreamAlertsConfig.isLoading} error={getStreamAlertsConfig.isError} />
+				<Alerts isLoading={getStreamAlertsConfig.isLoading} isError={getStreamAlertsConfig.isError} />
 			</Stack>
 		</Stack>
 	);

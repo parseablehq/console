@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { IconEdit, IconInfoCircleFilled, IconPlus, IconTrash } from '@tabler/icons-react';
 import { UseFormReturnType, useForm } from '@mantine/form';
 import { managementStoreReducers } from '../../providers/ManageProvider';
-import { useStreamStore, ConfigType } from '../../providers/StreamProvider';
+import { useStreamStore } from '../../providers/StreamProvider';
 
 const {} = managementStoreReducers;
 const defaultColumnTypeConfig = { column: '', operator: '=', value: '', repeats: 1, ignoreCase: false };
@@ -82,18 +82,18 @@ type FormOpts = {
 	allAlertNames: string[];
 };
 
-const validateRuleConfig = (config: ConfigType | string) => {
-	if (_.isString(config)) {
-		return _.isEmpty(config) ? 'Cannot be empty' : null;
-	} else {
-		return {
-			column: _.isEmpty(config.column) ? 'Unknown Column' : null,
-			operator: _.isEmpty(config.operator) ? 'Unknown Operator' : null,
-			value: _.isString(config.value) || _.isNumber(config.value) ? null : 'Value cannot be empty',
-			repeats: _.isNumber(config.repeats) && config.repeats > 0 ? null : 'Must be an integer',
-		};
-	}
-};
+// const validateRuleConfig = (config: ConfigType | string) => {
+// 	if (_.isString(config)) {
+// 		return _.isEmpty(config) ? 'Cannot be empty' : null;
+// 	} else {
+// 		return {
+// 			column: _.isEmpty(config.column) ? 'Unknown Column' : null,
+// 			operator: _.isEmpty(config.operator) ? 'Unknown Operator' : null,
+// 			value: _.isString(config.value) || _.isNumber(config.value) ? null : 'Value cannot be empty',
+// 			repeats: _.isNumber(config.repeats) && config.repeats > 0 ? null : 'Must be an integer',
+// 		};
+// 	}
+// };
 
 const useAlertsForm = (opts: FormOpts) => {
 	const form = useForm<TransformedAlert>({
@@ -568,7 +568,8 @@ const AlertList = (props: { selectAlert: selectAlert }) => {
 	);
 };
 
-const Alerts = () => {
+const Alerts = (props: {isLoading: boolean, isError: boolean}) => {
+	console.log(props)
 	// todo: implement loading state & no data state
 	const [alertName, setAlertName] = useState<string>('');
 	const [alertModalOpen, setAlertModalOpen] = useState<boolean>(false);

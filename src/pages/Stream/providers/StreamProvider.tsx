@@ -162,7 +162,7 @@ const setStreamSchema = (_store: StreamStore, schema: LogStreamSchemaData) => {
 	};
 };
 
-const getCleanStoreForRefetch = (store: StreamStore) => {
+const getCleanStoreForRefetch = (_store: StreamStore) => {
 	// const { tableOpts, data, timeRange } = store;
 	// const { interval, type } = timeRange;
 
@@ -189,7 +189,7 @@ const getCleanStoreForRefetch = (store: StreamStore) => {
 	return initialState;
 };
 
-const setCleanStoreForStreamChange = (store: StreamStore) => {
+const setCleanStoreForStreamChange = (_store: StreamStore) => {
 	return initialState;
 };
 

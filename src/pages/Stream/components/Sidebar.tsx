@@ -5,10 +5,6 @@ import {
 	IconChevronLeft,
 	IconChevronRight,
 	IconFileSettings,
-	IconExclamationCircle,
-	IconFileInvoice,
-	IconSettings,
-	IconTrash,
 } from '@tabler/icons-react';
 import { useCallback } from 'react';
 import { useStreamStore, streamStoreReducers } from '../providers/StreamProvider';

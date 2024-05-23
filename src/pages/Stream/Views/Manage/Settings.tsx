@@ -1,4 +1,4 @@
-import { Box, Button, NumberInput, Stack, Switch, TextInput } from '@mantine/core';
+import { Button, NumberInput, Stack, Switch, TextInput } from '@mantine/core';
 import classes from '../../styles/Management.module.css';
 import { Text } from '@mantine/core';
 import { useLogsStore } from '../../providers/LogsProvider';
@@ -8,7 +8,7 @@ import _ from 'lodash';
 import { useCallback, useEffect } from 'react';
 import { useRetentionEditor } from '@/hooks/useRetentionEditor';
 
-const Header = (props) => {
+const Header = () => {
 	return (
 		<Stack className={classes.headerContainer}>
 			<Text className={classes.title}>Settings</Text>

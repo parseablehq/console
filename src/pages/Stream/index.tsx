@@ -1,6 +1,6 @@
-import { Box, Stack, Text } from '@mantine/core';
+import { Box, Stack } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
-import { FC, useEffect, useMemo } from 'react';
+import { FC, useEffect } from 'react';
 import StaticLogTable from './Views/Explore/StaticLogTable'
 import LiveLogTable from './Views/LiveTail/LiveLogTable';
 import ViewLog from './components/ViewLog';
@@ -13,24 +13,23 @@ import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useStreamStore, streamStoreReducers } from './providers/StreamProvider';
 import _ from 'lodash';
 import SecondaryToolbar from './components/SecondaryToolbar';
-import { LOGS_PRIMARY_TOOLBAR_HEIGHT, LOGS_SECONDARY_TOOLBAR_HEIGHT, PRIMARY_HEADER_HEIGHT, STREAM_PRIMARY_TOOLBAR_HEIGHT, STREAM_SECONDARY_TOOLBAR_HRIGHT } from '@/constants/theme';
+import {  PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 import PrimaryToolbar from './components/PrimaryToolbar';
 import { useParams } from 'react-router-dom';
 import { STREAM_VIEWS } from '@/constants/routes';
 
 const {
-	setCleanStoreForStreamChange: setCleanStreamStoreForStreamChange,
 	streamChangeCleanup,
 } = streamStoreReducers;
 
 const Logs: FC = () => {
 	useDocumentTitle('Parseable | Stream');
-	const { streamName, view } = useParams();
+	const { view } = useParams();
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [maximized] = useAppStore((store) => store.maximized);
 	const [sideBarOpen, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
 
-	const { getDataSchema, loading: schemaLoading, error: logStreamSchemaError } = useGetLogStreamSchema();
+	const { getDataSchema, loading: schemaLoading } = useGetLogStreamSchema();
 
 	useEffect(() => {
 		if (!_.isEmpty(currentStream)) {

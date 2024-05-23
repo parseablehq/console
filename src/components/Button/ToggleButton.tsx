@@ -1,4 +1,4 @@
-import { Box, Button, ButtonProps } from '@mantine/core';
+import { Button, ButtonProps } from '@mantine/core';
 import { FC, ReactNode } from 'react';
 import classes from './Button.module.css'
 

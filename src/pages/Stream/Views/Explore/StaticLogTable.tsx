@@ -1,5 +1,4 @@
 import { Tbody, Thead } from '@/components/Table';
-import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useQueryLogs } from '@/hooks/useQueryLogs';
 import {
 	Box,
@@ -85,11 +84,6 @@ const TotalLogsCount = () => {
 };
 
 const TableContainer = (props: { children: ReactNode }) => {
-	const [maximized] = useAppStore((store) => store.maximized);
-	const primaryHeaderHeight = !maximized
-		? PRIMARY_HEADER_HEIGHT + LOGS_PRIMARY_TOOLBAR_HEIGHT + LOGS_SECONDARY_TOOLBAR_HEIGHT
-		: 0;
-
 	return <Box className={tableStyles.container}>{props.children}</Box>;
 };
 
