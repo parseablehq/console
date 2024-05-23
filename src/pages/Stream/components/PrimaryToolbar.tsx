@@ -12,6 +12,7 @@ import { useCallback, useEffect } from 'react';
 import StreamDropdown from '@/components/Header/StreamDropdown';
 import { notifications } from '@mantine/notifications';
 import { useParams } from 'react-router-dom';
+import _ from 'lodash';
 
 const renderMaximizeIcon = () => <IconMaximize size={px('1.4rem')} stroke={1.5} />;
 const renderDeleteIcon = () => <IconTrash size={px('1.4rem')} stroke={1.5} />;
@@ -28,9 +29,34 @@ const DeleteStreamButton = () => {
 	return <IconButton renderIcon={renderDeleteIcon} onClick={onClick} tooltipLabel="Delete" />;
 };
 
+const ExploreToolbar = () => (
+	<>
+		<StreamDropdown />
+		<Querier />
+		<TimeRange />
+		<RefreshInterval />
+		<MaximizeButton />
+		<RefreshNow />
+	</>
+);
+
+const LiveTailToolbar = () => (
+	<>
+		<StreamDropdown />
+		<MaximizeButton />
+	</>
+);
+
+const ManagementToolbar = () => (
+	<>
+		<StreamDropdown />
+		<DeleteStreamButton />
+	</>
+);
+
 const PrimaryToolbar = () => {
 	const [maximized] = useAppStore((store) => store.maximized);
-	const {view} = useParams();
+	const { view } = useParams();
 
 	useEffect(() => {
 		if (maximized) {
@@ -44,18 +70,13 @@ const PrimaryToolbar = () => {
 
 	return (
 		<Stack className={classes.logsSecondaryToolbar} gap="0.675rem" style={{ height: STREAM_PRIMARY_TOOLBAR_HEIGHT }}>
-			<StreamDropdown />
-			{view === 'manage' ? (
-				<DeleteStreamButton />
-			) : (
-				<>
-					<Querier />
-					<TimeRange />
-					<RefreshInterval />
-					<MaximizeButton />
-					<RefreshNow />
-				</>
-			)}
+			{view === 'explore' ? (
+				<ExploreToolbar />
+			) : view === 'live-tail' ? (
+				<LiveTailToolbar />
+			) : view === 'manage' ? (
+				<ManagementToolbar />
+			) : null}
 		</Stack>
 	);
 };
