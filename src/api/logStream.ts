@@ -7,6 +7,7 @@ import {
 	LOG_STREAMS_RETRNTION_URL,
 	LOG_STREAMS_STATS_URL,
 	CREATE_STREAM_URL,
+	LOG_STREAMS_INFO_URL
 } from './constants';
 import { LogStreamData, LogStreamSchemaData } from '@/@types/parseable/api/stream';
 
@@ -44,4 +45,8 @@ export const deleteLogStream = (streamName: string) => {
 
 export const createLogStream = (streamName: string, data: any, headers: any) => {
 	return Axios().put(CREATE_STREAM_URL(streamName), data, { headers });
+};
+
+export const getLogStreamInfo = (streamName: string) => {
+	return Axios().get(LOG_STREAMS_INFO_URL(streamName));
 };

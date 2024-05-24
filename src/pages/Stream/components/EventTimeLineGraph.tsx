@@ -79,7 +79,7 @@ const getModifiedTimeRange = (
 
 const generateCountQuery = (streamName: string, startTime: Date, endTime: Date, interval: number) => {
 	const { modifiedEndTime, modifiedStartTime, compactType } = getModifiedTimeRange(startTime, endTime, interval);
-	return `SELECT DATE_TRUNC(${compactType}, p_timestamp) AS timestamp, COUNT(*) AS log_count FROM ${streamName} WHERE p_timestamp BETWEEN '${modifiedStartTime.toISOString()}' AND '${modifiedEndTime.toISOString()}' GROUP BY timestamp ORDER BY timestamp`;
+	return `SELECT DATE_TRUNC('${compactType}', p_timestamp) AS timestamp, COUNT(*) AS log_count FROM ${streamName} WHERE p_timestamp BETWEEN '${modifiedStartTime.toISOString()}' AND '${modifiedEndTime.toISOString()}' GROUP BY timestamp ORDER BY timestamp`;
 };
 
 const NoDataView = () => {
@@ -114,7 +114,9 @@ const parseGraphData = (data: GraphRecord[], avg: number, startTime: Date, endTi
 
 	const allTimestamps = getAllIntervals(modifiedStartTime, modifiedEndTime, compactType)
 	const parsedData = allTimestamps.map((ts) => {
-		const countData = data.find((d) => `${d.timestamp}Z` === ts.toISOString());
+		const countData = data.find((d) => {
+			return new Date(`${d.timestamp}Z`).toLocaleString() === ts.toLocaleString()});
+		
 		if (!countData || typeof countData !== 'object') {
 			return {
 				events: 0,

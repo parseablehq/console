@@ -6,6 +6,7 @@ export type LogStreamSchemaData = {
 	fields: Array<Field>;
 	metadata: Record<string, string>;
 };
+
 export type LogStreamStat = {
 	ingestion: {
 		count: number;
@@ -38,6 +39,8 @@ export type StreamInfo = {
 	cache_enabled: boolean;
 	time_partition: string;
 	static_schema_flag: boolean;
+    time_partition_limit: string,
+    custom_partition: string,
 }
 
 export type LogStreamRetention = Array<action>;

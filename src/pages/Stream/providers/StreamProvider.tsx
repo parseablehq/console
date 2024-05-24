@@ -83,7 +83,7 @@ type StreamStore = {
 		description: string;
 	};
 	alertsConfig: TransformedAlerts;
-	info: StreamInfo;
+	info: StreamInfo | {};
 	sideBarOpen: boolean;
 	cacheEnabled: boolean | null;
 };
@@ -99,6 +99,7 @@ type LogsStoreReducers = {
 	setCleanStoreForStreamChange: (store: StreamStore) => ReducerOutput;
 	toggleSideBar: (store: StreamStore) => ReducerOutput;
 	setCacheEnabled: (store: StreamStore, enabled: boolean) => ReducerOutput;
+	setStreamInfo: (_store: StreamStore, infoResponse: AxiosResponse<StreamInfo>) => ReducerOutput;
 };
 
 const initialState: StreamStore = {
@@ -115,13 +116,7 @@ const initialState: StreamStore = {
 		version: '',
 		alerts: [],
 	},
-	info: {
-		"created-at": "2024-04-21T03:51:57.302942942+00:00",
-		"first-event-at": "2024-04-21T03:59:52.579+00:00", //Optional - dont display in console if API response does not have this field
-		"cache_enabled": true,
-		"time_partition": "log_date", //Optional - dont display in console if API response does not have this field
-		 "static_schema_flag": true //Optional - dont display in console if API response does not have this field
-	},
+	info: {},
 	sideBarOpen: false,
 	cacheEnabled: null
 };
@@ -212,6 +207,12 @@ const setRetention = (_store: StreamStore, retention: { duration?: string; descr
 		},
 	};
 };
+
+const setStreamInfo = (_store: StreamStore, infoResponse: AxiosResponse<StreamInfo>) => {
+	return {
+		info: infoResponse.data
+	}
+}
 
 const operatorLabelMap = {
 	lessThanEquals: '<=',
@@ -326,7 +327,8 @@ const streamStoreReducers: LogsStoreReducers = {
 	setCleanStoreForStreamChange,
 	setStats,
 	toggleSideBar,
-	setCacheEnabled
+	setCacheEnabled,
+	setStreamInfo
 };
 
 export { StreamProvider, useStreamStore, streamStoreReducers };

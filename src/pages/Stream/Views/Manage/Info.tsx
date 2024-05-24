@@ -13,9 +13,9 @@ const Header = () => {
 	);
 };
 
-const InfoItem = (props: { title: string; value: string }) => {
+const InfoItem = (props: { title: string; value: string, fullWidth?: boolean }) => {
 	return (
-		<Stack w="33%" gap={0}>
+		<Stack w={props.fullWidth ? "100%" : "33%"} gap={0}>
 			<Text className={classes.fieldDescription}>{props.title}</Text>
 			<Text className={classes.fieldTitle}>{props.value}</Text>
 		</Stack>
@@ -25,6 +25,17 @@ const InfoItem = (props: { title: string; value: string }) => {
 const InfoData = (props: {isLoading: boolean}) => {
 	const [info] = useStreamStore((store) => store.info);
 	const [currentStream] = useAppStore((store) => store.currentStream);
+
+	const createdAt = _.chain(info).get("created-at", '').thru(val => val !== '' ? dayjs(val).format('HH:mm A DD MMM YYYY') : '-').value()
+	const firstEventAt = _.chain(info).get("first-event-at", "").thru(val => val !== '' ? dayjs(val).format('HH:mm A DD MMM YYYY') : '-').value()
+	const timePartition = _.get(info, 'time_partition', '-');
+	const staticSchemaFlag = _.chain(info)
+		.get('static_schema_flag', '')
+		.thru((val) => (val === 'true' ? 'Static' : 'Dynamic'))
+		.value();
+	const timePartitionLimit = _.chain(info).get('time_partition_limit', '').thru(val => val === '' ? '-' : `${val} day(s)`).value()
+	const customPartition = _.chain(info).get('custom_partition', '').split(',').join(", ").value();
+
 	return (
 		<Stack style={{ flex: 1, padding: '1.5rem' }} gap={20}>
 			{props.isLoading ? (
@@ -37,18 +48,16 @@ const InfoData = (props: {isLoading: boolean}) => {
 				<>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Name" value={currentStream || ''} />
-						<InfoItem title="Created At" value={dayjs(info['created-at']).format('HH:mm A DD MMM YYYY')} />
-						<InfoItem title="First Event At" value={dayjs(info['first-event-at']).format('HH:mm A DD MMM YYYY')} />
+						<InfoItem title="Created At" value={createdAt} />
+						<InfoItem title="First Event At" value={firstEventAt} />
 					</Stack>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-						<InfoItem title="Time Partition" value={info['time_partition'] || '-'} />
-						<InfoItem
-							title="Schema Type"
-							value={
-								info['static_schema_flag'] === true ? 'Static' : info['static_schema_flag'] === false ? 'Dynamic' : '-'
-							}
-						/>
-						<Stack w="33%" />
+						<InfoItem title="Schema Type" value={staticSchemaFlag} />
+						<InfoItem title="Time Partition" value={timePartition} />
+						<InfoItem title="Time Partition" value={timePartitionLimit} />
+					</Stack>
+					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+						<InfoItem title="Custom Partition" value={customPartition} fullWidth/>
 					</Stack>
 				</>
 			)}
