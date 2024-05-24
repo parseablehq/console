@@ -14,6 +14,7 @@ import { useGetStreamInfo } from '@/hooks/useGetStreamInfo';
 
 const Management = (props: { schemaLoading: boolean }) => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
+	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
 	const getStreamAlertsConfig = useAlertsQuery(currentStream || '');
 	const getStreamStats = useLogStreamStats(currentStream || '');
 	const getRetentionConfig = useRetentionQuery(currentStream || '');
@@ -23,8 +24,8 @@ const Management = (props: { schemaLoading: boolean }) => {
 	// todo - handle loading and error states separately
 	const isStatsLoading = getStreamStats.getLogStreamStatsDataIsLoading || getStreamStats.getLogStreamStatsDataIsError;
 	const isAlertsLoading = getStreamAlertsConfig.isError || getStreamAlertsConfig.isLoading;
-	const isSettingsLoading = getRetentionConfig.getLogRetentionIsLoading || getRetentionConfig.getLogRetentionIsError;
-	const isStreamInfoLoading = getStreamInfo.getStreamInfoLoading || getStreamInfo.getStreamInfoError
+	const isSettingsLoading = getRetentionConfig.getLogRetentionIsLoading || getRetentionConfig.getLogRetentionIsError || instanceConfig === null;
+	const isStreamInfoLoading = getStreamInfo.getStreamInfoLoading || getStreamInfo.getStreamInfoError;
 	return (
 		<Stack className={classes.viewConatiner}>
 			<DeleteStreamModal />
