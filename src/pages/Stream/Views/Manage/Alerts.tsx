@@ -599,7 +599,7 @@ const AlertList = (props: { selectAlert: selectAlert, isLoading: boolean, update
 	);
 
 	return (
-		<Stack className={classes.listContainer}>
+		<Stack className={classes.listContainer} gap={0}>
 			{props.isLoading ? (
 				<Stack style={{ flex: 1, width: '100%', alignItems: 'centrer', justifyContent: 'center' }}>
 					<Stack style={{ alignItems: 'center' }}>
