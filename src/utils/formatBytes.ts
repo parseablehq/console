@@ -26,7 +26,7 @@ export function HumanizeNumber(val: number) {
 }
 
 export const sanitizeEventsCount = (val: any) => {
-	return typeof val === 'number' ? HumanizeNumber(val) : '–';
+	return typeof val === 'number' ? HumanizeNumber(val) : '0';
 };
 
 export const sizetoInteger = (str: string) => {
@@ -38,7 +38,7 @@ export const sizetoInteger = (str: string) => {
 
 export const sanitizeBytes = (str: any) => {
 	const size = sizetoInteger(str);
-	return size ? formatBytes(size) : '–';
+	return size ? formatBytes(size) : '0 bytes';
 };
 
 export const calcCompressionRate = (storageSize: string, ingestionSize: string) => {
