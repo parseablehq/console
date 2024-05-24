@@ -34,7 +34,10 @@ const InfoData = (props: {isLoading: boolean}) => {
 		.thru((val) => (val === 'true' ? 'Static' : 'Dynamic'))
 		.value();
 	const timePartitionLimit = _.chain(info).get('time_partition_limit', '').thru(val => val === '' ? '-' : `${val} day(s)`).value()
-	const customPartition = _.chain(info).get('custom_partition', '').split(',').join(", ").value();
+	const customPartition = _.chain(info)
+		.get('custom_partition', '')
+		.thru((val) => (val === '' ? '-' : _.chain(val).split(',').join(', ').value()))
+		.value();
 
 	return (
 		<Stack style={{ flex: 1, padding: '1.5rem' }} gap={20}>
