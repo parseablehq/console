@@ -56,7 +56,7 @@ const RetentionForm = (props: { updateRetentionConfig: ({ config }: { config: an
 	);
 
 	return (
-		<Stack gap={0} flex={1} style={{ justifyContent: 'space-between' }}>
+		<Stack gap={12} flex={1} style={{ justifyContent: 'space-between' }}>
 			<Stack gap={8}>
 				<Stack gap={16} style={{ flexDirection: 'row', width: '100%' }}>
 					<NumberInput
@@ -150,7 +150,7 @@ const Settings = (props: {
 								)}
 							</Stack>
 						</Stack>
-						<Stack className={classes.fieldsContainer} style={{ border: 'none', flex: 1 }}>
+						<Stack className={classes.fieldsContainer} style={{ border: 'none', flex: 1, gap: 4 }}>
 							<Text className={classes.fieldTitle}>Retention</Text>
 							<RetentionForm updateRetentionConfig={props.updateRetentionConfig} />
 						</Stack>
