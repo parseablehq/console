@@ -490,6 +490,11 @@ const AlertsModal = (props: { open: boolean; alertName: string; onClose: () => v
 		}
 	}, [alert]);
 
+	const onSubmitSuccess = useCallback(() => {
+		form.setValues(defaultAlert);
+		onClose();
+	}, [])
+
 	const onSubmit = useCallback(() => {
 		const errors = form.validate()
 		if (!errors.hasErrors) {
@@ -505,7 +510,7 @@ const AlertsModal = (props: { open: boolean; alertName: string; onClose: () => v
 				}
 			})()
 			const transformedAlerts = transformAlerts(allAlerts)
-			updateAlerts({config: {...alertsConfig, alerts: transformedAlerts}, onSuccess: onClose})
+			updateAlerts({config: {...alertsConfig, alerts: transformedAlerts}, onSuccess: onSubmitSuccess})
 		}
 	}, [updateAlerts, form, alertsConfig, alert])
 

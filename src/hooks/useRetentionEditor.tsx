@@ -3,6 +3,7 @@ import { getLogStreamRetention, putLogStreamRetention } from '@/api/logStream';
 import { notifyError, notifySuccess } from '@/utils/notification';
 import { AxiosError, isAxiosError } from 'axios';
 import { useStreamStore, streamStoreReducers } from '@/pages/Stream/providers/StreamProvider';
+import _ from 'lodash';
 
 const { setRetention } = streamStoreReducers;
 
@@ -16,7 +17,8 @@ export const useRetentionQuery = (streamName: string) => {
 		refetch: getLogRetentionDataRefetch,
 	} = useQuery(['fetch-log-stream-retention', streamName], () => getLogStreamRetention(streamName), {
 		onSuccess: (data) => {
-			setStreamStore((store) => setRetention(store, data.data));
+			const retentionData = _.isArray(data.data) ? data.data[0] || {} : {}
+			setStreamStore((store) => setRetention(store, retentionData));
 		},
 		retry: false,
 		enabled: streamName !== '',

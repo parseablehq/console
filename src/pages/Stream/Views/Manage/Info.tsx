@@ -54,7 +54,7 @@ const InfoData = (props: {isLoading: boolean}) => {
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Schema Type" value={staticSchemaFlag} />
 						<InfoItem title="Time Partition" value={timePartition} />
-						<InfoItem title="Time Partition" value={timePartitionLimit} />
+						<InfoItem title="Time Partition Limit" value={timePartitionLimit} />
 					</Stack>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Custom Partition" value={customPartition} fullWidth/>
