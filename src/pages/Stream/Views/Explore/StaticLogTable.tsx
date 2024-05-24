@@ -236,7 +236,7 @@ const Footer = (props: { loaded: boolean }) => {
 				downloadDataAsJson(makeExportData(filteredData, headers, 'JSON'), filename);
 			}
 		},
-		[currentStream],
+		[currentStream, filteredData, headers],
 	);
 
 	return (
@@ -396,7 +396,7 @@ const LogTable = (props: { schemaLoading: boolean }) => {
 			) : (
 				<ErrorView message={errorMessage} />
 			)}
-			<Footer loaded={showTable}/>
+			<Footer loaded={showTable} />
 		</TableContainer>
 	);
 };
