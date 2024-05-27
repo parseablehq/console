@@ -1,85 +1,19 @@
 import { Paper, Skeleton, Stack, Text } from '@mantine/core';
 import classes from '../styles/EventTimeLineGraph.module.css';
 import { useQueryResult } from '@/hooks/useQueryResult';
-import { useCallback, useEffect, useMemo } from 'react';
-import dayjs from 'dayjs';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import dayjs, { Dayjs } from 'dayjs';
 import { ChartTooltipProps, AreaChart } from '@mantine/charts';
 import { HumanizeNumber } from '@/utils/formatBytes';
 import { logsStoreReducers, useLogsStore } from '../providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 const { setTimeRange } = logsStoreReducers;
 
-const getCompactType = (interval: number) => {
-	const totalMinutes = interval / (1000 * 60);
-	if (totalMinutes <= 60) { // 1 hour
-		return 'minute'
-	} else if (totalMinutes <= 4320) { // 3 days
-		return 'hour'
-	} else {
-		return 'day'
-	}
-}
+const START_RANGE = 30;
+const END_RANGE = 0;
 
-const getStartOfTs = (time: Date, compactType:  'day' | 'hour' | 'minute'): Date => {
-	if (compactType === 'minute') {
-		return time;
-	} else if (compactType === 'hour') {
-		return new Date(time.getFullYear(), time.getMonth(), time.getDate(), time.getHours());
-	} else {
-		return new Date(time.getFullYear(), time.getMonth(), time.getDate());
-	}
-}
-
-const getEndOfTs = (time: Date, compactType:  'day' | 'hour' | 'minute'): Date => {
-	if (compactType === 'minute') {
-		return time;
-	} else if (compactType === 'hour') {
-		return new Date(time.getFullYear(), time.getMonth(), time.getDate(), time.getHours() + 1);
-	} else {
-		return new Date(time.getFullYear(), time.getMonth(), time.getDate() + 1);
-	}
-}
-
-const getAllIntervals = (start: Date, end: Date, compactType: 'minute' | 'hour' | 'day'): Date[] => {
-    const result = [];
-    const current = new Date(start);
-
-    const increment = (date: Date, type: 'minute' | 'hour' | 'day') => {
-        switch (type) {
-            case 'minute':
-                date.setMinutes(date.getMinutes() + 1);
-                break;
-            case 'hour':
-                date.setHours(date.getHours() + 1);
-                break;
-            case 'day':
-                date.setDate(date.getDate() + 1);
-                break;
-        }
-    }
-
-    while (current <= end) {
-        result.push(new Date(current));
-        increment(current, compactType);
-    }
-
-    return result;
-}
-
-const getModifiedTimeRange = (
-	startTime: Date,
-	endTime: Date,
-	interval: number,
-): { modifiedStartTime: Date; modifiedEndTime: Date; compactType: 'day' | 'minute' | 'hour' } => {
-	const compactType = getCompactType(interval);
-	const modifiedStartTime = getStartOfTs(startTime, compactType);
-	const modifiedEndTime = getEndOfTs(endTime, compactType);
-	return { modifiedEndTime, modifiedStartTime, compactType };
-};	
-
-const generateCountQuery = (streamName: string, startTime: Date, endTime: Date, interval: number) => {
-	const { modifiedEndTime, modifiedStartTime, compactType } = getModifiedTimeRange(startTime, endTime, interval);
-	return `SELECT DATE_TRUNC('${compactType}', p_timestamp) AS timestamp, COUNT(*) AS log_count FROM ${streamName} WHERE p_timestamp BETWEEN '${modifiedStartTime.toISOString()}' AND '${modifiedEndTime.toISOString()}' GROUP BY timestamp ORDER BY timestamp`;
+const generateCountQuery = (streamName: string, startTime: string, endTime: string) => {
+	return `SELECT DATE_TRUNC('minute', p_timestamp) AS minute_range, COUNT(*) AS log_count FROM ${streamName} WHERE p_timestamp BETWEEN '${startTime}' AND '${endTime}' GROUP BY minute_range ORDER BY minute_range`;
 };
 
 const NoDataView = () => {
@@ -93,7 +27,7 @@ const NoDataView = () => {
 };
 
 type GraphRecord = {
-	timestamp: string;
+	minute_range: string;
 	log_count: number;
 };
 
@@ -106,32 +40,36 @@ const calcAverage = (data: GraphRecord[]) => {
 	return parseInt(Math.abs(total / data.length).toFixed(0));
 };
 
+const getAllTimestamps = (startTime: Dayjs) => {
+	const timestamps = [];
+	for (let i = 0; i < START_RANGE; i++) {
+		const ts = startTime.add(i + 1, 'minute');
+		timestamps.push(ts.toISOString().split('.')[0] + 'Z');
+	}
+	return timestamps;
+};
+
 // date_trunc removes tz info
 // filling data empty values where there is no rec
-const parseGraphData = (data: GraphRecord[], avg: number, startTime: Date, endTime: Date, interval: number) => {
+const parseGraphData = (data: GraphRecord[], avg: number, startTime: Dayjs) => {
 	if (!Array.isArray(data) || data.length === 0) return [];
-	const { modifiedEndTime, modifiedStartTime, compactType } = getModifiedTimeRange(startTime, endTime, interval);
 
-	const allTimestamps = getAllIntervals(modifiedStartTime, modifiedEndTime, compactType)
+	const allTimestamps = getAllTimestamps(startTime);
 	const parsedData = allTimestamps.map((ts) => {
-		const countData = data.find((d) => {
-			return new Date(`${d.timestamp}Z`).toLocaleString() === ts.toLocaleString()});
-		
+		const countData = data.find((d) => `${d.minute_range}Z` === ts);
 		if (!countData || typeof countData !== 'object') {
 			return {
 				events: 0,
 				minute: ts,
 				aboveAvgPercent: 0,
-				compactType
 			};
 		} else {
 			const aboveAvgCount = countData.log_count - avg;
 			const aboveAvgPercent = parseInt(((aboveAvgCount / avg) * 100).toFixed(2));
 			return {
 				events: countData.log_count,
-				minute: `${countData.timestamp}Z`,
+				minute: `${countData.minute_range}Z`,
 				aboveAvgPercent,
-				compactType
 			};
 		}
 	});
@@ -142,55 +80,61 @@ const parseGraphData = (data: GraphRecord[], avg: number, startTime: Date, endTi
 function ChartTooltip({ payload }: ChartTooltipProps) {
 	if (!payload || (Array.isArray(payload) && payload.length === 0)) return null;
 
-	const { minute, aboveAvgPercent, events, compactType } = payload[0]?.payload || {};
+	const { minute, aboveAvgPercent, events } = payload[0]?.payload || {};
 	const isAboveAvg = aboveAvgPercent > 0;
 	const startTime = dayjs(minute).utc(true);
-	const endTime = dayjs(minute).add(1, compactType);
+	const endTime = dayjs(minute).add(60, 'seconds');
 	return (
 		<Paper px="md" py="sm" withBorder shadow="md" radius="md">
 			<Text fw={600} mb={5}>
-				{`${startTime.format('DD MMM HH:mm A')} - ${endTime.format('DD MMM HH:mm A')}`}
+				{`${startTime.format('HH:mm:ss A')} - ${endTime.format('HH:mm:ss A')}`}
 			</Text>
 			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 				<Text>Events</Text>
 				<Text>{events}</Text>
 			</Stack>
-			<Stack mt={4} style={{ flexDirection: 'row' }}>
+			<Stack mt={4} style={{ flexDirection: 'row', justifyContent: 'center' }}>
 				<Text size="sm" c={isAboveAvg ? 'red.6' : 'green.8'}>{`${isAboveAvg ? '+' : ''}${aboveAvgPercent}% ${
 					isAboveAvg ? 'above' : 'below'
-				} average in the given time-range`}</Text>
+				} avg (Last 30 mins)`}</Text>
 			</Stack>
 		</Paper>
 	);
 }
 
+const generateTimeOpts = () => {
+	const endTime = dayjs().subtract(END_RANGE, 'minute').startOf('minute');
+	const startTime = endTime.subtract(START_RANGE, 'minute').startOf('minute');
+	return { startTime, endTime };
+};
+
 const EventTimeLineGraph = () => {
 	const { fetchQueryMutation } = useQueryResult();
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const [{interval, startTime, endTime}] = useLogsStore(store => store.timeRange)
+	const [timeOpts, _setTimeOpts] = useState<{ startTime: Dayjs; endTime: Dayjs }>(generateTimeOpts());
+	const { endTime, startTime } = timeOpts;
 
 	useEffect(() => {
 		if (!currentStream || currentStream.length === 0) return;
 
 		const logsQuery = {
 			streamName: currentStream,
-			startTime,
-			endTime,
+			startTime: startTime.toDate(),
+			endTime: endTime.toDate(),
 			access: [],
 		};
-		
-		const query = generateCountQuery(currentStream, startTime, endTime, interval);
+		const query = generateCountQuery(currentStream, startTime.toISOString(), endTime.toISOString());
 		fetchQueryMutation.mutate({
 			logsQuery,
 			query,
 		});
-	}, [currentStream, startTime.toISOString(), endTime.toISOString()]);
+	}, [currentStream]);
 
 	const isLoading = fetchQueryMutation.isLoading;
 	const avgEventCount = useMemo(() => calcAverage(fetchQueryMutation?.data), [fetchQueryMutation?.data]);
 	const graphData = useMemo(
-		() => parseGraphData(fetchQueryMutation?.data, avgEventCount, startTime, endTime, interval),
-		[fetchQueryMutation?.data, interval],
+		() => parseGraphData(fetchQueryMutation?.data, avgEventCount, startTime),
+		[fetchQueryMutation?.data],
 	);
 	const hasData = Array.isArray(graphData) && graphData.length !== 0;
 	const [, setLogsStore] = useLogsStore((store) => store.timeRange);
@@ -201,12 +145,10 @@ const EventTimeLineGraph = () => {
 		const samplePayload = activePayload[0];
 		if (!samplePayload || typeof samplePayload !== 'object') return;
 
-		const { minute, compactType } = samplePayload.payload || {};
+		const { minute } = samplePayload.payload || {};
 		const startTime = dayjs(minute);
-		const endTime = dayjs(minute).add(1, compactType);
-		setLogsStore((store) =>
-			setTimeRange(store, { type: 'custom', startTime: startTime, endTime: endTime }),
-		);
+		const endTime = dayjs(minute).add(60, 'seconds');
+		setLogsStore((store) => setTimeRange(store, { type: 'custom', startTime: startTime, endTime: endTime }));
 	}, []);
 
 	return (
@@ -219,12 +161,11 @@ const EventTimeLineGraph = () => {
 				{hasData ? (
 					<AreaChart
 						h="100%"
-						w="100%"
 						data={graphData}
 						dataKey="minute"
 						series={[{ name: 'events', color: 'indigo.5', label: 'Events' }]}
 						tooltipProps={{
-							content: ({ label, payload }) => <ChartTooltip label={label} payload={payload}/>,
+							content: ({ label, payload }) => <ChartTooltip label={label} payload={payload} />,
 							position: { y: -20 },
 						}}
 						valueFormatter={(value) => new Intl.NumberFormat('en-US').format(value)}
