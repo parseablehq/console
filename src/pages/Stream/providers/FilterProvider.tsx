@@ -121,8 +121,8 @@ type FilterStoreReducers = {
 	updateGroupCombinator: (store: FilterStore, id: string, op: Combinator) => ReducerOutput;
 	updateParentCombinator: (store: FilterStore, combinator: Combinator) => ReducerOutput;
 	updateRule: (store: FilterStore, groupId: string, ruleId: string, updateOpts: RuleUpdateOpts) => ReducerOutput;
-	parseQuery: (query: QueryType, currentStream: string) => string;
-	toggleSubmitBtn: (store:FilterStore, val: boolean) => ReducerOutput;
+	parseQuery: (query: QueryType, currentStream: string) => { where: string; parsedQuery: string };
+	toggleSubmitBtn: (store: FilterStore, val: boolean) => ReducerOutput;
 };
 
 const { Provider: FilterProvider, useStore: useFilterStore } = initContext(initialState);
@@ -222,15 +222,16 @@ export const noValueOperators = ['null', 'notNull'];
 
 const toggleSubmitBtn = (_store: FilterStore, val: boolean) => {
 	return {
-		isSumbitDisabled: val
-	}
-}
+		isSumbitDisabled: val,
+	};
+};
 
 // todo - custom rule processor to prevent converting number strings into numbers for text fields
 const parseQuery = (query: QueryType, currentStream: string) => {
 	// todo - custom rule processor to prevent converting number strings into numbers for text fields
 	const where = formatQuery(query, { format: 'sql', parseNumbers: true, quoteFieldNamesWith: ['"', '"'] });
-	return `select * from ${currentStream} where ${where} limit 9000`;
+	const parsedQuery = `select * from ${currentStream} where ${where} limit 9000`;
+	return { where, parsedQuery };
 };
 
 const storeAppliedQuery = (store: FilterStore) => {
@@ -297,7 +298,7 @@ const filterStoreReducers: FilterStoreReducers = {
 	updateParentCombinator,
 	updateRule,
 	parseQuery,
-	toggleSubmitBtn
+	toggleSubmitBtn,
 };
 
 export { FilterProvider, useFilterStore, filterStoreReducers };

@@ -7,8 +7,10 @@ import { ChartTooltipProps, AreaChart } from '@mantine/charts';
 import { HumanizeNumber } from '@/utils/formatBytes';
 import { logsStoreReducers, useLogsStore } from '../providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { useFilterStore, filterStoreReducers } from '../providers/FilterProvider';
 const { setTimeRange } = logsStoreReducers;
 
+const { parseQuery } = filterStoreReducers;
 const getCompactType = (interval: number) => {
 	const totalMinutes = interval / (1000 * 60);
 	if (totalMinutes <= 60) {
@@ -90,9 +92,10 @@ const generateCountQuery = (
 	startTime: Date,
 	endTime: Date,
 	compactType: 'day' | 'minute' | 'hour',
+	whereClause: string,
 ) => {
 	const range = compactTypeIntervalMap[compactType];
-	return `SELECT DATE_BIN('${range}', p_timestamp, '${startTime.toISOString()}') AS timestamp, COUNT(*) AS log_count FROM ${streamName} WHERE p_timestamp BETWEEN '${startTime.toISOString()}' AND '${endTime.toISOString()}' GROUP BY timestamp ORDER BY timestamp`;
+	return `SELECT DATE_BIN('${range}', p_timestamp, '${startTime.toISOString()}') AS timestamp, COUNT(*) AS log_count FROM ${streamName} WHERE p_timestamp BETWEEN '${startTime.toISOString()}' AND '${endTime.toISOString()}' AND ${whereClause} GROUP BY timestamp ORDER BY timestamp`;
 };
 
 const NoDataView = () => {
@@ -181,6 +184,7 @@ function ChartTooltip({ payload }: ChartTooltipProps) {
 const EventTimeLineGraph = () => {
 	const { fetchQueryMutation } = useQueryResult();
 	const [currentStream] = useAppStore((store) => store.currentStream);
+	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
 	const [{ interval, startTime, endTime }] = useLogsStore((store) => store.timeRange);
 
 	useEffect(() => {
@@ -194,12 +198,13 @@ const EventTimeLineGraph = () => {
 			access: [],
 		};
 
-		const query = generateCountQuery(currentStream, modifiedStartTime, modifiedEndTime, compactType);
+		const { where: whereClause } = parseQuery(appliedQuery, currentStream);
+		const query = generateCountQuery(currentStream, modifiedStartTime, modifiedEndTime, compactType, whereClause);
 		fetchQueryMutation.mutate({
 			logsQuery,
 			query,
 		});
-	}, [currentStream, startTime.toISOString(), endTime.toISOString()]);
+	}, [currentStream, startTime.toISOString(), endTime.toISOString(), appliedQuery]);
 
 	const isLoading = fetchQueryMutation.isLoading;
 	const avgEventCount = useMemo(() => calcAverage(fetchQueryMutation?.data), [fetchQueryMutation?.data]);

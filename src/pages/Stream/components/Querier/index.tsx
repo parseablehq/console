@@ -95,22 +95,25 @@ const Querier = () => {
 
 	const triggerRefetch = useCallback((query: string, mode: 'filters' | 'sql') => {
 		setLogsStore((store) => applyCustomQuery(store, query, mode));
-	}, [])
+	}, []);
 
 	const onFiltersApply = useCallback(() => {
 		if (!currentStream) return;
 
-		const parsedQuery = parseQuery(query, currentStream);
+		const { parsedQuery } = parseQuery(query, currentStream);
 		setFilterStore((store) => storeAppliedQuery(store));
-		triggerRefetch(parsedQuery, 'filters')
+		triggerRefetch(parsedQuery, 'filters');
 	}, [query, currentStream]);
 
-	const onSqlSearchApply = useCallback((query: string) => {
-		if (!currentStream) return;
+	const onSqlSearchApply = useCallback(
+		(query: string) => {
+			if (!currentStream) return;
 
-		setFilterStore((store) => resetFilters(store));
-		triggerRefetch(query, 'sql')
-	}, [currentStream])
+			setFilterStore((store) => resetFilters(store));
+			triggerRefetch(query, 'sql');
+		},
+		[currentStream],
+	);
 
 	const onClear = useCallback(() => {
 		setFilterStore((store) => resetFilters(store));
@@ -150,11 +153,11 @@ const Querier = () => {
 	}, []);
 
 	return (
-		<Stack gap={0} style={{flexDirection: 'row'}} className={classes.container}>
-			<QuerierModal  onSqlSearchApply={onSqlSearchApply} onFiltersApply={onFiltersApply} onClear={onClear} />
+		<Stack gap={0} style={{ flexDirection: 'row' }} className={classes.container}>
+			<QuerierModal onSqlSearchApply={onSqlSearchApply} onFiltersApply={onFiltersApply} onClear={onClear} />
 			<Menu position="bottom">
 				<Menu.Target>
-						<Box>
+					<Box>
 						<ToggleButton
 							onClick={() => {}}
 							toggled={false}
@@ -162,8 +165,8 @@ const Querier = () => {
 							label={getLabel(viewMode)}
 							iconPosition="right"
 							customClassName={classes.modeButton}
-							/>
-							</Box>
+						/>
+					</Box>
 				</Menu.Target>
 				<Menu.Dropdown>
 					<Menu.Item
@@ -171,7 +174,9 @@ const Querier = () => {
 						style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
 						Filters
 					</Menu.Item>
-					<Menu.Item onClick={() => onChangeCustQueryViewMode('sql')} style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
+					<Menu.Item
+						onClick={() => onChangeCustQueryViewMode('sql')}
+						style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
 						SQL
 					</Menu.Item>
 				</Menu.Dropdown>
