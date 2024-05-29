@@ -33,7 +33,7 @@ const Management = (props: { schemaLoading: boolean }) => {
 				<Stats isLoading={isStatsLoading} />
 				<Info isLoading={isStreamInfoLoading} />
 			</Stack>
-			<Stack style={{ flexDirection: 'row', height: '50%' }} gap={24}>
+			<Stack style={{ flexDirection: 'row', height: 'fit-content' }} gap={24}>
 				<Settings
 					isLoading={isSettingsLoading}
 					getCacheError={getCacheError}

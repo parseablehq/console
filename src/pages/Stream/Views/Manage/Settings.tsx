@@ -113,7 +113,7 @@ const Settings = (props: {
 	const [isStandAloneMode] = useAppStore((store) => store.isStandAloneMode);
 	const [cacheEnabled] = useStreamStore((store) => store.cacheEnabled);
 	return (
-		<Stack className={classes.sectionContainer} gap={0}>
+		<Stack className={classes.sectionContainer} gap={0} style={{ height: 'fit-content' }}>
 			<Header />
 			<Stack gap={0} h="100%" pr="0.65rem" pl="0.65rem">
 				{props.isLoading ? (
