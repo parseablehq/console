@@ -124,8 +124,8 @@ const calcAverage = (data: GraphRecord[]) => {
 
 // date_trunc removes tz info
 // filling data empty values where there is no rec
-const parseGraphData = (data: GraphRecord[], avg: number, startTime: Date, endTime: Date, interval: number) => {
-	if (!Array.isArray(data) || data.length === 0) return [];
+const parseGraphData = (data: GraphRecord[] = [], avg: number, startTime: Date, endTime: Date, interval: number) => {
+	if (!Array.isArray(data)) return [];
 	const { modifiedEndTime, modifiedStartTime, compactType } = getModifiedTimeRange(startTime, endTime, interval);
 
 	const allTimestamps = getAllIntervals(modifiedStartTime, modifiedEndTime, compactType);
