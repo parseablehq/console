@@ -2,19 +2,39 @@ import { Button, Menu, Text, Tooltip, px } from '@mantine/core';
 import { IconRefresh, IconRefreshOff } from '@tabler/icons-react';
 import ms from 'ms';
 import type { FC } from 'react';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { REFRESH_INTERVALS } from '@/constants/timeConstants';
-import classes from './styles/LogQuery.module.css'
-import { useLogsStore, logsStoreReducers } from '@/pages/Logs/providers/LogsProvider';
+import classes from './styles/LogQuery.module.css';
+import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsProvider';
 
-const {setRefreshInterval} = logsStoreReducers;
+const { setRefreshInterval, getCleanStoreForRefetch } = logsStoreReducers;
 const RefreshInterval: FC = () => {
-	const [refreshInterval, setLogsStore] = useLogsStore(store => store.refreshInterval)
+	const [refreshInterval, setLogsStore] = useLogsStore((store) => store.refreshInterval);
 	const Icon = useMemo(() => (refreshInterval ? IconRefresh : IconRefreshOff), [refreshInterval]);
+	const timerRef = useRef<NodeJS.Timer | null>(null);
 
 	const onSelectedInterval = (interval: number | null) => {
-		setLogsStore(store => setRefreshInterval(store, interval))
+		setLogsStore((store) => setRefreshInterval(store, interval));
 	};
+
+	useEffect(() => {
+		const timerInterval = timerRef.current;
+		if (timerInterval !== null) {
+			try {
+				clearInterval(timerInterval);
+				timerRef.current = null;
+			} catch (e) {
+				console.log(e);
+			}
+		}
+
+		if (refreshInterval !== null) {
+			const intervalId = setInterval(() => {
+				setLogsStore(getCleanStoreForRefetch);
+			}, refreshInterval);
+			timerRef.current = intervalId;
+		}
+	}, [refreshInterval]);
 
 	const { intervalbtn } = classes;
 

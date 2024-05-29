@@ -4,16 +4,19 @@ import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
 import { Field } from '@/@types/parseable/dataType';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { useLogsStore, logsStoreReducers } from '@/pages/Logs/providers/LogsProvider';
+import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsProvider';
+import { useStreamStore, streamStoreReducers } from '@/pages/Stream/providers/StreamProvider';
 
-const {setStreamSchema} = logsStoreReducers;
+const {setStreamSchema} = streamStoreReducers;
+const {setTableHeaders} = logsStoreReducers;
 
 export const useGetLogStreamSchema = () => {
 	const [data, setData] = useMountedState<LogStreamSchemaData | null>(null);
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const [, setLogsStore] = useLogsStore(_store => null)
+	const [, setLogsStore] = useLogsStore(_store => null);
+	const [, setStreamStore] = useStreamStore(_store => null);
 
 	const getDataSchema = async (stream: string | null = currentStream) => {
 		try {
@@ -28,7 +31,8 @@ export const useGetLogStreamSchema = () => {
 					const schema = res.data;
 
 					setData(schema);
-					setLogsStore(store => setStreamSchema(store, schema))
+					setStreamStore(store => setStreamSchema(store, schema))
+					setLogsStore(store => setTableHeaders(store, schema))
 					break;
 				}
 				default: {

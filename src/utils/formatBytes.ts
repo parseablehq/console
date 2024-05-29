@@ -24,3 +24,34 @@ export function HumanizeNumber(val: number) {
 	// Appending the letter to precised val.
 	return sVal + s[sNum];
 }
+
+export const sanitizeEventsCount = (val: any) => {
+	return typeof val === 'number' ? HumanizeNumber(val) : '0';
+};
+
+export const sizetoInteger = (str: string) => {
+	if (!str || typeof str !== 'string') return null;
+
+	const strChuncks = str?.split(' ');
+	return Array.isArray(strChuncks) && !isNaN(Number(strChuncks[0])) ? parseInt(strChuncks[0]) : null;
+};
+
+export const sanitizeBytes = (str: any) => {
+	const size = sizetoInteger(str);
+	return size ? formatBytes(size) : '0 bytes';
+};
+
+export const calcCompressionRate = (storageSize: string, ingestionSize: string) => {
+	const parsedStorageSize = sizetoInteger(storageSize);
+	const parsedIngestionSize = sizetoInteger(ingestionSize);
+
+	if (parsedIngestionSize === null || parsedStorageSize === null) return '–';
+
+	if (parsedIngestionSize === 0) return '0%';
+
+	const rate = (100 - (parsedStorageSize / parsedIngestionSize) * 100)
+	
+	if (rate <= 0) return '0%';
+
+	return `${rate.toPrecision(4)}%`;
+};

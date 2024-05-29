@@ -4,7 +4,7 @@ import { FlightServiceDefinition, FlightData } from '@/assets/arrow';
 import useMountedState from './useMountedState';
 import { useEffect, useRef } from 'react';
 import { LogStreamData } from '@/@types/parseable/api/stream';
-import { useLogsStore, logsStoreReducers } from '@/pages/Logs/providers/LogsProvider';
+import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsProvider';
 
 const { resetLiveTailSearchState } = logsStoreReducers;
 const TOTAL_LOGS_TO_SHOW = 500;

@@ -2,13 +2,30 @@ import { useMutation, useQuery } from 'react-query';
 import { getLogStreamAlerts, putLogStreamAlerts } from '@/api/logStream';
 import { notifyError, notifySuccess } from '@/utils/notification';
 import { AxiosError, isAxiosError } from 'axios';
+import { useStreamStore, streamStoreReducers } from '@/pages/Stream/providers/StreamProvider';
+const { setAlertsConfig } = streamStoreReducers;
 
-export const useAlertsEditor = (streamName: string) => {
+const useAlertsQuery = (streamName: string) => {
+	const [, setStreamStore] = useStreamStore((_store) => null);
+	const { data, isError, isSuccess, isLoading, refetch } = useQuery(
+		['fetch-log-stream-alert', streamName],
+		() => getLogStreamAlerts(streamName),
+		{
+			retry: false,
+			enabled: streamName !== '',
+			refetchOnWindowFocus: false,
+			onSuccess: (data) => {
+				setStreamStore((store) => setAlertsConfig(store, data));
+			},
+		},
+	);
+
 	const { mutate: updateLogStreamAlerts } = useMutation(
 		(data: { config: any; onSuccess?: () => void }) => putLogStreamAlerts(streamName, data.config),
 		{
 			onSuccess: (_data, variables) => {
 				variables.onSuccess && variables.onSuccess();
+				refetch();
 				notifySuccess({ message: 'Updated Successfully' });
 			},
 			onError: (data: AxiosError) => {
@@ -23,28 +40,13 @@ export const useAlertsEditor = (streamName: string) => {
 	);
 
 	return {
+		data,
+		isError,
+		isSuccess,
+		isLoading,
+		refetch,
 		updateLogStreamAlerts,
 	};
 };
 
-export const useGetAlerts = (streamName: string) => {
-	const {
-		data: getLogAlertData,
-		isError: getLogAlertIsError,
-		isSuccess: getLogAlertIsSuccess,
-		isLoading: getLogAlertIsLoading,
-		refetch: getLogAlertDataRefetch
-	} = useQuery(['fetch-log-stream-alert', streamName], () => getLogStreamAlerts(streamName), {
-		retry: false,
-		enabled: streamName !== '',
-		refetchOnWindowFocus: false,
-	});
-
-	return {
-		getLogAlertData,
-		getLogAlertIsError,
-		getLogAlertIsSuccess,
-		getLogAlertIsLoading,
-		getLogAlertDataRefetch
-	};
-};
+export default useAlertsQuery;

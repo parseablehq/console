@@ -1,23 +1,28 @@
-export const HOME_ROUTE = '/';
-export const LOGS_ROUTE = '/:streamName/logs';
-export const LOGIN_ROUTE = '/login';
 export const ALL_ROUTE = '/*';
+export const HOME_ROUTE = '/';
+export const LOGIN_ROUTE = '/login';
+// -----
+export const MANAGE_ROUTE = '/:streamName/manage';
 export const LIVE_TAIL_ROUTE = '/:streamName/live-tail';
-export const STATS_ROUTE = '/:streamName/stats';
-export const CONFIG_ROUTE = '/:streamName/config';
+export const EXPLORE_ROUTE = '/:streamName/explore';
+// -----
 export const USERS_MANAGEMENT_ROUTE = '/users';
 export const OIDC_NOT_CONFIGURED_ROUTE = '/oidc-not-configured';
 export const CLUSTER_ROUTE = '/cluster';
+export const STREAM_ROUTE = '/:streamName/:view?'
+
+export const STREAM_VIEWS = ['explore', 'manage', 'live-tail']
 
 export const PATHS = {
 	all: '/*',
 	home: '/',
-	logs: '/:streamName/logs',
+	explore: '/:streamName/:view?',
 	login: '/login',
-	liveTail: '/:streamName/live-tail',
+	liveTail: '/:streamName/:view?',
 	stats: '/:streamName/stats',
 	config: '/:streamName/config',
 	users: '/users',
 	oidcNotConfigured: '/oidc-not-configured',
 	cluster: '/cluster',
+	manage: '/:streamName/:view?',
 } as { [key: string]: string };

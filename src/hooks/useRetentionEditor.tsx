@@ -2,13 +2,35 @@ import { useMutation, useQuery } from 'react-query';
 import { getLogStreamRetention, putLogStreamRetention } from '@/api/logStream';
 import { notifyError, notifySuccess } from '@/utils/notification';
 import { AxiosError, isAxiosError } from 'axios';
+import { useStreamStore, streamStoreReducers } from '@/pages/Stream/providers/StreamProvider';
+import _ from 'lodash';
 
-export const useRetentionEditor = (streamName: string) => {
+const { setRetention } = streamStoreReducers;
+
+export const useRetentionQuery = (streamName: string) => {
+	const [, setStreamStore] = useStreamStore((_store) => null);
+	const {
+		data: getLogRetentionData,
+		isError: getLogRetentionIsError,
+		isLoading: getLogRetentionIsLoading,
+		isSuccess: getLogRetentionIsSuccess,
+		refetch: getLogRetentionDataRefetch,
+	} = useQuery(['fetch-log-stream-retention', streamName], () => getLogStreamRetention(streamName), {
+		onSuccess: (data) => {
+			const retentionData = _.isArray(data.data) ? data.data[0] || {} : {}
+			setStreamStore((store) => setRetention(store, retentionData));
+		},
+		retry: false,
+		enabled: streamName !== '',
+		refetchOnWindowFocus: false,
+	});
+
 	const { mutate: updateLogStreamRetention } = useMutation(
 		(data: { config: any; onSuccess?: () => void }) => putLogStreamRetention(streamName, data.config),
 		{
 			onSuccess: (_data, variables) => {
 				notifySuccess({ message: 'Updated Successfully' });
+				getLogRetentionDataRefetch();
 				variables.onSuccess && variables.onSuccess();
 			},
 			onError: (data: AxiosError) => {
@@ -23,28 +45,11 @@ export const useRetentionEditor = (streamName: string) => {
 	);
 
 	return {
-		updateLogStreamRetention,
-	};
-};
-
-export const useGetRetention = (streamName: string) => {
-	const {
-		data: getLogRetentionData,
-		isError: getLogRetentionIsError,
-		isLoading: getLogRetentionIsLoading,
-		isSuccess: getLogRetentionIsSuccess,
-		refetch: getLogRetentionDataRefetch
-	} = useQuery(['fetch-log-stream-retention', streamName], () => getLogStreamRetention(streamName), {
-		onSuccess: () => {},
-		retry: false,
-		enabled: streamName !== '',
-		refetchOnWindowFocus: false,
-	});
-	return {
 		getLogRetentionData,
 		getLogRetentionIsLoading,
 		getLogRetentionIsError,
 		getLogRetentionIsSuccess,
-		getLogRetentionDataRefetch
+		getLogRetentionDataRefetch,
+		updateLogStreamRetention,
 	};
 };

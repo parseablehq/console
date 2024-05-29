@@ -5,9 +5,16 @@ import Queriers from './Queriers';
 import StandaloneServer from './StandaloneServer';
 import { useAbout } from '@/hooks/useGetAbout';
 import { IconBook2 } from '@tabler/icons-react';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+// import Redesign from './Redesign';
+
+const navigateToDistributedDocs = () => {
+	window.open('https://www.parseable.com/docs/installation-distributed', '_blank');
+};
 
 const Systems: FC = () => {
-	const { getAboutData, getAboutIsLoading, getAboutIsError } = useAbout();
+	const { getAboutIsLoading, getAboutIsError } = useAbout();
+	const [isStandAloneMode] = useAppStore((store) => store.isStandAloneMode);
 	if (getAboutIsLoading || getAboutIsError) return null;
 
 	return (
@@ -17,26 +24,29 @@ const Systems: FC = () => {
 				width: '100%',
 				height: '100%',
 				flexDirection: 'column',
-				padding: '1.25rem',
+				padding: '3rem',
 			}}>
-			{getAboutData?.data.mode === 'All' ? (
+			{isStandAloneMode ? (
 				<Stack>
-					{/* <Text
-						ta="end"
-						c="brandPrimary"
-						style={{ cursor: 'pointer', textDecoration: 'underline', fontSize: '0.875rem' }}>
-						Know more about implementing distributed systems for enhanced efficiency
-					</Text> */}
 					<Box style={{ alignSelf: 'flex-end' }}>
-						<Button leftSection={<IconBook2 stroke={1.5} />} c='gray.7' style={{borderColor: 'gray'}} variant="outline">Distributed Systems</Button>
+						<Button
+							onClick={navigateToDistributedDocs}
+							leftSection={<IconBook2 stroke={1.5} />}
+							c="gray.7"
+							style={{ borderColor: 'gray' }}
+							variant="outline">
+							Distributed Systems
+						</Button>
 					</Box>
 					<StandaloneServer />
 				</Stack>
 			) : (
+				// <Redesign/>
 				<>
-					<Queriers />
-					<Ingestors />
-				</>
+				<Queriers />
+				<Ingestors />
+			</>
+
 			)}
 		</Stack>
 	);
