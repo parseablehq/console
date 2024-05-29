@@ -93,6 +93,10 @@ const Querier = () => {
 		}
 	}, [schema]);
 
+	useEffect(() => {
+		return setFilterStore(resetFilters);
+	}, []);
+
 	const triggerRefetch = useCallback((query: string, mode: 'filters' | 'sql') => {
 		setLogsStore((store) => applyCustomQuery(store, query, mode));
 	}, []);
