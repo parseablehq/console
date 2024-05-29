@@ -583,7 +583,7 @@ const getCleanStoreForRefetch = (store: LogsStore) => {
 
 	const duration = _.find(FIXED_DURATIONS, (duration) => duration.milliseconds === timeRange.interval);
 
-	const updatedTimeRange = interval && type === 'fixed' ? { timeRange: getDefaultTimeRange(duration) } : {};
+	const updatedTimeRange = interval && type === 'fixed' ? { timeRange: getDefaultTimeRange(duration) } : { timeRange };
 	return {
 		tableOpts: {
 			...tableOpts,
@@ -606,8 +606,8 @@ const getCleanStoreForRefetch = (store: LogsStore) => {
 const setCleanStoreForStreamChange = (store: LogsStore) => {
 	const { tableOpts, timeRange, alerts } = store;
 	const { interval, type } = timeRange;
-	const duration = _.find(FIXED_DURATIONS, (duration) => duration.name === timeRange.label);
-	const updatedTimeRange = interval && type === 'fixed' ? { timeRange: getDefaultTimeRange(duration) } : {};
+	const duration = _.find(FIXED_DURATIONS, (duration) => duration.milliseconds === timeRange.interval);
+	const updatedTimeRange = interval && type === 'fixed' ? { timeRange: getDefaultTimeRange(duration) } : { timeRange };
 	return {
 		...initialState,
 		tableOpts: {
