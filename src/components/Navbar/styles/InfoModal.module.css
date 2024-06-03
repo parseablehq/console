@@ -15,10 +15,8 @@
 }
 
 .aboutDescription {
-    font-size: 0.875rem;
     text-align: center;
     color: #868e96;
-    margin-top: 0.75rem;
 
     &::after {
         content: '';
@@ -27,7 +25,7 @@
         background-color: #FC466B;
         width: 6.25rem;
         height: 0.125rem;
-        margin-top: 0.75rem;
+        margin-top: 0.5rem;
         margin-left: auto;
         margin-right: auto;
         margin-bottom: 0.75rem;
@@ -41,7 +39,7 @@
     display: flex;
     border-radius: 0.5rem;
     border: 0.0625rem solid rgba(0, 0, 0, 0.05);
-    padding: 1rem;
+    padding: 0.6rem 0.9rem;
     flex-direction: column;
 }
 
@@ -54,17 +52,18 @@
 }
 
 .aboutTextKey {
-    font-size: 0.875rem;
+    font-size: 0.7rem;
     color: #343a40;
     line-height: normal;
-    width: 15%;
+    width: 30%;
+    font-weight: 500;
 }
 
 .aboutTextValue {
-    font-size: 0.875rem;
+    font-size: 0.7rem;
     color: #868e96;
     line-height: normal;
-    width: 85%;
+    width: 70%;
 }
 
 .helpTitle {
