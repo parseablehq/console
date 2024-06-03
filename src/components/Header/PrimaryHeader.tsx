@@ -1,7 +1,7 @@
 import icon from '@/assets/images/brand/icon.svg';
 import { HOME_ROUTE } from '@/constants/routes';
 import { NAVBAR_WIDTH, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
-import { Button, Image, Stack } from '@mantine/core';
+import { Button, Divider, Image, Stack } from '@mantine/core';
 import { FC, useCallback } from 'react';
 import styles from './styles/Header.module.css';
 import HelpModal from './HelpModal';
@@ -22,25 +22,26 @@ const PrimaryHeader: FC = () => {
 			}}
 			gap={0}>
 			<HelpModal />
-			<Stack className={logoContainer} w={NAVBAR_WIDTH}>
+			<Stack className={logoContainer} w={NAVBAR_WIDTH + 20} style={{ alignItems: 'center', justifyContent: 'center'}}>
 				<a href={HOME_ROUTE}>
-					<Image className={imageSty} src={icon} height={32} alt="Parseable Logo" />
+					<Image className={imageSty} src={icon} height={24} alt="Parseable Logo" />
 				</a>
 			</Stack>
 			<Stack
 				className={classes.rightSection}
-				style={{ flexDirection: 'row', height: '100%', justifyContent: 'flex-end' }}
-				gap={0}>
+				style={{ flexDirection: 'row', height: '100%', justifyContent: 'flex-end'}}
+				gap={8}
+				>
 				<Button
 					variant="outline"
-					style={{ border: 'none', padding: '0 1rem' }}
+					style={{ border: 'none', fontSize: '0.6rem' }}
 					component={'a'}
 					href="mailto:sales@parseable.io?subject=Production%20Support%20Query"
 					target="_blank">
 					Upgrade
 				</Button>
-				<Stack className={classes.divider} />
-				<Button onClick={toggleHelpModal} style={{ border: 'none', padding: '0 1rem' }} variant="outline">
+				<Divider orientation='vertical'/>
+				<Button onClick={toggleHelpModal} style={{ border: 'none', fontsize: '0.6rem' }} variant="outline">
 					Help
 				</Button>
 			</Stack>

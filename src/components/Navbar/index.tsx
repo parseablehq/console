@@ -152,7 +152,7 @@ const Navbar: FC = () => {
 									onClick={() => navigateToPage(navItem.route)}
 									key={index}>
 									<Tooltip label={navItem.label} position="right">
-										<navItem.icon className={styles.navIcon} stroke={isActiveItem ? 1.2 : 1} size={'1.8rem'} />
+										<navItem.icon stroke={isActiveItem ? 1.2 : 1} size={'1.2rem'} />
 									</Tooltip>
 								</Stack>
 							);
@@ -172,7 +172,7 @@ const Navbar: FC = () => {
 									onClick={() => navigateToPage(navItem.route)}
 									key={index}>
 									<Tooltip label={navItem.label} position="right">
-										<navItem.icon className={styles.navIcon} stroke={isActiveItem ? 1.2 : 1} size={'1.8rem'} />
+										<navItem.icon className={styles.navIcon} stroke={isActiveItem ? 1.2 : 1} size={'1.2rem'} />
 									</Tooltip>
 								</Stack>
 							);
@@ -196,7 +196,7 @@ const Navbar: FC = () => {
 									style={{ border: 'none', padding: '8px 0px' }}
 									key={index}>
 									<Tooltip label={navAction.label} position="right">
-										<navAction.icon className={styles.navIcon} stroke={1.2} size={'1.8rem'} />
+										<navAction.icon className={styles.navIcon} stroke={1.2} size={'1.2rem'} />
 									</Tooltip>
 								</Stack>
 							);

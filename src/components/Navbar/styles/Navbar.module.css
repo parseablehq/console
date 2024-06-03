@@ -119,7 +119,7 @@
 .navItemContainer {
     width: 100%;
     align-items: center;
-    padding: 0.8rem 0;
+    padding: 0.5rem 0;
     cursor: pointer;
     color: var(--mantine-color-gray-6);
 }

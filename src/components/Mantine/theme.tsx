@@ -1,7 +1,6 @@
-import { createTheme } from '@mantine/core';
+import { createTheme, rem } from '@mantine/core';
 
 export const theme = createTheme({
-
 	colors: {
 		brandPrimary: [
 			'#ececff',
@@ -52,13 +51,20 @@ export const theme = createTheme({
 			'#5a6671',
 			'#495866',
 		],
-		
 	},
 	spacing: {
 		xxs: '0.2rem',
 	},
 	primaryColor: 'brandPrimary',
 	primaryShade: 4,
+	scale: 0.7,
+	fontSizes: {
+		xs: rem(12),
+		sm: rem(14),
+		md: rem(18),
+		lg: rem(22),
+		xl: rem(24),
+	},
 	fontFamily:
 		'Inter ,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji',
 });

@@ -100,8 +100,7 @@ const AddFieldButton = ({ onClick }: { onClick: () => void }) => {
 						<IconPlus stroke={2} />
 					</ThemeIcon>
 				}
-				onClick={onClick}
-				style={{ padding: 12, fontSize: '0.8rem' }}>
+				onClick={onClick}>
 				Add Field
 			</Button>
 		</Box>
@@ -120,7 +119,7 @@ const SchemaTypeField = (props: { inputProps: GetInputPropsReturnType }) => {
 						withArrow
 						transitionProps={{ duration: 200 }}
 						label="Dynamic schema allows new fields to be added to a stream later. Static schema is fixed for the lifetime of the stream.">
-						<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={18} width={18} />
+						<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={14} width={14} />
 					</Tooltip>
 				</Stack>
 				<Text className={styles.fieldDescription}>Choose dynamic or static schema</Text>
@@ -141,13 +140,18 @@ const PartitionLimitField = (props: { inputProps: GetInputPropsReturnType }) => 
 						w={220}
 						withArrow
 						transitionProps={{ duration: 200 }}
-						label="Maximum difference between current server time and timestamp in the custom time partition field" >
-						<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={18} width={18} />
+						label="Maximum difference between current server time and timestamp in the custom time partition field">
+						<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={14} width={14} />
 					</Tooltip>
 				</Stack>
 				<Text className={styles.fieldDescription}>Default limit is set to 30 days</Text>
 			</Stack>
-			<NumberInput w={200} styles={{section: {"--section-size": 'none', padding: 12}}} {...props.inputProps} rightSection={<Text>Days</Text>}/>
+			<NumberInput
+				w={200}
+				styles={{ section: { '--section-size': 'none', padding: 12 } }}
+				{...props.inputProps}
+				rightSection={<Text>Days</Text>}
+			/>
 		</Stack>
 	);
 };
@@ -184,7 +188,7 @@ const PartitionField = (props: {
 						withArrow
 						transitionProps={{ duration: 200 }}
 						label="This allows querying events based on custom timestamp selected here.">
-						<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={18} width={18} />
+						<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={14} width={14} />
 					</Tooltip>
 				</Stack>
 				<Text className={styles.fieldDescription}>Select the time field to partition log events</Text>
@@ -196,7 +200,7 @@ const PartitionField = (props: {
 				setValue={(value: string) => onFieldChange(value)}
 				placeholder="Select or Add"
 				error={props.error}
-				style={{width: 200}}
+				style={{ width: 200 }}
 			/>
 		</Stack>
 	);
@@ -222,7 +226,7 @@ const CustomPartitionField = (props: {
 						withArrow
 						transitionProps={{ duration: 200 }}
 						label="Partition data storage based on fields and their values">
-						<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={18} width={18} />
+						<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={14} width={14} />
 					</Tooltip>
 				</Stack>
 				<Text className={styles.fieldDescription}>Select 3 columns to partition the events</Text>
@@ -353,7 +357,9 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 			...(partitionField !== defaultPartitionField ? { 'X-P-Time-Partition': partitionField } : {}),
 			...(isStatic ? { 'X-P-Static-Schema-Flag': true } : {}),
 			...(_.isEmpty(customPartitionFields) ? {} : { 'X-P-Custom-Partition': _.join(customPartitionFields, ',') }),
-			...(partitionField === defaultPartitionField || !_.isInteger(partitionLimit) ? {} : { 'X-P-Time-Partition-Limit': `${partitionLimit}d` }),
+			...(partitionField === defaultPartitionField || !_.isInteger(partitionLimit)
+				? {}
+				: { 'X-P-Time-Partition-Limit': `${partitionLimit}d` }),
 		};
 		const schmaFields = isStatic ? fields : {};
 		createLogStreamMutation({
@@ -427,7 +433,7 @@ const CreateStreamModal: FC = () => {
 			opened={createStreamModalOpen}
 			onClose={closeModal}
 			withinPortal
-			size="lg"
+			size="xl"
 			centered
 			padding={20}
 			title="Create Stream"

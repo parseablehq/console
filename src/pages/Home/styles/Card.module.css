@@ -5,24 +5,25 @@
 
 .streamBox {
 	border-radius: 0.5rem;
-	box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.2);
-	height: 95px;
-	padding: 1rem;
+	padding: 1rem 1rem;
 	cursor: pointer;
+	box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.2);
 	width: auto;
 	flex-direction: row;
 	align-items: center;
 	width: 100%;
+	border: 1px solid var(--mantine-color-gray-1)
 }
 
 .streamBoxCol {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	min-width: 130px;
+	min-width: 10px;
 	border-right: 1px solid #e9ecef;
 }
 
 .bigNo {
 	color: var(--mantine-color-brandPrimary-4);
+	font-size: 0.8rem;
 }
