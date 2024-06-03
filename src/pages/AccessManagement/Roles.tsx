@@ -5,7 +5,7 @@ import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import PrivilegeTR from './PrivilegeTR';
 import { IconBook2, IconPencil, IconUserPlus } from '@tabler/icons-react';
 import { useRole } from '@/hooks/useRole';
-import styles from './styles/AccessManagement.module.css'
+import classes from './styles/AccessManagement.module.css'
 import IconButton from '@/components/Button/IconButton';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
@@ -13,7 +13,7 @@ const navigateToDocs = () => {
 	return window.open('https://www.parseable.io/docs/rbac', '_blank');
 }
 
-const renderDocsIcon = () => <IconBook2 stroke={1.5} size="1.4rem"/>
+const renderDocsIcon = () => <IconBook2 stroke={1.5} size="1rem"/>
 
 const Roles: FC = () => {
 	useDocumentTitle('Parseable | Users');
@@ -169,17 +169,16 @@ const Roles: FC = () => {
 		handleDefaultRoleModalClose();
 	};
 
-	const classes = styles;
 	return (
 		<Box className={classes.container}>
 			<Stack className={classes.header} gap={0}>
-				<Text size="xl" style={{ fontWeight: 500 }}>
+				<Text style={{ fontWeight: 600 }}>
 					Roles
 				</Text>
 				<Stack style={{ flexDirection: 'row' }} gap={0}>
 					<Button
-						className={styles.createUserBtn}
-						rightSection={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}
+						className={classes.createUserBtn}
+						rightSection={<IconUserPlus size={px('1rem')} stroke={1.5} />}
 						onClick={() => {
 							setModalOpen(true);
 						}}>
@@ -187,7 +186,7 @@ const Roles: FC = () => {
 					</Button>
 					{oidcActive && (
 						<Button
-							className={styles.createUserBtn}
+							className={classes.createUserBtn}
 							rightSection={<IconPencil size={px('1.2rem')} stroke={1.5} />}
 							onClick={() => {
 								setDefaultRoleModalOpen(true);
@@ -254,7 +253,7 @@ const Roles: FC = () => {
 				title="Create Role"
 				centered
 				className={classes.modalStyle}
-				styles={{ title: { fontWeight: 700 } }}>
+				styles={{ title: { fontWeight: 500 } }}>
 				<Stack>
 					<TextInput
 						type="text"

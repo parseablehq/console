@@ -5,7 +5,7 @@ import { useGetUser, useUser } from '@/hooks/useUser';
 import RoleTR from './RoleTR';
 import { IconBook2, IconUserPlus } from '@tabler/icons-react';
 import { useRole } from '@/hooks/useRole';
-import styles from './styles/AccessManagement.module.css';
+import classes from './styles/AccessManagement.module.css';
 import { heights } from '@/components/Mantine/sizing';
 import { HEADER_HEIGHT } from '@/constants/theme';
 import { CodeHighlight } from '@mantine/code-highlight';
@@ -15,7 +15,7 @@ const navigateToDocs = () => {
 	return window.open('https://www.parseable.io/docs/rbac', '_blank');
 }
 
-const renderDocsIcon = () => <IconBook2 stroke={1.5} size="1.4rem"/>
+const renderDocsIcon = () => <IconBook2 stroke={1.5} size="1rem"/>
 
 const Users: FC = () => {
 	useDocumentTitle('Parseable | Users');
@@ -47,7 +47,7 @@ const Users: FC = () => {
 
 	const rows =
 		getUserIsSuccess && getUserData?.data ? (
-			getUserData?.data.map((user: any) => {
+			getUserData?.data?.map((user: any) => {
 				return (
 					<RoleTR
 						key={user.id}
@@ -104,31 +104,30 @@ const Users: FC = () => {
 		return false;
 	};
 
-
-
 	return (
 		<Box
-			className={styles.container}
-			style={{ maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2}px - ${20}px)` }}>
-			<Stack className={styles.header} gap={0}>
-				<Text size="xl" style={{ fontWeight: 500 }}>
+			className={classes.container}
+			style={{ maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2}px - ${20}px)`}}
+			>
+			<Stack className={classes.header} gap={0}>
+				<Text style={{ fontWeight: 600 }}>
 					Users
 				</Text>
 				<Stack style={{ flexDirection: 'row' }} gap={0}>
-					<Button className={styles.createUserBtn} onClick={() => setModalOpen(true)} rightSection={<IconUserPlus size={px('1.2rem')} stroke={1.5} />}>
+					<Button className={classes.createUserBtn} onClick={() => setModalOpen(true)} rightSection={<IconUserPlus size={px('1rem')} stroke={1.5} />}>
 						Create User
 					</Button>
 					<IconButton renderIcon={renderDocsIcon} onClick={navigateToDocs} tooltipLabel='Docs'/>
 				</Stack>
 			</Stack>
-			<ScrollArea className={styles.tableContainer} type="always">
-				<Table striped highlightOnHover className={styles.tableStyle}>
-					<thead className={styles.theadStyle}>
+			<ScrollArea className={classes.tableContainer} type="always">
+				<Table striped highlightOnHover className={classes.tableStyle}>
+					<thead className={classes.theadStyle}>
 						<tr>
-							<th>Username</th>
-							<th>Role</th>
-							<th style={{ textAlign: 'center' }}>Delete</th>
-							<th style={{ textAlign: 'center' }}>Reset Password</th>
+							<th className={classes.tableHeader}>Username</th>
+							<th className={classes.tableHeader}>Role</th>
+							<th className={classes.tableHeader} style={{ textAlign: 'center' }}>Delete</th>
+							<th className={classes.tableHeader} style={{ textAlign: 'center' }}>Reset Password</th>
 						</tr>
 					</thead>
 					<tbody>{rows}</tbody>
@@ -139,8 +138,8 @@ const Users: FC = () => {
 				onClose={handleClose}
 				title="Create user"
 				centered
-				className={styles.modalStyle}
-				styles={{ title: { fontWeight: 700 } }}>
+				className={classes.modalStyle}
+				styles={{ title: { fontWeight: 500 } }}>
 				<Stack>
 					<TextInput
 						type="text"
@@ -152,7 +151,6 @@ const Users: FC = () => {
 						value={createUserInput}
 						required
 					/>
-
 					<Select
 						placeholder="Select a role to assign"
 						onChange={(value) => {
@@ -171,22 +169,22 @@ const Users: FC = () => {
 					/>
 
 					{createUserIsError ? (
-						<Text className={styles.passwordText} color="red">
+						<Text className={classes.passwordText} color="red">
 							{createUserError}
 						</Text>
 					) : createUserIsLoading ? (
-						<Text className={styles.passwordText}>loading</Text>
+						<Text className={classes.passwordText}>loading</Text>
 					) : createUserData?.data ? (
 						<Box>
-							<Text className={styles.passwordText}>Password</Text>
+							<Text className={classes.passwordText}>Password</Text>
 							<CodeHighlight
-								className={styles.passwordPrims}
+								className={classes.passwordPrims}
 								language="text"
 								copyLabel="Copy password to clipboard"
 								code={createUserData?.data}
 								copiedLabel="Password copied to clipboard"
 							/>
-							<Text className={styles.passwordText} color="red">
+							<Text className={classes.passwordText} color="red">
 								Warning this is the only time you are able to see Password
 							</Text>
 						</Box>
@@ -199,12 +197,12 @@ const Users: FC = () => {
 					<Button
 						variant="filled"
 						color="gray"
-						className={styles.modalActionBtn}
+						className={classes.modalActionBtn}
 						onClick={handleCreateUser}
 						disabled={createVaildtion() || !!createUserData?.data}>
 						Create
 					</Button>
-					<Button onClick={handleClose} variant="outline" color="gray" className={styles.modalCancelBtn}>
+					<Button onClick={handleClose} variant="outline" color="gray" className={classes.modalCancelBtn}>
 						Cancel
 					</Button>
 				</Group>
