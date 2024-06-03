@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { REFRESH_INTERVALS } from '@/constants/timeConstants';
 import classes from './styles/LogQuery.module.css';
 import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsProvider';
+import { LOGS_PRIMARY_TOOLBAR_HEIGHT, STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT, STREAM_PRIMARY_TOOLBAR_HEIGHT } from '@/constants/theme';
 
 const { setRefreshInterval, getCleanStoreForRefetch } = logsStoreReducers;
 const RefreshInterval: FC = () => {
@@ -42,7 +43,7 @@ const RefreshInterval: FC = () => {
 		<Menu withArrow>
 			<Menu.Target>
 				<Tooltip label="Refresh Interval">
-					<Button className={intervalbtn} leftSection={<Icon size={px('1.2rem')} stroke={1.5} />}>
+					<Button className={intervalbtn} h="100%" leftSection={<Icon size={px('1rem')} stroke={1.5} />}>
 						{refreshInterval ? ms(refreshInterval) : 'Off'}
 					</Button>
 				</Tooltip>

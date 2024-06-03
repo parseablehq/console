@@ -1,4 +1,4 @@
-import { Box, Stack } from '@mantine/core';
+import { Box, Stack, rem } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect } from 'react';
 import StaticLogTable from './Views/Explore/StaticLogTable'
@@ -35,9 +35,8 @@ const Logs: FC = () => {
 			getDataSchema();
 		}
 	}, [currentStream]);
-	
-	const sideBarWidth = sideBarOpen ? '10%' : '5%';
-	const contentWidth = sideBarOpen ? '90%' : '95%';
+
+	const sideBarWidth = sideBarOpen ? rem(180) : rem(100);
 	
 	if (!currentStream) return null;
 	if (!_.includes(STREAM_VIEWS, view)) return null;
@@ -53,10 +52,10 @@ const Logs: FC = () => {
 			</Stack>
 			<Stack
 				gap={0}
-				w={contentWidth}
 				style={{
 					maxHeight: `calc(100vh - ${maximized ? 0 : PRIMARY_HEADER_HEIGHT}px )`,
 					overflow: 'scroll',
+					flex: 1,
 				}}>
 				<PrimaryToolbar />
 				{view === 'explore' && <SecondaryToolbar />}

@@ -117,7 +117,7 @@ const initialState: StreamStore = {
 		alerts: [],
 	},
 	info: {},
-	sideBarOpen: false,
+	sideBarOpen: true,
 	cacheEnabled: null
 };
 

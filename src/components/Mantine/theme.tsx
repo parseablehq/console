@@ -60,7 +60,7 @@ export const theme = createTheme({
 	scale: 0.7,
 	fontSizes: {
 		xs: rem(12),
-		sm: rem(14),
+		sm: rem(16),
 		md: rem(18),
 		lg: rem(22),
 		xl: rem(24),

@@ -23,8 +23,8 @@
 
 .iconBtn {
     background: #fff;
-	padding: 0;
-	width: 36px;
+	/* padding: 0; */
+	/* width: 36px; */
 	color: #211F1F;
 	border: 1px #e9ecef solid;
     border-radius: rem(8px);

@@ -23,8 +23,8 @@ const getLabel = (mode: string | null) => {
 const FilterPlaceholder = () => {
 	return (
 		<Group className={classes.placeholderText} gap={0}>
-			<IconFilter size={'1.2rem'} stroke={1.8} style={{ marginRight: 6 }} />
-			Click to add filter
+			<IconFilter size={'1rem'} stroke={1.8} style={{ marginRight: 6 }} />
+			<Text size="md">Click to add filter</Text>
 		</Group>
 	);
 };
@@ -161,16 +161,18 @@ const Querier = () => {
 			<QuerierModal onSqlSearchApply={onSqlSearchApply} onFiltersApply={onFiltersApply} onClear={onClear} />
 			<Menu position="bottom">
 				<Menu.Target>
-					<Box>
-						<ToggleButton
-							onClick={() => {}}
-							toggled={false}
-							renderIcon={() => <IconChevronDown size={px('1.2rem')} stroke={1.5} />}
-							label={getLabel(viewMode)}
-							iconPosition="right"
-							customClassName={classes.modeButton}
-						/>
-					</Box>
+					<Stack
+						gap={0}
+						style={{
+							borderRight: '1px solid',
+							flexDirection: 'row',
+							alignItems: 'center',
+							justifyContent: 'center',
+							padding: '0 1rem',
+						}}>
+						<Text style={{fontSize: '0.75rem', fontWeight: 500}}>{getLabel(viewMode)}</Text>
+						<IconChevronDown size={px('1rem')} stroke={1.8} />
+					</Stack>
 				</Menu.Target>
 				<Menu.Dropdown>
 					<Menu.Item

@@ -5,7 +5,7 @@ import EventTimeLineGraph from './EventTimeLineGraph';
 
 const SecondaryToolbar = () => {
 	return (
-		<Stack className={classes.logsPrimaryToolbar} style={{ height: STREAM_SECONDARY_TOOLBAR_HRIGHT }}>
+		<Stack className={classes.logsSecondaryToolbar} style={{ height: STREAM_SECONDARY_TOOLBAR_HRIGHT }}>
 			<EventTimeLineGraph />
 		</Stack>
 	);

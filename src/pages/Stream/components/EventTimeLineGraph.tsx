@@ -254,6 +254,8 @@ const EventTimeLineGraph = () => {
 						areaChartProps={{ onClick: setTimeRangeFromGraph, style: { cursor: 'pointer' } }}
 						gridAxis="xy"
 						fillOpacity={0.5}
+						strokeWidth={1.25}
+						dotProps={{ strokeWidth: 1, r: 2.5 }}
 					/>
 				) : (
 					<NoDataView />

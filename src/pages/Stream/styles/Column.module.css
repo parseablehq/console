@@ -2,14 +2,15 @@
     display: flex;
     align-items: center;
     text-align: left;
-    padding: 0.625rem 1rem;
+    padding: 0.4rem 1rem;
     font-weight: 500;
     height: 100%;
     width: 100%;
+    font-size: 0.65rem;
 }
 
 .labelBtn:hover {
-    background-color: #E0E0E0
+    background-color: var(--mantine-color-gray-1)
 }
 
 .labelIcon {

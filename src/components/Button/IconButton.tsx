@@ -1,7 +1,6 @@
-import { Button, Tooltip } from '@mantine/core';
+import { Tooltip, ActionIcon } from '@mantine/core';
 import type { FC, ReactNode } from 'react';
 import classes from './Button.module.css';
-import React from 'react';
 
 type IconButtonProps = {
 	onClick?: () => void;
@@ -9,6 +8,7 @@ type IconButtonProps = {
 	icon?: ReactNode;
 	active?: boolean;
 	tooltipLabel?: string;
+	size?: string | number;
 };
 
 const IconButton: FC<IconButtonProps> = (props) => {
@@ -16,22 +16,22 @@ const IconButton: FC<IconButtonProps> = (props) => {
 	if (tooltipLabel) {
 		return (
 			<Tooltip label={tooltipLabel}>
-				<Button
+				<ActionIcon
+					size={props.size ? props.size : 'xl'}
 					className={`${classes.iconBtn} ${props.active && classes.iconBtnActive}`}
 					onClick={props.onClick && props.onClick}>
 					{renderIcon()}
-				</Button>
+				</ActionIcon>
 			</Tooltip>
 		);
 	} else {
 		return (
-			<React.Fragment>
-				<Button
-					className={`${classes.iconBtn} ${props.active && classes.iconBtnActive}`}
-					onClick={props.onClick && props.onClick}>
-					{renderIcon()}
-				</Button>
-			</React.Fragment>
+			<ActionIcon
+				size={props.size ? props.size : 'xl'}
+				className={`${classes.iconBtn} ${props.active && classes.iconBtnActive}`}
+				onClick={props.onClick && props.onClick}>
+				{renderIcon()}
+			</ActionIcon>
 		);
 	}
 };

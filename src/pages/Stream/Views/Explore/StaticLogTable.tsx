@@ -61,12 +61,12 @@ const {
 const TotalCount = (props: { totalCount: number }) => {
 	return (
 		<Tooltip label={props.totalCount}>
-			<Text>{HumanizeNumber(props.totalCount)}</Text>
+			<Text size="md">{HumanizeNumber(props.totalCount)}</Text>
 		</Tooltip>
 	);
 };
 
-const renderExportIcon = () => <IconDownload size={px('1.4rem')} stroke={1.5} />;
+const renderExportIcon = () => <IconDownload size={px('1rem')} stroke={1.2} />;
 
 const TotalLogsCount = () => {
 	const [{ totalCount, perPage, pageData }] = useLogsStore((store) => store.tableOpts);
@@ -76,9 +76,9 @@ const TotalLogsCount = () => {
 
 	return (
 		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }} gap={6}>
-			<Text>{`Showing ${showingCount} out of`}</Text>
+			<Text size="md">{`Showing ${showingCount} out of`}</Text>
 			<TotalCount totalCount={totalCount} />
-			<Text>records</Text>
+			<Text size="md">records</Text>
 		</Stack>
 	);
 };
@@ -251,7 +251,9 @@ const Footer = (props: { loaded: boolean }) => {
 						value={currentPage}
 						onChange={(page) => {
 							pagination.setPage(page);
-						}}>
+						}}
+						size="md"
+						>
 						<Group gap={5} justify="center">
 							<Pagination.First
 								onClick={() => {
@@ -293,10 +295,10 @@ const Footer = (props: { loaded: boolean }) => {
 					<Menu position="top">
 						<Menu.Target>
 							<div>
-								<IconButton renderIcon={renderExportIcon} />
+								<IconButton renderIcon={renderExportIcon}/>
 							</div>
 						</Menu.Target>
-						<Menu.Dropdown style={{}}>
+						<Menu.Dropdown>
 							<Menu.Item onClick={() => exportHandler('CSV')} style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
 								CSV
 							</Menu.Item>
@@ -543,7 +545,7 @@ const LimitControl: FC = () => {
 					<Menu.Target>
 						<Box onClick={toggle} className={limitBtn}>
 							<Text className={limitBtnText}>{perPage}</Text>
-							<IconSelector size={px('1rem')} />
+							<IconSelector size={'1rem'} />
 						</Box>
 					</Menu.Target>
 				</Center>

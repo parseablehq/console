@@ -49,13 +49,13 @@ type MenuItemProps = {
 const AllLogsButton = (props: MenuItemProps) => {
 	const viewName = 'explore';
 	const isActive = props.currentView === viewName;
-	const additionalClassNames = `${!props.sideBarOpen ? classes.shrink : ''} ${isActive ? classes.activeMenuItem : ''}`;
+	const additionalClassNames = `${props.sideBarOpen ? "" : classes.shrink} ${isActive ? classes.activeMenuItem : ''}`;
 	const additionalStyles = isActive ? { color: 'white' } : {};
 	return (
 		<Stack
 			onClick={() => props.setCurrentView(viewName)}
 			className={`${classes.menuItemContainer} ${additionalClassNames}`}>
-			<ThemeIcon size={32} className={classes.menuIconContainer}>
+			<ThemeIcon size={24} className={classes.menuIconContainer}>
 				{renderlogsIcon(props.currentView === viewName)}
 			</ThemeIcon>
 			{props.sideBarOpen && (
@@ -76,8 +76,8 @@ const ConfigButton = (props: MenuItemProps) => {
 		<Stack
 			onClick={() => props.setCurrentView(viewName)}
 			className={`${classes.menuItemContainer} ${additionalClassNames}`}>
-			<ThemeIcon className={classes.menuIconContainer}>
-				<IconFileSettings style={additionalStyles} size={px('1.4rem')} stroke={1.5} />
+			<ThemeIcon size={24} className={classes.menuIconContainer}>
+				<IconFileSettings  style={additionalStyles} size={px('1.4rem')} stroke={1.5} />
 			</ThemeIcon>
 			{props.sideBarOpen && (
 				<Text style={additionalStyles} className={classes.menuLabel}>
@@ -97,7 +97,7 @@ const LiveTailMenu = (props: MenuItemProps) => {
 		<Stack
 			onClick={() => props.setCurrentView(viewName)}
 			className={`${classes.menuItemContainer} ${additionalClassNames}`}>
-			<ThemeIcon className={classes.menuIconContainer}>
+			<ThemeIcon size={24} className={classes.menuIconContainer}>
 				<IconBolt size={px('1.4rem')} stroke={1.5} style={additionalStyles} />
 			</ThemeIcon>
 			{props.sideBarOpen && (
@@ -127,7 +127,6 @@ const SideBar = () => {
 	return (
 		<Stack className={classes.container}>
 			<Stack className={classes.streamDropdownContainer}>
-				{/* <StreamDropdown /> */}
 				<Stack onClick={onToggle} className={classes.sideBarToggleContainer}>
 					<ThemeIcon className={classes.sideBarToggleIconContainer} p={2}>
 						{sideBarOpen ? (

@@ -26,7 +26,7 @@
 	margin-left: 0.625rem;
 }
 
-.logsPrimaryToolbar {
+.logsSecondaryToolbar {
 	border-bottom: 1px solid var(--mantine-color-gray-3);
 	width: 100%;
 	flex-direction: row;
@@ -34,8 +34,6 @@
 	align-items: center;
 }
 
-.logsSecondaryToolbar {
-	width: '100%';
-	flex-direction: row;
-	padding: 1rem 1.5rem;
+.logsPrimaryToolbar {
+	
 }

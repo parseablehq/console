@@ -80,7 +80,7 @@ const EmptyBox: FC<EmptyBoxProps> = (props) => {
 
 	return (
 		<Center className={container} {...restProps}>
-			<EmptySimple height={imgHeight || 70} width={imgWidth || 100} />
+			<EmptySimple height={imgHeight || 60} width={imgWidth || 60} />
 			<Text className={messageStyle} {...textProps}>
 				{message || 'No Data'}
 			</Text>

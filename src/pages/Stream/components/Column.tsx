@@ -93,7 +93,6 @@ const Column: FC<Column> = (props) => {
 	return (
 		<th
 			style={{
-				height: '42px',
 				padding: 0,
 				textAlign: 'left',
 			}}>
