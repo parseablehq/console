@@ -108,7 +108,7 @@ const Roles: FC = () => {
 				privilege: selectedPrivilege,
 			});
 		}
-		if (selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingester') {
+		if (selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingestor') {
 			if (getLogStreamListData?.data?.find((stream) => stream.name === SelectedStream)) {
 				if (tagInput !== '' && tagInput !== undefined && selectedPrivilege === 'reader') {
 					userRole?.push({
@@ -147,7 +147,7 @@ const Roles: FC = () => {
 				}
 				return true;
 			}
-			if (selectedPrivilege === 'writer' || selectedPrivilege === 'ingester') {
+			if (selectedPrivilege === 'writer' || selectedPrivilege === 'ingestor') {
 				if (getLogStreamListData?.data?.find((stream) => stream.name === SelectedStream)) {
 					return false;
 				}
@@ -269,7 +269,7 @@ const Roles: FC = () => {
 					<Select
 						placeholder="Select privilege"
 						label="Select a privilege to assign"
-						data={['admin', 'editor', 'writer', 'reader', 'ingester']}
+						data={['admin', 'editor', 'writer', 'reader', 'ingestor']}
 						onChange={(value) => {
 							setSelectedPrivilege(value ?? '');
 						}}
@@ -277,7 +277,7 @@ const Roles: FC = () => {
 						nothingFoundMessage="No options"
 					/>
 
-					{selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingester' ? (
+					{selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingestor' ? (
 						<>
 							<Select
 								placeholder="Pick one"
