@@ -46,7 +46,7 @@ const Login: FC = () => {
 							<Text mt="xl" className={titleStyle}>
 								👋 Welcome back
 							</Text>
-							<Text mt="xl" size={'sm'} color="dimmed">
+							<Text mt="sm" size={'sm'} color="dimmed">
 								Please enter your credentials
 							</Text>
 
@@ -56,7 +56,7 @@ const Login: FC = () => {
 								</Text>
 							)}
 							<TextInput
-								mt="xl"
+								mt="sm"
 								className={formInput}
 								placeholder="J.Doe"
 								label="Username"
@@ -64,7 +64,7 @@ const Login: FC = () => {
 								{...getInputProps('username')}
 							/>
 							<PasswordInput
-								mt="xl"
+								mt="lg"
 								className={formInput}
 								placeholder="**********"
 								label="Password"
