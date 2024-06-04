@@ -130,7 +130,6 @@ const StorageSizeRow = () => {
 		.thru((e: {}) => ({ ...defaultIngestedSizeData, ...e }))
 		.value();
 	const compressionSize = calcCompressionRate(storageData.size, ingestionData.size);
-	const lifetimeCompressionSize = calcCompressionRate(storageData.lifetime_size, ingestionData.lifetime_size);
 	return (
 		<Stack style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
 			<Stack w={titleWidth}>
@@ -154,7 +153,7 @@ const StorageSizeRow = () => {
 					</Stack>
 				</Stack>
 			</Stack>
-			<Stack w={bigNoWidth} gap={0} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+			{/* <Stack w={bigNoWidth} gap={0} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
 				<Text ta="center" className={classes.bigNoText}>
 					{sanitizeBytes(storageData.lifetime_size)}
 				</Text>
@@ -171,12 +170,16 @@ const StorageSizeRow = () => {
 						<Text>)</Text>
 					</Stack>
 				</Stack>
+			</Stack> */}
+			<Stack w={bigNoWidth}>
+				<Text ta="center" className={classes.bigNoText}>
+					{sanitizeBytes(storageData.lifetime_size)}
+				</Text>
 			</Stack>
 			<Stack w={bigNoWidth}>
 				<Text ta="center" className={classes.bigNoText}>
 					{sanitizeBytes(storageData.deleted_size)}
 				</Text>
-				{/* <Text ta="center">{deletedCompressionSize}</Text> */}
 			</Stack>
 		</Stack>
 	);
