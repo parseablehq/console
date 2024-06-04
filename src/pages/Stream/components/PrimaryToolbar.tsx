@@ -89,10 +89,19 @@ const PrimaryToolbar = () => {
 					<RefreshNow />
 				</Stack>
 			) : view === 'live-tail' ? (
-				<LiveTailToolbar />
-			) : view === 'manage' ? (
-				<ManagementToolbar />
-			) : null}
+				<Stack style={{ flexDirection: 'row', height: STREAM_PRIMARY_TOOLBAR_HEIGHT }} w="100%">
+					<StreamDropdown />
+					<StreamingButton />
+					<MaximizeButton />
+				</Stack>
+			) 
+			: view === 'manage' ? (
+				<Stack style={{ flexDirection: 'row', height: STREAM_PRIMARY_TOOLBAR_HEIGHT }} w="100%">
+					<StreamDropdown />
+					<DeleteStreamButton />
+				</Stack>
+			)
+			 : null}
 		</Stack>
 	);
 };

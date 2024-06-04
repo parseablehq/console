@@ -227,8 +227,9 @@ export const QueryPills = () => {
 	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
 	const { combinator, rules: ruleSets } = appliedQuery;
 	return (
-		<ScrollArea scrollbarSize={6} scrollHideDelay={0} offsetScrollbars>
-			<Stack style={{ flexDirection: 'row' }} gap={8}>
+		<ScrollArea scrollbarSize={6} scrollHideDelay={0} offsetScrollbars={false}>
+			<Stack style={{border: '1px solid', height: '100%'}}>
+			<Stack style={{ flexDirection: 'row', border: '1px solid' }} gap={8}>
 				{ruleSets.map((ruleSet, index) => {
 					const shouldShowCombinatorPill = ruleSets.length !== 1 && index + 1 !== ruleSets.length;
 					return (
@@ -239,6 +240,7 @@ export const QueryPills = () => {
 					);
 				})}
 			</Stack>
+				</Stack>
 		</ScrollArea>
 	);
 };

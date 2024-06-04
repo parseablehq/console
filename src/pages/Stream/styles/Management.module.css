@@ -1,14 +1,12 @@
 .viewConatiner {
     width: 100%;
-    height: 100%;
     gap: 12;
     padding: 0 1.5rem 1.5rem 1.5rem;
-
 }
 
 .sectionContainer {
     width: 50%;
-    border: 1px solid var(--mantine-color-gray-3);
+    border: 1px solid var(--mantine-color-gray-2);
     border-radius: 0.5rem;
     height: 100%;
 }
@@ -17,22 +15,18 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    border-bottom: 1px solid var(--mantine-color-gray-3);
+    border-bottom: 1px solid var(--mantine-color-gray-1);
     align-items: center;
-    padding: 1rem 1.5rem;
+    padding: 0.6rem 1rem;
 }
 
 .title {
-    font-size: 1.2rem;
+    font-size: 0.75rem;
     font-weight: 600;
 }
 
-.listContainer {
-    overflow: scroll;
-}
-
 .alertItemContainer {
-    padding: 1rem 1.5rem;
+    padding: 0.75rem 1rem;
     border-bottom: 1px solid var(--mantine-color-gray-2);
     flex-direction: row;
     justify-content: space-between;
@@ -43,7 +37,7 @@
 }
 
 .alertName {
-    font-size: 1rem;
+    font-size: 0.7rem;
     font-weight: 400;
 }
 
@@ -54,12 +48,13 @@
 }
 
 .modalTitle {
-	font-size: 1.2rem;
+	font-size: 1rem;
 	font-weight: 600;
 } 
 
 .fieldTitle {
     font-weight: 500;
+    font-size: 0.7rem;
 }
 
 .fieldDescription {
@@ -85,7 +80,6 @@
 	background-color: white;
 	color: #211F1F;
 	border: 1px #e9ecef solid;
-	padding: 0.625rem 1rem;
 	margin-right: 0.625rem;
     border-radius: rem(8px);
     &:hover {
@@ -109,7 +103,7 @@
 
 .statsTableContainer {
     flex: 1;
-    padding: 1.5rem;
+    padding: 0.8rem;
     padding-bottom: 0;
 }
 
@@ -128,13 +122,12 @@
 }
 
 .bigNoText {
-    font-size: 1rem;
-    font-weight: 500;
+    font-size: 0.75rem;
 }
 
 .compressionText {
     color: var(--mantine-color-green-7);
-    font-weight: 700;
+    font-weight: 500;
 }
 
 .infoTitle {

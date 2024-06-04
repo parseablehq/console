@@ -32,8 +32,8 @@ const FilterPlaceholder = () => {
 const SQLEditorPlaceholder = () => {
 	return (
 		<Group className={classes.placeholderText} gap={0}>
-			<IconCodeCircle size={'1.2rem'} stroke={1.8} style={{ marginRight: 6 }} />
-			Click to write query
+			<IconCodeCircle size={'1rem'} stroke={1.8} style={{ marginRight: 6 }} />
+			<Text size="md">Click to write query</Text>
 		</Group>
 	);
 };
@@ -164,7 +164,7 @@ const Querier = () => {
 					<Stack
 						gap={0}
 						style={{
-							borderRight: '1px solid',
+							borderRight: '1px solid #e9ecef',
 							flexDirection: 'row',
 							alignItems: 'center',
 							justifyContent: 'center',

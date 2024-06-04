@@ -22,10 +22,6 @@
     color: #545beb;
 }
 
-.searchInputStyle {
-    margin-bottom: 0.625rem;
-}
-
 .filterText {
     display: flex;
     align-items: center;
@@ -43,8 +39,12 @@
     font-weight: 400;
     overflow: hidden;
     white-space: nowrap;
-    width: 18rem;
     text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.checkBoxLabel { 
+   cursor: pointer; 
 }
 
 .checkBoxStyle .mantine-Checkbox-label {
@@ -80,25 +80,27 @@
     align-items: center;
     color: #211F1F;
     padding: 0;
-    font-size: 0.875rem;
+    font-size: 0.7rem;
     font-weight: 400;
     background-color: white;
 }
 
 .sortBtn:hover {
-    color: #fc466b;
+   background-color: var(--mantine-color-gray-1);
+   color: var(--mantine-color-gray-8);
 }
 
 .sortBtnActive {
     display: flex;
     align-items: center;
-    color: #545beb;
+    color: #fc466b;
     padding: 0;
-    font-size: 0.875rem;
+    font-size: 0.7rem;
     font-weight: 500;
     background-color: white;
 }
 
 .sortBtnActive:hover {
     color: #fc466b;
+    background-color: var(--mantine-color-gray-1);
 }

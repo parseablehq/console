@@ -1,5 +1,5 @@
 import { Log } from '@/@types/parseable/api/query';
-import { Box, Checkbox, Popover, ScrollArea, Stack, TextInput, Tooltip, UnstyledButton, px } from '@mantine/core';
+import { Box, Checkbox, Popover, ScrollArea, Stack, TextInput, Tooltip, UnstyledButton, px, rem } from '@mantine/core';
 import { type ChangeEvent, type FC, Fragment, useRef, useCallback, useState, useEffect } from 'react';
 import { IconDotsVertical, IconFilter, IconSearch, IconSortAscending, IconSortDescending } from '@tabler/icons-react';
 import EmptyBox from '@/components/Empty';
@@ -31,20 +31,20 @@ const SortWidget: FC<SortWidgetProps> = (props) => {
 	const [sortOrder] = useLogsStore((store) => store.tableOpts.sortOrder);
 	const isSortActive = sortKey === columnName;
 	return (
-		<Box>
+		<Stack gap={8}>
 			<Button
 				className={isSortActive && sortOrder === 'asc' ? sortBtnActive : sortBtn}
 				onClick={() => toggleSort('asc')}
 				leftSection={<IconSortAscending stroke={1} />}>
-				Sort by Ascending order
+				Sort by ascending order
 			</Button>
 			<Button
 				className={isSortActive && sortOrder === 'desc' ? sortBtnActive : sortBtn}
 				onClick={() => toggleSort('desc')}
 				leftSection={<IconSortDescending stroke={1} />}>
-				Sort by Descending order
+				Sort by descending order
 			</Button>
-		</Box>
+		</Stack>
 	);
 };
 
@@ -59,11 +59,20 @@ const Column: FC<Column> = (props) => {
 	const [selectedValues, setSelectedValues] = useState<string[]>([]);
 	const [rawData, setLogsStore] = useLogsStore((store) => store.data.rawData);
 	const inputValueRef = useRef('');
+	const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
 
 	useEffect(() => {
 		const uniqueValues = getUniqueValues(rawData, columnName);
 		setUniqueValues(uniqueValues);
 	}, [rawData]);
+
+	const closePopover = useCallback(() => {
+		setPopoverOpen(false);
+	}, []);
+
+	const openPopover = useCallback(() => {
+		setPopoverOpen(true)
+	}, [])
 
 	const onSearch = useCallback(
 		(e: ChangeEvent<HTMLInputElement>) => {
@@ -83,6 +92,7 @@ const Column: FC<Column> = (props) => {
 	}, []);
 
 	const onApply = () => {
+		closePopover();
 		setLogsStore((store) => setAndFilterData(store, columnName, selectedValues));
 	};
 	const classes = columnStyles;
@@ -96,25 +106,34 @@ const Column: FC<Column> = (props) => {
 				padding: 0,
 				textAlign: 'left',
 			}}>
-			<Popover position="bottom" withArrow withinPortal shadow="md" zIndex={2}>
+			<Popover
+				position="bottom"
+				opened={popoverOpen}
+				onClose={closePopover}
+				onOpen={openPopover}
+				withArrow
+				withinPortal
+				shadow="md"
+				zIndex={2}>
 				<Popover.Target>
-					<UnstyledButton className={labelBtn}>
+					<UnstyledButton className={labelBtn} onClick={openPopover}>
 						<span>{columnName}</span>
 						<IconDotsVertical size={px('1rem')} className={[labelIcon].filter(Boolean).join(' ')} />
 					</UnstyledButton>
 				</Popover.Target>
 				<Popover.Dropdown>
-					<Box>
+					<Box style={{ width: rem(400) }}>
 						<SortWidget columnName={columnName} />
-						<Button className={filterText} leftSection={<IconFilter stroke={1} />}>
-							Filter by values:
-						</Button>
-
+						<Stack gap={8} mt={16} style={{ flexDirection: 'row' }}>
+							<IconFilter stroke={1} size="1rem" />
+							<Text>Filter by values:</Text>
+						</Stack>
 						<TextInput
 							className={searchInputStyle}
 							placeholder="Search"
-							leftSection={<IconSearch size={px('0.8rem')} />}
+							leftSection={<IconSearch size={px('1rem')} />}
 							onChange={onSearch}
+							mt={8}
 						/>
 						{checkboxList.length ? (
 							<Fragment>
@@ -169,6 +188,7 @@ const CheckboxVirtualList: FC<CheckboxVirtualListProps> = (props) => {
 										value={label}
 										label={label}
 										className={checkBoxStyle}
+										classNames={{ label: classes.checkBoxLabel }}
 										styles={{
 											label: { textOverflow: 'ellipsis', width: 250, whiteSpace: 'nowrap', overflow: 'hidden' },
 											body: {

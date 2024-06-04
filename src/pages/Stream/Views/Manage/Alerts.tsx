@@ -393,10 +393,11 @@ const TargetsSection = (props: TargetsSectionProps) => {
 			</Stack>
 			<Box mt={8}>
 				<Button
-					leftSection={<IconPlus stroke={1.2} />}
+					leftSection={<IconPlus stroke={1.2} size="1rem"/>}
 					variant="outline"
 					onClick={addTarget}
-					className={classes.formBtn}>
+					className={classes.formBtn}
+					>
 					Add Target
 				</Button>
 			</Box>
@@ -552,8 +553,8 @@ const Header = (props: { selectAlert: selectAlert, isLoading: boolean }) => {
 					<Button
 						variant="outline"
 						onClick={() => props.selectAlert('')}
-						h={'2rem'}
-						leftSection={<IconPlus stroke={2} />}>
+						// h={'2rem'}
+						leftSection={<IconPlus stroke={2} size={'1rem'}/>}>
 						New Alert
 					</Button>
 				</Box>
@@ -571,10 +572,10 @@ const AlertItem = (props: { alert: TransformedAlert; selectAlert: selectAlert, o
 			<Text className={classes.alertName}>{name}</Text>
 			<Stack className={classes.alertActionsContainer}>
 				<Tooltip label="Edit">
-					<IconEdit stroke={1.2} onClick={() => selectAlert(name)} />
+					<IconEdit stroke={1.2} onClick={() => selectAlert(name)} size="1rem" />
 				</Tooltip>
 				<Tooltip label="Delete" onClick={() => props.onDeleteAlert(name)}>
-					<IconTrash stroke={1.2} />
+					<IconTrash stroke={1.2} size="1rem" />
 				</Tooltip>
 			</Stack>
 		</Stack>
@@ -599,7 +600,7 @@ const AlertList = (props: { selectAlert: selectAlert, isLoading: boolean, update
 	);
 
 	return (
-		<Stack className={classes.listContainer} gap={0}>
+		<Stack className={classes.listContainer} gap={0} style={{flex: 1, overflow: 'scroll'}}>
 			{props.isLoading ? (
 				<Stack style={{ flex: 1, width: '100%', alignItems: 'centrer', justifyContent: 'center' }}>
 					<Stack style={{ alignItems: 'center' }}>
@@ -613,6 +614,29 @@ const AlertList = (props: { selectAlert: selectAlert, isLoading: boolean, update
 					})}
 				</>
 			)}
+			{/* <Text>hello</Text>
+			<Text>hello</Text>
+			<Text>hello</Text>
+			<Text>hello</Text>
+			<Text>hello</Text>
+			<Text>hello</Text>
+			<Text>hello</Text>
+			<Text>hello</Text>
+			<Text>hello</Text>
+			<Text>hello</Text>
+			<Text>hello</Text>
+			<Text>hello</Text>
+			<Text>hello</Text>
+			<Text>hello</Text>
+			<Text>hello</Text>
+			<Text>hello</Text>
+			<Text>hello</Text>
+			<Text>hello</Text><Text>hello</Text>
+			<Text>hello</Text>
+			<Text>hello</Text>
+			<Text>hello</Text>
+			<Text>hello</Text>
+			<Text>hello</Text> */}
 		</Stack>
 	);
 };
@@ -635,7 +659,7 @@ const Alerts = (props: {
 	}, []);
 
 	return (
-		<Stack className={classes.sectionContainer} gap={0}>
+		<Stack className={classes.sectionContainer} gap={0} style={{flex: 1}}>
 			<AlertsModal open={alertModalOpen} alertName={alertName} onClose={closeModal} updateAlerts={props.updateAlerts}/>
 			<Header selectAlert={selectAlert} isLoading={props.isLoading} />
 			<AlertList selectAlert={selectAlert} isLoading={props.isLoading} updateAlerts={props.updateAlerts}/>
