@@ -11,44 +11,65 @@ import { useFilterStore, filterStoreReducers } from '../providers/FilterProvider
 const { setTimeRange } = logsStoreReducers;
 
 const { parseQuery } = filterStoreReducers;
-const getCompactType = (interval: number) => {
+
+type CompactInterval = 'minute' | 'day' | 'hour' | 'quarter-hour' | 'half-hour';
+
+const getCompactType = (interval: number): CompactInterval => {
 	const totalMinutes = interval / (1000 * 60);
 	if (totalMinutes <= 60) {
-		// 1 hour
+		// upto 1 hour
 		return 'minute';
+	} else if (totalMinutes <= 300) {
+		// upto 5 hours
+		return 'quarter-hour';
+	} else if (totalMinutes <= 1440) {
+		// upto 5 hours
+		return 'half-hour';
 	} else if (totalMinutes <= 4320) {
-		// 3 days
+		// upto 3 days
 		return 'hour';
 	} else {
 		return 'day';
 	}
 };
 
-const getStartOfTs = (time: Date, compactType: 'day' | 'hour' | 'minute'): Date => {
+const getStartOfTs = (time: Date, compactType: CompactInterval): Date => {
 	if (compactType === 'minute') {
 		return time;
 	} else if (compactType === 'hour') {
 		return new Date(time.getFullYear(), time.getMonth(), time.getDate(), time.getHours());
+	} else if (compactType === 'quarter-hour') {
+		const roundOff = 1000 * 60 * 15;
+		return new Date(Math.floor(time.getTime() / roundOff) * roundOff);
+	} else if (compactType === 'half-hour') {
+		const roundOff = 1000 * 60 * 30;
+		return new Date(Math.floor(time.getTime() / roundOff) * roundOff);
 	} else {
 		return new Date(time.getFullYear(), time.getMonth(), time.getDate());
 	}
 };
 
-const getEndOfTs = (time: Date, compactType: 'day' | 'hour' | 'minute'): Date => {
+const getEndOfTs = (time: Date, compactType: CompactInterval): Date => {
 	if (compactType === 'minute') {
 		return time;
 	} else if (compactType === 'hour') {
 		return new Date(time.getFullYear(), time.getMonth(), time.getDate(), time.getHours() + 1);
+	} else if (compactType === 'quarter-hour') {
+		const roundOff = 1000 * 60 * 15;
+		return new Date(Math.round(time.getTime() / roundOff) * roundOff);
+	} else if (compactType === 'half-hour') {
+		const roundOff = 1000 * 60 * 30;
+		return new Date(Math.round(time.getTime() / roundOff) * roundOff);
 	} else {
 		return new Date(time.getFullYear(), time.getMonth(), time.getDate() + 1);
 	}
 };
 
-const getAllIntervals = (start: Date, end: Date, compactType: 'minute' | 'hour' | 'day'): Date[] => {
+const getAllIntervals = (start: Date, end: Date, compactType: CompactInterval): Date[] => {
 	const result = [];
 	const current = new Date(start);
 
-	const increment = (date: Date, type: 'minute' | 'hour' | 'day') => {
+	const increment = (date: Date, type: CompactInterval) => {
 		switch (type) {
 			case 'minute':
 				date.setMinutes(date.getMinutes() + 1);
@@ -58,6 +79,12 @@ const getAllIntervals = (start: Date, end: Date, compactType: 'minute' | 'hour' 
 				break;
 			case 'day':
 				date.setDate(date.getDate() + 1);
+				break;
+			case 'quarter-hour':
+				date.setMinutes(date.getMinutes() + 15);
+				break;
+			case 'half-hour':
+				date.setMinutes(date.getMinutes() + 30);
 				break;
 		}
 	};
@@ -74,7 +101,7 @@ const getModifiedTimeRange = (
 	startTime: Date,
 	endTime: Date,
 	interval: number,
-): { modifiedStartTime: Date; modifiedEndTime: Date; compactType: 'day' | 'minute' | 'hour' } => {
+): { modifiedStartTime: Date; modifiedEndTime: Date; compactType: CompactInterval } => {
 	const compactType = getCompactType(interval);
 	const modifiedStartTime = getStartOfTs(startTime, compactType);
 	const modifiedEndTime = getEndOfTs(endTime, compactType);
@@ -85,13 +112,15 @@ const compactTypeIntervalMap = {
 	minute: '1 minute',
 	hour: '1 hour',
 	day: '24 hour',
+	'quarter-hour': '15 minute',
+	'half-hour': '30 minute',
 };
 
 const generateCountQuery = (
 	streamName: string,
 	startTime: Date,
 	endTime: Date,
-	compactType: 'day' | 'minute' | 'hour',
+	compactType: CompactInterval,
 	whereClause: string,
 ) => {
 	const range = compactTypeIntervalMap[compactType];
@@ -102,7 +131,7 @@ const NoDataView = () => {
 	return (
 		<Stack style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
 			<Stack className={classes.noDataContainer}>
-				<Text className={classes.noDataText}>No new events in the last 30 minutes.</Text>
+				<Text className={classes.noDataText}>No new events in the selected time range.</Text>
 			</Stack>
 		</Stack>
 	);
@@ -162,7 +191,16 @@ function ChartTooltip({ payload }: ChartTooltipProps) {
 	const { minute, aboveAvgPercent, events, compactType } = payload[0]?.payload || {};
 	const isAboveAvg = aboveAvgPercent > 0;
 	const startTime = dayjs(minute).utc(true);
-	const endTime = dayjs(minute).add(1, compactType);
+	const endTime = (() => {
+		if (compactType === 'half-hour') {
+			return dayjs(minute).add(30, 'minute');
+		} else if (compactType === 'quarter-hour') {
+			return dayjs(minute).add(15, 'minute');
+		} else {
+			return dayjs(minute).add(1, compactType);
+		}
+	})();
+
 	return (
 		<Paper px="md" py="sm" withBorder shadow="md" radius="md">
 			<Text fw={600} mb={5}>
@@ -254,6 +292,8 @@ const EventTimeLineGraph = () => {
 						areaChartProps={{ onClick: setTimeRangeFromGraph, style: { cursor: 'pointer' } }}
 						gridAxis="xy"
 						fillOpacity={0.5}
+						strokeWidth={1.25}
+						dotProps={{ strokeWidth: 1, r: 2.5 }}
 					/>
 				) : (
 					<NoDataView />
