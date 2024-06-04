@@ -1,5 +1,4 @@
-import { Box, Group, Menu, Modal, Stack, px } from '@mantine/core';
-import { ToggleButton } from '@/components/Button/ToggleButton';
+import { Group, Menu, Modal, Stack, px } from '@mantine/core';
 import { IconChevronDown, IconCodeCircle, IconFilter } from '@tabler/icons-react';
 import classes from '../../styles/Querier.module.css';
 import { Text } from '@mantine/core';

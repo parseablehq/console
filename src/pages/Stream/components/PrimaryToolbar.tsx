@@ -31,32 +31,6 @@ const DeleteStreamButton = () => {
 	return <IconButton renderIcon={renderDeleteIcon} size={38} onClick={onClick} tooltipLabel="Delete" />;
 };
 
-const ExploreToolbar = () => (
-	<Stack>
-		<StreamDropdown />
-		<Querier />
-		<TimeRange />
-		<RefreshInterval />
-		<MaximizeButton />
-		<RefreshNow />
-	</Stack>
-);
-
-const LiveTailToolbar = () => (
-	<>
-		<StreamDropdown />
-		<StreamingButton />
-		<MaximizeButton />
-	</>
-);
-
-const ManagementToolbar = () => (
-	<>
-		<StreamDropdown />
-		<DeleteStreamButton />
-	</>
-);
-
 const PrimaryToolbar = () => {
 	const [maximized] = useAppStore((store) => store.maximized);
 	const { view } = useParams();

@@ -6,7 +6,6 @@ import { useEffect, useMemo, useRef } from 'react';
 import { REFRESH_INTERVALS } from '@/constants/timeConstants';
 import classes from './styles/LogQuery.module.css';
 import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsProvider';
-import { LOGS_PRIMARY_TOOLBAR_HEIGHT, STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT, STREAM_PRIMARY_TOOLBAR_HEIGHT } from '@/constants/theme';
 
 const { setRefreshInterval, getCleanStoreForRefetch } = logsStoreReducers;
 const RefreshInterval: FC = () => {

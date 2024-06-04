@@ -96,7 +96,7 @@ const Column: FC<Column> = (props) => {
 		setLogsStore((store) => setAndFilterData(store, columnName, selectedValues));
 	};
 	const classes = columnStyles;
-	const { labelBtn, applyBtn, labelIcon, searchInputStyle, filterText } = classes;
+	const { labelBtn, applyBtn, labelIcon, searchInputStyle } = classes;
 
 	const checkboxList =
 		filteredValues.length === 0 ? (inputValueRef.current.length === 0 ? uniqueValues : []) : filteredValues;
