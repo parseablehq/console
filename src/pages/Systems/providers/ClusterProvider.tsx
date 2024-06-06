@@ -4,7 +4,7 @@ import _ from 'lodash';
 
 type ReducerOutput = Partial<ClusterStore>;
 
-type SystemType = 'querier' | 'ingestor'
+type SystemType = 'querier' | 'ingestor';
 
 type currentMachineData = IngestorQueryRecord[];
 
@@ -23,14 +23,15 @@ export type MachineType = {
 	domain_name: string;
 	reachable: boolean;
 	type?: SystemType;
-}
+	error?: string | null;
+};
 
 type ClusterStoreReducers = {
 	setIngestorMachines: (store: ClusterStore, ingestors: MachineType[]) => ReducerOutput;
 	setCurrentMachine: (store: ClusterStore, domain_name: string, type: SystemType | undefined) => ReducerOutput;
 	setCurrentMachineData: (store: ClusterStore, data: currentMachineData) => ReducerOutput;
 	getCleanStoreForRefetch: (store: ClusterStore) => ReducerOutput;
-}
+};
 
 const initialState: ClusterStore = {
 	// for any changes - modify setCurrentMachine
@@ -38,16 +39,16 @@ const initialState: ClusterStore = {
 	currentMachineType: 'querier',
 	currentMachineData: [],
 	currentMachineRecentRecord: null,
-	querierMachine: {domain_name: `${window.location.protocol}//${window.location.host}`, reachable: true},
-	ingestorMachines: []
-}
+	querierMachine: { domain_name: `${window.location.protocol}//${window.location.host}`, reachable: true },
+	ingestorMachines: [],
+};
 
 const setIngestorMachines = (store: ClusterStore, ingestors: MachineType[]) => {
 	return {
 		currentMachine: store.querierMachine.domain_name,
 		ingestorMachines: ingestors,
-	}
-}
+	};
+};
 
 const setCurrentMachine = (store: ClusterStore, domain_name: string, type: SystemType | undefined) => {
 	if (!type) return store;
@@ -70,14 +71,14 @@ const setCurrentMachine = (store: ClusterStore, domain_name: string, type: Syste
 			currentMachineRecentRecord: null,
 		};
 	}
-}
+};
 
 const setCurrentMachineData = (_store: ClusterStore, data: currentMachineData) => {
 	return {
 		currentMachineData: data,
-		currentMachineRecentRecord: _.last(data)
-	}
-}
+		currentMachineRecentRecord: _.last(data),
+	};
+};
 
 const getCleanStoreForRefetch = (_store: ClusterStore) => {
 	return initialState;
@@ -87,11 +88,9 @@ const clusterStoreReducers: ClusterStoreReducers = {
 	setIngestorMachines,
 	setCurrentMachine,
 	setCurrentMachineData,
-	getCleanStoreForRefetch
-}
+	getCleanStoreForRefetch,
+};
 
 const { Provider: ClusterProvider, useStore: useClusterStore } = initContext(initialState);
-
-
 
 export { ClusterProvider, useClusterStore, clusterStoreReducers };

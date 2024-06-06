@@ -1,4 +1,4 @@
-import { Skeleton, Stack, Text } from '@mantine/core';
+import { Skeleton, Stack, Text, ThemeIcon, Tooltip } from '@mantine/core';
 import { useClusterStore } from './providers/ClusterProvider';
 import classes from './styles/Systems.module.css';
 import { HumanizeNumber, formatBytes } from '@/utils/formatBytes';
@@ -7,6 +7,7 @@ import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useCallback, useEffect, useState } from 'react';
 import { PrometheusMetricResponse, SanitizedMetrics, parsePrometheusResponse, sanitizeIngestorData } from './utils';
+import { IconAlertCircle } from '@tabler/icons-react';
 
 const fetchIngestorMetrics = async () => {
 	const endpoint = `/api/v1/metrics`;
@@ -62,11 +63,18 @@ const useFetchQuerierMetrics = () => {
 const InfoItem = (props: { title: string; value: string; width?: string; loading?: boolean }) => {
 	return (
 		<Stack w={props.width ? props.width : '25%'} gap={4}>
-			<Text className={classes.fieldDescription}>{props.title}</Text>
+			<Text
+				className={classes.fieldDescription}
+				style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+				{props.title}
+			</Text>
 			{props.loading ? (
 				<Skeleton height="1.8rem" />
 			) : (
-				<Text className={classes.fieldTitle} fw={400}>
+				<Text
+					className={classes.fieldTitle}
+					fw={400}
+					style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
 					{props.value}
 				</Text>
 			)}
@@ -76,15 +84,30 @@ const InfoItem = (props: { title: string; value: string; width?: string; loading
 
 const IngestorInfo = () => {
 	const [recentRecord] = useClusterStore((store) => store.currentMachineRecentRecord);
+	const [ingestorMachines] = useClusterStore((store) => store.ingestorMachines);
+	const ingestor = _.find(ingestorMachines, (ingestor) => ingestor.domain_name === recentRecord?.address);
+	const error = ingestor ? ingestor.error : null || null;
 	return (
 		<Stack style={{ width: '70%', height: '100%' }} className={classes.machineInfoSection}>
-			<Text fw={500}>Instance Info</Text>
+			<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={8}>
+				<Text fw={500}>Instance Info</Text>
+				{error && (
+					<Tooltip label={error}>
+						<ThemeIcon className={classes.infoIcon} variant="filled" size="sm">
+							<IconAlertCircle stroke={1.5} />
+						</ThemeIcon>
+					</Tooltip>
+				)}
+			</Stack>
 			<Stack flex={1} style={{ justifyContent: 'space-around' }}>
 				<Stack style={{ width: '100%', flexDirection: 'row' }}>
 					<InfoItem title="Address" value={recentRecord?.address || ''} />
 					<InfoItem title="Cache" value={recentRecord?.cache || ''} />
 					<InfoItem title="Staging Files" value={HumanizeNumber(recentRecord?.parseable_staging_files || 0)} />
-					<InfoItem title="Staging Size" value={formatBytes(recentRecord?.parseable_storage_size?.staging || 0) || ''} />
+					<InfoItem
+						title="Staging Size"
+						value={formatBytes(recentRecord?.parseable_storage_size?.staging || 0) || ''}
+					/>
 				</Stack>
 				<Stack style={{ width: '100%', flexDirection: 'row' }}>
 					<InfoItem title="Commit" value={recentRecord?.commit || ''} />
