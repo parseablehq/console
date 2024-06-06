@@ -6,6 +6,7 @@ import { Field, RuleGroupType, RuleType, formatQuery } from 'react-querybuilder'
 export const textFieldOperators = [
 	{ value: '=', label: '=' },
 	{ value: '!=', label: '!=' },
+	{ value: 'ilike', label: 'case-insensitive match' },
 	{ value: 'contains', label: 'contains' },
 	{ value: 'beginsWith', label: 'begins with' },
 	{ value: 'endsWith', label: 'ends with' },
@@ -14,7 +15,6 @@ export const textFieldOperators = [
 	{ value: 'doesNotEndWith', label: 'does not end with' },
 	{ value: 'null', label: 'is null' },
 	{ value: 'notNull', label: 'is not null' },
-	{ value: 'ilike', label: 'case-insensitive match' },
 ];
 
 export const numberFieldOperators = [
