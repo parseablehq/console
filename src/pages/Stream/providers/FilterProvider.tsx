@@ -14,6 +14,7 @@ export const textFieldOperators = [
 	{ value: 'doesNotEndWith', label: 'does not end with' },
 	{ value: 'null', label: 'is null' },
 	{ value: 'notNull', label: 'is not null' },
+	{ value: 'ilike', label: 'case-insensitive match' },
 ];
 
 export const numberFieldOperators = [
