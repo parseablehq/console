@@ -6,7 +6,6 @@ import Column from '../../components/Column';
 import { useDoGetLiveTail } from '@/hooks/useDoGetLiveTail';
 import EmptyBox from '@/components/Empty';
 import styles from '../../styles/Logs.module.css';
-import { LOGS_PRIMARY_TOOLBAR_HEIGHT, LOGS_SECONDARY_TOOLBAR_HEIGHT, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
@@ -16,7 +15,6 @@ const { setLiveTailStatus } = logsStoreReducers;
 const LiveLogTable: FC = () => {
 	const { finalData: data, doGetLiveTail, resetData, abort, loading, schema } = useDoGetLiveTail();
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const [maximized] = useAppStore((store) => store.maximized);
 	const [grpcPort] = useAppStore((store) => store.instanceConfig?.grpcPort);
 	const [liveTailConfig, setLogsStore] = useLogsStore((store) => store.liveTailConfig);
 	const { liveTailStatus } = liveTailConfig;
@@ -56,28 +54,16 @@ const LiveLogTable: FC = () => {
 		}
 	}, [loading]);
 
-	const headerRows = schema?.map((element) => (
-		<Column key={element.name} columnName={element.name} />
-	));
+	const headerRows = schema?.map((element) => <Column key={element.name} columnName={element.name} />);
 
 	const classes = styles;
 
 	const { container, tableStyle, liveTheadStyle, tableContainer, innerContainer } = classes;
 
-	const primaryHeaderHeight = !maximized
-		? PRIMARY_HEADER_HEIGHT + LOGS_PRIMARY_TOOLBAR_HEIGHT + LOGS_SECONDARY_TOOLBAR_HEIGHT
-		: 0;
-
 	return (
-		<Box
-			className={container}
-			style={{
-				maxHeight: `calc(100vh - ${primaryHeaderHeight}px )`,
-			}}>
-			<Box className={innerContainer} style={{ maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
-				<Box
-					className={innerContainer}
-					style={{ display: 'flex', flexDirection: 'row', maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
+		<Box className={container}>
+			<Box className={innerContainer}>
+				<Box className={innerContainer} style={{ display: 'flex', flexDirection: 'row' }}>
 					{data.length > 0 ? (
 						<ScrollArea
 							styles={() => ({
