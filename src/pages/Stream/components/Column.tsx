@@ -11,6 +11,7 @@ import _ from 'lodash';
 
 type SortWidgetProps = {
 	columnName: string;
+	closePopover: () => void;
 };
 
 const { setAndSortData, getUniqueValues, setAndFilterData } = logsStoreReducers;
@@ -19,10 +20,11 @@ const { setAndSortData, getUniqueValues, setAndFilterData } = logsStoreReducers;
  * Component that allows selecting sorting by a given field
  */
 const SortWidget: FC<SortWidgetProps> = (props) => {
-	const { columnName } = props;
+	const { columnName, closePopover } = props;
 	const [, setLogsStore] = useLogsStore((_store) => null);
 	const toggleSort = useCallback((order: 'asc' | 'desc') => {
 		setLogsStore((store) => setAndSortData(store, columnName, order));
+		closePopover();
 	}, []);
 
 	const classes = columnStyles;
@@ -123,7 +125,7 @@ const Column: FC<Column> = (props) => {
 				</Popover.Target>
 				<Popover.Dropdown>
 					<Box style={{ width: rem(400) }}>
-						<SortWidget columnName={columnName} />
+						<SortWidget columnName={columnName} closePopover={closePopover}/>
 						<Stack gap={8} mt={16} style={{ flexDirection: 'row' }}>
 							<IconFilter stroke={1} size="1rem" />
 							<Text>Filter by values:</Text>
