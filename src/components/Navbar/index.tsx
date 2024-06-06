@@ -86,6 +86,7 @@ const Navbar: FC = () => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [userSpecificStreams] = useAppStore((store) => store.userSpecificStreams);
 	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
+	const [isStandAloneMode] = useAppStore(store => store.isStandAloneMode);
 	const [userModalOpened, { toggle: toggleUserModal, close: closeUserModal }] = useDisclosure(false);
 	const [infoModalOpened, { toggle: toggleInfoModal, close: closeInfoModal }] = useDisclosure(false);
 	const { getLogStreamListData } = useLogStream();
@@ -160,11 +161,11 @@ const Navbar: FC = () => {
 					</Stack>
 					<Stack gap={4}>
 						{previlagedActions.map((navItem, index) => {
+							if (isStandAloneMode === null) return null;
 							if (navItem.route === USERS_MANAGEMENT_ROUTE && !userAccessMap.hasUserAccess) return null;
-							if (navItem.route === CLUSTER_ROUTE && !userAccessMap.hasUserAccess) return null;
+							if (navItem.route === CLUSTER_ROUTE && (!userAccessMap.hasUserAccess || isStandAloneMode)) return null;
 
 							const isActiveItem = navItem.route === currentRoute;
-							
 							return (
 								<Stack
 									className={`${styles.navItemContainer} ${isActiveItem && styles.navItemActive}`}
