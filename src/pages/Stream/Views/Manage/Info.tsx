@@ -13,11 +13,19 @@ const Header = () => {
 	);
 };
 
-const InfoItem = (props: { title: string; value: string, fullWidth?: boolean }) => {
+const InfoItem = (props: { title: string; value: string; fullWidth?: boolean }) => {
 	return (
-		<Stack w={props.fullWidth ? "100%" : "33%"} gap={0}>
-			<Text className={classes.fieldDescription}>{props.title}</Text>
-			<Text className={classes.fieldTitle}>{props.value}</Text>
+		<Stack w={props.fullWidth ? '100%' : '33%'} gap={0}>
+			<Text
+				className={classes.fieldDescription}
+				style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+				{props.title}
+			</Text>
+			<Text
+				className={classes.fieldTitle}
+				style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', fontWeight: 400 }}>
+				{props.value}
+			</Text>
 		</Stack>
 	);
 };
@@ -57,7 +65,7 @@ const InfoData = (props: {isLoading: boolean}) => {
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Schema Type" value={staticSchemaFlag} />
 						<InfoItem title="Time Partition Field" value={timePartition} />
-						<InfoItem title="Maximum Historical Difference" value={timePartitionLimit} />
+						<InfoItem title="Max Historical Difference" value={timePartitionLimit} />
 					</Stack>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Custom Partition Field" value={customPartition} fullWidth/>
