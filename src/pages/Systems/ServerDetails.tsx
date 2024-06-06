@@ -44,14 +44,17 @@ const ServerDetail = () => {
 
 	useEffect(() => {
 		const timerInterval = timerRef.current;
-		if (timerInterval !== null) {
-			try {
-				clearInterval(timerInterval);
-				timerRef.current = null;
-			} catch (e) {
-				console.log(e);
+		const clearIntervalInstance = () => {
+			if (timerInterval !== null) {
+				try {
+					clearInterval(timerInterval);
+					timerRef.current = null;
+				} catch (e) {
+					console.log(e);
+				}
 			}
-		}
+		};
+		clearIntervalInstance();
 
 		if (clusterStore.currentMachineType === 'ingestor' && clusterStore.currentMachine !== null) {
 			const intervalId = setInterval(() => {
@@ -59,7 +62,10 @@ const ServerDetail = () => {
 			}, 60 * 1000);
 			timerRef.current = intervalId;
 		}
+
+		return () => clearIntervalInstance();
 	}, [clusterStore.currentMachine]);
+
 	return (
 		<Stack className={classes.sectionContainerr} style={{ padding: '1.4rem' }}>
 			{showLoadingState ? <LoadingState /> : <MachineDetails />}

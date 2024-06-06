@@ -19,20 +19,27 @@ const RefreshInterval: FC = () => {
 
 	useEffect(() => {
 		const timerInterval = timerRef.current;
-		if (timerInterval !== null) {
-			try {
-				clearInterval(timerInterval);
-				timerRef.current = null;
-			} catch (e) {
-				console.log(e);
+		const clearIntervalInstance = () => {
+			if (timerInterval !== null) {
+				try {
+					clearInterval(timerInterval);
+					timerRef.current = null;
+				} catch (e) {
+					console.log(e);
+				}
 			}
 		}
 
+		clearIntervalInstance();
 		if (refreshInterval !== null) {
 			const intervalId = setInterval(() => {
 				setLogsStore(getCleanStoreForRefetch);
 			}, refreshInterval);
 			timerRef.current = intervalId;
+		}
+
+		return () => {
+			clearIntervalInstance()
 		}
 	}, [refreshInterval]);
 
