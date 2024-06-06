@@ -7,6 +7,7 @@ import { AppProvider } from '@/layouts/MainLayout/providers/AppProvider';
 import { LogsProvider } from '@/pages/Stream/providers/LogsProvider';
 import { FilterProvider } from '@/pages/Stream/providers/FilterProvider';
 import { StreamProvider } from '@/pages/Stream/providers/StreamProvider';
+import { ClusterProvider } from '@/pages/Systems/providers/ClusterProvider';
 
 export const HomeElement: FC = () => {
 	return (
@@ -65,7 +66,9 @@ const Systems = lazy(() => import('@/pages/Systems'));
 export const SystemsElement: FC = () => {
 	return (
 		<SuspensePage>
-			<Systems />
+			<ClusterProvider>
+				<Systems />
+			</ClusterProvider>
 		</SuspensePage>
 	);
 };

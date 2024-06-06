@@ -120,9 +120,6 @@
 .container {
     flex-direction: row;
     flex: 1;
-    border-radius: 0.6rem;
-    border: 1px solid var(--mantine-color-gray-2);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adjust shadow parameters as needed */
 }
 
 .sectionContainerr {
@@ -130,26 +127,26 @@
 }
 
 .leftSectionTitle {
-    font-size: 1.2rem;
+    font-size: 0.8rem;
     font-weight: 500;
 }
 
 .totalMachines {
-    font-size: 1.2rem;
+    font-size: 0.8rem;
     color: var(--mantine-color-gray-6)
 }
 
 .serverItem {
-    padding: 1.2rem 1.6rem;
+    padding: 0.8rem 1.6rem;
     border-top: 1px solid var(--mantine-color-gray-2);
     /* border-bottom: 1px solid var(--mantine-color-gray-2); */
     cursor: pointer;
     &:hover {
-        background-color: var(--mantine-color-gray-1);
+        background-color: var(--mantine-color-gray-0);
     }
-    /* &.serverItemActive {
-        background-color: var(--mantine-color-brandPrimary-3);
-    } */
+    &.serverItemActive {
+        background-color: var(--mantine-color-gray-0);
+    }
 
     .liveIcon {
         color: var(--mantine-color-green-6);
@@ -166,7 +163,7 @@
     }
 
     .serverDomain {
-        font-size: 1rem;
+        font-size: 0.7rem;
         color: var(--mantine-color-gray-7);
     }
 }
@@ -208,4 +205,49 @@
     .graphContainer {
         padding: 0.5rem;
     }
+}
+
+.eventCountGraph {
+    width: 70%;
+    height: 100%;
+    border-radius: 0.3rem;
+    padding: 1rem;
+    border: 1px solid var(--mantine-color-gray-3);
+    justify-content: space-between;
+}
+
+.memoryInfoSection {
+    border: 1px solid var(--mantine-color-gray-3);
+    padding: 1rem;
+    border-radius: 0.3rem;
+    width: 30%;
+}
+
+.machineInfoSection {
+    border: 1px solid var(--mantine-color-gray-3);
+    padding: 1rem;
+    width: 70%;
+    border-radius: 0.3rem;
+}
+
+.overallSectionContainer {
+    width: 30%;
+    height: 100%;
+    border-radius: 0.3rem;
+    padding: 1rem;
+    border: 1px solid var(--mantine-color-gray-3);
+}
+
+.compressionText {
+    color: var(--mantine-color-green-7);
+}
+
+.fieldTitle {
+    font-size: var(--mantine-font-size-md);
+    font-weight: 500;
+}
+
+.fieldDescription {
+    font-size: var(--mantine-font-size-md);
+    color: var(--mantine-color-gray-6);
 }
