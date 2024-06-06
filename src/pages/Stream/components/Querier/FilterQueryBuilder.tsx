@@ -145,7 +145,7 @@ const RuleSet = (props: RuleSetProps) => {
 
 	return (
 		<Stack gap={0}>
-			<Stack className={classes.ruleSet}>
+			<Stack className={classes.ruleSet} gap={22}>
 				<CombinatorToggle isOrSelected={ruleSetCombinator === 'or'} onCombinatorChange={onCombinatorChange} />
 				{rules.map((rule) => {
 					return <RuleView rule={rule} key={rule.id} type={fieldTypeMap[rule.field] || 'text'} groupId={id} />;
@@ -259,7 +259,7 @@ export const FilterQueryBuilder = (props: { onClear: () => void; onApply: () => 
 
 	return (
 		<Stack style={{ height: 500 }}>
-			<ScrollArea style={{ height: 400 }}>
+			<ScrollArea style={{ height: 480 }}>
 				<Stack gap={0}>
 					{query.rules.map((ruleSet) => {
 						return <RuleSet ruleSet={ruleSet} key={ruleSet.id} />;

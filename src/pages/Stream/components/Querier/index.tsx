@@ -60,7 +60,7 @@ const QuerierModal = (props: {
 			centered
 			styles={{ body: { padding: '0 0.5rem' }, header: { padding: '1rem', paddingBottom: '0' } }}
 			title={<ModalTitle title={getLabel(viewMode)} />}>
-			<Stack style={{ width: '820px', padding: '1rem', height: '100%' }} gap={0}>
+			<Stack style={{ width: '40rem', padding: '1rem', height: '100%' }} gap={0}>
 				{viewMode === 'filters' ? (
 					<FilterQueryBuilder onClear={props.onClear} onApply={props.onFiltersApply} />
 				) : (
