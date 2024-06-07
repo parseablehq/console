@@ -12,7 +12,7 @@ const { setTimeRange } = logsStoreReducers;
 
 const { parseQuery } = filterStoreReducers;
 
-type CompactInterval = 'minute' | 'day' | 'hour' | 'quarter-hour' | 'half-hour';
+type CompactInterval = 'minute' | 'day' | 'hour' | 'quarter-hour' | 'half-hour' | 'month';
 
 const getCompactType = (interval: number): CompactInterval => {
 	const totalMinutes = interval / (1000 * 60);
@@ -28,8 +28,10 @@ const getCompactType = (interval: number): CompactInterval => {
 	} else if (totalMinutes <= 4320) {
 		// upto 3 days
 		return 'hour';
-	} else {
+	} else if (totalMinutes <= 259200) {
 		return 'day';
+	} else {
+		return 'month'
 	}
 };
 
@@ -44,8 +46,10 @@ const getStartOfTs = (time: Date, compactType: CompactInterval): Date => {
 	} else if (compactType === 'half-hour') {
 		const roundOff = 1000 * 60 * 30;
 		return new Date(Math.floor(time.getTime() / roundOff) * roundOff);
-	} else {
+	} else if (compactType === 'day') {
 		return new Date(time.getFullYear(), time.getMonth(), time.getDate());
+	} else {
+		return new Date(time.getFullYear(), time.getMonth());
 	}
 };
 
@@ -60,8 +64,10 @@ const getEndOfTs = (time: Date, compactType: CompactInterval): Date => {
 	} else if (compactType === 'half-hour') {
 		const roundOff = 1000 * 60 * 30;
 		return new Date(Math.round(time.getTime() / roundOff) * roundOff);
-	} else {
+	} else if (compactType === 'day') {
 		return new Date(time.getFullYear(), time.getMonth(), time.getDate() + 1);
+	} else {
+		return new Date(time.getFullYear(), time.getMonth() + 1);
 	}
 };
 
@@ -85,6 +91,9 @@ const getAllIntervals = (start: Date, end: Date, compactType: CompactInterval): 
 				break;
 			case 'half-hour':
 				date.setMinutes(date.getMinutes() + 30);
+				break;
+			case 'month':
+				date.setMonth(date.getMonth() + 1);
 				break;
 		}
 	};
@@ -114,6 +123,7 @@ const compactTypeIntervalMap = {
 	day: '24 hour',
 	'quarter-hour': '15 minute',
 	'half-hour': '30 minute',
+	month: '1 month'
 };
 
 const generateCountQuery = (
@@ -151,8 +161,8 @@ const calcAverage = (data: GraphRecord[]) => {
 	return parseInt(Math.abs(total / data.length).toFixed(0));
 };
 
-// date_trunc removes tz info
-// filling data empty values where there is no rec
+// date_bin removes tz info
+// filling data with empty values where there is no rec
 const parseGraphData = (data: GraphRecord[] = [], avg: number, startTime: Date, endTime: Date, interval: number) => {
 	if (!Array.isArray(data)) return [];
 	const { modifiedEndTime, modifiedStartTime, compactType } = getModifiedTimeRange(startTime, endTime, interval);
@@ -204,7 +214,7 @@ function ChartTooltip({ payload }: ChartTooltipProps) {
 	return (
 		<Paper px="md" py="sm" withBorder shadow="md" radius="md">
 			<Text fw={600} mb={5}>
-				{`${startTime.format('DD MMM HH:mm A')} - ${endTime.format('DD MMM HH:mm A')}`}
+				{`${startTime.format('DD MMM YY HH:mm A')} - ${endTime.format('DD MMM YY HH:mm A')}`}
 			</Text>
 			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 				<Text>Events</Text>
