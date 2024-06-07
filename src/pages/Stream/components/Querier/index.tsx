@@ -38,7 +38,7 @@ const SQLEditorPlaceholder = () => {
 };
 
 const ModalTitle = ({ title }: { title: string }) => {
-	return <Text style={{ fontSize: '1.2rem', fontWeight: 700, marginLeft: '0.5rem' }}>{title}</Text>;
+	return <Text style={{ fontSize: '1rem', fontWeight: 500, marginLeft: '0.5rem' }}>{title}</Text>;
 };
 
 const QuerierModal = (props: {

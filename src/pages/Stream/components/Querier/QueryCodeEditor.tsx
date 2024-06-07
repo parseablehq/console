@@ -120,7 +120,7 @@ const QueryCodeEditor: FC<{ queryCodeEditorRef: MutableRefObject<any>, onSqlSear
 	return (
 		<Stack style={{ flex: 1 }}>
 			<ScrollArea>
-				<Box style={{ marginTop: 16, marginBottom: 8 }}>
+				<Box style={{ marginBottom: 8 }}>
 					{localLlmActive ? (
 						<Stack gap={0} style={{ flexDirection: 'row', width: '100%' }}>
 							<TextInput
@@ -153,7 +153,7 @@ const QueryCodeEditor: FC<{ queryCodeEditorRef: MutableRefObject<any>, onSqlSear
 						options={{
 							scrollBeyondLastLine: false,
 							readOnly: false,
-							fontSize: 12,
+							fontSize: 10,
 							wordWrap: 'on',
 							minimap: { enabled: false },
 							automaticLayout: true,
@@ -183,7 +183,7 @@ const SchemaList = (props: { currentStream: string | null; fields: Field[] }) =>
 		<Box>
 			<Text
 				style={{
-					fontSize: 12,
+					fontSize: '0.7rem',
 					color: '#098658',
 					fontFamily: 'monospace',
 				}}>{`/* Schema for ${currentStream}`}</Text>
@@ -193,7 +193,7 @@ const SchemaList = (props: { currentStream: string | null; fields: Field[] }) =>
 						return (
 							<Text
 								key={index}
-								style={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
+								style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
 						);
 					})}
 				</Box>
@@ -202,12 +202,12 @@ const SchemaList = (props: { currentStream: string | null; fields: Field[] }) =>
 						return (
 							<Text
 								key={index}
-								style={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
+								style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
 						);
 					})}
 				</Box>
 			</Flex>
-			<Text style={{ fontSize: 12, color: '#098658', fontFamily: 'monospace' }}> */</Text>
+			<Text style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}> */</Text>
 		</Box>
 	);
 };

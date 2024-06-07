@@ -496,16 +496,22 @@ const setTableHeaders = (store: LogsStore, schema: LogStreamSchemaData) => {
 	}
 }
 
-const setData = (store: LogsStore, data: Log[]) => {
-	const { data: existingData,  tableOpts } = store;
+const setData = (store: LogsStore, data: Log[], schema: LogStreamSchemaData | null) => {
+	const {
+		data: existingData,
+		tableOpts,
+		custQuerySearchState: { isQuerySearchActive, activeMode },
+	} = store;
 	const currentPage = tableOpts.currentPage === 0 ? 1 : tableOpts.currentPage;
 	const filteredData = filterAndSortData(tableOpts, data);
 	const newPageSlice = filteredData && getPageSlice(currentPage, tableOpts.perPage, filteredData);
+	const newHeaders = isQuerySearchActive && activeMode === 'sql' ? makeHeadersfromData(data) : makeHeadersFromSchema(schema);
 
 	return {
 		tableOpts: {
 			...store.tableOpts,
 			...(newPageSlice ? { pageData: newPageSlice } : {}),
+			...(!_.isEmpty(newHeaders) ? { headers: newHeaders } : {}),
 			currentPage,
 			totalPages: getTotalPages(filteredData, tableOpts.perPage),
 		},
