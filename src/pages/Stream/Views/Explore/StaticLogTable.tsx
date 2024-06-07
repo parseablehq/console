@@ -200,7 +200,7 @@ const LoadingView = () => {
 const Footer = (props: { loaded: boolean }) => {
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const [filteredData] = useLogsStore((store) => store.data.filteredData);
-	const { totalPages, currentOffset, currentPage, perPage, totalCount, headers } = tableOpts;
+	const { totalPages, currentOffset, currentPage, perPage, headers } = tableOpts;
 	const onPageChange = useCallback((page: number) => {
 		setLogsStore((store) => setPageAndPageData(store, page));
 	}, []);
@@ -219,9 +219,7 @@ const Footer = (props: { loaded: boolean }) => {
 				setLogsStore((store) => setCurrentOffset(store, targetOffset));
 			} else {
 				const targetOffset = currentOffset + 9000;
-				if (totalCount <= targetOffset) {
-					setLogsStore((store) => setCurrentOffset(store, targetOffset));
-				}
+				setLogsStore((store) => setCurrentOffset(store, targetOffset));
 			}
 		},
 		[currentOffset],
