@@ -74,9 +74,10 @@ const setCurrentMachine = (store: ClusterStore, domain_name: string, type: Syste
 };
 
 const setCurrentMachineData = (_store: ClusterStore, data: currentMachineData) => {
+	const dataInAscendingOrder = _.reverse(data);
 	return {
-		currentMachineData: data,
-		currentMachineRecentRecord: _.last(data),
+		currentMachineData: dataInAscendingOrder,
+		currentMachineRecentRecord: _.last(dataInAscendingOrder),
 	};
 };
 
