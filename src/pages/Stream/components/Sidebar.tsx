@@ -1,4 +1,4 @@
-import { Stack } from '@mantine/core';
+import { Stack, Tooltip } from '@mantine/core';
 import classes from '../styles/SideBar.module.css';
 import { IconBolt, IconFilterSearch, IconSettings2 } from '@tabler/icons-react';
 import { useCallback } from 'react';
@@ -20,11 +20,12 @@ const AllLogsButton = (props: MenuItemProps) => {
 		<Stack
 			onClick={() => props.setCurrentView(viewName)}
 			style={{ padding: '4px 0', alignItems: 'center' }}
-			className={classes.menuItemContainer}
-			>
-			<Stack className={additionalClassNames} style={{ padding: '4px 4px' }}>
-				<IconFilterSearch stroke={1} size="1.5rem" className={classes.icon} {...(isActive && {color: 'black'})}/>
-			</Stack>
+			className={classes.menuItemContainer}>
+			<Tooltip label="Explore" position="right">
+				<Stack className={additionalClassNames} style={{ padding: '4px 4px' }}>
+					<IconFilterSearch stroke={1} size="1.5rem" className={classes.icon} {...(isActive && { color: 'black' })} />
+				</Stack>
+			</Tooltip>
 		</Stack>
 	);
 };
@@ -37,11 +38,12 @@ const ConfigButton = (props: MenuItemProps) => {
 		<Stack
 			onClick={() => props.setCurrentView(viewName)}
 			style={{ padding: '4px 0', alignItems: 'center' }}
-			className={classes.menuItemContainer}
-			>
-			<Stack className={additionalClassNames} style={{ padding: '4px 4px' }}>
-				<IconSettings2 stroke={1} size="1.5rem" className={classes.icon}/>
-			</Stack>
+			className={classes.menuItemContainer}>
+			<Tooltip label="Manage" position="right">
+				<Stack className={additionalClassNames} style={{ padding: '4px 4px' }}>
+					<IconSettings2 stroke={1} size="1.5rem" className={classes.icon} />
+				</Stack>
+			</Tooltip>
 		</Stack>
 	);
 };
@@ -55,9 +57,11 @@ const LiveTailMenu = (props: MenuItemProps) => {
 			onClick={() => props.setCurrentView(viewName)}
 			className={classes.menuItemContainer}
 			style={{ padding: '4px 0', alignItems: 'center' }}>
-			<Stack className={additionalClassNames} style={{ padding: '4px 4px' }}>
-				<IconBolt stroke={1} size="1.5rem" className={classes.icon}/>
-			</Stack>
+			<Tooltip label="Live Tail" position="right">
+				<Stack className={additionalClassNames} style={{ padding: '4px 4px' }}>
+					<IconBolt stroke={1} size="1.5rem" className={classes.icon} />
+				</Stack>
+			</Tooltip>
 		</Stack>
 	);
 };
