@@ -5,46 +5,28 @@
 }
 
 .menuItemContainer {
-    gap: 0.5rem;
-    flex-direction: row;
     cursor: pointer;
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--mantine-color-gray-2);
-    border-radius: 4px;
-    align-items: center;
-    &:hover {
-        background-color: var(--mantine-color-gray-0);
-    }
-
-    &.shrink {
-        justify-content: center;
-        padding: 0.5rem 1rem;
-    }
-
-    &.activeMenuItem {
-        background-color: var(--mantine-color-brandPrimary-4);
-        color: white;
-    }
 }
 
-.menuListContainer {
-    gap: 0.8rem;
-    align-items: center;
+.activeMenuItem {
+    padding: 4px;
+    background-color: var(--mantine-color-gray-1);
+    border-radius: 0.2rem;
 }
 
 .menuIconContainer {
     background-color: transparent;
-    color: var(--mantine-color-gray-7);
 }
 
 .menuLabel {
     font-size: 0.7rem;
     font-weight: 500;
+    padding-right: 4px;
 }
 
 .streamDropdownContainer {
-    margin-top: 0.5rem;
-    padding: 0 1.25rem;
+    /* margin-top: 0.5rem; */
+    /* padding: 0 1.25rem; */
     position: relative;
 }
 
@@ -63,4 +45,8 @@
     background-color: white;
     border: 1px solid var(--mantine-color-gray-2);
     cursor: pointer;
+}
+
+.icon {
+    color: var(--mantine-color-gray-8);
 }

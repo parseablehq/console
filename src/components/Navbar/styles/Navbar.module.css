@@ -60,11 +60,9 @@
     font-size: 14px;
 }
 
-
 .modalStyle {
     overflow-y: inherit;
 }
-
 
 .modalActionBtn {
     background-color: #4d4d4d;
@@ -88,10 +86,10 @@
 	height: calc(100vh - 50px);
 	display: flex;
 	flex-direction: column;
-	border-right: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
 	transition: width 0.4s ease-in-out;
 	flex: '0 0 auto';
     background-color: var(--mantine-color-gray-0);
+    border-right: 1px solid var(--mantine-color-gray-2);
 }
 
 .navbarMain {
@@ -122,10 +120,8 @@
     padding: 0.5rem 0;
     cursor: pointer;
     color: var(--mantine-color-gray-6);
-}
-
-.navItemContainer:last-child {
-    border: none;
+    border-right: 2px solid transparent;
+    padding-left: 2px;
 }
 
 .navItemLabel {
@@ -133,9 +129,8 @@
 }
 
 .navItemActive {
-    /* color: #ff0000; */
-    border-color: white;
     color: var(--mantine-color-gray-8);
+    border-right: 2px solid var(--mantine-color-brandPrimary-4);
 }
 
 .lowerContainer {
