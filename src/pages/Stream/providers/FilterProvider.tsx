@@ -4,8 +4,9 @@ import initContext from '@/utils/initContext';
 import { Field, RuleGroupType, RuleType, formatQuery } from 'react-querybuilder';
 
 export const textFieldOperators = [
-	{ value: '=', label: '=' },
-	{ value: '!=', label: '!=' },
+	{ value: '=', label: 'equals to' },
+	{ value: '!=', label: 'not equals to' },
+	{ value: 'ilike', label: 'case-insensitive match' },
 	{ value: 'contains', label: 'contains' },
 	{ value: 'beginsWith', label: 'begins with' },
 	{ value: 'endsWith', label: 'ends with' },
