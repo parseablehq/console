@@ -51,9 +51,10 @@ const EventsCountGraph = () => {
 		// @ts-ignore
 		(acc, record) => {
 			const date = _.get(record, 'event_time', '');
-			const localDate = dayjs(`${date}Z`).format('HH:MM A');
+			const localDate = new Date(`${date}Z`);
+			const parsedDate = dayjs(localDate).format('HH:mm A')
 			const count = _.get(record, 'parseable_events_ingested', 0);
-			return [...acc, { date: localDate, count }];
+			return [...acc, { date: parsedDate, count }];
 		},
 		[],
 	);

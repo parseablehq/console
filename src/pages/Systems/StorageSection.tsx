@@ -52,9 +52,10 @@ const StorageSizeGraph = () => {
 		// @ts-ignore
 		(acc, record) => {
 			const date = _.get(record, 'event_time', '');
-			const localDate = dayjs(`${date}Z`).format('HH:MM A');
-			const size = _.get(record, 'parseable_storage_size.data', 0);
-			return [...acc, { date: localDate, size }];
+			const localDate = new Date(`${date}Z`);
+			const parsedDate = dayjs(localDate).format('HH:mm A');
+			const size = _.get(record, 'parseable_storage_size_data', 0);
+			return [...acc, { date: parsedDate, size }];
 		},
 		[],
 	);
@@ -68,7 +69,7 @@ const StorageSizeGraph = () => {
 	);
 };
 
-const EventsCountOverallSection = () => {
+const OverallSection = () => {
 	const [record] = useClusterStore((store) => store.currentMachineRecentRecord);
 	const opts = useMemo(() => makeOverallStorageSectionProps(record), [record]);
 
@@ -99,7 +100,7 @@ const EventsCountOverallSection = () => {
 				<Text size="md">Lifetime</Text>
 				<Stack gap={0} style={{ justifyContent: 'flex-end', alignItems: 'flex-end' }}>
 					<Stack gap="0.5rem" style={{ flexDirection: 'row' }}>
-						<Text size="md">{`${opts.storageSize} ${'  '}`}</Text>
+						<Text size="md">{`${opts.lifetimeStorageSize} ${'  '}`}</Text>
 						{/* <Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={0}>
 							<Text ta="center" className={classes.compressionText}>
 								( {opts.activeCompressionRate}
@@ -108,7 +109,7 @@ const EventsCountOverallSection = () => {
 						</Stack> */}
 					</Stack>
 					<Stack style={{ width: '100%', alignItems: 'flex-end' }}>
-						<Text className={classes.fieldDescription}>{opts.ingestedSize} Ingested</Text>
+						<Text className={classes.fieldDescription}>{opts.lifetimeIngestedSize} Ingested</Text>
 					</Stack>
 				</Stack>
 			</Stack>
@@ -116,7 +117,7 @@ const EventsCountOverallSection = () => {
 				<Text size="md">Deleted</Text>
 				<Stack gap={0} style={{ justifyContent: 'flex-end', alignItems: 'flex-end' }}>
 					<Stack gap="0.5rem" style={{ flexDirection: 'row' }}>
-						<Text size="md">{`${opts.storageSize} ${'  '}`}</Text>
+						<Text size="md">{`${opts.deletedStorageSize} ${'  '}`}</Text>
 						{/* <Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={0}>
 							<Text ta="center" className={classes.compressionText}>
 								( {opts.activeCompressionRate}
@@ -137,15 +138,15 @@ const StorageSection = () => {
 	return (
 		<Stack style={{ height: '33%', flexDirection: 'row', overflow: 'hidden' }}>
 			<StorageSizeGraph />
-			<EventsCountOverallSection />
+			<OverallSection />
 		</Stack>
 	);
 };
 
 const makeOverallStorageSectionProps = (record: IngestorQueryRecord | null) => {
-	const storageSize = formatBytes(_.get(record, 'parseable_storage_size.data', 0));
-	const lifetimeStorageSize = formatBytes(_.get(record, 'parseable_lifetime_storage_size.data', 0));
-	const deletedStorageSize = formatBytes(_.get(record, 'parseable_deleted_storage_size.data', 0));
+	const storageSize = formatBytes(_.get(record, 'parseable_storage_size_data', 0));
+	const lifetimeStorageSize = formatBytes(_.get(record, 'parseable_lifetime_storage_size_data', 0));
+	const deletedStorageSize = formatBytes(_.get(record, 'parseable_deleted_storage_size_data', 0));
 	const ingestedSize = formatBytes(_.get(record, 'parseable_events_ingested_size', 0));
 	const lifetimeIngestedSize = formatBytes(_.get(record, 'parseable_lifetime_events_ingested_size', 0));
 	const lifetimeCompressionRate = calcCompressionRate(lifetimeStorageSize, lifetimeIngestedSize);

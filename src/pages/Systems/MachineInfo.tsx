@@ -106,7 +106,7 @@ const IngestorInfo = () => {
 					<InfoItem title="Staging Files" value={HumanizeNumber(recentRecord?.parseable_staging_files || 0)} />
 					<InfoItem
 						title="Staging Size"
-						value={formatBytes(recentRecord?.parseable_storage_size?.staging || 0) || ''}
+						value={formatBytes(recentRecord?.parseable_storage_size_staging || 0) || ''}
 					/>
 				</Stack>
 				<Stack style={{ width: '100%', flexDirection: 'row' }}>
