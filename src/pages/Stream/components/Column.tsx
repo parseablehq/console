@@ -120,7 +120,7 @@ const Column: FC<Column> = (props) => {
 				<Popover.Target>
 					<UnstyledButton className={labelBtn} onClick={openPopover}>
 						<span>{columnName}</span>
-						<IconDotsVertical size={px('1rem')} className={[labelIcon].filter(Boolean).join(' ')} />
+						<IconDotsVertical size={px('0.75rem')} className={[labelIcon].filter(Boolean).join(' ')} />
 					</UnstyledButton>
 				</Popover.Target>
 				<Popover.Dropdown>
