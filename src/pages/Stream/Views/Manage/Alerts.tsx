@@ -614,29 +614,6 @@ const AlertList = (props: { selectAlert: selectAlert, isLoading: boolean, update
 					})}
 				</>
 			)}
-			{/* <Text>hello</Text>
-			<Text>hello</Text>
-			<Text>hello</Text>
-			<Text>hello</Text>
-			<Text>hello</Text>
-			<Text>hello</Text>
-			<Text>hello</Text>
-			<Text>hello</Text>
-			<Text>hello</Text>
-			<Text>hello</Text>
-			<Text>hello</Text>
-			<Text>hello</Text>
-			<Text>hello</Text>
-			<Text>hello</Text>
-			<Text>hello</Text>
-			<Text>hello</Text>
-			<Text>hello</Text>
-			<Text>hello</Text><Text>hello</Text>
-			<Text>hello</Text>
-			<Text>hello</Text>
-			<Text>hello</Text>
-			<Text>hello</Text>
-			<Text>hello</Text> */}
 		</Stack>
 	);
 };

@@ -116,10 +116,10 @@ const CombinatorToggle = (props: CombinatorToggleType) => {
 	const { onCombinatorChange, isOrSelected } = props;
 	return (
 		<Box className={classes.toggleBtnContainer}>
-			<Text className={isOrSelected ? activeBtnClass : inActiveBtnClass} onClick={() => onCombinatorChange('or')}>
+			<Text style={{fontSize: '0.6rem'}} className={isOrSelected ? activeBtnClass : inActiveBtnClass} onClick={() => onCombinatorChange('or')}>
 				OR
 			</Text>
-			<Text className={!isOrSelected ? activeBtnClass : inActiveBtnClass} onClick={() => onCombinatorChange('and')}>
+			<Text style={{fontSize: '0.6rem'}} className={!isOrSelected ? activeBtnClass : inActiveBtnClass} onClick={() => onCombinatorChange('and')}>
 				AND
 			</Text>
 		</Box>

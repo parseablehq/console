@@ -23,7 +23,7 @@ const AllLogsButton = (props: MenuItemProps) => {
 			className={classes.menuItemContainer}>
 			<Tooltip label="Explore" position="right">
 				<Stack className={additionalClassNames} style={{ padding: '4px 4px' }}>
-					<IconFilterSearch stroke={1} size="1.5rem" className={classes.icon} {...(isActive && { color: 'black' })} />
+					<IconFilterSearch stroke={isActive ? 1.4 : 1.2} size="1.2rem" className={classes.icon} {...(isActive && { color: 'black' })} />
 				</Stack>
 			</Tooltip>
 		</Stack>
@@ -41,7 +41,7 @@ const ConfigButton = (props: MenuItemProps) => {
 			className={classes.menuItemContainer}>
 			<Tooltip label="Manage" position="right">
 				<Stack className={additionalClassNames} style={{ padding: '4px 4px' }}>
-					<IconSettings2 stroke={1} size="1.5rem" className={classes.icon} />
+					<IconSettings2 stroke={isActive ? 1.4 : 1.2} size="1.2rem" className={classes.icon} {...(isActive && { color: 'black' })}/>
 				</Stack>
 			</Tooltip>
 		</Stack>
@@ -59,7 +59,7 @@ const LiveTailMenu = (props: MenuItemProps) => {
 			style={{ padding: '4px 0', alignItems: 'center' }}>
 			<Tooltip label="Live Tail" position="right">
 				<Stack className={additionalClassNames} style={{ padding: '4px 4px' }}>
-					<IconBolt stroke={1} size="1.5rem" className={classes.icon} />
+					<IconBolt stroke={isActive ? 1.4 : 1.2} size="1.2rem" className={classes.icon} {...(isActive && { color: 'black' })}/>
 				</Stack>
 			</Tooltip>
 		</Stack>

@@ -48,7 +48,7 @@ const InfoData = (props: {isLoading: boolean}) => {
 		.value();
 
 	return (
-		<Stack style={{ flex: 1, padding: '1.5rem' }} gap={20}>
+		<Stack style={{ flex: 1, padding: '1.5rem', justifyContent: 'space-between' }}>
 			{props.isLoading ? (
 				<Stack style={{ flex: 1, width: '100%', alignItems: 'centrer', justifyContent: 'center' }}>
 					<Stack style={{ alignItems: 'center' }}>

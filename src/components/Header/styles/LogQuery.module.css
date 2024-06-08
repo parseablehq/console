@@ -32,6 +32,7 @@
 	background: #fff;
 	color: #211F1F;
 	border: 1px #e9ecef solid;
+    border-radius: rem(8px);
   }
   
   .intervalbtn {
@@ -42,6 +43,7 @@
 	color: var(--mantine-color-gray-7);
 	border: 1px #e9ecef solid;
     border-radius: rem(8px);
+	font-size: 0.65rem;
 	&:hover {
 		color: black;
 	}

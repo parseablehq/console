@@ -22,8 +22,8 @@ const getLabel = (mode: string | null) => {
 const FilterPlaceholder = () => {
 	return (
 		<Group className={classes.placeholderText} gap={0}>
-			<IconFilter size={'1rem'} stroke={1.8} style={{ marginRight: 6 }} />
-			<Text size="md">Click to add filter</Text>
+			<IconFilter size={'0.8rem'} stroke={1.8} style={{ marginRight: 6 }} />
+			<Text style={{ fontSize: '0.65rem', fontWeight: 600 }}>Click to add filter</Text>
 		</Group>
 	);
 };
@@ -32,7 +32,7 @@ const SQLEditorPlaceholder = () => {
 	return (
 		<Group className={classes.placeholderText} gap={0}>
 			<IconCodeCircle size={'1rem'} stroke={1.8} style={{ marginRight: 6 }} />
-			<Text size="md">Click to write query</Text>
+			<Text style={{ fontSize: '0.65rem', fontWeight: 600 }}>Click to write query</Text>
 		</Group>
 	);
 };
@@ -169,7 +169,7 @@ const Querier = () => {
 							justifyContent: 'center',
 							padding: '0 1rem',
 						}}>
-						<Text style={{fontSize: '0.75rem', fontWeight: 500}}>{getLabel(viewMode)}</Text>
+						<Text style={{ fontSize: '0.65rem', fontWeight: 600 }}>{getLabel(viewMode)}</Text>
 						<IconChevronDown size={px('1rem')} stroke={1.8} />
 					</Stack>
 				</Menu.Target>

@@ -69,7 +69,7 @@ const Home: FC = () => {
 						justifyContent: 'space-between',
 						flexDirection: 'row',
 					}}>
-					<Text fw={500}>All Streams</Text>
+					<Text style={{fontSize: '0.8rem'}} fw={500}>All Streams</Text>
 					<Box>
 						{userAccessMap.hasCreateStreamAccess && (
 							<Button

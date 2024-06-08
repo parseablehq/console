@@ -18,20 +18,20 @@ const bigNoWidth = '24%';
 
 const StatsTableHeaderRow = () => {
 	return (
-		<Stack style={{ flexDirection: 'row'}}>
+		<Stack style={{ flexDirection: 'row' }}>
 			<Stack w={titleWidth} />
 			<Stack w={bigNoWidth}>
-				<Text ta="center" className={classes.fieldDescription} style={{fontSize:'0.8rem'}}>
+				<Text ta="center" className={classes.fieldDescription}>
 					Stored
 				</Text>
 			</Stack>
 			<Stack w={bigNoWidth}>
-				<Text ta="center" className={classes.fieldDescription} style={{fontSize:'0.8rem'}}>
+				<Text ta="center" className={classes.fieldDescription}>
 					Lifetime
 				</Text>
 			</Stack>
 			<Stack w={bigNoWidth}>
-				<Text ta="center" className={classes.fieldDescription} style={{fontSize:'0.8rem'}}>
+				<Text ta="center" className={classes.fieldDescription}>
 					Deleted
 				</Text>
 			</Stack>
@@ -144,33 +144,15 @@ const StorageSizeRow = () => {
 					className={classes.compressionText}
 					style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
 					<Stack gap={0} style={{ flexDirection: 'row', alignItems: 'center' }}>
-						<Text>(</Text>
-						<Text ta="center" className={classes.compressionText}>
+						<Text size="md" mr="2px">{`(  `}</Text>
+						<Text  size="md" ta="center" className={classes.compressionText}>
 							{compressionSize}
 						</Text>
-						<IconArrowDown className={classes.compressionText} size="1rem" stroke={1.8}/>
-						<Text>)</Text>
+						<IconArrowDown className={classes.compressionText} size="0.8rem" stroke={1.8} />
+						<Text size="md">)</Text>
 					</Stack>
 				</Stack>
 			</Stack>
-			{/* <Stack w={bigNoWidth} gap={0} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-				<Text ta="center" className={classes.bigNoText}>
-					{sanitizeBytes(storageData.lifetime_size)}
-				</Text>
-				<Stack
-					gap={0}
-					className={classes.compressionText}
-					style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-					<Stack gap={0} style={{ flexDirection: 'row', alignItems: 'center' }}>
-						<Text>(</Text>
-						<Text ta="center" className={classes.compressionText}>
-							{storageData.lifetime_size === '-' ? '0%' : lifetimeCompressionSize}
-						</Text>
-						<IconArrowDown className={classes.compressionText} size="1rem" stroke={1.8}/>
-						<Text>)</Text>
-					</Stack>
-				</Stack>
-			</Stack> */}
 			<Stack w={bigNoWidth}>
 				<Text ta="center" className={classes.bigNoText}>
 					{sanitizeBytes(storageData.lifetime_size)}
@@ -185,7 +167,7 @@ const StorageSizeRow = () => {
 	);
 };
 
-const StatsTable = (props: {isLoading: boolean}) => {
+const StatsTable = (props: { isLoading: boolean }) => {
 	return (
 		<Stack className={classes.statsTableContainer} gap={0}>
 			{props.isLoading ? (
@@ -206,7 +188,7 @@ const StatsTable = (props: {isLoading: boolean}) => {
 	);
 };
 
-const Stats = (props: {isLoading: boolean}) => {
+const Stats = (props: { isLoading: boolean }) => {
 	return (
 		<Stack className={classes.sectionContainer} gap={0}>
 			<Header />

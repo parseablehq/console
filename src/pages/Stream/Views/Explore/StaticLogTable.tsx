@@ -61,12 +61,12 @@ const {
 const TotalCount = (props: { totalCount: number }) => {
 	return (
 		<Tooltip label={props.totalCount}>
-			<Text size="md">{HumanizeNumber(props.totalCount)}</Text>
+			<Text style={{ fontSize: '0.7rem' }}>{HumanizeNumber(props.totalCount)}</Text>
 		</Tooltip>
 	);
 };
 
-const renderExportIcon = () => <IconDownload size={px('1rem')} stroke={1.2} />;
+const renderExportIcon = () => <IconDownload size={px('0.8rem')} stroke={1.8} />;
 
 const TotalLogsCount = () => {
 	const [{ totalCount, perPage, pageData }] = useLogsStore((store) => store.tableOpts);
@@ -76,9 +76,9 @@ const TotalLogsCount = () => {
 
 	return (
 		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }} gap={6}>
-			<Text size="md">{`Showing ${showingCount} out of`}</Text>
+			<Text style={{ fontSize: '0.7rem' }}>{`Showing ${showingCount} out of`}</Text>
 			<TotalCount totalCount={totalCount} />
-			<Text size="md">records</Text>
+			<Text style={{ fontSize: '0.7rem' }}>records</Text>
 		</Stack>
 	);
 };
@@ -250,8 +250,7 @@ const Footer = (props: { loaded: boolean }) => {
 						onChange={(page) => {
 							pagination.setPage(page);
 						}}
-						size="md"
-						>
+						size="sm">
 						<Group gap={5} justify="center">
 							<Pagination.First
 								onClick={() => {
@@ -293,7 +292,7 @@ const Footer = (props: { loaded: boolean }) => {
 					<Menu position="top">
 						<Menu.Target>
 							<div>
-								<IconButton renderIcon={renderExportIcon}/>
+								<IconButton renderIcon={renderExportIcon} />
 							</div>
 						</Menu.Target>
 						<Menu.Dropdown>
@@ -534,16 +533,16 @@ const LimitControl: FC = () => {
 	};
 
 	const classes = tableStyles;
-	const { limitContainer, limitBtn, limitBtnText, limitActive, limitOption } = classes;
+	const { limitBtn, limitBtnText, limitActive, limitOption } = classes;
 
 	return (
-		<Box className={limitContainer}>
+		<Box>
 			<Menu withArrow withinPortal shadow="md" opened={opened} onChange={setOpened}>
 				<Center>
 					<Menu.Target>
 						<Box onClick={toggle} className={limitBtn}>
 							<Text className={limitBtnText}>{perPage}</Text>
-							<IconSelector size={'1rem'} />
+							<IconSelector size={'0.8rem'} />
 						</Box>
 					</Menu.Target>
 				</Center>

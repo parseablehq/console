@@ -92,7 +92,7 @@ const TimeRange: FC = () => {
 						className={timeRangeBTn}
 						leftSection={<IconClock size={px('1rem')} stroke={1.5} />}
 						onClick={toggleMenu}
-						styles={{label: {fontSize: '0.6rem'}}}
+						styles={{label: {fontSize: '0.65rem', fontWeight: 600}}}
 						>
 						{FIXED_DURATIONS_LABEL[label] || label}
 					</Button>

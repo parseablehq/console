@@ -110,7 +110,7 @@
 
 .addConditionBtn {
     width: fit-content;
-    font-size: small;
+    /* font-size: small; */
 }
 
 .parentCombinatorToggleContainer {
