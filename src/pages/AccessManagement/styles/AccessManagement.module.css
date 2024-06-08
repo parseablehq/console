@@ -5,7 +5,7 @@
 	position: relative;
 	margin: 1rem;
 	border-radius: 0.5rem;
-	border: 1px solid light-dark(#D4D4D4, #424242);
+	border: 1px solid var(--mantine-color-gray-2);
   }
   
   .container:first-of-type {
@@ -15,11 +15,9 @@
   .header {
 	justify-content: space-between;
 	align-items: center;
-	padding-left: 20px;
-	padding-right: 20px;
-	height: 70px;
-	border-bottom: 1px solid light-dark(#D4D4D4, #424242);
+	border-bottom: 1px solid var(--mantine-color-gray-1);
 	flex-direction: row;
+	padding: 1rem;
   }
   
   .createBtn {
@@ -38,7 +36,7 @@
 
 
   .tableContainer {
-	height: calc(100% - 70px);
+	/* height: calc(100% - 70px); */
   }
   
   .tableStyle {
@@ -59,7 +57,6 @@
   
   .theadStyle tr th {
 	padding: 0.625rem;
-	padding-left: 1rem;
   }
   
   .trStyle:nth-child(odd) {
@@ -70,7 +67,6 @@
 	height: 100%;
 	vertical-align: middle;
 	padding: 0.625rem;
-	padding-left: 1rem;
   }
   
   .passwordPrims .mantine-Tooltip-tooltip {
@@ -122,8 +118,8 @@
   }
 
   .actionBtn {
-	height: 34px;
-	width: 34px;
+	height: 24px;
+	width: 24px;
 	padding: 0;
 	margin-inline-end: 0.625rem;
 	color: #777777;
@@ -141,10 +137,14 @@
 	background-color: white;
 	color: #211F1F;
 	border: 1px #e9ecef solid;
-	padding: 0.625rem 1rem;
 	margin-right: 0.625rem;
 	border-radius: rem(8px);
 	&:hover {
-		background-color: #E0E0E0;
+		background-color: var(--mantine-color-gray-0);
+		color:  #211F1F;;
 	}
+}
+
+.tableHeader {
+	font-weight: 600;
 }

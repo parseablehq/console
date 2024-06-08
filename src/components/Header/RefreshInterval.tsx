@@ -19,20 +19,27 @@ const RefreshInterval: FC = () => {
 
 	useEffect(() => {
 		const timerInterval = timerRef.current;
-		if (timerInterval !== null) {
-			try {
-				clearInterval(timerInterval);
-				timerRef.current = null;
-			} catch (e) {
-				console.log(e);
+		const clearIntervalInstance = () => {
+			if (timerInterval !== null) {
+				try {
+					clearInterval(timerInterval);
+					timerRef.current = null;
+				} catch (e) {
+					console.log(e);
+				}
 			}
 		}
 
+		clearIntervalInstance();
 		if (refreshInterval !== null) {
 			const intervalId = setInterval(() => {
 				setLogsStore(getCleanStoreForRefetch);
 			}, refreshInterval);
 			timerRef.current = intervalId;
+		}
+
+		return () => {
+			clearIntervalInstance()
 		}
 	}, [refreshInterval]);
 
@@ -42,7 +49,7 @@ const RefreshInterval: FC = () => {
 		<Menu withArrow>
 			<Menu.Target>
 				<Tooltip label="Refresh Interval">
-					<Button className={intervalbtn} leftSection={<Icon size={px('1.2rem')} stroke={1.5} />}>
+					<Button className={intervalbtn} h="100%" leftSection={<Icon size={px('1rem')} stroke={1.5} />}>
 						{refreshInterval ? ms(refreshInterval) : 'Off'}
 					</Button>
 				</Tooltip>

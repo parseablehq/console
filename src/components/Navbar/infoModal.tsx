@@ -2,12 +2,10 @@ import { Box, Button, Modal, Stack, Text, Tooltip, px } from '@mantine/core';
 import { FC, useEffect, useMemo } from 'react';
 import { useAbout } from '@/hooks/useGetAbout';
 import { IconAlertCircle, IconInfoCircle } from '@tabler/icons-react';
-
 import styles from './styles/InfoModal.module.css';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const { setInstanceConfig } = appStoreReducers;
-
 
 type InfoModalProps = {
 	opened: boolean;
@@ -116,9 +114,9 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 							<Box className={aboutTextInnerBox}>
 								<Text className={aboutTextKey}>Store</Text>
 								<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={4}>
-									<Text className={aboutTextValue}>{getAboutData?.data?.store?.type}</Text>
+									<Text className={aboutTextValue} style={{width: '100%'}}>{getAboutData?.data?.store?.type}</Text>
 									<Tooltip label={getAboutData?.data?.store?.path}>
-										<IconInfoCircle style={{ cursor: 'pointer' }} color="gray" stroke={1.5} />
+										<IconInfoCircle style={{ cursor: 'pointer' }} size="1.2rem" color="gray" stroke={1.5} />
 									</Tooltip>
 								</Stack>
 							</Box>

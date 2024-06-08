@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { STREAM_VIEWS } from '@/constants/routes';
 import _ from 'lodash';
+import { STREAM_PRIMARY_TOOLBAR_HEIGHT } from '@/constants/theme';
 
 const StreamDropdown = () => {
 	const { streamName, view } = useParams();
@@ -32,9 +33,12 @@ const StreamDropdown = () => {
 			searchable
 			limit={20}
 			value={valueRef.current}
+			h="100%"
 			classNames={{ input: classes.streamInput, description: classes.streamSelectDescription }}
-			className={classes.streamSelect}
 			onChange={handleChange}
+			styles={{input: {
+				height: STREAM_PRIMARY_TOOLBAR_HEIGHT
+			}}}
 			data={userSpecificStreams?.map((stream: any) => ({ value: stream.name, label: stream.name })) ?? []}
 		/>
 	);

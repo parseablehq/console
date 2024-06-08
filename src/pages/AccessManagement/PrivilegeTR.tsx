@@ -252,18 +252,18 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 					) : getRoleIsLoading ? (
 						'loading..'
 					) : getRoleData?.data ? (
-						<>
+						<Stack style={{flexDirection:'row', alignItems: 'center'}} gap={8}>
 							{getBadges(getRoleData?.data)}
 							<Tooltip
 								label={'Add a Privilege'}
 								style={{ color: 'white', backgroundColor: 'black' }}
 								withArrow
 								position="right">
-								<Badge color="green" onClick={openUpdateRole} style={{ textAlign: 'center', alignItems: 'center' }}>
-									<IconPlus size={'1rem'} style={{ paddingTop: 6 }} />
+								<Badge color="green" onClick={openUpdateRole}>
+									<IconPlus size={'0.7rem'} stroke={2} style={{paddingTop: '2px'}}/>
 								</Badge>
 							</Tooltip>
-						</>
+						</Stack>
 					) : (
 						<></>
 					)}
@@ -278,7 +278,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 								onClick={() => {
 									openDeleteRole();
 								}}>
-								<IconTrash size={px('1.2rem')} stroke={1.5} />
+								<IconTrash size={px('1rem')} stroke={1.5} />
 							</Button>
 						</Tooltip>
 					</Box>
@@ -300,6 +300,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 					}}
 					placeholder={`Please enter the Role to confirm, i.e. ${roleName}`}
 					required
+					mb={20}
 				/>
 
 				<Group justify="right" mt={10}>

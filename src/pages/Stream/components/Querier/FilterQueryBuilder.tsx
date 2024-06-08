@@ -116,10 +116,10 @@ const CombinatorToggle = (props: CombinatorToggleType) => {
 	const { onCombinatorChange, isOrSelected } = props;
 	return (
 		<Box className={classes.toggleBtnContainer}>
-			<Text className={isOrSelected ? activeBtnClass : inActiveBtnClass} onClick={() => onCombinatorChange('or')}>
+			<Text style={{fontSize: '0.6rem'}} className={isOrSelected ? activeBtnClass : inActiveBtnClass} onClick={() => onCombinatorChange('or')}>
 				OR
 			</Text>
-			<Text className={!isOrSelected ? activeBtnClass : inActiveBtnClass} onClick={() => onCombinatorChange('and')}>
+			<Text style={{fontSize: '0.6rem'}} className={!isOrSelected ? activeBtnClass : inActiveBtnClass} onClick={() => onCombinatorChange('and')}>
 				AND
 			</Text>
 		</Box>
@@ -145,7 +145,7 @@ const RuleSet = (props: RuleSetProps) => {
 
 	return (
 		<Stack gap={0}>
-			<Stack className={classes.ruleSet}>
+			<Stack className={classes.ruleSet} gap={22}>
 				<CombinatorToggle isOrSelected={ruleSetCombinator === 'or'} onCombinatorChange={onCombinatorChange} />
 				{rules.map((rule) => {
 					return <RuleView rule={rule} key={rule.id} type={fieldTypeMap[rule.field] || 'text'} groupId={id} />;
@@ -227,17 +227,19 @@ export const QueryPills = () => {
 	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
 	const { combinator, rules: ruleSets } = appliedQuery;
 	return (
-		<ScrollArea scrollbarSize={6} scrollHideDelay={0} offsetScrollbars>
-			<Stack style={{ flexDirection: 'row' }} gap={8}>
-				{ruleSets.map((ruleSet, index) => {
-					const shouldShowCombinatorPill = ruleSets.length !== 1 && index + 1 !== ruleSets.length;
-					return (
-						<Stack style={{ flexDirection: 'row' }} gap={8} key={ruleSet.id}>
-							<RuleSetPills ruleSet={ruleSet} />
-							{shouldShowCombinatorPill && <Pill className={classes.parentCombinatorPill}>{combinator}</Pill>}
-						</Stack>
-					);
-				})}
+		<ScrollArea scrollbarSize={6} scrollHideDelay={0} offsetScrollbars={false}>
+			<Stack style={{ height: '100%' }}>
+				<Stack style={{ flexDirection: 'row' }} gap={8}>
+					{ruleSets.map((ruleSet, index) => {
+						const shouldShowCombinatorPill = ruleSets.length !== 1 && index + 1 !== ruleSets.length;
+						return (
+							<Stack style={{ flexDirection: 'row' }} gap={8} key={ruleSet.id}>
+								<RuleSetPills ruleSet={ruleSet} />
+								{shouldShowCombinatorPill && <Pill className={classes.parentCombinatorPill}>{combinator}</Pill>}
+							</Stack>
+						);
+					})}
+				</Stack>
 			</Stack>
 		</ScrollArea>
 	);
@@ -257,7 +259,7 @@ export const FilterQueryBuilder = (props: { onClear: () => void; onApply: () => 
 
 	return (
 		<Stack style={{ height: 500 }}>
-			<ScrollArea style={{ height: 400 }}>
+			<ScrollArea style={{ height: 480 }}>
 				<Stack gap={0}>
 					{query.rules.map((ruleSet) => {
 						return <RuleSet ruleSet={ruleSet} key={ruleSet.id} />;

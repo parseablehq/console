@@ -13,11 +13,19 @@ const Header = () => {
 	);
 };
 
-const InfoItem = (props: { title: string; value: string, fullWidth?: boolean }) => {
+const InfoItem = (props: { title: string; value: string; fullWidth?: boolean }) => {
 	return (
-		<Stack w={props.fullWidth ? "100%" : "33%"} gap={0}>
-			<Text className={classes.fieldDescription}>{props.title}</Text>
-			<Text className={classes.fieldTitle}>{props.value}</Text>
+		<Stack w={props.fullWidth ? '100%' : '33%'} gap={0}>
+			<Text
+				className={classes.fieldDescription}
+				style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+				{props.title}
+			</Text>
+			<Text
+				className={classes.fieldTitle}
+				style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', fontWeight: 400 }}>
+				{props.value}
+			</Text>
 		</Stack>
 	);
 };
@@ -40,7 +48,7 @@ const InfoData = (props: {isLoading: boolean}) => {
 		.value();
 
 	return (
-		<Stack style={{ flex: 1, padding: '1.5rem' }} gap={20}>
+		<Stack style={{ flex: 1, padding: '1.5rem', justifyContent: 'space-between' }}>
 			{props.isLoading ? (
 				<Stack style={{ flex: 1, width: '100%', alignItems: 'centrer', justifyContent: 'center' }}>
 					<Stack style={{ alignItems: 'center' }}>
@@ -56,11 +64,11 @@ const InfoData = (props: {isLoading: boolean}) => {
 					</Stack>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Schema Type" value={staticSchemaFlag} />
-						<InfoItem title="Time Partition" value={timePartition} />
-						<InfoItem title="Time Partition Limit" value={timePartitionLimit} />
+						<InfoItem title="Time Partition Field" value={timePartition} />
+						<InfoItem title="Max Historical Difference" value={timePartitionLimit} />
 					</Stack>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-						<InfoItem title="Custom Partition" value={customPartition} fullWidth/>
+						<InfoItem title="Custom Partition Field" value={customPartition} fullWidth/>
 					</Stack>
 				</>
 			)}

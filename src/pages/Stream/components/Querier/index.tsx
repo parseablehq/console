@@ -1,5 +1,4 @@
-import { Box, Group, Menu, Modal, Stack, px } from '@mantine/core';
-import { ToggleButton } from '@/components/Button/ToggleButton';
+import { Group, Menu, Modal, Stack, px } from '@mantine/core';
 import { IconChevronDown, IconCodeCircle, IconFilter } from '@tabler/icons-react';
 import classes from '../../styles/Querier.module.css';
 import { Text } from '@mantine/core';
@@ -23,8 +22,8 @@ const getLabel = (mode: string | null) => {
 const FilterPlaceholder = () => {
 	return (
 		<Group className={classes.placeholderText} gap={0}>
-			<IconFilter size={'1.2rem'} stroke={1.8} style={{ marginRight: 6 }} />
-			Click to add filter
+			<IconFilter size={'0.8rem'} stroke={1.8} style={{ marginRight: 6 }} />
+			<Text style={{ fontSize: '0.65rem', fontWeight: 600 }}>Click to add filter</Text>
 		</Group>
 	);
 };
@@ -32,14 +31,14 @@ const FilterPlaceholder = () => {
 const SQLEditorPlaceholder = () => {
 	return (
 		<Group className={classes.placeholderText} gap={0}>
-			<IconCodeCircle size={'1.2rem'} stroke={1.8} style={{ marginRight: 6 }} />
-			Click to write query
+			<IconCodeCircle size={'1rem'} stroke={1.8} style={{ marginRight: 6 }} />
+			<Text style={{ fontSize: '0.65rem', fontWeight: 600 }}>Click to write query</Text>
 		</Group>
 	);
 };
 
 const ModalTitle = ({ title }: { title: string }) => {
-	return <Text style={{ fontSize: '1.2rem', fontWeight: 700, marginLeft: '0.5rem' }}>{title}</Text>;
+	return <Text style={{ fontSize: '1rem', fontWeight: 500, marginLeft: '0.5rem' }}>{title}</Text>;
 };
 
 const QuerierModal = (props: {
@@ -61,7 +60,7 @@ const QuerierModal = (props: {
 			centered
 			styles={{ body: { padding: '0 0.5rem' }, header: { padding: '1rem', paddingBottom: '0' } }}
 			title={<ModalTitle title={getLabel(viewMode)} />}>
-			<Stack style={{ width: '820px', padding: '1rem', height: '100%' }} gap={0}>
+			<Stack style={{ width: '40rem', padding: '1rem', height: '100%' }} gap={0}>
 				{viewMode === 'filters' ? (
 					<FilterQueryBuilder onClear={props.onClear} onApply={props.onFiltersApply} />
 				) : (
@@ -161,16 +160,18 @@ const Querier = () => {
 			<QuerierModal onSqlSearchApply={onSqlSearchApply} onFiltersApply={onFiltersApply} onClear={onClear} />
 			<Menu position="bottom">
 				<Menu.Target>
-					<Box>
-						<ToggleButton
-							onClick={() => {}}
-							toggled={false}
-							renderIcon={() => <IconChevronDown size={px('1.2rem')} stroke={1.5} />}
-							label={getLabel(viewMode)}
-							iconPosition="right"
-							customClassName={classes.modeButton}
-						/>
-					</Box>
+					<Stack
+						gap={0}
+						style={{
+							borderRight: '1px solid #e9ecef',
+							flexDirection: 'row',
+							alignItems: 'center',
+							justifyContent: 'center',
+							padding: '0 1rem',
+						}}>
+						<Text style={{ fontSize: '0.65rem', fontWeight: 600 }}>{getLabel(viewMode)}</Text>
+						<IconChevronDown size={px('1rem')} stroke={1.8} />
+					</Stack>
 				</Menu.Target>
 				<Menu.Dropdown>
 					<Menu.Item

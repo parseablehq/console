@@ -30,11 +30,10 @@
     background-color: white;
     color: #211F1F;
     border: 1px #e9ecef solid;
-    padding: 0.625rem 0.75rem;
     margin-right: 0.625rem;
     border-radius: rem(8px);
-    text-transform: capitalize;
-
+    text-transform: capitalize;  
+    height: 1.65rem;
     &:hover {
         background-color: #E0E0E0;
         color: black;

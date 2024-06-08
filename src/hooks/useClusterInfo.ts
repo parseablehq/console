@@ -1,10 +1,14 @@
 import { useMutation, useQuery } from 'react-query';
 import { AxiosError, AxiosResponse, isAxiosError } from 'axios';
-import { getClusterInfo, getClusterMetrics, deleteIngestor } from '@/api/cluster';
-import { Ingestor, IngestorMetrics } from '@/@types/parseable/api/clusterInfo';
+import { getClusterInfo, getClusterMetrics, deleteIngestor, getIngestorInfo } from '@/api/cluster';
+import { Ingestor, IngestorMetrics, IngestorQueryRecord } from '@/@types/parseable/api/clusterInfo';
 import { notifyError, notifySuccess } from '@/utils/notification';
+import { useClusterStore, clusterStoreReducers } from '@/pages/Systems/providers/ClusterProvider';
+
+const { setIngestorMachines, setCurrentMachineData } = clusterStoreReducers;
 
 export const useClusterInfo = () => {
+	const [, setClusterStore] = useClusterStore((_store) => null);
 	const {
 		data: clusterInfoData,
 		isError: getClusterInfoError,
@@ -14,6 +18,9 @@ export const useClusterInfo = () => {
 	} = useQuery<AxiosResponse<Ingestor[]>, Error>(['fetch-cluster-info'], () => getClusterInfo(), {
 		retry: false,
 		refetchOnWindowFocus: false,
+		onSuccess: (data) => {
+			setClusterStore((store) => setIngestorMachines(store, data.data));
+		},
 	});
 	return {
 		clusterInfoData,
@@ -68,5 +75,39 @@ export const useDeleteIngestor = () => {
 		deleteIngestorIsSuccess,
 		deleteIngestorIsError,
 		deleteIngestorIsLoading,
+	};
+};
+
+export const useGetIngestorInfo = () => {
+	const [clusterStore, setClusterStore] = useClusterStore((store) => store);
+	const { currentMachine, currentMachineType } = clusterStore;
+	const now = new Date();
+	const startOfMinute = new Date(now.setSeconds(0, 0));
+	const startTime = new Date(startOfMinute.getTime() - 11 * 60000); // 11 minutes earlier
+	const endTime = new Date(startOfMinute.getTime() + 11 * 60000); // 11 minutes later
+	const {
+		data: ingestorInfoData,
+		isError: getIngestorInfoError,
+		isSuccess: getIngestorInfoSuccess,
+		isLoading: getIngestorInfoLoading,
+		refetch: getIngestorInfoRefetch,
+	} = useQuery<AxiosResponse<IngestorQueryRecord[]>, Error>(
+		['fetch-ingestor-info', currentMachine, startTime.toLocaleString(), endTime.toLocaleString()],
+		() => getIngestorInfo(currentMachine, startTime, endTime),
+		{
+			retry: false,
+			refetchOnWindowFocus: false,
+			enabled: currentMachine !== null && currentMachineType === 'ingestor',
+			onSuccess: (data) => {
+				setClusterStore((store) => setCurrentMachineData(store, data.data));
+			},
+		},
+	);
+	return {
+		ingestorInfoData,
+		getIngestorInfoError,
+		getIngestorInfoSuccess,
+		getIngestorInfoLoading,
+		getIngestorInfoRefetch,
 	};
 };

@@ -9,7 +9,7 @@ import { useStreamStore } from '../../providers/StreamProvider';
 
 const Header = () => {
 	return (
-		<Stack className={classes.headerContainer}>
+		<Stack className={classes.headerContainer} style={{minHeight: '3rem', maxHeight: '3rem'}}>
 			<Text className={classes.title}>Settings</Text>
 		</Stack>
 	);
@@ -56,12 +56,12 @@ const RetentionForm = (props: { updateRetentionConfig: ({ config }: { config: an
 	);
 
 	return (
-		<Stack gap={12} flex={1} style={{ justifyContent: 'space-between' }}>
+		<Stack gap={12} flex={1}>
 			<Stack gap={8}>
 				<Stack gap={16} style={{ flexDirection: 'row', width: '100%' }}>
 					<NumberInput
 						withAsterisk
-						classNames={{ label: classes.fieldTitle }}
+						classNames={{ label: classes.fieldDescription }}
 						styles={{ label: { marginBottom: 4 } }}
 						label="Duration (In Days)"
 						placeholder="Duration in days"
@@ -70,7 +70,7 @@ const RetentionForm = (props: { updateRetentionConfig: ({ config }: { config: an
 						style={{ width: '50%' }}
 					/>
 					<TextInput
-						classNames={{ label: classes.fieldTitle }}
+						classNames={{ label: classes.fieldDescription }}
 						styles={{ label: { marginBottom: 4 } }}
 						label="Action"
 						key="action"
@@ -80,7 +80,7 @@ const RetentionForm = (props: { updateRetentionConfig: ({ config }: { config: an
 					/>
 				</Stack>
 				<TextInput
-					classNames={{ label: classes.fieldTitle }}
+					classNames={{ label: classes.fieldDescription }}
 					styles={{ label: { marginBottom: 4 } }}
 					label="Description"
 					key="description"
@@ -88,13 +88,13 @@ const RetentionForm = (props: { updateRetentionConfig: ({ config }: { config: an
 					{...form.getInputProps('description')}
 				/>
 			</Stack>
-			<Stack style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+			<Stack style={{ flexDirection: 'row', justifyContent: 'flex-end' }} mt="0.6rem">
 				<Button
 					className={classes.submitBtn}
 					onClick={() => onSubmit({ reset: true })}
 					variant="outline"
 					disabled={retention.duration === 0}>
-					Reset Retention
+					Reset
 				</Button>
 				<Button className={classes.submitBtn} onClick={() => onSubmit({ reset: false })} disabled={!form.isDirty()}>
 					Submit
@@ -113,7 +113,7 @@ const Settings = (props: {
 	const [isStandAloneMode] = useAppStore((store) => store.isStandAloneMode);
 	const [cacheEnabled] = useStreamStore((store) => store.cacheEnabled);
 	return (
-		<Stack className={classes.sectionContainer} gap={0} style={{ height: 'fit-content' }}>
+		<Stack className={classes.sectionContainer} gap={0} w="100%">
 			<Header />
 			<Stack gap={0} h="100%" pr="0.65rem" pl="0.65rem">
 				{props.isLoading ? (
@@ -131,8 +131,11 @@ const Settings = (props: {
 								alignItems: 'center',
 								justifyContent: 'space-between',
 								borderColor: 'transparent',
-								borderBottomColor: '#dee2e6',
+								borderBottomColor: 'transparent',
 								...(isStandAloneMode ? {} : { display: 'none' }),
+								background: '#f3f3f3',
+								marginTop: '1rem',
+								borderRadius: '0.3rem',
 							}}>
 							<Text className={classes.fieldTitle}>Caching</Text>
 							<Stack style={{}}>
@@ -145,6 +148,7 @@ const Settings = (props: {
 											labelPosition="left"
 											onChange={(event) => props.updateCacheStatus({ type: event.currentTarget.checked })}
 											label={cacheEnabled ? 'Enabled' : 'Disabled'}
+											classNames={{ label: classes.fieldDescription }}
 										/>
 									)
 								)}

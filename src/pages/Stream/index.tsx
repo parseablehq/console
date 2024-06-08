@@ -1,7 +1,7 @@
-import { Box, Stack } from '@mantine/core';
+import { Box, Stack, rem } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useEffect } from 'react';
-import StaticLogTable from './Views/Explore/StaticLogTable'
+import StaticLogTable from './Views/Explore/StaticLogTable';
 import LiveLogTable from './Views/LiveTail/LiveLogTable';
 import ViewLog from './components/ViewLog';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
@@ -11,14 +11,12 @@ import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useStreamStore, streamStoreReducers } from './providers/StreamProvider';
 import _ from 'lodash';
 import SecondaryToolbar from './components/SecondaryToolbar';
-import {  PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
+import { PRIMARY_HEADER_HEIGHT, SECONDARY_SIDEBAR_WIDTH } from '@/constants/theme';
 import PrimaryToolbar from './components/PrimaryToolbar';
 import { useParams } from 'react-router-dom';
 import { STREAM_VIEWS } from '@/constants/routes';
 
-const {
-	streamChangeCleanup,
-} = streamStoreReducers;
+const { streamChangeCleanup } = streamStoreReducers;
 
 const Logs: FC = () => {
 	useDocumentTitle('Parseable | Stream');
@@ -35,10 +33,9 @@ const Logs: FC = () => {
 			getDataSchema();
 		}
 	}, [currentStream]);
-	
-	const sideBarWidth = sideBarOpen ? '10%' : '5%';
-	const contentWidth = sideBarOpen ? '90%' : '95%';
-	
+
+	const sideBarWidth = sideBarOpen ? rem(180) : SECONDARY_SIDEBAR_WIDTH;
+
 	if (!currentStream) return null;
 	if (!_.includes(STREAM_VIEWS, view)) return null;
 
@@ -48,15 +45,15 @@ const Logs: FC = () => {
 	return (
 		<Box style={{ flex: 1, display: 'flex', position: 'relative', flexDirection: 'row', width: '100%' }}>
 			<ViewLog />
-			<Stack w={sideBarWidth}>
+			<Stack style={{ width: sideBarWidth }}>
 				<SideBar />
 			</Stack>
 			<Stack
 				gap={0}
-				w={contentWidth}
 				style={{
 					maxHeight: `calc(100vh - ${maximized ? 0 : PRIMARY_HEADER_HEIGHT}px )`,
 					overflow: 'scroll',
+					flex: 1,
 				}}>
 				<PrimaryToolbar />
 				{view === 'explore' && <SecondaryToolbar />}

@@ -61,12 +61,12 @@ const {
 const TotalCount = (props: { totalCount: number }) => {
 	return (
 		<Tooltip label={props.totalCount}>
-			<Text>{HumanizeNumber(props.totalCount)}</Text>
+			<Text style={{ fontSize: '0.7rem' }}>{HumanizeNumber(props.totalCount)}</Text>
 		</Tooltip>
 	);
 };
 
-const renderExportIcon = () => <IconDownload size={px('1.4rem')} stroke={1.5} />;
+const renderExportIcon = () => <IconDownload size={px('0.8rem')} stroke={1.8} />;
 
 const TotalLogsCount = () => {
 	const [{ totalCount, perPage, pageData }] = useLogsStore((store) => store.tableOpts);
@@ -76,9 +76,9 @@ const TotalLogsCount = () => {
 
 	return (
 		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }} gap={6}>
-			<Text>{`Showing ${showingCount} out of`}</Text>
+			<Text style={{ fontSize: '0.7rem' }}>{`Showing ${showingCount} out of`}</Text>
 			<TotalCount totalCount={totalCount} />
-			<Text>records</Text>
+			<Text style={{ fontSize: '0.7rem' }}>records</Text>
 		</Stack>
 	);
 };
@@ -200,7 +200,7 @@ const LoadingView = () => {
 const Footer = (props: { loaded: boolean }) => {
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const [filteredData] = useLogsStore((store) => store.data.filteredData);
-	const { totalPages, currentOffset, currentPage, perPage, totalCount, headers } = tableOpts;
+	const { totalPages, currentOffset, currentPage, perPage, headers } = tableOpts;
 	const onPageChange = useCallback((page: number) => {
 		setLogsStore((store) => setPageAndPageData(store, page));
 	}, []);
@@ -219,9 +219,7 @@ const Footer = (props: { loaded: boolean }) => {
 				setLogsStore((store) => setCurrentOffset(store, targetOffset));
 			} else {
 				const targetOffset = currentOffset + 9000;
-				if (totalCount <= targetOffset) {
-					setLogsStore((store) => setCurrentOffset(store, targetOffset));
-				}
+				setLogsStore((store) => setCurrentOffset(store, targetOffset));
 			}
 		},
 		[currentOffset],
@@ -251,7 +249,8 @@ const Footer = (props: { loaded: boolean }) => {
 						value={currentPage}
 						onChange={(page) => {
 							pagination.setPage(page);
-						}}>
+						}}
+						size="sm">
 						<Group gap={5} justify="center">
 							<Pagination.First
 								onClick={() => {
@@ -296,7 +295,7 @@ const Footer = (props: { loaded: boolean }) => {
 								<IconButton renderIcon={renderExportIcon} />
 							</div>
 						</Menu.Target>
-						<Menu.Dropdown style={{}}>
+						<Menu.Dropdown>
 							<Menu.Item onClick={() => exportHandler('CSV')} style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
 								CSV
 							</Menu.Item>
@@ -360,13 +359,17 @@ const LogTable = (props: { schemaLoading: boolean }) => {
 	}, [currentStream]);
 
 	useEffect(() => {
-		if (currentPage === 0) {
+		if (currentPage === 0 && currentOffset === 0) {
 			getQueryData();
 			fetchCount();
-		} else if (currentOffset !== 0) {
+		}
+	}, [currentPage]);
+
+	useEffect(() => {
+		if (currentOffset !== 0 && currentPage !== 0) {
 			getQueryData();
 		}
-	}, [currentPage, currentOffset]);
+	}, [currentOffset]);
 
 	const [pageData] = useLogsStore((store) => store.tableOpts.pageData);
 	const [headers] = useLogsStore((store) => store.tableOpts.headers);
@@ -534,16 +537,16 @@ const LimitControl: FC = () => {
 	};
 
 	const classes = tableStyles;
-	const { limitContainer, limitBtn, limitBtnText, limitActive, limitOption } = classes;
+	const { limitBtn, limitBtnText, limitActive, limitOption } = classes;
 
 	return (
-		<Box className={limitContainer}>
+		<Box>
 			<Menu withArrow withinPortal shadow="md" opened={opened} onChange={setOpened}>
 				<Center>
 					<Menu.Target>
 						<Box onClick={toggle} className={limitBtn}>
 							<Text className={limitBtnText}>{perPage}</Text>
-							<IconSelector size={px('1rem')} />
+							<IconSelector size={'0.8rem'} />
 						</Box>
 					</Menu.Target>
 				</Center>

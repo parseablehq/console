@@ -4,12 +4,12 @@
 }
 
 .aboutTitle {
-	font-size: 1.2rem;
-	font-weight: 600;
+	font-size: 0.8rem;
+	font-weight: 500;
 }
 
 .fieldTitle {
-    font-size: var(--mantine-font-size-sm);
+    font-size: var(--mantine-font-size-md);
     font-weight: 500;
 }
 

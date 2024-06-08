@@ -1,5 +1,5 @@
 import { parseLogData } from '@/utils';
-import { Box, px } from '@mantine/core';
+import { Box } from '@mantine/core';
 import { IconArrowNarrowRight } from '@tabler/icons-react';
 import { FC, Fragment, useCallback } from 'react';
 import { Log } from '@/@types/parseable/api/query';
@@ -53,7 +53,7 @@ const ViewLogArrow: FC = () => {
 	return (
 		<td className={tdArrow}>
 			<Box className={tdArrowContainer}>
-				<IconArrowNarrowRight size={px('1.6rem')} stroke={1} />
+				<IconArrowNarrowRight size={'1.4rem'} stroke={1} />
 			</Box>
 		</td>
 	);

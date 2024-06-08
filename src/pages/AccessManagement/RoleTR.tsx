@@ -191,7 +191,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				)}
 			</td>
 			<td>
-				<Box style={{ height: '100%', width: '100%', whiteSpace: 'nowrap', textAlign: 'center' }}>
+				<Box style={{ height: '100%', width: '100%', whiteSpace: 'nowrap', display: 'flex', justifyContent: 'center' }}>
 					<Tooltip label={'Delete'} style={{ color: 'white', backgroundColor: 'black' }} withArrow position="right">
 						<Button
 							variant="default"
@@ -200,7 +200,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 							onClick={() => {
 								openDelete();
 							}}>
-							<IconTrash size={px('1.2rem')} stroke={1.5} />
+							<IconTrash size={px('1rem')} stroke={1.5} />
 						</Button>
 					</Tooltip>
 				</Box>
@@ -220,7 +220,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 									open();
 								}
 							}}>
-							<IconTransform size={px('1.2rem')} stroke={1.5} />
+							<IconTransform size={px('1rem')} stroke={1.5} />
 						</Button>
 					</Tooltip>
 				</Box>
@@ -304,7 +304,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				title="Change user password"
 				centered
 				className={classes.modalStyle}
-				styles={{ title: { fontWeight: 700 } }}>
+				styles={{ title: { fontWeight: 500 } }}>
 				<Stack>
 					<TextInput
 						label={"Are you sure you want to reset this user's password?"}

@@ -1,5 +1,4 @@
 import { Stack } from '@mantine/core';
-import classes from '../../styles/Management.module.css';
 import Alerts from './Alerts';
 import useAlertsQuery from '@/hooks/useAlertsEditor';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
@@ -27,19 +26,21 @@ const Management = (props: { schemaLoading: boolean }) => {
 	const isSettingsLoading = getRetentionConfig.getLogRetentionIsLoading || getRetentionConfig.getLogRetentionIsError || instanceConfig === null;
 	const isStreamInfoLoading = getStreamInfo.getStreamInfoLoading || getStreamInfo.getStreamInfoError;
 	return (
-		<Stack className={classes.viewConatiner}>
+		<Stack style={{ padding: '1rem', paddingTop: '0', height: '90%'}}>
 			<DeleteStreamModal />
-			<Stack style={{ flexDirection: 'row', height: '50%' }} gap={24}>
+			<Stack style={{ flexDirection: 'row', height: '40%' }} gap={24}>
 				<Stats isLoading={isStatsLoading} />
 				<Info isLoading={isStreamInfoLoading} />
 			</Stack>
-			<Stack style={{ flexDirection: 'row', height: 'fit-content' }} gap={24}>
-				<Settings
-					isLoading={isSettingsLoading}
-					getCacheError={getCacheError}
-					updateCacheStatus={updateCacheStatus}
-					updateRetentionConfig={getRetentionConfig.updateLogStreamRetention}
-				/>
+			<Stack style={{ flexDirection: 'row', height: '57%' }} gap={24}>
+				<Stack w="49.4%">
+					<Settings
+						isLoading={isSettingsLoading}
+						getCacheError={getCacheError}
+						updateCacheStatus={updateCacheStatus}
+						updateRetentionConfig={getRetentionConfig.updateLogStreamRetention}
+					/>
+				</Stack>
 				<Alerts
 					isLoading={isAlertsLoading}
 					schemaLoading={props.schemaLoading}

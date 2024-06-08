@@ -2,11 +2,11 @@ import { Box, Divider, Stack, Tooltip } from '@mantine/core';
 import {
 	IconLogout,
 	IconUser,
-	IconBinaryTree2,
 	IconInfoCircle,
 	IconUserCog,
-	IconHome,
 	IconServerCog,
+	IconHomeStats,
+	IconListDetails,
 } from '@tabler/icons-react';
 import { FC, useCallback, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
@@ -30,13 +30,13 @@ const { setUserRoles, setUserSpecificStreams, setUserAccessMap, changeStream } =
 
 const navItems = [
 	{
-		icon: IconHome,
+		icon: IconHomeStats,
 		label: 'Home',
 		path: '/',
 		route: HOME_ROUTE,
 	},
 	{
-		icon: IconBinaryTree2,
+		icon: IconListDetails,
 		label: 'Stream',
 		path: '/explore',
 		route: STREAM_ROUTE,
@@ -86,6 +86,7 @@ const Navbar: FC = () => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [userSpecificStreams] = useAppStore((store) => store.userSpecificStreams);
 	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
+	const [isStandAloneMode] = useAppStore((store) => store.isStandAloneMode);
 	const [userModalOpened, { toggle: toggleUserModal, close: closeUserModal }] = useDisclosure(false);
 	const [infoModalOpened, { toggle: toggleInfoModal, close: closeInfoModal }] = useDisclosure(false);
 	const { getLogStreamListData } = useLogStream();
@@ -97,7 +98,7 @@ const Navbar: FC = () => {
 
 				const defaultStream = currentStream && currentStream.length !== 0 ? currentStream : userSpecificStreams[0].name;
 				const stream = !streamName || streamName.length === 0 ? defaultStream : streamName;
-				const path = `/${stream}${view ? '/' + view : "/explore"}`;
+				const path = `/${stream}${view ? '/' + view : '/explore'}`;
 				setAppStore((store) => changeStream(store, stream));
 
 				if (path !== location.pathname) {
@@ -152,19 +153,19 @@ const Navbar: FC = () => {
 									onClick={() => navigateToPage(navItem.route)}
 									key={index}>
 									<Tooltip label={navItem.label} position="right">
-										<navItem.icon className={styles.navIcon} stroke={isActiveItem ? 1.2 : 1} size={'1.8rem'} />
+										<navItem.icon stroke={isActiveItem ? 1.4 : 1.2} size={'1.2rem'} />
 									</Tooltip>
 								</Stack>
 							);
 						})}
 					</Stack>
-					<Stack gap={4}>
+					<Stack gap={0}>
 						{previlagedActions.map((navItem, index) => {
+							if (isStandAloneMode === null) return null;
 							if (navItem.route === USERS_MANAGEMENT_ROUTE && !userAccessMap.hasUserAccess) return null;
-							if (navItem.route === CLUSTER_ROUTE && !userAccessMap.hasUserAccess) return null;
+							if (navItem.route === CLUSTER_ROUTE && (!userAccessMap.hasUserAccess || isStandAloneMode)) return null;
 
 							const isActiveItem = navItem.route === currentRoute;
-							
 							return (
 								<Stack
 									className={`${styles.navItemContainer} ${isActiveItem && styles.navItemActive}`}
@@ -172,7 +173,7 @@ const Navbar: FC = () => {
 									onClick={() => navigateToPage(navItem.route)}
 									key={index}>
 									<Tooltip label={navItem.label} position="right">
-										<navItem.icon className={styles.navIcon} stroke={isActiveItem ? 1.2 : 1} size={'1.8rem'} />
+										<navItem.icon className={styles.navIcon} stroke={isActiveItem ? 1.4 : 1.2} size={'1.2rem'} />
 									</Tooltip>
 								</Stack>
 							);
@@ -193,10 +194,10 @@ const Navbar: FC = () => {
 									className={`${styles.navItemContainer} ${isActiveItem && styles.navItemActive}`}
 									gap={0}
 									onClick={onClick}
-									style={{ border: 'none', padding: '8px 0px' }}
+									style={{ padding: '8px 0px' }}
 									key={index}>
 									<Tooltip label={navAction.label} position="right">
-										<navAction.icon className={styles.navIcon} stroke={1.2} size={'1.8rem'} />
+										<navAction.icon className={styles.navIcon} stroke={1.2} size={'1.2rem'} />
 									</Tooltip>
 								</Stack>
 							);

@@ -86,16 +86,18 @@ const TimeRange: FC = () => {
 			<Menu.Target>
 				<Stack className={classes.timeRangeBtnContainer}>
 					<Stack className={classes.timeRangeCtrlIcon} onClick={() => shiftTimeRange('left')}>
-						<IconChevronLeft style={{ cursor: 'pointer' }} />
+						<IconChevronLeft stroke={2} size="1rem" style={{ cursor: 'pointer' }} />
 					</Stack>
 					<Button
 						className={timeRangeBTn}
-						leftSection={<IconClock size={px('1.2rem')} stroke={1.5} />}
-						onClick={toggleMenu}>
+						leftSection={<IconClock size={px('1rem')} stroke={1.5} />}
+						onClick={toggleMenu}
+						styles={{label: {fontSize: '0.65rem', fontWeight: 600}}}
+						>
 						{FIXED_DURATIONS_LABEL[label] || label}
 					</Button>
 					<Stack className={classes.timeRangeCtrlIcon} onClick={() => shiftTimeRange('right')}>
-						<IconChevronRight style={{ cursor: 'pointer' }} />
+						<IconChevronRight stroke={2} size="1rem" style={{ cursor: 'pointer' }} />
 					</Stack>
 				</Stack>
 			</Menu.Target>
@@ -181,7 +183,7 @@ const CustomTimeRange: FC<CustomTimeRangeProps> = ({ setOpened }) => {
 
 	return (
 		<Fragment>
-			<Text style={{fontSize: '0.9rem', fontWeight: 500}}>Custom Range</Text>
+			<Text style={{fontSize: '0.7rem', fontWeight: 500}}>Custom Range</Text>
 			<DateTimePicker
 				error={isStartTimeMoreThenEndTime ? 'Start time cannot be greater than the end time' : ''}
 				maxDate={new Date()}

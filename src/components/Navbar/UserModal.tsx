@@ -4,7 +4,7 @@ import { Text } from '@mantine/core';
 import Cookies from 'js-cookie';
 
 const ModalTitle = () => {
-	return <Text style={{ fontSize: '1.2rem', fontWeight: 700, marginLeft: '0.5rem' }}>User Details</Text>;
+	return <Text style={{ fontWeight: 600, marginLeft: '0.5rem' }}>User Details</Text>;
 };
 
 type UserModalProps = {
@@ -28,11 +28,11 @@ const UserModal = (props: UserModalProps) => {
 			title={<ModalTitle />}>
 			<Stack style={{ padding: '1rem' }}>
 				<Stack gap={0}>
-					<Text style={{ fontSize: '1rem', fontWeight: 600 }}>Username:</Text>
+					<Text style={{ fontWeight: 500 }}>Username:</Text>
 					<Text>{username}</Text>
 				</Stack>
 				<Stack gap={0}>
-					<Text style={{ fontSize: '1rem', fontWeight: 600 }}>Roles:</Text>
+					<Text style={{ fontWeight: 500 }}>Roles:</Text>
 					{Object.entries(userRoles).map(([key, value], index) => {
 						return (
 							<Text key={index}>

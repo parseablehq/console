@@ -51,6 +51,7 @@ const ViewLog: FC = () => {
 						code={JSON.stringify(selectedLog, null, 2)}
 						language="json"
 						styles={{ copy: { marginLeft: '550px' } }}
+						copyLabel="Copy Log"
 					/>
 				</Box>
 			)}
