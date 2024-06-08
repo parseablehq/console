@@ -9,7 +9,7 @@ import { useStreamStore } from '../../providers/StreamProvider';
 
 const Header = () => {
 	return (
-		<Stack className={classes.headerContainer}>
+		<Stack className={classes.headerContainer} style={{minHeight: '3rem', maxHeight: '3rem'}}>
 			<Text className={classes.title}>Settings</Text>
 		</Stack>
 	);

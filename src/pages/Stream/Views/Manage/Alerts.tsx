@@ -546,7 +546,7 @@ const AlertsModal = (props: { open: boolean; alertName: string; onClose: () => v
 
 const Header = (props: { selectAlert: selectAlert, isLoading: boolean }) => {
 	return (
-		<Stack className={classes.headerContainer}>
+		<Stack className={classes.headerContainer} style={{minHeight: '3rem', maxHeight: '3rem'}}>
 			<Text className={classes.title}>Alerts</Text>
 			{!props.isLoading && (
 				<Box>

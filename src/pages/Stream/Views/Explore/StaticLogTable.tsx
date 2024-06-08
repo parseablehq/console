@@ -359,13 +359,17 @@ const LogTable = (props: { schemaLoading: boolean }) => {
 	}, [currentStream]);
 
 	useEffect(() => {
-		if (currentPage === 0) {
+		if (currentPage === 0 && currentOffset === 0) {
 			getQueryData();
 			fetchCount();
-		} else if (currentOffset !== 0) {
+		}
+	}, [currentPage]);
+
+	useEffect(() => {
+		if (currentOffset !== 0 && currentPage !== 0) {
 			getQueryData();
 		}
-	}, [currentPage, currentOffset]);
+	}, [currentOffset]);
 
 	const [pageData] = useLogsStore((store) => store.tableOpts.pageData);
 	const [headers] = useLogsStore((store) => store.tableOpts.headers);
