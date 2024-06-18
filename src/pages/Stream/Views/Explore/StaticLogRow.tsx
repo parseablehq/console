@@ -1,10 +1,11 @@
 import { parseLogData } from '@/utils';
 import { Box } from '@mantine/core';
 import { IconArrowNarrowRight } from '@tabler/icons-react';
-import { FC, Fragment, useCallback } from 'react';
+import { FC, Fragment, useCallback, useEffect } from 'react';
 import { Log } from '@/@types/parseable/api/query';
 import tableStyles from '../../styles/Logs.module.css';
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
+import dayjs from 'dayjs';
 
 const columnsToSkip = ['p_metadata', 'p_tags'];
 
@@ -30,6 +31,9 @@ const LogRow: FC<LogRowProps> = (props) => {
 	const onClick = useCallback((log: Log) => {
 		setLogsStore((store) => setSelectedLog(store, log));
 	}, []);
+	useEffect(() => {
+		console.log(dayjs().format("HH:MM:ss:SSS"), "First row rendered")
+	}, [])
 	return (
 		<Fragment>
 			{pageData.map((log, logIndex) => {

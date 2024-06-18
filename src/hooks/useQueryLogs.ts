@@ -8,6 +8,7 @@ import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useQueryResult } from './useQueryResult';
 import _ from 'lodash';
 import { useStreamStore } from '@/pages/Stream/providers/StreamProvider';
+import dayjs from 'dayjs';
 
 const { setData, setTotalCount } = logsStoreReducers;
 
@@ -88,6 +89,7 @@ export const useQueryLogs = () => {
 				? await getQueryResult({ ...logsQuery, access: [] }, appendOffsetToQuery(custSearchQuery, logsQuery.pageOffset))
 				: await getQueryLogs(logsQuery);
 
+			console.log(dayjs().format("HH:MM:ss:SSS"), "Fetched log data")
 			const data = logsQueryRes.data;
 
 			if (logsQueryRes.status === StatusCodes.OK) {

@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { Axios } from './axios';
 import {
 	DELETE_STREAMS_URL,
@@ -16,6 +17,7 @@ export const getLogStreamList = () => {
 };
 
 export const getLogStreamSchema = (streamName: string) => {
+	console.log(dayjs().format("HH:MM:ss:SSS"), "Fetching schema data")
 	return Axios().get<LogStreamSchemaData>(LOG_STREAMS_SCHEMA_URL(streamName));
 };
 

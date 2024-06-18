@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { Axios } from './axios';
 import { LOG_QUERY_URL } from './constants';
 import { LogsQuery } from '@/@types/parseable/api/query';
@@ -15,6 +16,7 @@ export const getQueryLogs = (logsQuery: QueryLogs) => {
 
 	const query = `SELECT * FROM ${streamName} LIMIT ${limit} OFFSET ${pageOffset}`;
 
+	console.log(dayjs().format("HH:MM:ss:SSS"), "Fetching log data")
 	return Axios().post(
 		LOG_QUERY_URL,
 		{

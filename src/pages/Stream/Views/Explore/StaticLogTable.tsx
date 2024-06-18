@@ -44,6 +44,7 @@ import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
 import IconButton from '@/components/Button/IconButton';
 import { downloadDataAsCSV, downloadDataAsJson } from '@/utils/exportHelpers';
+import dayjs from 'dayjs';
 
 const skipFields = ['p_metadata', 'p_tags'];
 
@@ -190,6 +191,9 @@ const ErrorView = (props: { message: string }) => {
 };
 
 const LoadingView = () => {
+	useEffect(() => {
+		return () => console.log(dayjs().format("HH:MM:ss:SSS"), "Loader removed")
+	}, [])
 	return (
 		<Stack w="100%" align="center" h="100%" style={{ alignItems: 'center', justifyContent: 'center' }}>
 			<Loader variant="dots" />

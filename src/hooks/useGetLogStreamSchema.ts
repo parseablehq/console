@@ -6,6 +6,7 @@ import { Field } from '@/@types/parseable/dataType';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsProvider';
 import { useStreamStore, streamStoreReducers } from '@/pages/Stream/providers/StreamProvider';
+import dayjs from 'dayjs';
 
 const {setStreamSchema} = streamStoreReducers;
 const {setTableHeaders} = logsStoreReducers;
@@ -25,7 +26,7 @@ export const useGetLogStreamSchema = () => {
 			if (!stream) throw 'Current stream context is missing';
 
 			const res = await getLogStreamSchema(stream);
-
+			console.log(dayjs().format("HH:MM:ss:SSS"), "Fetched schema data")
 			switch (res.status) {
 				case StatusCodes.OK: {
 					const schema = res.data;
