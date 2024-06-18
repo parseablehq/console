@@ -77,7 +77,7 @@ export const useQueryLogs = () => {
 		streamName: currentStream || '',
 		startTime: timeRange.startTime,
 		endTime: timeRange.endTime,
-		limit: 9000,
+		limit: 1000,
 		pageOffset: currentOffset,
 	};
 	const getQueryData = async (logsQuery: QueryLogs = defaultQueryOpts) => {

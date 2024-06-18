@@ -10,7 +10,7 @@ import { sanitizeCSVData } from '@/utils/exportHelpers';
 
 export const DEFAULT_FIXED_DURATIONS = FIXED_DURATIONS[0];
 export const LOG_QUERY_LIMITS = [30, 50, 100, 150, 200];
-export const LOAD_LIMIT = 9000;
+export const LOAD_LIMIT = 1000;
 
 type ReducerOutput = Partial<LogsStore>;
 

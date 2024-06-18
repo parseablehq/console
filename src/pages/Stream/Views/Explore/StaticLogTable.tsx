@@ -213,7 +213,7 @@ const Footer = (props: { loaded: boolean }) => {
 	const onChangeOffset = useCallback(
 		(key: 'prev' | 'next') => {
 			if (key === 'prev') {
-				const targetOffset = currentOffset - 9000;
+				const targetOffset = currentOffset - 1000;
 				if (currentOffset < 0) return;
 
 				if (targetOffset === 0 && currentOffset > 0) {
@@ -222,7 +222,7 @@ const Footer = (props: { loaded: boolean }) => {
 				}
 				setLogsStore((store) => setCurrentOffset(store, targetOffset));
 			} else {
-				const targetOffset = currentOffset + 9000;
+				const targetOffset = currentOffset + 1000;
 				setLogsStore((store) => setCurrentOffset(store, targetOffset));
 			}
 		},

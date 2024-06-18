@@ -231,7 +231,7 @@ const toggleSubmitBtn = (_store: FilterStore, val: boolean) => {
 const parseQuery = (query: QueryType, currentStream: string) => {
 	// todo - custom rule processor to prevent converting number strings into numbers for text fields
 	const where = formatQuery(query, { format: 'sql', parseNumbers: true, quoteFieldNamesWith: ['"', '"'] });
-	const parsedQuery = `select * from ${currentStream} where ${where} limit 9000`;
+	const parsedQuery = `select * from ${currentStream} where ${where} limit 1000`;
 	return { where, parsedQuery };
 };
 
