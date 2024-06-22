@@ -1,5 +1,5 @@
 import useMountedState from '@/hooks/useMountedState';
-import { Box, Button, Divider, Menu, NumberInput, Stack, Text, UnstyledButton, px } from '@mantine/core';
+import { Box, Button, Divider, Menu, NumberInput, Stack, Text, Tooltip, UnstyledButton, px } from '@mantine/core';
 import { DateTimePicker } from '@mantine/dates';
 import { IconChevronLeft, IconChevronRight, IconClock } from '@tabler/icons-react';
 import dayjs from 'dayjs';
@@ -10,7 +10,7 @@ import classes from './styles/LogQuery.module.css';
 import { useOuterClick } from '@/hooks/useOuterClick';
 import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
 
-const {setTimeRange, setshiftInterval} = logsStoreReducers;
+const { setTimeRange, setshiftInterval } = logsStoreReducers;
 type FixedDurations = (typeof FIXED_DURATIONS)[number];
 
 const {
@@ -20,18 +20,18 @@ const {
 	fixedRangeBtn,
 	fixedRangeBtnSelected,
 	customRangeContainer,
-	shiftIntervalContainer
+	shiftIntervalContainer,
 } = classes;
 
 const TimeRange: FC = () => {
-	const [timeRange, setLogsStore] = useLogsStore(store => store.timeRange);
-	const {label, shiftInterval, interval, startTime, endTime, type} = timeRange;
+	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
+	const { label, shiftInterval, interval, startTime, endTime, type } = timeRange;
 	const handleOuterClick = useCallback((event: any) => {
-		const targetClassNames:  string[] = event.target?.classList || [];
+		const targetClassNames: string[] = event.target?.classList || [];
 		const maybeSubmitBtnClassNames: string[] = event.target.closest('button')?.classList || [];
 		const classNames: string[] = [
-			...(typeof targetClassNames[Symbol.iterator] === 'function'  ? [...targetClassNames] : []),
-			...(typeof maybeSubmitBtnClassNames[Symbol.iterator] === 'function'  ? [...maybeSubmitBtnClassNames] : []),
+			...(typeof targetClassNames[Symbol.iterator] === 'function' ? [...targetClassNames] : []),
+			...(typeof maybeSubmitBtnClassNames[Symbol.iterator] === 'function' ? [...maybeSubmitBtnClassNames] : []),
 		];
 		const shouldIgnoreClick = classNames.some((className) => {
 			return (
@@ -60,9 +60,9 @@ const TimeRange: FC = () => {
 
 	const onSetShiftInterval = useCallback((val: number | string) => {
 		if (typeof val === 'number') {
-			setLogsStore(store => setshiftInterval(store, val))
+			setLogsStore((store) => setshiftInterval(store, val));
 		}
-	}, [])
+	}, []);
 
 	const shiftTimeRange = (direction: 'left' | 'right') => {
 		const changeInMs = shiftInterval * 60 * 1000;
@@ -79,26 +79,33 @@ const TimeRange: FC = () => {
 				setTimeRange(store, { startTime: dayjs(newStartTime), endTime: dayjs(newEndTime), type: 'custom' }),
 			);
 		}
-	}
+	};
+
+	const shiftLabelPrefix = `Shift ${shiftInterval} Mins`;
 
 	return (
 		<Menu withArrow position="top" opened={opened}>
 			<Menu.Target>
 				<Stack className={classes.timeRangeBtnContainer}>
-					<Stack className={classes.timeRangeCtrlIcon} onClick={() => shiftTimeRange('left')}>
-						<IconChevronLeft stroke={2} size="1rem" style={{ cursor: 'pointer' }} />
-					</Stack>
-					<Button
-						className={timeRangeBTn}
-						leftSection={<IconClock size={px('1rem')} stroke={1.5} />}
-						onClick={toggleMenu}
-						styles={{label: {fontSize: '0.65rem', fontWeight: 600}}}
-						>
-						{FIXED_DURATIONS_LABEL[label] || label}
-					</Button>
-					<Stack className={classes.timeRangeCtrlIcon} onClick={() => shiftTimeRange('right')}>
-						<IconChevronRight stroke={2} size="1rem" style={{ cursor: 'pointer' }} />
-					</Stack>
+					<Tooltip label={`${shiftLabelPrefix} Back`}>
+						<Stack className={classes.timeRangeCtrlIcon} onClick={() => shiftTimeRange('left')}>
+							<IconChevronLeft stroke={2} size="1rem" style={{ cursor: 'pointer' }} />
+						</Stack>
+					</Tooltip>
+					<Tooltip label="In Local Browser Time">
+						<Button
+							className={timeRangeBTn}
+							leftSection={<IconClock size={px('1rem')} stroke={1.5} />}
+							onClick={toggleMenu}
+							styles={{ label: { fontSize: '0.65rem', fontWeight: 600 } }}>
+							{FIXED_DURATIONS_LABEL[label] || label}
+						</Button>
+					</Tooltip>
+					<Tooltip label={`${shiftLabelPrefix} Forward`}>
+						<Stack className={classes.timeRangeCtrlIcon} onClick={() => shiftTimeRange('right')}>
+							<IconChevronRight stroke={2} size="1rem" style={{ cursor: 'pointer' }} />
+						</Stack>
+					</Tooltip>
 				</Stack>
 			</Menu.Target>
 			<Menu.Dropdown>
@@ -143,7 +150,7 @@ type CustomTimeRangeProps = {
 	setOpened: (opened: boolean) => void;
 };
 const CustomTimeRange: FC<CustomTimeRangeProps> = ({ setOpened }) => {
-	const [{startTime, endTime} ,setLogsStore] = useLogsStore(store => store.timeRange)
+	const [{ startTime, endTime }, setLogsStore] = useLogsStore((store) => store.timeRange);
 
 	const [localSelectedRange, setLocalSelectedRange] = useMountedState({
 		startTime,
@@ -183,7 +190,7 @@ const CustomTimeRange: FC<CustomTimeRangeProps> = ({ setOpened }) => {
 
 	return (
 		<Fragment>
-			<Text style={{fontSize: '0.7rem', fontWeight: 500}}>Custom Range</Text>
+			<Text style={{ fontSize: '0.7rem', fontWeight: 500 }}>Custom Range</Text>
 			<DateTimePicker
 				error={isStartTimeMoreThenEndTime ? 'Start time cannot be greater than the end time' : ''}
 				maxDate={new Date()}
