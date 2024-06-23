@@ -168,8 +168,8 @@ const CustomTimeRange: FC<CustomTimeRangeProps> = ({ setOpened }) => {
 		setLogsStore((store) =>
 			setTimeRange(store, {
 				type: 'custom',
-				startTime: dayjs(localSelectedRange.startTime),
-				endTime: dayjs(localSelectedRange.endTime),
+				startTime: dayjs(localSelectedRange.startTime).startOf('minute'),
+				endTime: dayjs(localSelectedRange.endTime).startOf('minute'),
 			}),
 		);
 		setOpened(false);
