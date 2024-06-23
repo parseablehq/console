@@ -23,7 +23,12 @@ const AllLogsButton = (props: MenuItemProps) => {
 			className={classes.menuItemContainer}>
 			<Tooltip label="Explore" position="right">
 				<Stack className={additionalClassNames} style={{ padding: '4px 4px' }}>
-					<IconFilterSearch stroke={isActive ? 1.4 : 1.2} size="1.2rem" className={classes.icon} {...(isActive && { color: 'black' })} />
+					<IconFilterSearch
+						stroke={isActive ? 1.4 : 1.2}
+						size="1.2rem"
+						className={classes.icon}
+						{...(isActive && { color: 'black' })}
+					/>
 				</Stack>
 			</Tooltip>
 		</Stack>
@@ -41,7 +46,12 @@ const ConfigButton = (props: MenuItemProps) => {
 			className={classes.menuItemContainer}>
 			<Tooltip label="Manage" position="right">
 				<Stack className={additionalClassNames} style={{ padding: '4px 4px' }}>
-					<IconSettings2 stroke={isActive ? 1.4 : 1.2} size="1.2rem" className={classes.icon} {...(isActive && { color: 'black' })}/>
+					<IconSettings2
+						stroke={isActive ? 1.4 : 1.2}
+						size="1.2rem"
+						className={classes.icon}
+						{...(isActive && { color: 'black' })}
+					/>
 				</Stack>
 			</Tooltip>
 		</Stack>
@@ -59,7 +69,12 @@ const LiveTailMenu = (props: MenuItemProps) => {
 			style={{ padding: '4px 0', alignItems: 'center' }}>
 			<Tooltip label="Live Tail" position="right">
 				<Stack className={additionalClassNames} style={{ padding: '4px 4px' }}>
-					<IconBolt stroke={isActive ? 1.4 : 1.2} size="1.2rem" className={classes.icon} {...(isActive && { color: 'black' })}/>
+					<IconBolt
+						stroke={isActive ? 1.4 : 1.2}
+						size="1.2rem"
+						className={classes.icon}
+						{...(isActive && { color: 'black' })}
+					/>
 				</Stack>
 			</Tooltip>
 		</Stack>
@@ -68,6 +83,7 @@ const LiveTailMenu = (props: MenuItemProps) => {
 
 const SideBar = () => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
+	const [isStandAloneMode] = useAppStore((store) => store.isStandAloneMode);
 	const { view } = useParams();
 	const navigate = useNavigate();
 
@@ -84,7 +100,7 @@ const SideBar = () => {
 		<Stack className={classes.container} style={{ gap: 0 }}>
 			<Stack gap={0}>
 				<AllLogsButton setCurrentView={setCurrentView} currentView={view || ''} />
-				<LiveTailMenu setCurrentView={setCurrentView} currentView={view || ''} />
+				{isStandAloneMode && <LiveTailMenu setCurrentView={setCurrentView} currentView={view || ''} />}
 				<ConfigButton setCurrentView={setCurrentView} currentView={view || ''} />
 			</Stack>
 		</Stack>
