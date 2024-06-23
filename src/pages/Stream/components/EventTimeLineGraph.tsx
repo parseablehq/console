@@ -214,7 +214,7 @@ function ChartTooltip({ payload }: ChartTooltipProps) {
 	return (
 		<Paper px="md" py="sm" withBorder shadow="md" radius="md">
 			<Text fw={600} mb={5}>
-				{`${startTime.format('DD MMM YY HH:mm A')} - ${endTime.format('DD MMM YY HH:mm A')}`}
+				{`${startTime.format('DD MMM YY hh:mm A')} - ${endTime.format('DD MMM YY hh:mm A')}`}
 			</Text>
 			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 				<Text>Events</Text>

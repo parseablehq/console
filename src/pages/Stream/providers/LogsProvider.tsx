@@ -116,14 +116,14 @@ const getDefaultTimeRange = (duration: FixedDuration = DEFAULT_FIXED_DURATIONS) 
 
 	const startTime = now.subtract(milliseconds, 'milliseconds');
 	const endTime = now;
-	const startTimeLabel = dayjs(startTime).format('HH:mm A DD MMM YY');
-	const endTimeLabel = dayjs(endTime).format('HH:mm A DD MMM YY');
+	const startTimeLabel = dayjs(startTime).format('hh:mm A DD MMM YY');
+	const endTimeLabel = dayjs(endTime).format('hh:mm A DD MMM YY');
 
 	return {
 		startTime: startTime.toDate(),
 		endTime: now.toDate(),
 		type: 'fixed' as 'fixed',
-		label: `${startTimeLabel} - ${endTimeLabel}`,
+		label: `${startTimeLabel} to ${endTimeLabel}`,
 		interval: milliseconds,
 		shiftInterval: 1,
 	};
@@ -327,7 +327,7 @@ const setTimeRange = (
 	payload: { startTime: dayjs.Dayjs; endTime: Dayjs; type: 'fixed' | 'custom' },
 ) => {
 	const { startTime, endTime, type } = payload;
-	const label = `${startTime.format('HH:mm A DD MMM YY')} to ${endTime.format('HH:mm A DD MMM YY')}`;
+	const label = `${startTime.format('hh:mm A DD MMM YY')} to ${endTime.format('hh:mm A DD MMM YY')}`;
 	const interval = endTime.diff(startTime, 'milliseconds');
 	return {
 		...getCleanStoreForRefetch(store),
