@@ -1,4 +1,4 @@
-import { Tooltip, px } from '@mantine/core';
+import { px } from '@mantine/core';
 import { IconReload } from '@tabler/icons-react';
 import { useCallback, type FC } from 'react';
 import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsProvider';
@@ -14,11 +14,7 @@ const RefreshNow: FC = () => {
 	const onRefresh = useCallback(() => {
 		setLogsStore((store) => getCleanStoreForRefetch(store));
 	}, []);
-	return (
-		<Tooltip label="Refresh">
-			<IconButton size={38} renderIcon={renderRefreshIcon} onClick={onRefresh} />
-		</Tooltip>
-	);
+	return <IconButton size={38} renderIcon={renderRefreshIcon} onClick={onRefresh} tooltipLabel="Refresh Now" />;
 };
 
 export default RefreshNow;
