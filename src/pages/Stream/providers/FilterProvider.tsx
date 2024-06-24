@@ -2,6 +2,7 @@ import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
 import { generateRandomId } from '@/utils';
 import initContext from '@/utils/initContext';
 import { Field, RuleGroupType, RuleType, formatQuery } from 'react-querybuilder';
+import { LOAD_LIMIT } from './LogsProvider';
 
 export const textFieldOperators = [
 	{ value: '=', label: 'equals to' },
@@ -231,7 +232,7 @@ const toggleSubmitBtn = (_store: FilterStore, val: boolean) => {
 const parseQuery = (query: QueryType, currentStream: string) => {
 	// todo - custom rule processor to prevent converting number strings into numbers for text fields
 	const where = formatQuery(query, { format: 'sql', parseNumbers: true, quoteFieldNamesWith: ['"', '"'] });
-	const parsedQuery = `select * from ${currentStream} where ${where} limit 9000`;
+	const parsedQuery = `select * from ${currentStream} where ${where} limit ${LOAD_LIMIT}`;
 	return { where, parsedQuery };
 };
 
