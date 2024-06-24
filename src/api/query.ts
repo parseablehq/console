@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { Axios } from './axios';
 import { LOG_QUERY_URL } from './constants';
 import { LogsQuery } from '@/@types/parseable/api/query';
@@ -10,6 +11,12 @@ type QueryLogs = {
 	pageOffset: number;
 };
 
+// to optimize performace, it has been decided to round off the time at the given level
+// so making the end-time inclusive
+const optimizeEndTime = (endTime: Date) => {
+	return dayjs(endTime).add(1, 'minute').toDate();
+};
+
 export const getQueryLogs = (logsQuery: QueryLogs) => {
 	const { startTime, endTime, streamName, limit, pageOffset } = logsQuery;
 
@@ -20,7 +27,7 @@ export const getQueryLogs = (logsQuery: QueryLogs) => {
 		{
 			query,
 			startTime,
-			endTime,
+			endTime: optimizeEndTime(endTime),
 		},
 		{},
 	);
@@ -34,23 +41,7 @@ export const getQueryResult = (logsQuery: LogsQuery, query = '') => {
 		{
 			query,
 			startTime,
-			endTime,
-		},
-		{},
-	);
-};
-
-export const getQueryCount = (logsQuery: LogsQuery) => {
-	const { startTime, endTime, streamName } = logsQuery;
-
-	const query = `SELECT count(*) as totalcurrentcount FROM ${streamName}`;
-
-	return Axios().post(
-		LOG_QUERY_URL,
-		{
-			query,
-			startTime,
-			endTime,
+			endTime: optimizeEndTime(endTime),
 		},
 		{},
 	);
