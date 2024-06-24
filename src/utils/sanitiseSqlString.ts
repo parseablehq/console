@@ -10,7 +10,6 @@ export const sanitiseSqlString = (sqlString: string): string => {
     if (limitRegex.test(withoutTrailingSemicolon)) {
         return withoutTrailingSemicolon.replace(limitRegex, (match, p1) => {
             const currentLimit = parseInt(p1, 10);
-			console.log(currentLimit, LOAD_LIMIT)
             if (currentLimit > LOAD_LIMIT) {
                 notify({ message: `Limit exceeds the default load limit. Replacing with default limit - ${LOAD_LIMIT}` });
                 return `LIMIT ${LOAD_LIMIT}`;

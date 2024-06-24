@@ -76,9 +76,8 @@ const QuerierModal = (props: {
 };
 
 const Querier = () => {
-	const [{ isQuerySearchActive, viewMode, showQueryBuilder, activeMode }, setLogsStore] = useLogsStore(
-		(store) => store.custQuerySearchState,
-	);
+	const [custQuerySearchState, setLogsStore] = useLogsStore((store) => store.custQuerySearchState);
+	const { isQuerySearchActive, viewMode, showQueryBuilder, activeMode } = custQuerySearchState;
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const openBuilderModal = useCallback(() => {
 		setLogsStore((store) => toggleQueryBuilder(store));
@@ -135,7 +134,7 @@ const Querier = () => {
 		}
 
 		// trigger query fetch if the rules were updated by the remove btn on pills
-		if (!showQueryBuilder) {
+		if (!showQueryBuilder && activeMode !== 'sql') {
 			if (!shouldSumbitDisabled) {
 				onFiltersApply();
 			}
@@ -146,7 +145,7 @@ const Querier = () => {
 		}
 
 		// trigger reset when no active rules are available
-		if (isQuerySearchActive && allValues.length === 0) {
+		if (isQuerySearchActive && allValues.length === 0 && activeMode !== 'sql') {
 			onClear();
 		}
 	}, [query.rules]);
