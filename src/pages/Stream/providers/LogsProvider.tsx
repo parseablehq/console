@@ -129,6 +129,10 @@ const getDefaultTimeRange = (duration: FixedDuration = DEFAULT_FIXED_DURATIONS) 
 	};
 };
 
+export const makeTimeRangeLabel = (startTime: Date, endTime: Date) => {
+	return `${dayjs(startTime).format('hh:mm A DD MMM YY')} to ${dayjs(endTime).format('hh:mm A DD MMM YY')}`
+}
+
 const defaultQuickFilters = {
 	search: '',
 	filters: {},
@@ -153,6 +157,7 @@ const defaultCustQuerySearchState = {
 	custSearchQuery: '',
 	viewMode: 'filters',
 	activeMode: null,
+	savedFilterId: null
 };
 
 type LogQueryData = {
@@ -166,6 +171,7 @@ type CustQuerySearchState = {
 	custSearchQuery: string;
 	viewMode: string;
 	activeMode: null | 'filters' | 'sql';
+	savedFilterId: string | null;
 };
 
 type LogsStore = {
@@ -252,13 +258,14 @@ type LogsStoreReducers = {
 	// data reducers
 	setData: (store: LogsStore, data: Log[], schema: LogStreamSchemaData | null) => ReducerOutput;
 	setStreamSchema: (store: LogsStore, schema: LogStreamSchemaData) => ReducerOutput;
-	applyCustomQuery: (store: LogsStore, query: string, mode: 'filters' | 'sql') => ReducerOutput;
+	applyCustomQuery: (store: LogsStore, query: string, mode: 'filters' | 'sql', savedFilterId?: string) => ReducerOutput;
 	getUniqueValues: (data: Log[], key: string) => string[];
 	makeExportData: (data: Log[], headers: string[], type: string) => Log[];
 	setRetention: (store: LogsStore, retention: { description: string; duration: string }) => ReducerOutput;
 	setTableHeaders: (store: LogsStore, schema: LogStreamSchemaData) => ReducerOutput;
 
 	setCleanStoreForStreamChange: (store: LogsStore) => ReducerOutput;
+	updateSavedFilterId: (store: LogsStore, savedFilterId: string | null) => ReducerOutput;
 };
 
 const initialState: LogsStore = {
@@ -630,7 +637,7 @@ const setCleanStoreForStreamChange = (store: LogsStore) => {
 	};
 };
 
-const applyCustomQuery = (store: LogsStore, query: string, mode: 'filters' | 'sql') => {
+const applyCustomQuery = (store: LogsStore, query: string, mode: 'filters' | 'sql', savedFilterId?: string) => {
 	const { custQuerySearchState } = store;
 	return {
 		custQuerySearchState: {
@@ -639,10 +646,22 @@ const applyCustomQuery = (store: LogsStore, query: string, mode: 'filters' | 'sq
 			isQuerySearchActive: true,
 			custSearchQuery: query,
 			activeMode: mode,
+			savedFilterId: savedFilterId || null,
+			viewMode: mode
 		},
 		...getCleanStoreForRefetch(store),
 	};
 };
+
+const updateSavedFilterId = (store: LogsStore, savedFilterId: string | null) => {
+	const { custQuerySearchState } = store;
+	return {
+		custQuerySearchState: {
+			...custQuerySearchState,
+			savedFilterId
+		},
+	};
+}
 
 const setAndSortData = (store: LogsStore, sortKey: string, sortOrder: 'asc' | 'desc') => {
 	const { data, tableOpts } = store;
@@ -767,7 +786,8 @@ const logsStoreReducers: LogsStoreReducers = {
 	setRetention,
 	setCleanStoreForStreamChange,
 	toggleSideBar,
-	setTableHeaders
+	setTableHeaders,
+	updateSavedFilterId
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };

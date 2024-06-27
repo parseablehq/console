@@ -1,3 +1,4 @@
+import { SavedFilterType } from '@/@types/parseable/api/savedFilters';
 import { Axios } from './axios';
 import {
 	DELETE_STREAMS_URL,
@@ -7,7 +8,9 @@ import {
 	LOG_STREAMS_RETRNTION_URL,
 	LOG_STREAMS_STATS_URL,
 	CREATE_STREAM_URL,
-	LOG_STREAMS_INFO_URL
+	LOG_STREAMS_INFO_URL,
+	LIST_SAVED_FILTERS_URL,
+	UPDATE_SAVED_FILTERS_URL
 } from './constants';
 import { LogStreamData, LogStreamSchemaData } from '@/@types/parseable/api/stream';
 
@@ -25,6 +28,18 @@ export const getLogStreamAlerts = (streamName: string) => {
 
 export const putLogStreamAlerts = (streamName: string, data: any) => {
 	return Axios().put(LOG_STREAMS_ALERTS_URL(streamName), data);
+};
+
+export const getSavedFilters = (userId: string) => {
+	return Axios().get<SavedFilterType[]>(LIST_SAVED_FILTERS_URL(userId));
+};
+
+export const updateSavedFilters = (userId:string, filterId: string, filter: SavedFilterType) => {
+	return Axios().post(UPDATE_SAVED_FILTERS_URL(userId, filterId), filter);
+};
+
+export const deleteSavedFilter = (userId:string, filterId: string) => {
+	return Axios().delete(UPDATE_SAVED_FILTERS_URL(userId, filterId));
 };
 
 export const getLogStreamRetention = (streamName: string) => {

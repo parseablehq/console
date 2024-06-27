@@ -3,6 +3,8 @@ import { getStreamsSepcificAccess } from '@/components/Navbar/rolesHandler';
 import initContext from '@/utils/initContext';
 import { AboutData } from '@/@types/parseable/api/about';
 import _ from 'lodash';
+import { AxiosResponse } from 'axios';
+import { SavedFilterType } from '@/@types/parseable/api/savedFilters';
 
 export type UserRoles = {
 	[roleName: string]: {
@@ -26,7 +28,9 @@ type AppStore = {
 	userAccessMap: { [key: string]: boolean };
 	streamSpecificUserAccess: string[] | null;
 	instanceConfig: AboutData | null;
-	isStandAloneMode: boolean | null; 
+	isStandAloneMode: boolean | null;
+	savedFilters: SavedFilterType[] | null;  // null to verify whether filters have been fetched or not
+	activeSavedFilters: SavedFilterType[]; // stream specific
 };
 
 type AppStoreReducers = {
@@ -39,6 +43,7 @@ type AppStoreReducers = {
 	setStreamSpecificUserAccess: (store: AppStore) => ReducerOutput;
 	setInstanceConfig: (store: AppStore, instanceConfig: AboutData) => ReducerOutput;
 	toggleCreateStreamModal: (store: AppStore, val?: boolean) => ReducerOutput;
+	setSavedFilters: (store: AppStore, savedFilters: AxiosResponse<SavedFilterType[]>) => ReducerOutput;
 };
 
 const initialState: AppStore = {
@@ -51,7 +56,9 @@ const initialState: AppStore = {
 	streamSpecificUserAccess: null,
 	instanceConfig: null,
 	createStreamModalOpen: false,
-	isStandAloneMode: null
+	isStandAloneMode: null,
+	savedFilters: null,
+	activeSavedFilters: [],
 };
 
 const { Provider: AppProvider, useStore: useAppStore } = initContext(initialState);
@@ -118,6 +125,13 @@ const setInstanceConfig = (_store: AppStore, instanceConfig: AboutData | null) =
 	return { instanceConfig, isStandAloneMode: mode === 'Standalone' };
 };
 
+const setSavedFilters = (store: AppStore, savedFiltersResponse: AxiosResponse<SavedFilterType[]>) => {
+	const { currentStream } = store;
+	const savedFilters = savedFiltersResponse.data;
+	const activeSavedFilters = _.filter(savedFilters, (filter) => filter.stream_name === currentStream);
+	return { savedFilters, activeSavedFilters };
+};
+
 const appStoreReducers: AppStoreReducers = {
 	toggleMaximize,
 	toggleHelpModal,
@@ -128,6 +142,7 @@ const appStoreReducers: AppStoreReducers = {
 	setStreamSpecificUserAccess,
 	setInstanceConfig,
 	toggleCreateStreamModal,
+	setSavedFilters,
 };
 
 export { AppProvider, useAppStore, appStoreReducers };

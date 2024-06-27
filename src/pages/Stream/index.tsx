@@ -26,7 +26,6 @@ const Logs: FC = () => {
 	const [sideBarOpen, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
 
 	const { getDataSchema, loading, error } = useGetLogStreamSchema();
-
 	useEffect(() => {
 		if (!_.isEmpty(currentStream)) {
 			setStreamStore(streamChangeCleanup);
