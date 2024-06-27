@@ -258,7 +258,7 @@ type LogsStoreReducers = {
 	// data reducers
 	setData: (store: LogsStore, data: Log[], schema: LogStreamSchemaData | null) => ReducerOutput;
 	setStreamSchema: (store: LogsStore, schema: LogStreamSchemaData) => ReducerOutput;
-	applyCustomQuery: (store: LogsStore, query: string, mode: 'filters' | 'sql', savedFilterId?: string) => ReducerOutput;
+	applyCustomQuery: (store: LogsStore, query: string, mode: 'filters' | 'sql', savedFilterId?: string, timeRangePayload?: { from: string; to: string; } | null) => ReducerOutput;
 	getUniqueValues: (data: Log[], key: string) => string[];
 	makeExportData: (data: Log[], headers: string[], type: string) => Log[];
 	setRetention: (store: LogsStore, retention: { description: string; duration: string }) => ReducerOutput;
@@ -637,8 +637,36 @@ const setCleanStoreForStreamChange = (store: LogsStore) => {
 	};
 };
 
-const applyCustomQuery = (store: LogsStore, query: string, mode: 'filters' | 'sql', savedFilterId?: string) => {
+const applyCustomQuery = (
+	store: LogsStore,
+	query: string,
+	mode: 'filters' | 'sql',
+	savedFilterId?: string,
+	timeRangePayload?: { from: string; to: string; } | null,
+) => {
 	const { custQuerySearchState } = store;
+
+	const timeRange = (() => {
+		if (!timeRangePayload) {
+			return {};
+		} else {
+			const startTime = dayjs(timeRangePayload.from);
+			const endTime = dayjs(timeRangePayload.to);
+			const label = `${startTime.format('hh:mm A DD MMM YY')} to ${endTime.format('hh:mm A DD MMM YY')}`;
+			const interval = endTime.diff(startTime, 'milliseconds');
+			return {
+				timeRange: {
+					...store.timeRange,
+					startTime: startTime.toDate(),
+					endTime: endTime.toDate(),
+					label,
+					interval,
+					type: 'custom' as 'custom', // always
+				},
+			};
+		}
+	})();
+
 	return {
 		custQuerySearchState: {
 			...custQuerySearchState,
@@ -647,9 +675,10 @@ const applyCustomQuery = (store: LogsStore, query: string, mode: 'filters' | 'sq
 			custSearchQuery: query,
 			activeMode: mode,
 			savedFilterId: savedFilterId || null,
-			viewMode: mode
+			viewMode: mode,
 		},
 		...getCleanStoreForRefetch(store),
+		...timeRange
 	};
 };
 

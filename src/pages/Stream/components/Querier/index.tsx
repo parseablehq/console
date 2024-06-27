@@ -12,6 +12,7 @@ import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useStreamStore } from '../../providers/StreamProvider';
 import SaveFilterModal from './SaveFilterModal';
 import SavedFiltersModal from './SavedFiltersModal';
+import _ from 'lodash';
 
 const { setFields, parseQuery, storeAppliedQuery, resetFilters, toggleSubmitBtn, toggleSaveFiltersModal } =
 	filterStoreReducers;
@@ -82,6 +83,7 @@ const Querier = () => {
 	const [custQuerySearchState, setLogsStore] = useLogsStore((store) => store.custQuerySearchState);
 	const { isQuerySearchActive, viewMode, showQueryBuilder, activeMode, savedFilterId } = custQuerySearchState;
 	const [currentStream] = useAppStore((store) => store.currentStream);
+	const [activeSavedFilters] = useAppStore((store) => store.activeSavedFilters);
 	const openBuilderModal = useCallback(() => {
 		setLogsStore((store) => toggleQueryBuilder(store));
 	}, []);
@@ -99,8 +101,9 @@ const Querier = () => {
 	}, []);
 
 	const triggerRefetch = useCallback((query: string, mode: 'filters' | 'sql', id?: string) => {
-		setLogsStore((store) => applyCustomQuery(store, query, mode, id));
-	}, []);
+		const time_filter = id ? _.find(activeSavedFilters, filter => filter.filter_id === id)?.time_filter : null
+		setLogsStore((store) => applyCustomQuery(store, query, mode, id, time_filter));
+	}, [activeSavedFilters]);
 
 	const onFiltersApply = useCallback(
 		(opts?: { isUncontrolled?: boolean }) => {
@@ -131,6 +134,7 @@ const Querier = () => {
 
 	useEffect(() => {
 		// toggle submit btn - enable / disable
+		// -----------------------------------
 		const ruleSets = query.rules.map((r) => r.rules);
 		const allValues = ruleSets.flat().flatMap((rule) => {
 			return noValueOperators.indexOf(rule.operator) !== -1 ? [null] : [rule.value];
@@ -139,8 +143,11 @@ const Querier = () => {
 		if (isSumbitDisabled !== shouldSumbitDisabled) {
 			setFilterStore((store) => toggleSubmitBtn(store, shouldSumbitDisabled));
 		}
+		// -----------------------------------
+
 
 		// trigger query fetch if the rules were updated by the remove btn on pills
+		// -----------------------------------
 		if (!showQueryBuilder && activeMode !== 'sql') {
 			if (!shouldSumbitDisabled) {
 				onFiltersApply({ isUncontrolled: true });
@@ -150,6 +157,8 @@ const Querier = () => {
 				onClear();
 			}
 		}
+		// -----------------------------------
+
 
 		// trigger reset when no active rules are available
 		if (isQuerySearchActive && allValues.length === 0 && activeMode !== 'sql') {

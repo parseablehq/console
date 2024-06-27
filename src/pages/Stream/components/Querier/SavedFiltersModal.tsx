@@ -37,7 +37,7 @@ const getTimeRangeLabel = (startTime: string, endTime: string) => {
 
 const SavedFilterItem = (props: {
 	item: SavedFilterType;
-	onSqlSearchApply: (query: string, id: string) => void;
+	onSqlSearchApply: (query: string, id: string, time_filter: null | {from: string, to: string}) => void;
 	onFilterBuilderQueryApply: (query: QueryType, id: string) => void;
 	currentStream: string;
 }) => {
@@ -45,7 +45,6 @@ const SavedFilterItem = (props: {
 		item: { filter_name, time_filter, query, filter_id, stream_name },
 		currentStream,
 	} = props;
-	const hasTimeRange = _.isString(time_filter.from) && _.isString(time_filter.to);
 	const [showQuery, setShowQuery] = useState<boolean>(false);
 	const [showDeletePropmt, setShowDeletePrompt] = useState<boolean>(false);
 	const { deleteSavedFilterMutation } = useSavedFiltersQuery(currentStream);
@@ -63,7 +62,7 @@ const SavedFilterItem = (props: {
 
 	const onApplyFilters = useCallback(() => {
 		if (_.isString(query.filter_query)) {
-			props.onSqlSearchApply(query.filter_query, filter_id);
+			props.onSqlSearchApply(query.filter_query, filter_id, time_filter);
 		} else if (query.filter_builder) {
 			props.onFilterBuilderQueryApply(query.filter_builder, filter_id);
 		}
@@ -77,7 +76,7 @@ const SavedFilterItem = (props: {
 					<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={6}>
 						<IconClock size="0.9rem" stroke={1.4} color="#868e96" />
 						<Text style={{ fontSize: '0.7rem' }} c="gray.6">
-							{hasTimeRange && time_filter.from && time_filter.to
+							{time_filter && time_filter.from && time_filter.to
 								? getTimeRangeLabel(time_filter.from, time_filter.to)
 								: 'No selected time range'}
 						</Text>
@@ -143,9 +142,10 @@ const SavedFiltersModal = () => {
 	const [activeSavedFilters] = useAppStore((store) => store.activeSavedFilters);
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const { isLoading, refetch, isError } = useSavedFiltersQuery(currentStream || '');
-	const onSqlSearchApply = useCallback((query: string, id: string) => {
+	const onSqlSearchApply = useCallback((query: string, id: string, time_filter: null | {from: string, to: string}) => {
 		setFilterStore((store) => resetFilters(store));
-		setLogsStore((store) => applyCustomQuery(store, query, 'sql', id));
+
+		setLogsStore((store) => applyCustomQuery(store, query, 'sql', id, time_filter));
 	}, []);
 
 	const onFilterBuilderQueryApply = useCallback(

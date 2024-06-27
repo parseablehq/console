@@ -24,7 +24,7 @@ const sanitizeFilterItem = (formObject: FormObjectType): SavedFilterType => {
 		stream_name,
 		filter_id,
 		filter_name,
-		time_filter: includeTimeRange ? time_filter : {},
+		time_filter: includeTimeRange ? time_filter : null,
 		query,
 	};
 };

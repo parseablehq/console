@@ -10,8 +10,8 @@ export type SavedFilterType = {
         filter_query?: string;
         filter_builder?: QueryType
     }
-    time_filter: {
-        from?: string,
-        to?:  string
+    time_filter: null | {
+        from: string,
+        to:  string
     }   
 }
