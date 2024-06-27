@@ -30,16 +30,16 @@ export const putLogStreamAlerts = (streamName: string, data: any) => {
 	return Axios().put(LOG_STREAMS_ALERTS_URL(streamName), data);
 };
 
-export const getSavedFilters = (userId: string) => {
-	return Axios().get<SavedFilterType[]>(LIST_SAVED_FILTERS_URL(userId));
+export const getSavedFilters = (userId: string, headers: any) => {
+	return Axios().get<SavedFilterType[]>(LIST_SAVED_FILTERS_URL(userId), { headers });
 };
 
-export const updateSavedFilters = (userId:string, filterId: string, filter: SavedFilterType) => {
-	return Axios().post(UPDATE_SAVED_FILTERS_URL(userId, filterId), filter);
+export const updateSavedFilters = (userId: string, filterId: string, filter: SavedFilterType, headers: any) => {
+	return Axios().post(UPDATE_SAVED_FILTERS_URL(userId, filterId), filter, { headers });
 };
 
-export const deleteSavedFilter = (userId:string, filterId: string) => {
-	return Axios().delete(UPDATE_SAVED_FILTERS_URL(userId, filterId));
+export const deleteSavedFilter = (userId: string, filterId: string, headers: any) => {
+	return Axios().delete(UPDATE_SAVED_FILTERS_URL(userId, filterId), { headers });
 };
 
 export const getLogStreamRetention = (streamName: string) => {

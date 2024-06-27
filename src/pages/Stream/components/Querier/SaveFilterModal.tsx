@@ -18,16 +18,16 @@ interface FormObjectType extends SavedFilterType {
 }
 
 const sanitizeFilterItem = (formObject: FormObjectType): SavedFilterType => {
-	const {stream_name, filter_name, filter_id, query, time_filter, includeTimeRange} = formObject;
+	const { stream_name, filter_name, filter_id, query, time_filter, includeTimeRange } = formObject;
 	return {
 		version: 'v1',
 		stream_name,
 		filter_id,
 		filter_name,
 		time_filter: includeTimeRange ? time_filter : {},
-		query
-	}
-}
+		query,
+	};
+};
 
 const SaveFilterModal = () => {
 	const [isSaveFiltersModalOpen, setFilterStore] = useFilterStore((store) => store.isSaveFiltersModalOpen);
@@ -38,7 +38,7 @@ const SaveFilterModal = () => {
 	const [{ custSearchQuery, savedFilterId, activeMode }] = useLogsStore((store) => store.custQuerySearchState);
 	const [isDirty, setDirty] = useState<boolean>(false);
 
-	const {mutateSavedFilters} = useSavedFiltersQuery();
+	const { mutateSavedFilters } = useSavedFiltersQuery(currentStream || '');
 
 	useEffect(() => {
 		const selectedFilter = _.find(activeSavedFilters, (filter) => filter.filter_id === savedFilterId);
@@ -55,7 +55,7 @@ const SaveFilterModal = () => {
 				},
 				includeTimeRange: !_.isEmpty(time_filter),
 				isNew: false,
-				isError: false
+				isError: false,
 			});
 		} else {
 			setFormObject({
@@ -65,7 +65,7 @@ const SaveFilterModal = () => {
 				stream_name: currentStream,
 				filter_name: '',
 				query: {
-					type: 'sql',
+					filter_type: 'sql',
 					filter_query: custSearchQuery,
 				},
 				time_filter: {
@@ -73,7 +73,7 @@ const SaveFilterModal = () => {
 					to: timeRange.endTime.toISOString(),
 				},
 				isNew: true,
-				isError: false
+				isError: false,
 			});
 		}
 	}, [custSearchQuery, savedFilterId]);
@@ -98,18 +98,17 @@ const SaveFilterModal = () => {
 		if (!formObject) return;
 
 		if (_.isEmpty(formObject?.filter_name)) {
-			return setFormObject(prev => {
+			return setFormObject((prev) => {
 				if (!prev) return null;
 
 				return {
 					...prev,
-					isError: true
+					isError: true,
 				};
-			})
+			});
 		}
-		
-		mutateSavedFilters({filter: sanitizeFilterItem(formObject), onSuccess: closeModal})
-		
+
+		mutateSavedFilters({ filter: sanitizeFilterItem(formObject), onSuccess: closeModal });
 	}, [formObject]);
 
 	const onNameChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -120,7 +119,7 @@ const SaveFilterModal = () => {
 			return {
 				...prev,
 				filter_name: e.target.value,
-				isError: _.isEmpty(e.target.value)
+				isError: _.isEmpty(e.target.value),
 			};
 		});
 	}, []);
@@ -151,7 +150,9 @@ const SaveFilterModal = () => {
 					<Stack gap={4} style={{ width: '100%' }}>
 						<Text style={{ fontSize: '0.7rem', fontWeight: 500 }}>Include Time Range</Text>
 						<Text style={{ fontSize: '0.7rem' }} c={formObject?.includeTimeRange ? 'black' : 'gray.5'}>
-							{formObject?.includeTimeRange ? makeTimeRangeLabel(timeRange.startTime, timeRange.endTime) : 'Time range is not included'}
+							{formObject?.includeTimeRange
+								? makeTimeRangeLabel(timeRange.startTime, timeRange.endTime)
+								: 'Time range is not included'}
 						</Text>
 					</Stack>
 					<Stack>

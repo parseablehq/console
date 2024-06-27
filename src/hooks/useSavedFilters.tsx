@@ -10,13 +10,13 @@ import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsPr
 const { setSavedFilters } = appStoreReducers;
 const {updateSavedFilterId} = logsStoreReducers;
 
-const useSavedFiltersQuery = () => {
+const useSavedFiltersQuery = (streamName: string) => {
 	const [, setAppStore] = useAppStore((_store) => null);
 	const [, setLogsStore] = useLogsStore(_store => null);
 	const username = Cookies.get('username');
 	const { isError, isSuccess, isLoading, refetch } = useQuery(
 		['saved-filters'],
-		() => getSavedFilters(username || ''),
+		() => getSavedFilters(username || '', { 'x-p-stream': streamName }),
 		{
 			retry: false,
 			enabled: false, // not on mount
@@ -29,7 +29,7 @@ const useSavedFiltersQuery = () => {
 
 	const { mutate: mutateSavedFilters } = useMutation(
 		(data: { filter: SavedFilterType; onSuccess?: () => void }) =>
-			updateSavedFilters(username || '', data.filter.filter_id, data.filter),
+			updateSavedFilters(username || '', data.filter.filter_id, data.filter, { 'x-p-stream': streamName }),
 		{
 			onSuccess: (_data, variables) => {
 				variables.onSuccess && variables.onSuccess();
@@ -49,7 +49,7 @@ const useSavedFiltersQuery = () => {
 
 	const { mutate: deleteSavedFilterMutation } = useMutation(
 		(data: { filter_id: string; onSuccess?: () => void }) =>
-			deleteSavedFilter(username || '', data.filter_id),
+			deleteSavedFilter(username || '', data.filter_id, { 'x-p-stream': streamName }),
 		{
 			onSuccess: (_data, variables) => {
 				variables.onSuccess && variables.onSuccess();

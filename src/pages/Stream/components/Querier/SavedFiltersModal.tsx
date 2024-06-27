@@ -39,14 +39,16 @@ const SavedFilterItem = (props: {
 	item: SavedFilterType;
 	onSqlSearchApply: (query: string, id: string) => void;
 	onFilterBuilderQueryApply: (query: QueryType, id: string) => void;
+	currentStream: string;
 }) => {
 	const {
 		item: { filter_name, time_filter, query, filter_id, stream_name },
+		currentStream,
 	} = props;
 	const hasTimeRange = _.isString(time_filter.from) && _.isString(time_filter.to);
 	const [showQuery, setShowQuery] = useState<boolean>(false);
 	const [showDeletePropmt, setShowDeletePrompt] = useState<boolean>(false);
-	const { deleteSavedFilterMutation } = useSavedFiltersQuery();
+	const { deleteSavedFilterMutation } = useSavedFiltersQuery(currentStream);
 
 	const toggleShowQuery = useCallback(() => {
 		return setShowQuery((prev) => !prev);
@@ -140,7 +142,7 @@ const SavedFiltersModal = () => {
 	const [savedFilters] = useAppStore((store) => store.savedFilters);
 	const [activeSavedFilters] = useAppStore((store) => store.activeSavedFilters);
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const { isLoading, refetch, isError } = useSavedFiltersQuery();
+	const { isLoading, refetch, isError } = useSavedFiltersQuery(currentStream || '');
 	const onSqlSearchApply = useCallback((query: string, id: string) => {
 		setFilterStore((store) => resetFilters(store));
 		setLogsStore((store) => applyCustomQuery(store, query, 'sql', id));
@@ -197,6 +199,7 @@ const SavedFiltersModal = () => {
 									key={filterItem.filter_id}
 									onSqlSearchApply={onSqlSearchApply}
 									onFilterBuilderQueryApply={onFilterBuilderQueryApply}
+									currentStream={currentStream || ''}
 								/>
 							);
 						})}
