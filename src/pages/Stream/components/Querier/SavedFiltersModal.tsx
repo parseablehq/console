@@ -86,7 +86,7 @@ const SavedFilterItem = (props: {
 					{showDeletePropmt ? (
 						<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={8}>
 							<Box>
-								<Button leftSection={renderDeleteIcon()} variant="outline">
+								<Button leftSection={renderDeleteIcon()} onClick={handleDelete} variant="outline">
 									Confirm
 								</Button>
 							</Box>

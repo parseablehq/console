@@ -145,10 +145,9 @@ const Querier = () => {
 		}
 		// -----------------------------------
 
-
 		// trigger query fetch if the rules were updated by the remove btn on pills
 		// -----------------------------------
-		if (!showQueryBuilder && activeMode !== 'sql') {
+		if (!showQueryBuilder && (activeMode !== 'sql' || savedFilterId)) {
 			if (!shouldSumbitDisabled) {
 				onFiltersApply({ isUncontrolled: true });
 			}
@@ -158,7 +157,6 @@ const Querier = () => {
 			}
 		}
 		// -----------------------------------
-
 
 		// trigger reset when no active rules are available
 		if (isQuerySearchActive && allValues.length === 0 && activeMode !== 'sql') {
