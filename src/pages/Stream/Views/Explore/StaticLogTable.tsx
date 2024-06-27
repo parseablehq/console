@@ -39,7 +39,7 @@ import { usePagination } from '@mantine/hooks';
 import tableStyles from '../../styles/Logs.module.css';
 import { LOGS_PRIMARY_TOOLBAR_HEIGHT, LOGS_SECONDARY_TOOLBAR_HEIGHT, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 import { HumanizeNumber } from '@/utils/formatBytes';
-import { useLogsStore, logsStoreReducers, LOG_QUERY_LIMITS } from '../../providers/LogsProvider';
+import { useLogsStore, logsStoreReducers, LOG_QUERY_LIMITS, LOAD_LIMIT } from '../../providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
 import IconButton from '@/components/Button/IconButton';
@@ -200,7 +200,7 @@ const LoadingView = () => {
 const Footer = (props: { loaded: boolean }) => {
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const [filteredData] = useLogsStore((store) => store.data.filteredData);
-	const { totalPages, currentOffset, currentPage, perPage, headers } = tableOpts;
+	const { totalPages, currentOffset, currentPage, perPage, headers, totalCount } = tableOpts;
 	const onPageChange = useCallback((page: number) => {
 		setLogsStore((store) => setPageAndPageData(store, page));
 	}, []);
@@ -209,7 +209,7 @@ const Footer = (props: { loaded: boolean }) => {
 	const onChangeOffset = useCallback(
 		(key: 'prev' | 'next') => {
 			if (key === 'prev') {
-				const targetOffset = currentOffset - 9000;
+				const targetOffset = currentOffset - LOAD_LIMIT;
 				if (currentOffset < 0) return;
 
 				if (targetOffset === 0 && currentOffset > 0) {
@@ -218,7 +218,7 @@ const Footer = (props: { loaded: boolean }) => {
 				}
 				setLogsStore((store) => setCurrentOffset(store, targetOffset));
 			} else {
-				const targetOffset = currentOffset + 9000;
+				const targetOffset = currentOffset + LOAD_LIMIT;
 				setLogsStore((store) => setCurrentOffset(store, targetOffset));
 			}
 		},
@@ -281,7 +281,7 @@ const Footer = (props: { loaded: boolean }) => {
 								onClick={() => {
 									onChangeOffset('next');
 								}}
-								disabled={false} // do not rmv
+								disabled={!(currentOffset + LOAD_LIMIT < totalCount)}
 							/>
 						</Group>
 					</Pagination.Root>
