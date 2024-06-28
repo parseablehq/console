@@ -10,13 +10,13 @@ import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsPr
 const { setSavedFilters } = appStoreReducers;
 const { updateSavedFilterId } = logsStoreReducers;
 
-const useSavedFiltersQuery = (streamName: string) => {
+const useSavedFiltersQuery = () => {
 	const [, setAppStore] = useAppStore((_store) => null);
 	const [, setLogsStore] = useLogsStore((_store) => null);
 	const username = Cookies.get('username');
 	const { isError, isSuccess, isLoading, refetch } = useQuery(
 		['saved-filters'],
-		() => getSavedFilters(username || '', { 'x-p-stream': streamName }),
+		() => getSavedFilters(username || ''),
 		{
 			retry: false,
 			enabled: false, // not on mount

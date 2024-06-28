@@ -35,6 +35,7 @@ const sanitizeFilterItem = (formObject: FormObjectType): SavedFilterType  => {
 const SaveFilterModal = () => {
 	const username = Cookies.get('username');
 	const [isSaveFiltersModalOpen, setFilterStore] = useFilterStore((store) => store.isSaveFiltersModalOpen);
+	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
 	const [activeSavedFilters] = useAppStore((store) => store.activeSavedFilters);
 	const [formObject, setFormObject] = useState<FormObjectType | null>(null);
 	const [currentStream] = useAppStore((store) => store.currentStream);
@@ -42,7 +43,7 @@ const SaveFilterModal = () => {
 	const [{ custSearchQuery, savedFilterId, activeMode }] = useLogsStore((store) => store.custQuerySearchState);
 	const [isDirty, setDirty] = useState<boolean>(false);
 
-	const { updateSavedFilters, createSavedFilters } = useSavedFiltersQuery(currentStream || '');
+	const { updateSavedFilters, createSavedFilters } = useSavedFiltersQuery();
 
 	useEffect(() => {
 		const selectedFilter = _.find(activeSavedFilters, (filter) => filter.filter_id === savedFilterId);
@@ -62,13 +63,14 @@ const SaveFilterModal = () => {
 				isError: false,
 			});
 		} else {
+			const isSqlMode = activeMode === 'sql';
 			setFormObject({
 				includeTimeRange: false,
 				stream_name: currentStream,
 				filter_name: '',
 				query: {
-					filter_type: 'sql',
-					filter_query: custSearchQuery,
+					filter_type: isSqlMode ? 'sql' : 'builder',
+					...(isSqlMode ? { filter_query: custSearchQuery } : { filter_builder: appliedQuery }),
 				},
 				time_filter: {
 					from: timeRange.startTime.toISOString(),
@@ -76,10 +78,26 @@ const SaveFilterModal = () => {
 				},
 				isNew: true,
 				isError: false,
-				user_id: username || '' 
+				user_id: username || '',
 			});
 		}
-	}, [custSearchQuery, savedFilterId]);
+	}, [custSearchQuery, savedFilterId, activeMode]);
+
+	useEffect(() => {
+		if (formObject?.includeTimeRange) {
+			setFormObject((prev) => {
+				if (!prev) return null;
+
+				return {
+					...prev,
+					time_filter: {
+						from: timeRange.startTime.toISOString(),
+						to: timeRange.endTime.toISOString(),
+					},
+				};
+			});
+		}
+	}, [formObject?.includeTimeRange])
 
 	const closeModal = useCallback(() => {
 		setFilterStore((store) => toggleSaveFiltersModal(store, false));

@@ -37,17 +37,16 @@ const getTimeRangeLabel = (startTime: string, endTime: string) => {
 
 const SavedFilterItem = (props: {
 	item: SavedFilterType;
-	onSqlSearchApply: (query: string, id: string, time_filter: null | {from: string, to: string}) => void;
+	onSqlSearchApply: (query: string, id: string, time_filter: null | { from: string; to: string }) => void;
 	onFilterBuilderQueryApply: (query: QueryType, id: string) => void;
 	currentStream: string;
 }) => {
 	const {
 		item: { filter_name, time_filter, query, filter_id, stream_name },
-		currentStream,
 	} = props;
 	const [showQuery, setShowQuery] = useState<boolean>(false);
 	const [showDeletePropmt, setShowDeletePrompt] = useState<boolean>(false);
-	const { deleteSavedFilterMutation } = useSavedFiltersQuery(currentStream);
+	const { deleteSavedFilterMutation } = useSavedFiltersQuery();
 
 	const toggleShowQuery = useCallback(() => {
 		return setShowQuery((prev) => !prev);
@@ -141,7 +140,7 @@ const SavedFiltersModal = () => {
 	const [savedFilters] = useAppStore((store) => store.savedFilters);
 	const [activeSavedFilters] = useAppStore((store) => store.activeSavedFilters);
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const { isLoading, refetch, isError } = useSavedFiltersQuery(currentStream || '');
+	const { isLoading, refetch, isError } = useSavedFiltersQuery();
 	const onSqlSearchApply = useCallback((query: string, id: string, time_filter: null | {from: string, to: string}) => {
 		setFilterStore((store) => resetFilters(store));
 
