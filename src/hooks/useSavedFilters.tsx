@@ -1,18 +1,18 @@
 import { useMutation, useQuery } from 'react-query';
-import { getSavedFilters, updateSavedFilters, deleteSavedFilter } from '@/api/logStream';
+import { getSavedFilters, deleteSavedFilter, putSavedFilters, postSavedFilters } from '@/api/logStream';
 import { notifyError, notifySuccess } from '@/utils/notification';
 import { AxiosError, isAxiosError } from 'axios';
 import { useAppStore, appStoreReducers } from '@/layouts/MainLayout/providers/AppProvider';
 import Cookies from 'js-cookie';
 import _ from 'lodash';
-import { SavedFilterType } from '@/@types/parseable/api/savedFilters';
+import { CreateSavedFilterType, SavedFilterType } from '@/@types/parseable/api/savedFilters';
 import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsProvider';
 const { setSavedFilters } = appStoreReducers;
-const {updateSavedFilterId} = logsStoreReducers;
+const { updateSavedFilterId } = logsStoreReducers;
 
 const useSavedFiltersQuery = (streamName: string) => {
 	const [, setAppStore] = useAppStore((_store) => null);
-	const [, setLogsStore] = useLogsStore(_store => null);
+	const [, setLogsStore] = useLogsStore((_store) => null);
 	const username = Cookies.get('username');
 	const { isError, isSuccess, isLoading, refetch } = useQuery(
 		['saved-filters'],
@@ -27,9 +27,29 @@ const useSavedFiltersQuery = (streamName: string) => {
 		},
 	);
 
-	const { mutate: mutateSavedFilters } = useMutation(
+	const { mutate: updateSavedFilters } = useMutation(
 		(data: { filter: SavedFilterType; onSuccess?: () => void }) =>
-			updateSavedFilters(username || '', data.filter.filter_id, data.filter, { 'x-p-stream': streamName }),
+			putSavedFilters(data.filter.filter_id, data.filter),
+		{
+			onSuccess: (_data, variables) => {
+				variables.onSuccess && variables.onSuccess();
+				refetch();
+				notifySuccess({ message: 'Updated Successfully' });
+			},
+			onError: (data: AxiosError) => {
+				if (isAxiosError(data) && data.response) {
+					const error = data.response?.data as string;
+					typeof error === 'string' && notifyError({ message: error });
+				} else if (data.message && typeof data.message === 'string') {
+					notifyError({ message: data.message });
+				}
+			},
+		},
+	);
+
+	const { mutate: createSavedFilters } = useMutation(
+		(data: { filter: CreateSavedFilterType; onSuccess?: () => void }) =>
+			postSavedFilters(data.filter),
 		{
 			onSuccess: (_data, variables) => {
 				variables.onSuccess && variables.onSuccess();
@@ -49,11 +69,11 @@ const useSavedFiltersQuery = (streamName: string) => {
 
 	const { mutate: deleteSavedFilterMutation } = useMutation(
 		(data: { filter_id: string; onSuccess?: () => void }) =>
-			deleteSavedFilter(username || '', data.filter_id, { 'x-p-stream': streamName }),
+			deleteSavedFilter(data.filter_id),
 		{
 			onSuccess: (_data, variables) => {
 				variables.onSuccess && variables.onSuccess();
-				setLogsStore(store => updateSavedFilterId(store, null))
+				setLogsStore((store) => updateSavedFilterId(store, null));
 				refetch();
 				notifySuccess({ message: 'Updated Successfully' });
 			},
@@ -73,8 +93,9 @@ const useSavedFiltersQuery = (streamName: string) => {
 		isSuccess,
 		isLoading,
 		refetch,
-		mutateSavedFilters,
-		deleteSavedFilterMutation
+		updateSavedFilters,
+		deleteSavedFilterMutation,
+		createSavedFilters
 	};
 };
 

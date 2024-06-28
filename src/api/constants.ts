@@ -6,7 +6,9 @@ export const LOG_STREAMS_SCHEMA_URL = (streamName: string) => `${LOG_STREAM_LIST
 export const LOG_QUERY_URL = `${API_V1}/query`;
 export const LOG_STREAMS_ALERTS_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/alert`;
 export const LIST_SAVED_FILTERS_URL = (userId: string) => `${API_V1}/filters/${userId}`;
-export const UPDATE_SAVED_FILTERS_URL = (userId: string, filterId: string) => `${API_V1}/filters/${userId}/${filterId}`;
+export const UPDATE_SAVED_FILTERS_URL = (filterId: string) => `${API_V1}/filters/filter/${filterId}`;
+export const CREATE_SAVED_FILTERS_URL = `${API_V1}/filters`;
+export const DELETE_SAVED_FILTERS_URL = (filterId: string) => `${API_V1}/filters/filter/${filterId}`;
 export const LOG_STREAMS_RETRNTION_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/retention`;
 export const LOG_STREAMS_STATS_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/stats`;
 export const LOG_STREAMS_INFO_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/info`;

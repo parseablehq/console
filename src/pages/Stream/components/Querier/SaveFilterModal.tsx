@@ -5,31 +5,35 @@ import { makeTimeRangeLabel, useLogsStore } from '../../providers/LogsProvider';
 import { CodeHighlight } from '@mantine/code-highlight';
 import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { SavedFilterType } from '@/@types/parseable/api/savedFilters';
-import { generateRandomId } from '@/utils';
+import { CreateSavedFilterType, SavedFilterType } from '@/@types/parseable/api/savedFilters';
 import useSavedFiltersQuery from '@/hooks/useSavedFilters';
+import Cookies from 'js-cookie';
 
 const { toggleSaveFiltersModal } = filterStoreReducers;
 
-interface FormObjectType extends SavedFilterType {
+interface FormObjectType extends Omit<SavedFilterType, 'filter_id' | 'version'> {
 	includeTimeRange: boolean;
 	isNew: boolean;
 	isError: boolean;
+	filter_id?: string;
+	version?: string;
 }
 
-const sanitizeFilterItem = (formObject: FormObjectType): SavedFilterType => {
-	const { stream_name, filter_name, filter_id, query, time_filter, includeTimeRange } = formObject;
+const sanitizeFilterItem = (formObject: FormObjectType): SavedFilterType  => {
+	const { stream_name, filter_name, filter_id = '', query, time_filter, includeTimeRange, user_id, version = '' } = formObject;
 	return {
-		version: 'v1',
-		stream_name,
 		filter_id,
+		version,
+		stream_name,
 		filter_name,
 		time_filter: includeTimeRange ? time_filter : null,
 		query,
+		user_id,
 	};
 };
 
 const SaveFilterModal = () => {
+	const username = Cookies.get('username');
 	const [isSaveFiltersModalOpen, setFilterStore] = useFilterStore((store) => store.isSaveFiltersModalOpen);
 	const [activeSavedFilters] = useAppStore((store) => store.activeSavedFilters);
 	const [formObject, setFormObject] = useState<FormObjectType | null>(null);
@@ -38,7 +42,7 @@ const SaveFilterModal = () => {
 	const [{ custSearchQuery, savedFilterId, activeMode }] = useLogsStore((store) => store.custQuerySearchState);
 	const [isDirty, setDirty] = useState<boolean>(false);
 
-	const { mutateSavedFilters } = useSavedFiltersQuery(currentStream || '');
+	const { updateSavedFilters, createSavedFilters } = useSavedFiltersQuery(currentStream || '');
 
 	useEffect(() => {
 		const selectedFilter = _.find(activeSavedFilters, (filter) => filter.filter_id === savedFilterId);
@@ -59,9 +63,7 @@ const SaveFilterModal = () => {
 			});
 		} else {
 			setFormObject({
-				filter_id: generateRandomId(6),
 				includeTimeRange: false,
-				version: 'v1',
 				stream_name: currentStream,
 				filter_name: '',
 				query: {
@@ -74,6 +76,7 @@ const SaveFilterModal = () => {
 				},
 				isNew: true,
 				isError: false,
+				user_id: username || '' 
 			});
 		}
 	}, [custSearchQuery, savedFilterId]);
@@ -108,7 +111,15 @@ const SaveFilterModal = () => {
 			});
 		}
 
-		mutateSavedFilters({ filter: sanitizeFilterItem(formObject), onSuccess: closeModal });
+		if (!_.isEmpty(formObject.filter_id) && !_.isEmpty(formObject.user_id) && !_.isEmpty(formObject.version)) {
+			updateSavedFilters({ filter: sanitizeFilterItem(formObject), onSuccess: closeModal });
+		} else {
+			const keysToRemove = ['filter_id', 'version'];
+			const sanitizedFilterItem = sanitizeFilterItem(formObject);
+			const filteredEntries = Object.entries(sanitizedFilterItem).filter(([key]) => !keysToRemove.includes(key));
+			const newObj: CreateSavedFilterType = Object.fromEntries(filteredEntries) as CreateSavedFilterType;
+			createSavedFilters({ filter: newObj, onSuccess: closeModal });
+		}
 	}, [formObject]);
 
 	const onNameChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
