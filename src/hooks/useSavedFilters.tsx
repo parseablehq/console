@@ -51,8 +51,9 @@ const useSavedFiltersQuery = (streamName: string) => {
 		(data: { filter: CreateSavedFilterType; onSuccess?: () => void }) =>
 			postSavedFilters(data.filter),
 		{
-			onSuccess: (_data, variables) => {
+			onSuccess: (data, variables) => {
 				variables.onSuccess && variables.onSuccess();
+				setLogsStore((store) => updateSavedFilterId(store, data.data.filter_id));
 				refetch();
 				notifySuccess({ message: 'Updated Successfully' });
 			},
