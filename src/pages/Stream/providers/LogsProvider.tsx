@@ -9,8 +9,8 @@ import _ from 'lodash';
 import { sanitizeCSVData } from '@/utils/exportHelpers';
 
 export const DEFAULT_FIXED_DURATIONS = FIXED_DURATIONS[0];
-export const LOG_QUERY_LIMITS = [30, 50, 100, 150, 200];
-export const LOAD_LIMIT = 9000;
+export const LOG_QUERY_LIMITS = [50, 100, 150, 200];
+export const LOAD_LIMIT = 1000;
 
 type ReducerOutput = Partial<LogsStore>;
 
@@ -280,7 +280,7 @@ const initialState: LogsStore = {
 		disabledColumns: [],
 		pinnedColumns: [],
 		pageData: [],
-		perPage: 30,
+		perPage: 50,
 		totalCount: 0,
 		displayedCount: 0,
 		totalPages: 0,
