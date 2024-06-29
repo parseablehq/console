@@ -129,7 +129,7 @@ const getDefaultTimeRange = (duration: FixedDuration = DEFAULT_FIXED_DURATIONS) 
 	};
 };
 
-export const makeTimeRangeLabel = (startTime: Date, endTime: Date) => {
+export const makeTimeRangeLabel = (startTime: Date | string, endTime: Date | string) => {
 	return `${dayjs(startTime).format('hh:mm A DD MMM YY')} to ${dayjs(endTime).format('hh:mm A DD MMM YY')}`
 }
 

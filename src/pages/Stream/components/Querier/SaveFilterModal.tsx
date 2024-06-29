@@ -1,4 +1,4 @@
-import { Box, Button, Modal, Stack, Switch, Text, TextInput } from '@mantine/core';
+import { Box, Button, Modal, Select, Stack, Text, TextInput } from '@mantine/core';
 import { filterStoreReducers, useFilterStore } from '../../providers/FilterProvider';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { makeTimeRangeLabel, useLogsStore } from '../../providers/LogsProvider';
@@ -12,25 +12,53 @@ import Cookies from 'js-cookie';
 const { toggleSaveFiltersModal } = filterStoreReducers;
 
 interface FormObjectType extends Omit<SavedFilterType, 'filter_id' | 'version'> {
-	includeTimeRange: boolean;
 	isNew: boolean;
 	isError: boolean;
 	filter_id?: string;
 	version?: string;
+	timeRangeOptions: {value: string, label: string}[];
+	selectedTimeRangeOption: {value: string, label: string}
 }
 
 const sanitizeFilterItem = (formObject: FormObjectType): SavedFilterType  => {
-	const { stream_name, filter_name, filter_id = '', query, time_filter, includeTimeRange, user_id, version = '' } = formObject;
+	const { stream_name, filter_name, filter_id = '', query, time_filter, user_id, version = '' } = formObject;
 	return {
 		filter_id,
 		version,
 		stream_name,
 		filter_name,
-		time_filter: includeTimeRange ? time_filter : null,
+		time_filter: time_filter ? time_filter : null,
 		query,
 		user_id,
 	};
 };
+
+const defaultTimeRangeOption = {
+	value: 'none',
+	label: 'Time range not included',
+}
+
+const makeTimeRangeOptions = ({
+	selected,
+	current,
+}: {
+	selected: { from: string; to: string } | null;
+	current: { startTime: Date; endTime: Date };
+}) => {
+	return [
+		defaultTimeRangeOption,
+		{
+			value: 'current',
+			label: `Current - ${makeTimeRangeLabel(current.startTime, current.endTime)}`,
+		},
+		...(selected ? [{ value: 'selected', label: `Stored - ${makeTimeRangeLabel(selected.from, selected.to)}` }] : []),
+	];
+};
+
+const getDefaultTimeRangeOption = (opts: {value: string, label: string}[]) => {
+	const selectedTimeRange = _.find(opts, (option) => option.value === 'selected');
+	return selectedTimeRange ? selectedTimeRange : defaultTimeRangeOption
+}
 
 const SaveFilterModal = () => {
 	const username = Cookies.get('username');
@@ -51,21 +79,20 @@ const SaveFilterModal = () => {
 
 		if (selectedFilter) {
 			const { time_filter } = selectedFilter;
+			const timeRangeOptions = makeTimeRangeOptions({selected: time_filter, current: timeRange});
+			const selectedTimeRangeOption = getDefaultTimeRangeOption(timeRangeOptions)
 			setFormObject({
 				...selectedFilter,
-				time_filter: {
-					...time_filter,
-					from: timeRange.startTime.toISOString(),
-					to: timeRange.endTime.toISOString(),
-				},
-				includeTimeRange: !_.isEmpty(time_filter),
 				isNew: false,
 				isError: false,
+				timeRangeOptions,
+				selectedTimeRangeOption
 			});
 		} else {
 			const isSqlMode = activeMode === 'sql';
+			const timeRangeOptions = makeTimeRangeOptions({ selected: null, current: timeRange });
+			const selectedTimeRangeOption = getDefaultTimeRangeOption(timeRangeOptions);
 			setFormObject({
-				includeTimeRange: false,
 				stream_name: currentStream,
 				filter_name: '',
 				query: {
@@ -79,41 +106,37 @@ const SaveFilterModal = () => {
 				isNew: true,
 				isError: false,
 				user_id: username || '',
+				timeRangeOptions,
+				selectedTimeRangeOption
 			});
 		}
-	}, [custSearchQuery, savedFilterId, activeMode]);
-
-	useEffect(() => {
-		if (formObject?.includeTimeRange) {
-			setFormObject((prev) => {
-				if (!prev) return null;
-
-				return {
-					...prev,
-					time_filter: {
-						from: timeRange.startTime.toISOString(),
-						to: timeRange.endTime.toISOString(),
-					},
-				};
-			});
-		}
-	}, [formObject?.includeTimeRange])
+	}, [custSearchQuery, savedFilterId, activeMode, timeRange]);
 
 	const closeModal = useCallback(() => {
 		setFilterStore((store) => toggleSaveFiltersModal(store, false));
 	}, []);
 
-	const onToggleIncludeTimeRange = useCallback(() => {
+	const onToggleIncludeTimeRange = useCallback((value: string | null) => {
 		setDirty(true);
 		setFormObject((prev) => {
 			if (!prev) return null;
 
+			const time_filter =
+				value === 'none' || value === null
+					? null
+					: value === 'selected'
+					? prev.time_filter
+					: {
+							from: timeRange.startTime.toISOString(),
+							to: timeRange.endTime.toISOString(),
+					  };
 			return {
 				...prev,
-				includeTimeRange: !prev.includeTimeRange,
+				time_filter,
+				selectedTimeRangeOption: _.find(prev.timeRangeOptions, option => option.value === value) || defaultTimeRangeOption
 			};
 		});
-	}, []);
+	}, [timeRange]);
 
 	const onSubmit = useCallback(() => {
 		if (!formObject) return;
@@ -177,22 +200,8 @@ const SaveFilterModal = () => {
 				</Stack>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center' }}>
 					<Stack gap={4} style={{ width: '100%' }}>
-						<Text style={{ fontSize: '0.7rem', fontWeight: 500 }}>Include Time Range</Text>
-						<Text style={{ fontSize: '0.7rem' }} c={formObject?.includeTimeRange ? 'black' : 'gray.5'}>
-							{formObject?.includeTimeRange
-								? makeTimeRangeLabel(timeRange.startTime, timeRange.endTime)
-								: 'Time range is not included'}
-						</Text>
-					</Stack>
-					<Stack>
-						<Switch
-							styles={{
-								label: { fontSize: '0.7rem' },
-							}}
-							checked={formObject?.includeTimeRange}
-							onChange={onToggleIncludeTimeRange}
-							size="md"
-						/>
+						<Text style={{ fontSize: '0.7rem', fontWeight: 500 }}>Fixed Time Range</Text>
+						<Select data={formObject?.timeRangeOptions}  value={formObject?.selectedTimeRangeOption.value} onChange={onToggleIncludeTimeRange}/>
 					</Stack>
 				</Stack>
 				<Stack gap={4}>

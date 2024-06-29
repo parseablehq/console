@@ -96,8 +96,9 @@ const toggleCreateStreamModal = (store: AppStore, val?: boolean) => {
 	return { createStreamModalOpen: _.isBoolean(val) ? val : !store.createStreamModalOpen };
 };
 
-const changeStream = (_store: AppStore, stream: string) => {
-	return { currentStream: stream };
+const changeStream = (store: AppStore, stream: string) => {
+	const activeSavedFilters = _.filter(store.savedFilters, (filter) => filter.stream_name === stream);
+	return { currentStream: stream, activeSavedFilters };
 };
 
 const setUserRoles = (_store: AppStore, roles: UserRoles | null) => {
