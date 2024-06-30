@@ -372,8 +372,7 @@ const LogTable = (props: { schemaLoading: boolean }) => {
 	}, [currentOffset]);
 
 	const [pageData] = useLogsStore((store) => store.tableOpts.pageData);
-	const [headers] = useLogsStore((store) => store.tableOpts.headers);
-	const hasContentLoaded = props.schemaLoading === false && logsLoading === false && headers.length !== 0;
+	const hasContentLoaded = props.schemaLoading === false && logsLoading === false;
 	const errorMessage = logsError;
 	const hasNoData = hasContentLoaded && !errorMessage && pageData.length === 0;
 	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
