@@ -270,20 +270,7 @@
 	white-space: nowrap;
 }
 
-.filterContainer {
-	background-color: white;
-	/* padding: 4px 12px; */
-	color: #211F1F;
-	border: 1px var(--mantine-color-gray-4) solid;
-	border-radius: rem(8px);
-	cursor: pointer;
-	/* height: 2.2rem; */
-    overflow: auto;
-    flex: 1;
-	margin-right: 0.625rem;
-	flex-direction: row;
-	/* height: fit-content; */
-}
+
 
 .modeContainer {
 	width: 5rem;

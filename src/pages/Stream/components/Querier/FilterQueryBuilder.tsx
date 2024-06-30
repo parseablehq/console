@@ -228,7 +228,7 @@ export const QueryPills = () => {
 	const { combinator, rules: ruleSets } = appliedQuery;
 	return (
 		<ScrollArea scrollbarSize={6} scrollHideDelay={0} offsetScrollbars={false}>
-			<Stack style={{ height: '100%' }}>
+			<Stack style={{ height: '100%'}}>
 				<Stack style={{ flexDirection: 'row' }} gap={8}>
 					{ruleSets.map((ruleSet, index) => {
 						const shouldShowCombinatorPill = ruleSets.length !== 1 && index + 1 !== ruleSets.length;
