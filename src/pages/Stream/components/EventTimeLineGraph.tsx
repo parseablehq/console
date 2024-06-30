@@ -14,6 +14,15 @@ const { parseQuery } = filterStoreReducers;
 
 type CompactInterval = 'minute' | 'day' | 'hour' | 'quarter-hour' | 'half-hour' | 'month';
 
+function extractWhereClause(sql: string) {
+	const whereClauseRegex = /WHERE\s+(.*?)(?=\s*(ORDER\s+BY|GROUP\s+BY|LIMIT|$))/i;
+	const match = sql.match(whereClauseRegex);
+	if (match) {
+		return match[1].trim();
+	}
+	return '(1 = 1)';
+}
+
 const getCompactType = (interval: number): CompactInterval => {
 	const totalMinutes = interval / (1000 * 60);
 	if (totalMinutes <= 60) {
@@ -31,7 +40,7 @@ const getCompactType = (interval: number): CompactInterval => {
 	} else if (totalMinutes <= 259200) {
 		return 'day';
 	} else {
-		return 'month'
+		return 'month';
 	}
 };
 
@@ -123,7 +132,7 @@ const compactTypeIntervalMap = {
 	day: '24 hour',
 	'quarter-hour': '15 minute',
 	'half-hour': '30 minute',
-	month: '1 month'
+	month: '1 month',
 };
 
 const generateCountQuery = (
@@ -233,6 +242,7 @@ const EventTimeLineGraph = () => {
 	const { fetchQueryMutation } = useQueryResult();
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
+	const [{ activeMode, custSearchQuery }] = useLogsStore((store) => store.custQuerySearchState);
 	const [{ interval, startTime, endTime }] = useLogsStore((store) => store.timeRange);
 
 	useEffect(() => {
@@ -246,13 +256,14 @@ const EventTimeLineGraph = () => {
 			access: [],
 		};
 
-		const { where: whereClause } = parseQuery(appliedQuery, currentStream);
+		const whereClause =
+			activeMode === 'sql' ? extractWhereClause(custSearchQuery) : parseQuery(appliedQuery, currentStream).where;
 		const query = generateCountQuery(currentStream, modifiedStartTime, modifiedEndTime, compactType, whereClause);
 		fetchQueryMutation.mutate({
 			logsQuery,
 			query,
 		});
-	}, [currentStream, startTime.toISOString(), endTime.toISOString(), appliedQuery]);
+	}, [currentStream, startTime.toISOString(), endTime.toISOString(), custSearchQuery]);
 
 	const isLoading = fetchQueryMutation.isLoading;
 	const avgEventCount = useMemo(() => calcAverage(fetchQueryMutation?.data), [fetchQueryMutation?.data]);
