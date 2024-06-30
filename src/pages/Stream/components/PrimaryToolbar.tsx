@@ -1,6 +1,6 @@
-import { Stack, px } from '@mantine/core';
+import { Button, Stack, px } from '@mantine/core';
 import IconButton from '@/components/Button/IconButton';
-import { IconListSearch, IconMaximize, IconTrash } from '@tabler/icons-react';
+import { IconFilterHeart, IconMaximize, IconTrash } from '@tabler/icons-react';
 import { STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT, STREAM_PRIMARY_TOOLBAR_HEIGHT } from '@/constants/theme';
 import TimeRange from '@/components/Header/TimeRange';
 import RefreshInterval from '@/components/Header/RefreshInterval';
@@ -15,23 +15,29 @@ import _ from 'lodash';
 import StreamingButton from '@/components/Header/StreamingButton';
 import { useLogsStore, logsStoreReducers } from '../providers/LogsProvider';
 import { filterStoreReducers, useFilterStore } from '../providers/FilterProvider';
+import classes from '../../../components/Header/styles/LogQuery.module.css';
 
 const { toggleDeleteModal } = logsStoreReducers;
 const { toggleSavedFiltersModal } = filterStoreReducers;
 const renderMaximizeIcon = () => <IconMaximize size={px('1rem')} stroke={1.5} />;
 const renderDeleteIcon = () => <IconTrash size={px('1rem')} stroke={1.5} />;
-const renderSavedFiltersIcon = () => <IconListSearch size={px('1rem')} stroke={1.5} />;
 
 const MaximizeButton = () => {
 	const [_appStore, setAppStore] = useAppStore((_store) => null);
 	const onClick = useCallback(() => setAppStore(appStoreReducers.toggleMaximize), []);
-	return <IconButton renderIcon={renderMaximizeIcon} size={38} onClick={onClick} tooltipLabel="Full Screen" />;
+	return <IconButton renderIcon={renderMaximizeIcon} size={38} onClick={onClick} tooltipLabel="Full screen" />;
 };
 
 const SavedFiltersButton = () => {
 	const [_store, setLogsStore] = useFilterStore((_store) => null);
-	const onClick = useCallback(() => setLogsStore((store) => toggleSavedFiltersModal(store, true)), []);
-	return <IconButton renderIcon={renderSavedFiltersIcon} size={38} onClick={onClick} tooltipLabel="Saved Filters" />;
+	const { intervalbtn } = classes;
+	return (
+		<Button 
+			className={intervalbtn} h="100%" 
+			leftSection={<IconFilterHeart size={px('1rem')} stroke={1.5} />} 
+			onClick={useCallback(() => setLogsStore((store) => toggleSavedFiltersModal(store, true)), [])}>
+			Saved Filters
+		</Button>);
 };
 
 const DeleteStreamButton = () => {

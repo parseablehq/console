@@ -1,4 +1,4 @@
-import { Group, Menu, Modal, Stack, px } from '@mantine/core';
+import { Group, Menu, Modal, Stack, px, Tooltip } from '@mantine/core';
 import { IconChevronDown, IconCodeCircle, IconFilter, IconFilterEdit, IconFilterPlus } from '@tabler/icons-react';
 import classes from '../../styles/Querier.module.css';
 import { Text } from '@mantine/core';
@@ -227,9 +227,13 @@ const Querier = () => {
 					}}
 					onClick={openSaveFiltersModal}>
 					{custQuerySearchState.savedFilterId ? (
-						<IconFilterEdit size="1rem" stroke={1.2} />
+						<Tooltip label="Edit this filter">
+							<IconFilterEdit size="1rem" stroke={1.2} />
+						</Tooltip>
 					) : (
-						<IconFilterPlus size="1rem" stroke={1.2} />
+						<Tooltip label="Save this filter">
+							<IconFilterPlus size="1rem" stroke={1.2} />
+						</Tooltip>
 					)}
 				</Stack>
 			)}
