@@ -4,6 +4,7 @@ import initContext from '@/utils/initContext';
 import { Field, RuleGroupType, RuleType, formatQuery } from 'react-querybuilder';
 import { LOAD_LIMIT } from './LogsProvider';
 
+// write transformer (for saved filters) if you are updating the operators below
 export const textFieldOperators = [
 	{ value: '=', label: 'equals to' },
 	{ value: '!=', label: 'not equals to' },
@@ -59,13 +60,14 @@ type UpdateRuleType = {
 };
 
 type FilterStore = {
-	isModalOpen: boolean;
 	fields: Field[];
 	query: QueryType;
 	fieldTypeMap: FieldTypeMap;
 	fieldNames: string[];
 	isSumbitDisabled: boolean;
 	appliedQuery: QueryType;
+	isSaveFiltersModalOpen: boolean;
+	isSavedFiltersModalOpen: boolean;
 };
 
 type RuleUpdateOpts = {
@@ -81,13 +83,14 @@ const defaultQuery = {
 };
 
 const initialState: FilterStore = {
-	isModalOpen: false,
 	fields: [],
 	query: defaultQuery,
 	fieldTypeMap: {},
 	fieldNames: [],
 	isSumbitDisabled: true,
 	appliedQuery: defaultQuery,
+	isSaveFiltersModalOpen: false,
+	isSavedFiltersModalOpen: false,
 };
 
 type ReducerOutput = Partial<FilterStore>;
@@ -125,6 +128,9 @@ type FilterStoreReducers = {
 	updateRule: (store: FilterStore, groupId: string, ruleId: string, updateOpts: RuleUpdateOpts) => ReducerOutput;
 	parseQuery: (query: QueryType, currentStream: string) => { where: string; parsedQuery: string };
 	toggleSubmitBtn: (store: FilterStore, val: boolean) => ReducerOutput;
+	toggleSaveFiltersModal: (_store: FilterStore, val: boolean) => ReducerOutput;
+	toggleSavedFiltersModal: (_store: FilterStore, val: boolean) => ReducerOutput;
+	applySavedFilters: (store: FilterStore, query: QueryType) => ReducerOutput;
 };
 
 const { Provider: FilterProvider, useStore: useFilterStore } = initContext(initialState);
@@ -289,6 +295,27 @@ const setFields = (_store: FilterStore, schema: LogStreamSchemaData) => {
 	};
 };
 
+const toggleSaveFiltersModal = (_store: FilterStore, val: boolean) => {
+	return {
+		isSaveFiltersModalOpen: val
+	}
+}
+
+const toggleSavedFiltersModal = (_store: FilterStore, val: boolean) => {
+	return {
+		isSavedFiltersModalOpen: val
+	}
+}
+
+const applySavedFilters = (store: FilterStore, query: QueryType) => {
+	return {
+		...store,
+		appliedQuery: query,
+		query,
+		isSumbitDisabled: true
+	}
+}
+
 const filterStoreReducers: FilterStoreReducers = {
 	storeAppliedQuery,
 	resetFilters,
@@ -301,6 +328,9 @@ const filterStoreReducers: FilterStoreReducers = {
 	updateRule,
 	parseQuery,
 	toggleSubmitBtn,
+	toggleSaveFiltersModal,
+	toggleSavedFiltersModal,
+	applySavedFilters
 };
 
 export { FilterProvider, useFilterStore, filterStoreReducers };
