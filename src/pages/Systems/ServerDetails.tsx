@@ -63,7 +63,7 @@ const ServerDetail = () => {
 			timerRef.current = intervalId;
 		}
 
-		return () => clearIntervalInstance();
+		return () => timerRef.current ? clearInterval(timerRef.current) : _.noop();
 	}, [clusterStore.currentMachine]);
 
 	return (
