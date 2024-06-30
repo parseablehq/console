@@ -14,7 +14,7 @@ const RefreshNow: FC = () => {
 	const onRefresh = useCallback(() => {
 		setLogsStore((store) => getCleanStoreForRefetch(store));
 	}, []);
-	return <IconButton size={38} renderIcon={renderRefreshIcon} onClick={onRefresh} tooltipLabel="Refresh Now" />;
+	return <IconButton size={38} renderIcon={renderRefreshIcon} onClick={onRefresh} tooltipLabel="Refresh now" />;
 };
 
 export default RefreshNow;
