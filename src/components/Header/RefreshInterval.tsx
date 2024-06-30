@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { REFRESH_INTERVALS } from '@/constants/timeConstants';
 import classes from './styles/LogQuery.module.css';
 import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsProvider';
+import _ from 'lodash';
 
 const { setRefreshInterval, getCleanStoreForRefetch } = logsStoreReducers;
 const RefreshInterval: FC = () => {
@@ -38,9 +39,7 @@ const RefreshInterval: FC = () => {
 			timerRef.current = intervalId;
 		}
 
-		return () => {
-			clearIntervalInstance()
-		}
+		return () => timerRef.current ? clearInterval(timerRef.current) : _.noop();
 	}, [refreshInterval]);
 
 	const { intervalbtn } = classes;
