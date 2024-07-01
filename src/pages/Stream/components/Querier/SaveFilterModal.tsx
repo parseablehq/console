@@ -220,7 +220,7 @@ const SaveFilterModal = () => {
 				</Stack>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center' }}>
 					<Stack gap={4} style={{ width: '100%' }}>
-						<Text style={{ fontSize: '0.7rem', fontWeight: 500 }}>Fixed Time Range</Text>
+						<Text style={{ fontSize: '0.7rem', fontWeight: 500 }}>Time Range</Text>
 						<Select
 							data={formObject?.timeRangeOptions}
 							value={formObject?.selectedTimeRangeOption.value}
