@@ -162,7 +162,7 @@ const Querier = () => {
 		if (isQuerySearchActive && allValues.length === 0 && activeMode !== 'sql') {
 			onClear();
 		}
-	}, [query.rules]);
+	}, [query.rules, savedFilterId]);
 
 	const onChangeCustQueryViewMode = useCallback((mode: 'sql' | 'filters') => {
 		setLogsStore((store) => toggleCustQuerySearchViewMode(store, mode));

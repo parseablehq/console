@@ -22,8 +22,8 @@ const { streamChangeCleanup } = streamStoreReducers;
 
 const SchemaErrorView = (props: { error: string; fetchSchema: () => void }) => {
 	return (
-		<Stack style={{ border: '1px solid', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
-			<Stack gap={0}>
+		<Stack style={{ height: '100%', alignItems: 'center', justifyContent: 'center' }}>
+			<Stack gap={0} style={{ justifyContent: 'center', alignItems: 'center' }}>
 				<Text c="red.8" style={{ fontWeight: 400, textAlign: 'center' }}>
 					{props.error || 'Error'}
 				</Text>

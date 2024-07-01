@@ -27,7 +27,7 @@ const useSavedFiltersQuery = () => {
 		},
 	);
 
-	const { mutate: updateSavedFilters } = useMutation(
+	const { mutate: updateSavedFilters, isLoading: isUpdating } = useMutation(
 		(data: { filter: SavedFilterType; onSuccess?: () => void }) =>
 			putSavedFilters(data.filter.filter_id, data.filter),
 		{
@@ -47,7 +47,7 @@ const useSavedFiltersQuery = () => {
 		},
 	);
 
-	const { mutate: createSavedFilters } = useMutation(
+	const { mutate: createSavedFilters, isLoading: isCreating } = useMutation(
 		(data: { filter: CreateSavedFilterType; onSuccess?: () => void }) =>
 			postSavedFilters(data.filter),
 		{
@@ -68,7 +68,7 @@ const useSavedFiltersQuery = () => {
 		},
 	);
 
-	const { mutate: deleteSavedFilterMutation } = useMutation(
+	const { mutate: deleteSavedFilterMutation, isLoading: isDeleting } = useMutation(
 		(data: { filter_id: string; onSuccess?: () => void }) =>
 			deleteSavedFilter(data.filter_id),
 		{
@@ -96,7 +96,10 @@ const useSavedFiltersQuery = () => {
 		refetch,
 		updateSavedFilters,
 		deleteSavedFilterMutation,
-		createSavedFilters
+		createSavedFilters,
+		isDeleting,
+		isUpdating,
+		isCreating
 	};
 };
 

@@ -1,4 +1,4 @@
-import { Box, Button, Modal, Select, Stack, Text, TextInput } from '@mantine/core';
+import { Box, Button, Loader, Modal, Select, Stack, Text, TextInput } from '@mantine/core';
 import { filterStoreReducers, useFilterStore } from '../../providers/FilterProvider';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { makeTimeRangeLabel, useLogsStore } from '../../providers/LogsProvider';
@@ -96,8 +96,8 @@ const SaveFilterModal = () => {
 	const [timeRange] = useLogsStore((store) => store.timeRange);
 	const [{ custSearchQuery, savedFilterId, activeMode }] = useLogsStore((store) => store.custQuerySearchState);
 	const [isDirty, setDirty] = useState<boolean>(false);
-
-	const { updateSavedFilters, createSavedFilters } = useSavedFiltersQuery();
+	const { updateSavedFilters, createSavedFilters, isCreating, isUpdating } = useSavedFiltersQuery();
+	const showLoader = isCreating || isUpdating;
 
 	useEffect(() => {
 		const selectedFilter = _.find(activeSavedFilters, (filter) => filter.filter_id === savedFilterId);
@@ -220,7 +220,7 @@ const SaveFilterModal = () => {
 				</Stack>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center' }}>
 					<Stack gap={4} style={{ width: '100%' }}>
-						<Text style={{ fontSize: '0.7rem', fontWeight: 500 }}>Fixed Time Range</Text>
+						<Text style={{ fontSize: '0.7rem', fontWeight: 500 }}>Time Range</Text>
 						<Select
 							data={formObject?.timeRangeOptions}
 							value={formObject?.selectedTimeRangeOption.value}
@@ -244,16 +244,24 @@ const SaveFilterModal = () => {
 					/>
 				</Stack>
 				<Stack style={{ flexDirection: 'row', justifyContent: 'flex-end', width: '100%', marginTop: 10 }}>
-					<Box>
-						<Button miw={100} variant="outline" onClick={closeModal}>
-							Cancel
-						</Button>
-					</Box>
-					<Box>
-						<Button miw={100} onClick={onSubmit}>
-							Save
-						</Button>
-					</Box>
+					{showLoader ? (
+						<Stack style={{ marginRight: 10 }}>
+							<Loader size="md" />
+						</Stack>
+					) : (
+						<>
+							<Box>
+								<Button miw={100} variant="outline" onClick={closeModal}>
+									Cancel
+								</Button>
+							</Box>
+							<Box>
+								<Button miw={100} onClick={onSubmit}>
+									Save
+								</Button>
+							</Box>
+						</>
+					)}
 				</Stack>
 			</Stack>
 		</Modal>
