@@ -6,17 +6,19 @@ import { Field } from '@/@types/parseable/dataType';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsProvider';
 import { useStreamStore, streamStoreReducers } from '@/pages/Stream/providers/StreamProvider';
+import { AxiosError } from 'axios';
+import _ from 'lodash';
 
-const {setStreamSchema} = streamStoreReducers;
-const {setTableHeaders} = logsStoreReducers;
+const { setStreamSchema } = streamStoreReducers;
+const { setTableHeaders } = logsStoreReducers;
 
 export const useGetLogStreamSchema = () => {
 	const [data, setData] = useMountedState<LogStreamSchemaData | null>(null);
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const [, setLogsStore] = useLogsStore(_store => null);
-	const [, setStreamStore] = useStreamStore(_store => null);
+	const [, setLogsStore] = useLogsStore((_store) => null);
+	const [, setStreamStore] = useStreamStore((_store) => null);
 
 	const getDataSchema = async (stream: string | null = currentStream) => {
 		try {
@@ -31,16 +33,19 @@ export const useGetLogStreamSchema = () => {
 					const schema = res.data;
 
 					setData(schema);
-					setStreamStore(store => setStreamSchema(store, schema))
-					setLogsStore(store => setTableHeaders(store, schema))
+					setStreamStore((store) => setStreamSchema(store, schema));
+					setLogsStore((store) => setTableHeaders(store, schema));
 					break;
 				}
 				default: {
-					setError('Failed to get log schema');
+					const errorMessage = res?.data;
+					setError(_.isString(errorMessage) && !_.isEmpty(errorMessage) ? errorMessage : 'Failed to fetch schema');
 				}
 			}
-		} catch {
-			setError('Failed to get log schema');
+		} catch (e) {
+			const axiosError = e as AxiosError;
+			const errorMessage = axiosError?.response?.data;
+			setError(_.isString(errorMessage) && !_.isEmpty(errorMessage) ? errorMessage : 'Failed to fetch schema');
 		} finally {
 			setLoading(false);
 		}

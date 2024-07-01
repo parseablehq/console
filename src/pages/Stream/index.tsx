@@ -1,6 +1,6 @@
 import { Box, Stack, rem } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
-import { FC, useEffect } from 'react';
+import { FC, useCallback, useEffect } from 'react';
 import StaticLogTable from './Views/Explore/StaticLogTable';
 import LiveLogTable from './Views/LiveTail/LiveLogTable';
 import ViewLog from './components/ViewLog';
@@ -15,8 +15,25 @@ import { PRIMARY_HEADER_HEIGHT, SECONDARY_SIDEBAR_WIDTH } from '@/constants/them
 import PrimaryToolbar from './components/PrimaryToolbar';
 import { useParams } from 'react-router-dom';
 import { STREAM_VIEWS } from '@/constants/routes';
+import { Text } from '@mantine/core';
+import { RetryBtn } from '@/components/Button/Retry';
 
 const { streamChangeCleanup } = streamStoreReducers;
+
+const SchemaErrorView = (props: { error: string; fetchSchema: () => void }) => {
+	return (
+		<Stack style={{ border: '1px solid', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
+			<Stack gap={0}>
+				<Text c="red.8" style={{ fontWeight: 400, textAlign: 'center' }}>
+					{props.error || 'Error'}
+				</Text>
+				<Box>
+					<RetryBtn onClick={props.fetchSchema} mt="md" />
+				</Box>
+			</Stack>
+		</Stack>
+	);
+};
 
 const Logs: FC = () => {
 	useDocumentTitle('Parseable | Stream');
@@ -27,10 +44,14 @@ const Logs: FC = () => {
 
 	const { getDataSchema, loading, error } = useGetLogStreamSchema();
 
+	const fetchSchema = useCallback(() => {
+		setStreamStore(streamChangeCleanup);
+		getDataSchema();
+	}, []);
+
 	useEffect(() => {
 		if (!_.isEmpty(currentStream)) {
-			setStreamStore(streamChangeCleanup);
-			getDataSchema();
+			fetchSchema();
 		}
 	}, [currentStream]);
 
@@ -58,7 +79,11 @@ const Logs: FC = () => {
 				<PrimaryToolbar />
 				{view === 'explore' && <SecondaryToolbar />}
 				{view === 'explore' ? (
-					<StaticLogTable schemaLoading={isSchemaLoading} />
+					error ? (
+						<SchemaErrorView error={error} fetchSchema={fetchSchema} />
+					) : (
+						<StaticLogTable schemaLoading={isSchemaLoading} />
+					)
 				) : view === 'live-tail' ? (
 					<LiveLogTable />
 				) : (

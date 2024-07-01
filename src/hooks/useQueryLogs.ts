@@ -8,6 +8,7 @@ import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useQueryResult } from './useQueryResult';
 import _ from 'lodash';
 import { useStreamStore } from '@/pages/Stream/providers/StreamProvider';
+import { AxiosError } from 'axios';
 
 const { setData, setTotalCount } = logsStoreReducers;
 
@@ -40,7 +41,7 @@ export const useQueryLogs = () => {
 		},
 	});
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const [schema] = useStreamStore(store => store.schema)
+	const [schema] = useStreamStore((store) => store.schema);
 	const [
 		{
 			timeRange,
@@ -97,8 +98,10 @@ export const useQueryLogs = () => {
 				return setLogsStore((store) => setData(store, [], schema));
 			}
 			setError('Failed to query log');
-		} catch {
-			setError('Failed to query log');
+		} catch (e) {
+			const axiosError = e as AxiosError;
+			const errorMessage = axiosError?.response?.data;
+			setError(_.isString(errorMessage) && !_.isEmpty(errorMessage) ? errorMessage : 'Failed to query log');
 			return setLogsStore((store) => setData(store, [], schema));
 		} finally {
 			setLoading(false);
