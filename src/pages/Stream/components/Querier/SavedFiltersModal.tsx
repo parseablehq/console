@@ -14,7 +14,7 @@ import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import useSavedFiltersQuery from '@/hooks/useSavedFilters';
 
 const { toggleSavedFiltersModal, resetFilters, parseQuery, applySavedFilters } = filterStoreReducers;
-const { applyCustomQuery, updateSavedFilterId } = logsStoreReducers;
+const { applyCustomQuery, updateSavedFilterId, getCleanStoreForRefetch, setTimeRange } = logsStoreReducers;
 
 const renderDeleteIcon = () => <IconTrash size={px('1rem')} stroke={1.5} />;
 const renderCloseIcon = () => <IconX size={px('1rem')} stroke={1.5} />;
@@ -40,13 +40,21 @@ const SavedFilterItem = (props: {
 	onSqlSearchApply: (query: string, id: string, time_filter: null | { from: string; to: string }) => void;
 	onFilterBuilderQueryApply: (query: QueryType, id: string) => void;
 	currentStream: string;
+	savedFilterId: string | null;
+	isStoredAndCurrentTimeRangeAreSame: (from: string, to: string) => boolean;
+	hardRefresh: () => void;
+	changeTimerange: (from: string, end: string) => void;
 }) => {
 	const {
 		item: { filter_name, time_filter, query, filter_id, stream_name },
+		savedFilterId,
+		isStoredAndCurrentTimeRangeAreSame,
+		hardRefresh,
+		changeTimerange,
 	} = props;
 	const [showQuery, setShowQuery] = useState<boolean>(false);
 	const [showDeletePropmt, setShowDeletePrompt] = useState<boolean>(false);
-	const { deleteSavedFilterMutation } = useSavedFiltersQuery();
+	const { deleteSavedFilterMutation, isDeleting } = useSavedFiltersQuery();
 
 	const toggleShowQuery = useCallback(() => {
 		return setShowQuery((prev) => !prev);
@@ -63,9 +71,20 @@ const SavedFilterItem = (props: {
 		if (_.isString(query.filter_query)) {
 			props.onSqlSearchApply(query.filter_query, filter_id, time_filter);
 		} else if (query.filter_builder) {
-			props.onFilterBuilderQueryApply(query.filter_builder, filter_id);
+			if (filter_id !== savedFilterId) {
+				props.onFilterBuilderQueryApply(query.filter_builder, filter_id);
+			} else {
+				if (
+					time_filter === null ||
+					(time_filter && isStoredAndCurrentTimeRangeAreSame(time_filter.from, time_filter.to))
+				) {
+					hardRefresh();
+				} else {
+					changeTimerange(time_filter.from, time_filter.to);
+				}
+			}
 		}
-	}, []);
+	}, [savedFilterId, isStoredAndCurrentTimeRangeAreSame, hardRefresh, changeTimerange]);
 
 	return (
 		<Stack className={classes.filterItemContainer} style={{ paddingBottom: '0.8rem' }}>
@@ -83,18 +102,24 @@ const SavedFilterItem = (props: {
 				</Stack>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center', width: '40%', justifyContent: 'flex-end' }}>
 					{showDeletePropmt ? (
-						<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={8}>
-							<Box>
-								<Button leftSection={renderDeleteIcon()} onClick={handleDelete} variant="outline">
-									Confirm
-								</Button>
-							</Box>
-							<Box>
-								<Button leftSection={renderCloseIcon()} onClick={() => setShowDeletePrompt(false)}>
-									Cancel
-								</Button>
-							</Box>
-						</Stack>
+						isDeleting ? (
+							<Stack style={{ flex: 1, alignItems: 'center' }}>
+								<Loader size="md" />
+							</Stack>
+						) : (
+							<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={8}>
+								<Box>
+									<Button leftSection={renderDeleteIcon()} onClick={handleDelete} variant="outline">
+										Confirm
+									</Button>
+								</Box>
+								<Box>
+									<Button leftSection={renderCloseIcon()} onClick={() => setShowDeletePrompt(false)}>
+										Cancel
+									</Button>
+								</Box>
+							</Stack>
+						)
 					) : (
 						<>
 							<VisiblityToggleButton showQuery={showQuery} onClick={toggleShowQuery} />
@@ -136,16 +161,22 @@ const SavedFilterItem = (props: {
 
 const SavedFiltersModal = () => {
 	const [isSavedFiltersModalOpen, setFilterStore] = useFilterStore((store) => store.isSavedFiltersModalOpen);
-	const [, setLogsStore] = useLogsStore((_store) => null);
+	const [savedFilterId, setLogsStore] = useLogsStore((store) => store.custQuerySearchState.savedFilterId);
+	const [{ startTime, endTime }] = useLogsStore((store) => store.timeRange);
 	const [savedFilters] = useAppStore((store) => store.savedFilters);
 	const [activeSavedFilters] = useAppStore((store) => store.activeSavedFilters);
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const { isLoading, refetch, isError } = useSavedFiltersQuery();
-	const onSqlSearchApply = useCallback((query: string, id: string, time_filter: null | {from: string, to: string}) => {
-		setFilterStore((store) => resetFilters(store));
+	const onSqlSearchApply = useCallback(
+		(query: string, id: string, time_filter: null | { from: string; to: string }) => {
+			setFilterStore((store) => resetFilters(store));
 
-		setLogsStore((store) => applyCustomQuery(store, query, 'sql', id, time_filter));
-	}, []);
+			setLogsStore((store) => applyCustomQuery(store, query, 'sql', id, time_filter));
+		},
+		[],
+	);
+	const startTimeString = startTime.toISOString();
+	const endTimeString = endTime.toISOString();
 
 	const onFilterBuilderQueryApply = useCallback(
 		(query: QueryType, id: string) => {
@@ -167,6 +198,23 @@ const SavedFiltersModal = () => {
 	}, []);
 
 	const hasNoSavedFilters = _.isEmpty(activeSavedFilters) || _.isNil(activeSavedFilters) || isError;
+	const isStoredAndCurrentTimeRangeAreSame = useCallback(
+		(from: string, to: string) => {
+			return from === startTimeString && to === endTimeString;
+		},
+		[startTimeString, endTimeString],
+	);
+
+	const hardRefresh = useCallback(() => {
+		setLogsStore((store) => getCleanStoreForRefetch(store));
+		closeModal();
+	}, []);
+
+	const changeTimerange = useCallback((from: string, end: string) => {
+		setLogsStore((store) => setTimeRange(store, { type: 'custom', startTime: dayjs(from), endTime: dayjs(end) }));
+		closeModal();
+	}, []);
+
 	return (
 		<Modal
 			opened={isSavedFiltersModalOpen}
@@ -199,6 +247,10 @@ const SavedFiltersModal = () => {
 									onSqlSearchApply={onSqlSearchApply}
 									onFilterBuilderQueryApply={onFilterBuilderQueryApply}
 									currentStream={currentStream || ''}
+									savedFilterId={savedFilterId}
+									isStoredAndCurrentTimeRangeAreSame={isStoredAndCurrentTimeRangeAreSame}
+									hardRefresh={hardRefresh}
+									changeTimerange={changeTimerange}
 								/>
 							);
 						})}
