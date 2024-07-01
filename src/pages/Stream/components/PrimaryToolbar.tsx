@@ -15,7 +15,7 @@ import _ from 'lodash';
 import StreamingButton from '@/components/Header/StreamingButton';
 import { useLogsStore, logsStoreReducers } from '../providers/LogsProvider';
 import { filterStoreReducers, useFilterStore } from '../providers/FilterProvider';
-import classes from '../../../components/Header/styles/LogQuery.module.css';
+import classes from './styles/PrimaryToolbar.module.css'
 
 const { toggleDeleteModal } = logsStoreReducers;
 const { toggleSavedFiltersModal } = filterStoreReducers;
@@ -30,14 +30,16 @@ const MaximizeButton = () => {
 
 const SavedFiltersButton = () => {
 	const [_store, setLogsStore] = useFilterStore((_store) => null);
-	const { intervalbtn } = classes;
+	const onClick = useCallback(() => setLogsStore((store) => toggleSavedFiltersModal(store, true)), []);
 	return (
-		<Button 
-			className={intervalbtn} h="100%" 
-			leftSection={<IconFilterHeart size={px('1rem')} stroke={1.5} />} 
-			onClick={useCallback(() => setLogsStore((store) => toggleSavedFiltersModal(store, true)), [])}>
+		<Button
+			className={classes.savedFiltersBtn}
+			h="100%"
+			leftSection={<IconFilterHeart size={px('1rem')} stroke={1.5} />}
+			onClick={onClick}>
 			Saved Filters
-		</Button>);
+		</Button>
+	);
 };
 
 const DeleteStreamButton = () => {

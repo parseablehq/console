@@ -36,9 +36,6 @@
   }
   
   .intervalbtn {
-	/* display: flex; */
-	/* justify-content: center; */
-	/* align-items: center; */
 	background-color: white;
 	color: var(--mantine-color-gray-7);
 	border: 1px #e9ecef solid;
