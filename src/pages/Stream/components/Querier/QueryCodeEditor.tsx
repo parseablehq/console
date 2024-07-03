@@ -41,7 +41,7 @@ const defaultCustSQLQuery = (streamName: string | null) => {
 const QueryCodeEditor: FC<{ queryCodeEditorRef: MutableRefObject<any>, onSqlSearchApply: (query: string) => void; onClear: () => void; }> = (props) => {
 	const [llmActive] = useAppStore((store) => store.instanceConfig?.llmActive);
 	const [] = useFilterStore((store) => store);
-	const [{ isQuerySearchActive, activeMode }] = useLogsStore((store) => store.custQuerySearchState);
+	const [{ isQuerySearchActive, activeMode, savedFilterId, custSearchQuery }] = useLogsStore((store) => store.custQuerySearchState);
 	const [schema] = useStreamStore((store) => store.schema);
 	const fields = schema?.fields || [];
 	const editorRef = React.useRef<any>();
@@ -65,6 +65,12 @@ const QueryCodeEditor: FC<{ queryCodeEditorRef: MutableRefObject<any>, onSqlSear
 		props.queryCodeEditorRef.current = query;
 		setQuery(query);
 	}, []);
+
+	useEffect(() => {
+		if (savedFilterId && isSqlSearchActive) {
+			updateQuery(custSearchQuery)
+		}
+	}, [savedFilterId])
 
 	const handleAIGenerate = useCallback(() => {
 		if (!aiQuery?.length) {
@@ -103,19 +109,12 @@ const QueryCodeEditor: FC<{ queryCodeEditorRef: MutableRefObject<any>, onSqlSear
 		updateQuery(props.queryCodeEditorRef.current);
 	}, []);
 
-	function handleEditorDidMount(editor: any, monaco: any) {
-		editorRef.current = editor;
-		monacoRef.current = monaco;
-		editor.addCommand(monaco.KeyMod.CtrlCmd + monaco.KeyCode.Enter, async () => {
-			runQuery(props.queryCodeEditorRef.current);
-		});
-	}
-
-	const runQuery = (inputQuery: string) => {
-		const query = sanitiseSqlString(inputQuery);
-		const parsedQuery = query.replace(/(\r\n|\n|\r)/gm, '');
+	const runQuery = useCallback(() => {
+		const sanitizedQuery = sanitiseSqlString(query);
+		const parsedQuery = sanitizedQuery.replace(/(\r\n|\n|\r)/gm, '');
+		updateQuery(sanitizedQuery);
 		props.onSqlSearchApply(parsedQuery)
-	};
+	}, [query]);
 
 	return (
 		<Stack style={{ flex: 1 }}>
@@ -160,7 +159,7 @@ const QueryCodeEditor: FC<{ queryCodeEditorRef: MutableRefObject<any>, onSqlSear
 							mouseWheelZoom: true,
 							padding: { top: 8 },
 						}}
-						onMount={handleEditorDidMount}
+						// onMount={handleEditorDidMount}
 					/>
 				</Stack>
 			</ScrollArea>
@@ -168,7 +167,7 @@ const QueryCodeEditor: FC<{ queryCodeEditorRef: MutableRefObject<any>, onSqlSear
 				<Button onClick={props.onClear} disabled={!isSqlSearchActive} variant="outline">
 					Clear
 				</Button>
-				<Button onClick={() => runQuery(query)}>Apply</Button>
+				<Button onClick={() => runQuery()}>Apply</Button>
 			</Stack>
 		</Stack>
 	);

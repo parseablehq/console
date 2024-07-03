@@ -1,0 +1,7 @@
+.filterItemContainer {
+    border-bottom: 1px solid var(--mantine-color-gray-2);
+    
+    &:last-of-type {
+        border-bottom: none;
+    }
+}
