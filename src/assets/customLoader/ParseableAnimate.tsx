@@ -5,7 +5,7 @@ const ParseableLoader: MantineLoaderComponent = forwardRef(() => (
 	<svg height="60px" width="60px" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15">
 		<defs>
 			<filter id="iconfilter" primitiveUnits="objectBoundingBox">
-				<feFlood flood-color="#545beb" />
+				<feFlood floodColor="#545beb" />
 
 				<feOffset>
 					<animate attributeName="dy" from="1" to="0" dur="1500ms" repeatCount="indefinite" />
@@ -15,7 +15,7 @@ const ParseableLoader: MantineLoaderComponent = forwardRef(() => (
 				<feComposite operator="over" in2="SourceGraphic" />
 			</filter>
 			<filter id="iconfilterRed" primitiveUnits="objectBoundingBox">
-				<feFlood flood-color="#fc466b" />
+				<feFlood floodColor="#fc466b" />
 
 				<feOffset>
 					<animate attributeName="dy" from="1" to="0" dur="1500ms" repeatCount="indefinite" />

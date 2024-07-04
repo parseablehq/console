@@ -1,6 +1,7 @@
 import { MantineProvider, Loader } from '@mantine/core';
 import ParseableAnimate from './ParseableAnimate';
 
+// This is a custom Parseable Icon with loading animation
 function ParseableLoader() {
 	return (
 		<MantineProvider
