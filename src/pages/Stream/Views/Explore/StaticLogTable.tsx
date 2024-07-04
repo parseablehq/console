@@ -13,11 +13,11 @@ import {
 	Flex,
 	Button,
 	Pagination,
-	Loader,
 	Group,
 	Stack,
 	Tooltip,
 } from '@mantine/core';
+import ParseableLoader from '@/assets/customLoader/ParseableAnimate';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FC, MutableRefObject, ReactNode, RefObject } from 'react';
 import LogRow from './StaticLogRow';
@@ -76,9 +76,13 @@ const TotalLogsCount = () => {
 
 	return (
 		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }} gap={6}>
-			<Text style={{ fontSize: '0.7rem' }}>{`Showing ${showingCount} out of`}</Text>
-			<TotalCount totalCount={totalCount} />
-			<Text style={{ fontSize: '0.7rem' }}>records</Text>
+			{totalCount < 0 ? null : (
+				<>
+					<Text style={{ fontSize: '0.7rem' }}>{`Showing ${showingCount} out of`}</Text>
+					<TotalCount totalCount={totalCount} />
+					<Text style={{ fontSize: '0.7rem' }}>records</Text>
+				</>
+			)}
 		</Stack>
 	);
 };
@@ -191,8 +195,16 @@ const ErrorView = (props: { message: string }) => {
 
 const LoadingView = () => {
 	return (
-		<Stack w="100%" align="center" h="100%" style={{ alignItems: 'center', justifyContent: 'center' }}>
-			<Loader variant="dots" />
+		<Stack
+			w="100%"
+			align="center"
+			h="100%"
+			style={{
+				alignItems: 'center',
+				justifyContent: 'center',
+			}}>
+			{/* <Loader variant="dots" /> */}
+			<ParseableLoader />
 		</Stack>
 	);
 };
