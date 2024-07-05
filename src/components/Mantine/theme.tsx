@@ -73,7 +73,6 @@ theme.components = {
 	Loader: Loader.extend({
 		defaultProps: {
 			loaders: { ...Loader.defaultLoaders, parseable: ParseableAnimate },
-			type: 'parseable',
 		},
 	}),
 };

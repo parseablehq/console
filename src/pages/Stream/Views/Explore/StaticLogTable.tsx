@@ -30,6 +30,7 @@ import {
 	IconSettings,
 	IconDownload,
 } from '@tabler/icons-react';
+import { useQuery } from 'react-query';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import EmptyBox from '@/components/Empty';
 import { RetryBtn } from '@/components/Button/Retry';
@@ -361,6 +362,9 @@ const LogTable = (props: { schemaLoading: boolean }) => {
 	const [currentPage] = useLogsStore((store) => store.tableOpts.currentPage);
 	const [currentOffset, setLogsStore] = useLogsStore((store) => store.tableOpts.currentOffset);
 
+	const footerDataCount = useQuery('FooterData', () => fetchCount());
+	const { isLoading } = footerDataCount;
+
 	useEffect(() => {
 		setLogsStore(setCleanStoreForStreamChange);
 	}, [currentStream]);
@@ -405,7 +409,7 @@ const LogTable = (props: { schemaLoading: boolean }) => {
 			) : (
 				<ErrorView message={errorMessage} />
 			)}
-			<Footer loaded={showTable} isLoading={logsLoading} />
+			<Footer loaded={showTable} isLoading={isLoading} />
 		</TableContainer>
 	);
 };
