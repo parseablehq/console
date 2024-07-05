@@ -246,8 +246,6 @@ const Footer = (props: { loaded: boolean }) => {
 		[currentStream, filteredData, headers],
 	);
 
-	console.log(props.loaded);
-
 	return (
 		<Stack className={tableStyles.footerContainer} gap={0}>
 			<Stack w="100%" justify="center" align="flex-start">
