@@ -18,7 +18,6 @@ import {
 	Tooltip,
 	Loader,
 } from '@mantine/core';
-import ParseableLoader from '@/assets/customLoader/ParseableLoader';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FC, MutableRefObject, ReactNode, RefObject } from 'react';
 import LogRow from './StaticLogRow';
@@ -200,13 +199,13 @@ const LoadingView = () => {
 				alignItems: 'center',
 				justifyContent: 'center',
 			}}>
-			{/* <Loader variant="dots" /> */}
-			<ParseableLoader />
+			<Loader type="parseable" />
 		</Stack>
 	);
 };
 
-const Footer = (props: { loaded: boolean }) => {
+const Footer = (props: { loaded: boolean; isLoading: boolean }) => {
+	console.log(props);
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const [filteredData] = useLogsStore((store) => store.data.filteredData);
 	const { totalPages, currentOffset, currentPage, perPage, headers, totalCount } = tableOpts;
@@ -249,7 +248,7 @@ const Footer = (props: { loaded: boolean }) => {
 	return (
 		<Stack className={tableStyles.footerContainer} gap={0}>
 			<Stack w="100%" justify="center" align="flex-start">
-				{!props.loaded ? <Loader type="dots" /> : <TotalLogsCount />}
+				{!props.loaded ? !props.isLoading ? null : <Loader type="dots" /> : <TotalLogsCount />}
 			</Stack>
 			<Stack w="100%" justify="center">
 				{props.loaded ? (
@@ -407,7 +406,7 @@ const LogTable = (props: { schemaLoading: boolean }) => {
 			) : (
 				<ErrorView message={errorMessage} />
 			)}
-			<Footer loaded={showTable} />
+			<Footer loaded={showTable} isLoading={logsLoading} />
 		</TableContainer>
 	);
 };
