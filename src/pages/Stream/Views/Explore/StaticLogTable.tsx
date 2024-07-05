@@ -205,7 +205,6 @@ const LoadingView = () => {
 };
 
 const Footer = (props: { loaded: boolean; isLoading: boolean }) => {
-	console.log(props);
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const [filteredData] = useLogsStore((store) => store.data.filteredData);
 	const { totalPages, currentOffset, currentPage, perPage, headers, totalCount } = tableOpts;
