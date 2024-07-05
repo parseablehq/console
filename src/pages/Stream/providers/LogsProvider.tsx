@@ -293,7 +293,7 @@ const initialState: LogsStore = {
 		pinnedColumns: [],
 		pageData: [],
 		perPage: 50,
-		totalCount: -1,
+		totalCount: 0,
 		displayedCount: 0,
 		totalPages: 0,
 		currentPage: 0,
@@ -607,7 +607,7 @@ const getCleanStoreForRefetch = (store: LogsStore) => {
 		tableOpts: {
 			...tableOpts,
 			pageData: [],
-			totalCount: -1,
+			totalCount: 0,
 			displayedCount: 0,
 			currentPage: 0,
 			currentOffset: 0,
@@ -632,7 +632,7 @@ const setCleanStoreForStreamChange = (store: LogsStore) => {
 		tableOpts: {
 			...tableOpts,
 			pageData: [],
-			totalCount: -1,
+			totalCount: 0,
 			displayedCount: 0,
 			currentPage: 0,
 			currentOffset: 0,

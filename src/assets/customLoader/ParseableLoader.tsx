@@ -9,8 +9,8 @@ function ParseableLoader() {
 				components: {
 					Loader: Loader.extend({
 						defaultProps: {
-							loaders: { ...Loader.defaultLoaders, ring: ParseableAnimate },
-							type: 'ring',
+							loaders: { ...Loader.defaultLoaders, parseable: ParseableAnimate },
+							type: 'parseable',
 						},
 					}),
 				},

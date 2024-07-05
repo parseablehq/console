@@ -16,8 +16,9 @@ import {
 	Group,
 	Stack,
 	Tooltip,
+	Loader,
 } from '@mantine/core';
-import ParseableLoader from '@/assets/customLoader/ParseableAnimate';
+import ParseableLoader from '@/assets/customLoader/ParseableLoader';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FC, MutableRefObject, ReactNode, RefObject } from 'react';
 import LogRow from './StaticLogRow';
@@ -76,13 +77,9 @@ const TotalLogsCount = () => {
 
 	return (
 		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }} gap={6}>
-			{totalCount < 0 ? null : (
-				<>
-					<Text style={{ fontSize: '0.7rem' }}>{`Showing ${showingCount} out of`}</Text>
-					<TotalCount totalCount={totalCount} />
-					<Text style={{ fontSize: '0.7rem' }}>records</Text>
-				</>
-			)}
+			<Text style={{ fontSize: '0.7rem' }}>{`Showing ${showingCount} out of`}</Text>
+			<TotalCount totalCount={totalCount} />
+			<Text style={{ fontSize: '0.7rem' }}>records</Text>
 		</Stack>
 	);
 };
@@ -249,10 +246,12 @@ const Footer = (props: { loaded: boolean }) => {
 		[currentStream, filteredData, headers],
 	);
 
+	console.log(props.loaded);
+
 	return (
 		<Stack className={tableStyles.footerContainer} gap={0}>
 			<Stack w="100%" justify="center" align="flex-start">
-				{!props.loaded ? null : <TotalLogsCount />}
+				{!props.loaded ? <Loader type="dots" /> : <TotalLogsCount />}
 			</Stack>
 			<Stack w="100%" justify="center">
 				{props.loaded ? (
@@ -403,7 +402,7 @@ const LogTable = (props: { schemaLoading: boolean }) => {
 						</Box>
 					</Box>
 				) : hasNoData ? (
-					<EmptyBox message="No Data Available" />
+					<EmptyBox message="No Matching Rows" />
 				) : (
 					<LoadingView />
 				)
