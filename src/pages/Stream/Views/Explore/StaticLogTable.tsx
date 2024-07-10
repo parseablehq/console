@@ -68,14 +68,14 @@ const TotalCount = (props: { totalCount: number }) => {
 
 const renderExportIcon = () => <IconDownload size={px('0.8rem')} stroke={1.8} />;
 
-const TotalLogsCount = (props: { tableLoaded: boolean; isFetchingCount: boolean; hasNoData: boolean }) => {
+const TotalLogsCount = (props: { hasTableLoaded: boolean; isFetchingCount: boolean; isTableEmpty: boolean }) => {
 	const [{ totalCount, perPage, pageData }] = useLogsStore((store) => store.tableOpts);
 	const displayedCount = _.size(pageData);
 	const showingCount = displayedCount < perPage ? displayedCount : perPage;
 	if (typeof totalCount !== 'number' || typeof displayedCount !== 'number') return <Stack />;
 	return (
 		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }} gap={6}>
-			{props.tableLoaded ? (
+			{props.hasTableLoaded ? (
 				props.isFetchingCount ? (
 					<Loader type="dots" />
 				) : (
@@ -85,7 +85,7 @@ const TotalLogsCount = (props: { tableLoaded: boolean; isFetchingCount: boolean;
 						<Text style={{ fontSize: '0.7rem' }}>records</Text>
 					</>
 				)
-			) : props.hasNoData ? null : (
+			) : props.isTableEmpty ? null : (
 				<Loader type="dots" />
 			)}
 		</Stack>
@@ -256,7 +256,11 @@ const Footer = (props: { loaded: boolean; isLoading: boolean; hasNoData: boolean
 	return (
 		<Stack className={tableStyles.footerContainer} gap={0}>
 			<Stack w="100%" justify="center" align="flex-start">
-				<TotalLogsCount tableLoaded={props.loaded} isFetchingCount={props.isLoading} hasNoData={props.hasNoData} />
+				<TotalLogsCount
+					hasTableLoaded={props.loaded}
+					isFetchingCount={props.isLoading}
+					isTableEmpty={props.hasNoData}
+				/>
 			</Stack>
 			<Stack w="100%" justify="center">
 				{props.loaded ? (
