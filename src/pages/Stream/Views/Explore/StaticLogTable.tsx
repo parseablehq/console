@@ -30,7 +30,6 @@ import {
 	IconSettings,
 	IconDownload,
 } from '@tabler/icons-react';
-import { useQuery } from 'react-query';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import EmptyBox from '@/components/Empty';
 import { RetryBtn } from '@/components/Button/Retry';
@@ -69,17 +68,26 @@ const TotalCount = (props: { totalCount: number }) => {
 
 const renderExportIcon = () => <IconDownload size={px('0.8rem')} stroke={1.8} />;
 
-const TotalLogsCount = () => {
+const TotalLogsCount = (props: { loaded: boolean; isLoading: boolean; hasNoData: boolean }) => {
 	const [{ totalCount, perPage, pageData }] = useLogsStore((store) => store.tableOpts);
 	const displayedCount = _.size(pageData);
 	const showingCount = displayedCount < perPage ? displayedCount : perPage;
 	if (typeof totalCount !== 'number' || typeof displayedCount !== 'number') return <Stack />;
-
 	return (
 		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }} gap={6}>
-			<Text style={{ fontSize: '0.7rem' }}>{`Showing ${showingCount} out of`}</Text>
-			<TotalCount totalCount={totalCount} />
-			<Text style={{ fontSize: '0.7rem' }}>records</Text>
+			{props.loaded ? (
+				props.isLoading ? (
+					<Loader type="dots" />
+				) : (
+					<>
+						<Text style={{ fontSize: '0.7rem' }}>{`Showing ${showingCount} out of`}</Text>
+						<TotalCount totalCount={totalCount} />
+						<Text style={{ fontSize: '0.7rem' }}>records</Text>
+					</>
+				)
+			) : props.hasNoData ? null : (
+				<Loader type="dots" />
+			)}
 		</Stack>
 	);
 };
@@ -205,7 +213,7 @@ const LoadingView = () => {
 	);
 };
 
-const Footer = (props: { loaded: boolean; isLoading: boolean }) => {
+const Footer = (props: { loaded: boolean; isLoading: boolean; hasNoData: boolean }) => {
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const [filteredData] = useLogsStore((store) => store.data.filteredData);
 	const { totalPages, currentOffset, currentPage, perPage, headers, totalCount } = tableOpts;
@@ -248,7 +256,7 @@ const Footer = (props: { loaded: boolean; isLoading: boolean }) => {
 	return (
 		<Stack className={tableStyles.footerContainer} gap={0}>
 			<Stack w="100%" justify="center" align="flex-start">
-				{!props.loaded ? !props.isLoading ? null : <Loader type="dots" /> : <TotalLogsCount />}
+				<TotalLogsCount loaded={props.loaded} isLoading={props.isLoading} hasNoData={props.hasNoData} />
 			</Stack>
 			<Stack w="100%" justify="center">
 				{props.loaded ? (
@@ -358,12 +366,9 @@ const LogTable = (props: { schemaLoading: boolean }) => {
 		? PRIMARY_HEADER_HEIGHT + LOGS_PRIMARY_TOOLBAR_HEIGHT + LOGS_SECONDARY_TOOLBAR_HEIGHT
 		: 0;
 
-	const { getQueryData, loading: logsLoading, error: logsError, fetchCount } = useQueryLogs();
+	const { getQueryData, loading: logsLoading, error: logsError, fetchCount, isFetchingCount } = useQueryLogs();
 	const [currentPage] = useLogsStore((store) => store.tableOpts.currentPage);
 	const [currentOffset, setLogsStore] = useLogsStore((store) => store.tableOpts.currentOffset);
-
-	const footerDataCount = useQuery('FooterData', () => fetchCount());
-	const { isLoading } = footerDataCount;
 
 	useEffect(() => {
 		setLogsStore(setCleanStoreForStreamChange);
@@ -409,7 +414,7 @@ const LogTable = (props: { schemaLoading: boolean }) => {
 			) : (
 				<ErrorView message={errorMessage} />
 			)}
-			<Footer loaded={showTable} isLoading={isLoading} />
+			<Footer loaded={showTable} isLoading={isFetchingCount} hasNoData={hasNoData} />
 		</TableContainer>
 	);
 };

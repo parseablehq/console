@@ -1,6 +1,6 @@
 import { createTheme, rem, Loader } from '@mantine/core';
 import ParseableAnimate from '@/assets/customLoader/ParseableAnimate';
-const theme = createTheme({
+export const theme = createTheme({
 	colors: {
 		brandPrimary: [
 			'#ececff',
@@ -67,14 +67,11 @@ const theme = createTheme({
 	},
 	fontFamily:
 		'Inter ,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji',
+	components: {
+		Loader: Loader.extend({
+			defaultProps: {
+				loaders: { ...Loader.defaultLoaders, parseable: ParseableAnimate },
+			},
+		}),
+	},
 });
-
-theme.components = {
-	Loader: Loader.extend({
-		defaultProps: {
-			loaders: { ...Loader.defaultLoaders, parseable: ParseableAnimate },
-		},
-	}),
-};
-
-export { theme };
