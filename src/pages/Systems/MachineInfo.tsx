@@ -120,7 +120,7 @@ const IngestorInfo = () => {
 					) : null}
 				</Group>
 			</Stack>
-			<DeleteIngestorModal modalOpened={openDeleteModal} closeModal={closeModal} IngestorAddress={deleteUrl} />
+			<DeleteIngestorModal modalOpened={openDeleteModal} closeModal={closeModal} ingestorAddress={deleteUrl} />
 
 			<Stack flex={1} style={{ justifyContent: 'space-around' }}>
 				<Stack style={{ width: '100%', flexDirection: 'row' }}>

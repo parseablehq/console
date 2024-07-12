@@ -22,7 +22,7 @@ const ModalTitle = () => {
 };
 
 export default function DeleteIngestorModal(props: {
-	IngestorAddress: string;
+	ingestorAddress: string;
 	modalOpened: boolean;
 	closeModal: () => void;
 }) {
@@ -30,7 +30,7 @@ export default function DeleteIngestorModal(props: {
 
 	const deleteFn = useCallback(() => {
 		deleteIngestorMutation({
-			ingestorUrl: sanitizeIngestorUrl(props.IngestorAddress),
+			ingestorUrl: sanitizeIngestorUrl(props.ingestorAddress),
 			onSuccess: props.closeModal,
 		});
 	}, []);
@@ -38,7 +38,7 @@ export default function DeleteIngestorModal(props: {
 	return (
 		<Modal size="lg" opened={props.modalOpened} onClose={props.closeModal} title={<ModalTitle />} centered>
 			<Stack style={{ padding: '1rem 1rem 1rem 0.5rem' }}>
-				<Text fw={500}> Do you want to delete {props.IngestorAddress} ? </Text>
+				<Text fw={500}> Do you want to delete {props.ingestorAddress} ? </Text>
 				<Group justify="flex-end" pt="1rem">
 					<Button onClick={props.closeModal} variant="filled">
 						Cancel
