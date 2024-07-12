@@ -1,15 +1,14 @@
 import { Skeleton, Stack, Text, ThemeIcon, Tooltip, Group, Button } from '@mantine/core';
-import { IconTrash } from '@tabler/icons-react';
 import { useClusterStore } from './providers/ClusterProvider';
 import classes from './styles/Systems.module.css';
 import { HumanizeNumber, formatBytes } from '@/utils/formatBytes';
 import { Sparkline } from '@mantine/charts';
 import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import IngestorDeleteModal from './IngestorDeleteModal';
+import DeleteIngestorModal from './DeleteIngestorModal';
 import { useCallback, useEffect, useState } from 'react';
 import { PrometheusMetricResponse, SanitizedMetrics, parsePrometheusResponse, sanitizeIngestorData } from './utils';
-import { IconAlertCircle } from '@tabler/icons-react';
+import { IconAlertCircle, IconTrash } from '@tabler/icons-react';
 
 const fetchIngestorMetrics = async () => {
 	const endpoint = `/api/v1/metrics`;
@@ -85,39 +84,39 @@ const InfoItem = (props: { title: string; value: string; width?: string; loading
 };
 
 const IngestorInfo = () => {
-	const [opened, setOpened] = useState(false);
+	const [openDeleteModal, setOpenDeleteModal] = useState(false);
 	const [recentRecord] = useClusterStore((store) => store.currentMachineRecentRecord);
 	const [ingestorMachines] = useClusterStore((store) => store.ingestorMachines);
 	const ingestor = _.find(ingestorMachines, (ingestor) => ingestor.domain_name === recentRecord?.address);
 	const error = ingestor ? ingestor.error : null || null;
-	const deleteUrl = recentRecord?.address as string;
+	const deleteUrl = recentRecord?.address ?? '';
 
-	const closeModal = () => {
-		setOpened(false);
-	};
+	const closeModal = useCallback(() => {
+		setOpenDeleteModal(false);
+	}, [openDeleteModal]);
 
 	return (
 		<Stack style={{ width: '70%', height: '100%' }} className={classes.machineInfoSection}>
 			<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={8}>
-				<Text fw={500}>Instance Info</Text>
-				{error && (
-					<Tooltip label={error}>
-						<ThemeIcon className={classes.infoIcon} variant="filled" size="sm">
-							<IconAlertCircle stroke={1.5} />
-						</ThemeIcon>
-					</Tooltip>
-				)}
-				{!ingestor?.reachable ? (
-					<Stack style={{ width: '85%' }}>
-						<Group justify="flex-end">
-							<Button onClick={() => setOpened(true)} className={classes.deleteIcon} color="white">
-								<IconTrash height="18" stroke={1.5} />
-							</Button>
-						</Group>
-					</Stack>
-				) : null}
+				<Group style={{ justifyContent: 'space-between', width: '100%' }}>
+					<Group>
+						<Text fw={500}>Instance Info</Text>
+						{error && (
+							<Tooltip label={error}>
+								<ThemeIcon className={classes.infoIcon} variant="filled" size="sm">
+									<IconAlertCircle stroke={1.5} />
+								</ThemeIcon>
+							</Tooltip>
+						)}
+					</Group>
+					{!ingestor?.reachable ? (
+						<Button onClick={() => setOpenDeleteModal(true)} className={classes.deleteIcon} color="white">
+							<IconTrash size={'1rem'} stroke={1.5} />
+						</Button>
+					) : null}
+				</Group>
 			</Stack>
-			<IngestorDeleteModal modalOpened={opened} closeModal={closeModal} IngestorAddress={deleteUrl} />
+			<DeleteIngestorModal modalOpened={openDeleteModal} closeModal={closeModal} IngestorAddress={deleteUrl} />
 
 			<Stack flex={1} style={{ justifyContent: 'space-around' }}>
 				<Stack style={{ width: '100%', flexDirection: 'row' }}>

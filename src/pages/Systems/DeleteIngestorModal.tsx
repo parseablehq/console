@@ -1,6 +1,7 @@
 import { Stack, Text, Group, Button, Modal } from '@mantine/core';
 import { useDeleteIngestor } from '@/hooks/useClusterInfo';
 import classes from './styles/Systems.module.css';
+import { useCallback } from 'react';
 
 function sanitizeIngestorUrl(url: string) {
 	if (url.startsWith('http://')) {
@@ -20,19 +21,19 @@ const ModalTitle = () => {
 	return <Text style={{ fontWeight: 600, marginLeft: '0.5rem' }}>Confirm Delete</Text>;
 };
 
-export default function IngestorDeleteModal(props: {
+export default function DeleteIngestorModal(props: {
 	IngestorAddress: string;
 	modalOpened: boolean;
 	closeModal: () => void;
 }) {
 	const { deleteIngestorMutation, deleteIngestorIsLoading } = useDeleteIngestor();
 
-	const deleteFn = () => {
+	const deleteFn = useCallback(() => {
 		deleteIngestorMutation({
 			ingestorUrl: sanitizeIngestorUrl(props.IngestorAddress),
 			onSuccess: props.closeModal,
 		});
-	};
+	}, []);
 
 	return (
 		<Modal size="lg" opened={props.modalOpened} onClose={props.closeModal} title={<ModalTitle />} centered>
