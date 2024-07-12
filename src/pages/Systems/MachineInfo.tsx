@@ -95,6 +95,10 @@ const IngestorInfo = () => {
 		setOpenDeleteModal(false);
 	}, [openDeleteModal]);
 
+	const openModal = useCallback(() => {
+		setOpenDeleteModal(true);
+	}, [openDeleteModal]);
+
 	return (
 		<Stack style={{ width: '70%', height: '100%' }} className={classes.machineInfoSection}>
 			<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={8}>
@@ -110,7 +114,7 @@ const IngestorInfo = () => {
 						)}
 					</Group>
 					{!ingestor?.reachable ? (
-						<Button onClick={() => setOpenDeleteModal(true)} className={classes.deleteIcon} color="white">
+						<Button onClick={openModal} className={classes.deleteIcon} color="white">
 							<IconTrash size={'1rem'} stroke={1.5} />
 						</Button>
 					) : null}
