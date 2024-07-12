@@ -22,36 +22,43 @@ const ModalTitle = () => {
 };
 
 export default function DeleteIngestorModal(props: {
-	ingestorAddress: string;
+	ingestorAddress: string | undefined;
 	modalOpened: boolean;
-	closeModal: () => void;
+	toggleModal: () => void;
 }) {
 	const { deleteIngestorMutation, deleteIngestorIsLoading } = useDeleteIngestor();
 
-	const deleteFn = useCallback(() => {
+	const deleteIngestor = useCallback(() => {
+		if (!props.ingestorAddress) return;
 		deleteIngestorMutation({
 			ingestorUrl: sanitizeIngestorUrl(props.ingestorAddress),
-			onSuccess: props.closeModal,
+			onSuccess: props.toggleModal,
 		});
 	}, []);
 
 	return (
-		<Modal size="lg" opened={props.modalOpened} onClose={props.closeModal} title={<ModalTitle />} centered>
-			<Stack style={{ padding: '1rem 1rem 1rem 0.5rem' }}>
-				<Text fw={500}> Do you want to delete {props.ingestorAddress} ? </Text>
-				<Group justify="flex-end" pt="1rem">
-					<Button onClick={props.closeModal} variant="filled">
-						Cancel
-					</Button>
-					{!deleteIngestorIsLoading ? (
-						<Button className={classes.deleteBtn} onClick={deleteFn} variant="default">
-							Delete
+		<Modal size="lg" opened={props.modalOpened} onClose={props.toggleModal} title={<ModalTitle />} centered>
+			{props.ingestorAddress ? (
+				<Stack style={{ padding: '1rem 1rem 1rem 0.5rem' }}>
+					<Text fw={500}> Do you want to delete {props.ingestorAddress} ? </Text>
+					<Group justify="flex-end" pt="1rem">
+						<Button onClick={props.toggleModal} variant="filled">
+							Cancel
 						</Button>
-					) : (
-						<Button loading loaderProps={{ type: 'dots' }} />
-					)}
-				</Group>
-			</Stack>
+						{!deleteIngestorIsLoading ? (
+							props.ingestorAddress ? (
+								<Button className={classes.deleteBtn} onClick={deleteIngestor} variant="default">
+									Delete
+								</Button>
+							) : null
+						) : (
+							<Button loading loaderProps={{ type: 'dots' }} />
+						)}
+					</Group>
+				</Stack>
+			) : (
+				<Text fw={500}>Cannot Load Ingestor Address</Text>
+			)}
 		</Modal>
 	);
 }
