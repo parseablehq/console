@@ -2,6 +2,7 @@ import { Stack, Text, Group, Button, Modal } from '@mantine/core';
 import { useDeleteIngestor } from '@/hooks/useClusterInfo';
 import classes from './styles/Systems.module.css';
 import { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function sanitizeIngestorUrl(url: string) {
 	if (url.startsWith('http://')) {
@@ -22,27 +23,27 @@ const ModalTitle = () => {
 };
 
 export default function DeleteIngestorModal(props: {
-	ingestorAddress: string | undefined;
+	ingestorAddress: string | null;
 	modalOpened: boolean;
-	toggleModal: () => void;
+	closeModal: () => void;
 }) {
+	const navigate = useNavigate();
 	const { deleteIngestorMutation, deleteIngestorIsLoading } = useDeleteIngestor();
 
 	const deleteIngestor = useCallback(() => {
 		if (!props.ingestorAddress) return;
 		deleteIngestorMutation({
 			ingestorUrl: sanitizeIngestorUrl(props.ingestorAddress),
-			onSuccess: props.toggleModal,
+			onSuccess: () => navigate(0),
 		});
 	}, []);
-
 	return (
-		<Modal size="lg" opened={props.modalOpened} onClose={props.toggleModal} title={<ModalTitle />} centered>
+		<Modal size="lg" opened={props.modalOpened} onClose={props.closeModal} title={<ModalTitle />} centered>
 			{props.ingestorAddress ? (
 				<Stack style={{ padding: '1rem 1rem 1rem 0.5rem' }}>
 					<Text fw={500}> Do you want to delete {props.ingestorAddress} ? </Text>
 					<Group justify="flex-end" pt="1rem">
-						<Button onClick={props.toggleModal} variant="filled">
+						<Button onClick={props.closeModal} variant="filled">
 							Cancel
 						</Button>
 						{!deleteIngestorIsLoading ? (
