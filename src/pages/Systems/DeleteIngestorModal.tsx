@@ -19,7 +19,11 @@ function sanitizeIngestorUrl(url: string) {
 }
 
 const ModalTitle = () => {
-	return <Text style={{ fontWeight: 600, marginLeft: '0.5rem' }}>Confirm Delete</Text>;
+	return (
+		<Text style={{ fontWeight: 600, marginLeft: '0.5rem' }}>
+			Confirm Delete
+		</Text>
+		);
 };
 
 export default function DeleteIngestorModal(props: {
