@@ -1,5 +1,4 @@
-import { Skeleton, Stack, Text, ThemeIcon, Tooltip, Group, Button, Modal } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { Skeleton, Stack, Text, ThemeIcon, Tooltip, Group, Button } from '@mantine/core';
 import { IconTrash } from '@tabler/icons-react';
 import { useClusterStore } from './providers/ClusterProvider';
 import classes from './styles/Systems.module.css';
@@ -7,7 +6,7 @@ import { HumanizeNumber, formatBytes } from '@/utils/formatBytes';
 import { Sparkline } from '@mantine/charts';
 import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { useClusterInfo, useDeleteIngestor } from '@/hooks/useClusterInfo';
+import IngestorDeleteModal from './IngestorDeleteModal';
 import { useCallback, useEffect, useState } from 'react';
 import { PrometheusMetricResponse, SanitizedMetrics, parsePrometheusResponse, sanitizeIngestorData } from './utils';
 import { IconAlertCircle } from '@tabler/icons-react';
@@ -26,20 +25,6 @@ const fetchIngestorMetrics = async () => {
 
 	return response.body;
 };
-
-function sanitizeIngestorUrl(url: string) {
-	if (url.startsWith('http://')) {
-		url = url.slice(7);
-	} else if (url.startsWith('https://')) {
-		url = url.slice(8);
-	}
-
-	if (url.endsWith('/')) {
-		url = url.slice(0, -1);
-	}
-
-	return url;
-}
 
 const useFetchQuerierMetrics = () => {
 	const [isMetricsFetching, setMetricsFetching] = useState(true);
@@ -99,19 +84,18 @@ const InfoItem = (props: { title: string; value: string; width?: string; loading
 	);
 };
 
-const ModalTitle = () => {
-	return <Text style={{ fontWeight: 600, marginLeft: '0.5rem' }}>Confirm Delete</Text>;
-};
-
 const IngestorInfo = () => {
-	const [opened, { close, open }] = useDisclosure(false);
-	const { deleteIngestorMutation, deleteIngestorIsLoading } = useDeleteIngestor();
-	const { getClusterInfoRefetch } = useClusterInfo();
+	const [opened, setOpened] = useState(false);
 	const [recentRecord] = useClusterStore((store) => store.currentMachineRecentRecord);
 	const [ingestorMachines] = useClusterStore((store) => store.ingestorMachines);
 	const ingestor = _.find(ingestorMachines, (ingestor) => ingestor.domain_name === recentRecord?.address);
 	const error = ingestor ? ingestor.error : null || null;
 	const deleteUrl = recentRecord?.address as string;
+
+	const closeModal = () => {
+		setOpened(false);
+	};
+
 	return (
 		<Stack style={{ width: '70%', height: '100%' }} className={classes.machineInfoSection}>
 			<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={8}>
@@ -126,38 +110,14 @@ const IngestorInfo = () => {
 				{!ingestor?.reachable ? (
 					<Stack style={{ width: '85%' }}>
 						<Group justify="flex-end">
-							<Button onClick={open} className={classes.deleteIcon} color="white">
+							<Button onClick={() => setOpened(true)} className={classes.deleteIcon} color="white">
 								<IconTrash height="18" stroke={1.5} />
 							</Button>
 						</Group>
 					</Stack>
 				) : null}
 			</Stack>
-			<Modal size="lg" opened={opened} onClose={close} title={<ModalTitle />} centered>
-				<Stack style={{ padding: '1rem 1rem 1rem 0.5rem' }}>
-					<Text fw={500}> Do you want to delete {recentRecord?.address} ? </Text>
-					<Group justify="flex-end" pt="1rem">
-						<Button onClick={close} variant="filled">
-							Cancel
-						</Button>
-						{!deleteIngestorIsLoading ? (
-							<Button
-								className={classes.deleteBtn}
-								onClick={() =>
-									deleteIngestorMutation({
-										ingestorUrl: sanitizeIngestorUrl(deleteUrl),
-										onSuccess: getClusterInfoRefetch,
-									})
-								}
-								variant="default">
-								Delete
-							</Button>
-						) : (
-							<Button loading loaderProps={{ type: 'dots' }} />
-						)}
-					</Group>
-				</Stack>
-			</Modal>
+			<IngestorDeleteModal modalOpened={opened} closeModal={closeModal} IngestorAddress={deleteUrl} />
 
 			<Stack flex={1} style={{ justifyContent: 'space-around' }}>
 				<Stack style={{ width: '100%', flexDirection: 'row' }}>
