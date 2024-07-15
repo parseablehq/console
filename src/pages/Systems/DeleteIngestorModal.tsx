@@ -30,23 +30,20 @@ export default function DeleteIngestorModal(props: { modalOpened: boolean; close
 	const [currentMachineAddress, setClusterStore] = useClusterStore((store) => store.currentMachine);
 	const [currentMachineType] = useClusterStore((store) => store.currentMachineType);
 
-	console.log(currentMachineType);
-
 	const onDeleteIngestorSuccess = useCallback(() => {
-		props.closeModal();
-		setClusterStore((store) => setCurrentMachine(store, store.querierMachine.domain_name, 'querier'));
 		getClusterInfoRefetch();
+		setClusterStore((store) => setCurrentMachine(store, store.querierMachine.domain_name, 'querier'));
+		props.closeModal();
 	}, []);
 
 	const deleteIngestor = useCallback(() => {
-		if (!currentMachineAddress) return;
-		if (currentMachineType !== 'ingestor') return;
+		if (!currentMachineAddress || currentMachineType !== 'ingestor') return;
 
 		deleteIngestorMutation({
 			ingestorUrl: sanitizeIngestorUrl(currentMachineAddress),
 			onSuccess: onDeleteIngestorSuccess,
 		});
-	}, [currentMachineAddress]);
+	}, [currentMachineAddress, currentMachineType]);
 
 	return (
 		<Modal

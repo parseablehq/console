@@ -1,4 +1,4 @@
-import { Skeleton, Stack, Text, ThemeIcon, Tooltip, Group, Button } from '@mantine/core';
+import { Skeleton, Stack, Text, ThemeIcon, Tooltip, Group, px } from '@mantine/core';
 import { useClusterStore } from './providers/ClusterProvider';
 import classes from './styles/Systems.module.css';
 import { HumanizeNumber, formatBytes } from '@/utils/formatBytes';
@@ -9,7 +9,9 @@ import DeleteIngestorModal from './DeleteIngestorModal';
 import { useCallback, useEffect, useState } from 'react';
 import { PrometheusMetricResponse, SanitizedMetrics, parsePrometheusResponse, sanitizeIngestorData } from './utils';
 import { IconAlertCircle, IconTrash } from '@tabler/icons-react';
+import IconButton from '@/components/Button/IconButton';
 
+const renderDeleteIcon = () => <IconTrash size={px('1rem')} stroke={1.5} />;
 const fetchIngestorMetrics = async () => {
 	const endpoint = `/api/v1/metrics`;
 	const response = await fetch(endpoint, {
@@ -92,7 +94,6 @@ const IngestorInfo = () => {
 	const toggleDeleteModal = useCallback(() => {
 		setDeleteModalOpen((prev) => !prev);
 	}, []);
-
 	return (
 		<Stack style={{ width: '70%', height: '100%' }} className={classes.machineInfoSection}>
 			<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={8}>
@@ -108,9 +109,7 @@ const IngestorInfo = () => {
 						)}
 					</Group>
 					{!ingestor?.reachable ? (
-						<Button onClick={toggleDeleteModal} className={classes.deleteIcon} color="white">
-							<IconTrash size={'1rem'} stroke={1.5} />
-						</Button>
+						<IconButton renderIcon={renderDeleteIcon} size={38} onClick={toggleDeleteModal} tooltipLabel="Delete" />
 					) : null}
 				</Group>
 			</Stack>

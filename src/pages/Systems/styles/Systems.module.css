@@ -251,12 +251,6 @@
 	color: var(--mantine-color-gray-6);
 }
 
-.deleteIcon {
-	border: 1px solid gray;
-	padding: 0.2rem;
-	color: black;
-}
-
 .deleteBtn {
 	background-color: #545beb;
 	color: white;
