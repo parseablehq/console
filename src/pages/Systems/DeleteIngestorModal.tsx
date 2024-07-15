@@ -27,8 +27,10 @@ const ModalTitle = () => {
 export default function DeleteIngestorModal(props: { modalOpened: boolean; closeModal: () => void }) {
 	const { deleteIngestorMutation, deleteIngestorIsLoading } = useDeleteIngestor();
 	const { getClusterInfoRefetch } = useClusterInfo();
-	const [ingestorAddress, setClusterStore] = useClusterStore((store) => store.currentMachine);
-	const [ingestor] = useClusterStore((store) => store.currentMachineType);
+	const [currentMachineAddress, setClusterStore] = useClusterStore((store) => store.currentMachine);
+	const [currentMachineType] = useClusterStore((store) => store.currentMachineType);
+
+	console.log(currentMachineType);
 
 	const onDeleteIngestorSuccess = useCallback(() => {
 		props.closeModal();
@@ -37,13 +39,14 @@ export default function DeleteIngestorModal(props: { modalOpened: boolean; close
 	}, []);
 
 	const deleteIngestor = useCallback(() => {
-		if (!ingestorAddress) return;
+		if (!currentMachineAddress) return;
+		if (currentMachineType !== 'ingestor') return;
 
 		deleteIngestorMutation({
-			ingestorUrl: sanitizeIngestorUrl(ingestorAddress),
+			ingestorUrl: sanitizeIngestorUrl(currentMachineAddress),
 			onSuccess: onDeleteIngestorSuccess,
 		});
-	}, [ingestorAddress, ingestor]);
+	}, [currentMachineAddress]);
 
 	return (
 		<Modal
@@ -53,10 +56,10 @@ export default function DeleteIngestorModal(props: { modalOpened: boolean; close
 			title={<ModalTitle />}
 			centered
 			size="36rem">
-			{ingestorAddress ? (
+			{currentMachineAddress ? (
 				<Stack style={{ paddingBottom: '0rem' }} gap={24}>
 					<Stack gap={0}>
-						<Text style={{ fontSize: '0.8rem' }}>Do you want to delete {ingestorAddress} ? </Text>
+						<Text style={{ fontSize: '0.8rem' }}>Do you want to delete {currentMachineAddress} ? </Text>
 					</Stack>
 					<Group justify="flex-end">
 						<Button
