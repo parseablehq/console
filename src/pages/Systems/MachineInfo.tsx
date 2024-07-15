@@ -84,14 +84,13 @@ const InfoItem = (props: { title: string; value: string; width?: string; loading
 };
 
 const IngestorInfo = () => {
-	const [openDeleteModal, setOpenDeleteModal] = useState(false);
+	const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
 	const [recentRecord] = useClusterStore((store) => store.currentMachineRecentRecord);
 	const [ingestorMachines] = useClusterStore((store) => store.ingestorMachines);
 	const ingestor = _.find(ingestorMachines, (ingestor) => ingestor.domain_name === recentRecord?.address);
 	const error = ingestor ? ingestor.error : null || null;
-	const [ingestorAddress] = useClusterStore((store) => store.currentMachine);
 	const toggleDeleteModal = useCallback(() => {
-		setOpenDeleteModal((prev) => !prev);
+		setDeleteModalOpen((prev) => !prev);
 	}, []);
 
 	return (
@@ -116,11 +115,7 @@ const IngestorInfo = () => {
 				</Group>
 			</Stack>
 
-			<DeleteIngestorModal
-				modalOpened={openDeleteModal}
-				closeModal={toggleDeleteModal}
-				ingestorAddress={ingestorAddress}
-			/>
+			<DeleteIngestorModal modalOpened={isDeleteModalOpen} closeModal={toggleDeleteModal} />
 
 			<Stack flex={1} style={{ justifyContent: 'space-around' }}>
 				<Stack style={{ width: '100%', flexDirection: 'row' }}>
