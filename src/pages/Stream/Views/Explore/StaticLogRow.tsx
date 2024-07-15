@@ -28,8 +28,11 @@ const LogRow: FC<LogRowProps> = (props) => {
 	];
 	const columnsToShow = headers.filter((header) => !columnsToIgnore.includes(header));
 	const onClick = useCallback((log: Log) => {
+		const selectedText = window.getSelection()?.toString();
+		if (selectedText!== undefined && selectedText?.length > 0) return;
 		setLogsStore((store) => setSelectedLog(store, log));
 	}, []);
+
 	return (
 		<Fragment>
 			{pageData.map((log, logIndex) => {
