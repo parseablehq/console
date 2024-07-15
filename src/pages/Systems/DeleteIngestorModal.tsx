@@ -3,7 +3,6 @@ import { useClusterInfo, useDeleteIngestor } from '@/hooks/useClusterInfo';
 import { useClusterStore, clusterStoreReducers } from './providers/ClusterProvider';
 import classes from './styles/Systems.module.css';
 import { useCallback } from 'react';
-import { machine } from 'os';
 
 function sanitizeIngestorUrl(url: string) {
 	if (url.startsWith('http://')) {
