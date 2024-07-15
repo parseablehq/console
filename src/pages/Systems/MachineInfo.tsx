@@ -90,11 +90,8 @@ const IngestorInfo = () => {
 	const ingestor = _.find(ingestorMachines, (ingestor) => ingestor.domain_name === recentRecord?.address);
 	const error = ingestor ? ingestor.error : null || null;
 	const [ingestorAddress] = useClusterStore((store) => store.currentMachine);
-	const openModal = useCallback(() => {
-		setOpenDeleteModal(true);
-	}, []);
-	const closeModal = useCallback(() => {
-		setOpenDeleteModal(false);
+	const toggleDeleteModal = useCallback(() => {
+		setOpenDeleteModal((prev) => !prev);
 	}, []);
 
 	return (
@@ -112,14 +109,18 @@ const IngestorInfo = () => {
 						)}
 					</Group>
 					{!ingestor?.reachable ? (
-						<Button onClick={openModal} className={classes.deleteIcon} color="white">
+						<Button onClick={toggleDeleteModal} className={classes.deleteIcon} color="white">
 							<IconTrash size={'1rem'} stroke={1.5} />
 						</Button>
 					) : null}
 				</Group>
 			</Stack>
 
-			<DeleteIngestorModal modalOpened={openDeleteModal} closeModal={closeModal} ingestorAddress={ingestorAddress} />
+			<DeleteIngestorModal
+				modalOpened={openDeleteModal}
+				closeModal={toggleDeleteModal}
+				ingestorAddress={ingestorAddress}
+			/>
 
 			<Stack flex={1} style={{ justifyContent: 'space-around' }}>
 				<Stack style={{ width: '100%', flexDirection: 'row' }}>

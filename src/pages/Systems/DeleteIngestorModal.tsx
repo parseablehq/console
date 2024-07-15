@@ -1,8 +1,8 @@
 import { Stack, Text, Group, Button, Modal } from '@mantine/core';
-import { useDeleteIngestor } from '@/hooks/useClusterInfo';
+import { useClusterInfo, useDeleteIngestor } from '@/hooks/useClusterInfo';
+import { useClusterStore, clusterStoreReducers } from './providers/ClusterProvider';
 import classes from './styles/Systems.module.css';
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 function sanitizeIngestorUrl(url: string) {
 	if (url.startsWith('http://')) {
@@ -18,12 +18,10 @@ function sanitizeIngestorUrl(url: string) {
 	return url;
 }
 
+const { setCurrentMachine } = clusterStoreReducers;
+
 const ModalTitle = () => {
-	return (
-		<Text style={{ fontWeight: 600, marginLeft: '0.5rem' }}>
-			Confirm Delete
-		</Text>
-		);
+	return <Text style={{ fontWeight: 600, marginLeft: '0.4.25rem' }}>Confirm Delete</Text>;
 };
 
 export default function DeleteIngestorModal(props: {
@@ -31,34 +29,48 @@ export default function DeleteIngestorModal(props: {
 	modalOpened: boolean;
 	closeModal: () => void;
 }) {
-	const navigate = useNavigate();
 	const { deleteIngestorMutation, deleteIngestorIsLoading } = useDeleteIngestor();
+	const { getClusterInfoRefetch } = useClusterInfo();
+	const [, setClusterStore] = useClusterStore((store) => store.currentMachine);
+
+	const deleteIngestorSuccess = () => {
+		props.closeModal();
+		setClusterStore((store) => setCurrentMachine(store, store.querierMachine.domain_name, 'querier'));
+		getClusterInfoRefetch();
+	};
 
 	const deleteIngestor = useCallback(() => {
 		if (!props.ingestorAddress) return;
 		deleteIngestorMutation({
 			ingestorUrl: sanitizeIngestorUrl(props.ingestorAddress),
-			onSuccess: () => navigate(0),
+			onSuccess: deleteIngestorSuccess,
 		});
 	}, []);
+
 	return (
-		<Modal size="lg" opened={props.modalOpened} onClose={props.closeModal} title={<ModalTitle />} centered>
+		<Modal
+			styles={{ header: { paddingBottom: '0rem' } }}
+			opened={props.modalOpened}
+			onClose={props.closeModal}
+			title={<ModalTitle />}
+			centered
+			size="36rem">
 			{props.ingestorAddress ? (
-				<Stack style={{ padding: '1rem 1rem 1rem 0.5rem' }}>
-					<Text fw={500}> Do you want to delete {props.ingestorAddress} ? </Text>
-					<Group justify="flex-end" pt="1rem">
-						<Button onClick={props.closeModal} variant="filled">
+				<Stack style={{ paddingBottom: '0rem' }} gap={24}>
+					<Stack gap={0}>
+						<Text style={{ fontSize: '0.8rem' }}>Do you want to delete {props.ingestorAddress} ? </Text>
+					</Stack>
+					<Group justify="flex-end">
+						<Button
+							className={classes.deleteBtn}
+							loading={deleteIngestorIsLoading}
+							onClick={deleteIngestor}
+							variant="filled">
+							Delete
+						</Button>
+						<Button onClick={props.closeModal} variant="default">
 							Cancel
 						</Button>
-						{!deleteIngestorIsLoading ? (
-							props.ingestorAddress ? (
-								<Button className={classes.deleteBtn} onClick={deleteIngestor} variant="default">
-									Delete
-								</Button>
-							) : null
-						) : (
-							<Button loading loaderProps={{ type: 'dots' }} />
-						)}
 					</Group>
 				</Stack>
 			) : (
