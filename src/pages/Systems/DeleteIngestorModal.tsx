@@ -42,7 +42,7 @@ export default function DeleteIngestorModal(props: { modalOpened: boolean; close
 			ingestorUrl: sanitizeIngestorUrl(ingestorAddress),
 			onSuccess: onDeleteIngestorSuccess,
 		});
-	}, [ingestorAddress, onDeleteIngestorSuccess]);
+	}, [ingestorAddress]);
 
 	return (
 		<Modal
