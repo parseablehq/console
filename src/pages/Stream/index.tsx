@@ -47,7 +47,7 @@ const Logs: FC = () => {
 	const fetchSchema = useCallback(() => {
 		setStreamStore(streamChangeCleanup);
 		getDataSchema();
-	}, []);
+	}, [currentStream]);
 
 	useEffect(() => {
 		if (!_.isEmpty(currentStream)) {
@@ -64,7 +64,14 @@ const Logs: FC = () => {
 	// todo - have separate ui components for loading and error states
 
 	return (
-		<Box style={{ flex: 1, display: 'flex', position: 'relative', flexDirection: 'row', width: '100%' }}>
+		<Box
+			style={{
+				flex: 1,
+				display: 'flex',
+				position: 'relative',
+				flexDirection: 'row',
+				width: '100%',
+			}}>
 			<ViewLog />
 			<Stack style={{ width: sideBarWidth }}>
 				<SideBar />

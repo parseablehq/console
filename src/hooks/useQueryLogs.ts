@@ -31,6 +31,7 @@ export const useQueryLogs = () => {
 	const _dataRef = useRef<Log[] | null>(null);
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
+	const [isFetchingCount, setIsFetchingCount] = useMountedState<boolean>(false);
 	const [pageLogData, setPageLogData] = useMountedState<LogsData | null>(null);
 	const [querySearch, setQuerySearch] = useMountedState<LogsSearch>({
 		search: '',
@@ -118,6 +119,7 @@ export const useQueryLogs = () => {
 
 	const fetchCount = () => {
 		try {
+			setIsFetchingCount(true);
 			const defaultQuery = `select count(*) as count from ${currentStream}`;
 			const query = isQuerySearchActive
 				? custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM')
@@ -136,6 +138,8 @@ export const useQueryLogs = () => {
 			}
 		} catch (e) {
 			console.log(e);
+		} finally {
+			setIsFetchingCount(false);
 		}
 	};
 
@@ -155,5 +159,6 @@ export const useQueryLogs = () => {
 		getQueryData,
 		resetData,
 		fetchCount,
+		isFetchingCount,
 	};
 };
