@@ -16,13 +16,13 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-		<QueryClientProvider client={queryClient}>
-			<Mantine>
-				<ErrorBoundary>
-					<BrowserRouter>
-						<App />
-					</BrowserRouter>
-				</ErrorBoundary>
-			</Mantine>
-		</QueryClientProvider>
+	<QueryClientProvider client={queryClient}>
+		<Mantine>
+			<ErrorBoundary>
+				<BrowserRouter>
+					<App />
+				</BrowserRouter>
+			</ErrorBoundary>
+		</Mantine>
+	</QueryClientProvider>,
 );

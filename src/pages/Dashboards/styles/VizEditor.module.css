@@ -1,0 +1,28 @@
+.modalTitle {
+	font-size: 1rem;
+	font-weight: 600;
+}
+
+.container {
+    min-height: 500px;
+    flex-direction: row;
+    gap: 20;
+}
+
+.vizContainer {
+    width: 40%;
+   justify-content: center;
+}
+
+.configContainer {
+    width: 60%;
+}
+
+.divider {
+    border: 0.5px solid var(--mantine-color-gray-2);
+}
+
+.fieldTitle {
+    font-weight: 500;
+    font-size: 0.7rem;
+}

@@ -7,12 +7,13 @@ import {
 	IconServerCog,
 	IconHomeStats,
 	IconListDetails,
+	IconChartBar
 } from '@tabler/icons-react';
 import { FC, useCallback, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
-import { HOME_ROUTE, CLUSTER_ROUTE, USERS_MANAGEMENT_ROUTE, STREAM_ROUTE } from '@/constants/routes';
+import { HOME_ROUTE, CLUSTER_ROUTE, USERS_MANAGEMENT_ROUTE, STREAM_ROUTE, DASHBOARDS_ROUTE } from '@/constants/routes';
 import InfoModal from './infoModal';
 import { getStreamsSepcificAccess, getUserSepcificStreams } from './rolesHandler';
 import Cookies from 'js-cookie';
@@ -34,6 +35,12 @@ const navItems = [
 		label: 'Home',
 		path: '/',
 		route: HOME_ROUTE,
+	},
+	{
+		icon: IconChartBar,
+		label: 'Dashboards',
+		path: '/dashboards',
+		route: DASHBOARDS_ROUTE,
 	},
 	{
 		icon: IconListDetails,

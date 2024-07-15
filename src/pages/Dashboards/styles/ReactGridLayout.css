@@ -1,0 +1,4 @@
+.react-grid-item.react-grid-placeholder {
+    background-color: var(--mantine-color-gray-3);
+    border-radius: 0.4rem;
+}

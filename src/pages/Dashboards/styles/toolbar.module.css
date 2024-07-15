@@ -1,0 +1,25 @@
+.editLayoutBtn {
+    background-color: white;
+    color: var(--mantine-color-gray-7);
+    border: 1px #e9ecef solid;
+    border-radius: rem(8px);
+    font-size: 0.65rem;
+
+    &:hover {
+        color: black;
+    }
+}
+
+.editLayoutBtn:hover {
+    background-color: #E0E0E0;
+}
+
+.toolbarContainer {
+    padding: 0.8rem;
+    border-bottom: 1px solid var(--mantine-color-gray-1);
+}
+
+.dashboardTitle {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
