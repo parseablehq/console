@@ -30,6 +30,7 @@ const LogRow: FC<LogRowProps> = (props) => {
 	const onClick = useCallback((log: Log) => {
 		const selectedText = window.getSelection()?.toString();
 		if (selectedText!== undefined && selectedText?.length > 0) return;
+		
 		setLogsStore((store) => setSelectedLog(store, log));
 	}, []);
 
