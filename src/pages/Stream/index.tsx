@@ -47,7 +47,7 @@ const Logs: FC = () => {
 	const fetchSchema = useCallback(() => {
 		setStreamStore(streamChangeCleanup);
 		getDataSchema();
-	}, []);
+	}, [currentStream]);
 
 	useEffect(() => {
 		if (!_.isEmpty(currentStream)) {

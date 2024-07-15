@@ -1,0 +1,31 @@
+.container {
+    transition: none;
+    border: 1px solid var(--mantine-color-gray-2);
+    height: 100%;
+    border-radius: 0.4rem;
+}
+
+.tileHeader {
+    padding: 0.6rem 0.9rem;
+    border-bottom: 1px solid var(--mantine-color-gray-2);
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tileTitle {
+    font-size: 0.8rem;
+    font-weight: 500;
+    flex: 1;
+}
+
+.tileDescription {
+    color: var(--mantine-color-gray-6);
+    font-size: 0.7rem;
+}
+
+.tileContainer {
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+}

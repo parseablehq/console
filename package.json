@@ -29,6 +29,7 @@
 		"axios": "^1.4.0",
 		"dayjs": "^1.11.10",
 		"embla-carousel-react": "7.1.0",
+		"html2canvas": "^1.4.1",
 		"http-status-codes": "^2.2.0",
 		"immer": "^10.0.2",
 		"js-cookie": "^3.0.5",

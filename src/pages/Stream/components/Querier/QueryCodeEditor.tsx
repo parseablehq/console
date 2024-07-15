@@ -173,7 +173,7 @@ const QueryCodeEditor: FC<{ queryCodeEditorRef: MutableRefObject<any>, onSqlSear
 	);
 };
 
-const SchemaList = (props: { currentStream: string | null; fields: Field[] }) => {
+export const SchemaList = (props: { currentStream: string | null; fields: Field[] }) => {
 	const { currentStream, fields } = props;
 	if (!fields || fields.length === 0) return null;
 
