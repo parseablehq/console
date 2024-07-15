@@ -21,20 +21,19 @@ function sanitizeIngestorUrl(url: string) {
 const { setCurrentMachine } = clusterStoreReducers;
 
 const ModalTitle = () => {
-	return <Text style={{ fontWeight: 600, marginLeft: '0 4.25rem' }}>Confirm Delete</Text>;
+	return <Text style={{ fontWeight: 600 }}>Confirm Delete</Text>;
 };
 
 export default function DeleteIngestorModal(props: { modalOpened: boolean; closeModal: () => void }) {
 	const { deleteIngestorMutation, deleteIngestorIsLoading } = useDeleteIngestor();
 	const { getClusterInfoRefetch } = useClusterInfo();
-	const [, setClusterStore] = useClusterStore((store) => store.currentMachine);
-	const [ingestorAddress] = useClusterStore((store) => store.currentMachine);
+	const [ingestorAddress, setClusterStore] = useClusterStore((store) => store.currentMachine);
 
 	const onDeleteIngestorSuccess = useCallback(() => {
 		props.closeModal();
 		setClusterStore((store) => setCurrentMachine(store, store.querierMachine.domain_name, 'querier'));
 		getClusterInfoRefetch();
-	}, [ingestorAddress]);
+	}, []);
 
 	const deleteIngestor = useCallback(() => {
 		if (!ingestorAddress) return;
@@ -43,7 +42,7 @@ export default function DeleteIngestorModal(props: { modalOpened: boolean; close
 			ingestorUrl: sanitizeIngestorUrl(ingestorAddress),
 			onSuccess: onDeleteIngestorSuccess,
 		});
-	}, [ingestorAddress]);
+	}, [ingestorAddress, onDeleteIngestorSuccess]);
 
 	return (
 		<Modal
