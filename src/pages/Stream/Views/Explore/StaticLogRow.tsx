@@ -16,25 +16,28 @@ type LogRowProps = {
 	isPinned?: boolean;
 };
 
-const CopyFieldValues = (props: { fieldValue: any }) => {
-	const handleCopyBtnClick = useCallback((e:MouseEvent,copy: () => void) => {
-		e.stopPropagation()
+const renderCopyButtons = (copied: boolean, copy: () => void) => {
+	const handleCopyBtnClick = useCallback((e: MouseEvent, copy: () => void) => {
+		e.stopPropagation();
 		copy();
 	}, []);
+	return (
+		<Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
+			<ActionIcon variant="subtle" onClick={(e) => handleCopyBtnClick(e, copy)}>
+				{copied ? (
+					<IconCheck size={12} style={{ backgroundColor: 'transparent', color: '#211F1F' }} stroke={1.5} />
+				) : (
+					<IconCopy size={12} style={{ backgroundColor: 'transparent', color: '#211F1F' }} stroke={1.5} />
+				)}
+			</ActionIcon>
+		</Tooltip>
+	);
+};
 
+const CopyFieldValues = (props: { fieldValue: any }) => {
 	return (
 		<CopyButton value={props.fieldValue} timeout={2000}>
-			{({ copied, copy }) => (
-				<Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
-					<ActionIcon variant="subtle" onClick={(e) => handleCopyBtnClick(e,copy)}>
-						{copied ? (
-							<IconCheck style={{ backgroundColor: 'transparent', color: '#211F1F' }} stroke={1.2} />
-						) : (
-							<IconCopy style={{ backgroundColor: 'transparent', color: '#211F1F' }} stroke={1.2} />
-						)}
-					</ActionIcon>
-				</Tooltip>
-			)}
+			{({ copied, copy }) => renderCopyButtons(copied, copy)}
 		</CopyButton>
 	);
 };
@@ -51,8 +54,7 @@ const LogRow: FC<LogRowProps> = (props) => {
 		...headers.filter((header) => (isPinned ? !pinnedColumns.includes(header) : pinnedColumns.includes(header))),
 	];
 	const columnsToShow = headers.filter((header) => !columnsToIgnore.includes(header));
-	const onClick = useCallback(( log: Log) => {
-
+	const onClick = useCallback((log: Log) => {
 		const selectedText = window.getSelection()?.toString();
 		if (selectedText !== undefined && selectedText?.length > 0) return;
 
@@ -63,7 +65,7 @@ const LogRow: FC<LogRowProps> = (props) => {
 		<Fragment>
 			{pageData.map((log, logIndex) => {
 				return (
-					<tr key={logIndex} className={logIndex % 2 ? trStyle : trEvenStyle} onClick={() => onClick( log)}>
+					<tr key={logIndex} className={logIndex % 2 ? trStyle : trEvenStyle} onClick={() => onClick(log)}>
 						{columnsToShow.map((header, logSchemaIndex) => {
 							const parsedData = parseLogData(log[header], header);
 							return (
