@@ -1,4 +1,4 @@
-import { Skeleton, Stack, Text, ThemeIcon, Tooltip } from '@mantine/core';
+import { Skeleton, Stack, Group, Text, ThemeIcon, Tooltip, CopyButton, ActionIcon } from '@mantine/core';
 import { useClusterStore } from './providers/ClusterProvider';
 import classes from './styles/Systems.module.css';
 import { HumanizeNumber, formatBytes } from '@/utils/formatBytes';
@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useCallback, useEffect, useState } from 'react';
 import { PrometheusMetricResponse, SanitizedMetrics, parsePrometheusResponse, sanitizeIngestorData } from './utils';
-import { IconAlertCircle } from '@tabler/icons-react';
+import { IconAlertCircle, IconCheck, IconCopy } from '@tabler/icons-react';
 
 const fetchIngestorMetrics = async () => {
 	const endpoint = `/api/v1/metrics`;
@@ -63,11 +63,28 @@ const useFetchQuerierMetrics = () => {
 const InfoItem = (props: { title: string; value: string; width?: string; loading?: boolean }) => {
 	return (
 		<Stack w={props.width ? props.width : '25%'} gap={4}>
-			<Text
-				className={classes.fieldDescription}
-				style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-				{props.title}
-			</Text>
+			<Group>
+				<Text
+					className={classes.fieldDescription}
+					style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+					{props.title}
+				</Text>
+				{props.title === 'Address' ? (
+					<CopyButton value={props.value} timeout={2000}>
+						{({ copied, copy }) => (
+							<Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
+								<ActionIcon variant="subtle" onClick={copy}>
+									{copied ? (
+										<IconCheck className={classes.copyBtn} stroke={1.2} />
+									) : (
+										<IconCopy className={classes.copyBtn} stroke={1.2} />
+									)}
+								</ActionIcon>
+							</Tooltip>
+						)}
+					</CopyButton>
+				) : null}
+			</Group>
 			{props.loading ? (
 				<Skeleton height="1.8rem" />
 			) : (
@@ -104,10 +121,7 @@ const IngestorInfo = () => {
 					<InfoItem title="Address" value={recentRecord?.address || ''} />
 					<InfoItem title="Cache" value={recentRecord?.cache || ''} />
 					<InfoItem title="Staging Files" value={HumanizeNumber(recentRecord?.parseable_staging_files || 0)} />
-					<InfoItem
-						title="Staging Size"
-						value={formatBytes(recentRecord?.parseable_storage_size_staging || 0) || ''}
-					/>
+					<InfoItem title="Staging Size" value={formatBytes(recentRecord?.parseable_storage_size_staging || 0) || ''} />
 				</Stack>
 				<Stack style={{ width: '100%', flexDirection: 'row' }}>
 					<InfoItem title="Commit" value={recentRecord?.commit || ''} />

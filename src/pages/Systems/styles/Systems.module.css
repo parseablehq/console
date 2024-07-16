@@ -1,253 +1,256 @@
 .sectionContainer {
-    width: 100%;
-    border: 1px solid var(--mantine-color-gray-3);
-    /* margin: 1rem; */
-    padding: 0.675rem;
-    padding-bottom: 0;
-    border-radius: 0.275rem;
+	width: 100%;
+	border: 1px solid var(--mantine-color-gray-3);
+	/* margin: 1rem; */
+	padding: 0.675rem;
+	padding-bottom: 0;
+	border-radius: 0.275rem;
 }
 
 .sectionTitleContainer {
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
-    padding: 1rem 1rem 0rem 0.5rem;
+	flex-direction: row;
+	justify-content: space-between;
+	width: 100%;
+	padding: 1rem 1rem 0rem 0.5rem;
 }
 
 .sectionTitle {
-    font-size: 1.2rem;
-    font-weight: 600;
+	font-size: 1.2rem;
+	font-weight: 600;
 }
 
 .usageIndicatorContainer {
-    background-color: var(--mantine-color-gray-2);
-    width: 100%;
-    height: 100%;
-    border-radius: 0.25rem;
-    height: 1.6rem;
-    justify-content: center;
-    &.ok {
-        background-color: var(--mantine-color-green-2);
-    }
-    &.alert {
-        background-color: var(--mantine-color-red-1);
-    }
-    .usageIndicatorText {
-        font-size: 0.8rem;
-        text-align: center;
-        z-index: 9;
-        font-weight: 500;
-    }
-    .usageLevelIndicator {
-        position: absolute;
-        height: 100%;
-        border-top-left-radius: 0.25rem;
-        border-bottom-left-radius: 0.25rem;
+	background-color: var(--mantine-color-gray-2);
+	width: 100%;
+	height: 100%;
+	border-radius: 0.25rem;
+	height: 1.6rem;
+	justify-content: center;
+	&.ok {
+		background-color: var(--mantine-color-green-2);
+	}
+	&.alert {
+		background-color: var(--mantine-color-red-1);
+	}
+	.usageIndicatorText {
+		font-size: 0.8rem;
+		text-align: center;
+		z-index: 9;
+		font-weight: 500;
+	}
+	.usageLevelIndicator {
+		position: absolute;
+		height: 100%;
+		border-top-left-radius: 0.25rem;
+		border-bottom-left-radius: 0.25rem;
 
-        &.ok {
-            background-color: var(--mantine-color-green-5);
-        }
-        &.alert {
-            background-color: var(--mantine-color-red-3);
-        }
-    }
+		&.ok {
+			background-color: var(--mantine-color-green-5);
+		}
+		&.alert {
+			background-color: var(--mantine-color-red-3);
+		}
+	}
 }
 
 .statusChip {
-    height: 1.6rem;
-    background-color: var(--mantine-color-gray-2);
-    border-radius: var(--mantine-spacing-sm);
-    text-align: center;
-    align-items: center;
-    justify-content: center;
-    text-transform: capitalize;
-    font-size: 0.875rem;
-    font-weight: 600;
-    width: fit-content;
-    padding: 0 1rem;
-    &.offline {
-        background-color: var(--mantine-color-gray-1);
-    }
+	height: 1.6rem;
+	background-color: var(--mantine-color-gray-2);
+	border-radius: var(--mantine-spacing-sm);
+	text-align: center;
+	align-items: center;
+	justify-content: center;
+	text-transform: capitalize;
+	font-size: 0.875rem;
+	font-weight: 600;
+	width: fit-content;
+	padding: 0 1rem;
+	&.offline {
+		background-color: var(--mantine-color-gray-1);
+	}
 
-    &.online {
-        color: var(--mantine-color-green-9);
-        background-color: var(--mantine-color-green-1);
-    }
+	&.online {
+		color: var(--mantine-color-green-9);
+		background-color: var(--mantine-color-green-1);
+	}
 }
 
 .noAlertsIcon {
-    color: var(--mantine-color-green-4);
+	color: var(--mantine-color-green-4);
 }
 
 .infoIcon {
-    background-color: transparent;
-    color: var(--mantine-color-red-5);
-    cursor: pointer;
+	background-color: transparent;
+	color: var(--mantine-color-red-5);
+	cursor: pointer;
 }
 
 .infoDetailsContainer {
-    width: 10rem;
+	width: 10rem;
 }
 
 .removeIcon {
-    color: var(--mantine-color-red-3);
-    height: 1rem;
-    width: 1rem;
-    cursor: pointer;
+	color: var(--mantine-color-red-3);
+	height: 1rem;
+	width: 1rem;
+	cursor: pointer;
 }
 
 .infoTitle {
-    font-size: 0.9rem;
-    font-weight: 600;
+	font-size: 0.9rem;
+	font-weight: 600;
 }
 
-
 .infoText {
-    font-size: 0.875rem;
-    /* font-weight: 600; */
+	font-size: 0.875rem;
+	/* font-weight: 600; */
 }
 
 .cellTitle {
-    font-size: 14px;
-    font-weight: 600;
-    padding: 0.5rem 1.25rem;
+	font-size: 14px;
+	font-weight: 600;
+	padding: 0.5rem 1.25rem;
 }
 
 .cellText {
-    font-size: 14px;
+	font-size: 14px;
 }
 
 .container {
-    flex-direction: row;
-    flex: 1;
+	flex-direction: row;
+	flex: 1;
 }
 
 .sectionContainerr {
-    flex: 1;
+	flex: 1;
 }
 
 .leftSectionTitle {
-    font-size: 0.8rem;
-    font-weight: 500;
+	font-size: 0.8rem;
+	font-weight: 500;
 }
 
 .totalMachines {
-    font-size: 0.8rem;
-    color: var(--mantine-color-gray-6)
+	font-size: 0.8rem;
+	color: var(--mantine-color-gray-6);
 }
 
 .serverItem {
-    padding: 0.8rem 1.6rem;
-    border-top: 1px solid var(--mantine-color-gray-2);
-    /* border-bottom: 1px solid var(--mantine-color-gray-2); */
-    cursor: pointer;
-    &:hover {
-        background-color: var(--mantine-color-gray-0);
-    }
-    &.serverItemActive {
-        background-color: var(--mantine-color-gray-0);
-    }
+	padding: 0.8rem 1.6rem;
+	border-top: 1px solid var(--mantine-color-gray-2);
+	/* border-bottom: 1px solid var(--mantine-color-gray-2); */
+	cursor: pointer;
+	&:hover {
+		background-color: var(--mantine-color-gray-0);
+	}
+	&.serverItemActive {
+		background-color: var(--mantine-color-gray-0);
+	}
 
-    .liveIcon {
-        color: var(--mantine-color-green-6);
-        background: var(--mantine-color-green-1);
-        border-radius: 50%;
-        padding: 0.2rem;
-    }
+	.liveIcon {
+		color: var(--mantine-color-green-6);
+		background: var(--mantine-color-green-1);
+		border-radius: 50%;
+		padding: 0.2rem;
+	}
 
-    .serverDownIcon {
-        color: var(--mantine-color-red-6);
-        background: var(--mantine-color-red-1);
-        border-radius: 50%;
-        padding: 0.2rem;
-    }
+	.serverDownIcon {
+		color: var(--mantine-color-red-6);
+		background: var(--mantine-color-red-1);
+		border-radius: 50%;
+		padding: 0.2rem;
+	}
 
-    .serverDomain {
-        font-size: 0.7rem;
-        color: var(--mantine-color-gray-7);
-    }
+	.serverDomain {
+		font-size: 0.7rem;
+		color: var(--mantine-color-gray-7);
+	}
 }
 
 .bigNoSection {
-    width: 100%;
-    flex-direction: row;
+	width: 100%;
+	flex-direction: row;
 }
 
 .bigNoContainer {
-    border: 1px solid var(--mantine-color-gray-3);
-    padding: 0.5rem 1rem;
-    /* padding: 1rem 4rem 1rem 1rem; */
-    flex: 1;
-    border-radius: 0.3rem;
-    gap: 0.4rem;
-    .bigNoTitle {
-       color: var(--mantine-color-gray-6);
-    }
+	border: 1px solid var(--mantine-color-gray-3);
+	padding: 0.5rem 1rem;
+	/* padding: 1rem 4rem 1rem 1rem; */
+	flex: 1;
+	border-radius: 0.3rem;
+	gap: 0.4rem;
+	.bigNoTitle {
+		color: var(--mantine-color-gray-6);
+	}
 
-    .bigNoText {
-        font-size: 1.4rem;
-        font-weight: 500;
-    }
+	.bigNoText {
+		font-size: 1.4rem;
+		font-weight: 500;
+	}
 }
 
 .graphSectionContainer {
-    .graphTitleContaier {
-        flex-direction: row;
-        margin-bottom: 1rem;
-        .graphTitleFiller {
-            border: 1px solid var(--mantine-color-gray-3);
-            flex: 1;
-            height: 1px;
-            align-self: center;
-        }
-    }
+	.graphTitleContaier {
+		flex-direction: row;
+		margin-bottom: 1rem;
+		.graphTitleFiller {
+			border: 1px solid var(--mantine-color-gray-3);
+			flex: 1;
+			height: 1px;
+			align-self: center;
+		}
+	}
 
-    .graphContainer {
-        padding: 0.5rem;
-    }
+	.graphContainer {
+		padding: 0.5rem;
+	}
 }
 
 .eventCountGraph {
-    width: 70%;
-    height: 100%;
-    border-radius: 0.3rem;
-    padding: 1rem;
-    border: 1px solid var(--mantine-color-gray-3);
-    justify-content: space-between;
+	width: 70%;
+	height: 100%;
+	border-radius: 0.3rem;
+	padding: 1rem;
+	border: 1px solid var(--mantine-color-gray-3);
+	justify-content: space-between;
 }
 
 .memoryInfoSection {
-    border: 1px solid var(--mantine-color-gray-3);
-    padding: 1rem;
-    border-radius: 0.3rem;
-    width: 30%;
+	border: 1px solid var(--mantine-color-gray-3);
+	padding: 1rem;
+	border-radius: 0.3rem;
+	width: 30%;
 }
 
 .machineInfoSection {
-    border: 1px solid var(--mantine-color-gray-3);
-    padding: 1rem;
-    width: 70%;
-    border-radius: 0.3rem;
+	border: 1px solid var(--mantine-color-gray-3);
+	padding: 1rem;
+	width: 70%;
+	border-radius: 0.3rem;
 }
 
 .overallSectionContainer {
-    width: 30%;
-    height: 100%;
-    border-radius: 0.3rem;
-    padding: 1rem;
-    border: 1px solid var(--mantine-color-gray-3);
+	width: 30%;
+	height: 100%;
+	border-radius: 0.3rem;
+	padding: 1rem;
+	border: 1px solid var(--mantine-color-gray-3);
 }
 
 .compressionText {
-    color: var(--mantine-color-green-7);
+	color: var(--mantine-color-green-7);
 }
 
 .fieldTitle {
-    font-size: var(--mantine-font-size-md);
-    font-weight: 500;
+	font-size: var(--mantine-font-size-md);
+	font-weight: 500;
 }
 
 .fieldDescription {
-    font-size: var(--mantine-font-size-md);
-    color: var(--mantine-color-gray-6);
+	font-size: var(--mantine-font-size-md);
+	color: var(--mantine-color-gray-6);
+}
+
+.copyBtn {
+	color: var(--mantine-color-gray-6);
 }
