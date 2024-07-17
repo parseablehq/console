@@ -68,7 +68,7 @@ const LogRow: FC<LogRowProps> = (props) => {
 	];
 	const columnsToShow = headers.filter((header) => !columnsToIgnore.includes(header));
 
-	const handleMouseHover = useCallback((row: number, column: number, isCursorInside: boolean) => {
+	const handleMouseHover = useCallback(( isCursorInside: boolean, row?: number, column?: number) => {
 		if (!isCursorInside) {
 			setHoveredCell(null);
 		} else {
@@ -93,8 +93,8 @@ const LogRow: FC<LogRowProps> = (props) => {
 						return (
 							<td
 								key={`${header}-${logSchemaIndex}`}
-								onMouseEnter={() => handleMouseHover(logIndex, logSchemaIndex, true)}
-								onMouseLeave={() => handleMouseHover(0, 0, false)}>
+								onMouseEnter={() => handleMouseHover( true, logIndex, logSchemaIndex,)}
+								onMouseLeave={() => handleMouseHover(false)}>
 								<Group style={{ position: 'relative' }} wrap="nowrap">
 									{parsedData}
 									{hoveredCell === `${logIndex}-${logSchemaIndex}` && (
