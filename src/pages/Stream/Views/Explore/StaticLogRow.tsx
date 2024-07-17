@@ -1,7 +1,7 @@
 import { parseLogData } from '@/utils';
-import { Group, CopyButton, ActionIcon, Tooltip, Box } from '@mantine/core';
+import { Group, Stack, ActionIcon, Tooltip, Box } from '@mantine/core';
 import { IconArrowNarrowRight } from '@tabler/icons-react';
-import { FC, Fragment, useCallback, MouseEvent } from 'react';
+import { FC, Fragment, useCallback, MouseEvent, useState, useEffect } from 'react';
 import { Log } from '@/@types/parseable/api/query';
 import tableStyles from '../../styles/Logs.module.css';
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
@@ -16,14 +16,34 @@ type LogRowProps = {
 	isPinned?: boolean;
 };
 
-const renderCopyButtons = (copied: boolean, copy: () => void) => {
-	const handleCopyBtnClick = useCallback((e: MouseEvent, copy: () => void) => {
-		e.stopPropagation();
-		copy();
-	}, []);
+const CopyFieldValue = (props: { fieldValue: any }) => {
+	const [copied, setCopied] = useState(false);
+
+	useEffect(() => {
+		if (copied) {
+			const timer = setTimeout(() => {
+				setCopied(false);
+			}, 2000);
+			return () => clearTimeout(timer);
+		}
+	}, [copied]);
+
+	const copy = async () => {
+		await navigator.clipboard.writeText(props.fieldValue);
+	};
+
+	const handleCopyBtnClick = useCallback(
+		async (e: MouseEvent) => {
+			e.stopPropagation();
+			await copy();
+			setCopied(true);
+		},
+		[copy],
+	);
+
 	return (
 		<Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
-			<ActionIcon variant="subtle" onClick={(e) => handleCopyBtnClick(e, copy)}>
+			<ActionIcon variant="subtle" onClick={handleCopyBtnClick}>
 				{copied ? (
 					<IconCheck size={12} style={{ backgroundColor: 'transparent', color: '#211F1F' }} stroke={1.5} />
 				) : (
@@ -34,15 +54,8 @@ const renderCopyButtons = (copied: boolean, copy: () => void) => {
 	);
 };
 
-const CopyFieldValues = (props: { fieldValue: any }) => {
-	return (
-		<CopyButton value={props.fieldValue} timeout={2000}>
-			{({ copied, copy }) => renderCopyButtons(copied, copy)}
-		</CopyButton>
-	);
-};
-
 const LogRow: FC<LogRowProps> = (props) => {
+	const [hoveredCell, setHoveredCell] = useState<string | null>(null);
 	const { isPinned, rowArrows } = props;
 	const classes = tableStyles;
 	const { trStyle, trEvenStyle } = classes;
@@ -54,6 +67,15 @@ const LogRow: FC<LogRowProps> = (props) => {
 		...headers.filter((header) => (isPinned ? !pinnedColumns.includes(header) : pinnedColumns.includes(header))),
 	];
 	const columnsToShow = headers.filter((header) => !columnsToIgnore.includes(header));
+
+	const handleMouseHover = useCallback((row: number, column: number, isCursorInside: boolean) => {
+		if (!isCursorInside) {
+			setHoveredCell(null);
+		} else {
+			setHoveredCell(`${row}-${column}`);
+		}
+	}, []);
+
 	const onClick = useCallback((log: Log) => {
 		const selectedText = window.getSelection()?.toString();
 		if (selectedText !== undefined && selectedText?.length > 0) return;
@@ -63,26 +85,35 @@ const LogRow: FC<LogRowProps> = (props) => {
 
 	return (
 		<Fragment>
-			{pageData.map((log, logIndex) => {
-				return (
-					<tr key={logIndex} className={logIndex % 2 ? trStyle : trEvenStyle} onClick={() => onClick(log)}>
-						{columnsToShow.map((header, logSchemaIndex) => {
-							const parsedData = parseLogData(log[header], header);
-							return (
-								<td key={`${header}-${logSchemaIndex}`} className={classes.tableDivision}>
-									<Group style={{ justifyContent: 'space-between', width: '100%' }} wrap="nowrap">
-										{parsedData}
-										<Group style={{ zIndex: 1 }} className={classes.copyBtn}>
-											<CopyFieldValues fieldValue={parsedData} />
-										</Group>
-									</Group>
-								</td>
-							);
-						})}
-						{rowArrows && <ViewLogArrow />}
-					</tr>
-				);
-			})}
+			{pageData.map((log, logIndex) => (
+				<tr key={logIndex} className={logIndex % 2 ? trStyle : trEvenStyle} onClick={() => onClick(log)}>
+					{columnsToShow.map((header, logSchemaIndex) => {
+						const parsedData = parseLogData(log[header], header);
+
+						return (
+							<td
+								key={`${header}-${logSchemaIndex}`}
+								onMouseEnter={() => handleMouseHover(logIndex, logSchemaIndex, true)}
+								onMouseLeave={() => handleMouseHover(0, 0, false)}>
+								<Group style={{ position: 'relative' }} wrap="nowrap">
+									{parsedData}
+									{hoveredCell === `${logIndex}-${logSchemaIndex}` && (
+										<Stack
+											style={{
+												position: 'absolute',
+												right: '0',
+												background: 'white',
+											}}>
+											<CopyFieldValue fieldValue={parsedData} />
+										</Stack>
+									)}
+								</Group>
+							</td>
+						);
+					})}
+					{rowArrows && <ViewLogArrow />}
+				</tr>
+			))}
 		</Fragment>
 	);
 };

@@ -68,7 +68,7 @@ const Header: FC<HeaderProps> = (props) => {
 	const { onClose } = props;
 	const classes = viewLogStyles;
 
-	const { headerContainer, headerTimeStampTitle, headerTimeStamp, headerCloseBtn } = classes;
+	const { headerContainer, headerTimeStampTitle, headerTimeStamp, closeBtn } = classes;
 
 	const timeStamp = useMemo(() => dayjs(`${props.timeStamp}+00:00`).utc().format('DD/MM/YYYY (hh:mm:ss A) z'), []);
 
@@ -84,7 +84,7 @@ const Header: FC<HeaderProps> = (props) => {
 				<Box />
 			)}
 
-			<CloseButton className={headerCloseBtn} iconSize={px('1.5rem')} onClick={onClose} />
+			<CloseButton className={closeBtn} iconSize={px('1.5rem')} onClick={onClose} />
 		</Box>
 	);
 };

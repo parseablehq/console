@@ -25,11 +25,11 @@
 	font-weight: 400;
 }
 
-.headerCloseBtn {
+.closeBtn {
 	color: #fff;
 }
 
-.headerCloseBtn:hover {
+.closeBtn:hover {
 	color: #000;
 	background-color: #fff;
 }

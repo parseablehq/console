@@ -278,13 +278,3 @@
 	color: var(--mantine-color-gray-5);
 	cursor: pointer;
 }
-
-.copyBtn {
-	visibility: hidden;
-	opacity: 0;
-}
-
-.tableDivision:hover .copyBtn {
-	opacity: 1;
-	visibility: visible;
-}

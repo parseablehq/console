@@ -60,21 +60,7 @@ const useFetchQuerierMetrics = () => {
 	return { isQuerierMetricsFetching: isMetricsFetching, metrics, fetchQuerierMetrics: fetchData };
 };
 
-const renderCopyButtons = (copied: boolean, copy: () => void) => {
-	return (
-		<Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
-			<ActionIcon variant="subtle" onClick={copy}>
-				{copied ? (
-					<IconCheck size={12} className={classes.copyBtn} stroke={2.2} />
-				) : (
-					<IconCopy size={12} className={classes.copyBtn} stroke={2.2} />
-				)}
-			</ActionIcon>
-		</Tooltip>
-	);
-};
-
-const InfoItem = (props: { title: string; value: string; width?: string; loading?: boolean; copyBtn?: true }) => {
+const InfoItem = (props: { title: string; value: string; width?: string; loading?: boolean; showCopyBtn?: true }) => {
 	return (
 		<Stack w={props.width ? props.width : '25%'} gap={4}>
 			<Group gap={0}>
@@ -83,9 +69,19 @@ const InfoItem = (props: { title: string; value: string; width?: string; loading
 					style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
 					{props.title}
 				</Text>
-				{props.copyBtn && (
+				{props.showCopyBtn && (
 					<CopyButton value={props.value} timeout={2000}>
-						{({ copied, copy }) => renderCopyButtons(copied, copy)}
+						{({ copied, copy }) => (
+							<Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
+								<ActionIcon variant="subtle" onClick={copy}>
+									{copied ? (
+										<IconCheck size={12} className={classes.copyBtn} stroke={2.2} />
+									) : (
+										<IconCopy size={12} className={classes.copyBtn} stroke={2.2} />
+									)}
+								</ActionIcon>
+							</Tooltip>
+						)}
 					</CopyButton>
 				)}
 			</Group>
@@ -122,7 +118,7 @@ const IngestorInfo = () => {
 			</Stack>
 			<Stack flex={1} style={{ justifyContent: 'space-around' }}>
 				<Stack style={{ width: '100%', flexDirection: 'row' }}>
-					<InfoItem title="Address" value={recentRecord?.address || ''} />
+					<InfoItem title="Address" value={recentRecord?.address || ''} showCopyBtn />
 					<InfoItem title="Cache" value={recentRecord?.cache || ''} />
 					<InfoItem title="Staging Files" value={HumanizeNumber(recentRecord?.parseable_staging_files || 0)} />
 					<InfoItem title="Staging Size" value={formatBytes(recentRecord?.parseable_storage_size_staging || 0) || ''} />
@@ -151,7 +147,7 @@ const QuerierInfo = () => {
 			<Text fw={500}>Instance Info</Text>
 			<Stack flex={1} style={{ justifyContent: 'space-around' }}>
 				<Stack style={{ width: '100%', flexDirection: 'row' }}>
-					<InfoItem title="Address" value={currentMachine || ''} copyBtn={true} />
+					<InfoItem title="Address" value={currentMachine || ''} showCopyBtn />
 					<InfoItem title="Cache" value={instanceConfig?.cache || ''} />
 					<InfoItem title="Commit" value={instanceConfig?.commit || ''} />
 					<InfoItem title="Version" value={instanceConfig?.version || ''} />
