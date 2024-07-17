@@ -16,7 +16,7 @@ type LogRowProps = {
 	isPinned?: boolean;
 };
 
-const CopyFieldValue = (props: { fieldValue: any }) => {
+const CopyButton = (props: { fieldValue: any }) => {
 	const [copied, setCopied] = useState(false);
 
 	useEffect(() => {
@@ -30,7 +30,7 @@ const CopyFieldValue = (props: { fieldValue: any }) => {
 
 	const copy = useCallback(async () => {
 		await navigator.clipboard.writeText(props.fieldValue);
-	},[props.fieldValue]);
+	}, [props.fieldValue]);
 
 	const handleCopyBtnClick = useCallback(
 		async (e: MouseEvent) => {
@@ -68,7 +68,7 @@ const LogRow: FC<LogRowProps> = (props) => {
 	];
 	const columnsToShow = headers.filter((header) => !columnsToIgnore.includes(header));
 
-	const handleMouseHover = useCallback(( isCursorInside: boolean, row?: number, column?: number) => {
+	const handleMouseHover = useCallback((isCursorInside: boolean, row?: number, column?: number) => {
 		if (!isCursorInside) {
 			setHoveredCell(null);
 		} else {
@@ -93,7 +93,7 @@ const LogRow: FC<LogRowProps> = (props) => {
 						return (
 							<td
 								key={`${header}-${logSchemaIndex}`}
-								onMouseEnter={() => handleMouseHover( true, logIndex, logSchemaIndex,)}
+								onMouseEnter={() => handleMouseHover(true, logIndex, logSchemaIndex)}
 								onMouseLeave={() => handleMouseHover(false)}>
 								<Group style={{ position: 'relative' }} wrap="nowrap">
 									{parsedData}
@@ -104,7 +104,7 @@ const LogRow: FC<LogRowProps> = (props) => {
 												right: '0',
 												background: 'white',
 											}}>
-											<CopyFieldValue fieldValue={parsedData} />
+											<CopyButton fieldValue={parsedData} />
 										</Stack>
 									)}
 								</Group>
