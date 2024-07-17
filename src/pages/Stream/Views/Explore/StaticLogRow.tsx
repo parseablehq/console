@@ -69,10 +69,10 @@ const LogRow: FC<LogRowProps> = (props) => {
 	const columnsToShow = headers.filter((header) => !columnsToIgnore.includes(header));
 
 	const handleMouseHover = useCallback((isCursorInside: boolean, row?: number, column?: number) => {
-		if (!isCursorInside) {
-			setHoveredCell(null);
-		} else {
+		if (isCursorInside && row !== undefined && column !== undefined) {
 			setHoveredCell(`${row}-${column}`);
+		} else  {
+			setHoveredCell(null);
 		}
 	}, []);
 
