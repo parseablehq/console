@@ -1,31 +1,40 @@
 .container {
-    padding: 1.25rem;
+	padding: 1.25rem;
 }
 
 .headerContainer {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background-color: #545BEB;
-    padding: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	background-color: #545beb;
+	padding: 1rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 }
 
 .headerTimeStampTitle {
-    color: #fff;
-    font-size: 0.875rem;
-    font-weight: 700;
+	color: #fff;
+	font-size: 0.875rem;
+	font-weight: 700;
 }
 
 .headerTimeStamp {
-    color: #fff;
-    font-size: 0.875rem;
-    font-weight: 400;
+	color: #fff;
+	font-size: 0.875rem;
+	font-weight: 400;
+}
+
+.closeBtn {
+	color: #fff;
+}
+
+.closeBtn:hover {
+	color: #000;
+	background-color: #fff;
 }
 
 .dataChipContainer {
-    display: flex;
-    flex-wrap: wrap;
+	display: flex;
+	flex-wrap: wrap;
 }
