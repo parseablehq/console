@@ -60,7 +60,7 @@ const useFetchQuerierMetrics = () => {
 	return { isQuerierMetricsFetching: isMetricsFetching, metrics, fetchQuerierMetrics: fetchData };
 };
 
-const InfoItem = (props: { title: string; value: string; width?: string; loading?: boolean; showCopyBtn?: true }) => {
+const InfoItem = (props: { title: string; value: string; width?: string; loading?: boolean; showCopyBtn?: boolean }) => {
 	return (
 		<Stack w={props.width ? props.width : '25%'} gap={4}>
 			<Group gap={0}>

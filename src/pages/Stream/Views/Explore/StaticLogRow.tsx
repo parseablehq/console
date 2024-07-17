@@ -28,9 +28,9 @@ const CopyFieldValue = (props: { fieldValue: any }) => {
 		}
 	}, [copied]);
 
-	const copy = async () => {
+	const copy = useCallback(async () => {
 		await navigator.clipboard.writeText(props.fieldValue);
-	};
+	},[props.fieldValue]);
 
 	const handleCopyBtnClick = useCallback(
 		async (e: MouseEvent) => {
