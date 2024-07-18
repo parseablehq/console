@@ -56,6 +56,16 @@ If you're looking to develop or test Parseable Console, you can follow the steps
 4. Run `pnpm dev` to start the console.
 5. Open `http://localhost:3001` in your browser.
 
+Enabling hot reload:
+
+1. Disable CORS on the server by setting `P_CORS=false`.
+2. Configure the following environment variables:
+    ```
+    VITE_USE_BASIC_AUTH=true
+    VITE_USERNAME=username
+    VITE_PASSWORD=password
+    ```
+
 To test production build
 
 1. Run `pnpm build:test` to create a release build in test mode.
