@@ -10,6 +10,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { PrometheusMetricResponse, SanitizedMetrics, parsePrometheusResponse, sanitizeIngestorData } from './utils';
 import { IconAlertCircle, IconTrash } from '@tabler/icons-react';
 import IconButton from '@/components/Button/IconButton';
+import { useGetIngestorInfo } from '@/hooks/useClusterInfo';
 
 const renderDeleteIcon = () => <IconTrash size={px('1rem')} stroke={1.5} />;
 const fetchIngestorMetrics = async () => {
@@ -90,7 +91,10 @@ const IngestorInfo = () => {
 	const [recentRecord] = useClusterStore((store) => store.currentMachineRecentRecord);
 	const [ingestorMachines] = useClusterStore((store) => store.ingestorMachines);
 	const ingestor = _.find(ingestorMachines, (ingestor) => ingestor.domain_name === recentRecord?.address);
+	const [selectedMachine] = useClusterStore((store) => store.currentMachine);
+	const ingestorInfo = _.find(ingestorMachines, (ingestor) => ingestor.domain_name === selectedMachine);
 	const error = ingestor ? ingestor.error : null || null;
+	const { getIngestorInfoLoading } = useGetIngestorInfo();
 	const toggleDeleteModal = useCallback(() => {
 		setDeleteModalOpen((prev) => !prev);
 	}, []);
@@ -108,7 +112,7 @@ const IngestorInfo = () => {
 							</Tooltip>
 						)}
 					</Group>
-					{ingestor && !ingestor?.reachable ? (
+					{!ingestorInfo?.reachable ? (
 						<IconButton renderIcon={renderDeleteIcon} size={38} onClick={toggleDeleteModal} tooltipLabel="Delete" />
 					) : null}
 				</Group>
@@ -118,14 +122,19 @@ const IngestorInfo = () => {
 
 			<Stack flex={1} style={{ justifyContent: 'space-around' }}>
 				<Stack style={{ width: '100%', flexDirection: 'row' }}>
-					<InfoItem title="Address" value={recentRecord?.address || ''} />
-					<InfoItem title="Cache" value={recentRecord?.cache || ''} />
+					<InfoItem title="Address" value={ingestorInfo?.domain_name || '–'} />
+					<InfoItem title="Cache" value={recentRecord?.cache || '–'} loading={getIngestorInfoLoading} />
 					<InfoItem title="Staging Files" value={HumanizeNumber(recentRecord?.parseable_staging_files || 0)} />
-					<InfoItem title="Staging Size" value={formatBytes(recentRecord?.parseable_storage_size_staging || 0) || ''} />
+					<InfoItem title="Staging Size" value={formatBytes(recentRecord?.parseable_storage_size_staging || 0)} />
 				</Stack>
 				<Stack style={{ width: '100%', flexDirection: 'row' }}>
-					<InfoItem title="Commit" value={recentRecord?.commit || ''} />
-					<InfoItem title="Staging Directory" width="75%" value={recentRecord?.staging || ''} />
+					<InfoItem title="Commit" value={recentRecord?.commit || '–'} loading={getIngestorInfoLoading} />
+					<InfoItem
+						title="Staging Directory"
+						width="75%"
+						value={ingestorInfo?.staging_path || '–'}
+						loading={getIngestorInfoLoading}
+					/>
 				</Stack>
 			</Stack>
 		</Stack>
