@@ -143,7 +143,7 @@ const generateCountQuery = (
 	whereClause: string,
 ) => {
 	const range = compactTypeIntervalMap[compactType];
-	return `SELECT DATE_BIN('${range}', p_timestamp, '${startTime.toISOString()}') AS timestamp, COUNT(*) AS log_count FROM ${streamName} WHERE p_timestamp BETWEEN '${startTime.toISOString()}' AND '${endTime.toISOString()}' AND ${whereClause} GROUP BY timestamp ORDER BY timestamp`;
+	return `SELECT DATE_BIN('${range}', p_timestamp, '${startTime.toISOString()}') AS date_bin_timestamp, COUNT(*) AS log_count FROM ${streamName} WHERE p_timestamp BETWEEN '${startTime.toISOString()}' AND '${endTime.toISOString()}' AND ${whereClause} GROUP BY date_bin_timestamp ORDER BY date_bin_timestamp`;
 };
 
 const NoDataView = () => {
@@ -157,7 +157,7 @@ const NoDataView = () => {
 };
 
 type GraphRecord = {
-	timestamp: string;
+	date_bin_timestamp: string;
 	log_count: number;
 };
 
@@ -179,7 +179,7 @@ const parseGraphData = (data: GraphRecord[] = [], avg: number, startTime: Date, 
 	const allTimestamps = getAllIntervals(modifiedStartTime, modifiedEndTime, compactType);
 	const parsedData = allTimestamps.map((ts) => {
 		const countData = data.find((d) => {
-			return new Date(`${d.timestamp}Z`).toISOString() === ts.toISOString();
+			return new Date(`${d.date_bin_timestamp}Z`).toISOString() === ts.toISOString();
 		});
 
 		if (!countData || typeof countData !== 'object') {
