@@ -108,7 +108,7 @@ const IngestorInfo = () => {
 							</Tooltip>
 						)}
 					</Group>
-					{!ingestor?.reachable ? (
+					{ingestor && !ingestor?.reachable ? (
 						<IconButton renderIcon={renderDeleteIcon} size={38} onClick={toggleDeleteModal} tooltipLabel="Delete" />
 					) : null}
 				</Group>
