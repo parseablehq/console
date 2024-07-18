@@ -102,7 +102,7 @@ const LogRow: FC<LogRowProps> = (props) => {
 											style={{
 												position: 'absolute',
 												right: '0',
-												background: 'white',
+												background: '#f1f3f5',
 											}}>
 											<CopyButton fieldValue={parsedData} />
 										</Stack>
