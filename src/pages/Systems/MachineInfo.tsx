@@ -1,4 +1,4 @@
-import { Skeleton, Stack, Text, ThemeIcon, Tooltip, Group, px } from '@mantine/core';
+import { Skeleton, Stack, Group, Text, ThemeIcon, Tooltip, CopyButton, ActionIcon, px } from '@mantine/core';
 import { useClusterStore } from './providers/ClusterProvider';
 import classes from './styles/Systems.module.css';
 import { HumanizeNumber, formatBytes } from '@/utils/formatBytes';
@@ -8,9 +8,8 @@ import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import DeleteIngestorModal from './DeleteIngestorModal';
 import { useCallback, useEffect, useState } from 'react';
 import { PrometheusMetricResponse, SanitizedMetrics, parsePrometheusResponse, sanitizeIngestorData } from './utils';
-import { IconAlertCircle, IconTrash } from '@tabler/icons-react';
+import { IconAlertCircle, IconTrash, IconCheck, IconCopy } from '@tabler/icons-react';
 import IconButton from '@/components/Button/IconButton';
-import { useGetIngestorInfo } from '@/hooks/useClusterInfo';
 
 const renderDeleteIcon = () => <IconTrash size={px('1rem')} stroke={1.5} />;
 const fetchIngestorMetrics = async () => {
@@ -64,14 +63,37 @@ const useFetchQuerierMetrics = () => {
 	return { isQuerierMetricsFetching: isMetricsFetching, metrics, fetchQuerierMetrics: fetchData };
 };
 
-const InfoItem = (props: { title: string; value: string; width?: string; loading?: boolean }) => {
+const InfoItem = (props: {
+	title: string;
+	value: string;
+	width?: string;
+	loading?: boolean;
+	showCopyBtn?: boolean;
+}) => {
 	return (
 		<Stack w={props.width ? props.width : '25%'} gap={4}>
-			<Text
-				className={classes.fieldDescription}
-				style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-				{props.title}
-			</Text>
+			<Group gap={0}>
+				<Text
+					className={classes.fieldDescription}
+					style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+					{props.title}
+				</Text>
+				{props.showCopyBtn && (
+					<CopyButton value={props.value} timeout={2000}>
+						{({ copied, copy }) => (
+							<Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
+								<ActionIcon variant="subtle" onClick={copy}>
+									{copied ? (
+										<IconCheck size={12} className={classes.copyBtn} stroke={2.2} />
+									) : (
+										<IconCopy size={12} className={classes.copyBtn} stroke={2.2} />
+									)}
+								</ActionIcon>
+							</Tooltip>
+						)}
+					</CopyButton>
+				)}
+			</Group>
 			{props.loading ? (
 				<Skeleton height="1.8rem" />
 			) : (
@@ -94,7 +116,6 @@ const IngestorInfo = () => {
 	const [selectedMachine] = useClusterStore((store) => store.currentMachine);
 	const ingestorInfo = _.find(ingestorMachines, (ingestor) => ingestor.domain_name === selectedMachine);
 	const error = ingestor ? ingestor.error : null || null;
-	const { getIngestorInfoLoading } = useGetIngestorInfo();
 	const toggleDeleteModal = useCallback(() => {
 		setDeleteModalOpen((prev) => !prev);
 	}, []);
@@ -122,19 +143,14 @@ const IngestorInfo = () => {
 
 			<Stack flex={1} style={{ justifyContent: 'space-around' }}>
 				<Stack style={{ width: '100%', flexDirection: 'row' }}>
-					<InfoItem title="Address" value={ingestorInfo?.domain_name || '–'} />
-					<InfoItem title="Cache" value={recentRecord?.cache || '–'} loading={getIngestorInfoLoading} />
+					<InfoItem title="Address" value={ingestorInfo?.domain_name || '–'} showCopyBtn />
+					<InfoItem title="Cache" value={recentRecord?.cache || '–'} />
 					<InfoItem title="Staging Files" value={HumanizeNumber(recentRecord?.parseable_staging_files || 0)} />
-					<InfoItem title="Staging Size" value={formatBytes(recentRecord?.parseable_storage_size_staging || 0)} />
+					<InfoItem title="Staging Size" value={formatBytes(recentRecord?.parseable_storage_size_staging || 0) || ''} />
 				</Stack>
 				<Stack style={{ width: '100%', flexDirection: 'row' }}>
-					<InfoItem title="Commit" value={recentRecord?.commit || '–'} loading={getIngestorInfoLoading} />
-					<InfoItem
-						title="Staging Directory"
-						width="75%"
-						value={ingestorInfo?.staging_path || '–'}
-						loading={getIngestorInfoLoading}
-					/>
+					<InfoItem title="Commit" value={recentRecord?.commit || '–'} />
+					<InfoItem title="Staging Directory" width="75%" value={ingestorInfo?.staging_path || '–'} />
 				</Stack>
 			</Stack>
 		</Stack>
@@ -156,7 +172,7 @@ const QuerierInfo = () => {
 			<Text fw={500}>Instance Info</Text>
 			<Stack flex={1} style={{ justifyContent: 'space-around' }}>
 				<Stack style={{ width: '100%', flexDirection: 'row' }}>
-					<InfoItem title="Address" value={currentMachine || ''} />
+					<InfoItem title="Address" value={currentMachine || ''} showCopyBtn />
 					<InfoItem title="Cache" value={instanceConfig?.cache || ''} />
 					<InfoItem title="Commit" value={instanceConfig?.commit || ''} />
 					<InfoItem title="Version" value={instanceConfig?.version || ''} />
