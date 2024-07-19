@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from 'react-query';
-import { deleteLogStream, getLogStreamList, createLogStream } from '@/api/logStream';
+import { deleteLogStream, getLogStreamList, createLogStream, updateLogStream } from '@/api/logStream';
 import { AxiosError, isAxiosError } from 'axios';
 import { notifyError, notifySuccess } from '@/utils/notification';
 
@@ -69,6 +69,27 @@ export const useLogStream = () => {
 		return 0;
 	});
 
+	const {
+		mutate: updateLogStreamMutation,
+		isSuccess: updateLogStreamIsSuccess,
+		isError: updateLogStreamIsError,
+		isLoading: updateLogStreamIsLoading,
+	} = useMutation(
+		(data: { streamName: string; headers: Record<string, string | boolean>; onSuccess: () => void }) =>
+			updateLogStream(data.streamName, null, data.headers),
+		{
+			onError: (data: AxiosError) => {
+				if (isAxiosError(data) && typeof data.message === 'string') {
+					notifyError({ message: data.message });
+				}
+			},
+			onSuccess: (_data, variables) => {
+				variables.onSuccess && variables.onSuccess();
+				notifySuccess({ message: `Stream ${variables.streamName} updated successfully` });
+			},
+		},
+	);
+
 	return {
 		deleteLogStreamMutation,
 		deleteLogStreamIsSuccess,
@@ -83,5 +104,9 @@ export const useLogStream = () => {
 		createLogStreamIsSuccess,
 		createLogStreamIsError,
 		createLogStreamIsLoading,
+		updateLogStreamMutation,
+		updateLogStreamIsSuccess,
+		updateLogStreamIsError,
+		updateLogStreamIsLoading,
 	};
 };
