@@ -278,3 +278,10 @@
 	color: var(--mantine-color-gray-5);
 	cursor: pointer;
 }
+
+.copyIcon {
+	color: #211f1f;
+}
+.copyIcon:hover {
+	background-color: #f1f3f5;
+}

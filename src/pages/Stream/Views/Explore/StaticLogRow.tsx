@@ -17,6 +17,7 @@ type LogRowProps = {
 };
 
 const CopyButton = (props: { fieldValue: any }) => {
+	const classes = tableStyles;
 	const [copied, setCopied] = useState(false);
 
 	useEffect(() => {
@@ -43,12 +44,8 @@ const CopyButton = (props: { fieldValue: any }) => {
 
 	return (
 		<Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
-			<ActionIcon variant="subtle" onClick={handleCopyBtnClick}>
-				{copied ? (
-					<IconCheck size={12} style={{ backgroundColor: 'transparent', color: '#211F1F' }} stroke={1.5} />
-				) : (
-					<IconCopy size={12} style={{ backgroundColor: 'transparent', color: '#211F1F' }} stroke={1.5} />
-				)}
+			<ActionIcon className={classes.copyIcon} variant="subtle" onClick={handleCopyBtnClick}>
+				{copied ? <IconCheck size={12} stroke={1.5} /> : <IconCopy size={12} stroke={1.5} />}
 			</ActionIcon>
 		</Tooltip>
 	);
@@ -93,16 +90,17 @@ const LogRow: FC<LogRowProps> = (props) => {
 						return (
 							<td
 								key={`${header}-${logSchemaIndex}`}
+								style={{ position: 'relative' }}
 								onMouseEnter={() => handleMouseEnter(logIndex, logSchemaIndex)}
 								onMouseLeave={handleMouseLeave}>
-								<Group style={{ position: 'relative' }} wrap="nowrap">
+								<Group wrap="nowrap">
 									{parsedData}
 									{hoveredCell === `${logIndex}-${logSchemaIndex}` && (
 										<Stack
 											style={{
 												position: 'absolute',
 												right: '0',
-												background: '#f1f3f5',
+												background: 'transparent',
 											}}>
 											<CopyButton fieldValue={parsedData} />
 										</Stack>
