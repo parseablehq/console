@@ -260,3 +260,7 @@
 .copyBtn {
 	color: var(--mantine-color-gray-6);
 }
+
+.copyBtn:hover {
+	background: transparent;
+}
