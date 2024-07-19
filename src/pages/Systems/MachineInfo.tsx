@@ -82,12 +82,8 @@ const InfoItem = (props: {
 					<CopyButton value={props.value} timeout={2000}>
 						{({ copied, copy }) => (
 							<Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
-								<ActionIcon variant="subtle" onClick={copy}>
-									{copied ? (
-										<IconCheck size={12} className={classes.copyBtn} stroke={2.2} />
-									) : (
-										<IconCopy size={12} className={classes.copyBtn} stroke={2.2} />
-									)}
+								<ActionIcon className={classes.copyBtn} variant="subtle" onClick={copy}>
+									{copied ? <IconCheck size={12} stroke={2.2} /> : <IconCopy size={12} stroke={2.2} />}
 								</ActionIcon>
 							</Tooltip>
 						)}
