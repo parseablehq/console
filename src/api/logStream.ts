@@ -12,9 +12,12 @@ import {
 	LIST_SAVED_FILTERS_URL,
 	UPDATE_SAVED_FILTERS_URL,
 	DELETE_SAVED_FILTERS_URL,
-	CREATE_SAVED_FILTERS_URL
+	CREATE_SAVED_FILTERS_URL,
+	CREATE_DASHBOARDS_URL,
+	LIST_DASHBOARDS
 } from './constants';
 import { LogStreamData, LogStreamSchemaData } from '@/@types/parseable/api/stream';
+import { Dashboard } from '@/pages/Dashboards/providers/DashboardsProvider';
 
 export const getLogStreamList = () => {
 	return Axios().get<LogStreamData>(LOG_STREAM_LIST_URL);

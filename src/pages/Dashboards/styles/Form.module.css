@@ -25,3 +25,45 @@
     padding: 1rem;
     overflow-y: scroll;
 }
+
+.schemaListContainer {
+    width: 30%;
+    overflow: hidden;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    border: 1px solid var(--mantine-color-gray-1);
+}
+
+.schemaTableHeader {
+    background-color: var(--mantine-color-gray-1);
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    padding: 0.5rem;
+}
+
+.schemaList {
+    overflow: scroll;
+    padding: 0.5rem 0rem;
+}
+
+.schemaListItem {
+    padding: 0 0.5rem;
+    border-bottom: 1px solid var(--mantine-color-gray-1);
+}
+
+.schemaItemText {
+    font-size: 0.7rem;
+}
+
+.schemaItemDataType {
+    font-size: 0.7rem;
+}
+
+.warningText {
+    color: var(--mantine-color-gray-5);
+    font-size: 0.75rem;
+}
+
+.warningIcon {
+    color: var(--mantine-color-gray-5);
+}

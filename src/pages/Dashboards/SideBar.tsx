@@ -2,19 +2,23 @@ import { DASHBOARDS_SIDEBAR_WIDTH } from '@/constants/theme';
 import { Button, Stack, Text } from '@mantine/core';
 import classes from './styles/sidebar.module.css';
 import { IconPlus } from '@tabler/icons-react';
-import { Dashboard, useDashboardsStore } from './providers/DashboardsProvider';
-import { useEffect, useState } from 'react';
+import { Dashboard, useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
+import { useCallback, useEffect, useState } from 'react';
 import _ from 'lodash';
+
+const {selectDashboard} = dashboardsStoreReducers;
 
 interface DashboardItemProps extends Dashboard {
 	activeDashboardId: undefined | string;
+	onSelect: (id: string) => void;
 }
+
 const DashboardListItem = (props: DashboardItemProps) => {
-	const { name, id, pinned, tiles, activeDashboardId } = props;
+	const { name, id, pinned, tiles, activeDashboardId, onSelect } = props;
 	const totalTiles = _.size(tiles);
 	const isActive = id === activeDashboardId;
 	return (
-		<Stack gap={0} className={`${classes.dashboardItem} ${isActive ? classes.active : ''}`}>
+		<Stack gap={0} className={`${classes.dashboardItem} ${isActive ? classes.active : ''}`} onClick={() => onSelect(id)}>
 			<Text className={classes.dashboardTitle} lineClamp={1}>{name}</Text>
 			<Text className={classes.tilesCountText}>{`${totalTiles} Tile${totalTiles > 1 ? 's' : ''}`}</Text>
 		</Stack>
@@ -22,7 +26,7 @@ const DashboardListItem = (props: DashboardItemProps) => {
 };
 
 const DashboardList = () => {
-	const [dashboards] = useDashboardsStore((store) => store.dashboards);
+	const [dashboards, setDashbaordsStore] = useDashboardsStore((store) => store.dashboards);
 	const [activeDashboardId] = useDashboardsStore(store => store.activeDashboard?.id)
 	// useEffect(() => {
 	// 	const { pinned, unpinned } = _.reduce(
@@ -39,16 +43,24 @@ const DashboardList = () => {
 	// 	);
 
 	// }, [dashboards]);
+
+	const onSelectDashboardId = useCallback((dashboardId: string) => {
+		setDashbaordsStore(store => selectDashboard(store, dashboardId))
+	}, [])
+
 	return (
 		<Stack style={{}}>
 			{_.map(dashboards, (dashboard) => {
-				return <DashboardListItem {...dashboard} activeDashboardId={activeDashboardId}/>;
+				return <DashboardListItem {...dashboard} activeDashboardId={activeDashboardId} onSelect={onSelectDashboardId}/>;
 			})}
 		</Stack>
 	);
 };
 
 const SideBar = () => {
+	const [dashboards] = useDashboardsStore(store => store.dashboards);
+
+	if (_.isEmpty(dashboards)) return null;
 	return (
 		<Stack style={{ width: DASHBOARDS_SIDEBAR_WIDTH }} className={classes.container}>
 			<Button variant="light" leftSection={<IconPlus stroke={2} size="1rem" />} style={{margin: '1rem', marginBottom: 0}}>

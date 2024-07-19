@@ -1,7 +1,9 @@
-import dayjs from 'dayjs';
 import { Axios } from './axios';
 import { LOG_QUERY_URL } from './constants';
 import { LogsQuery } from '@/@types/parseable/api/query';
+import timeRangeUtils from '@/utils/timeRangeUtils';
+
+const { optimizeEndTime } = timeRangeUtils;
 
 type QueryLogs = {
 	streamName: string;
@@ -11,19 +13,13 @@ type QueryLogs = {
 	pageOffset: number;
 };
 
-// to optimize performace, it has been decided to round off the time at the given level
-// so making the end-time inclusive
-const optimizeEndTime = (endTime: Date) => {
-	return dayjs(endTime).add(1, 'minute').toDate();
-};
-
 export const getQueryLogs = (logsQuery: QueryLogs) => {
 	const { startTime, endTime, streamName, limit, pageOffset } = logsQuery;
 
 	const query = `SELECT * FROM ${streamName} LIMIT ${limit} OFFSET ${pageOffset}`;
 
 	return Axios().post(
-		LOG_QUERY_URL,
+		LOG_QUERY_URL(),
 		{
 			query,
 			startTime,
@@ -37,7 +33,7 @@ export const getQueryResult = (logsQuery: LogsQuery, query = '') => {
 	const { startTime, endTime } = logsQuery;
 
 	return Axios().post(
-		LOG_QUERY_URL,
+		LOG_QUERY_URL(),
 		{
 			query,
 			startTime,

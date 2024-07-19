@@ -1,13 +1,28 @@
-import { Box, px, Stack } from '@mantine/core';
+import { Box, Loader, px, Stack } from '@mantine/core';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import GridLayout from 'react-grid-layout';
-import { NAVBAR_WIDTH } from '@/constants/theme';
 import SideBar from './SideBar';
 import Dashboard from './Dashboard';
-import { IconMaximize, IconTrash } from '@tabler/icons-react'
+import { useDashboardsStore } from './providers/DashboardsProvider';
+import CreateDashboardModal from './CreateDashboardModal';
+import { useEffect } from 'react';
+import { useDashboardsQuery } from '@/hooks/useDashboards';
+
+const LoadingView = () => {
+	return (
+		<Stack style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+			<Loader/>
+		</Stack>
+	)
+}
 
 const Dashboards = () => {
+	const [dashboards] = useDashboardsStore(store => store.dashboards);
+	const { fetchDashboards } = useDashboardsQuery();
+	useEffect(() => {
+		fetchDashboards();
+	}, []);
+
 	return (
 		<Box
 			style={{
@@ -17,8 +32,15 @@ const Dashboards = () => {
 				flexDirection: 'row',
 				width: '100%',
 			}}>
-			<SideBar />
-			<Dashboard />
+			{dashboards === null ? (
+				<LoadingView />
+			) : (
+				<>
+					<SideBar />
+					<CreateDashboardModal />
+					<Dashboard />
+				</>
+			)}
 		</Box>
 	);
 };

@@ -3,11 +3,13 @@ const API_V1 = 'api/v1';
 // Streams Management
 export const LOG_STREAM_LIST_URL = `${API_V1}/logstream`;
 export const LOG_STREAMS_SCHEMA_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/schema`;
-export const LOG_QUERY_URL = `${API_V1}/query`;
+export const LOG_QUERY_URL = (includeFields?: boolean) => includeFields ? `${API_V1}/query?fields=true` : `${API_V1}/query`;
 export const LOG_STREAMS_ALERTS_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/alert`;
 export const LIST_SAVED_FILTERS_URL = (userId: string) => `${API_V1}/filters/${userId}`;
+export const LIST_DASHBOARDS = (userId: string) => `${API_V1}/dashboards/${userId}`;
 export const UPDATE_SAVED_FILTERS_URL = (filterId: string) => `${API_V1}/filters/filter/${filterId}`;
 export const CREATE_SAVED_FILTERS_URL = `${API_V1}/filters`;
+export const CREATE_DASHBOARDS_URL = `${API_V1}/dashboards`;
 export const DELETE_SAVED_FILTERS_URL = (filterId: string) => `${API_V1}/filters/filter/${filterId}`;
 export const LOG_STREAMS_RETRNTION_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/retention`;
 export const LOG_STREAMS_STATS_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/stats`;
