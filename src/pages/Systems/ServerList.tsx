@@ -4,7 +4,7 @@ import { IconActivity } from '@tabler/icons-react';
 import _ from 'lodash';
 import { useClusterInfo } from '@/hooks/useClusterInfo';
 import { useClusterStore, clusterStoreReducers, MachineType } from './providers/ClusterProvider';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 const { setCurrentMachine } = clusterStoreReducers;
 
@@ -53,11 +53,15 @@ const LoadingState = () => {
 };
 
 const List = () => {
-	const { getClusterInfoSuccess } = useClusterInfo();
+	const { getClusterInfoSuccess, getClusterInfoRefetch } = useClusterInfo();
 	const [clusterStore] = useClusterStore((store) => store);
 	const { ingestorMachines: ingestorsInStore, querierMachine } = clusterStore;
 	const querier = { ...querierMachine, type: 'querier' as 'querier' };
 	const ingestors = _.map(ingestorsInStore, (ingestors) => ({ ...ingestors, type: 'ingestor' as 'ingestor' }));
+
+	useEffect(() => {
+		getClusterInfoRefetch();
+	}, []);
 
 	return (
 		<Stack gap={0} flex={1}>
