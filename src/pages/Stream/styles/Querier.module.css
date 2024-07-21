@@ -1,23 +1,23 @@
 .filterContainer {
-    padding-left: 0.6rem;
+	padding-left: 0.6rem;
 	background-color: white;
-	color: #211F1F;
+	color: #211f1f;
 	cursor: pointer;
-    flex: 1;
+	flex: 1;
 	flex-direction: row;
-    overflow-y: hidden;
-    align-items: center;
+	overflow-y: hidden;
+	align-items: center;
 }
 
 .container {
 	background-color: white;
-	color: #211F1F;
+	color: #211f1f;
 	border: 1px var(--mantine-color-gray-2) solid;
 	border-radius: rem(8px);
 	cursor: pointer;
-    flex: 1;
-    overflow-y: hidden;
-    flex-direction: row;
+	flex: 1;
+	overflow-y: hidden;
+	flex-direction: row;
 }
 
 .modeContainer {
@@ -41,8 +41,8 @@
 	border-top: none !important;
 	border-left: none !important;
 	border-bottom: none !important;
-    margin: 0px !important;
-    &:hover {
+	margin: 0px !important;
+	&:hover {
 		color: black;
 	}
 }
@@ -54,132 +54,143 @@
 }
 
 .addRuleContainer {
-    border: rem(2px) solid var(--mantine-color-gray-3);
-    height: 6rem;
-    width: 100%;
-    border-style: dashed;
-    border-spacing: 400px;
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
-    border-radius: rem(6px);
-    color: var(--mantine-primary-color-3);
-    font-weight: 400;
+	border: rem(2px) solid var(--mantine-color-gray-3);
+	height: 6rem;
+	width: 100%;
+	border-style: dashed;
+	border-spacing: 400px;
+	cursor: pointer;
+	align-items: center;
+	justify-content: center;
+	border-radius: rem(6px);
+	color: var(--mantine-primary-color-3);
+	font-weight: 400;
 }
 
 .ruleSet {
-    border-radius: rem(6px);
-    padding: 1rem;
-    width: 100%;
-    background-color: var(--mantine-color-gray-1);
+	border-radius: rem(6px);
+	padding: 1rem;
+	width: 100%;
+	background-color: var(--mantine-color-gray-1);
 }
 
 .toggleBtnContainer {
-    flex-direction: row;
-    border: 1px solid black;
-    width: fit-content;
-    border-radius: rem(6px);
-    background-color: white;
-    border-color: transparent;
-    display: flex;
-    flex-direction: row;
-    cursor: pointer;
-    align-self: flex-end;
+	flex-direction: row;
+	border: 1px solid black;
+	width: fit-content;
+	border-radius: rem(6px);
+	background-color: white;
+	border-color: transparent;
+	display: flex;
+	flex-direction: row;
+	cursor: pointer;
+	align-self: flex-end;
 }
 
 .toggleBtnText {
-    padding: 0.2rem 0.6rem;
-    border-radius: rem(6px);
-    font-weight: 500;
-    font-size: small;
-    &.toggleBtnActive {
-        background-color: var(--mantine-primary-color-4) !important;
-        color: white;
-    }
+	padding: 0.2rem 0.6rem;
+	border-radius: rem(6px);
+	font-weight: 500;
+	font-size: small;
+	&.toggleBtnActive {
+		background-color: var(--mantine-primary-color-4) !important;
+		color: white;
+	}
 }
 
 .ruleContainer {
-    flex-direction: row;
-    width: 100%;
-    align-items: center;
+	flex-direction: row;
+	width: 100%;
+	align-items: center;
 }
 
 .deleteRulebtn {
-    cursor: pointer;    
+	cursor: pointer;
 }
 
 .addConditionBtn {
-    width: fit-content;
-    /* font-size: small; */
+	width: fit-content;
+	/* font-size: small; */
 }
 
 .parentCombinatorToggleContainer {
-    width: fit-content;
-    background-color: var(--mantine-color-gray-2);
-    border-radius: rem(6px);
-    position: 'relative';
-    margin-left: 16px;  
-    border: 1px solid var(--mantine-color-gray-4);
-    padding: 0.2rem;
+	width: fit-content;
+	background-color: var(--mantine-color-gray-2);
+	border-radius: rem(6px);
+	position: 'relative';
+	margin-left: 16px;
+	border: 1px solid var(--mantine-color-gray-4);
+	padding: 0.2rem;
 }
 
 .ruleSetConnector {
-    width: 0;
-    height: 100%;
-    margin-left: 60px;
-    border: 1px solid var(--mantine-color-gray-4);
+	width: 0;
+	height: 100%;
+	margin-left: 60px;
+	border: 1px solid var(--mantine-color-gray-4);
 }
 
 .modalHeader {
-    font-weight: 500;
-    font-size: large;
-    margin-bottom: 1rem;
+	font-weight: 500;
+	font-size: large;
+	margin-bottom: 1rem;
 }
 
 .queryBuilderBtn {
 	background-color: white;
 	padding: 4px 12px;
-	color: #211F1F;
+	color: #211f1f;
 	border: 1px var(--mantine-color-gray-4) solid;
 	border-radius: rem(8px);
 	cursor: pointer;
 	height: 2.2rem;
-    overflow: auto;
-    flex: 1;
+	overflow: auto;
+	flex: 1;
 	margin-right: 0.625rem;
 }
 
 .parentCombinatorPill {
-    color: white;
-    background: var(--mantine-color-teal-4);
-    text-transform: uppercase;
-    font-weight: 700;
+	color: white;
+	background: var(--mantine-color-teal-4);
+	text-transform: uppercase;
+	font-weight: 700;
 }
 
 .childCombinatorPill {
-    color: white;
-    background: var(--mantine-color-indigo-4);
-    text-transform: uppercase;
-    font-weight: 700;
+	color: white;
+	background: var(--mantine-color-indigo-4);
+	text-transform: uppercase;
+	font-weight: 700;
 }
 
 .footer {
-    flex-direction: row;
-    justify-content: flex-end;
-    padding: 1.5rem;
-    padding-right: 0rem;
-    padding-top: 0.75rem; 
-    padding-bottom: 0;
+	flex-direction: row;
+	justify-content: flex-end;
+	padding: 1.5rem;
+	padding-right: 0rem;
+	padding-top: 0.75rem;
+	padding-bottom: 0;
 }
 
 .queryBuilderContainer {
-    border-top-left-radius: rem(6px);
-    border-top-right-radius: rem(6px);
-    /* border-bottom: 1px solid var(--mantine-color-gray-3); */
+	border-top-left-radius: rem(6px);
+	border-top-right-radius: rem(6px);
+	/* border-bottom: 1px solid var(--mantine-color-gray-3); */
 }
 
 .queryBuilderBtnPlaceholder {
 	color: var(--mantine-color-gray-5);
 	font-size: 1rem;
 	font-weight: 500;
+}
+
+.activeModalBtn {
+	background: white;
+	color: black;
+	border: 2px solid gray;
+}
+
+.activeModalBtn:hover {
+	background-color: rgba(0, 0, 0, 0.1);
+	color: #000;
 }

@@ -144,7 +144,7 @@ const QueryCodeEditor: FC<{ queryCodeEditorRef: MutableRefObject<any>, onSqlSear
 					)}
 				</Box>
 				<SchemaList {...{ currentStream, fields }} />
-				<Stack style={{ height: 200, flex: 1 }}>
+				<Stack style={{ height: 260, flex: 1 }}>
 					<Editor
 						defaultLanguage="sql"
 						value={query}

@@ -1,4 +1,4 @@
-import { Group, Menu, Modal, Stack, px, Tooltip } from '@mantine/core';
+import { Group, Menu, Modal, Stack, px, Tooltip, Button } from '@mantine/core';
 import { IconChevronDown, IconCodeCircle, IconFilter, IconFilterEdit, IconFilterPlus } from '@tabler/icons-react';
 import classes from '../../styles/Querier.module.css';
 import { Text } from '@mantine/core';
@@ -42,7 +42,25 @@ const SQLEditorPlaceholder = () => {
 };
 
 const ModalTitle = ({ title }: { title: string }) => {
-	return <Text style={{ fontSize: '1rem', fontWeight: 500, marginLeft: '0.5rem' }}>{title}</Text>;
+	const [, setLogsStore] = useLogsStore((store) => store.custQuerySearchState);
+	const onChangeCustQueryViewMode = useCallback((mode: 'sql' | 'filters') => {
+		setLogsStore((store) => toggleCustQuerySearchViewMode(store, mode));
+	}, []);
+
+	return (
+		<Stack style={{ flexDirection: 'row' }} gap={2}>
+			<Button
+				onClick={() => onChangeCustQueryViewMode('filters')}
+				className={title === 'Filters' ? classes.activeModalBtn : ''}>
+				Filter
+			</Button>
+			<Button
+				onClick={() => onChangeCustQueryViewMode('sql')}
+				className={title === 'SQL' ? classes.activeModalBtn : ''}>
+				SQL
+			</Button>
+		</Stack>
+	);
 };
 
 const QuerierModal = (props: {
@@ -100,10 +118,13 @@ const Querier = () => {
 		return setFilterStore(resetFilters);
 	}, []);
 
-	const triggerRefetch = useCallback((query: string, mode: 'filters' | 'sql', id?: string) => {
-		const time_filter = id ? _.find(activeSavedFilters, filter => filter.filter_id === id)?.time_filter : null
-		setLogsStore((store) => applyCustomQuery(store, query, mode, id, time_filter));
-	}, [activeSavedFilters]);
+	const triggerRefetch = useCallback(
+		(query: string, mode: 'filters' | 'sql', id?: string) => {
+			const time_filter = id ? _.find(activeSavedFilters, (filter) => filter.filter_id === id)?.time_filter : null;
+			setLogsStore((store) => applyCustomQuery(store, query, mode, id, time_filter));
+		},
+		[activeSavedFilters],
+	);
 
 	const onFiltersApply = useCallback(
 		(opts?: { isUncontrolled?: boolean }) => {
