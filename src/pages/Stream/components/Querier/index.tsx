@@ -1,4 +1,4 @@
-import { Group, Menu, Modal, Stack, px, Tooltip, Button } from '@mantine/core';
+import { Group, Menu, Modal, Stack, px, Tooltip, Tabs } from '@mantine/core';
 import { IconChevronDown, IconCodeCircle, IconFilter, IconFilterEdit, IconFilterPlus } from '@tabler/icons-react';
 import classes from '../../styles/Querier.module.css';
 import { Text } from '@mantine/core';
@@ -48,18 +48,16 @@ const ModalTitle = ({ title }: { title: string }) => {
 	}, []);
 
 	return (
-		<Stack style={{ flexDirection: 'row' }} gap={2}>
-			<Button
-				onClick={() => onChangeCustQueryViewMode('filters')}
-				className={title === 'Filters' ? classes.activeModalBtn : ''}>
-				Filter
-			</Button>
-			<Button
-				onClick={() => onChangeCustQueryViewMode('sql')}
-				className={title === 'SQL' ? classes.activeModalBtn : ''}>
-				SQL
-			</Button>
-		</Stack>
+		<Tabs defaultValue={title}>
+			<Tabs.List>
+				<Tabs.Tab value="Filters" onClick={() => onChangeCustQueryViewMode('filters')} style={{ outline: 'none' }}>
+					Filters
+				</Tabs.Tab>
+				<Tabs.Tab value="SQL" onClick={() => onChangeCustQueryViewMode('sql')} style={{ outline: 'none' }}>
+					SQL
+				</Tabs.Tab>
+			</Tabs.List>
+		</Tabs>
 	);
 };
 
