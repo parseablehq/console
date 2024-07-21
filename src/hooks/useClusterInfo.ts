@@ -18,6 +18,7 @@ export const useClusterInfo = () => {
 	} = useQuery<AxiosResponse<Ingestor[]>, Error>(['fetch-cluster-info'], () => getClusterInfo(), {
 		retry: false,
 		refetchOnWindowFocus: false,
+		enabled: false,
 		onSuccess: (data) => {
 			setClusterStore((store) => setIngestorMachines(store, data.data));
 		},

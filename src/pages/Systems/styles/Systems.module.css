@@ -249,8 +249,18 @@
 .fieldDescription {
 	font-size: var(--mantine-font-size-md);
 	color: var(--mantine-color-gray-6);
+	font-size: var(--mantine-font-size-md);
+	color: var(--mantine-color-gray-6);
 }
 
+.deleteBtn {
+	background-color: #545beb;
+	color: white;
+}
 .copyBtn {
 	color: var(--mantine-color-gray-6);
+}
+
+.copyBtn:hover {
+	background: transparent;
 }
