@@ -1,4 +1,4 @@
-import { Group, Loader, Stack, Text, TextInput, Tooltip } from '@mantine/core';
+import { Group, Loader, Stack, Text, TextInput, Tooltip, TagsInput } from '@mantine/core';
 import { ChangeEvent, useState } from 'react';
 import classes from '../../styles/Management.module.css';
 import { useStreamStore } from '../../providers/StreamProvider';
@@ -6,12 +6,133 @@ import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import dayjs from 'dayjs';
 import { useLogStream } from '@/hooks/useLogStream';
+// import { useLogsStore } from '../../providers/LogsProvider';
 import { IconEdit, IconCheck, IconX } from '@tabler/icons-react';
+
+//
+import styles from '../../../../pages/Home/styles/CreateStreamModal.module.css';
 
 const Header = () => {
 	return (
 		<Stack className={classes.headerContainer}>
 			<Text className={classes.title}>Info</Text>
+		</Stack>
+	);
+};
+
+const UpdateMaxHistoricalDifference = (props: { onClose: () => void; currentStream:string}) => {
+	const [info] = useStreamStore((store) => store.info);
+	const timePartitonLimit = _.get(info, 'time_partition_limit');
+	const [value, setValue] = useState<number | undefined>(timePartitonLimit);
+	const { updateLogStreamMutation, getLogStreamListRefetch } = useLogStream();
+	const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+		const inputTime = e.target.value
+		const numberRegex = /^\d*$/;
+		if(numberRegex.test(inputTime)){
+		setValue(parseInt(inputTime) || 0);
+		}
+	};
+
+	const updateLogStream = ( updatedValue: number) => {
+			const data = {
+				streamName: props.currentStream ,
+				headers: {
+					'x-p-update-stream': true,
+					'x-p-time-partition-limit': `${updatedValue}d`,
+				},
+				onSuccess: getLogStreamListRefetch,
+			};
+			updateLogStreamMutation(data);
+		
+	};
+
+	const onClick = () => {
+		if (value === undefined) return;
+
+		updateLogStream(value)
+	}
+
+	
+	return (
+		<Stack w={'33%'} gap={4}>
+			<Text
+				className={classes.fieldDescription}
+				style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+				Max Historical Differernce
+			</Text>
+			<Stack
+				gap={2}
+				style={{
+					flexDirection: 'row',
+					alignItems: 'center',
+				}}>
+				<TextInput w={'100%'} placeholder="Max Historical Difference" value={value} onChange={(e) => onChange(e)} />
+				<Stack gap={4} style={{ display: 'flex', flexDirection: 'row' }}>
+					<Tooltip label="Update" withArrow position="top">
+						<IconCheck
+							className={classes.infoEditBtn}
+							onClick={onClick}
+							stroke={1.6}
+							size={16}
+						/>
+					</Tooltip>
+
+					<Tooltip label="Close" withArrow position="top">
+						<IconX className={classes.infoEditBtn} stroke={1.6} size={16} onClick={props.onClose} />
+					</Tooltip>
+				</Stack>
+			</Stack>
+		</Stack>
+	);
+};
+
+const CustomPartitionField = (props: {
+	partitionFields: string[];
+	// onChangeValue: (key: string, field: string[]) => void;
+	isStaticSchema: boolean;
+	// error: string;
+	value: string[];
+	onClose: () => void;
+}) => {
+	const shouldDisable = _.isEmpty(props.partitionFields);
+
+	return (
+		<Stack gap={0} style={{ justifyContent: 'space-between' }}>
+			<Stack>
+				<Text className={styles.fieldDescription}>Custom Partition Field</Text>
+			</Stack>
+
+			<Stack style={{ flexDirection: 'row', alignItems: 'center' }}>
+				<TagsInput
+					w={'100%'}
+					placeholder={
+						props.isStaticSchema
+							? shouldDisable
+								? 'Add Columns to the Schema'
+								: 'Select column from the list'
+							: 'Add upto 3 columns'
+					}
+					data={props.partitionFields}
+					// onChange={(val) => props.onChangeValue('customPartitionFields', val)}
+					maxTags={3}
+					// value={props.value}
+					// error={props.error}
+				/>
+				<Stack gap={4} style={{ display: 'flex', flexDirection: 'row' }}>
+					<Tooltip label="Update" withArrow position="top">
+						<IconCheck
+							className={classes.infoEditBtn}
+							// onClick={onClick}
+							stroke={1.6}
+							size={16}
+						/>
+					</Tooltip>
+
+					<Tooltip label="Close" withArrow position="top">
+						<IconX className={classes.infoEditBtn} stroke={1.6} size={16} onClick={props.onClose} />
+					</Tooltip>
+				</Stack>
+			</Stack>
 		</Stack>
 	);
 };
@@ -24,33 +145,17 @@ const InfoItem = (props: {
 	editable?: boolean;
 }) => {
 	const [showEditField, setShowEditField] = useState<boolean>(false);
-	const [value, setValue] = useState<string>(props.updateableValue || '');
-	const placeHolderText = `Enter a value for ${props.title}`;
-	const editFieldWidth = props.title === 'Custom Partition Field' ? '50%' : '100%';
-	const { updateLogStreamMutation, getLogStreamListRefetch } = useLogStream();
+	const [value, setValue] = useState(props.updateableValue);
+	const partitionFieldValues = value !== undefined ? value?.split(',') : [''];
 	const [currentStream] = useAppStore((store) => store.currentStream);
-
-	const updateLogStream = (fieldName: string, updatedValue: number) => {
-		if (fieldName === 'maxHist') {
-			const data = {
-				streamName: currentStream || '',
-				headers: {
-					'x-p-update-stream': true,
-					'x-p-time-partition-limit': `${updatedValue}d`,
-				},
-				onSuccess: getLogStreamListRefetch,
-			};
-			updateLogStreamMutation(data);
-		}
+	// const logsStore = useLogsStore((store) => store);
+	// console.log(logsStore)
+	const closeEditField = () => {
+		setShowEditField(false);
 	};
 
-	const onClick = () => {
-		updateLogStream('maxHist', 10);
-	};
+	
 
-	const updateValue = (e: ChangeEvent<HTMLInputElement>) => {
-		setValue(e.target.value);
-	};
 
 	return (
 		<>
@@ -79,33 +184,15 @@ const InfoItem = (props: {
 						{props.value}
 					</Text>
 				</Stack>
+			) : props.title === 'Custom Partition Field' ? (
+				<CustomPartitionField
+					onClose={closeEditField}
+					value={partitionFieldValues}
+					partitionFields={partitionFieldValues}
+					isStaticSchema
+				/>
 			) : (
-				<Stack w={props.fullWidth ? '100%' : '33%'} gap={4}>
-					<Text
-						className={classes.fieldDescription}
-						style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-						{props.title}
-					</Text>
-					<Stack
-						gap={2}
-						style={{
-							display: 'flex',
-							flexDirection: 'row',
-							alignItems: 'center',
-							width: editFieldWidth,
-						}}>
-						<TextInput w={'100%'} placeholder={placeHolderText} value={value} onChange={(e) => updateValue(e)} />
-						<Stack gap={4} style={{ display: 'flex', flexDirection: 'row' }}>
-							<Tooltip label="Update" withArrow position="top">
-								<IconCheck className={classes.infoEditBtn} onClick={onClick} stroke={1.6} size={16} />
-							</Tooltip>
-
-							<Tooltip label="Close" withArrow position="top">
-								<IconX className={classes.infoEditBtn} stroke={1.6} size={16} onClick={() => setShowEditField(false)} />
-							</Tooltip>
-						</Stack>
-					</Stack>
-				</Stack>
+				<UpdateMaxHistoricalDifference onClose={closeEditField} currentStream = {currentStream ? currentStream : ""} />
 			)}
 		</>
 	);
