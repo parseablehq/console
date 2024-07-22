@@ -1,16 +1,13 @@
 import { Group, Loader, Stack, Text, TextInput, Tooltip, TagsInput } from '@mantine/core';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useCallback, useState } from 'react';
 import classes from '../../styles/Management.module.css';
 import { useStreamStore } from '../../providers/StreamProvider';
 import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import dayjs from 'dayjs';
 import { useLogStream } from '@/hooks/useLogStream';
-// import { useLogsStore } from '../../providers/LogsProvider';
+import { useGetStreamInfo } from '@/hooks/useGetStreamInfo';
 import { IconEdit, IconCheck, IconX } from '@tabler/icons-react';
-
-//
-import styles from '../../../../pages/Home/styles/CreateStreamModal.module.css';
 
 const Header = () => {
 	return (
@@ -20,39 +17,70 @@ const Header = () => {
 	);
 };
 
-const UpdateMaxHistoricalDifference = (props: { onClose: () => void; currentStream:string}) => {
+const UpdateFieldButtons = (props: { onClose: () => void; onClick: () => void; updating: boolean }) => {
+	return (
+		<>
+			{!props.updating ? (
+				<Stack gap={4} style={{ display: 'flex', flexDirection: 'row' }}>
+					<Tooltip label="Update" withArrow position="top">
+						<IconCheck className={classes.infoEditBtn} onClick={() => props.onClick()} stroke={1.6} size={16} />
+					</Tooltip>
+
+					<Tooltip label="Close" withArrow position="top">
+						<IconX className={classes.infoEditBtn} stroke={1.6} size={16} onClick={() => props.onClose()} />
+					</Tooltip>
+				</Stack>
+			) : (
+				<Loader variant="ring" size="sm" style={{ padding: '0 0.2rem' }} />
+			)}
+		</>
+	);
+};
+
+const UpdateMaxHistoricalDifference = (props: { onClose: () => void; currentStream: string }) => {
 	const [info] = useStreamStore((store) => store.info);
 	const timePartitonLimit = _.get(info, 'time_partition_limit');
 	const [value, setValue] = useState<number | undefined>(timePartitonLimit);
-	const { updateLogStreamMutation, getLogStreamListRefetch } = useLogStream();
-	const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-		const inputTime = e.target.value
-		const numberRegex = /^\d*$/;
-		if(numberRegex.test(inputTime)){
-		setValue(parseInt(inputTime) || 0);
-		}
-	};
+	const [updating, setUpdating] = useState<boolean>(false);
+	const { updateLogStreamMutation } = useLogStream();
+	const { getStreamInfoRefetch } = useGetStreamInfo(props.currentStream);
 
-	const updateLogStream = ( updatedValue: number) => {
-			const data = {
-				streamName: props.currentStream ,
-				headers: {
-					'x-p-update-stream': true,
-					'x-p-time-partition-limit': `${updatedValue}d`,
-				},
-				onSuccess: getLogStreamListRefetch,
-			};
-			updateLogStreamMutation(data);
-		
-	};
+	const onChange = useCallback(
+		(e: ChangeEvent<HTMLInputElement>) => {
+			const inputTime = e.target.value;
+			const numberRegex = /^\d*$/;
+			if (numberRegex.test(inputTime)) {
+				setValue(parseInt(inputTime) || 0);
+			}
+		},
+		[setValue],
+	);
 
-	const onClick = () => {
+	const updateLogStreamSuccess = useCallback(() => {
+		props.onClose();
+		setUpdating(false);
+		getStreamInfoRefetch();
+	}, [getStreamInfoRefetch]);
+
+	const updateLogStream = useCallback(
+		(updatedValue: number) => {
+			updateLogStreamMutation({
+				streamName: props.currentStream,
+				partitionLimit: updatedValue,
+				onSuccess: () => updateLogStreamSuccess(),
+				onError: () => setUpdating(false),
+			});
+		},
+		[updateLogStreamMutation, props.currentStream],
+	);
+
+	const onClick = useCallback(() => {
 		if (value === undefined) return;
 
-		updateLogStream(value)
-	}
+		setUpdating(true);
+		updateLogStream(value);
+	}, [value, updateLogStream]);
 
-	
 	return (
 		<Stack w={'33%'} gap={4}>
 			<Text
@@ -67,95 +95,81 @@ const UpdateMaxHistoricalDifference = (props: { onClose: () => void; currentStre
 					alignItems: 'center',
 				}}>
 				<TextInput w={'100%'} placeholder="Max Historical Difference" value={value} onChange={(e) => onChange(e)} />
-				<Stack gap={4} style={{ display: 'flex', flexDirection: 'row' }}>
-					<Tooltip label="Update" withArrow position="top">
-						<IconCheck
-							className={classes.infoEditBtn}
-							onClick={onClick}
-							stroke={1.6}
-							size={16}
-						/>
-					</Tooltip>
-
-					<Tooltip label="Close" withArrow position="top">
-						<IconX className={classes.infoEditBtn} stroke={1.6} size={16} onClick={props.onClose} />
-					</Tooltip>
-				</Stack>
+				<UpdateFieldButtons onClick={onClick} onClose={props.onClose} updating={updating} />
 			</Stack>
 		</Stack>
 	);
 };
 
-const CustomPartitionField = (props: {
-	partitionFields: string[];
-	// onChangeValue: (key: string, field: string[]) => void;
-	isStaticSchema: boolean;
-	// error: string;
-	value: string[];
-	onClose: () => void;
-}) => {
-	const shouldDisable = _.isEmpty(props.partitionFields);
+const UpdateCustomPartitionField = (props: { isStaticSchema: boolean; onClose: () => void; currentStream: string }) => {
+	const [info] = useStreamStore((store) => store.info);
+	const updateableCustomPartition = _.get(info, 'custom_partition', '');
+	const partitionFields: string[] = updateableCustomPartition.split(',');
+	const [value, setValue] = useState<string[]>(partitionFields);
+	const [updating, setUpdating] = useState<boolean>(false);
+	const { updateLogStreamMutation } = useLogStream();
+	const { getStreamInfoRefetch } = useGetStreamInfo(props.currentStream);
+
+	const onChangeValue = useCallback(
+		(value: string[]) => {
+			setValue(value);
+		},
+		[setValue],
+	);
+
+	const updateLogStreamSuccess = useCallback(() => {
+		props.onClose();
+		setUpdating(false);
+		getStreamInfoRefetch();
+	}, [getStreamInfoRefetch]);
+
+	const updateLogStream = useCallback(
+		(updatedValue: string) => {
+			updateLogStreamMutation({
+				streamName: props.currentStream,
+				customPartition: updatedValue,
+				onSuccess: () => updateLogStreamSuccess(),
+				onError: () => setUpdating(false),
+			});
+		},
+		[props.currentStream, updateLogStreamMutation],
+	);
+
+	const onClick = useCallback(() => {
+		if (value === undefined) return;
+
+		const valuesFlattened = value.join(',');
+		setUpdating(true);
+		updateLogStream(valuesFlattened);
+	}, [value, updateLogStream]);
 
 	return (
 		<Stack gap={0} style={{ justifyContent: 'space-between' }}>
 			<Stack>
-				<Text className={styles.fieldDescription}>Custom Partition Field</Text>
+				<Text className={classes.fieldDescription}>Custom Partition Field</Text>
 			</Stack>
 
 			<Stack style={{ flexDirection: 'row', alignItems: 'center' }}>
 				<TagsInput
-					w={'100%'}
-					placeholder={
-						props.isStaticSchema
-							? shouldDisable
-								? 'Add Columns to the Schema'
-								: 'Select column from the list'
-							: 'Add upto 3 columns'
-					}
-					data={props.partitionFields}
-					// onChange={(val) => props.onChangeValue('customPartitionFields', val)}
+					w={'30rem'}
+					placeholder="Add upto 3 columns"
+					data={partitionFields}
+					onChange={(value) => onChangeValue(value)}
 					maxTags={3}
-					// value={props.value}
-					// error={props.error}
+					value={value}
 				/>
-				<Stack gap={4} style={{ display: 'flex', flexDirection: 'row' }}>
-					<Tooltip label="Update" withArrow position="top">
-						<IconCheck
-							className={classes.infoEditBtn}
-							// onClick={onClick}
-							stroke={1.6}
-							size={16}
-						/>
-					</Tooltip>
-
-					<Tooltip label="Close" withArrow position="top">
-						<IconX className={classes.infoEditBtn} stroke={1.6} size={16} onClick={props.onClose} />
-					</Tooltip>
-				</Stack>
+				<UpdateFieldButtons onClick={onClick} onClose={props.onClose} updating={updating} />
 			</Stack>
 		</Stack>
 	);
 };
 
-const InfoItem = (props: {
-	title: string;
-	value: string;
-	fullWidth?: boolean;
-	updateableValue?: string;
-	editable?: boolean;
-}) => {
+const InfoItem = (props: { title: string; value: string; fullWidth?: boolean; editable?: boolean }) => {
 	const [showEditField, setShowEditField] = useState<boolean>(false);
-	const [value, setValue] = useState(props.updateableValue);
-	const partitionFieldValues = value !== undefined ? value?.split(',') : [''];
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	// const logsStore = useLogsStore((store) => store);
-	// console.log(logsStore)
-	const closeEditField = () => {
+	const closeEditField = useCallback(() => {
 		setShowEditField(false);
-	};
-
-	
-
+	}, []);
 
 	return (
 		<>
@@ -185,14 +199,13 @@ const InfoItem = (props: {
 					</Text>
 				</Stack>
 			) : props.title === 'Custom Partition Field' ? (
-				<CustomPartitionField
+				<UpdateCustomPartitionField
 					onClose={closeEditField}
-					value={partitionFieldValues}
-					partitionFields={partitionFieldValues}
+					currentStream={currentStream ? currentStream : ''}
 					isStaticSchema
 				/>
 			) : (
-				<UpdateMaxHistoricalDifference onClose={closeEditField} currentStream = {currentStream ? currentStream : ""} />
+				<UpdateMaxHistoricalDifference onClose={closeEditField} currentStream={currentStream ? currentStream : ''} />
 			)}
 		</>
 	);
@@ -201,9 +214,6 @@ const InfoItem = (props: {
 const InfoData = (props: { isLoading: boolean }) => {
 	const [info] = useStreamStore((store) => store.info);
 	const [currentStream] = useAppStore((store) => store.currentStream);
-
-	const updateableMaxHistoricalDiff = _.get(info, 'time_partition_limit');
-	const updateableCustomPartition = _.get(info, 'custom_partition');
 
 	const createdAt = _.chain(info)
 		.get('created-at', '')
@@ -245,21 +255,10 @@ const InfoData = (props: { isLoading: boolean }) => {
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Schema Type" value={staticSchemaFlag} />
 						<InfoItem title="Time Partition Field" value={timePartition} />
-						<InfoItem
-							title="Max Historical Difference"
-							value={timePartitionLimit}
-							updateableValue={updateableMaxHistoricalDiff}
-							editable
-						/>
+						<InfoItem title="Max Historical Difference" value={timePartitionLimit} editable />
 					</Stack>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-						<InfoItem
-							title="Custom Partition Field"
-							value={customPartition}
-							updateableValue={updateableCustomPartition}
-							editable
-							fullWidth
-						/>
+						<InfoItem title="Custom Partition Field" value={customPartition} editable fullWidth />
 					</Stack>
 				</>
 			)}

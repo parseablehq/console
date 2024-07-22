@@ -75,10 +75,17 @@ export const useLogStream = () => {
 		isError: updateLogStreamIsError,
 		isLoading: updateLogStreamIsLoading,
 	} = useMutation(
-		(data: { streamName: string; headers: Record<string, string | boolean>; onSuccess: () => void }) =>
-			updateLogStream(data.streamName, null, data.headers),
+		(data: { streamName: string; partitionLimit?: number; customPartition?: string; onSuccess: () => void; onError?: () => void }) =>
+			updateLogStream(
+				data.streamName,
+				null,
+				data.partitionLimit
+					? { 'x-p-update-stream': true, 'x-p-time-partition-limit': `${data.partitionLimit}d` }
+					: { 'x-p-update-stream': true, 'x-p-custom-partition': data.customPartition },
+			),
 		{
-			onError: (data: AxiosError) => {
+			onError: (data: AxiosError, variables) => {
+				variables.onError && variables.onError();
 				if (isAxiosError(data) && typeof data.message === 'string') {
 					notifyError({ message: data.message });
 				}
