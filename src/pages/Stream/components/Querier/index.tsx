@@ -48,13 +48,19 @@ const ModalTitle = ({ title }: { title: string }) => {
 	}, []);
 
 	return (
-		<Tabs defaultValue={title}>
+		<Tabs defaultValue={title} variant="pills" className={classes.tabsList}>
 			<Tabs.List>
-				<Tabs.Tab value="Filters" onClick={() => onChangeCustQueryViewMode('filters')} style={{ outline: 'none' }}>
-					Filters
+				<Tabs.Tab
+					className={title !== 'Filters' ? classes.tab : ''}
+					value="Filters"
+					onClick={() => onChangeCustQueryViewMode('filters')}>
+					<Text style={{ fontSize: '1rem', fontWeight: 600 }}>Filters</Text>
 				</Tabs.Tab>
-				<Tabs.Tab value="SQL" onClick={() => onChangeCustQueryViewMode('sql')} style={{ outline: 'none' }}>
-					SQL
+				<Tabs.Tab
+					className={title !== 'SQL' ? classes.tab : ''}
+					value="SQL"
+					onClick={() => onChangeCustQueryViewMode('sql')}>
+					<Text style={{ fontSize: '1rem', fontWeight: 600 }}>SQL</Text>
 				</Tabs.Tab>
 			</Tabs.List>
 		</Tabs>
@@ -78,9 +84,12 @@ const QuerierModal = (props: {
 			onClose={onClose}
 			size="auto"
 			centered
-			styles={{ body: { padding: '0 0.5rem' }, header: { padding: '1rem', paddingBottom: '0' } }}
+			styles={{
+				body: { padding: '0 0.5rem 0.5rem 0.5rem', height: '40rem' },
+				header: { padding: '1rem', paddingBottom: '0' },
+			}}
 			title={<ModalTitle title={getLabel(viewMode)} />}>
-			<Stack style={{ width: '40rem', padding: '1rem', height: '100%' }} gap={0}>
+			<Stack style={{ width: '40rem', padding: '1rem 0.5rem', height: '100%' }} gap={2}>
 				{viewMode === 'filters' ? (
 					<FilterQueryBuilder onClear={props.onClear} onApply={props.onFiltersApply} />
 				) : (

@@ -184,13 +184,11 @@
 	font-weight: 500;
 }
 
-.activeModalBtn {
-	background: white;
-	color: black;
-	border: 2px solid gray;
+.tabsList {
+	background: var(--mantine-color-gray-1);
+	border-radius: 0.2rem;
 }
 
-.activeModalBtn:hover {
-	background-color: rgba(0, 0, 0, 0.1);
-	color: #000;
+.tab:hover {
+	background: var(--mantine-color-gray-1);
 }
