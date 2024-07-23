@@ -85,7 +85,7 @@ const QuerierModal = (props: {
 			size="auto"
 			centered
 			styles={{
-				body: { padding: '0 0.8rem', height: '50vh' },
+				body: { padding: '0 0.8rem', height: '54vh' },
 				header: { padding: '1rem', paddingBottom: '0' },
 			}}
 			title={<ModalTitle title={getLabel(viewMode)} />}>
