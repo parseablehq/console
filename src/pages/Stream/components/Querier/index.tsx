@@ -48,7 +48,7 @@ const ModalTitle = ({ title }: { title: string }) => {
 	}, []);
 
 	return (
-		<Tabs defaultValue={title} style={{ padding: '0 0.4rem' }}>
+		<Tabs defaultValue={title} style={{ padding: '0 0.4rem', outline:'none' }}>
 			<Tabs.List>
 				<Tabs.Tab
 					className={title !== 'Filters' ? classes.tab : ''}
@@ -85,7 +85,7 @@ const QuerierModal = (props: {
 			size="auto"
 			centered
 			styles={{
-				body: { padding: '0 0.8rem', height: '45rem' },
+				body: { padding: '0 0.8rem', height: '40rem' },
 				header: { padding: '1rem', paddingBottom: '0' },
 			}}
 			title={<ModalTitle title={getLabel(viewMode)} />}>

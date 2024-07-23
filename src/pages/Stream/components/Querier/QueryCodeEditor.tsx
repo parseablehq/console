@@ -123,31 +123,32 @@ const QueryCodeEditor: FC<{
 	}, [query]);
 
 	return (
-		<Stack style={{ flex: 1, height: '100%', justifyContent:"space-between" }}>
+		<Stack style={{ flex: 1, height: '90%', justifyContent: 'space-between' }}>
 			<ScrollArea>
 				<Box style={{ marginBottom: 8 }}>
 					{localLlmActive ? (
-						<Stack gap={0} style={{ flexDirection: 'row', width: '100%' }}>
-							<TextInput
-								type="text"
-								name="ai_query"
-								id="ai_query"
-								value={aiQuery}
-								onChange={(e) => setAiQuery(e.target.value)}
-								placeholder="Enter plain text to generate SQL query using OpenAI"
-								w="85%"
-							/>
-							<Button variant="filled" w="15%" color="brandPrimary.4" radius={0} onClick={handleAIGenerate}>
-								✨ Generate
-							</Button>
-						</Stack>
-					) : (
-						<Box style={{ width: '100%' }}>
-							<Box component="a" href="https://www.parseable.com/docs/integrations/llm" target="_blank">
-								Know More: How to enable SQL generation with OpenAI ?
-							</Box>
-						</Box>
-					)}
+					<Stack gap={0} style={{ flexDirection: 'row', width: '100%' }}>
+						<TextInput
+							type="text"
+							name="ai_query"
+							id="ai_query"
+							value={aiQuery}
+							onChange={(e) => setAiQuery(e.target.value)}
+							placeholder="Enter plain text to generate SQL query using OpenAI"
+							w="85%"
+						/>
+						<Button variant="filled" w="15%" color="brandPrimary.4" radius={0} onClick={handleAIGenerate}>
+							✨ Generate
+						</Button>
+					</Stack>
+					) 
+					 : (
+					 	<Box style={{ width: '100%' }}>
+					 		<Box component="a" href="https://www.parseable.com/docs/integrations/llm" target="_blank">
+					 			Know More: How to enable SQL generation with OpenAI ?
+					 		</Box>
+					 	</Box>
+					 )}
 				</Box>
 				<SchemaList {...{ currentStream, fields }} />
 				<Stack style={{ height: 200, flex: 1 }}>
