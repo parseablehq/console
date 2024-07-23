@@ -123,7 +123,7 @@ const QueryCodeEditor: FC<{
 	}, [query]);
 
 	return (
-		<Stack style={{ flex: 1, height: '90%', justifyContent: 'space-between' }}>
+		<Stack style={{ flex: 1,justifyContent: 'space-between' }}>
 			<ScrollArea>
 				<Box style={{ marginBottom: 8 }}>
 					{localLlmActive ? (
