@@ -32,16 +32,22 @@ const genColumnConfig = (fields: Field[]) => {
 
 const defaultCustSQLQuery = (streamName: string | null) => {
 	if (streamName && streamName.length > 0) {
-		return `SELECT * FROM ${streamName} LIMIT ${LOAD_LIMIT};`
+		return `SELECT * FROM ${streamName} LIMIT ${LOAD_LIMIT};`;
 	} else {
-		return ''
+		return '';
 	}
-}
+};
 
-const QueryCodeEditor: FC<{ queryCodeEditorRef: MutableRefObject<any>, onSqlSearchApply: (query: string) => void; onClear: () => void; }> = (props) => {
+const QueryCodeEditor: FC<{
+	queryCodeEditorRef: MutableRefObject<any>;
+	onSqlSearchApply: (query: string) => void;
+	onClear: () => void;
+}> = (props) => {
 	const [llmActive] = useAppStore((store) => store.instanceConfig?.llmActive);
 	const [] = useFilterStore((store) => store);
-	const [{ isQuerySearchActive, activeMode, savedFilterId, custSearchQuery }] = useLogsStore((store) => store.custQuerySearchState);
+	const [{ isQuerySearchActive, activeMode, savedFilterId, custSearchQuery }] = useLogsStore(
+		(store) => store.custQuerySearchState,
+	);
 	const [schema] = useStreamStore((store) => store.schema);
 	const fields = schema?.fields || [];
 	const editorRef = React.useRef<any>();
@@ -68,9 +74,9 @@ const QueryCodeEditor: FC<{ queryCodeEditorRef: MutableRefObject<any>, onSqlSear
 
 	useEffect(() => {
 		if (savedFilterId && isSqlSearchActive) {
-			updateQuery(custSearchQuery)
+			updateQuery(custSearchQuery);
 		}
-	}, [savedFilterId])
+	}, [savedFilterId]);
 
 	const handleAIGenerate = useCallback(() => {
 		if (!aiQuery?.length) {
@@ -113,11 +119,11 @@ const QueryCodeEditor: FC<{ queryCodeEditorRef: MutableRefObject<any>, onSqlSear
 		const sanitizedQuery = sanitiseSqlString(query);
 		const parsedQuery = sanitizedQuery.replace(/(\r\n|\n|\r)/gm, '');
 		updateQuery(sanitizedQuery);
-		props.onSqlSearchApply(parsedQuery)
+		props.onSqlSearchApply(parsedQuery);
 	}, [query]);
 
 	return (
-		<Stack style={{ flex: 1 }}>
+		<Stack style={{ flex: 1, height: '100%', justifyContent:"space-between" }}>
 			<ScrollArea>
 				<Box style={{ marginBottom: 8 }}>
 					{localLlmActive ? (
@@ -144,7 +150,7 @@ const QueryCodeEditor: FC<{ queryCodeEditorRef: MutableRefObject<any>, onSqlSear
 					)}
 				</Box>
 				<SchemaList {...{ currentStream, fields }} />
-				<Stack style={{ height: 300, flex: 1 }}>
+				<Stack style={{ height: 200, flex: 1 }}>
 					<Editor
 						defaultLanguage="sql"
 						value={query}
