@@ -1,4 +1,4 @@
-import React, { FC, MutableRefObject, useCallback, useEffect, useState } from 'react';
+import React, { FC, MutableRefObject, useCallback, useEffect, useState, useRef } from 'react';
 import Editor from '@monaco-editor/react';
 import { Box, Button, Flex, ScrollArea, Stack, Text, TextInput } from '@mantine/core';
 import { ErrorMarker, errChecker } from '../ErrorMarker';
@@ -178,15 +178,23 @@ const QueryCodeEditor: FC<{
 };
 
 const SchemaList = (props: { currentStream: string | null; fields: Field[] }) => {
+	const schemaListDivRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
+	const [schemaDivHeight, setSchemaDivHeight] = useState<number>(0);
 	const [scrollPosition, onScrollPositionChange] = useState({ x: 0, y: 0 });
+
+	useEffect(() => {
+		const height = schemaListDivRef.current && schemaListDivRef.current.offsetHeight;
+		setSchemaDivHeight(height ? height : 0);
+	}, []);
 	const { currentStream, fields } = props;
 	if (!fields || fields.length === 0) return null;
 
 	const { leftColumns, rightColumns } = genColumnConfig(fields);
+
 	return (
-		<Stack style={{ height: '13rem' }}>
-			<ScrollArea onScrollPositionChange={onScrollPositionChange} scrollbars="y">
-				<Box className={scrollPosition.y > 0 ? queryCodeStyles.schemaListShadow : ''}>
+		<Stack style={{ height: 190 }}>
+			<ScrollArea scrollbars="y" onScrollPositionChange={onScrollPositionChange}>
+				<Box ref={schemaListDivRef} >
 					<Text
 						style={{
 							fontSize: '0.7rem',
@@ -195,6 +203,20 @@ const SchemaList = (props: { currentStream: string | null; fields: Field[] }) =>
 						}}>{`/* Schema for ${currentStream}`}</Text>
 					<Flex style={{ alignItems: 'flex-start', padding: 6, paddingTop: 4 }}>
 						<Box style={{ width: '50%' }}>
+							{leftColumns.map((config, index) => {
+								return (
+									<Text
+										key={index}
+										style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
+								);
+							})}
+							{leftColumns.map((config, index) => {
+								return (
+									<Text
+										key={index}
+										style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
+								);
+							})}
 							{leftColumns.map((config, index) => {
 								return (
 									<Text
@@ -216,7 +238,7 @@ const SchemaList = (props: { currentStream: string | null; fields: Field[] }) =>
 					<Text style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}> */</Text>
 				</Box>
 			</ScrollArea>
-			{fields.length > 20 && scrollPosition.y === 0 ? (
+			{schemaDivHeight > 190 && scrollPosition.y < 10 ? (
 				<Text style={{ fontSize: '0.8rem', color: '#095286', textAlign: 'center' }}>Scroll to see more</Text>
 			) : null}
 		</Stack>
