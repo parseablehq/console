@@ -85,6 +85,7 @@ export const useLogStream = () => {
 			onError: (data: AxiosError, variables) => {
 				variables.onError && variables.onError();
 				if (isAxiosError(data) && typeof data.message === 'string') {
+					console.log(data)
 					notifyError({ message: data.message });
 				}
 			},
