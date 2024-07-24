@@ -97,8 +97,8 @@ const UpdateCustomPartitionField = (props: { onClose: () => void; currentStream:
 	const [info] = useStreamStore((store) => store.info);
 	const isSchemaStatic = _.get(info, 'static_schema_flag', false);
 	const updateableCustomPartition = _.get(info, 'custom_partition', '').split(',');
-	const [value, setValue] = useState<string[]>(updateableCustomPartition);
-	const partitionFields: string[] = !isSchemaStatic ? [] : updateableCustomPartition;
+	const [value, setValue] = useState<string[] | undefined>(updateableCustomPartition);
+	const [partitionFields]= useStreamStore((store) => store.fieldNames);
 	const [updating, setUpdating] = useState<boolean>(false);
 	const { updateLogStreamMutation } = useLogStream();
 	const { getStreamInfoRefetch } = useGetStreamInfo(props.currentStream);
@@ -129,12 +129,15 @@ const UpdateCustomPartitionField = (props: { onClose: () => void; currentStream:
 	);
 
 	const updateCustomPartition = useCallback(() => {
-		if (value === undefined) return;
+		const valuesFlattened = value?.join(',');
 
-		const valuesFlattened = value.join(',');
+		if (valuesFlattened === undefined) return;
+
 		setUpdating(true);
 		updateLogStream(valuesFlattened);
 	}, [value, updateLogStream]);
+
+	
 
 	return (
 		<Stack style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -144,7 +147,7 @@ const UpdateCustomPartitionField = (props: { onClose: () => void; currentStream:
 				data={partitionFields}
 				onChange={(value) => onChangeValue(value)}
 				maxTags={3}
-				value={value}
+				value={(value?.length === 1) && (value?.[0] === '') ? undefined : value }
 			/>
 			<UpdateFieldButtons onUpdateClick={updateCustomPartition} onClose={props.onClose} isUpdating={updating} />
 		</Stack>
@@ -246,7 +249,7 @@ const InfoData = (props: { isLoading: boolean }) => {
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Schema Type" value={staticSchemaFlag} />
 						<InfoItem title="Time Partition Field" value={timePartition} />
-						<InfoItem title="Max Historical Difference" value={timePartitionLimit} allowEdit />
+						<InfoItem title="Max Historical Difference" value={timePartitionLimit} allowEdit={timePartition !== '-'} />
 					</Stack>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Custom Partition Field" value={customPartition} allowEdit fullWidth />
