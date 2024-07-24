@@ -172,7 +172,7 @@ const InfoItem = (props: { title: string; value: string; fullWidth?: boolean; al
 
 	return (
 		<>
-			<Stack w={props.fullWidth ? '100%' : '33%'} gap={14}>
+			<Stack w={props.fullWidth ? '100%' : '33%'} gap={1}>
 				<Group gap={6}>
 					<Text
 						className={classes.fieldDescription}
