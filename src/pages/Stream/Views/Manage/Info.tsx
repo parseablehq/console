@@ -17,13 +17,13 @@ const Header = () => {
 	);
 };
 
-const UpdateFieldButtons = (props: { onClose: () => void; onClick: () => void; updating: boolean }) => {
+const UpdateFieldButtons = (props: { onClose: () => void; onUpdateClick: () => void; isUpdating: boolean }) => {
 	return (
 		<>
-			{!props.updating ? (
+			{!props.isUpdating ? (
 				<Stack gap={4} style={{ display: 'flex', flexDirection: 'row' }}>
 					<Tooltip label="Update" withArrow position="top">
-						<IconCheck className={classes.infoEditBtn} onClick={() => props.onClick()} stroke={1.6} size={16} />
+						<IconCheck className={classes.infoEditBtn} onClick={() => props.onUpdateClick()} stroke={1.6} size={16} />
 					</Tooltip>
 
 					<Tooltip label="Close" withArrow position="top">
@@ -66,8 +66,8 @@ const UpdateMaxHistoricalDifference = (props: { onClose: () => void; currentStre
 		(updatedValue: number) => {
 			updateLogStreamMutation({
 				streamName: props.currentStream,
-				partitionLimit: updatedValue,
-				onSuccess: () => updateLogStreamSuccess(),
+				header: {'x-p-time-partition-limit' : `${updatedValue}d`},
+				onSuccess: updateLogStreamSuccess,
 				onError: () => setUpdating(false),
 			});
 		},
@@ -95,7 +95,7 @@ const UpdateMaxHistoricalDifference = (props: { onClose: () => void; currentStre
 					alignItems: 'center',
 				}}>
 				<TextInput w={'100%'} placeholder="Max Historical Difference" value={value} onChange={(e) => onChange(e)} />
-				<UpdateFieldButtons onClick={onClick} onClose={props.onClose} updating={updating} />
+				<UpdateFieldButtons onUpdateClick={onClick} onClose={props.onClose} isUpdating={updating} />
 			</Stack>
 		</Stack>
 	);
@@ -127,8 +127,8 @@ const UpdateCustomPartitionField = (props: { isStaticSchema: boolean; onClose: (
 		(updatedValue: string) => {
 			updateLogStreamMutation({
 				streamName: props.currentStream,
-				customPartition: updatedValue,
-				onSuccess: () => updateLogStreamSuccess(),
+				header:{'x-p-custom-partition': updatedValue},
+				onSuccess: updateLogStreamSuccess,
 				onError: () => setUpdating(false),
 			});
 		},
@@ -158,13 +158,13 @@ const UpdateCustomPartitionField = (props: { isStaticSchema: boolean; onClose: (
 					maxTags={3}
 					value={value}
 				/>
-				<UpdateFieldButtons onClick={onClick} onClose={props.onClose} updating={updating} />
+				<UpdateFieldButtons onUpdateClick={onClick} onClose={props.onClose} isUpdating={updating} />
 			</Stack>
 		</Stack>
 	);
 };
 
-const InfoItem = (props: { title: string; value: string; fullWidth?: boolean; editable?: boolean }) => {
+const InfoItem = (props: { title: string; value: string; fullWidth?: boolean; allowEdit?: boolean }) => {
 	const [showEditField, setShowEditField] = useState<boolean>(false);
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const closeEditField = useCallback(() => {
@@ -181,7 +181,7 @@ const InfoItem = (props: { title: string; value: string; fullWidth?: boolean; ed
 							style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
 							{props.title}
 						</Text>
-						{props.editable ? (
+						{props.allowEdit ? (
 							<Tooltip label="Edit" withArrow position="top">
 								<IconEdit
 									className={classes.infoEditBtn}
@@ -255,10 +255,10 @@ const InfoData = (props: { isLoading: boolean }) => {
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Schema Type" value={staticSchemaFlag} />
 						<InfoItem title="Time Partition Field" value={timePartition} />
-						<InfoItem title="Max Historical Difference" value={timePartitionLimit} editable />
+						<InfoItem title="Max Historical Difference" value={timePartitionLimit} allowEdit />
 					</Stack>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-						<InfoItem title="Custom Partition Field" value={customPartition} editable fullWidth />
+						<InfoItem title="Custom Partition Field" value={customPartition} allowEdit fullWidth />
 					</Stack>
 				</>
 			)}
