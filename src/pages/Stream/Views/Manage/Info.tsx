@@ -1,4 +1,4 @@
-import { Group, Loader, Stack, Text, TextInput, Tooltip, TagsInput,Box } from '@mantine/core';
+import { Group, Loader, Stack, Text, TextInput, Tooltip, TagsInput, Box } from '@mantine/core';
 import { ChangeEvent, useCallback, useState } from 'react';
 import classes from '../../styles/Management.module.css';
 import { useStreamStore } from '../../providers/StreamProvider';
@@ -82,21 +82,13 @@ const UpdateMaxHistoricalDifference = (props: { onClose: () => void; currentStre
 	}, [value, updateLogStream]);
 
 	return (
-		<Stack w={'33%'} gap={4}>
-			<Text
-				className={classes.fieldDescription}
-				style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-				Max Historical Differernce
-			</Text>
-			<Stack
-				gap={2}
-				style={{
-					flexDirection: 'row',
-					alignItems: 'center',
-				}}>
-				<TextInput w={'100%'} placeholder="Max Historical Difference" value={value} onChange={(e) => onChange(e)} />
-				<UpdateFieldButtons onUpdateClick={updateTimePartitionLimit} onClose={props.onClose} isUpdating={updating} />
-			</Stack>
+		<Stack
+			style={{
+				flexDirection: 'row',
+				alignItems: 'center',
+			}}>
+			<TextInput w={'100%'} placeholder="Max Historical Difference" value={value} onChange={(e) => onChange(e)} />
+			<UpdateFieldButtons onUpdateClick={updateTimePartitionLimit} onClose={props.onClose} isUpdating={updating} />
 		</Stack>
 	);
 };
@@ -104,9 +96,9 @@ const UpdateMaxHistoricalDifference = (props: { onClose: () => void; currentStre
 const UpdateCustomPartitionField = (props: { onClose: () => void; currentStream: string }) => {
 	const [info] = useStreamStore((store) => store.info);
 	const isSchemaStatic = _.get(info, 'static_schema_flag', false);
-	const updateableCustomPartition = _.get(info, 'custom_partition', '');
-	const [value, setValue] = useState<string[]>(updateableCustomPartition.split(','));
-	const partitionFields: string[] = isSchemaStatic ? [] : value;
+	const updateableCustomPartition = _.get(info, 'custom_partition', '').split(',');
+	const [value, setValue] = useState<string[]>(updateableCustomPartition);
+	const partitionFields: string[] = !isSchemaStatic ? [] : updateableCustomPartition;
 	const [updating, setUpdating] = useState<boolean>(false);
 	const { updateLogStreamMutation } = useLogStream();
 	const { getStreamInfoRefetch } = useGetStreamInfo(props.currentStream);
@@ -145,30 +137,22 @@ const UpdateCustomPartitionField = (props: { onClose: () => void; currentStream:
 	}, [value, updateLogStream]);
 
 	return (
-		<Stack gap={0} style={{ justifyContent: 'space-between' }}>
-			<Stack>
-				<Text className={classes.fieldDescription}>Custom Partition Field</Text>
-			</Stack>
-
-			<Stack style={{ flexDirection: 'row', alignItems: 'center' }}>
-				<TagsInput
-					w={'30rem'}
-					placeholder={isSchemaStatic ? 'Select column from the list' : 'Add upto 3 columns'}
-					data={partitionFields}
-					onChange={(value) => onChangeValue(value)}
-					maxTags={3}
-					value={value}
-				/>
-				<UpdateFieldButtons onUpdateClick={updateCustomPartition} onClose={props.onClose} isUpdating={updating} />
-			</Stack>
+		<Stack style={{ flexDirection: 'row', alignItems: 'center' }}>
+			<TagsInput
+				w={'30rem'}
+				placeholder={isSchemaStatic ? 'Select column from the list' : 'Add upto 3 columns'}
+				data={partitionFields}
+				onChange={(value) => onChangeValue(value)}
+				maxTags={3}
+				value={value}
+			/>
+			<UpdateFieldButtons onUpdateClick={updateCustomPartition} onClose={props.onClose} isUpdating={updating} />
 		</Stack>
 	);
 };
 
-
-
 const InfoItem = (props: { title: string; value: string; fullWidth?: boolean; allowEdit?: boolean }) => {
-	const [showEditField, setShowEditField] = useState<string|null>(props.title);
+	const [showEditField, setShowEditField] = useState<string | null>(null);
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const closeEditField = useCallback(() => {
 		setShowEditField(null);
@@ -176,36 +160,44 @@ const InfoItem = (props: { title: string; value: string; fullWidth?: boolean; al
 
 	return (
 		<>
-			{!showEditField ? (
-				<Stack w={props.fullWidth ? '100%' : '33%'} gap={14}>
-					<Group gap={6}>
-						<Text
-							className={classes.fieldDescription}
-							style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-							{props.title}
-						</Text>
-						{props.allowEdit ? (
-							<Tooltip label="Edit" withArrow position="top">
-								<IconEdit
-									className={classes.infoEditBtn}
-									stroke={1.6}
-									size={12}
-									onClick={() => setShowEditField(props.title)}
-								/>
-							</Tooltip>
-						) : null}
-					</Group>
+			<Stack w={props.fullWidth ? '100%' : '33%'} gap={14}>
+				<Group gap={6}>
+					<Text
+						className={classes.fieldDescription}
+						style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+						{props.title}
+					</Text>
+					{props.allowEdit && showEditField !== props.title ? (
+						<Tooltip label="Edit" withArrow position="top">
+							<IconEdit
+								className={classes.infoEditBtn}
+								stroke={1.6}
+								size={12}
+								onClick={() => setShowEditField(props.title)}
+							/>
+						</Tooltip>
+					) : null}
+				</Group>
+				{props.title === showEditField ? null : (
 					<Text
 						className={classes.fieldTitle}
-						style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', fontWeight: 400 }}>
+						style={{
+							textOverflow: 'ellipsis',
+							whiteSpace: 'nowrap',
+							overflow: 'hidden',
+							fontWeight: 400,
+							height: '1.75rem',
+						}}>
 						{props.value}
 					</Text>
-				</Stack>
-			) : props.title === 'Custom Partition Field' ? (
-				<UpdateCustomPartitionField onClose={closeEditField} currentStream={currentStream ? currentStream : ''} />
-			) : (
-				<UpdateMaxHistoricalDifference onClose={closeEditField} currentStream={currentStream ? currentStream : ''} />
-			)}
+				)}
+				{showEditField === props.title && showEditField === 'Custom Partition Field' && (
+					<UpdateCustomPartitionField onClose={closeEditField} currentStream={currentStream ? currentStream : ''} />
+				)}
+				{showEditField === props.title && showEditField === 'Max Historical Difference' && (
+					<UpdateMaxHistoricalDifference onClose={closeEditField} currentStream={currentStream ? currentStream : ''} />
+				)}
+			</Stack>
 		</>
 	);
 };
@@ -237,7 +229,7 @@ const InfoData = (props: { isLoading: boolean }) => {
 		.value();
 
 	return (
-		<Stack style={{ flex: 1, padding: '1.5rem', justifyContent: 'space-between' }}>
+		<Stack style={{ flex: 1 }}>
 			{props.isLoading ? (
 				<Stack style={{ flex: 1, width: '100%', alignItems: 'centrer', justifyContent: 'center' }}>
 					<Stack style={{ alignItems: 'center' }}>
@@ -245,7 +237,7 @@ const InfoData = (props: { isLoading: boolean }) => {
 					</Stack>
 				</Stack>
 			) : (
-				<>
+				<Stack style={{ flex: 1, padding: '1.5rem', justifyContent: 'space-between' }}>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Name" value={currentStream || ''} />
 						<InfoItem title="Created At" value={createdAt} />
@@ -259,7 +251,7 @@ const InfoData = (props: { isLoading: boolean }) => {
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Custom Partition Field" value={customPartition} allowEdit fullWidth />
 					</Stack>
-				</>
+				</Stack>
 			)}
 		</Stack>
 	);
