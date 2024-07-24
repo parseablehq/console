@@ -185,8 +185,8 @@ const SchemaList = (props: { currentStream: string | null; fields: Field[] }) =>
 	const { leftColumns, rightColumns } = genColumnConfig(fields);
 	return (
 		<Stack style={{ height: '13rem' }}>
-			<ScrollArea onScrollPositionChange={onScrollPositionChange}>
-				<Box>
+			<ScrollArea onScrollPositionChange={onScrollPositionChange} scrollbars="y">
+				<Box className={scrollPosition.y > 0 ? queryCodeStyles.schemaListShadow : ''}>
 					<Text
 						style={{
 							fontSize: '0.7rem',
