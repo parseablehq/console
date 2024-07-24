@@ -1,4 +1,4 @@
-import React, { FC, MutableRefObject, useCallback, useEffect } from 'react';
+import React, { FC, MutableRefObject, useCallback, useEffect, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { Box, Button, Flex, ScrollArea, Stack, Text, TextInput } from '@mantine/core';
 import { ErrorMarker, errChecker } from '../ErrorMarker';
@@ -123,10 +123,9 @@ const QueryCodeEditor: FC<{
 	}, [query]);
 
 	return (
-		<Stack style={{ flex: 1,justifyContent: 'space-between' }}>
-			<ScrollArea>
-				<Box style={{ marginBottom: 8 }}>
-					{localLlmActive ? (
+		<Stack style={{ flex: 1, justifyContent: 'space-between' }}>
+			<Box style={{ marginBottom: 8 }}>
+				{localLlmActive ? (
 					<Stack gap={0} style={{ flexDirection: 'row', width: '100%' }}>
 						<TextInput
 							type="text"
@@ -141,35 +140,33 @@ const QueryCodeEditor: FC<{
 							✨ Generate
 						</Button>
 					</Stack>
-					) 
-					 : (
-					 	<Box style={{ width: '100%' }}>
-					 		<Box component="a" href="https://www.parseable.com/docs/integrations/llm" target="_blank">
-					 			Know More: How to enable SQL generation with OpenAI ?
-					 		</Box>
-					 	</Box>
-					 )}
-				</Box>
-				<SchemaList {...{ currentStream, fields }} />
-				<Stack style={{ height: 200, flex: 1 }}>
-					<Editor
-						defaultLanguage="sql"
-						value={query}
-						onChange={handleEditorChange}
-						options={{
-							scrollBeyondLastLine: false,
-							readOnly: false,
-							fontSize: 10,
-							wordWrap: 'on',
-							minimap: { enabled: false },
-							automaticLayout: true,
-							mouseWheelZoom: true,
-							padding: { top: 8 },
-						}}
-						// onMount={handleEditorDidMount}
-					/>
-				</Stack>
-			</ScrollArea>
+				) : (
+					<Box style={{ width: '100%' }}>
+						<Box component="a" href="https://www.parseable.com/docs/integrations/llm" target="_blank">
+							Know More: How to enable SQL generation with OpenAI ?
+						</Box>
+					</Box>
+				)}
+			</Box>
+			<SchemaList {...{ currentStream, fields }} />
+			<Stack style={{ height: 200, flex: 1 }}>
+				<Editor
+					defaultLanguage="sql"
+					value={query}
+					onChange={handleEditorChange}
+					options={{
+						scrollBeyondLastLine: false,
+						readOnly: false,
+						fontSize: 10,
+						wordWrap: 'on',
+						minimap: { enabled: false },
+						automaticLayout: true,
+						mouseWheelZoom: true,
+						padding: { top: 8 },
+					}}
+					// onMount={handleEditorDidMount}
+				/>
+			</Stack>
 			<Stack className={queryCodeStyles.footer} style={{ alignItems: 'center' }}>
 				<Button onClick={props.onClear} disabled={!isSqlSearchActive} variant="outline">
 					Clear
@@ -181,40 +178,48 @@ const QueryCodeEditor: FC<{
 };
 
 const SchemaList = (props: { currentStream: string | null; fields: Field[] }) => {
+	const [scrollPosition, onScrollPositionChange] = useState({ x: 0, y: 0 });
 	const { currentStream, fields } = props;
 	if (!fields || fields.length === 0) return null;
 
 	const { leftColumns, rightColumns } = genColumnConfig(fields);
 	return (
-		<Box>
-			<Text
-				style={{
-					fontSize: '0.7rem',
-					color: '#098658',
-					fontFamily: 'monospace',
-				}}>{`/* Schema for ${currentStream}`}</Text>
-			<Flex style={{ alignItems: 'flex-start', padding: 6, paddingTop: 4 }}>
-				<Box style={{ width: '50%' }}>
-					{leftColumns.map((config, index) => {
-						return (
-							<Text
-								key={index}
-								style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
-						);
-					})}
+		<Stack style={{ height: '13rem' }}>
+			<ScrollArea onScrollPositionChange={onScrollPositionChange}>
+				<Box>
+					<Text
+						style={{
+							fontSize: '0.7rem',
+							color: '#098658',
+							fontFamily: 'monospace',
+						}}>{`/* Schema for ${currentStream}`}</Text>
+					<Flex style={{ alignItems: 'flex-start', padding: 6, paddingTop: 4 }}>
+						<Box style={{ width: '50%' }}>
+							{leftColumns.map((config, index) => {
+								return (
+									<Text
+										key={index}
+										style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
+								);
+							})}
+						</Box>
+						<Box style={{ width: '50%' }}>
+							{rightColumns.map((config, index) => {
+								return (
+									<Text
+										key={index}
+										style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
+								);
+							})}
+						</Box>
+					</Flex>
+					<Text style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}> */</Text>
 				</Box>
-				<Box style={{ width: '50%' }}>
-					{rightColumns.map((config, index) => {
-						return (
-							<Text
-								key={index}
-								style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
-						);
-					})}
-				</Box>
-			</Flex>
-			<Text style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}> */</Text>
-		</Box>
+			</ScrollArea>
+			{fields.length > 20 && scrollPosition.y === 0 ? (
+				<Text style={{ fontSize: '0.8rem', color: '#095286', textAlign: 'center' }}>Scroll to see more</Text>
+			) : null}
+		</Stack>
 	);
 };
 

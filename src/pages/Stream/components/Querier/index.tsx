@@ -85,11 +85,11 @@ const QuerierModal = (props: {
 			size="auto"
 			centered
 			styles={{
-				body: { padding: '0 0.8rem', height: '54vh' },
+				body: { padding: '0 0.8rem', height: '70vh', width: '50vw', justifyContent: 'center' },
 				header: { padding: '1rem', paddingBottom: '0' },
 			}}
 			title={<ModalTitle title={getLabel(viewMode)} />}>
-			<Stack style={{ width: '40rem', padding: '1rem 0.5rem', height: '100%' }} gap={2}>
+			<Stack style={{ padding: '1rem 0.5rem', height: '100%' }} gap={2}>
 				{viewMode === 'filters' ? (
 					<FilterQueryBuilder onClear={props.onClear} onApply={props.onFiltersApply} />
 				) : (
