@@ -210,20 +210,6 @@ const SchemaList = (props: { currentStream: string | null; fields: Field[] }) =>
 										style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
 								);
 							})}
-							{leftColumns.map((config, index) => {
-								return (
-									<Text
-										key={index}
-										style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
-								);
-							})}
-							{leftColumns.map((config, index) => {
-								return (
-									<Text
-										key={index}
-										style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
-								);
-							})}
 						</Box>
 						<Box style={{ width: '50%' }}>
 							{rightColumns.map((config, index) => {
