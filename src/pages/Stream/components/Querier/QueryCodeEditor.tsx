@@ -192,9 +192,11 @@ const SchemaList = (props: { currentStream: string | null; fields: Field[] }) =>
 	const { leftColumns, rightColumns } = genColumnConfig(fields);
 
 	return (
-		<Stack style={{ height: 190 }}>
+		<Stack
+			className={!((schemaDivHeight -190) === scrollPosition.y) && schemaDivHeight > 190 ? queryCodeStyles.schemaListShadow : ''}
+			style={{ height: 190 }}>
 			<ScrollArea scrollbars="y" onScrollPositionChange={onScrollPositionChange}>
-				<Box ref={schemaListDivRef} >
+				<Box ref={schemaListDivRef}>
 					<Text
 						style={{
 							fontSize: '0.7rem',
@@ -225,7 +227,7 @@ const SchemaList = (props: { currentStream: string | null; fields: Field[] }) =>
 				</Box>
 			</ScrollArea>
 			{schemaDivHeight > 190 && scrollPosition.y < 10 ? (
-				<Text style={{ fontSize: '0.8rem', color: '#095286', textAlign: 'center' }}>Scroll to see more</Text>
+				<Text style={{ fontSize: '0.8rem', color: '#095286', textAlign: 'center', paddingBottom:'0.2rem' }}>Scroll to see more</Text>
 			) : null}
 		</Stack>
 	);
