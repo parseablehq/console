@@ -75,18 +75,13 @@ export const useLogStream = () => {
 		isError: updateLogStreamIsError,
 		isLoading: updateLogStreamIsLoading,
 	} = useMutation(
-		(data: {
-			streamName: string;
-			header: Record<string,string>;
-			onSuccess: () => void;
-			onError?: () => void;
-		}) => updateLogStream(data.streamName, null, { 'x-p-update-stream': true, ...data.header }),
+		(data: { streamName: string; header: Record<string, string>; onSuccess: () => void; onError?: () => void }) =>
+			updateLogStream(data.streamName, null, { 'x-p-update-stream': true, ...data.header }),
 		{
 			onError: (data: AxiosError, variables) => {
 				variables.onError && variables.onError();
-				if (isAxiosError(data) && typeof data.message === 'string') {
-					console.log(data)
-					notifyError({ message: data.message });
+				if (isAxiosError(data) && typeof data.response?.data === 'string') {
+					notifyError({ message: data.response.data });
 				}
 			},
 			onSuccess: (_data, variables) => {

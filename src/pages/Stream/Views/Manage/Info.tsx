@@ -42,6 +42,7 @@ const UpdateMaxHistoricalDifference = (props: { onClose: () => void; currentStre
 	const timePartitonLimit = _.get(info, 'time_partition_limit');
 	const [value, setValue] = useState<number | undefined>(timePartitonLimit);
 	const [updating, setUpdating] = useState<boolean>(false);
+	const [error, setError] = useState<string | null>(null);
 	const { updateLogStreamMutation } = useLogStream();
 	const { getStreamInfoRefetch } = useGetStreamInfo(props.currentStream);
 
@@ -50,16 +51,22 @@ const UpdateMaxHistoricalDifference = (props: { onClose: () => void; currentStre
 			const inputTime = e.target.value;
 			const numberRegex = /^\d*$/;
 			if (numberRegex.test(inputTime)) {
-				setValue(parseInt(inputTime) || 0);
+				if (parseInt(inputTime) > 0) {
+					setValue(parseInt(inputTime));
+					setError(null);
+				} else {
+					setValue(0);
+					setError('Number should be higher than zero');
+				}
 			}
 		},
 		[setValue],
 	);
 
 	const updateLogStreamSuccess = useCallback(() => {
+		getStreamInfoRefetch();
 		props.onClose();
 		setUpdating(false);
-		getStreamInfoRefetch();
 	}, [getStreamInfoRefetch]);
 
 	const updateLogStream = useCallback(
@@ -76,19 +83,21 @@ const UpdateMaxHistoricalDifference = (props: { onClose: () => void; currentStre
 
 	const updateTimePartitionLimit = useCallback(() => {
 		if (value === undefined) return;
+		if (error !== null) return;
 
 		setUpdating(true);
 		updateLogStream(value);
 	}, [value, updateLogStream]);
 
 	return (
-		<Stack
-			style={{
-				flexDirection: 'row',
-				alignItems: 'center',
-			}}>
-			<TextInput w={'100%'} placeholder="Max Historical Difference" value={value} onChange={(e) => onChange(e)} />
-			<UpdateFieldButtons onUpdateClick={updateTimePartitionLimit} onClose={props.onClose} isUpdating={updating} />
+		<Stack style={{ flexDirection: 'column', height: '2.55rem' }} gap={0}>
+			<Group style={{ flexDirection: 'row' }}>
+				<TextInput placeholder="Max Historical Difference" value={value} onChange={(e) => onChange(e)} />
+				<UpdateFieldButtons onUpdateClick={updateTimePartitionLimit} onClose={props.onClose} isUpdating={updating} />
+			</Group>
+			<Group>
+				<Text style={{ fontSize: '0.6rem', color: 'red' }}>{error}</Text>
+			</Group>
 		</Stack>
 	);
 };
@@ -98,7 +107,7 @@ const UpdateCustomPartitionField = (props: { onClose: () => void; currentStream:
 	const isSchemaStatic = _.get(info, 'static_schema_flag', false);
 	const updateableCustomPartition = _.get(info, 'custom_partition', '').split(',');
 	const [value, setValue] = useState<string[] | undefined>(updateableCustomPartition);
-	const [partitionFields]= useStreamStore((store) => store.fieldNames);
+	const [partitionFields] = useStreamStore((store) => store.fieldNames);
 	const [updating, setUpdating] = useState<boolean>(false);
 	const { updateLogStreamMutation } = useLogStream();
 	const { getStreamInfoRefetch } = useGetStreamInfo(props.currentStream);
@@ -111,9 +120,9 @@ const UpdateCustomPartitionField = (props: { onClose: () => void; currentStream:
 	);
 
 	const updateLogStreamSuccess = useCallback(() => {
+		getStreamInfoRefetch();
 		props.onClose();
 		setUpdating(false);
-		getStreamInfoRefetch();
 	}, [getStreamInfoRefetch]);
 
 	const updateLogStream = useCallback(
@@ -137,17 +146,15 @@ const UpdateCustomPartitionField = (props: { onClose: () => void; currentStream:
 		updateLogStream(valuesFlattened);
 	}, [value, updateLogStream]);
 
-	
-
 	return (
-		<Stack style={{ flexDirection: 'row', alignItems: 'center' }}>
+		<Stack style={{ flexDirection: 'row', alignItems: 'center', height: '2.55rem' }}>
 			<TagsInput
 				w={'30rem'}
 				placeholder={isSchemaStatic ? 'Select column from the list' : 'Add upto 3 columns'}
 				data={partitionFields}
 				onChange={(value) => onChangeValue(value)}
 				maxTags={3}
-				value={(value?.length === 1) && (value?.[0] === '') ? undefined : value }
+				value={value?.length === 1 && value?.[0] === '' ? undefined : value}
 			/>
 			<UpdateFieldButtons onUpdateClick={updateCustomPartition} onClose={props.onClose} isUpdating={updating} />
 		</Stack>
@@ -189,7 +196,7 @@ const InfoItem = (props: { title: string; value: string; fullWidth?: boolean; al
 							whiteSpace: 'nowrap',
 							overflow: 'hidden',
 							fontWeight: 400,
-							height: '1.75rem',
+							height: '2.55rem',
 						}}>
 						{props.value}
 					</Text>
@@ -234,7 +241,7 @@ const InfoData = (props: { isLoading: boolean }) => {
 	return (
 		<Stack style={{ flex: 1 }}>
 			{props.isLoading ? (
-				<Stack style={{ flex: 1, width: '100%', alignItems: 'centrer', justifyContent: 'center' }}>
+				<Stack style={{ flex: 1, width: '100%', alignItems: 'center', justifyContent: 'center' }}>
 					<Stack style={{ alignItems: 'center' }}>
 						<Loader />
 					</Stack>
