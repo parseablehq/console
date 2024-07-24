@@ -190,10 +190,11 @@ const SchemaList = (props: { currentStream: string | null; fields: Field[] }) =>
 	if (!fields || fields.length === 0) return null;
 
 	const { leftColumns, rightColumns } = genColumnConfig(fields);
+	const showShadow = schemaDivHeight > 190 ? (!((schemaDivHeight -190) === scrollPosition.y)  ? queryCodeStyles.schemaListShadow : ''): '';
 
 	return (
 		<Stack
-			className={schemaDivHeight > 190 && !((schemaDivHeight -190) === scrollPosition.y)  ? queryCodeStyles.schemaListShadow : ''}
+			className={showShadow}
 			style={{ height: 190 }}>
 			<ScrollArea scrollbars="y" onScrollPositionChange={onScrollPositionChange}>
 				<Box ref={schemaListDivRef}>
