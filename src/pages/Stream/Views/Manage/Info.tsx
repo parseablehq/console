@@ -64,8 +64,10 @@ const UpdateMaxHistoricalDifference = (props: { onClose: () => void; currentStre
 	);
 
 	const updateLogStreamSuccess = useCallback(() => {
-		getStreamInfoRefetch().then(() => setUpdating(false));
-		props.onClose();
+		getStreamInfoRefetch().then(() => {
+			setUpdating(false);
+			props.onClose();
+		});
 	}, [getStreamInfoRefetch]);
 
 	const updateLogStream = useCallback(
@@ -119,8 +121,10 @@ const UpdateCustomPartitionField = (props: { onClose: () => void; currentStream:
 	);
 
 	const updateLogStreamSuccess = useCallback(() => {
-		getStreamInfoRefetch().then(() => setUpdating(false));
-		props.onClose();
+		getStreamInfoRefetch().then(() => {
+			setUpdating(false);
+			props.onClose();
+		});
 	}, [getStreamInfoRefetch]);
 
 	const updateLogStream = useCallback(
