@@ -1,4 +1,4 @@
-import { Group, Loader, Stack, Text, TextInput, Tooltip, TagsInput } from '@mantine/core';
+import { Group, Loader, Stack, Text, TextInput, Tooltip, TagsInput,Box } from '@mantine/core';
 import { ChangeEvent, useCallback, useState } from 'react';
 import classes from '../../styles/Management.module.css';
 import { useStreamStore } from '../../providers/StreamProvider';
@@ -19,7 +19,7 @@ const Header = () => {
 
 const UpdateFieldButtons = (props: { onClose: () => void; onUpdateClick: () => void; isUpdating: boolean }) => {
 	return (
-		<>
+		<Box>
 			{!props.isUpdating ? (
 				<Stack gap={4} style={{ display: 'flex', flexDirection: 'row' }}>
 					<Tooltip label="Update" withArrow position="top">
@@ -33,7 +33,7 @@ const UpdateFieldButtons = (props: { onClose: () => void; onUpdateClick: () => v
 			) : (
 				<Loader variant="ring" size="sm" style={{ padding: '0 0.2rem' }} />
 			)}
-		</>
+		</Box>
 	);
 };
 
@@ -66,7 +66,7 @@ const UpdateMaxHistoricalDifference = (props: { onClose: () => void; currentStre
 		(updatedValue: number) => {
 			updateLogStreamMutation({
 				streamName: props.currentStream,
-				header: {'x-p-time-partition-limit' : `${updatedValue}d`},
+				header: { 'x-p-time-partition-limit': `${updatedValue}d` },
 				onSuccess: updateLogStreamSuccess,
 				onError: () => setUpdating(false),
 			});
@@ -74,7 +74,7 @@ const UpdateMaxHistoricalDifference = (props: { onClose: () => void; currentStre
 		[updateLogStreamMutation, props.currentStream],
 	);
 
-	const onClick = useCallback(() => {
+	const updateTimePartitionLimit = useCallback(() => {
 		if (value === undefined) return;
 
 		setUpdating(true);
@@ -95,17 +95,18 @@ const UpdateMaxHistoricalDifference = (props: { onClose: () => void; currentStre
 					alignItems: 'center',
 				}}>
 				<TextInput w={'100%'} placeholder="Max Historical Difference" value={value} onChange={(e) => onChange(e)} />
-				<UpdateFieldButtons onUpdateClick={onClick} onClose={props.onClose} isUpdating={updating} />
+				<UpdateFieldButtons onUpdateClick={updateTimePartitionLimit} onClose={props.onClose} isUpdating={updating} />
 			</Stack>
 		</Stack>
 	);
 };
 
-const UpdateCustomPartitionField = (props: { isStaticSchema: boolean; onClose: () => void; currentStream: string }) => {
+const UpdateCustomPartitionField = (props: { onClose: () => void; currentStream: string }) => {
 	const [info] = useStreamStore((store) => store.info);
+	const isSchemaStatic = _.get(info, 'static_schema_flag', false);
 	const updateableCustomPartition = _.get(info, 'custom_partition', '');
-	const partitionFields: string[] = updateableCustomPartition.split(',');
-	const [value, setValue] = useState<string[]>(partitionFields);
+	const [value, setValue] = useState<string[]>(updateableCustomPartition.split(','));
+	const partitionFields: string[] = isSchemaStatic ? [] : value;
 	const [updating, setUpdating] = useState<boolean>(false);
 	const { updateLogStreamMutation } = useLogStream();
 	const { getStreamInfoRefetch } = useGetStreamInfo(props.currentStream);
@@ -127,7 +128,7 @@ const UpdateCustomPartitionField = (props: { isStaticSchema: boolean; onClose: (
 		(updatedValue: string) => {
 			updateLogStreamMutation({
 				streamName: props.currentStream,
-				header:{'x-p-custom-partition': updatedValue},
+				header: { 'x-p-custom-partition': updatedValue },
 				onSuccess: updateLogStreamSuccess,
 				onError: () => setUpdating(false),
 			});
@@ -135,7 +136,7 @@ const UpdateCustomPartitionField = (props: { isStaticSchema: boolean; onClose: (
 		[props.currentStream, updateLogStreamMutation],
 	);
 
-	const onClick = useCallback(() => {
+	const updateCustomPartition = useCallback(() => {
 		if (value === undefined) return;
 
 		const valuesFlattened = value.join(',');
@@ -152,23 +153,25 @@ const UpdateCustomPartitionField = (props: { isStaticSchema: boolean; onClose: (
 			<Stack style={{ flexDirection: 'row', alignItems: 'center' }}>
 				<TagsInput
 					w={'30rem'}
-					placeholder="Add upto 3 columns"
+					placeholder={isSchemaStatic ? 'Select column from the list' : 'Add upto 3 columns'}
 					data={partitionFields}
 					onChange={(value) => onChangeValue(value)}
 					maxTags={3}
 					value={value}
 				/>
-				<UpdateFieldButtons onUpdateClick={onClick} onClose={props.onClose} isUpdating={updating} />
+				<UpdateFieldButtons onUpdateClick={updateCustomPartition} onClose={props.onClose} isUpdating={updating} />
 			</Stack>
 		</Stack>
 	);
 };
 
+
+
 const InfoItem = (props: { title: string; value: string; fullWidth?: boolean; allowEdit?: boolean }) => {
-	const [showEditField, setShowEditField] = useState<boolean>(false);
+	const [showEditField, setShowEditField] = useState<string|null>(props.title);
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const closeEditField = useCallback(() => {
-		setShowEditField(false);
+		setShowEditField(null);
 	}, []);
 
 	return (
@@ -187,7 +190,7 @@ const InfoItem = (props: { title: string; value: string; fullWidth?: boolean; al
 									className={classes.infoEditBtn}
 									stroke={1.6}
 									size={12}
-									onClick={() => setShowEditField(true)}
+									onClick={() => setShowEditField(props.title)}
 								/>
 							</Tooltip>
 						) : null}
@@ -199,11 +202,7 @@ const InfoItem = (props: { title: string; value: string; fullWidth?: boolean; al
 					</Text>
 				</Stack>
 			) : props.title === 'Custom Partition Field' ? (
-				<UpdateCustomPartitionField
-					onClose={closeEditField}
-					currentStream={currentStream ? currentStream : ''}
-					isStaticSchema
-				/>
+				<UpdateCustomPartitionField onClose={closeEditField} currentStream={currentStream ? currentStream : ''} />
 			) : (
 				<UpdateMaxHistoricalDifference onClose={closeEditField} currentStream={currentStream ? currentStream : ''} />
 			)}
