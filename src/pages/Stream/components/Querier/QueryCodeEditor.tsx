@@ -193,7 +193,7 @@ const SchemaList = (props: { currentStream: string | null; fields: Field[] }) =>
 
 	return (
 		<Stack
-			className={!((schemaDivHeight -190) === scrollPosition.y) && schemaDivHeight > 190 ? queryCodeStyles.schemaListShadow : ''}
+			className={schemaDivHeight > 190 && !((schemaDivHeight -190) === scrollPosition.y)  ? queryCodeStyles.schemaListShadow : ''}
 			style={{ height: 190 }}>
 			<ScrollArea scrollbars="y" onScrollPositionChange={onScrollPositionChange}>
 				<Box ref={schemaListDivRef}>
