@@ -20,7 +20,7 @@ const selectStreamWarningText = 'Select a stream to continue';
 const validateQueryWarningText = 'Validate query to continue';
 const emptyVizWarning = 'No visualization selected for the tile';
 
-const {toggleVizEditorModal, toggleCreateTileModal} = dashboardsStoreReducers;
+const { toggleVizEditorModal, toggleCreateTileModal } = dashboardsStoreReducers;
 
 const SectionHeader = (props: { title: string; actionBtnProps?: { label: string; onClick: () => void } }) => {
 	const { title, actionBtnProps } = props;
@@ -73,12 +73,12 @@ const VisPreview = (props: { form: TileFormType }) => {
 	const showWarning = (!isValidStream || !isQueryValidated) && _.isEmpty(data);
 	const hasNoViz = true;
 	const errorMsg = showWarning ? (!isValidStream ? selectStreamWarningText : validateQueryWarningText) : null;
-	
+
 	return (
 		<Stack className={classes.sectionContainer} {...(showWarning ? { gap: 0 } : {})}>
-			<VizEditorModal form={props.form}/>
+			<VizEditorModal form={props.form} />
 			<SectionHeader title="Visualization Preview" />
-			{showWarning ? <WarningView msg={errorMsg} /> : hasNoViz ? <EmptyVizView msg={emptyVizWarning}/> : null}
+			{showWarning ? <WarningView msg={errorMsg} /> : hasNoViz ? <EmptyVizView msg={emptyVizWarning} /> : null}
 		</Stack>
 	);
 };
@@ -130,17 +130,17 @@ const useTileForm = (opts: FormOpts) => {
 		mode: 'controlled',
 		initialValues: opts,
 		validate: {
-			name: (val) => _.isEmpty(val) ? "Cannot be empty" : null,
-			stream: (val) => _.isEmpty(val) ? "Cannot be empty" : null,
-			description: (val) => _.isEmpty(val) ? "Cannot be empty" : null,
-			query: (val) => _.isEmpty(val) ? "Cannot be empty" : null,
-			isQueryValidated: (val) => val ? null : "Query not validated"
+			name: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
+			stream: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
+			description: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
+			query: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
+			isQueryValidated: (val) => (val ? null : 'Query not validated'),
 		},
 		validateInputOnChange: true,
 		validateInputOnBlur: true,
 	});
 
-	const colors = form.values.visualization?.colors
+	const colors = form.values.visualization?.colors;
 
 	const onChangeValue = useCallback((key: string, value: any) => {
 		form.setFieldValue(key, value);
@@ -149,7 +149,7 @@ const useTileForm = (opts: FormOpts) => {
 	const updateColors = useCallback(
 		(key: string, value: string) => {
 			form.setFieldValue('colors', {
-				...(colors ? {...colors} : {}),
+				...(colors ? { ...colors } : {}),
 				[key]: value,
 			});
 		},
@@ -330,7 +330,7 @@ const defaultTileOpts = {
 	description: 'hello',
 	stream: 'teststream',
 	isQueryValidated: false,
-	query: "select * from teststream",
+	query: 'select * from teststream',
 	data: null,
 	visualization: {
 		type: 'donut-chart',
@@ -344,10 +344,10 @@ const defaultTileOpts = {
 
 const CreateTileForm = () => {
 	const { form, onChangeValue } = useTileForm(defaultTileOpts);
-	const [, setDashbaordsStore] = useDashboardsStore(store => null);
+	const [, setDashbaordsStore] = useDashboardsStore((store) => null);
 
 	const closeEditForm = useCallback(() => {
-		setDashbaordsStore(store => toggleCreateTileModal(store, false));
+		setDashbaordsStore((store) => toggleCreateTileModal(store, false));
 	}, []);
 
 	return (
@@ -356,10 +356,14 @@ const CreateTileForm = () => {
 				<Text style={{ fontSize: '0.8rem', fontWeight: 500 }}>Create Tile</Text>
 				<Stack style={{ flexDirection: 'row' }}>
 					<Box>
-						<Button onClick={closeEditForm} variant="outline">Cancel</Button>
+						<Button onClick={closeEditForm} variant="outline">
+							Cancel
+						</Button>
 					</Box>
 					<Box>
-						<Button disabled={!form.isValid()} variant="filled">Save Changes</Button>
+						<Button disabled={!form.isValid()} variant="filled">
+							Save Changes
+						</Button>
 					</Box>
 				</Stack>
 			</Stack>

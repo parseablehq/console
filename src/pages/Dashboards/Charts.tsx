@@ -3,6 +3,8 @@ import { AreaChart, BarChart, DonutChart, LineChart, PieChart } from '@mantine/c
 import { Stack, Text } from '@mantine/core';
 import _ from 'lodash';
 import { circularChartTypes } from './providers/DashboardsProvider';
+import { IconAlertTriangle } from '@tabler/icons-react';
+import classes from './styles/Charts.module.css'
 
 export const chartColorsMap = {
 	'black': 'dark.6',
@@ -66,19 +68,62 @@ export type SeriesType = {
 
 export const isCircularChart = (viz: string) => _.includes(circularChartTypes, viz);
 
-export const renderCircularChart = (opts: {queryResponse: TileQueryResponse | null, nameKey: string, valueKey: string, chart: 'donut-chart'}) => {
+const invalidConfigMsg = "Invalid chart config"
+const noDataMsg = "No data available"
+const invalidDataMsg = "Invalid chart data"
+
+const WarningView = (props: { msg: string | null }) => {
+	return (
+		<Stack style={{ alignItems: 'center', justifyContent: 'center', flex: 1, gap: 0 }} className={classes.warningViewContainer}>
+				<IconAlertTriangle stroke={1.2} className={classes.warningIcon} />
+				<Text className={classes.warningText}>{props.msg}</Text>
+		</Stack>
+	);
+};
+
+const validateCircularChartData = (data: CircularChartData) => {
+	return _.every(data, d => _.isNumber(d.value))
+}
+
+export const renderCircularChart = (opts: {queryResponse: TileQueryResponse | null, nameKey: string, valueKey: string, chart: string }) => {
 	const { queryResponse, nameKey, valueKey, chart } = opts;
 
 	const VizComponent = getVizComponent(chart);
 	const data = makeCircularChartData(queryResponse?.records || [], nameKey, valueKey);
-	return <Stack style={{ flex: 1, height: '100%' }}>{VizComponent ? <VizComponent data={data} /> : null}</Stack>;
+
+	const isInvalidKey = _.isEmpty(nameKey) || _.isEmpty(valueKey);
+	const hasNoData = _.isEmpty(data);
+	const isValidData = validateCircularChartData(data);
+	const warningMsg = isInvalidKey ? invalidConfigMsg : hasNoData ? noDataMsg : !isValidData ? invalidDataMsg : null;
+
+	return (
+		<Stack style={{ flex: 1, height: '100%', padding: '1rem 0rem'}}>
+			{warningMsg ? <WarningView msg={warningMsg} /> : VizComponent ? <VizComponent data={data} /> : null}
+		</Stack>
+	);
 }
 
 export const renderGraph = (opts: {queryResponse: TileQueryResponse | null, xKey: string, yKeys: string[], chart}) => {
 	const { queryResponse, xKey, yKeys, chart } = opts;
 	const VizComponent = getVizComponent(chart);
 	const seriesData = makeSeriesData(queryResponse?.records || [], yKeys);
-	return <Stack style={{ flex: 1, height: '100%', padding: '1rem' }}>{VizComponent ? <VizComponent data={queryResponse?.records || []} dataKey={xKey} series={seriesData}/> : null}</Stack>;
+
+	const data = queryResponse?.records || []
+	const isInvalidKey = _.isEmpty(xKey) || _.isEmpty(yKeys);
+	const hasNoData = _.isEmpty(seriesData) || _.isEmpty(data);
+	const warningMsg = isInvalidKey ? invalidConfigMsg : hasNoData ? noDataMsg : null;
+
+	return (
+		<Stack style={{ flex: 1, height: '100%', padding: '1rem' }}>
+			{warningMsg ? <WarningView msg={warningMsg} /> : VizComponent ? <VizComponent data={data} dataKey={xKey} series={seriesData}/> : null}
+		</Stack>
+	);
+
+	// return (
+	// 	<Stack style={{ flex: 1, height: '100%', padding: '1rem' }}>
+	// 		{VizComponent ? <VizComponent data={queryResponse?.records || []} dataKey={xKey} series={seriesData} /> : null}
+	// 	</Stack>
+	// );
 }
 
 export const makeCircularChartData = (data: TileData | null, nameKey: string, valueKey: string): CircularChartData => {

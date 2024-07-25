@@ -1,6 +1,6 @@
 import { Modal, MultiSelect, Select, Stack, Text, TextInput } from '@mantine/core';
 import classes from './styles/VizEditor.module.css';
-import { useDashboardsStore, Visualization, dashboardsStoreReducers, tileSizes } from './providers/DashboardsProvider';
+import { useDashboardsStore, Visualization, dashboardsStoreReducers, tileSizes, circularChartTypes } from './providers/DashboardsProvider';
 import { useForm, UseFormReturnType } from '@mantine/form';
 import { useCallback, useEffect, useState } from 'react';
 import { visualizations } from './providers/DashboardsProvider';
@@ -9,10 +9,10 @@ import { colors as defaultColors, DonutData, isCircularChart, renderCircularChar
 import charts from './Charts';
 import { FormOpts, TileFormType, TileQuery, TileQueryResponse } from '@/@types/parseable/api/dashboards';
 import { IconAlertTriangle } from '@tabler/icons-react';
-
+import TableViz from './Table';
 const {toggleVizEditorModal} = dashboardsStoreReducers;
 
-const inValidVizType = 'Select a chart type'
+const inValidVizType = 'Select a visualization type';
 
 const WarningView = (props: { msg: string | null }) => {
 	return (
@@ -23,38 +23,57 @@ const WarningView = (props: { msg: string | null }) => {
 	);
 };
 
+const CircularChart = (props: { form: TileFormType }) => {
+	const {
+		visualization: { type, circularChartConfig },
+		data,
+	} = props.form.values;
+	const nameKey = _.get(circularChartConfig, 'nameKey', '');
+	const valueKey = _.get(circularChartConfig, 'valueKey', '');
+
+	return (
+		<Stack style={{ flex: 1, width: '100%' }}>
+			{renderCircularChart({ queryResponse: data, nameKey, valueKey, chart: type })}
+		</Stack>
+	);
+};
+
+const Graph = (props: { form: TileFormType }) => {
+	const {
+		visualization: { type, graphConfig },
+		data,
+	} = props.form.values;
+	const xKey = _.get(graphConfig, 'xAxis', '');
+	const yKeys = _.get(graphConfig, 'yAxis', []);
+	return (
+		<Stack style={{ flex: 1, width: '100%' }}>{renderGraph({ queryResponse: data, xKey, yKeys, chart: type })}</Stack>
+	);
+};
+
+const Table = (props: {form: TileFormType }) => {
+	const data = props.form.values.data;
+	return (
+		<Stack style={{ width: '100%', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+			<Stack className={classes.tableContainer} style={{ width: '100%', height: '90%' }}>
+				<TableViz data={data} />
+			</Stack>
+		</Stack>
+	);
+};
+
 const Viz = (props: {form: TileFormType}) => {
     const {form: {values: {visualization, data}}} = props;
 
 	const {type} = visualization;
 	const isValidVizType = _.includes(visualizations, type);
 	const showWarning = !isValidVizType;
-    // const [chartData, setChartData] = useState<DonutData>([]);
+	const Viss = type === 'table' ? Table : isCircularChart(type) ? CircularChart : Graph;
 
-    // useEffect(() => {
-    //     setChartData(sanitizeDonutData([data], form.values.colors))
-    // }, [data, form.values.colors])
-
-	const renderFn = isCircularChart(type) ? renderCircularChart : renderGraph;
-	const chartOpts = isCircularChart(type)
-		? {
-				queryResponse: data,
-				nameKey: visualization.circularChartConfig.nameKey,
-				valueKey: visualization.circularChartConfig.valueKey,
-				chart: type,
-		  }
-		: {queryResponse: data, xKey: visualization.graphConfig.xAxis, yKeys: visualization.graphConfig.yAxis, chart: 'line-chart'};
 	return (
-		<Stack className={classes.vizContainer} >
-			<Stack style={{flex: 1}}>
-				{/* {
-					showWarning && <WarningView msg={inValidVizType}/>
-				} */}
-				{
-					renderFn(chartOpts)
-				}
-                {/* <charts.Donut data={chartData}/> */}
-            </Stack>
+		<Stack className={classes.vizContainer}>
+			<Stack style={{ flex: 1 }}>
+				{showWarning ? <WarningView msg={inValidVizType} /> : <Viss form={props.form} />}
+			</Stack>
 		</Stack>
 	);
 };
@@ -161,6 +180,8 @@ const GraphConfig = (props: {form: TileFormType}) => {
 }
 
 const TickConfig = (props: {form: TileFormType}) => {
+	if (props.form.values.visualization.type === 'table') return null;
+
 	return (
 		<Stack gap={4}>
 			<Text className={classes.fieldTitle} style={{ marginBottom: '0.25rem', fontSize: '0.8rem', fontWeight: 500 }}>
@@ -207,19 +228,6 @@ const Config = (props: {form: TileFormType, updateColors: (key: string, value: s
 	);
 };
 
-const data = {
-	info: 789,
-	warn: 364,
-	error: 456,
-	debug: 123,
-	critical: 78,
-	notice: 567,
-	alert: 231,
-	emergency: 45,
-	trace: 890,
-	fatal: 132,
-};
-
 const useVizForm = (opts: Visualization) => {
 	const form = useForm<Visualization>({
 		mode: 'controlled',
@@ -250,13 +258,11 @@ type VizFormReturnType = UseFormReturnType<Visualization, (values: Visualization
 
 const VizEditorModal = (props: {form: TileFormType}) => {
 	const {form} = props;
-    // const {form, updateColors} = useVizForm({type: 'donut-chart', colors: {}});
 	const [vizEditorModalOpen] = useDashboardsStore((store) => store.vizEditorModalOpen);
 	const [, setDashboardStore] = useDashboardsStore((_store) => null);
 	const closeVizModal = useCallback(() => {
 		setDashboardStore((store) => toggleVizEditorModal(store, false));
 	}, []);
-	const showWarning = _.isEmpty(data);
 	return (
 		<Modal
 			opened={vizEditorModalOpen}

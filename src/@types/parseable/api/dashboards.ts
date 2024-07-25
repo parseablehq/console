@@ -40,7 +40,7 @@ export type TileQueryResponse = {
 
 export interface FormOpts extends Omit<Tile, 'id' | 'visualization'> {
 	isQueryValidated: boolean;
-	data: TileQueryResponse | null;
+	data: TileQueryResponse;
 	visualization: Visualization;
 }
 

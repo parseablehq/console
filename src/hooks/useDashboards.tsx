@@ -97,6 +97,8 @@ export const useTileQuery = (opts: { onSuccess: (data: TileQueryResponse) => voi
 			try {
 				setFetchState({ isLoading: true, isError: null, isSuccess: null });
 				const res = await getQueryData(queryOpts);
+				// debug
+				// if no result, fill {records: [], fields: []}
 				onSuccess(res.data);
 				setFetchState({ isLoading: false, isError: false, isSuccess: true });
 			} catch (e) {

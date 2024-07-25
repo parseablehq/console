@@ -1,0 +1,13 @@
+.warningText {
+    color: var(--mantine-color-gray-5);
+    font-size: 0.75rem;
+}
+
+.warningIcon {
+    color: var(--mantine-color-gray-5);
+}
+
+.warningViewContainer {
+    /* border: 1px solid var(--mantine-color-gray-2); */
+    /* border-radius: 0.2rem; */
+}

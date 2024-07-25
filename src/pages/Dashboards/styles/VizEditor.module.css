@@ -35,3 +35,8 @@
 .warningIcon {
     color: var(--mantine-color-gray-5);
 }
+
+.tableContainer {
+    border: 1px solid var(--mantine-color-gray-2);
+    border-radius: 0.2rem;
+}

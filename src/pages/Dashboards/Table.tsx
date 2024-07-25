@@ -1,9 +1,9 @@
 import { Stack, Table, Text } from "@mantine/core"
-import { Tile } from "./providers/DashboardsProvider";
 import { TileQueryResponse } from "@/@types/parseable/api/dashboards";
 import classes from './styles/Table.module.css'
 import _ from "lodash";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { IconAlertTriangle } from "@tabler/icons-react";
 
 const makeRowData = (data: TileQueryResponse) => {
     const {fields, records} = data;
@@ -12,12 +12,21 @@ const makeRowData = (data: TileQueryResponse) => {
     })
 }
 
-const TableViz = (props: { tile: Tile; data: TileQueryResponse }) => {
+const NoDataView = () => {
+	return (
+		<Stack style={{ alignItems: 'center', justifyContent: 'center', flex: 1, gap: 0 }}>
+			<IconAlertTriangle stroke={1.2} className={classes.warningIcon} />
+			<Text className={classes.warningText}>No data to display</Text>
+		</Stack>
+	);
+};
+
+const TableViz = (props: { data: TileQueryResponse }) => {
 	const {
-		tile,
 		data: { fields, records },
 	} = props;
-	const rowData = makeRowData({ fields, records });
+	// debug
+	const rowData = useMemo(() => makeRowData({ fields, records }), []);
 
 	const containerRef = useRef(null);
 	const [initialHeight, setInitialHeight] = useState(0);
@@ -27,20 +36,25 @@ const TableViz = (props: { tile: Tile; data: TileQueryResponse }) => {
 			setInitialHeight(containerRef.current.offsetHeight);
 		}
 	}, []);
+	const hasNoData = _.isEmpty(records) || _.isEmpty(fields)
 
 	return (
 		<Stack ref={containerRef} style={{ flex: 1, width: '100%', overflow: 'auto' }}>
 			<Stack style={{ overflow: 'scroll', height: initialHeight }}>
-				<Table
-					striped
-					highlightOnHover
-					stickyHeader
-					classNames={{ thead: classes.thead, tbody: classes.tbody, table: classes.table }}
-					data={{
-						head: fields,
-						body: rowData,
-					}}
-				/>
+				{hasNoData ? (
+					<NoDataView />
+				) : (
+					<Table
+						striped
+						highlightOnHover
+						stickyHeader
+						classNames={{ thead: classes.thead, tbody: classes.tbody, table: classes.table }}
+						data={{
+							head: fields,
+							body: rowData,
+						}}
+					/>
+				)}
 			</Stack>
 		</Stack>
 	);
