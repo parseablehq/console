@@ -42,14 +42,17 @@ export default function UpdateCustomPartitionField(props: { timePartition: strin
 	const onChangeValue = useCallback(
 		(value: string[]) => {
 			setValue(value);
-            if (value?.includes(props.timePartition)) {
-                setError(`${props.timePartition} is a time partition`);
-            }
     
             if (isStaticSchema) {
                 value?.forEach((el) => {
                     if (!partitionFields.includes(el)) {
-                        setError(`${el} is not a part of existing partition field`);
+                        setError("Unknown Field Included");
+                        console.log(el)
+                    }else if(el === null){
+                        setError(null)
+                    }
+                    else{
+                        setError(null)
                     }
                 });
             }
@@ -70,7 +73,7 @@ export default function UpdateCustomPartitionField(props: { timePartition: strin
 				streamName: props.currentStream,
 				header: { 'x-p-custom-partition': updatedValue },
 				onSuccess: updateLogStreamSuccess,
-				onError: () => setUpdating(false),
+				onError: () => {setUpdating(false), setValue(existingCustomPartition)},
 			});
 		},
 		[props.currentStream, updateLogStreamMutation],
