@@ -4,10 +4,8 @@ import { IconArrowNarrowRight } from '@tabler/icons-react';
 import { FC, Fragment, useCallback, MouseEvent, useState, useEffect } from 'react';
 import { Log } from '@/@types/parseable/api/query';
 import tableStyles from '../../styles/Logs.module.css';
-import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
+import { useLogsStore, logsStoreReducers, columnsToSkip } from '../../providers/LogsProvider';
 import { IconCopy, IconCheck } from '@tabler/icons-react';
-
-const columnsToSkip = ['p_metadata', 'p_tags'];
 
 const { setSelectedLog } = logsStoreReducers;
 

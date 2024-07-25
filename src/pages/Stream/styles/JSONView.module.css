@@ -1,0 +1,42 @@
+.container {
+	position: relative;
+}
+
+.innerContainer {
+	position: relative;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.rowContainer {
+	border-bottom: 1px solid var(--mantine-color-gray-1);
+	padding: 0.25rem 1rem;
+	cursor: pointer;
+	&:hover {
+		background-color: var(--mantine-color-gray-1);
+	}
+}
+
+.itemHeader {
+	font-weight: 500;
+	font-size: 0.65rem;
+	word-break: normal;
+    word-wrap: break-word;
+	font-family: monospace;
+}
+
+.itemValue {
+	font-weight: 400;
+	font-size: 0.65rem;
+	color: var(--mantine-color-gray-7);
+	word-break: normal;
+    word-wrap: break-word;
+	font-family: monospace;
+}
+
+.itemContainer {
+	margin-right: 0.2rem;
+
+}

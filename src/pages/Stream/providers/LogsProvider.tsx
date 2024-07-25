@@ -11,8 +11,11 @@ import { sanitizeCSVData } from '@/utils/exportHelpers';
 export const DEFAULT_FIXED_DURATIONS = FIXED_DURATIONS[0];
 export const LOG_QUERY_LIMITS = [50, 100, 150, 200];
 export const LOAD_LIMIT = 1000;
+export const columnsToSkip = ['p_metadata', 'p_tags'];
 
 type ReducerOutput = Partial<LogsStore>;
+
+export type ViewMode = 'table' | 'json'
 
 export type ConfigType = {
 	column: string;
@@ -182,6 +185,7 @@ type LogsStore = {
 	selectedLog: Log | null;
 	custQuerySearchState: CustQuerySearchState;
 	sideBarOpen: boolean;
+	viewMode: ViewMode;
 	modalOpts: {
 		deleteModalOpen: boolean;
 		alertsModalOpen: boolean;
@@ -281,6 +285,7 @@ const initialState: LogsStore = {
 	selectedLog: null,
 	custQuerySearchState: defaultCustQuerySearchState,
 	sideBarOpen: false,
+	viewMode: 'json',
 	modalOpts: {
 		deleteModalOpen: false,
 		alertsModalOpen: false,
