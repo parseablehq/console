@@ -42,6 +42,17 @@ export default function UpdateCustomPartitionField(props: { timePartition: strin
 	const onChangeValue = useCallback(
 		(value: string[]) => {
 			setValue(value);
+            if (value?.includes(props.timePartition)) {
+                setError(`${props.timePartition} is a time partition`);
+            }
+    
+            if (isStaticSchema) {
+                value?.forEach((el) => {
+                    if (!partitionFields.includes(el)) {
+                        setError(`${el} is not a part of existing partition field`);
+                    }
+                });
+            }
 		},
 		[setValue],
 	);
@@ -66,17 +77,7 @@ export default function UpdateCustomPartitionField(props: { timePartition: strin
 	);
 
 	const updateCustomPartition = useCallback(() => {
-		if (value?.includes(props.timePartition)) {
-			setError(`${props.timePartition} is a time partition`);
-		}
-
-		if (isStaticSchema) {
-			value?.forEach((el) => {
-				if (!partitionFields.includes(el)) {
-					setError(`${el} is not a part of existing partition field`);
-				}
-			});
-		}
+		
 		const valuesFlattened = value?.join(',');
 
 		if (valuesFlattened === undefined) return;
