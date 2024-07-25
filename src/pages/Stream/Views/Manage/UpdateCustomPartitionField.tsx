@@ -3,7 +3,7 @@ import classes from '../../styles/Management.module.css';
 import { IconCheck, IconX, IconEdit } from '@tabler/icons-react';
 import { useStreamStore } from '../../providers/StreamProvider';
 import _ from 'lodash';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useLogStream } from '@/hooks/useLogStream';
 import { useGetStreamInfo } from '@/hooks/useGetStreamInfo';
 
@@ -39,6 +39,13 @@ export default function UpdateCustomPartitionField(props: { timePartition: strin
 	const { updateLogStreamMutation } = useLogStream();
 	const { getStreamInfoRefetch } = useGetStreamInfo(props.currentStream);
 
+    // eject '-' from value array
+    useEffect(()=> {
+        if(value?.length ===1 && value.includes('-')){
+            setValue([])
+        }
+    },[])
+
 	const onChangeValue = useCallback(
 		(value: string[]) => {
 			setValue(value);
@@ -47,12 +54,13 @@ export default function UpdateCustomPartitionField(props: { timePartition: strin
 				value?.forEach((el) => {
 					if (!partitionFields.includes(el)) {
 						setError('Unknown Field Included');
-					} else if (el === null) {
-						setError(null);
 					} else {
 						setError(null);
 					}
 				});
+			}
+			if (Array.isArray(value) && value.length === 0) {
+				setError(null);
 			}
 		},
 		[setValue],
