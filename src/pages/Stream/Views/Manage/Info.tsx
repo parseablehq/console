@@ -15,8 +15,7 @@ const Header = () => {
 	);
 };
 
-const InfoItem = (props: { title: string; value: string; fullWidth?: boolean; allowEdit?: boolean }) => {
-
+const InfoItem = (props: { title: string; value: string; fullWidth?: boolean }) => {
 	return (
 		<Stack w={props.fullWidth ? '100%' : '33%'} gap={1}>
 			<Group gap={6}>
