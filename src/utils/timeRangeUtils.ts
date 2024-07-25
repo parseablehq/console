@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import _ from "lodash";
 
 const defaultTimeRangeOption = {
 	value: 'none',
@@ -48,12 +49,20 @@ const optimizeEndTime = (endTime: Date) => {
 	return dayjs(endTime).add(1, 'minute').toDate();
 };
 
+const getDefaultTimeRangeOption = (
+	opts: { value: string; label: string; time_filter: null | { from: string; to: string } }[],
+) => {
+	const selectedTimeRange = _.find(opts, (option) => option.value === 'selected');
+	return selectedTimeRange ? selectedTimeRange : defaultTimeRangeOption;
+};
+
 const timeRangeUtils = {
     defaultTimeRangeOption,
 
     makeTimeRangeOptions,
     makeTimeRangeLabel,
-	optimizeEndTime
+	optimizeEndTime,
+	getDefaultTimeRangeOption
 }
 
 export default timeRangeUtils;

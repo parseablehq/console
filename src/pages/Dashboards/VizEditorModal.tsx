@@ -1,11 +1,11 @@
-import { Modal, Select, Stack, Text, TextInput } from '@mantine/core';
+import { Modal, MultiSelect, Select, Stack, Text, TextInput } from '@mantine/core';
 import classes from './styles/VizEditor.module.css';
 import { useDashboardsStore, Visualization, dashboardsStoreReducers, tileSizes } from './providers/DashboardsProvider';
 import { useForm, UseFormReturnType } from '@mantine/form';
 import { useCallback, useEffect, useState } from 'react';
 import { visualizations } from './providers/DashboardsProvider';
 import _ from 'lodash';
-import { colors as defaultColors, DonutData, isCircularChart, renderCircularChart, sanitizeDonutData, sanitizeDonutData2 } from './Charts';
+import { colors as defaultColors, DonutData, isCircularChart, renderCircularChart, renderGraph, sanitizeDonutData, sanitizeDonutData2 } from './Charts';
 import charts from './Charts';
 import { FormOpts, TileFormType, TileQuery, TileQueryResponse } from '@/@types/parseable/api/dashboards';
 import { IconAlertTriangle } from '@tabler/icons-react';
@@ -35,8 +35,15 @@ const Viz = (props: {form: TileFormType}) => {
     //     setChartData(sanitizeDonutData([data], form.values.colors))
     // }, [data, form.values.colors])
 
-	const renderFn = isCircularChart(type) ? renderCircularChart : renderCircularChart;
-
+	const renderFn = isCircularChart(type) ? renderCircularChart : renderGraph;
+	const chartOpts = isCircularChart(type)
+		? {
+				queryResponse: data,
+				nameKey: visualization.circularChartConfig.nameKey,
+				valueKey: visualization.circularChartConfig.valueKey,
+				chart: type,
+		  }
+		: {queryResponse: data, xKey: visualization.graphConfig.xAxis, yKeys: visualization.graphConfig.yAxis, chart: 'line-chart'};
 	return (
 		<Stack className={classes.vizContainer} >
 			<Stack style={{flex: 1}}>
@@ -44,7 +51,7 @@ const Viz = (props: {form: TileFormType}) => {
 					showWarning && <WarningView msg={inValidVizType}/>
 				} */}
 				{
-					renderFn({queryResponse: data, nameKey: visualization.circularChartConfig.nameKey, valueKey: visualization.circularChartConfig.valueKey, chart: type})
+					renderFn(chartOpts)
 				}
                 {/* <charts.Donut data={chartData}/> */}
             </Stack>
@@ -58,6 +65,7 @@ const vizLabelMap = {
     'table': 'Table',
     'line-chart': 'Line Chart',
     'bar-chart': 'Bar Chart',
+	'area-chart': 'Area Chart'
 }
 
 const sizeLabelMap = {
@@ -124,13 +132,46 @@ const CircularChartConfig = (props: {form: TileFormType}) => {
 	);
 }
 
+const GraphConfig = (props: {form: TileFormType}) => {
+	const {form: {values: {data}}} = props;
+
+	return (
+		<Stack>
+			<Select
+				data={_.map(data?.fields, (field) => ({ label: field, value: field }))}
+				classNames={{ label: classes.fieldTitle }}
+				label="X Axis"
+				placeholder="X Axis"
+				key="visualization.graphConfig.xAxis"
+				{...props.form.getInputProps('visualization.graphConfig.xAxis')}
+				style={{ width: '50%' }}
+			/>
+			<MultiSelect
+				data={data?.fields}
+				classNames={{ label: classes.fieldTitle }}
+				label="Y Axis"
+				placeholder="Y Axis"
+				key="visualization.graphConfig.yAxis"
+				{...props.form.getInputProps('visualization.graphConfig.yAxis')}
+				style={{ width: '50%' }}
+				limit={6}
+			/>
+		</Stack>
+	);
+}
+
 const TickConfig = (props: {form: TileFormType}) => {
 	return (
 		<Stack gap={4}>
 			<Text className={classes.fieldTitle} style={{ marginBottom: '0.25rem', fontSize: '0.8rem', fontWeight: 500 }}>
 				Chart Config
 			</Text>
-			<CircularChartConfig form={props.form}/>
+			{/* debug */}
+			{isCircularChart(props.form.values.visualization.type) ? (
+				<CircularChartConfig form={props.form} />
+			) : (
+				<GraphConfig form={props.form} />
+			)}
 		</Stack>
 	);
 }

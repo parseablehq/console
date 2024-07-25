@@ -1,6 +1,6 @@
 import { TileData, TileQueryResponse, TileRecord } from '@/@types/parseable/api/dashboards';
-import { DonutChart, PieChart } from '@mantine/charts';
-import { Stack } from '@mantine/core';
+import { AreaChart, BarChart, DonutChart, LineChart, PieChart } from '@mantine/charts';
+import { Stack, Text } from '@mantine/core';
 import _ from 'lodash';
 import { circularChartTypes } from './providers/DashboardsProvider';
 
@@ -21,7 +21,20 @@ export const chartColorsMap = {
 	'orange': 'orange.6',
 }
 
-export const colors = ['red', 'pink', 'grape', 'violet', 'indigo', 'cyan', 'blue', 'teal', 'green', 'lime', 'yellow', 'orange']
+export const colors = [
+	'indigo',
+	'cyan',
+	'teal',
+	'yellow',
+	'grape',
+	'violet',
+	'blue',
+	'pink',
+	'lime',
+	'orange',
+	'red',
+	'green',
+];
 export const nullColor = 'gray'
 
 export const getVizComponent = (viz: string) => {
@@ -29,14 +42,25 @@ export const getVizComponent = (viz: string) => {
 		return Donut;
 	} else if (viz === 'pie-chart') {
 		return Pie;
+	} else if (viz === 'line-chart') {
+		return Line;
+	} else if (viz === 'bar-chart') {
+		return Bar;
+	} else if (viz === 'area-chart') {
+		return Area;
 	} else {
 		return null;
 	}
 };
 
-export type DonutData = {
+export type CircularChartData = {
 	name: string;
 	value: number;
+	color: string;
+}[];
+
+export type SeriesType = {
+	name: string;
 	color: string;
 }[];
 
@@ -50,15 +74,14 @@ export const renderCircularChart = (opts: {queryResponse: TileQueryResponse | nu
 	return <Stack style={{ flex: 1, height: '100%' }}>{VizComponent ? <VizComponent data={data} /> : null}</Stack>;
 }
 
-export const renderGraph = (opts: {queryResponse: TileQueryResponse | null, nameKey: string, valueKey: string, chart: 'donut-chart'}) => {
-	const { queryResponse, nameKey, valueKey, chart } = opts;
-
+export const renderGraph = (opts: {queryResponse: TileQueryResponse | null, xKey: string, yKeys: string[], chart}) => {
+	const { queryResponse, xKey, yKeys, chart } = opts;
 	const VizComponent = getVizComponent(chart);
-	const data = makeCircularChartData(queryResponse?.records || [], nameKey, valueKey);
-	return <Stack style={{ flex: 1, height: '100%' }}>{VizComponent ? <VizComponent data={data} /> : null}</Stack>;
+	const seriesData = makeSeriesData(queryResponse?.records || [], yKeys);
+	return <Stack style={{ flex: 1, height: '100%', padding: '1rem' }}>{VizComponent ? <VizComponent data={queryResponse?.records || []} dataKey={xKey} series={seriesData}/> : null}</Stack>;
 }
 
-export const makeCircularChartData = (data: TileData | null, nameKey: string, valueKey: string): DonutData => {
+export const makeCircularChartData = (data: TileData | null, nameKey: string, valueKey: string): CircularChartData => {
 	if (!_.isArray(data)) return [];
 
 	const topN = 5;
@@ -81,26 +104,61 @@ export const makeCircularChartData = (data: TileData | null, nameKey: string, va
 	const restObject = _.omit(chartData, topNKeys);
 
 	let usedColors: string[] = [];
-	const topNArcs = _.reduce(
+	const { topNArcs } = _.reduce(
 		topNObject,
-		(acc: DonutData, value, key) => {
-			const color = _.sample(_.difference(colors, usedColors)) || nullColor;
+		(acc: { topNArcs: CircularChartData; index: number }, value, key) => {
+			const { topNArcs, index } = acc;
+			const color = _.difference(colors, usedColors)[index] || nullColor;
 			usedColors = [...usedColors, color];
-			return [...acc, { name: key, value, color: chartColorsMap[color] || 'gray.6' }];
+			return { topNArcs: [...topNArcs, { name: key, value, color: chartColorsMap[color] || 'gray.6' }], index: index + 1 };
 		},
-		[],
+		{ topNArcs: [], index: 0 },
 	);
 
 	const restArcValue = _.sum(_.values(restObject));
 	return [...topNArcs, ...(restArcValue !== 0 ? [{ name: 'Others', value: restArcValue, color: 'gray.6' }] : [])];
 }
 
-const Donut = (props: { data: DonutData }) => {
+const makeSeriesData = (data: TileData | null, yKeys: string[]) => {
+	if (!_.isArray(data)) return [];
+
+	let usedColors: string[] = [];
+
+	return _.reduce<string, { color: string; name: string }[]>(
+		yKeys,
+		(acc, key: string, index: number) => {
+			const color =  _.difference(colors, usedColors)[index] || nullColor;
+			return [...acc, { color: chartColorsMap[color] || 'gray.6', name: key }];
+		},
+		[],
+	);
+}
+
+const Donut = (props: { data: CircularChartData }) => {
 	return <DonutChart withLabelsLine={false} thickness={30} withLabels data={props.data} h="100%" w="100%" />;
 };
 
-const Pie = (props: { data: DonutData }) => {
+const Pie = (props: { data: CircularChartData }) => {
 	return <PieChart withLabelsLine={false} withLabels data={props.data} h="100%" w="100%" withTooltip tooltipDataSource="segment"/>;
+};
+
+const Line = (props: { data: TileData; dataKey: string; series: SeriesType }) => {
+	return (
+		<LineChart h="100%" w="100%" withLegend data={props.data} dataKey={props.dataKey} curveType="linear" series={props.series} />
+	);
+};
+
+const Bar = (props: { data: TileData; dataKey: string; series: SeriesType }) => {
+	console.log(props, "bar bar")
+	return (
+		<BarChart h="100%" w="100%" type="stacked" withLegend data={props.data} dataKey={props.dataKey}  series={props.series} />
+	);
+};
+
+const Area = (props: { data: TileData; dataKey: string; series: SeriesType }) => {
+	return (
+		<AreaChart withLegend data={props.data} dataKey={props.dataKey}  series={props.series} />
+	);
 };
 
 const charts = {

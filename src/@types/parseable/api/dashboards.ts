@@ -1,9 +1,28 @@
 import { Tile, Visualization } from "@/pages/Dashboards/providers/DashboardsProvider";
-import { Log } from "./query";
 import { UseFormReturnType } from "@mantine/form";
 
 export type CreateDashboardType = {
     name: string;
+	description: string;
+	refresh_interval: number;
+	tiles: Tile[];
+	time_filter: null | {
+		from: string;
+		to: string;
+	}
+}
+
+
+export type UpdateDashboardType = {
+    name: string;
+	description: string;
+	refresh_interval: number;
+	tiles: Tile[];
+	dashboard_id: string;
+	time_filter: null | {
+		from: string;
+		to: string;
+	}
 }
 
 export type TileQuery = {query: string, startTime: Date, endTime: Date}

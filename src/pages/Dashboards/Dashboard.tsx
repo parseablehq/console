@@ -9,25 +9,27 @@ import Tile from './Tile';
 // import classes from './styles/tile.module.css';
 import classes from './styles/Dashboard.module.css'
 import CreateTileForm from './CreateTileForm';
-import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
+import { useDashboardsStore, dashboardsStoreReducers, genLayout } from './providers/DashboardsProvider';
 import _ from 'lodash';
 import { IconChartBar } from '@tabler/icons-react';
 import { useCallback } from 'react';
 
 const {toggleCreateDashboardModal, toggleCreateTileModal} = dashboardsStoreReducers;
 
-const BasicSample = () => {
-	const layout = [
-		{ i: 'a', x: 0, y: 0, w: 4, h: 1, minH: 1 },
-		// { i: 'a', x: 0, y: 0, w: 4, h: 1, minH: 1 },
-		// { i: 'a', x: 0, y: 0, w: 4, h: 1, minH: 1 },
-		// { i: 'b', x: 4, y: 0, w: 4, h: 1, minH: 1 },
-		// { i: 'c', x: 8, y: 0, w: 4, h: 1, minH: 1 },
-		// { i: 'd', x: 12, y: 0, w: 4, h: 1, minH: 1 },
-	];
+const TilesView  = () => {
+	const [activeDashboard] = useDashboardsStore(store => store.activeDashboard);
+	const hasNoTiles = _.size(activeDashboard?.tiles) < 1;
+
+	if (hasNoTiles || !activeDashboard) return <NoTilesView />;
+
+
+	const {tiles} = activeDashboard;
+
+	// debug - memo
+	const layout = genLayout(tiles);
 
 	return (
-		<Stack>
+		<Stack className={classes.tilesViewConatiner}>
 			<GridLayout
 				className="layout"
 				layout={layout}
@@ -35,14 +37,21 @@ const BasicSample = () => {
 				rowHeight={300}
 				width={window.innerWidth - NAVBAR_WIDTH - DASHBOARDS_SIDEBAR_WIDTH}
 				isResizable={false}
-				margin={[16,16]}
+				margin={[16, 16]}
 				containerPadding={[20, 10]}
 				compactType="horizontal"
-				isDraggable={true}
-				>
-				<div key="a" style={{ transition: 'none', background: 'white' }} className={`${classes.container} capture-class`}>
-					<Tile/>
-				</div>
+				isDraggable={false}>
+				{_.map(layout, (item) => {
+					return (
+						<div
+							key={item.i}
+							style={{ transition: 'none', background: 'white' }}
+							className={`${classes.container} capture-class`}>
+							<Tile id={item.i} />
+						</div>
+					);
+				})}
+
 				{/* <div key="b" style={{ border: '1px solid black', transition: 'none', backgroundColor: 'lightblue' }}>
 					Item B
 				</div>
@@ -88,14 +97,14 @@ const NoTilesView = () => {
 	}, [])
 
 	return (
-		<Stack className={classes.noDashboardsContainer}>
+		<Stack className={classes.noDashboardsContainer} gap={4}>
 			{/* <ThemeIcon size="lg" variant='light' radius="lg"> */}
 			<Stack className={classes.dashboardIconContainer}>
 				<IconChartBar className={classes.dashboardIcon} stroke={1.2} />
 			</Stack>
 			<Text className={classes.noDashboardsViewTitle}>Create Tile Title Placeholder</Text>
 			<Text className={classes.noDashboardsViewDescription}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco</Text>
-			<Box>
+			<Box mt={4}>
 				<Button onClick={openCreateTileModal}>Add Tile</Button>
 			</Box>
 			{/* </ThemeIcon> */}
@@ -105,22 +114,14 @@ const NoTilesView = () => {
 
 const Dashboard = () => {
 	const [dashboards] = useDashboardsStore(store => store.dashboards);
-	const [activeDashboard] = useDashboardsStore(store => store.activeDashboard)
-	const hasNoTiles = _.size(activeDashboard?.tiles) < 1;
+	const [createTileFormOpen] = useDashboardsStore(store => store.createTileFormOpen)
 
 	if (_.isEmpty(dashboards)) return <NoDashboardsView/>;
 
 	return (
 		<Stack style={{ flex: 1 }} gap={0}>
 			<Toolbar />
-			<CreateTileForm />
-			{/* {hasNoTiles ? (
-				<NoTilesView />
-			) : (
-				<>
-					<BasicSample />
-				</>
-			)} */}
+			{createTileFormOpen ? <CreateTileForm /> : <TilesView />}
 		</Stack>
 	);
 };

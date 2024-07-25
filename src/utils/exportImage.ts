@@ -1,9 +1,7 @@
 import html2canvas from 'html2canvas';
 
 const handleCapture = () => {
-    console.log("pop")
     const element = document.querySelector('.capture-class');
-    console.log("kolo", element)
     if (element) {
       html2canvas(element).then(canvas => {
         const imgData = canvas.toDataURL('image/png');

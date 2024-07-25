@@ -6,7 +6,7 @@ import { Dashboard, useDashboardsStore, dashboardsStoreReducers } from './provid
 import { useCallback, useEffect, useState } from 'react';
 import _ from 'lodash';
 
-const {selectDashboard} = dashboardsStoreReducers;
+const {selectDashboard, toggleCreateDashboardModal} = dashboardsStoreReducers;
 
 interface DashboardItemProps extends Dashboard {
 	activeDashboardId: undefined | string;
@@ -14,58 +14,58 @@ interface DashboardItemProps extends Dashboard {
 }
 
 const DashboardListItem = (props: DashboardItemProps) => {
-	const { name, id, pinned, tiles, activeDashboardId, onSelect } = props;
+	const { name, dashboard_id, tiles, activeDashboardId, onSelect } = props;
 	const totalTiles = _.size(tiles);
-	const isActive = id === activeDashboardId;
+	const isActive = dashboard_id === activeDashboardId;
+
+	const selectDashboard = useCallback(() => onSelect(dashboard_id), [])
 	return (
-		<Stack gap={0} className={`${classes.dashboardItem} ${isActive ? classes.active : ''}`} onClick={() => onSelect(id)}>
+		<Stack gap={0} className={`${classes.dashboardItem} ${isActive ? classes.active : ''}`} onClick={selectDashboard}>
 			<Text className={classes.dashboardTitle} lineClamp={1}>{name}</Text>
-			<Text className={classes.tilesCountText}>{`${totalTiles} Tile${totalTiles > 1 ? 's' : ''}`}</Text>
+			<Text className={classes.tilesCountText}>{`${totalTiles} Tile${totalTiles === 1 ? '' : 's'}`}</Text>
 		</Stack>
 	);
 };
 
 const DashboardList = () => {
 	const [dashboards, setDashbaordsStore] = useDashboardsStore((store) => store.dashboards);
-	const [activeDashboardId] = useDashboardsStore(store => store.activeDashboard?.id)
-	// useEffect(() => {
-	// 	const { pinned, unpinned } = _.reduce(
-	// 		dashboards,
-	// 		(acc: { pinned: Dashboard[]; unpinned: Dashboard[] }, dashboard: Dashboard) => {
-	// 			const { pinned, unpinned } = acc;
-	// 			if (dashboard.pinned) {
-	// 				return { pinned: [...pinned, dashboard], unpinned };
-	// 			} else {
-	// 				return { pinned, unpinned: [...unpinned, dashboard] };
-	// 			}
-	// 		},
-	// 		{ pinned: [], unpinned: [] },
-	// 	);
-
-	// }, [dashboards]);
+	const [activeDashboardId] = useDashboardsStore((store) => store.activeDashboard?.dashboard_id);
 
 	const onSelectDashboardId = useCallback((dashboardId: string) => {
-		setDashbaordsStore(store => selectDashboard(store, dashboardId))
-	}, [])
+		setDashbaordsStore((store) => selectDashboard(store, dashboardId));
+	}, []);
 
 	return (
 		<Stack style={{}}>
 			{_.map(dashboards, (dashboard) => {
-				return <DashboardListItem {...dashboard} activeDashboardId={activeDashboardId} onSelect={onSelectDashboardId}/>;
+				return (
+					<DashboardListItem key={dashboard.dashboard_id} {...dashboard} activeDashboardId={activeDashboardId} onSelect={onSelectDashboardId} />
+				);
 			})}
 		</Stack>
 	);
 };
 
 const SideBar = () => {
-	const [dashboards] = useDashboardsStore(store => store.dashboards);
+	const [dashboards, setDashbaordsStore] = useDashboardsStore((store) => store.dashboards);
+
+	const openCreateStreamModal = useCallback(() => {
+		setDashbaordsStore((store) => toggleCreateDashboardModal(store, true));
+	}, []);
 
 	if (_.isEmpty(dashboards)) return null;
+
 	return (
 		<Stack style={{ width: DASHBOARDS_SIDEBAR_WIDTH }} className={classes.container}>
-			<Button variant="light" leftSection={<IconPlus stroke={2} size="1rem" />} style={{margin: '1rem', marginBottom: 0}}>
-				New Dashboard
-			</Button>
+			<Stack style={{ padding: '0.75rem', paddingBottom: 0, justifyContent: 'center' }}>
+				<Button
+					variant="outline"
+					className={classes.createDashboardBtn}
+					onClick={openCreateStreamModal}
+					leftSection={<IconPlus stroke={2} size={'1rem'} />}>
+					New Dashboard
+				</Button>
+			</Stack>
 			<DashboardList />
 		</Stack>
 	);

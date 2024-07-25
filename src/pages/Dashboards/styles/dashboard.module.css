@@ -23,9 +23,14 @@
 .noDashboardsViewTitle {
     font-weight: 500;
     font-size: 0.9rem;
+    text-align: center;
 }
 
 .noDashboardsViewDescription {
     font-size: 0.8rem;
     text-align: center;
+}
+
+.tilesViewConatiner {
+    margin-top: 0.5rem;
 }

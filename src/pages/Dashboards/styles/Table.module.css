@@ -1,0 +1,36 @@
+.thead {
+    th {
+        font-weight: 600;
+        font-size: 0.7rem;
+        padding: 0.6rem;
+        min-width: 5rem;
+        max-width: 10rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    tr {
+        border-color: var(--mantine-color-gray-1);
+    }
+
+}
+
+.tbody {
+    tr {
+        border-color: var(--mantine-color-gray-1);
+    }
+
+    td {
+        padding: 0.4rem 0.6rem;
+        min-width: 5rem;
+        max-width: 10rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+.tr {}
+
+.table {}

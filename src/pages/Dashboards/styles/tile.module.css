@@ -29,3 +29,12 @@
     justify-content: center;
     align-items: center;
 }
+
+.warningText {
+    color: var(--mantine-color-gray-5);
+    font-size: 0.75rem;
+}
+
+.warningIcon {
+    color: var(--mantine-color-gray-5);
+}

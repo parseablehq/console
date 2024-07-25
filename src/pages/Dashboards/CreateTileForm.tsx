@@ -18,9 +18,9 @@ import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 
 const selectStreamWarningText = 'Select a stream to continue';
 const validateQueryWarningText = 'Validate query to continue';
-const emptyVizWarning = 'Select visualization for the data';
+const emptyVizWarning = 'No visualization selected for the tile';
 
-const {toggleVizEditorModal} = dashboardsStoreReducers;
+const {toggleVizEditorModal, toggleCreateTileModal} = dashboardsStoreReducers;
 
 const SectionHeader = (props: { title: string; actionBtnProps?: { label: string; onClick: () => void } }) => {
 	const { title, actionBtnProps } = props;
@@ -129,7 +129,13 @@ const useTileForm = (opts: FormOpts) => {
 	const form = useForm<FormOpts>({
 		mode: 'controlled',
 		initialValues: opts,
-		validate: {},
+		validate: {
+			name: (val) => _.isEmpty(val) ? "Cannot be empty" : null,
+			stream: (val) => _.isEmpty(val) ? "Cannot be empty" : null,
+			description: (val) => _.isEmpty(val) ? "Cannot be empty" : null,
+			query: (val) => _.isEmpty(val) ? "Cannot be empty" : null,
+			isQueryValidated: (val) => val ? null : "Query not validated"
+		},
 		validateInputOnChange: true,
 		validateInputOnBlur: true,
 	});
@@ -197,7 +203,7 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 		const now = new Date();
 		const santizedQuery = sanitiseSqlString(query);
 		onChangeValue('query', santizedQuery);
-		fetchTileData({ query: santizedQuery, startTime: new Date(now.getTime() - 24 * 60 * 60 * 1000), endTime: now });
+		fetchTileData({ query: santizedQuery, startTime: new Date(now.getTime() - 24 * 3 * 60 * 60 * 1000), endTime: now });
 	}, [query]);
 
 	const onEditorChange = useCallback((query: string | undefined) => {
@@ -289,11 +295,10 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 	return (
 		<Stack className={classes.sectionContainer} style={{ height: '100%' }}>
 			<SectionHeader title="Tile Config" />
-			<Stack style={{ flexDirection: 'row', alignItems: 'center', padding: '0 1rem' }}>
+			<Stack style={{ flexDirection: 'row', padding: '0 1rem' }}>
 				<TextInput
 					classNames={{ label: classes.fieldTitle }}
 					label="Name"
-					placeholder="Tile Name"
 					key="name"
 					{...form.getInputProps('name')}
 					style={{ width: '50%' }}
@@ -302,7 +307,6 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 					data={allStreams}
 					classNames={{ label: classes.fieldTitle }}
 					label="Stream"
-					placeholder="Stream"
 					key="stream"
 					{...form.getInputProps('stream')}
 					style={{ width: '50%' }}
@@ -312,7 +316,6 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 				<TextInput
 					classNames={{ label: classes.fieldTitle }}
 					label="Description"
-					placeholder="Tile Description (Optional)"
 					key="description"
 					{...form.getInputProps('description')}
 				/>
@@ -323,11 +326,11 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 };
 
 const defaultTileOpts = {
-	name: '',
-	description: '',
+	name: 'hello',
+	description: 'hello',
 	stream: 'teststream',
 	isQueryValidated: false,
-	query: 'SELECT level, COUNT(*) AS level_count FROM teststream GROUP BY level;',
+	query: "select * from teststream",
 	data: null,
 	visualization: {
 		type: 'donut-chart',
@@ -341,15 +344,33 @@ const defaultTileOpts = {
 
 const CreateTileForm = () => {
 	const { form, onChangeValue } = useTileForm(defaultTileOpts);
+	const [, setDashbaordsStore] = useDashboardsStore(store => null);
+
+	const closeEditForm = useCallback(() => {
+		setDashbaordsStore(store => toggleCreateTileModal(store, false));
+	}, []);
 
 	return (
-		<Stack style={{ height: '100%', padding: '1rem', flexDirection: 'row' }} gap={24}>
-			<Stack style={{ width: '60%' }}>
-				<Config form={form} onChangeValue={onChangeValue} />
+		<Stack style={{ height: '100%' }} gap={0}>
+			<Stack style={{ justifyContent: 'space-between', padding: '1rem', flexDirection: 'row' }}>
+				<Text style={{ fontSize: '0.8rem', fontWeight: 500 }}>Create Tile</Text>
+				<Stack style={{ flexDirection: 'row' }}>
+					<Box>
+						<Button onClick={closeEditForm} variant="outline">Cancel</Button>
+					</Box>
+					<Box>
+						<Button disabled={!form.isValid()} variant="filled">Save Changes</Button>
+					</Box>
+				</Stack>
 			</Stack>
-			<Stack style={{ height: '100%', width: '40%' }} gap={24}>
-				<VisPreview form={form} />
-				<DataPreview form={form} />
+			<Stack style={{ height: '100%', padding: '1rem', paddingTop: 0, flexDirection: 'row' }} gap={24}>
+				<Stack style={{ width: '60%' }}>
+					<Config form={form} onChangeValue={onChangeValue} />
+				</Stack>
+				<Stack style={{ height: '100%', width: '40%' }} gap={24}>
+					<VisPreview form={form} />
+					<DataPreview form={form} />
+				</Stack>
 			</Stack>
 		</Stack>
 	);
