@@ -58,41 +58,44 @@ const Home: FC = () => {
 	}, []);
 
 	return (
-		<ScrollArea>
-			<Box className={container} style={{ display: 'flex', flex: 1, marginTop: '1rem', paddingBottom: '3rem' }}>
-				<CreateStreamModal />
-				<Stack
-					style={{
-						margin: '1rem',
-						marginTop: '0',
-						alignItems: 'center',
-						justifyContent: 'space-between',
-						flexDirection: 'row',
-					}}>
-					<Text style={{fontSize: '0.8rem'}} fw={500}>All Streams</Text>
-					<Box>
-						{userAccessMap.hasCreateStreamAccess && (
-							<Button
-								variant="outline"
-								className={createStreamButton}
-								onClick={openCreateStreamModal}
-								leftSection={<IconPlus stroke={2} size={"1rem"}/>}>
-								Create Stream
-							</Button>
-						)}
-					</Box>
-				</Stack>
-				{displayEmptyPlaceholder ? (
-					<EmptyStreamsView />
-				) : (
-					<Group style={{ marginRight: '1rem', marginLeft: '1rem', gap: '1rem' }}>
-						{Object.entries(metaData || {}).map(([stream, data]) => {
-							return <StreamInfo key={stream} stream={stream} data={data} navigateToStream={navigateToStream} />;
-						})}
-					</Group>
-				)}
-			</Box>
-		</ScrollArea>
+		<>
+			<Stack
+				style={{
+					margin: '1rem',
+					alignItems: 'center',
+					justifyContent: 'space-between',
+					flexDirection: 'row',
+				}}>
+				<Text style={{ fontSize: '0.8rem' }} fw={500}>
+					All Streams
+				</Text>
+				<Box>
+					{userAccessMap.hasCreateStreamAccess && (
+						<Button
+							variant="outline"
+							className={createStreamButton}
+							onClick={openCreateStreamModal}
+							leftSection={<IconPlus stroke={2} size={'1rem'} />}>
+							Create Stream
+						</Button>
+					)}
+				</Box>
+			</Stack>
+			<ScrollArea>
+				<Box className={container} style={{ display: 'flex', flex: 1, paddingBottom: '3rem' }}>
+					<CreateStreamModal />
+					{displayEmptyPlaceholder ? (
+						<EmptyStreamsView />
+					) : (
+						<Group style={{ marginRight: '1rem', marginLeft: '1rem', gap: '1rem' }}>
+							{Object.entries(metaData || {}).map(([stream, data]) => {
+								return <StreamInfo key={stream} stream={stream} data={data} navigateToStream={navigateToStream} />;
+							})}
+						</Group>
+					)}
+				</Box>
+			</ScrollArea>
+		</>
 	);
 };
 
@@ -101,9 +104,7 @@ export default Home;
 const BigNumber = (props: { label: string; value: any; color?: string }) => {
 	return (
 		<Box className={cardStyles.streamBoxCol} style={{ width: '11%' }}>
-			<Text style={{ color: 'black', fontSize: '0.6rem' }}>
-				{props.label}
-			</Text>
+			<Text style={{ color: 'black', fontSize: '0.6rem' }}>{props.label}</Text>
 			<Text fw={700} className={cardStyles.bigNo}>
 				{props.value}
 			</Text>

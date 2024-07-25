@@ -13,10 +13,10 @@ import {
 	Flex,
 	Button,
 	Pagination,
-	Loader,
 	Group,
 	Stack,
 	Tooltip,
+	Loader,
 } from '@mantine/core';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FC, MutableRefObject, ReactNode, RefObject } from 'react';
@@ -68,17 +68,26 @@ const TotalCount = (props: { totalCount: number }) => {
 
 const renderExportIcon = () => <IconDownload size={px('0.8rem')} stroke={1.8} />;
 
-const TotalLogsCount = () => {
+const TotalLogsCount = (props: { hasTableLoaded: boolean; isFetchingCount: boolean; isTableEmpty: boolean }) => {
 	const [{ totalCount, perPage, pageData }] = useLogsStore((store) => store.tableOpts);
 	const displayedCount = _.size(pageData);
 	const showingCount = displayedCount < perPage ? displayedCount : perPage;
 	if (typeof totalCount !== 'number' || typeof displayedCount !== 'number') return <Stack />;
-
 	return (
 		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }} gap={6}>
-			<Text style={{ fontSize: '0.7rem' }}>{`Showing ${showingCount} out of`}</Text>
-			<TotalCount totalCount={totalCount} />
-			<Text style={{ fontSize: '0.7rem' }}>records</Text>
+			{props.hasTableLoaded ? (
+				props.isFetchingCount ? (
+					<Loader type="dots" />
+				) : (
+					<>
+						<Text style={{ fontSize: '0.7rem' }}>{`Showing ${showingCount} out of`}</Text>
+						<TotalCount totalCount={totalCount} />
+						<Text style={{ fontSize: '0.7rem' }}>records</Text>
+					</>
+				)
+			) : props.isTableEmpty ? null : (
+				<Loader type="dots" />
+			)}
 		</Stack>
 	);
 };
@@ -191,13 +200,20 @@ const ErrorView = (props: { message: string }) => {
 
 const LoadingView = () => {
 	return (
-		<Stack w="100%" align="center" h="100%" style={{ alignItems: 'center', justifyContent: 'center' }}>
-			<Loader variant="dots" />
+		<Stack
+			w="100%"
+			align="center"
+			h="100%"
+			style={{
+				alignItems: 'center',
+				justifyContent: 'center',
+			}}>
+			<Loader type="parseable" />
 		</Stack>
 	);
 };
 
-const Footer = (props: { loaded: boolean }) => {
+const Footer = (props: { loaded: boolean; isLoading: boolean; hasNoData: boolean }) => {
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const [filteredData] = useLogsStore((store) => store.data.filteredData);
 	const { totalPages, currentOffset, currentPage, perPage, headers, totalCount } = tableOpts;
@@ -240,7 +256,11 @@ const Footer = (props: { loaded: boolean }) => {
 	return (
 		<Stack className={tableStyles.footerContainer} gap={0}>
 			<Stack w="100%" justify="center" align="flex-start">
-				{!props.loaded ? null : <TotalLogsCount />}
+				<TotalLogsCount
+					hasTableLoaded={props.loaded}
+					isFetchingCount={props.isLoading}
+					isTableEmpty={props.hasNoData}
+				/>
 			</Stack>
 			<Stack w="100%" justify="center">
 				{props.loaded ? (
@@ -350,7 +370,7 @@ const LogTable = (props: { schemaLoading: boolean }) => {
 		? PRIMARY_HEADER_HEIGHT + LOGS_PRIMARY_TOOLBAR_HEIGHT + LOGS_SECONDARY_TOOLBAR_HEIGHT
 		: 0;
 
-	const { getQueryData, loading: logsLoading, error: logsError, fetchCount } = useQueryLogs();
+	const { getQueryData, loading: logsLoading, error: logsError, fetchCount, isFetchingCount } = useQueryLogs();
 	const [currentPage] = useLogsStore((store) => store.tableOpts.currentPage);
 	const [currentOffset, setLogsStore] = useLogsStore((store) => store.tableOpts.currentOffset);
 
@@ -391,14 +411,14 @@ const LogTable = (props: { schemaLoading: boolean }) => {
 						</Box>
 					</Box>
 				) : hasNoData ? (
-					<EmptyBox message="No Data Available" />
+					<EmptyBox message="No Matching Rows" />
 				) : (
 					<LoadingView />
 				)
 			) : (
 				<ErrorView message={errorMessage} />
 			)}
-			<Footer loaded={showTable} />
+			<Footer loaded={showTable} isLoading={isFetchingCount} hasNoData={hasNoData} />
 		</TableContainer>
 	);
 };
