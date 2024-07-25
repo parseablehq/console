@@ -11,7 +11,7 @@ const UpdateFieldButtons = (props: { onClose: () => void; onUpdateClick: () => v
 	return (
 		<Box>
 			{!props.isUpdating ? (
-				<Stack gap={4} style={{ display: 'flex', flexDirection: 'row' }}>
+				<Stack gap={4} style={{ display: 'flex', flexDirection: 'row'}} >
 					<Tooltip label="Update" withArrow position="top">
 						<IconCheck className={classes.infoEditBtn} onClick={() => props.onUpdateClick()} stroke={1.6} size={16} />
 					</Tooltip>
@@ -98,7 +98,7 @@ export default function UpdateCustomPartitionField(props: { timePartition: strin
 	}, [value, updateLogStream]);
 
 	return (
-		<Stack style={{ flexDirection: 'column', height: '2.55rem' }} gap={6}>
+		<Stack style={{ flexDirection: 'column', height: '3.5rem' }} gap={6}>
 			<Group>
 				<Text
 					className={classes.fieldDescription}
@@ -116,7 +116,7 @@ export default function UpdateCustomPartitionField(props: { timePartition: strin
 				</Tooltip>
 			</Group>
 			{showEditField ? (
-				<Group style={{ flexDirection: 'row', alignItems: 'center' }}>
+				<Group style={{ flexDirection: 'row', alignItems: 'baseline' }}>
 					<TagsInput
 						w={'30rem'}
 						placeholder={isStaticSchema ? 'Select column from the list' : 'Add upto 3 columns'}

@@ -82,7 +82,7 @@ function UpdateTimePartitionLimit(props: { timePartition: string; currentStream:
 	}, [value, updateLogStream]);
 
 	return (
-		<Stack style={{ height: '2.55rem', width: '33%' }} gap={6}>
+		<Stack style={{ height: '3.5rem', width: '33%' }} gap={6}>
 			<Group>
 				<Text
 					className={classes.fieldDescription}
@@ -102,7 +102,7 @@ function UpdateTimePartitionLimit(props: { timePartition: string; currentStream:
 				)}
 			</Group>
 			{showEditField ? (
-				<Group style={{ flexDirection: 'row', alignItems: 'center' }} gap={6}>
+				<Group style={{ flexDirection: 'row',alignItems:"baseline" }} gap={6}>
 					<TextInput
 						placeholder="Max Historical Difference"
 						value={value}

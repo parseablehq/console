@@ -17,7 +17,7 @@ const Header = () => {
 
 const InfoItem = (props: { title: string; value: string; fullWidth?: boolean }) => {
 	return (
-		<Stack w={props.fullWidth ? '100%' : '33%'} gap={1}>
+		<Stack w={props.fullWidth ? '100%' : '33%'} gap={1} style={{height:'3.5rem'}}>
 			<Group gap={6}>
 				<Text
 					className={classes.fieldDescription}
@@ -33,7 +33,6 @@ const InfoItem = (props: { title: string; value: string; fullWidth?: boolean }) 
 					whiteSpace: 'nowrap',
 					overflow: 'hidden',
 					fontWeight: 400,
-					height: '2.55rem',
 				}}>
 				{props.value}
 			</Text>
