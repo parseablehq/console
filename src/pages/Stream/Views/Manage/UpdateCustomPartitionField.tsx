@@ -27,14 +27,15 @@ const UpdateFieldButtons = (props: { onClose: () => void; onUpdateClick: () => v
 	);
 };
 
-export default function UpdateCustomPartitionField(props: { currentStream: string }) {
+export default function UpdateCustomPartitionField(props: { timePartition: string; currentStream: string }) {
 	const [info] = useStreamStore((store) => store.info);
 	const isStaticSchema = _.get(info, 'static_schema_flag', false);
-	const existingCustomPartition = _.get(info, 'custom_partition', '').split(',');
+	const existingCustomPartition = _.get(info, 'custom_partition', '-').split(',');
 	const [partitionFields] = useStreamStore((store) => store.fieldNames);
 	const [value, setValue] = useState<string[] | undefined>(existingCustomPartition);
 	const [updating, setUpdating] = useState<boolean>(false);
 	const [showEditField, setShowEditField] = useState<boolean>(false);
+	const [error, setError] = useState<string | null>(null);
 	const { updateLogStreamMutation } = useLogStream();
 	const { getStreamInfoRefetch } = useGetStreamInfo(props.currentStream);
 
@@ -65,9 +66,21 @@ export default function UpdateCustomPartitionField(props: { currentStream: strin
 	);
 
 	const updateCustomPartition = useCallback(() => {
+		if (value?.includes(props.timePartition)) {
+			setError(`${props.timePartition} is a time partition`);
+		}
+
+		if (isStaticSchema) {
+			value?.forEach((el) => {
+				if (!partitionFields.includes(el)) {
+					setError(`${el} is not a part of existing partition field`);
+				}
+			});
+		}
 		const valuesFlattened = value?.join(',');
 
 		if (valuesFlattened === undefined) return;
+		if (error !== null) return;
 
 		setUpdating(true);
 		updateLogStream(valuesFlattened);
@@ -100,6 +113,7 @@ export default function UpdateCustomPartitionField(props: { currentStream: strin
 						onChange={(value) => onChangeValue(value)}
 						maxTags={3}
 						value={value?.length === 1 && value?.[0] === '' ? undefined : value}
+						error={error}
 					/>
 					<UpdateFieldButtons
 						onUpdateClick={updateCustomPartition}

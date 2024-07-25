@@ -27,7 +27,7 @@ const UpdateFieldButtons = (props: { onClose: () => void; onUpdateClick: () => v
 	);
 };
 
-function UpdateTimePartitionLimit(props: { partitionField: string; currentStream: string }) {
+function UpdateTimePartitionLimit(props: { timePartition: string; currentStream: string }) {
 	const [info] = useStreamStore((store) => store.info);
 	const timePartitonLimit = _.get(info, 'time_partition_limit');
 	const [value, setValue] = useState<number | undefined>(timePartitonLimit);
@@ -90,7 +90,7 @@ function UpdateTimePartitionLimit(props: { partitionField: string; currentStream
 					Max Historical Difference
 				</Text>
 
-				{props.partitionField !== '-' && (
+				{props.timePartition !== '-' && (
 					<Tooltip label="Edit" withArrow position="top">
 						<IconEdit
 							className={classes.infoEditBtn}
@@ -124,7 +124,7 @@ function UpdateTimePartitionLimit(props: { partitionField: string; currentStream
 						overflow: 'hidden',
 						fontWeight: 400,
 					}}>
-					{timePartitonLimit}
+					{timePartitonLimit !== undefined ? `${timePartitonLimit} day(s)` : '-'}
 				</Text>
 			)}
 		</Stack>

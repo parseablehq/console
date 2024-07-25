@@ -78,12 +78,15 @@ const InfoData = (props: { isLoading: boolean }) => {
 						<InfoItem title="Schema Type" value={staticSchemaFlag} />
 						<InfoItem title="Time Partition Field" value={timePartition} />
 						<UpdateTimePartitionLimit
-							partitionField={timePartition}
+							timePartition={timePartition}
 							currentStream={currentStream ? currentStream : ''}
 						/>
 					</Stack>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-						<UpdateCustomPartitionField currentStream={currentStream ? currentStream : ''} />
+						<UpdateCustomPartitionField
+							currentStream={currentStream ? currentStream : ''}
+							timePartition={timePartition}
+						/>
 					</Stack>
 				</Stack>
 			)}
