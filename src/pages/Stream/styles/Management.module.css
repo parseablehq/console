@@ -148,8 +148,3 @@
 	color: var(--mantine-color-brandPrimary-4);
 	cursor: pointer;
 }
-
-.fieldDescription {
-    color: var(--mantine-color-gray-6);
-}
-
