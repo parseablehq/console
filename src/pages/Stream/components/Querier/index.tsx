@@ -180,7 +180,7 @@ const Querier = () => {
 				onFiltersApply({ isUncontrolled: true });
 			}
 
-			if (allValues.length === 0) {
+			if (allValues.length === 0 && activeMode !== 'sql') {
 				onClear();
 			}
 		}
