@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { useStreamStore } from '../../providers/StreamProvider';
-import { ChangeEvent, useCallback, useState } from 'react';
+import { ChangeEvent, useCallback, useState, useEffect } from 'react';
 import { useLogStream } from '@/hooks/useLogStream';
 import { useGetStreamInfo } from '@/hooks/useGetStreamInfo';
 import { Box, Loader, Stack, TextInput, Tooltip, Text, Group } from '@mantine/core';
@@ -36,6 +36,10 @@ function UpdateTimePartitionLimit(props: { timePartition: string; currentStream:
 	const [showEditField, setShowEditField] = useState<boolean>(false);
 	const { updateLogStreamMutation } = useLogStream();
 	const { getStreamInfoRefetch } = useGetStreamInfo(props.currentStream);
+
+	useEffect(() => {
+		setValue(timePartitonLimit);
+	}, [props.currentStream, info]);
 
 	const onChange = useCallback(
 		(e: ChangeEvent<HTMLInputElement>) => {
@@ -102,7 +106,7 @@ function UpdateTimePartitionLimit(props: { timePartition: string; currentStream:
 				)}
 			</Group>
 			{showEditField ? (
-				<Group style={{ flexDirection: 'row',alignItems:"baseline" }} gap={6}>
+				<Group style={{ flexDirection: 'row', alignItems: 'baseline' }} gap={6}>
 					<TextInput
 						placeholder="Max Historical Difference"
 						value={value}
