@@ -11,7 +11,7 @@ const UpdateFieldButtons = (props: { onClose: () => void; onUpdateClick: () => v
 	return (
 		<Box>
 			{!props.isUpdating ? (
-				<Stack gap={4} style={{ display: 'flex', flexDirection: 'row'}} >
+				<Stack gap={4} style={{ display: 'flex', flexDirection: 'row' }}>
 					<Tooltip label="Update" withArrow position="top">
 						<IconCheck className={classes.infoEditBtn} onClick={() => props.onUpdateClick()} stroke={1.6} size={16} />
 					</Tooltip>
@@ -32,19 +32,17 @@ export default function UpdateCustomPartitionField(props: { timePartition: strin
 	const isStaticSchema = _.get(info, 'static_schema_flag', false);
 	const existingCustomPartition = _.get(info, 'custom_partition', '-').split(',');
 	const [partitionFields] = useStreamStore((store) => store.fieldNames);
-	const [value, setValue] = useState<string[] | undefined>(existingCustomPartition);
+	const [value, setValue] = useState<string[]>([]);
 	const [updating, setUpdating] = useState<boolean>(false);
 	const [showEditField, setShowEditField] = useState<boolean>(false);
 	const [error, setError] = useState<string | null>(null);
 	const { updateLogStreamMutation } = useLogStream();
 	const { getStreamInfoRefetch } = useGetStreamInfo(props.currentStream);
 
-    // eject '-' from value array
-    useEffect(()=> {
-        if(value?.length ===1 && value.includes('-')){
-            setValue([])
-        }
-    },[])
+	useEffect(() => {
+		const customPartition: string = _.get(info, 'custom_partition', 'EMPTY_VALUE');
+		setValue(customPartition !== 'EMPTY_VALUE' ? customPartition.split(',') : []);
+	}, [props.currentStream, info]);
 
 	const onChangeValue = useCallback(
 		(value: string[]) => {
