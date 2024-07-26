@@ -11,6 +11,7 @@ export const useGetStreamInfo = (currentStream: string) => {
 		isError: getStreamInfoError,
 		isSuccess: getStreamInfoSuccess,
 		isLoading: getStreamInfoLoading,
+		refetch: getStreamInfoRefetch
 	} = useQuery(['stream-info', currentStream], () => getLogStreamInfo(currentStream), {
 		retry: false,
 		refetchOnWindowFocus: false,
@@ -24,5 +25,6 @@ export const useGetStreamInfo = (currentStream: string) => {
 		getStreamInfoError,
 		getStreamInfoSuccess,
 		getStreamInfoLoading,
+		getStreamInfoRefetch
 	};
 };
