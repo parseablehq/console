@@ -24,6 +24,7 @@ export type MachineType = {
 	reachable: boolean;
 	type?: SystemType;
 	error?: string | null;
+	staging_path?: string;
 };
 
 type ClusterStoreReducers = {

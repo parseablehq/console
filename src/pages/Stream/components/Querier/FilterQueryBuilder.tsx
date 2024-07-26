@@ -116,10 +116,16 @@ const CombinatorToggle = (props: CombinatorToggleType) => {
 	const { onCombinatorChange, isOrSelected } = props;
 	return (
 		<Box className={classes.toggleBtnContainer}>
-			<Text style={{fontSize: '0.6rem'}} className={isOrSelected ? activeBtnClass : inActiveBtnClass} onClick={() => onCombinatorChange('or')}>
+			<Text
+				style={{ fontSize: '0.6rem' }}
+				className={isOrSelected ? activeBtnClass : inActiveBtnClass}
+				onClick={() => onCombinatorChange('or')}>
 				OR
 			</Text>
-			<Text style={{fontSize: '0.6rem'}} className={!isOrSelected ? activeBtnClass : inActiveBtnClass} onClick={() => onCombinatorChange('and')}>
+			<Text
+				style={{ fontSize: '0.6rem' }}
+				className={!isOrSelected ? activeBtnClass : inActiveBtnClass}
+				onClick={() => onCombinatorChange('and')}>
 				AND
 			</Text>
 		</Box>
@@ -228,7 +234,7 @@ export const QueryPills = () => {
 	const { combinator, rules: ruleSets } = appliedQuery;
 	return (
 		<ScrollArea scrollbarSize={6} scrollHideDelay={0} offsetScrollbars={false}>
-			<Stack style={{ height: '100%'}}>
+			<Stack style={{ height: '100%' }}>
 				<Stack style={{ flexDirection: 'row' }} gap={8}>
 					{ruleSets.map((ruleSet, index) => {
 						const shouldShowCombinatorPill = ruleSets.length !== 1 && index + 1 !== ruleSets.length;
@@ -258,9 +264,9 @@ export const FilterQueryBuilder = (props: { onClear: () => void; onApply: () => 
 	}, [query.rules, fields]);
 
 	return (
-		<Stack style={{ height: 500 }}>
-			<ScrollArea style={{ height: 480 }}>
-				<Stack gap={0}>
+		<Stack style={{ height: '100%', justifyContent:'space-between'}}>
+			<ScrollArea>
+				<Stack gap={0} pl={20} pr={20}>
 					{query.rules.map((ruleSet) => {
 						return <RuleSet ruleSet={ruleSet} key={ruleSet.id} />;
 					})}

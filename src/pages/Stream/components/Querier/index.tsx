@@ -1,4 +1,4 @@
-import { Group, Menu, Modal, Stack, px, Tooltip } from '@mantine/core';
+import { Group, Menu, Modal, Stack, px, Tooltip, Tabs } from '@mantine/core';
 import { IconChevronDown, IconCodeCircle, IconFilter, IconFilterEdit, IconFilterPlus } from '@tabler/icons-react';
 import classes from '../../styles/Querier.module.css';
 import { Text } from '@mantine/core';
@@ -42,7 +42,29 @@ const SQLEditorPlaceholder = () => {
 };
 
 const ModalTitle = ({ title }: { title: string }) => {
-	return <Text style={{ fontSize: '1rem', fontWeight: 500, marginLeft: '0.5rem' }}>{title}</Text>;
+	const [, setLogsStore] = useLogsStore((store) => store.custQuerySearchState);
+	const onChangeCustQueryViewMode = useCallback((mode: 'sql' | 'filters') => {
+		setLogsStore((store) => toggleCustQuerySearchViewMode(store, mode));
+	}, []);
+
+	return (
+		<Tabs defaultValue={title} style={{ padding: '0 0.4rem', outline: 'none' }}>
+			<Tabs.List>
+				<Tabs.Tab
+					className={title !== 'Filters' ? classes.tab : ''}
+					value="Filters"
+					onClick={() => onChangeCustQueryViewMode('filters')}>
+					<Text style={{ fontSize: '1rem', fontWeight: 600 }}>Filters</Text>
+				</Tabs.Tab>
+				<Tabs.Tab
+					className={title !== 'SQL' ? classes.tab : ''}
+					value="SQL"
+					onClick={() => onChangeCustQueryViewMode('sql')}>
+					<Text style={{ fontSize: '1rem', fontWeight: 600 }}>SQL</Text>
+				</Tabs.Tab>
+			</Tabs.List>
+		</Tabs>
+	);
 };
 
 const QuerierModal = (props: {
@@ -62,9 +84,12 @@ const QuerierModal = (props: {
 			onClose={onClose}
 			size="auto"
 			centered
-			styles={{ body: { padding: '0 0.5rem' }, header: { padding: '1rem', paddingBottom: '0' } }}
+			styles={{
+				body: { padding: '0 0.8rem', height: '70vh', width: '50vw', justifyContent: 'center' },
+				header: { padding: '1rem', paddingBottom: '0' },
+			}}
 			title={<ModalTitle title={getLabel(viewMode)} />}>
-			<Stack style={{ width: '40rem', padding: '1rem', height: '100%' }} gap={0}>
+			<Stack style={{ padding: '1rem 0.5rem', height: '100%' }} gap={2}>
 				{viewMode === 'filters' ? (
 					<FilterQueryBuilder onClear={props.onClear} onApply={props.onFiltersApply} />
 				) : (
@@ -100,10 +125,13 @@ const Querier = () => {
 		return setFilterStore(resetFilters);
 	}, []);
 
-	const triggerRefetch = useCallback((query: string, mode: 'filters' | 'sql', id?: string) => {
-		const time_filter = id ? _.find(activeSavedFilters, filter => filter.filter_id === id)?.time_filter : null
-		setLogsStore((store) => applyCustomQuery(store, query, mode, id, time_filter));
-	}, [activeSavedFilters]);
+	const triggerRefetch = useCallback(
+		(query: string, mode: 'filters' | 'sql', id?: string) => {
+			const time_filter = id ? _.find(activeSavedFilters, (filter) => filter.filter_id === id)?.time_filter : null;
+			setLogsStore((store) => applyCustomQuery(store, query, mode, id, time_filter));
+		},
+		[activeSavedFilters],
+	);
 
 	const onFiltersApply = useCallback(
 		(opts?: { isUncontrolled?: boolean }) => {

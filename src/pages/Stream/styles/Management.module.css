@@ -1,76 +1,76 @@
 .viewConatiner {
-    width: 100%;
-    gap: 12;
-    padding: 0 1.5rem 1.5rem 1.5rem;
+	width: 100%;
+	gap: 12;
+	padding: 0 1.5rem 1.5rem 1.5rem;
 }
 
 .sectionContainer {
-    width: 50%;
-    border: 1px solid var(--mantine-color-gray-2);
-    border-radius: 0.5rem;
-    height: 100%;
+	width: 50%;
+	border: 1px solid var(--mantine-color-gray-2);
+	border-radius: 0.5rem;
+	height: 100%;
 }
 
 .headerContainer {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--mantine-color-gray-1);
-    align-items: center;
-    padding: 0.6rem 1rem;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	border-bottom: 1px solid var(--mantine-color-gray-1);
+	align-items: center;
+	padding: 0.6rem 1rem;
 }
 
 .title {
-    font-size: 0.75rem;
-    font-weight: 600;
+	font-size: 0.75rem;
+	font-weight: 600;
 }
 
 .alertItemContainer {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--mantine-color-gray-2);
-    flex-direction: row;
-    justify-content: space-between;
-    &:hover {
-        background-color: var(--mantine-color-gray-0);
-    }
-    cursor: pointer;
+	padding: 0.75rem 1rem;
+	border-bottom: 1px solid var(--mantine-color-gray-2);
+	flex-direction: row;
+	justify-content: space-between;
+	&:hover {
+		background-color: var(--mantine-color-gray-0);
+	}
+	cursor: pointer;
 }
 
 .alertName {
-    font-size: 0.7rem;
-    font-weight: 400;
+	font-size: 0.7rem;
+	font-weight: 400;
 }
 
-.alertActionsContainer { 
-    flex-direction: row;
-    gap: 0.8rem;
-    color: var(--mantine-color-gray-7);
+.alertActionsContainer {
+	flex-direction: row;
+	gap: 0.8rem;
+	color: var(--mantine-color-gray-7);
 }
 
 .modalTitle {
 	font-size: 1rem;
 	font-weight: 600;
-} 
+}
 
 .fieldTitle {
-    font-weight: 500;
-    font-size: 0.7rem;
+	font-weight: 500;
+	font-size: 0.7rem;
 }
 
 .fieldDescription {
-    font-size: 0.65rem;
-    color: var(--mantine-color-gray-6);
+	font-size: 0.65rem;
+	color: var(--mantine-color-gray-6);
 }
 
 .fieldsContainer {
-    border: 1px solid var(--mantine-color-gray-4);
-    padding: var(--mantine-spacing-md);
-    border-radius: 0.2rem;
+	border: 1px solid var(--mantine-color-gray-4);
+	padding: var(--mantine-spacing-md);
+	border-radius: 0.2rem;
 }
 
 .infoTooltipIcon {
-    color: var(--mantine-color-gray-5);
-    cursor: pointer;
+	color: var(--mantine-color-gray-5);
+	cursor: pointer;
 }
 
 .formBtn {
@@ -78,64 +78,73 @@
 	justify-content: center;
 	align-items: center;
 	background-color: white;
-	color: #211F1F;
+	color: #211f1f;
 	border: 1px #e9ecef solid;
 	margin-right: 0.625rem;
-    border-radius: rem(8px);
-    &:hover {
-        color: #211F1F;
-    }
+	border-radius: rem(8px);
+	&:hover {
+		color: #211f1f;
+	}
 }
 
 .alertSection {
-    border: 1px solid var(--mantine-color-gray-4);
-    border-radius: 0.2rem;
-    padding: 1rem;
-    margin: 0.6rem 0;
+	border: 1px solid var(--mantine-color-gray-4);
+	border-radius: 0.2rem;
+	padding: 1rem;
+	margin: 0.6rem 0;
 }
 
 .targetContainer {
-    gap: 8;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    background-color: var(--mantine-color-gray-1);
+	gap: 8;
+	padding: 1rem;
+	border-radius: 0.5rem;
+	background-color: var(--mantine-color-gray-1);
 }
 
 .statsTableContainer {
-    flex: 1;
-    padding: 0.8rem;
-    padding-bottom: 0;
+	flex: 1;
+	padding: 0.8rem;
+	padding-bottom: 0;
 }
 
 .statsRowContainer {
-    flex: 1;
-   justify-content: center;
-   flex-direction: row;
+	flex: 1;
+	justify-content: center;
+	flex-direction: row;
 }
 
 .rowTitleContainer {
-    width: '40%'
-}   
+	width: '40%';
+}
 
 .statsTableHeaderRowContainer {
-    flex-direction: row;
+	flex-direction: row;
 }
 
 .bigNoText {
-    font-size: 0.7rem;
+	font-size: 0.7rem;
 }
 
 .compressionText {
-    color: var(--mantine-color-green-7);
-    font-weight: 500;
+	color: var(--mantine-color-green-7);
+	font-weight: 500;
 }
 
 .infoTitle {
-    font-size: 0.8rem;
-    color: var(--mantine-color-gray-6);
+	font-size: 0.8rem;
+	color: var(--mantine-color-gray-6);
 }
 
 .infoText {
-    font-size: 1rem;
-    font-weight: 400;
+	font-size: 1rem;
+	font-weight: 400;
+}
+
+.infoEditBtn {
+	color: var(--mantine-color-gray-6);
+}
+
+.infoEditBtn:hover {
+	color: var(--mantine-color-brandPrimary-4);
+	cursor: pointer;
 }

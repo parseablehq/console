@@ -68,6 +68,10 @@ export const createLogStream = (streamName: string, data: any, headers: any) => 
 	return Axios().put(CREATE_STREAM_URL(streamName), data, { headers });
 };
 
+export const updateLogStream = (streamName: string, data: any, headers: any) => {
+	return Axios().put(CREATE_STREAM_URL(streamName), data, { headers });
+};
+
 export const getLogStreamInfo = (streamName: string) => {
 	return Axios().get(LOG_STREAMS_INFO_URL(streamName));
 };
