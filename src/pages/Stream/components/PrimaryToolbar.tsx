@@ -1,6 +1,6 @@
-import { Button, Stack, px } from '@mantine/core';
+import { Button, SegmentedControl, Stack, Tooltip, px, rem } from '@mantine/core';
 import IconButton from '@/components/Button/IconButton';
-import { IconFilterHeart, IconMaximize, IconTrash } from '@tabler/icons-react';
+import { IconFilterHeart, IconList, IconMaximize, IconTable, IconTrash } from '@tabler/icons-react';
 import { STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT, STREAM_PRIMARY_TOOLBAR_HEIGHT } from '@/constants/theme';
 import TimeRange from '@/components/Header/TimeRange';
 import RefreshInterval from '@/components/Header/RefreshInterval';
@@ -17,7 +17,7 @@ import { useLogsStore, logsStoreReducers } from '../providers/LogsProvider';
 import { filterStoreReducers, useFilterStore } from '../providers/FilterProvider';
 import classes from './styles/PrimaryToolbar.module.css'
 
-const { toggleDeleteModal } = logsStoreReducers;
+const { toggleDeleteModal, onToggleView } = logsStoreReducers;
 const { toggleSavedFiltersModal } = filterStoreReducers;
 const renderMaximizeIcon = () => <IconMaximize size={px('1rem')} stroke={1.5} />;
 const renderDeleteIcon = () => <IconTrash size={px('1rem')} stroke={1.5} />;
@@ -48,6 +48,45 @@ const DeleteStreamButton = () => {
 	return <IconButton renderIcon={renderDeleteIcon} size={38} onClick={onClick} tooltipLabel="Delete" />;
 };
 
+const ViewToggle = () => {
+	const [viewMode, setLogsStore] = useLogsStore((store) => store.viewMode);
+	const iconProps = {
+		style: { width: rem(20), height: rem(20), display: 'block' },
+		stroke: 1.8,
+	};
+	const onChange = useCallback((val: string) => {
+		if (_.includes(['json', 'table'], val)) {
+			setLogsStore((store) => onToggleView(store, val as 'json' | 'table'));
+		}
+	}, []);
+	return (
+		<SegmentedControl
+			style={{ borderRadius: rem(8) }}
+			withItemsBorders={false}
+			onChange={onChange}
+			value={viewMode}
+			data={[
+				{
+					value: 'table',
+					label: (
+						<Tooltip label="Table View">
+							<IconTable {...iconProps} />
+						</Tooltip>
+					),
+				},
+				{
+					value: 'json',
+					label: (
+						<Tooltip label="Json View">
+							<IconList {...iconProps} />
+						</Tooltip>
+					),
+				},
+			]}
+		/>
+	);
+}
+
 const PrimaryToolbar = () => {
 	const [maximized] = useAppStore((store) => store.maximized);
 	const { view } = useParams();
@@ -76,6 +115,7 @@ const PrimaryToolbar = () => {
 					<Querier />
 					<SavedFiltersButton/>
 					<TimeRange />
+					<ViewToggle/>
 					<RefreshInterval />
 					<MaximizeButton />
 					<RefreshNow />

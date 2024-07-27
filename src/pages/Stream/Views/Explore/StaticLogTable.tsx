@@ -1,16 +1,5 @@
 import { Tbody, Thead } from '@/components/Table';
-import {
-	Box,
-	Center,
-	Checkbox,
-	Menu,
-	ScrollArea,
-	Table,
-	px,
-	ActionIcon,
-	Flex,
-	Button,
-} from '@mantine/core';
+import { Box, Center, Checkbox, Menu, ScrollArea, Table, px, ActionIcon, Flex, Button } from '@mantine/core';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FC, MutableRefObject, ReactNode, RefObject } from 'react';
 import LogRow from './StaticLogRow';
@@ -171,7 +160,7 @@ const LogTable = (props: {
 			<FilterPills />
 			{!errorMessage ? (
 				showTable ? (
-					<Box className={tableStyles.innerContainer} style={{ maxHeight: `calc(100vh - ${primaryHeaderHeight}px )`, border: '1px solid' }}>
+					<Box className={tableStyles.innerContainer} style={{ maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
 						<Box
 							className={tableStyles.innerContainer}
 							style={{ display: 'flex', flexDirection: 'row', maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
