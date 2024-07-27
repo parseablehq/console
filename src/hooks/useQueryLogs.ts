@@ -134,12 +134,11 @@ export const useQueryLogs = () => {
 				fetchQueryMutation.mutate({
 					logsQuery,
 					query,
+					onSuccess: () => setIsFetchingCount(false),
 				});
 			}
 		} catch (e) {
 			console.log(e);
-		} finally {
-			setIsFetchingCount(false);
 		}
 	};
 
