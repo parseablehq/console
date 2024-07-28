@@ -11,7 +11,7 @@ import {
 	LOGS_SECONDARY_TOOLBAR_HEIGHT,
 	PRIMARY_HEADER_HEIGHT,
 } from '@/constants/theme';
-import { columnsToSkip, useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
+import { columnsToSkip, useLogsStore, logsStoreReducers, isJqSearch } from '../../providers/LogsProvider';
 import { Log } from '@/@types/parseable/api/query';
 import _ from 'lodash';
 import jqSearch from '@/utils/jqSearch';
@@ -74,7 +74,7 @@ const Row = (props: {
 const JsonRows = (props: { isSearching: boolean }) => {
 	const [{ pageData, headers, instantSearchValue }] = useLogsStore((store) => store.tableOpts);
 	const sanitizedHeaders = _.without(headers, ...columnsToSkip);
-	const disableHighlight = props.isSearching || _.isEmpty(instantSearchValue) || _.startsWith(instantSearchValue, '.');
+	const disableHighlight = props.isSearching || _.isEmpty(instantSearchValue) || isJqSearch(instantSearchValue);
 	const regExp = disableHighlight ? null : new RegExp(instantSearchValue, 'i');
 
 	const shouldHighlight = useCallback(
@@ -107,8 +107,8 @@ const Toolbar = (props: { isSearching: boolean; setSearching: React.Dispatch<Rea
 
 	const debouncedSearch = useCallback(
 		_.debounce(async (val: string) => {
-			const isJqSearch = _.startsWith(val, '.');
-			if (isJqSearch) {
+			const isJq = isJqSearch(val);
+			if (isJq) {
 				const jqResult = await jqSearch(rawData, val);
 				setLogsStore((store) => applyJqSearch(store, jqResult));
 			} else {
@@ -131,7 +131,7 @@ const Toolbar = (props: { isSearching: boolean; setSearching: React.Dispatch<Rea
 		<Stack style={{ height: 50, padding: '1rem', width: '100%', justifyContent: 'center' }}>
 			<TextInput
 				leftSection={isSearching ? <Loader size="sm" /> : <IconSearch stroke={2.5} size="0.9rem" />}
-				placeholder="Search Placeholder"
+				placeholder="Search loaded data with text or jq. For jq input try `jq .[]`"
 				value={searchValue}
 				onChange={onChange}
 				style={{ '--input-left-section-width': '2rem', '--input-right-section-width': '6rem' }}

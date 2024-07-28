@@ -1,6 +1,6 @@
 import { Button, SegmentedControl, Stack, Tooltip, px, rem } from '@mantine/core';
 import IconButton from '@/components/Button/IconButton';
-import { IconFilterHeart, IconList, IconMaximize, IconTable, IconTrash } from '@tabler/icons-react';
+import { IconBraces, IconFilterHeart, IconMaximize, IconTable, IconTrash } from '@tabler/icons-react';
 import { STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT, STREAM_PRIMARY_TOOLBAR_HEIGHT } from '@/constants/theme';
 import TimeRange from '@/components/Header/TimeRange';
 import RefreshInterval from '@/components/Header/RefreshInterval';
@@ -77,8 +77,8 @@ const ViewToggle = () => {
 				{
 					value: 'json',
 					label: (
-						<Tooltip label="Json View">
-							<IconList {...iconProps} />
+						<Tooltip label="JSON View">
+							<IconBraces {...iconProps} />
 						</Tooltip>
 					),
 				},
@@ -115,8 +115,8 @@ const PrimaryToolbar = () => {
 					<Querier />
 					<SavedFiltersButton/>
 					<TimeRange />
-					<ViewToggle/>
 					<RefreshInterval />
+					<ViewToggle/>
 					<MaximizeButton />
 					<RefreshNow />
 				</Stack>

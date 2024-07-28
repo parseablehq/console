@@ -549,7 +549,7 @@ const setTableHeaders = (store: LogsStore, schema: LogStreamSchemaData) => {
 };
 
 export const isJqSearch = (value: string) => {
-	return _.startsWith(value, '.');
+	return _.startsWith(value, 'jq .');
 };
 
 const setData = (store: LogsStore, data: Log[], schema: LogStreamSchemaData | null, jqFilteredData?: Log[]) => {
@@ -875,9 +875,26 @@ const toggleSideBar = (store: LogsStore) => {
 	};
 };
 
-const onToggleView = (_store: LogsStore, viewMode: 'json' | 'table') => {
+const onToggleView = (store: LogsStore, viewMode: 'json' | 'table') => {
+	const { data, tableOpts } = store;
+	const filteredData = filterAndSortData({ sortOrder: defaultSortOrder, sortKey: defaultSortKey, filters: {} }, data.rawData);
+	const currentPage = tableOpts.currentPage;
+	const newPageSlice = getPageSlice(currentPage, tableOpts.perPage, filteredData);
+
 	return {
-		viewMode,
+		data: {
+			...data,
+			filteredData,
+		},
+		tableOpts: {
+			...tableOpts,
+			filters: {},
+			pageData: newPageSlice,
+			instantSearchValue: '',
+			currentPage,
+			totalPages: getTotalPages(filteredData, tableOpts.perPage),
+		},
+		viewMode
 	};
 };
 
