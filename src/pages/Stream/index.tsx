@@ -80,7 +80,7 @@ const Logs: FC = () => {
 				gap={0}
 				style={{
 					maxHeight: `calc(100vh - ${maximized ? 0 : PRIMARY_HEADER_HEIGHT}px )`,
-					overflow: 'scroll',
+					overflowY: 'scroll',
 					flex: 1,
 				}}>
 				<PrimaryToolbar />
