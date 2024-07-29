@@ -1,5 +1,6 @@
 import { Log } from "@/@types/parseable/api/query";
 import { LogStreamSchemaData } from "@/@types/parseable/api/stream";
+import { columnsToSkip } from "./providers/LogsProvider";
 
 export const getPageSlice = (page = 1, perPage: number, data: Log[]) => {
 	const firstPageIndex = (page - 1) * perPage;
@@ -32,3 +33,14 @@ export const makeHeadersfromData = (data: Log[]): string[] => {
 
 	return allKeys;
 };
+
+export const genColumnsToShow = (opts: {disabledColumns: string[], headers: string[], isPinned: boolean, pinnedColumns: string[]}) => {
+	const {disabledColumns, headers, isPinned, pinnedColumns} = opts;
+
+	const columnsToIgnore = [
+		...disabledColumns,
+		...columnsToSkip,
+		...headers.filter((header) => (isPinned ? !pinnedColumns.includes(header) : pinnedColumns.includes(header))),
+	];
+	return headers.filter((header) => !columnsToIgnore.includes(header));
+}

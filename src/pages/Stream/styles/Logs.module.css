@@ -1,33 +1,7 @@
-.mycontainer {
-	flex-direction: column;
-	flex: 1 1 auto;
-	overflow: scroll;
-	align-items: flex-start;
-}
-
 .col {
 	display: flex;
 	flex-direction: column;
 	width: max-content;
-}
-
-.myrow {
-	display: flex;
-	flex-direction: row;
-	height: 48px;
-	background-color: #e7eff5;
-	border-bottom: 1px solid red;
-}
-
-.mycell {
-	display: inline-flex;
-	justify-content: center;
-	align-items: center;
-	min-height: 48px;
-	background-color: #fff;
-	width: 300px;
-	background: transparent;
-	background-color: #f8f9fb;
 }
 
 .container {

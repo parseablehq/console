@@ -3,12 +3,13 @@ import { getQueryLogs, getQueryResult } from '@/api/query';
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
 import { useCallback, useEffect, useRef } from 'react';
-import { useLogsStore, logsStoreReducers, LOAD_LIMIT } from '@/pages/Stream/providers/LogsProvider';
+import { useLogsStore, logsStoreReducers, LOAD_LIMIT, isJqSearch } from '@/pages/Stream/providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useQueryResult } from './useQueryResult';
 import _ from 'lodash';
 import { useStreamStore } from '@/pages/Stream/providers/StreamProvider';
 import { AxiosError } from 'axios';
+import jqSearch from '@/utils/jqSearch';
 
 const { setData, setTotalCount } = logsStoreReducers;
 
@@ -46,7 +47,7 @@ export const useQueryLogs = () => {
 	const [
 		{
 			timeRange,
-			tableOpts: { currentOffset },
+			tableOpts: { currentOffset, instantSearchValue },
 			custQuerySearchState,
 		},
 		setLogsStore,
@@ -93,7 +94,8 @@ export const useQueryLogs = () => {
 			const data = logsQueryRes.data;
 
 			if (logsQueryRes.status === StatusCodes.OK) {
-				return setLogsStore((store) => setData(store, data, schema));
+				const jqFilteredData = isJqSearch(instantSearchValue) ? await jqSearch(data, instantSearchValue) : [];
+				return setLogsStore((store) => setData(store, data, schema, jqFilteredData));
 			}
 			if (typeof data === 'string' && data.includes('Stream is not initialized yet')) {
 				return setLogsStore((store) => setData(store, [], schema));
