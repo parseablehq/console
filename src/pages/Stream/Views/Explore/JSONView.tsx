@@ -6,10 +6,9 @@ import { ErrorView, LoadingView } from './LoadingViews';
 import Footer from './Footer';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import {
-	LOGS_PRIMARY_TOOLBAR_HEIGHT,
-	JSON_VIEW_TOOLBAR_HEIGHT,
-	LOGS_SECONDARY_TOOLBAR_HEIGHT,
 	PRIMARY_HEADER_HEIGHT,
+	STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT,
+	STREAM_SECONDARY_TOOLBAR_HRIGHT,
 } from '@/constants/theme';
 import { columnsToSkip, useLogsStore, logsStoreReducers, isJqSearch } from '../../providers/LogsProvider';
 import { Log } from '@/@types/parseable/api/query';
@@ -18,14 +17,6 @@ import jqSearch from '@/utils/jqSearch';
 import { IconSearch } from '@tabler/icons-react';
 
 const { setInstantSearchValue, applyInstantSearch, applyJqSearch } = logsStoreReducers;
-
-const Container = (props: { children: ReactNode }) => {
-	return (
-		<Stack style={{ flex: 1 }} gap={0}>
-			{props.children}
-		</Stack>
-	);
-};
 
 const Item = (props: { header: string | null; value: string; highlight: boolean }) => {
 	return (
@@ -148,27 +139,8 @@ const Toolbar = (props: { isSearching: boolean; setSearching: React.Dispatch<Rea
 	);
 };
 
-const Content = (props: { isSearching: boolean }) => {
-	const [maximized] = useAppStore((store) => store.maximized);
-
-	const primaryHeaderHeight = !maximized
-		? PRIMARY_HEADER_HEIGHT + LOGS_PRIMARY_TOOLBAR_HEIGHT + LOGS_SECONDARY_TOOLBAR_HEIGHT + JSON_VIEW_TOOLBAR_HEIGHT
-		: 0;
-	return (
-		<Box className={classes.innerContainer} style={{ maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
-			<Box
-				className={classes.innerContainer}
-				style={{
-					display: 'flex',
-					flexDirection: 'column',
-					maxHeight: `calc(100vh - ${primaryHeaderHeight}px )`,
-					flex: 1,
-					overflowY: 'scroll',
-				}}>
-				<JsonRows isSearching={props.isSearching} />
-			</Box>
-		</Box>
-	);
+const TableContainer = (props: { children: ReactNode }) => {
+	return <Box className={classes.container}>{props.children}</Box>;
 };
 
 const JsonView = (props: {
@@ -177,17 +149,30 @@ const JsonView = (props: {
 	hasNoData: boolean;
 	showTable: boolean;
 }) => {
+	const [maximized] = useAppStore((store) => store.maximized);
+
 	const { isFetchingCount, errorMessage, hasNoData, showTable } = props;
 	const [isSearching, setSearching] = useState(false);
+	const primaryHeaderHeight = !maximized
+		? PRIMARY_HEADER_HEIGHT + STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT + STREAM_SECONDARY_TOOLBAR_HRIGHT
+		: 0;
 
 	return (
-		<Container>
+		<TableContainer>
 			{!errorMessage ? (
 				showTable ? (
-					<>
-						<Toolbar isSearching={isSearching} setSearching={setSearching} />
-						<Content isSearching={isSearching} />
-					</>
+					<Box className={classes.innerContainer} style={{ maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
+						<Box
+							className={classes.innerContainer}
+							style={{ display: 'flex', flexDirection: 'row', maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
+							<Stack gap={0}>
+								<Toolbar isSearching={isSearching} setSearching={setSearching} />
+								<Stack style={{ overflow: 'scroll' }}>
+									<JsonRows isSearching={isSearching} />
+								</Stack>
+							</Stack>
+						</Box>
+					</Box>
 				) : hasNoData ? (
 					<>
 						<Toolbar isSearching={isSearching} setSearching={setSearching} />
@@ -200,7 +185,7 @@ const JsonView = (props: {
 				<ErrorView message={errorMessage} />
 			)}
 			<Footer loaded={showTable} isLoading={isFetchingCount} hasNoData={hasNoData} />
-		</Container>
+		</TableContainer>
 	);
 };
 

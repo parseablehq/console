@@ -116,9 +116,9 @@ const PrimaryToolbar = () => {
 					<SavedFiltersButton/>
 					<TimeRange />
 					<RefreshInterval />
+					<RefreshNow />
 					<ViewToggle/>
 					<MaximizeButton />
-					<RefreshNow />
 				</Stack>
 			) : view === 'live-tail' ? (
 				<Stack style={{ flexDirection: 'row', height: STREAM_PRIMARY_TOOLBAR_HEIGHT }} w="100%">

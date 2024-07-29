@@ -356,9 +356,11 @@ const setTimeRange = (
 	const { startTime, endTime, type } = payload;
 	const label = `${startTime.format('hh:mm A DD MMM YY')} to ${endTime.format('hh:mm A DD MMM YY')}`;
 	const interval = endTime.diff(startTime, 'milliseconds');
+	const cleanStore = getCleanStoreForRefetch(store);
 	return {
-		...getCleanStoreForRefetch(store),
+		...cleanStore,
 		timeRange: { ...store.timeRange, startTime: startTime.toDate(), endTime: endTime.toDate(), label, interval, type },
+		viewMode: store.viewMode
 	};
 };
 
