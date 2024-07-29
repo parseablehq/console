@@ -308,7 +308,7 @@ const EventTimeLineGraph = () => {
 						withXAxis={false}
 						withYAxis={hasData}
 						yAxisProps={{ tickCount: 2, tickFormatter: (value) => `${HumanizeNumber(value)}` }}
-						referenceLines={[{ y: avgEventCount, color: 'red.6', label: 'Avg' }]}
+						referenceLines={[{ y: avgEventCount, color: 'gray.5', label: 'Avg' }]}
 						tickLine="none"
 						areaChartProps={{ onClick: setTimeRangeFromGraph, style: { cursor: 'pointer' } }}
 						gridAxis="xy"

@@ -1,5 +1,5 @@
 import { Box, Loader, Stack, Text, TextInput } from '@mantine/core';
-import { ChangeEvent, ReactNode, useCallback, useState } from 'react';
+import { ChangeEvent, ReactNode, useCallback, useRef, useState } from 'react';
 import classes from '../../styles/JSONView.module.css';
 import EmptyBox from '@/components/Empty';
 import { ErrorView, LoadingView } from './LoadingViews';
@@ -14,7 +14,7 @@ import { columnsToSkip, useLogsStore, logsStoreReducers, isJqSearch } from '../.
 import { Log } from '@/@types/parseable/api/query';
 import _ from 'lodash';
 import jqSearch from '@/utils/jqSearch';
-import { IconSearch } from '@tabler/icons-react';
+import { IconCheck, IconCopy, IconSearch } from '@tabler/icons-react';
 
 const { setInstantSearchValue, applyInstantSearch, applyJqSearch } = logsStoreReducers;
 
@@ -26,6 +26,36 @@ const Item = (props: { header: string | null; value: string; highlight: boolean 
 				<span style={{ background: props.highlight ? 'yellow' : 'transparent' }}>{props.value}</span>{' '}
 			</span>
 		</span>
+	);
+};
+
+const CopyIcon = (props: { log: Log }) => {
+	const copyIconRef = useRef<HTMLDivElement>(null);
+	const copiedIconRef = useRef<HTMLDivElement>(null);
+
+	const onCopy = async () => {
+		if (copyIconRef.current && copiedIconRef.current) {
+			copyIconRef.current.style.display = 'none';
+			copiedIconRef.current.style.display = 'inline-block';
+		}
+		await navigator.clipboard.writeText(JSON.stringify(props.log, null, 2));
+		setTimeout(() => {
+			if (copyIconRef.current && copiedIconRef.current) {
+				copiedIconRef.current.style.display = 'none';
+				copyIconRef.current.style.display = 'inline-block';
+			}
+		}, 1500);
+	};
+
+	return (
+		<Stack style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 2 }} className={classes.toggleIcon}>
+			<Box ref={copyIconRef} style={{ display: 'inline-block' }} onClick={onCopy} className={classes.copyIcon}>
+				<IconCopy stroke={1.2} size={'1rem'} />
+			</Box>
+			<Box ref={copiedIconRef} style={{ display: 'none', color: 'green' }}>
+				<IconCheck stroke={1.2} size={'1rem'} />
+			</Box>
+		</Stack>
 	);
 };
 
@@ -58,6 +88,7 @@ const Row = (props: {
 					/>
 				)}
 			</span>
+			<CopyIcon log={log} />
 		</Stack>
 	);
 };
