@@ -36,20 +36,20 @@ const CopyIcon = (props: { log: Log }) => {
 	const onCopy = async () => {
 		if (copyIconRef.current && copiedIconRef.current) {
 			copyIconRef.current.style.display = 'none';
-			copiedIconRef.current.style.display = 'inline-block';
+			copiedIconRef.current.style.display = 'flex';
 		}
 		await navigator.clipboard.writeText(JSON.stringify(props.log, null, 2));
 		setTimeout(() => {
 			if (copyIconRef.current && copiedIconRef.current) {
 				copiedIconRef.current.style.display = 'none';
-				copyIconRef.current.style.display = 'inline-block';
+				copyIconRef.current.style.display = 'flex';
 			}
 		}, 1500);
 	};
 
 	return (
 		<Stack style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 2 }} className={classes.toggleIcon}>
-			<Box ref={copyIconRef} style={{ display: 'inline-block' }} onClick={onCopy} className={classes.copyIcon}>
+			<Box ref={copyIconRef} style={{ display: 'flex', height: 'auto' }} onClick={onCopy} className={classes.copyIcon}>
 				<IconCopy stroke={1.2} size={'1rem'} />
 			</Box>
 			<Box ref={copiedIconRef} style={{ display: 'none', color: 'green' }}>
@@ -190,6 +190,7 @@ const JsonView = (props: {
 
 	return (
 		<TableContainer>
+			<Toolbar isSearching={isSearching} setSearching={setSearching} />
 			{!errorMessage ? (
 				showTable ? (
 					<Box className={classes.innerContainer} style={{ maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
@@ -197,7 +198,6 @@ const JsonView = (props: {
 							className={classes.innerContainer}
 							style={{ display: 'flex', flexDirection: 'row', maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
 							<Stack gap={0}>
-								<Toolbar isSearching={isSearching} setSearching={setSearching} />
 								<Stack style={{ overflow: 'scroll' }}>
 									<JsonRows isSearching={isSearching} />
 								</Stack>
@@ -206,7 +206,6 @@ const JsonView = (props: {
 					</Box>
 				) : hasNoData ? (
 					<>
-						<Toolbar isSearching={isSearching} setSearching={setSearching} />
 						<EmptyBox message="No Matching Rows" />
 					</>
 				) : (
