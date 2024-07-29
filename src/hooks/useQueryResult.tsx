@@ -8,7 +8,7 @@ import { useMutation } from 'react-query';
 type QueryData = {
 	logsQuery: LogsQuery;
 	query: string;
-	onSuccess?: ()=>void;
+	onSuccess?: () => void;
 };
 
 export const useQueryResult = () => {
@@ -33,7 +33,7 @@ export const useQueryResult = () => {
 				});
 			}
 		},
-		onSuccess: (_data,variables) => {
+		onSuccess: (_data, variables) => {
 			variables.onSuccess && variables.onSuccess();
 			notifications.update({
 				id: 'load-data',
