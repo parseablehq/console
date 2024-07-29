@@ -198,7 +198,7 @@ const JsonView = (props: {
 							className={classes.innerContainer}
 							style={{ display: 'flex', flexDirection: 'row', maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
 							<Stack gap={0}>
-								<Stack style={{ overflow: 'scroll' }}>
+								<Stack style={{ overflowY: 'scroll' }}>
 									<JsonRows isSearching={isSearching} />
 								</Stack>
 							</Stack>
