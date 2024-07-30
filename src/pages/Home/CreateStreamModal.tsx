@@ -371,6 +371,7 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 			fields: schmaFields,
 			headers,
 			onSuccess: onSuccessCallback,
+			onError: () => setIsCreatingStream(false),
 		});
 	}, [form.values, setIsCreatingStream]);
 
