@@ -8,7 +8,6 @@ type CreateStreamOpts = {
 	fields: Record<string, string>;
 	headers: Record<string, string | boolean>;
 	onSuccess: () => void;
-	onError?: () => void;
 };
 
 export const useLogStream = () => {
@@ -31,8 +30,7 @@ export const useLogStream = () => {
 		isError: createLogStreamIsError,
 		isLoading: createLogStreamIsLoading,
 	} = useMutation((data: CreateStreamOpts) => createLogStream(data.streamName, { fields: data.fields }, data.headers), {
-		onError: (data: AxiosError, variables) => {
-			variables.onError && variables.onError();
+		onError: (data: AxiosError) => {
 			if (isAxiosError(data) && typeof data.message === 'string') {
 				notifyError({ message: data.message });
 			}

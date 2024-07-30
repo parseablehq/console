@@ -334,7 +334,6 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 	const { form, onAddField, onRemoveField, onChangeValue } = useCreateStreamForm();
 	const stringFields = getStringFieldNames(form.values.fields);
 	const isStaticSchema = form.values.schemaType === staticType;
-	const [isCreatingStream, setIsCreatingStream] = useState<boolean>(false);
 	const partitionFields = [defaultPartitionField, ...(isStaticSchema ? stringFields : [])];
 	const customPartitionFields = !isStaticSchema
 		? []
@@ -342,19 +341,17 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 				.map((field) => field.name)
 				.compact()
 				.value();
-	const { createLogStreamMutation } = useLogStream();
+	const { createLogStreamMutation, createLogStreamIsLoading } = useLogStream();
 	const { getLogStreamListRefetch } = useLogStream();
 	const onSuccessCallback = useCallback(() => {
 		props.toggleModal();
 		getLogStreamListRefetch();
-		setIsCreatingStream(false);
-	}, [setIsCreatingStream]);
+	}, []);
 
 	const onSubmit = useCallback(() => {
 		const { hasErrors } = form.validate();
 		const { schemaType, fields, partitionField, customPartitionFields, partitionLimit } = form.values;
 		const isStatic = schemaType === staticType;
-		setIsCreatingStream(true);
 		if (hasErrors || (isStatic && _.isEmpty(fields))) return;
 
 		const headers = {
@@ -371,9 +368,8 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 			fields: schmaFields,
 			headers,
 			onSuccess: onSuccessCallback,
-			onError: () => setIsCreatingStream(false),
 		});
-	}, [form.values, setIsCreatingStream]);
+	}, [form.values]);
 
 	return (
 		<Stack>
@@ -418,7 +414,7 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 			/>
 			<Stack style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
 				<Box>
-					{!isCreatingStream ? (
+					{!createLogStreamIsLoading ? (
 						<Button w="6rem" onClick={onSubmit}>
 							Create
 						</Button>
