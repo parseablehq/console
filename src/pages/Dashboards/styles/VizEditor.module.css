@@ -10,8 +10,8 @@
 }
 
 .vizContainer {
-    width: 40%;
    justify-content: center;
+   height: 100%;
 }
 
 .configContainer {

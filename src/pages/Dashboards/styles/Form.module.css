@@ -7,6 +7,10 @@
 .sectionHeader {
     border-bottom: 1px solid var(--mantine-color-gray-2);
     padding: 0.75rem;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 3rem;
 }
 
 .configContainer {
@@ -66,4 +70,9 @@
 
 .warningIcon {
     color: var(--mantine-color-gray-5);
+}
+
+.arrowLeftIcon {
+    color: var(--mantine-color-gray-7);
+    cursor: pointer;
 }

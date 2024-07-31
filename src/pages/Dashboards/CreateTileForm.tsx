@@ -1,26 +1,63 @@
 import { Box, Button, Select, Stack, Text, TextInput } from '@mantine/core';
 import classes from './styles/Form.module.css';
-import { useForm, UseFormReturnType } from '@mantine/form';
-import { Tile, useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
+import { useForm } from '@mantine/form';
+import {  useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
 import { getLogStreamSchema } from '@/api/logStream';
 import { Field } from '@/@types/parseable/dataType';
 import { Editor } from '@monaco-editor/react';
-import VizEditorModal from './VizEditorModal';
+import VizEditorModal, { Viz } from './VizEditorModal';
 import { SchemaList } from '../Stream/components/Querier/QueryCodeEditor';
-import { IconAlertTriangle, IconAlertTriangleFilled, IconChartPie } from '@tabler/icons-react';
+import { IconAlertTriangle, IconArrowLeft, IconChartPie } from '@tabler/icons-react';
 import { useTileQuery } from '@/hooks/useDashboards';
 import { FormOpts, TileFormType, TileQueryResponse } from '@/@types/parseable/api/dashboards';
 import { CodeHighlight } from '@mantine/code-highlight';
 import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
+import { useLogsStore } from '../Stream/providers/LogsProvider';
+import dayjs from 'dayjs';
+import TimeRange from '@/components/Header/TimeRange';
+import { isCircularChart, isGraph } from './Charts';
 
+const selectDashboardWarningText = 'Select a dashboard to continue'
 const selectStreamWarningText = 'Select a stream to continue';
 const validateQueryWarningText = 'Validate query to continue';
 const emptyVizWarning = 'No visualization selected for the tile';
+const noDataWarning = 'No data available for the query';
+const invalidVizConfig = 'Invalid visualization config';
 
 const { toggleVizEditorModal, toggleCreateTileModal } = dashboardsStoreReducers;
+
+const getErrorMsg = (form: TileFormType, configType: 'basic' | 'data' | 'viz'): string | null => {
+	const { stream, dashboardId, isQueryValidated,  data, visualization} = form.values;
+	const hasVizConfigErrors = _.some(_.keys(form.errors), key => _.startsWith(key, 'visualization.'));
+	// form.validateField('visualization')
+
+	const hasNoData = _.isEmpty(data) || _.isEmpty(data.records);
+	if (_.isEmpty(dashboardId)) {
+		return selectDashboardWarningText;
+	} else if (_.isEmpty(stream)) {
+		return selectStreamWarningText;
+	} else if (configType === 'data' || configType === 'viz') {
+		if (!isQueryValidated) {
+			return validateQueryWarningText;
+		}
+		if (configType === 'viz') {
+			if (hasNoData) {
+				return noDataWarning;
+			} else if (hasVizConfigErrors || _.isEmpty(visualization)) {
+				return invalidVizConfig;
+			} else if (_.isEmpty(visualization.type)) {
+				return emptyVizWarning;
+			}
+		}
+	} else {
+		return null;
+	}
+
+	return null;
+}
 
 const SectionHeader = (props: { title: string; actionBtnProps?: { label: string; onClick: () => void } }) => {
 	const { title, actionBtnProps } = props;
@@ -28,11 +65,11 @@ const SectionHeader = (props: { title: string; actionBtnProps?: { label: string;
 		<Stack className={classes.sectionHeader}>
 			<Text style={{ fontSize: '0.725rem', fontWeight: 500 }}>{title}</Text>
 			{actionBtnProps && (
-				<Box>
+				// <Box>
 					<Button onClick={actionBtnProps.onClick} variant="outline">
 						{actionBtnProps.label}
 					</Button>
-				</Box>
+				// </Box>
 			)}
 		</Stack>
 	);
@@ -52,13 +89,18 @@ const EmptyVizView = (props: { msg: string | null }) => {
 	const openVizModal = useCallback(() => {
 		setDashboardStore((store) => toggleVizEditorModal(store, true));
 	}, []);
+
+	if (!_.includes([emptyVizWarning, invalidVizConfig], props.msg)) return <WarningView msg={props.msg}/>
+
 	return (
 		<Stack style={{ alignItems: 'center', justifyContent: 'center', flex: 1, gap: 8 }}>
 			<IconChartPie stroke={1.2} className={classes.warningIcon} />
 			<Text className={classes.warningText}>{props.msg}</Text>
-			<Button variant="outline" onClick={openVizModal}>
-				Select Visualization
-			</Button>
+			{_.includes([emptyVizWarning, invalidVizConfig], props.msg) && (
+				<Button variant="outline" onClick={openVizModal}>
+					{props.msg === emptyVizWarning ? 'Select Visualization' : 'Edit Visualization'}
+				</Button>
+			)}
 		</Stack>
 	);
 };
@@ -66,19 +108,36 @@ const EmptyVizView = (props: { msg: string | null }) => {
 const VisPreview = (props: { form: TileFormType }) => {
 	const {
 		form: {
-			values: { isQueryValidated, stream, data },
+			values: { visualization },
 		},
 	} = props;
-	const isValidStream = !_.isEmpty(stream);
-	const showWarning = (!isValidStream || !isQueryValidated) && _.isEmpty(data);
-	const hasNoViz = true;
-	const errorMsg = showWarning ? (!isValidStream ? selectStreamWarningText : validateQueryWarningText) : null;
+	const errorMsg = getErrorMsg(props.form, 'viz');
+
+	useEffect(() => {
+		props.form.validateField('visualization');
+	}, [visualization]);
+
+	const [, setDashbaordsStore] = useDashboardsStore((store) => null);
+
+	const openVizModal = useCallback(() => setDashbaordsStore((store) => toggleVizEditorModal(store, true)), []);
+	const sectionHeaderProps = {
+		title: 'Visualization Preview',
+		...(errorMsg ? {} : { actionBtnProps: { label: 'Edit', onClick: openVizModal } }),
+	};
+
+	console.log(sectionHeaderProps);
 
 	return (
-		<Stack className={classes.sectionContainer} {...(showWarning ? { gap: 0 } : {})}>
+		<Stack className={classes.sectionContainer} {...(errorMsg ? { gap: 0 } : { gap: 0 })}>
 			<VizEditorModal form={props.form} />
-			<SectionHeader title="Visualization Preview" />
-			{showWarning ? <WarningView msg={errorMsg} /> : hasNoViz ? <EmptyVizView msg={emptyVizWarning} /> : null}
+			<SectionHeader {...sectionHeaderProps} />
+			{errorMsg ? (
+				<EmptyVizView msg={errorMsg} />
+			) : (
+				<Stack style={{ flex: 1, width: '100%' }}>
+					<Viz form={props.form} />
+				</Stack>
+			)}
 		</Stack>
 	);
 };
@@ -86,10 +145,9 @@ const VisPreview = (props: { form: TileFormType }) => {
 const DataPreview = (props: { form: TileFormType }) => {
 	const {
 		form: {
-			values: { isQueryValidated, stream, data },
+			values: {  data },
 		},
 	} = props;
-	const isValidStream = !_.isEmpty(stream);
 	const containerRef = useRef(null);
 	const [containerSize, setContainerSize] = useState({ height: 0, width: 0 });
 	useEffect(() => {
@@ -100,15 +158,14 @@ const DataPreview = (props: { form: TileFormType }) => {
 			});
 		}
 	}, []);
-	// const showWarning = false;
-	const showWarning = (!isValidStream || !isQueryValidated) && _.isEmpty(data);
-	const errorMsg = showWarning ? (!isValidStream ? selectStreamWarningText : validateQueryWarningText) : null;
+	const errorMsg = getErrorMsg(props.form, 'data');
+
 	return (
 		<Stack className={classes.sectionContainer} gap={0}>
 			<SectionHeader title="Data Preview" />
 			<Stack ref={containerRef} style={{ flex: 1, overflow: 'scroll' }}>
 				<Stack style={{ width: containerSize.width, height: containerSize.height }}>
-					{showWarning ? (
+					{errorMsg ? (
 						<WarningView msg={errorMsg} />
 					) : (
 						<CodeHighlight
@@ -134,7 +191,44 @@ const useTileForm = (opts: FormOpts) => {
 			stream: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
 			description: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
 			query: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
-			isQueryValidated: (val) => (val ? null : 'Query not validated'),
+			isQueryValidated: (val) => (val === true ? null : 'Query not validated'),
+			dashboardId: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
+			visualization: {
+				type: (val) => _.isEmpty(val) ? 'Cannot be empty' : null,
+				size: (val) => _.isEmpty(val) ? 'Cannot be empty' : null,
+				circularChartConfig: {
+					nameKey: (value, values, path) => {
+						const {visualization: {type, circularChartConfig}} = values;
+						if (isCircularChart(type)) {
+							const nameKey = _.get(circularChartConfig, 'nameKey', null);
+							return _.isEmpty(nameKey) ? 'Cannot be empty' : null
+						}
+					},
+					valueKey: (value, values, path) => {
+						const {visualization: {type, circularChartConfig}} = values;
+						if (isCircularChart(type)) {
+							const valueKey = _.get(circularChartConfig, 'valueKey', null);
+							return _.isEmpty(valueKey) ? 'Cannot be empty' : null
+						}
+					},
+				},
+				graphConfig: {
+					xAxis: (value, values, path) => {
+						const {visualization: {type, graphConfig}} = values;
+						if (isGraph(type)) {
+							const xAxis = _.get(graphConfig, 'xAxis', null);
+							return _.isEmpty(xAxis) ? 'Cannot be empty' : null
+						}
+					},
+					yAxis: (value, values, path) => {
+						const {visualization: {type, graphConfig}} = values;
+						if (isGraph(type)) {
+							const yAxis = _.get(graphConfig, 'yAxis', null);
+							return _.isEmpty(yAxis) ? 'Cannot be empty' : null
+						}
+					},
+				}
+			}
 		},
 		validateInputOnChange: true,
 		validateInputOnBlur: true,
@@ -171,14 +265,18 @@ const fetchStreamFields = async (stream: string, setFields: (fields: Field[]) =>
 const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: any) => void }) => {
 	const {
 		form: {
-			values: { stream, query, isQueryValidated },
+			values: { stream, query, isQueryValidated, dashboardId },
 		},
 		onChangeValue,
 	} = props;
+	const [llmActive] = useAppStore((store) => store.instanceConfig?.llmActive);
 	const containerRef = useRef(null);
 	const [fields, setFields] = useState<Field[]>([]);
 	const [initialHeight, setInitialHeight] = useState(0);
 	const isValidStream = !_.isEmpty(stream);
+	const [dashboards] = useDashboardsStore(store => store.dashboards);
+	const [timeRange] = useLogsStore(store => store.timeRange)
+
 	useEffect(() => {
 		setFields([]);
 		if (_.size(stream) > 0) {
@@ -193,18 +291,24 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 	}, [isValidStream]);
 
 	const onFetchTileSuccess = useCallback((data: TileQueryResponse) => {
-		onChangeValue('isQueryValidated', true);
-		onChangeValue('data', data);
+		props.form.setFieldValue('isQueryValidated', true)
+		props.form.setFieldValue('data', data)
+		props.form.validate()
 	}, []);
 
-	const { fetchTileData, isLoading, isError, isSuccess } = useTileQuery({ onSuccess: onFetchTileSuccess });
+	const { fetchTileData, isLoading } = useTileQuery({ onSuccess: onFetchTileSuccess });
 
 	const validateQuery = useCallback(() => {
-		const now = new Date();
-		const santizedQuery = sanitiseSqlString(query);
+		if (_.isEmpty(dashboardId)) return;
+
+		const selectedDashboard = _.find(dashboards, (dashboard) => dashboard.dashboard_id === dashboardId);
+		if (_.isEmpty(selectedDashboard)) return;
+
+		const santizedQuery = sanitiseSqlString(query, true, 100);
 		onChangeValue('query', santizedQuery);
-		fetchTileData({ query: santizedQuery, startTime: new Date(now.getTime() - 24 * 3 * 60 * 60 * 1000), endTime: now });
-	}, [query]);
+		const { from, to } = selectedDashboard.time_filter || { from: timeRange.startTime, to: timeRange.endTime };
+		fetchTileData({ query: santizedQuery, startTime: dayjs(from).toDate(), endTime: dayjs(to).toDate() });
+	}, [query, dashboardId, dashboards]);
 
 	const onEditorChange = useCallback((query: string | undefined) => {
 		onChangeValue('query', query || '');
@@ -212,13 +316,15 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 		// onChangeValue('data', null)
 	}, []);
 
+	const errorMsg = getErrorMsg(props.form, 'basic')
+
 	return (
 		<Stack style={{ padding: '0 1rem', flex: 1 }} gap={4}>
 			<Text className={classes.fieldTitle}>Query</Text>
-			{!isValidStream && <Text className={classes.warningText}>{selectStreamWarningText}</Text>}
+			{errorMsg && <Text className={classes.warningText}>{errorMsg}</Text>}
 			<Stack className={classes.queryCodeContainer} style={{ flex: 1, ...(isValidStream ? {} : { display: 'none' }) }}>
 				<Box style={{ marginBottom: 8 }}>
-					{true ? (
+					{llmActive ? (
 						<Stack gap={0} style={{ flexDirection: 'row', width: '100%' }}>
 							<TextInput
 								type="text"
@@ -276,6 +382,7 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 					<Button
 						variant="outline"
 						disabled={_.isEmpty(query) || isQueryValidated || isLoading}
+						loading={isLoading}
 						onClick={validateQuery}>
 						Validate Query
 					</Button>
@@ -288,9 +395,14 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 const Config = (props: { form: TileFormType; onChangeValue: (key: string, value: any) => void }) => {
 	const { form, onChangeValue } = props;
 	const [userSpecificStreams] = useAppStore((store) => store.userSpecificStreams);
+	const [dashboards] = useDashboardsStore(store => store.dashboards)
 	const allStreams = useMemo(
 		() => _.map(userSpecificStreams, (stream) => ({ label: stream.name, value: stream.name })),
 		[userSpecificStreams],
+	);
+	const allDashboards = useMemo(
+		() => _.map(dashboards, (dashboard) => ({ label: dashboard.name, value: dashboard.dashboard_id })),
+		[dashboards],
 	);
 	return (
 		<Stack className={classes.sectionContainer} style={{ height: '100%' }}>
@@ -301,7 +413,15 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 					label="Name"
 					key="name"
 					{...form.getInputProps('name')}
-					style={{ width: '50%' }}
+					style={{ width: '33%' }}
+				/>
+				<Select
+					data={allDashboards}
+					classNames={{ label: classes.fieldTitle }}
+					label="Dashboard"
+					key="dashboardId"
+					{...form.getInputProps('dashboardId')}
+					style={{ width: '33%' }}
 				/>
 				<Select
 					data={allStreams}
@@ -309,7 +429,7 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 					label="Stream"
 					key="stream"
 					{...form.getInputProps('stream')}
-					style={{ width: '50%' }}
+					style={{ width: '33%' }}
 				/>
 			</Stack>
 			<Stack style={{ padding: '0 1rem' }}>
@@ -326,12 +446,14 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 };
 
 const defaultTileOpts = {
-	name: 'hello',
-	description: 'hello',
-	stream: 'teststream',
+	name: '',
+	description: '',
+	stream: '',
 	isQueryValidated: false,
-	query: 'select * from teststream',
+	isVizValidated: false,
+	query: '',
 	data: null,
+	dashboardId: null,
 	visualization: {
 		type: 'donut-chart',
 		size: 'sm',
@@ -351,15 +473,14 @@ const CreateTileForm = () => {
 	}, []);
 
 	return (
-		<Stack style={{ height: '100%' }} gap={0}>
+		<Stack style={{ height: '100%', width: '100%' }} gap={0}>
 			<Stack style={{ justifyContent: 'space-between', padding: '1rem', flexDirection: 'row' }}>
-				<Text style={{ fontSize: '0.8rem', fontWeight: 500 }}>Create Tile</Text>
-				<Stack style={{ flexDirection: 'row' }}>
-					<Box>
-						<Button onClick={closeEditForm} variant="outline">
-							Cancel
-						</Button>
-					</Box>
+				<Stack gap={10} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+					<IconArrowLeft onClick={closeEditForm} stroke={1.2} size={'1.4rem'} className={classes.arrowLeftIcon} />
+					<Text style={{ fontSize: '0.8rem', fontWeight: 600 }}>Create Tile</Text>
+				</Stack>
+				<Stack style={{ flexDirection: 'row' }} gap={20}>
+					<TimeRange/>
 					<Box>
 						<Button disabled={!form.isValid()} variant="filled">
 							Save Changes

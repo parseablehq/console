@@ -102,8 +102,8 @@ export const useTileQuery = (opts: { onSuccess: (data: TileQueryResponse) => voi
 				onSuccess(res.data);
 				setFetchState({ isLoading: false, isError: false, isSuccess: true });
 			} catch (e) {
-				console.log(e);
 				setFetchState({ isLoading: false, isError: true, isSuccess: false });
+				notifyError({message: _.isString(e.response.data) ? e.response.data : ''}) 
 			}
 		},
 		[onSuccess],

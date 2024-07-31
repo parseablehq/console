@@ -61,7 +61,7 @@ const Table = (props: {form: TileFormType }) => {
 	);
 };
 
-const Viz = (props: {form: TileFormType}) => {
+export const Viz = (props: {form: TileFormType}) => {
     const {form: {values: {visualization, data}}} = props;
 
 	const {type} = visualization;
@@ -95,6 +95,10 @@ const sizeLabelMap = {
 }
 
 const BasicConfig = (props: {form: TileFormType}) => {
+	useEffect(() => {
+		props.form.validate();
+	}, [props.form.values.visualization.type])
+
 	return (
 		<Stack gap={4}>
 			<Text className={classes.fieldTitle} style={{ marginBottom: '0.25rem', fontSize: '0.8rem', fontWeight: 500 }}>
@@ -125,7 +129,7 @@ const BasicConfig = (props: {form: TileFormType}) => {
 }
 
 const CircularChartConfig = (props: {form: TileFormType}) => {
-	const {form: {values: {data}}} = props;
+	const {form: {values: {data}, errors}} = props;
 
 	return (
 		<Stack style={{ flexDirection: 'row' }}>
@@ -180,7 +184,7 @@ const GraphConfig = (props: {form: TileFormType}) => {
 }
 
 const TickConfig = (props: {form: TileFormType}) => {
-	if (props.form.values.visualization.type === 'table') return null;
+	if (props.form.values.visualization.type === 'table' || _.isEmpty(props.form.values.visualization.type)) return null;
 
 	return (
 		<Stack gap={4}>
@@ -273,7 +277,9 @@ const VizEditorModal = (props: {form: TileFormType}) => {
 			styles={{ body: { padding: '0 1rem' }, header: { padding: '1rem', paddingBottom: '0' } }}
 			classNames={{ title: classes.modalTitle }}>
 			<Stack className={classes.container}>
-				<Viz form={form} />
+				<Stack style={{ width: '40%' }}>
+					<Viz form={form} />
+				</Stack>
 				<Stack className={classes.divider} />
 				<Config form={form} />
 			</Stack>

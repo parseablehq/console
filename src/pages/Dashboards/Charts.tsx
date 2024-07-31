@@ -2,7 +2,7 @@ import { TileData, TileQueryResponse, TileRecord } from '@/@types/parseable/api/
 import { AreaChart, BarChart, DonutChart, LineChart, PieChart } from '@mantine/charts';
 import { Stack, Text } from '@mantine/core';
 import _ from 'lodash';
-import { circularChartTypes } from './providers/DashboardsProvider';
+import { circularChartTypes, graphTypes } from './providers/DashboardsProvider';
 import { IconAlertTriangle } from '@tabler/icons-react';
 import classes from './styles/Charts.module.css'
 
@@ -67,6 +67,7 @@ export type SeriesType = {
 }[];
 
 export const isCircularChart = (viz: string) => _.includes(circularChartTypes, viz);
+export const isGraph = (viz: string) => _.includes(graphTypes, viz);
 
 const invalidConfigMsg = "Invalid chart config"
 const noDataMsg = "No data available"
@@ -194,7 +195,6 @@ const Line = (props: { data: TileData; dataKey: string; series: SeriesType }) =>
 };
 
 const Bar = (props: { data: TileData; dataKey: string; series: SeriesType }) => {
-	console.log(props, "bar bar")
 	return (
 		<BarChart h="100%" w="100%" type="stacked" withLegend data={props.data} dataKey={props.dataKey}  series={props.series} />
 	);

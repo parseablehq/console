@@ -107,8 +107,6 @@ const CreateDashboardModal = () => {
 		}
 	}, [form.values, editMode, createMode, timeRangeOptions]);
 
-	console.log()
-
 	return (
 		<Modal
 			opened={createMode || editMode}

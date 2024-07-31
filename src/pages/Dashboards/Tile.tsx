@@ -71,7 +71,7 @@ const Tile = (props: { id: string }) => {
 	useEffect(() => {
 		const now = new Date();
 		// debug // should notify
-		const santizedQuery = sanitiseSqlString(tile.query, false);
+		const santizedQuery = sanitiseSqlString(tile.query, false, 100);
 		fetchTileData({ query: santizedQuery, startTime: new Date(now.getTime() - 24 * 3 * 60 * 60 * 1000), endTime: now });
 	}, []);
 

@@ -7,6 +7,7 @@ import { useDashboardsStore } from './providers/DashboardsProvider';
 import CreateDashboardModal from './CreateDashboardModal';
 import { useEffect } from 'react';
 import { useDashboardsQuery } from '@/hooks/useDashboards';
+import CreateTileForm from './CreateTileForm';
 
 const LoadingView = () => {
 	return (
@@ -17,7 +18,8 @@ const LoadingView = () => {
 }
 
 const Dashboards = () => {
-	const [dashboards] = useDashboardsStore(store => store.dashboards);
+	const [dashboards] = useDashboardsStore((store) => store.dashboards);
+	const [createTileFormOpen] = useDashboardsStore((store) => store.createTileFormOpen);
 	const { fetchDashboards } = useDashboardsQuery();
 	useEffect(() => {
 		fetchDashboards();
@@ -34,6 +36,8 @@ const Dashboards = () => {
 			}}>
 			{dashboards === null ? (
 				<LoadingView />
+			) : createTileFormOpen ? (
+				<CreateTileForm />
 			) : (
 				<>
 					<SideBar />

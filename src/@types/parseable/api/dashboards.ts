@@ -42,6 +42,7 @@ export interface FormOpts extends Omit<Tile, 'id' | 'visualization'> {
 	isQueryValidated: boolean;
 	data: TileQueryResponse;
 	visualization: Visualization;
+	dashboardId: string | null;
 }
 
 export type TileFormType = UseFormReturnType<FormOpts, (values: FormOpts) => FormOpts>;

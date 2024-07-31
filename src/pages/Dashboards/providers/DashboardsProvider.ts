@@ -10,6 +10,7 @@ export type TileSize = (typeof tileSizes)[number];
 // viz type constants
 export const visualizations = ['pie-chart', 'donut-chart', 'line-chart', 'bar-chart', 'area-chart', 'table'] as const;
 export const circularChartTypes = ['pie-chart', 'donut-chart'];
+export const graphTypes = ['line-chart', 'bar-chart', 'area-chart']
 
 // vize size constants
 export const tileSizeWidthMap = { sm: 4, md: 6, lg: 8, xl: 12 };
@@ -73,7 +74,7 @@ export type Visualization = {
 				[key: string | number]: string;
 		  };
 	circularChartConfig: {} | { nameKey: string; valueKey: string };
-	graphConfig: {} | {};
+	graphConfig: {} | {xAxis: string; yAxis: string};
 	tableConfig: {} | {};
 };
 
