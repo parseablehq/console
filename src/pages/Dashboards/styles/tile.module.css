@@ -3,6 +3,7 @@
     border: 1px solid var(--mantine-color-gray-2);
     height: 100%;
     border-radius: 0.4rem;
+    overflow: hidden;
 }
 
 .tileHeader {
@@ -28,6 +29,7 @@
     flex: 1;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
 }
 
 .warningText {
@@ -37,4 +39,25 @@
 
 .warningIcon {
     color: var(--mantine-color-gray-5);
+}
+
+.tileControlIcon {
+    color: var(--mantine-color-gray-7);
+    cursor: pointer;
+}
+
+.tileCtrlItemIcon {
+    color: var(--mantine-color-gray-7);
+}
+
+.tileCtrlItemText {
+    font-size: 0.75rem;
+    color: var(--mantine-color-gray-7);
+    font-weight: 500;
+}
+
+.tileCtrlLabel {
+    color: var(--mantine-color-gray-5);
+    font-size: 0.7rem;
+    padding: 0.25rem 0.25rem;
 }

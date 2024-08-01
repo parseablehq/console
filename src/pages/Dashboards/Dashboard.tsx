@@ -8,16 +8,17 @@ import { DASHBOARDS_SIDEBAR_WIDTH, NAVBAR_WIDTH } from '@/constants/theme';
 import Tile from './Tile';
 // import classes from './styles/tile.module.css';
 import classes from './styles/Dashboard.module.css';
-import CreateTileForm from './CreateTileForm';
 import { useDashboardsStore, dashboardsStoreReducers, genLayout } from './providers/DashboardsProvider';
 import _ from 'lodash';
 import { IconChartBar } from '@tabler/icons-react';
 import { useCallback } from 'react';
+import { makeExportClassName } from '@/utils/exportImage';
 
 const { toggleCreateDashboardModal, toggleCreateTileModal } = dashboardsStoreReducers;
 
 const TilesView = () => {
 	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
+	const [allowDrag] = useDashboardsStore(store => store.allowDrag)
 	const hasNoTiles = _.size(activeDashboard?.tiles) < 1;
 
 	if (hasNoTiles || !activeDashboard) return <NoTilesView />;
@@ -26,7 +27,7 @@ const TilesView = () => {
 
 	// debug - memo
 	const layout = genLayout(tiles);
-
+	console.log(layout, "given layout")
 	return (
 		<Stack className={classes.tilesViewConatiner}>
 			<GridLayout
@@ -39,13 +40,15 @@ const TilesView = () => {
 				margin={[16, 16]}
 				containerPadding={[20, 10]}
 				compactType="horizontal"
-				isDraggable={false}>
+				isDraggable={allowDrag}
+				onLayoutChange={(layout) => console.log(layout, "made layout")}
+				>
 				{_.map(layout, (item) => {
 					return (
 						<div
 							key={item.i}
 							style={{ transition: 'none', background: 'white' }}
-							className={`${classes.container} capture-class`}>
+							className={`${classes.container} ${makeExportClassName(item.i)}`}>
 							<Tile id={item.i} />
 						</div>
 					);

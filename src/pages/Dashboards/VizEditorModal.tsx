@@ -1,13 +1,12 @@
 import { Modal, MultiSelect, Select, Stack, Text, TextInput } from '@mantine/core';
 import classes from './styles/VizEditor.module.css';
-import { useDashboardsStore, Visualization, dashboardsStoreReducers, tileSizes, circularChartTypes } from './providers/DashboardsProvider';
+import { useDashboardsStore,  dashboardsStoreReducers } from './providers/DashboardsProvider';
 import { useForm, UseFormReturnType } from '@mantine/form';
 import { useCallback, useEffect, useState } from 'react';
-import { visualizations } from './providers/DashboardsProvider';
 import _ from 'lodash';
 import { colors as defaultColors, DonutData, isCircularChart, renderCircularChart, renderGraph, sanitizeDonutData, sanitizeDonutData2 } from './Charts';
 import charts from './Charts';
-import { FormOpts, TileFormType, TileQuery, TileQueryResponse } from '@/@types/parseable/api/dashboards';
+import { FormOpts, TileFormType, TileQuery, TileQueryResponse, tileSizes, Visualization, visualizations } from '@/@types/parseable/api/dashboards';
 import { IconAlertTriangle } from '@tabler/icons-react';
 import TableViz from './Table';
 const {toggleVizEditorModal} = dashboardsStoreReducers;
@@ -25,28 +24,28 @@ const WarningView = (props: { msg: string | null }) => {
 
 const CircularChart = (props: { form: TileFormType }) => {
 	const {
-		visualization: { type, circularChartConfig },
+		visualization: { visualization_type, circular_chart_config },
 		data,
 	} = props.form.values;
-	const nameKey = _.get(circularChartConfig, 'nameKey', '');
-	const valueKey = _.get(circularChartConfig, 'valueKey', '');
+	const name_key = _.get(circular_chart_config, 'name_key', '');
+	const value_key = _.get(circular_chart_config, 'value_key', '');
 
 	return (
 		<Stack style={{ flex: 1, width: '100%' }}>
-			{renderCircularChart({ queryResponse: data, nameKey, valueKey, chart: type })}
+			{renderCircularChart({ queryResponse: data, name_key, value_key, chart: visualization_type })}
 		</Stack>
 	);
 };
 
 const Graph = (props: { form: TileFormType }) => {
 	const {
-		visualization: { type, graphConfig },
+		visualization: { visualization_type, graph_config },
 		data,
 	} = props.form.values;
-	const xKey = _.get(graphConfig, 'xAxis', '');
-	const yKeys = _.get(graphConfig, 'yAxis', []);
+	const x_key = _.get(graph_config, 'xAxis', '');
+	const y_key = _.get(graph_config, 'yAxis', []);
 	return (
-		<Stack style={{ flex: 1, width: '100%' }}>{renderGraph({ queryResponse: data, xKey, yKeys, chart: type })}</Stack>
+		<Stack style={{ flex: 1, width: '100%' }}>{renderGraph({ queryResponse: data, x_key, y_key, chart: visualization_type })}</Stack>
 	);
 };
 
@@ -64,10 +63,10 @@ const Table = (props: {form: TileFormType }) => {
 export const Viz = (props: {form: TileFormType}) => {
     const {form: {values: {visualization, data}}} = props;
 
-	const {type} = visualization;
-	const isValidVizType = _.includes(visualizations, type);
+	const {visualization_type} = visualization;
+	const isValidVizType = _.includes(visualizations, visualization_type);
 	const showWarning = !isValidVizType;
-	const Viss = type === 'table' ? Table : isCircularChart(type) ? CircularChart : Graph;
+	const Viss = visualization_type === 'table' ? Table : isCircularChart(visualization_type) ? CircularChart : Graph;
 
 	return (
 		<Stack className={classes.vizContainer}>
@@ -97,7 +96,7 @@ const sizeLabelMap = {
 const BasicConfig = (props: {form: TileFormType}) => {
 	useEffect(() => {
 		props.form.validate();
-	}, [props.form.values.visualization.type])
+	}, [props.form.values.visualization.visualization_type]);
 
 	return (
 		<Stack gap={4}>
@@ -110,8 +109,8 @@ const BasicConfig = (props: {form: TileFormType}) => {
 					classNames={{ label: classes.fieldTitle }}
 					label="Type"
 					placeholder="Type"
-					key="visualization.type"
-					{...props.form.getInputProps('visualization.type')}
+					key="visualization.visualization_type"
+					{...props.form.getInputProps('visualization.visualization_type')}
 					style={{ width: '50%' }}
 				/>
 				<Select
@@ -138,8 +137,8 @@ const CircularChartConfig = (props: {form: TileFormType}) => {
 				classNames={{ label: classes.fieldTitle }}
 				label="Name"
 				placeholder="Name"
-				key="visualization.circularChartConfig.nameKey"
-				{...props.form.getInputProps('visualization.circularChartConfig.nameKey')}
+				key="visualization.circular_chart_config.name_key"
+				{...props.form.getInputProps('visualization.circular_chart_config.name_key')}
 				style={{ width: '50%' }}
 			/>
 			<Select
@@ -147,8 +146,8 @@ const CircularChartConfig = (props: {form: TileFormType}) => {
 				classNames={{ label: classes.fieldTitle }}
 				label="Value"
 				placeholder="Value"
-				key="visualization.circularChartConfig.valueKey"
-				{...props.form.getInputProps('visualization.circularChartConfig.valueKey')}
+				key="visualization.circular_chart_config.value_key"
+				{...props.form.getInputProps('visualization.circular_chart_config.value_key')}
 				style={{ width: '50%' }}
 			/>
 		</Stack>
@@ -165,8 +164,8 @@ const GraphConfig = (props: {form: TileFormType}) => {
 				classNames={{ label: classes.fieldTitle }}
 				label="X Axis"
 				placeholder="X Axis"
-				key="visualization.graphConfig.xAxis"
-				{...props.form.getInputProps('visualization.graphConfig.xAxis')}
+				key="visualization.graph_config.xAxis"
+				{...props.form.getInputProps('visualization.graph_config.xAxis')}
 				style={{ width: '50%' }}
 			/>
 			<MultiSelect
@@ -174,8 +173,8 @@ const GraphConfig = (props: {form: TileFormType}) => {
 				classNames={{ label: classes.fieldTitle }}
 				label="Y Axis"
 				placeholder="Y Axis"
-				key="visualization.graphConfig.yAxis"
-				{...props.form.getInputProps('visualization.graphConfig.yAxis')}
+				key="visualization.graph_config.yAxis"
+				{...props.form.getInputProps('visualization.graph_config.yAxis')}
 				style={{ width: '50%' }}
 				limit={6}
 			/>
@@ -184,7 +183,7 @@ const GraphConfig = (props: {form: TileFormType}) => {
 }
 
 const TickConfig = (props: {form: TileFormType}) => {
-	if (props.form.values.visualization.type === 'table' || _.isEmpty(props.form.values.visualization.type)) return null;
+	if (props.form.values.visualization.visualization_type === 'table' || _.isEmpty(props.form.values.visualization.visualization_type)) return null;
 
 	return (
 		<Stack gap={4}>
@@ -192,7 +191,7 @@ const TickConfig = (props: {form: TileFormType}) => {
 				Chart Config
 			</Text>
 			{/* debug */}
-			{isCircularChart(props.form.values.visualization.type) ? (
+			{isCircularChart(props.form.values.visualization.visualization_type) ? (
 				<CircularChartConfig form={props.form} />
 			) : (
 				<GraphConfig form={props.form} />

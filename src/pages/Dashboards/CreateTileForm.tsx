@@ -1,7 +1,7 @@
 import { Box, Button, Select, Stack, Text, TextInput } from '@mantine/core';
 import classes from './styles/Form.module.css';
 import { useForm } from '@mantine/form';
-import {  useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
+import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
@@ -11,8 +11,8 @@ import { Editor } from '@monaco-editor/react';
 import VizEditorModal, { Viz } from './VizEditorModal';
 import { SchemaList } from '../Stream/components/Querier/QueryCodeEditor';
 import { IconAlertTriangle, IconArrowLeft, IconChartPie } from '@tabler/icons-react';
-import { useTileQuery } from '@/hooks/useDashboards';
-import { FormOpts, TileFormType, TileQueryResponse } from '@/@types/parseable/api/dashboards';
+import { useDashboardsQuery, useTileQuery } from '@/hooks/useDashboards';
+import { Dashboard, EditTileType, FormOpts, TileFormType, TileQueryResponse } from '@/@types/parseable/api/dashboards';
 import { CodeHighlight } from '@mantine/code-highlight';
 import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 import { useLogsStore } from '../Stream/providers/LogsProvider';
@@ -20,7 +20,7 @@ import dayjs from 'dayjs';
 import TimeRange from '@/components/Header/TimeRange';
 import { isCircularChart, isGraph } from './Charts';
 
-const selectDashboardWarningText = 'Select a dashboard to continue'
+const selectDashboardWarningText = 'Select a dashboard to continue';
 const selectStreamWarningText = 'Select a stream to continue';
 const validateQueryWarningText = 'Validate query to continue';
 const emptyVizWarning = 'No visualization selected for the tile';
@@ -30,8 +30,8 @@ const invalidVizConfig = 'Invalid visualization config';
 const { toggleVizEditorModal, toggleCreateTileModal } = dashboardsStoreReducers;
 
 const getErrorMsg = (form: TileFormType, configType: 'basic' | 'data' | 'viz'): string | null => {
-	const { stream, dashboardId, isQueryValidated,  data, visualization} = form.values;
-	const hasVizConfigErrors = _.some(_.keys(form.errors), key => _.startsWith(key, 'visualization.'));
+	const { stream, dashboardId, isQueryValidated, data, visualization } = form.values;
+	const hasVizConfigErrors = _.some(_.keys(form.errors), (key) => _.startsWith(key, 'visualization.'));
 	// form.validateField('visualization')
 
 	const hasNoData = _.isEmpty(data) || _.isEmpty(data.records);
@@ -48,7 +48,7 @@ const getErrorMsg = (form: TileFormType, configType: 'basic' | 'data' | 'viz'): 
 				return noDataWarning;
 			} else if (hasVizConfigErrors || _.isEmpty(visualization)) {
 				return invalidVizConfig;
-			} else if (_.isEmpty(visualization.type)) {
+			} else if (_.isEmpty(visualization.visualization_type)) {
 				return emptyVizWarning;
 			}
 		}
@@ -57,7 +57,7 @@ const getErrorMsg = (form: TileFormType, configType: 'basic' | 'data' | 'viz'): 
 	}
 
 	return null;
-}
+};
 
 const SectionHeader = (props: { title: string; actionBtnProps?: { label: string; onClick: () => void } }) => {
 	const { title, actionBtnProps } = props;
@@ -66,9 +66,9 @@ const SectionHeader = (props: { title: string; actionBtnProps?: { label: string;
 			<Text style={{ fontSize: '0.725rem', fontWeight: 500 }}>{title}</Text>
 			{actionBtnProps && (
 				// <Box>
-					<Button onClick={actionBtnProps.onClick} variant="outline">
-						{actionBtnProps.label}
-					</Button>
+				<Button onClick={actionBtnProps.onClick} variant="outline">
+					{actionBtnProps.label}
+				</Button>
 				// </Box>
 			)}
 		</Stack>
@@ -90,7 +90,7 @@ const EmptyVizView = (props: { msg: string | null }) => {
 		setDashboardStore((store) => toggleVizEditorModal(store, true));
 	}, []);
 
-	if (!_.includes([emptyVizWarning, invalidVizConfig], props.msg)) return <WarningView msg={props.msg}/>
+	if (!_.includes([emptyVizWarning, invalidVizConfig], props.msg)) return <WarningView msg={props.msg} />;
 
 	return (
 		<Stack style={{ alignItems: 'center', justifyContent: 'center', flex: 1, gap: 8 }}>
@@ -145,7 +145,7 @@ const VisPreview = (props: { form: TileFormType }) => {
 const DataPreview = (props: { form: TileFormType }) => {
 	const {
 		form: {
-			values: {  data },
+			values: { data },
 		},
 	} = props;
 	const containerRef = useRef(null);
@@ -194,41 +194,49 @@ const useTileForm = (opts: FormOpts) => {
 			isQueryValidated: (val) => (val === true ? null : 'Query not validated'),
 			dashboardId: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
 			visualization: {
-				type: (val) => _.isEmpty(val) ? 'Cannot be empty' : null,
-				size: (val) => _.isEmpty(val) ? 'Cannot be empty' : null,
-				circularChartConfig: {
-					nameKey: (value, values, path) => {
-						const {visualization: {type, circularChartConfig}} = values;
-						if (isCircularChart(type)) {
-							const nameKey = _.get(circularChartConfig, 'nameKey', null);
-							return _.isEmpty(nameKey) ? 'Cannot be empty' : null
+				visualization_type: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
+				size: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
+				circular_chart_config: {
+					name_key: (_value, values, _path) => {
+						const {
+							visualization: { visualization_type, circular_chart_config },
+						} = values;
+						if (isCircularChart(visualization_type)) {
+							const name_key = _.get(circular_chart_config, 'name_key', null);
+							return _.isEmpty(name_key) ? 'Cannot be empty' : null;
 						}
 					},
-					valueKey: (value, values, path) => {
-						const {visualization: {type, circularChartConfig}} = values;
-						if (isCircularChart(type)) {
-							const valueKey = _.get(circularChartConfig, 'valueKey', null);
-							return _.isEmpty(valueKey) ? 'Cannot be empty' : null
+					value_key: (_value, values, _path) => {
+						const {
+							visualization: { visualization_type, circular_chart_config },
+						} = values;
+						if (isCircularChart(visualization_type)) {
+							const value_key = _.get(circular_chart_config, 'value_key', null);
+							return _.isEmpty(value_key) ? 'Cannot be empty' : null;
 						}
 					},
 				},
-				graphConfig: {
-					xAxis: (value, values, path) => {
-						const {visualization: {type, graphConfig}} = values;
-						if (isGraph(type)) {
-							const xAxis = _.get(graphConfig, 'xAxis', null);
-							return _.isEmpty(xAxis) ? 'Cannot be empty' : null
+				graph_config: {
+					xAxis: (_value, values, _path) => {
+						const {
+							visualization: { visualization_type, graph_config },
+						} = values;
+						if (isGraph(visualization_type)) {
+							const xAxis = _.get(graph_config, 'xAxis', null);
+							return _.isEmpty(xAxis) ? 'Cannot be empty' : null;
 						}
 					},
-					yAxis: (value, values, path) => {
-						const {visualization: {type, graphConfig}} = values;
-						if (isGraph(type)) {
-							const yAxis = _.get(graphConfig, 'yAxis', null);
-							return _.isEmpty(yAxis) ? 'Cannot be empty' : null
+					yAxis: (_value, values, _path) => {
+						const {
+							visualization: { visualization_type, graph_config },
+						} = values;
+						if (isGraph(visualization_type)) {
+							const yAxis = _.get(graph_config, 'yAxis', null);
+							return _.isEmpty(yAxis) ? 'Cannot be empty' : null;
 						}
 					},
-				}
-			}
+				},
+			},
 		},
 		validateInputOnChange: true,
 		validateInputOnBlur: true,
@@ -274,8 +282,8 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 	const [fields, setFields] = useState<Field[]>([]);
 	const [initialHeight, setInitialHeight] = useState(0);
 	const isValidStream = !_.isEmpty(stream);
-	const [dashboards] = useDashboardsStore(store => store.dashboards);
-	const [timeRange] = useLogsStore(store => store.timeRange)
+	const [dashboards] = useDashboardsStore((store) => store.dashboards);
+	const [timeRange] = useLogsStore((store) => store.timeRange);
 
 	useEffect(() => {
 		setFields([]);
@@ -291,9 +299,9 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 	}, [isValidStream]);
 
 	const onFetchTileSuccess = useCallback((data: TileQueryResponse) => {
-		props.form.setFieldValue('isQueryValidated', true)
-		props.form.setFieldValue('data', data)
-		props.form.validate()
+		props.form.setFieldValue('isQueryValidated', true);
+		props.form.setFieldValue('data', data);
+		props.form.validate();
 	}, []);
 
 	const { fetchTileData, isLoading } = useTileQuery({ onSuccess: onFetchTileSuccess });
@@ -316,7 +324,7 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 		// onChangeValue('data', null)
 	}, []);
 
-	const errorMsg = getErrorMsg(props.form, 'basic')
+	const errorMsg = getErrorMsg(props.form, 'basic');
 
 	return (
 		<Stack style={{ padding: '0 1rem', flex: 1 }} gap={4}>
@@ -395,7 +403,7 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 const Config = (props: { form: TileFormType; onChangeValue: (key: string, value: any) => void }) => {
 	const { form, onChangeValue } = props;
 	const [userSpecificStreams] = useAppStore((store) => store.userSpecificStreams);
-	const [dashboards] = useDashboardsStore(store => store.dashboards)
+	const [dashboards] = useDashboardsStore((store) => store.dashboards);
 	const allStreams = useMemo(
 		() => _.map(userSpecificStreams, (stream) => ({ label: stream.name, value: stream.name })),
 		[userSpecificStreams],
@@ -452,37 +460,89 @@ const defaultTileOpts = {
 	isQueryValidated: false,
 	isVizValidated: false,
 	query: '',
-	data: null,
+	data: { records: [], fields: [] },
 	dashboardId: null,
 	visualization: {
-		type: 'donut-chart',
+		visualization_type: 'donut-chart' as 'donut-chart',
 		size: 'sm',
-		colors: {},
-		circularChartConfig: {},
-		graphConfig: {},
-		tableConfig: {},
+		color_config: [],
+		circular_chart_config: {},
 	},
 };
 
-const CreateTileForm = () => {
-	const { form, onChangeValue } = useTileForm(defaultTileOpts);
-	const [, setDashbaordsStore] = useDashboardsStore((store) => null);
+const sanitizeFormValues = (form: TileFormType, type: 'create' | 'update', order: number): EditTileType => {
+	const { name, description, stream, query, visualization, tile_id } = form.values;
+	const { visualization_type, size, circular_chart_config } = visualization;
+	return {
+		name,
+		description,
+		stream,
+		query,
+		visualization: {
+			visualization_type,
+			size,
+			circular_chart_config,
+			color_config: [],
+		},
+		order,
+		...(type === 'create' && _.isString(tile_id) ? { tile_id } : {}),
+	};
+};
 
-	const closeEditForm = useCallback(() => {
+const genTileFormOpts = (opts: { activeDashboard: Dashboard | null }) => {
+	const { activeDashboard } = opts;
+	return {
+		name: '',
+		description: '',
+		stream: '',
+		isQueryValidated: false,
+		isVizValidated: false,
+		query: '',
+		data: { records: [], fields: [] },
+		dashboardId: activeDashboard?.dashboard_id || null,
+		visualization: {
+			visualization_type: 'donut-chart' as 'donut-chart',
+			size: 'sm',
+			color_config: [],
+			circular_chart_config: {},
+		},
+	};
+};
+
+const CreateTileForm = () => {
+	const [dashboards, setDashbaordsStore] = useDashboardsStore((store) => store.dashboards);
+	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
+
+	const { form, onChangeValue } = useTileForm(genTileFormOpts({ activeDashboard }));
+
+	const closeForm = useCallback(() => {
 		setDashbaordsStore((store) => toggleCreateTileModal(store, false));
 	}, []);
+
+	const { updateDashboard, isUpdatingDashboard } = useDashboardsQuery();
+
+	const onCreate = useCallback(() => {
+		const { dashboardId } = form.values;
+		const dashboard = _.find(dashboards, (dashboard) => dashboard.dashboard_id === dashboardId);
+
+		if (!dashboard) return;
+
+		const existingTiles = dashboard.tiles;
+		const newTile = sanitizeFormValues(form, 'create', _.size(existingTiles) + 1);
+		updateDashboard({ dashboard: { ...dashboard, tiles: [...existingTiles, newTile] } });
+	}, [form, dashboards]);
 
 	return (
 		<Stack style={{ height: '100%', width: '100%' }} gap={0}>
 			<Stack style={{ justifyContent: 'space-between', padding: '1rem', flexDirection: 'row' }}>
 				<Stack gap={10} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-					<IconArrowLeft onClick={closeEditForm} stroke={1.2} size={'1.4rem'} className={classes.arrowLeftIcon} />
+					<IconArrowLeft onClick={closeForm} stroke={1.2} size={'1.4rem'} className={classes.arrowLeftIcon} />
 					<Text style={{ fontSize: '0.8rem', fontWeight: 600 }}>Create Tile</Text>
 				</Stack>
 				<Stack style={{ flexDirection: 'row' }} gap={20}>
-					<TimeRange/>
+					<TimeRange />
 					<Box>
-						<Button disabled={!form.isValid()} variant="filled">
+						<Button disabled={!form.isValid()} onClick={onCreate} loading={isUpdatingDashboard} variant="filled">
 							Save Changes
 						</Button>
 					</Box>

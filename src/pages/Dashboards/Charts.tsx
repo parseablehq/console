@@ -2,9 +2,11 @@ import { TileData, TileQueryResponse, TileRecord } from '@/@types/parseable/api/
 import { AreaChart, BarChart, DonutChart, LineChart, PieChart } from '@mantine/charts';
 import { Stack, Text } from '@mantine/core';
 import _ from 'lodash';
-import { circularChartTypes, graphTypes } from './providers/DashboardsProvider';
+// import { circularChartTypes, graphTypes } from './providers/DashboardsProvider';
+import { circularChartTypes, graphTypes } from '@/@types/parseable/api/dashboards';
 import { IconAlertTriangle } from '@tabler/icons-react';
 import classes from './styles/Charts.module.css'
+import { CodeHighlight } from '@mantine/code-highlight';
 
 export const chartColorsMap = {
 	'black': 'dark.6',
@@ -86,61 +88,75 @@ const validateCircularChartData = (data: CircularChartData) => {
 	return _.every(data, d => _.isNumber(d.value))
 }
 
-export const renderCircularChart = (opts: {queryResponse: TileQueryResponse | null, nameKey: string, valueKey: string, chart: string }) => {
-	const { queryResponse, nameKey, valueKey, chart } = opts;
+export const renderCircularChart = (opts: {queryResponse: TileQueryResponse | null, name_key: string, value_key: string, chart: string }) => {
+	const { queryResponse, name_key, value_key, chart } = opts;
 
 	const VizComponent = getVizComponent(chart);
-	const data = makeCircularChartData(queryResponse?.records || [], nameKey, valueKey);
+	const data = makeCircularChartData(queryResponse?.records || [], name_key, value_key);
 
-	const isInvalidKey = _.isEmpty(nameKey) || _.isEmpty(valueKey);
+	const isInvalidKey = _.isEmpty(name_key) || _.isEmpty(value_key);
 	const hasNoData = _.isEmpty(data);
 	const isValidData = validateCircularChartData(data);
 	const warningMsg = isInvalidKey ? invalidConfigMsg : hasNoData ? noDataMsg : !isValidData ? invalidDataMsg : null;
 
 	return (
-		<Stack style={{ flex: 1, height: '100%', padding: '1rem 0rem'}}>
+		<Stack style={{ flex: 1, height: '100%'}}>
 			{warningMsg ? <WarningView msg={warningMsg} /> : VizComponent ? <VizComponent data={data} /> : null}
 		</Stack>
 	);
 }
 
-export const renderGraph = (opts: {queryResponse: TileQueryResponse | null, xKey: string, yKeys: string[], chart}) => {
-	const { queryResponse, xKey, yKeys, chart } = opts;
+export const renderJsonView = (opts: {queryResponse: TileQueryResponse | null}) => {
+	return (
+		<Stack>
+			<CodeHighlight
+				code={JSON.stringify(opts.queryResponse?.records || [], null, 2)}
+				style={{ background: 'white' }}
+				language="json"
+				styles={{ copy: { marginLeft: '550px' } }}
+				copyLabel="Copy Records"
+			/>
+		</Stack>
+	);
+}
+
+export const renderGraph = (opts: {queryResponse: TileQueryResponse | null, x_key: string, y_key: string[], chart}) => {
+	const { queryResponse, x_key, y_key, chart } = opts;
 	const VizComponent = getVizComponent(chart);
-	const seriesData = makeSeriesData(queryResponse?.records || [], yKeys);
+	const seriesData = makeSeriesData(queryResponse?.records || [], y_key);
 
 	const data = queryResponse?.records || []
-	const isInvalidKey = _.isEmpty(xKey) || _.isEmpty(yKeys);
+	const isInvalidKey = _.isEmpty(x_key) || _.isEmpty(y_key);
 	const hasNoData = _.isEmpty(seriesData) || _.isEmpty(data);
 	const warningMsg = isInvalidKey ? invalidConfigMsg : hasNoData ? noDataMsg : null;
 
 	return (
 		<Stack style={{ flex: 1, height: '100%', padding: '1rem' }}>
-			{warningMsg ? <WarningView msg={warningMsg} /> : VizComponent ? <VizComponent data={data} dataKey={xKey} series={seriesData}/> : null}
+			{warningMsg ? <WarningView msg={warningMsg} /> : VizComponent ? <VizComponent data={data} dataKey={x_key} series={seriesData}/> : null}
 		</Stack>
 	);
 
 	// return (
 	// 	<Stack style={{ flex: 1, height: '100%', padding: '1rem' }}>
-	// 		{VizComponent ? <VizComponent data={queryResponse?.records || []} dataKey={xKey} series={seriesData} /> : null}
+	// 		{VizComponent ? <VizComponent data={queryResponse?.records || []} dataKey={x_key} series={seriesData} /> : null}
 	// 	</Stack>
 	// );
 }
 
-export const makeCircularChartData = (data: TileData | null, nameKey: string, valueKey: string): CircularChartData => {
+export const makeCircularChartData = (data: TileData | null, name_key: string, value_key: string): CircularChartData => {
 	if (!_.isArray(data)) return [];
 
 	const topN = 5;
 	const chartData = _.reduce(
 		data,
 		(acc, rec: TileRecord) => {
-			if (!_.has(rec, nameKey) || !_.has(rec, valueKey)) {
+			if (!_.has(rec, name_key) || !_.has(rec, value_key)) {
 				return acc;
 			}
 
 			return {
 				...acc,
-				[rec[nameKey]]: rec[valueKey],
+				[rec[name_key]]: rec[value_key],
 			};
 		},
 		{},
@@ -165,13 +181,13 @@ export const makeCircularChartData = (data: TileData | null, nameKey: string, va
 	return [...topNArcs, ...(restArcValue !== 0 ? [{ name: 'Others', value: restArcValue, color: 'gray.6' }] : [])];
 }
 
-const makeSeriesData = (data: TileData | null, yKeys: string[]) => {
+const makeSeriesData = (data: TileData | null, y_key: string[]) => {
 	if (!_.isArray(data)) return [];
 
 	let usedColors: string[] = [];
 
 	return _.reduce<string, { color: string; name: string }[]>(
-		yKeys,
+		y_key,
 		(acc, key: string, index: number) => {
 			const color =  _.difference(colors, usedColors)[index] || nullColor;
 			return [...acc, { color: chartColorsMap[color] || 'gray.6', name: key }];

@@ -742,7 +742,7 @@ const getUniqueValues = (data: Log[], key: string) => {
 		.value();
 };
 
-const makeExportData = (data: Log[], headers: string[], type: string): Log[] => {
+export const makeExportData = (data: Log[], headers: string[], type: string): Log[] => {
 	if (type === 'JSON') {
 		return data;
 	} else if (type === 'CSV') {
