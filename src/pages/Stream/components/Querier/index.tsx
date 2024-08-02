@@ -4,7 +4,7 @@ import classes from '../../styles/Querier.module.css';
 import { Text } from '@mantine/core';
 import { FilterQueryBuilder, QueryPills } from './FilterQueryBuilder';
 import { AppliedSQLQuery } from './QueryEditor';
-import QueryCodeEditor from './QueryCodeEditor';
+import QueryCodeEditor, { defaultCustSQLQuery } from './QueryCodeEditor';
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { useCallback, useEffect, useRef } from 'react';
 import { filterStoreReducers, noValueOperators, useFilterStore } from '../../providers/FilterProvider';
@@ -72,11 +72,16 @@ const QuerierModal = (props: {
 	onSqlSearchApply: (query: string) => void;
 	onFiltersApply: () => void;
 }) => {
+	const [currentStream] = useAppStore(store => store.currentStream)
 	const [{ showQueryBuilder, viewMode }, setLogsStore] = useLogsStore((store) => store.custQuerySearchState);
 	const onClose = useCallback(() => {
 		setLogsStore((store) => toggleQueryBuilder(store, false));
 	}, []);
 	const queryCodeEditorRef = useRef<any>(''); // to store input value even after the editor unmounts
+
+	useEffect(() => {
+		queryCodeEditorRef.current = defaultCustSQLQuery(currentStream);
+	}, [currentStream]);
 
 	return (
 		<Modal
@@ -123,7 +128,7 @@ const Querier = () => {
 
 	useEffect(() => {
 		return setFilterStore(resetFilters);
-	}, []);
+	}, [currentStream]);
 
 	const triggerRefetch = useCallback(
 		(query: string, mode: 'filters' | 'sql', id?: string) => {
@@ -136,8 +141,8 @@ const Querier = () => {
 	const onFiltersApply = useCallback(
 		(opts?: { isUncontrolled?: boolean }) => {
 			if (!currentStream) return;
-			const { isUncontrolled } = opts || {};
 
+			const { isUncontrolled } = opts || {};
 			const { parsedQuery } = parseQuery(query, currentStream);
 			setFilterStore((store) => storeAppliedQuery(store));
 			triggerRefetch(parsedQuery, 'filters', isUncontrolled && savedFilterId ? savedFilterId : undefined);
@@ -175,13 +180,13 @@ const Querier = () => {
 
 		// trigger query fetch if the rules were updated by the remove btn on pills
 		// -----------------------------------
-		if (!showQueryBuilder && (activeMode !== 'sql' || savedFilterId)) {
+		if ((!showQueryBuilder && activeMode === 'filters') || savedFilterId) {
 			if (!shouldSumbitDisabled) {
 				onFiltersApply({ isUncontrolled: true });
-			}
-
-			if (allValues.length === 0 && activeMode !== 'sql') {
-				onClear();
+			} else {
+				if (activeMode === 'filters') {
+					onClear();
+				}
 			}
 		}
 		// -----------------------------------

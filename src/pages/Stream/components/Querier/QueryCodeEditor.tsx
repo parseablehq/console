@@ -9,7 +9,6 @@ import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 import { Field } from '@/@types/parseable/dataType';
 import queryCodeStyles from '../../styles/QueryCode.module.css';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { useFilterStore } from '../../providers/FilterProvider';
 import { LOAD_LIMIT, useLogsStore } from '../../providers/LogsProvider';
 import { useStreamStore } from '../../providers/StreamProvider';
 
@@ -30,7 +29,7 @@ const genColumnConfig = (fields: Field[]) => {
 	}, columnConfig);
 };
 
-const defaultCustSQLQuery = (streamName: string | null) => {
+export const defaultCustSQLQuery = (streamName: string | null) => {
 	if (streamName && streamName.length > 0) {
 		return `SELECT * FROM ${streamName} LIMIT ${LOAD_LIMIT};`;
 	} else {
@@ -44,7 +43,6 @@ const QueryCodeEditor: FC<{
 	onClear: () => void;
 }> = (props) => {
 	const [llmActive] = useAppStore((store) => store.instanceConfig?.llmActive);
-	const [] = useFilterStore((store) => store);
 	const [{ isQuerySearchActive, activeMode, savedFilterId, custSearchQuery }] = useLogsStore(
 		(store) => store.custQuerySearchState,
 	);
