@@ -489,8 +489,11 @@ const sanitizeFormValues = (form: TileFormType, type: 'create' | 'update', order
 	};
 };
 
-const genTileFormOpts = (opts: { activeDashboard: Dashboard | null }) => {
-	const { activeDashboard } = opts;
+const genTileFormOpts = (opts: { activeDashboard: Dashboard | null, editTileId: string | null }) => {
+	const { activeDashboard, editTileId } = opts;
+
+	const currentTile = _.find(activeDashboard?.tiles, )
+
 	return {
 		name: '',
 		description: '',
@@ -512,8 +515,9 @@ const genTileFormOpts = (opts: { activeDashboard: Dashboard | null }) => {
 const CreateTileForm = () => {
 	const [dashboards, setDashbaordsStore] = useDashboardsStore((store) => store.dashboards);
 	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
+	const [editTileId] = useDashboardsStore((store) => store.editTileId);
 
-	const { form, onChangeValue } = useTileForm(genTileFormOpts({ activeDashboard }));
+	const { form, onChangeValue } = useTileForm(genTileFormOpts({ activeDashboard, editTileId }));
 
 	const closeForm = useCallback(() => {
 		setDashbaordsStore((store) => toggleCreateTileModal(store, false));

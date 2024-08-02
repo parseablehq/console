@@ -1,4 +1,4 @@
-import { Dashboard, Tile, tileSizeWidthMap } from '@/@types/parseable/api/dashboards';
+import { Dashboard, Tile, TileQueryResponse, tileSizeWidthMap } from '@/@types/parseable/api/dashboards';
 import initContext from '@/utils/initContext';
 import _ from 'lodash';
 import { Layout } from 'react-grid-layout';
@@ -60,6 +60,10 @@ type DashboardsStore = {
 	createTileFormOpen: boolean;
 	vizEditorModalOpen: boolean;
 	allowDrag: boolean;
+	editTileId: string | null;
+	tileData: {
+		[key: string]: TileQueryResponse;
+	}
 };
 
 const mockDashboards = [
@@ -239,6 +243,8 @@ const initialState: DashboardsStore = {
 	createTileFormOpen: false,
 	vizEditorModalOpen: false,
 	allowDrag: false,
+	editTileId: null,
+	tileData: {}
 };
 
 type ReducerOutput = Partial<DashboardsStore>;
@@ -266,9 +272,10 @@ const toggleEditDashboardModal = (_store: DashboardsStore, val: boolean) => {
 	};
 };
 
-const toggleCreateTileModal = (_store: DashboardsStore, val: boolean) => {
+const toggleCreateTileModal = (_store: DashboardsStore, val: boolean, tileId: string | null = null) => {
 	return {
 		createTileFormOpen: val,
+		editTileId: tileId
 	};
 };
 
@@ -306,24 +313,7 @@ const setDashboards = (store: DashboardsStore, dashboards: Dashboard[]) => {
 	})();
 	return {
 		dashboards,
-		activeDashboard: {...activeDashboard, tiles: [{
-			"name": "asas",
-			"tile_id": "juiii",
-			"description": "asasa",
-			"stream": "teststream",
-			"query": "select * from teststream LIMIT 10",
-			"order": null,
-			"visualization": {
-				"visualization_type": "donut-chart",
-				"circular_chart_config": {
-					"name_key": "app_meta",
-					"value_key": "device_id"
-				},
-				"graph_config": null,
-				"size": "sm",
-				"color_config": []
-			}
-		}]},
+		activeDashboard,
 	};
 };
 

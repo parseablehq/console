@@ -7,7 +7,7 @@ import GridLayout from 'react-grid-layout';
 import { DASHBOARDS_SIDEBAR_WIDTH, NAVBAR_WIDTH } from '@/constants/theme';
 import Tile from './Tile';
 // import classes from './styles/tile.module.css';
-import classes from './styles/Dashboard.module.css';
+import classes from './styles/DashboardView.module.css';
 import { useDashboardsStore, dashboardsStoreReducers, genLayout } from './providers/DashboardsProvider';
 import _ from 'lodash';
 import { IconChartBar } from '@tabler/icons-react';

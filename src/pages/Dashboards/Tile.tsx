@@ -11,7 +11,7 @@ import { Tile, TileQueryResponse } from '@/@types/parseable/api/dashboards';
 import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 import Table from './Table';
 import { downloadDataAsCSV, downloadDataAsJson } from '@/utils/exportHelpers';
-import { makeExportData } from '../Stream/providers/LogsProvider';
+import { makeExportData, useLogsStore } from '../Stream/providers/LogsProvider';
 
 const NoDataView = () => {
 	return (
@@ -194,7 +194,8 @@ function TileControls(props: { tile: Tile; data: TileQueryResponse }) {
 
 const Tile = (props: { id: string }) => {
 	const [tileData, setTileData] = useState<TileQueryResponse>();
-	const [showJson, setShowJson] = useState<boolean>(false)
+	const [showJson, setShowJson] = useState<boolean>(false);
+	const [timeRange] = useLogsStore(store => store.timeRange)
 	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
 	const tile = _.chain(activeDashboard)
 		.get('tiles', [])
@@ -208,10 +209,9 @@ const Tile = (props: { id: string }) => {
 	const { fetchTileData, isLoading } = useTileQuery({ onSuccess: onQuerySuccess });
 
 	useEffect(() => {
-		const now = new Date();
-		// debug // should notify
-		const santizedQuery = sanitiseSqlString(tile.query, false, 100);
-		fetchTileData({ query: santizedQuery, startTime: new Date(now.getTime() - 24 * 3 * 60 * 60 * 1000), endTime: now });
+		const shouldNotify = false;
+		const santizedQuery = sanitiseSqlString(tile.query, shouldNotify, 100);
+		fetchTileData({ query: santizedQuery, startTime: timeRange.startTime, endTime: timeRange.endTime });
 	}, []);
 
 	const toggleJsonView = useCallback(() => {
