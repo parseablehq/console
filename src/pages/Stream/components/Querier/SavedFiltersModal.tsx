@@ -170,7 +170,6 @@ const SavedFiltersModal = () => {
 	const onSqlSearchApply = useCallback(
 		(query: string, id: string, time_filter: null | { from: string; to: string }) => {
 			setFilterStore((store) => resetFilters(store));
-
 			setLogsStore((store) => applyCustomQuery(store, query, 'sql', id, time_filter));
 		},
 		[],

@@ -84,11 +84,10 @@ const LogRow: FC<LogRowProps> = (props) => {
 				<tr key={logIndex} className={logIndex % 2 ? trStyle : trEvenStyle} onClick={() => onClick(log)}>
 					{columnsToShow.map((header, logSchemaIndex) => {
 						const parsedData = parseLogData(log[header], header);
-
 						return (
 							<td
 								key={`${header}-${logSchemaIndex}`}
-								style={{ position: 'relative' }}
+								style={{ position: 'relative', whiteSpace: 'pre' }}
 								onMouseEnter={() => handleMouseEnter(logIndex, logSchemaIndex)}
 								onMouseLeave={handleMouseLeave}>
 								<Group wrap="nowrap">

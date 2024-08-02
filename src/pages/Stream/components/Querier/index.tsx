@@ -136,8 +136,8 @@ const Querier = () => {
 	const onFiltersApply = useCallback(
 		(opts?: { isUncontrolled?: boolean }) => {
 			if (!currentStream) return;
-			const { isUncontrolled } = opts || {};
 
+			const { isUncontrolled } = opts || {};
 			const { parsedQuery } = parseQuery(query, currentStream);
 			setFilterStore((store) => storeAppliedQuery(store));
 			triggerRefetch(parsedQuery, 'filters', isUncontrolled && savedFilterId ? savedFilterId : undefined);
@@ -175,13 +175,13 @@ const Querier = () => {
 
 		// trigger query fetch if the rules were updated by the remove btn on pills
 		// -----------------------------------
-		if (!showQueryBuilder && (activeMode !== 'sql' || savedFilterId)) {
+		if ((!showQueryBuilder && activeMode === 'filters') || savedFilterId) {
 			if (!shouldSumbitDisabled) {
 				onFiltersApply({ isUncontrolled: true });
-			}
-
-			if (allValues.length === 0 && activeMode !== 'sql') {
-				onClear();
+			} else {
+				if (activeMode === 'filters') {
+					onClear();
+				}
 			}
 		}
 		// -----------------------------------

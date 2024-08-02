@@ -239,7 +239,6 @@ type LogsStoreReducers = {
 	streamChangeCleanup: (store: LogsStore) => ReducerOutput;
 	toggleQueryBuilder: (store: LogsStore, val?: boolean) => ReducerOutput;
 	resetCustQuerySearchState: (store: LogsStore) => ReducerOutput;
-	setCustQuerySearchState: (store: LogsStore, payload: Partial<CustQuerySearchState>) => ReducerOutput;
 	toggleCustQuerySearchViewMode: (store: LogsStore, targetMode: 'sql' | 'filters') => ReducerOutput;
 	toggleDeleteModal: (store: LogsStore, val?: boolean) => ReducerOutput;
 	toggleAlertsModal: (store: LogsStore, val?: boolean) => ReducerOutput;
@@ -442,13 +441,6 @@ const resetCustQuerySearchState = (store: LogsStore) => {
 	return {
 		custQuerySearchState: { ...defaultCustQuerySearchState, viewMode: custQuerySearchState.viewMode },
 		...getCleanStoreForRefetch(store),
-	};
-};
-
-const setCustQuerySearchState = (store: LogsStore, payload: Partial<CustQuerySearchState>) => {
-	const { custQuerySearchState } = store;
-	return {
-		custQuerySearchState: { ...custQuerySearchState, ...payload, isQuerySearchActive: true, showQueryBuilder: false },
 	};
 };
 
@@ -914,7 +906,6 @@ const logsStoreReducers: LogsStoreReducers = {
 	streamChangeCleanup,
 	toggleQueryBuilder,
 	resetCustQuerySearchState,
-	setCustQuerySearchState,
 	toggleCustQuerySearchViewMode,
 	toggleAlertsModal,
 	toggleRetentionModal,
