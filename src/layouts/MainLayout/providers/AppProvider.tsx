@@ -29,8 +29,9 @@ type AppStore = {
 	streamSpecificUserAccess: string[] | null;
 	instanceConfig: AboutData | null;
 	isStandAloneMode: boolean | null;
-	savedFilters: SavedFilterType[] | null;  // null to verify whether filters have been fetched or not
+	savedFilters: SavedFilterType[] | null; // null to verify whether filters have been fetched or not
 	activeSavedFilters: SavedFilterType[]; // stream specific
+	allowClarityTracking: boolean;
 };
 
 type AppStoreReducers = {
@@ -59,6 +60,7 @@ const initialState: AppStore = {
 	isStandAloneMode: null,
 	savedFilters: null,
 	activeSavedFilters: [],
+	allowClarityTracking: false,
 };
 
 const { Provider: AppProvider, useStore: useAppStore } = initContext(initialState);
@@ -122,8 +124,9 @@ const setStreamSpecificUserAccess = (store: AppStore) => {
 };
 
 const setInstanceConfig = (_store: AppStore, instanceConfig: AboutData | null) => {
-	const { mode } = instanceConfig || {};
-	return { instanceConfig, isStandAloneMode: mode === 'Standalone' };
+	const { mode, sendAnalytics } = instanceConfig || {};
+	const allowClarityTracking = !!(sendAnalytics && localStorage.getItem('allowClarityTracking') === 'true');
+	return { instanceConfig, isStandAloneMode: mode === 'Standalone', allowClarityTracking };
 };
 
 const setSavedFilters = (store: AppStore, savedFiltersResponse: AxiosResponse<SavedFilterType[]>) => {

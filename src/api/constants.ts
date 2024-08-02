@@ -42,3 +42,4 @@ export const CACHING_STATUS_URL = (streamName: string) => `${LOG_STREAM_LIST_URL
 export const CLUSTER_INFO_URL = `${API_V1}/cluster/info`;
 export const CLUSTER_METRICS_URL = `${API_V1}/cluster/metrics`;
 export const INGESTOR_DELETE_URL = (ingestorUrl: string) => `${API_V1}/cluster/${ingestorUrl}`;
+export const CLARITY_TAG = 'ngxysymavo';

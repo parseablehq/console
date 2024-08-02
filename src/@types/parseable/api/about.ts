@@ -14,4 +14,5 @@ export type AboutData = {
 	grpcPort: number;
 	oidcActive: boolean;
 	cache: string;
+	sendAnalytics: boolean;
 };
