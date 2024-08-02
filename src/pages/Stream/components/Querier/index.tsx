@@ -4,7 +4,7 @@ import classes from '../../styles/Querier.module.css';
 import { Text } from '@mantine/core';
 import { FilterQueryBuilder, QueryPills } from './FilterQueryBuilder';
 import { AppliedSQLQuery } from './QueryEditor';
-import QueryCodeEditor from './QueryCodeEditor';
+import QueryCodeEditor, { defaultCustSQLQuery } from './QueryCodeEditor';
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { useCallback, useEffect, useRef } from 'react';
 import { filterStoreReducers, noValueOperators, useFilterStore } from '../../providers/FilterProvider';
@@ -72,11 +72,16 @@ const QuerierModal = (props: {
 	onSqlSearchApply: (query: string) => void;
 	onFiltersApply: () => void;
 }) => {
+	const [currentStream] = useAppStore(store => store.currentStream)
 	const [{ showQueryBuilder, viewMode }, setLogsStore] = useLogsStore((store) => store.custQuerySearchState);
 	const onClose = useCallback(() => {
 		setLogsStore((store) => toggleQueryBuilder(store, false));
 	}, []);
 	const queryCodeEditorRef = useRef<any>(''); // to store input value even after the editor unmounts
+
+	useEffect(() => {
+		queryCodeEditorRef.current = defaultCustSQLQuery(currentStream);
+	}, [currentStream]);
 
 	return (
 		<Modal
@@ -123,7 +128,7 @@ const Querier = () => {
 
 	useEffect(() => {
 		return setFilterStore(resetFilters);
-	}, []);
+	}, [currentStream]);
 
 	const triggerRefetch = useCallback(
 		(query: string, mode: 'filters' | 'sql', id?: string) => {
