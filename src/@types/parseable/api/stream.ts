@@ -44,3 +44,14 @@ export type StreamInfo = {
 }
 
 export type LogStreamRetention = Array<action>;
+
+export type HotTierConfig = {
+	size: string;
+	used_size: string;
+	available_size: string;
+	oldest_date_time_entry: string;
+} | {};
+
+export type UpdateHotTierConfig = {
+	size: string;
+}

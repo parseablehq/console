@@ -1,15 +1,16 @@
-import { Button, Loader, NumberInput, Stack, Switch, TextInput } from '@mantine/core';
+import { Box, Button, Divider, Loader, Modal, NumberInput, Stack, TextInput } from '@mantine/core';
 import classes from '../../styles/Management.module.css';
 import { Text } from '@mantine/core';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useForm } from '@mantine/form';
 import _ from 'lodash';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useStreamStore } from '../../providers/StreamProvider';
+import { IconCheck, IconTrash, IconX } from '@tabler/icons-react';
 
 const Header = () => {
 	return (
-		<Stack className={classes.headerContainer} style={{minHeight: '3rem', maxHeight: '3rem'}}>
+		<Stack className={classes.headerContainer} style={{ minHeight: '3rem', maxHeight: '3rem' }}>
 			<Text className={classes.title}>Settings</Text>
 		</Stack>
 	);
@@ -104,14 +105,194 @@ const RetentionForm = (props: { updateRetentionConfig: ({ config }: { config: an
 	);
 };
 
+function extractNumber(value: string | null) {
+	if (_.isEmpty(value) || value === null) return 0;
+
+	const regex = /^(\d+)/;
+	const match = value.match(regex);
+	return match ? parseFloat(match[0]) : 0;
+}
+
+const DeleteHotTierModal = (props: {
+	deleteHotTierInfo: ({ onSuccess }: { onSuccess: () => void }) => void;
+	isDeleting: boolean;
+	closeModal: () => void;
+	showDeleteModal: boolean;
+}) => {
+	const [currentStream] = useAppStore((store) => store.currentStream);
+
+	const onDelete = useCallback(() => {
+		props.deleteHotTierInfo({ onSuccess: props.closeModal });
+	}, []);
+
+	return (
+		<Modal
+			opened={props.showDeleteModal}
+			onClose={props.closeModal}
+			size="auto"
+			centered
+			styles={{
+				body: { padding: '0 1rem 1rem 1rem', width: 400 },
+				header: { padding: '1rem', paddingBottom: '0.4rem' },
+			}}
+			title={<Text style={{ fontSize: '0.9rem', fontWeight: 600 }}>Delete Hot Tier</Text>}>
+			<Stack>
+				<Stack gap={8}>
+					<Text className={classes.deleteWarningText}>
+						Are you sure want to reset Hot Tier config for {currentStream} ?
+					</Text>
+				</Stack>
+				<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+					<Box>
+						<Button onClick={props.closeModal} variant="outline">
+							Cancel
+						</Button>
+					</Box>
+					<Box>
+						<Button loading={props.isDeleting} onClick={onDelete}>
+							Delete
+						</Button>
+					</Box>
+				</Stack>
+			</Stack>
+		</Modal>
+	);
+};
+
+const HotTierConfig = (props: {
+	updateHotTierInfo: ({ size }: { size: string }) => void;
+	deleteHotTierInfo: ({ onSuccess }: { onSuccess: () => void }) => void;
+	isDeleting: boolean;
+	isUpdating: boolean;
+}) => {
+	const [hotTier] = useStreamStore((store) => store.hotTier);
+	const size = _.get(hotTier, 'size', '');
+	const usedSize = _.get(hotTier, 'used_size', '');
+	const availableSize = _.get(hotTier, 'available_size', '');
+	const oldestEntry = _.get(hotTier, 'oldest_date_time_entry', '');
+	const sanitizedSize = extractNumber(size);
+	const [localSizeValue, setLocalSizeValue] = useState<number>(sanitizedSize);
+	const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+	const [isDirty, setIsDirty] = useState<boolean>(false);
+
+	const onChangeHandler = useCallback((e: string | number) => {
+		setLocalSizeValue(_.toNumber(e));
+	}, []);
+
+	const onCancel = useCallback(() => {
+		setLocalSizeValue(sanitizedSize);
+	}, [sanitizedSize]);
+
+	useEffect(() => {
+		setIsDirty(sanitizedSize !== localSizeValue);
+	}, [localSizeValue]);
+
+	useEffect(() => {
+		setLocalSizeValue(sanitizedSize);
+		setIsDirty(sanitizedSize !== localSizeValue);
+	}, [hotTier]);
+
+	const onUpdate = useCallback(() => {
+		props.updateHotTierInfo({ size: `${localSizeValue}GiB` });
+	}, [localSizeValue]);
+
+	const hotTierNotSet = _.isEmpty(size) || _.isEmpty(hotTier);
+	const closeDeleteModal = useCallback(() => {
+		return setShowDeleteModal(false);
+	}, []);
+	const openDeleteModal = useCallback(() => {
+		return setShowDeleteModal(true);
+	}, []);
+
+	return (
+		<Stack className={classes.fieldsContainer} style={{ border: 'none', gap: 16 }}>
+			<DeleteHotTierModal
+				deleteHotTierInfo={props.deleteHotTierInfo}
+				isDeleting={props.isDeleting}
+				closeModal={closeDeleteModal}
+				showDeleteModal={showDeleteModal}
+			/>
+			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between' }} gap={8}>
+				<Text className={classes.fieldTitle}>Hot Tier Storage Size</Text>
+				{!hotTierNotSet && (
+					<IconTrash onClick={openDeleteModal} stroke={1.2} size="1.2rem" className={classes.deleteIcon} />
+				)}
+			</Stack>
+			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between', height: '3.8rem' }}>
+				<Stack gap={4} style={{ ...(hotTierNotSet ? { display: 'none' } : {}) }}>
+					<Text className={classes.fieldDescription}>Oldest Record:</Text>
+					<Text className={classes.fieldDescription}>
+						{_.isEmpty(oldestEntry) ? 'No Entries Stored' : new Date(oldestEntry + ' UTC').toLocaleString()}
+					</Text>
+				</Stack>
+				<Stack style={{ width: hotTierNotSet ? '100%' : '50%' }} gap={isDirty || hotTierNotSet ? 16 : 4}>
+					<Stack style={{}} gap={12}>
+						<NumberInput
+							classNames={{ label: classes.fieldDescription }}
+							placeholder="Duration in days"
+							key="duration"
+							value={localSizeValue}
+							onChange={onChangeHandler}
+							min={0}
+							suffix=" GiB"
+							style={{ flex: 1 }}
+						/>
+						<Text
+							className={classes.fieldDescription}
+							ta="end"
+							style={{ ...(isDirty || hotTierNotSet ? { display: 'none' } : {}) }}>
+							{usedSize} used | {availableSize} available
+						</Text>
+					</Stack>
+					<Stack
+						style={{
+							flexDirection: 'row',
+							justifyContent: 'flex-end',
+							...(!isDirty || hotTierNotSet ? { display: 'none' } : {}),
+						}}
+						gap={12}>
+						<Stack
+							className={classes.actionIconClose}
+							p="0.1rem"
+							onClick={onCancel}
+							style={{
+								...(props.isUpdating ? { display: 'none' } : {}),
+							}}>
+							<IconX stroke={1.4} size="1rem" />
+						</Stack>
+						<Stack
+							style={{
+								...(props.isUpdating ? { display: 'none' } : {}),
+							}}
+							className={classes.actionIconCheck}
+							p="0.1rem"
+							onClick={onUpdate}>
+							<IconCheck stroke={1.4} size="1.1rem" />
+						</Stack>
+						{props.isUpdating && <Loader size="sm" />}
+					</Stack>
+					<Stack style={{ alignItems: 'flex-end', ...(!hotTierNotSet ? { display: 'none' } : {}) }}>
+						<Box>
+							<Button onClick={onUpdate} disabled={localSizeValue <= 0} loading={props.isUpdating}>
+								Submit
+							</Button>
+						</Box>
+					</Stack>
+				</Stack>
+			</Stack>
+		</Stack>
+	);
+};
+
 const Settings = (props: {
 	isLoading: boolean;
-	getCacheError: boolean;
-	updateCacheStatus: ({ type }: { type: boolean }) => void;
 	updateRetentionConfig: ({ config }: { config: any }) => void;
+	updateHotTierInfo: ({ size }: { size: string }) => void;
+	deleteHotTierInfo: ({ onSuccess }: { onSuccess: () => void }) => void;
+	isDeleting: boolean;
+	isUpdating: boolean;
 }) => {
 	const [isStandAloneMode] = useAppStore((store) => store.isStandAloneMode);
-	const [cacheEnabled] = useStreamStore((store) => store.cacheEnabled);
 	return (
 		<Stack className={classes.sectionContainer} gap={0} w="100%">
 			<Header />
@@ -124,36 +305,15 @@ const Settings = (props: {
 					</Stack>
 				) : (
 					<>
-						<Stack
-							className={classes.fieldsContainer}
-							style={{
-								flexDirection: 'row',
-								alignItems: 'center',
-								justifyContent: 'space-between',
-								borderColor: 'transparent',
-								borderBottomColor: 'transparent',
-								...(isStandAloneMode ? {} : { display: 'none' }),
-								background: '#f3f3f3',
-								marginTop: '1rem',
-								borderRadius: '0.3rem',
-							}}>
-							<Text className={classes.fieldTitle}>Caching</Text>
-							<Stack style={{}}>
-								{props.getCacheError ? (
-									<Text className={classes.fieldDescription}>Global cache not set</Text>
-								) : (
-									_.isBoolean(cacheEnabled) && (
-										<Switch
-											checked={cacheEnabled}
-											labelPosition="left"
-											onChange={(event) => props.updateCacheStatus({ type: event.currentTarget.checked })}
-											label={cacheEnabled ? 'Enabled' : 'Disabled'}
-											classNames={{ label: classes.fieldDescription }}
-										/>
-									)
-								)}
-							</Stack>
-						</Stack>
+						{!isStandAloneMode && (
+							<HotTierConfig
+								updateHotTierInfo={props.updateHotTierInfo}
+								deleteHotTierInfo={props.deleteHotTierInfo}
+								isDeleting={props.isDeleting}
+								isUpdating={props.isUpdating}
+							/>
+						)}
+						<Divider />
 						<Stack className={classes.fieldsContainer} style={{ border: 'none', flex: 1, gap: 4 }}>
 							<Text className={classes.fieldTitle}>Retention</Text>
 							<RetentionForm updateRetentionConfig={props.updateRetentionConfig} />

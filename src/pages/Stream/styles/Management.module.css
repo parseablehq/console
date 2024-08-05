@@ -148,3 +148,23 @@
 	color: var(--mantine-color-brandPrimary-4);
 	cursor: pointer;
 }
+
+.actionIconCheck {
+	border-radius: 0.2rem;
+	color: white;
+	background-color: var(--mantine-color-brandPrimary-4);
+	cursor: pointer;
+}
+
+.actionIconClose {
+	border-radius: 0.2rem;
+	color: var(--mantine-color-brandPrimary-4);
+	border: 1px solid var(--mantine-color-brandPrimary-4);
+	border-color: var(--mantine-color-brandPrimary-4);
+	cursor: pointer;
+}
+
+.deleteIcon {
+	color: var(--mantine-color-gray-6);
+	cursor: pointer;
+}
