@@ -139,7 +139,7 @@ const DeleteHotTierModal = (props: {
 			<Stack>
 				<Stack gap={8}>
 					<Text className={classes.deleteWarningText}>
-						Are you sure want to reset Hot Tier config for {currentStream} ?
+						Are you sure want to reset hot tier config and cached data for {currentStream} ?
 					</Text>
 				</Stack>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
