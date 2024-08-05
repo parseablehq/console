@@ -41,8 +41,8 @@ export const useHotTier = (streamName: string) => {
 		},
 	);
 
-    const { mutate: deleteHotTier, isLoading: isDeleting } = useMutation(
-		(_opts: {  onSuccess?: () => void }) => deleteHotTierInfo(streamName),
+	const { mutate: deleteHotTier, isLoading: isDeleting } = useMutation(
+		(_opts: { onSuccess?: () => void }) => deleteHotTierInfo(streamName),
 		{
 			onSuccess: (_data, variables) => {
 				notifySuccess({ message: `Hot tier config deleted successfully` });
@@ -64,8 +64,8 @@ export const useHotTier = (streamName: string) => {
 		getHotTierInfoError,
 		getHotTierInfoLoading,
 		updateHotTier,
-        deleteHotTier,
+		deleteHotTier,
 		isDeleting,
-		isUpdating
+		isUpdating,
 	};
 };
