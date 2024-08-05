@@ -14,5 +14,7 @@ export type AboutData = {
 	grpcPort: number;
 	oidcActive: boolean;
 	cache: string;
-	sendAnalytics: boolean;
+	analytics: {
+        clarityTag: string;
+    }
 };

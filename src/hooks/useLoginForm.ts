@@ -10,7 +10,6 @@ import { useId } from '@mantine/hooks';
 import { useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { getQueryParam } from '@/utils';
-import _ from 'lodash';
 
 export const useLoginForm = () => {
 	const notificationId = useId();
@@ -36,7 +35,6 @@ export const useLoginForm = () => {
 		initialValues: {
 			username: queryParams.username ?? '',
 			password: queryParams.password ?? '',
-			allowClarityTracking: true,
 		},
 		validate: {
 			username: (value) => (value ? null : ''),
@@ -46,7 +44,6 @@ export const useLoginForm = () => {
 			return {
 				username: values.username.trim(),
 				password: values.password.trim(),
-				allowClarityTracking: values.allowClarityTracking,
 			};
 		},
 	});
@@ -62,11 +59,10 @@ export const useLoginForm = () => {
 
 				switch (res.status) {
 					case StatusCodes.OK: {
-						localStorage.setItem('allowClarityTracking', _.toString(data.allowClarityTracking));
 						const pathname = location.state?.from?.pathname || HOME_ROUTE;
 						nav(
 							{
-								pathname,
+								pathname
 							},
 							{ replace: true },
 						);

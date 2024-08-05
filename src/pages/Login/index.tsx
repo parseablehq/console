@@ -1,22 +1,10 @@
 import logo from '@/assets/images/brand/logo.svg';
 import Loading from '@/components/Loading';
 import { useLoginForm } from '@/hooks/useLoginForm';
-import {
-	Box,
-	Button,
-	Checkbox,
-	Divider,
-	Image,
-	PasswordInput,
-	Stack,
-	Text,
-	TextInput,
-	Transition,
-	rem,
-} from '@mantine/core';
+import { Box, Button, Divider, Image, PasswordInput, Text, TextInput, Transition, rem } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC } from 'react';
-import loginStyles from './styles/Login.module.css';
+import loginStyles from './styles/Login.module.css'
 const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 
 const Login: FC = () => {
@@ -27,7 +15,6 @@ const Login: FC = () => {
 	const classes = loginStyles;
 	const { container, formContainer, titleStyle, formInput, loginBtnStyle, errorStyle, sideContainer } = classes;
 
-	const allowTrackFieldProps = getInputProps('allowClarityTracking');
 	return (
 		<Box
 			style={{
@@ -47,8 +34,7 @@ const Login: FC = () => {
 					}}>
 					<Text size={'xl'}>Unified logs for all applications and infrastructure</Text>
 					<Text color="dimmed" size={'md'}>
-						Access, debug and analyze your log data here. Run sophisticated SQL queries on your log data, or look at
-						tabular view.
+						Access, debug and analyze your log data here. Run sophisticated SQL queries on your log data, or look at tabular view. 
 					</Text>
 				</Box>
 			</Box>
@@ -110,19 +96,6 @@ const Login: FC = () => {
 								})}>
 								Login with OAuth
 							</Button>
-							<Divider labelPosition="center" my="2rem" style={{ width: '100%' }} />
-							<Stack style={{ flex: 1, width: '100%' }} gap={8} mt={rem(4)}>
-								<Checkbox
-									label="Allow Parseable to Track Usage"
-									classNames={{ label: formInput }}
-									{...allowTrackFieldProps}
-									checked={allowTrackFieldProps.value}
-								/>
-								<Text className={loginStyles.consentDescription}>
-									Parseable uses MS Clarity for detailed user interaction analytics in our console, driving targeted
-									enhancements to optimize the user experience.
-								</Text>
-							</Stack>
 						</form>
 					</Box>
 				)}

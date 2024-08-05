@@ -16,7 +16,7 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 	const { opened, close } = props;
 
 	const { getAboutData, getAboutIsError, getAboutIsLoading } = useAbout();
-	const [allowClarityTracking, setAppStore] = useAppStore((store) => store.allowClarityTracking);
+	const [analytics, setAppStore] = useAppStore((store) => store.instanceConfig?.analytics);
 	const llmStatus = useMemo(() => {
 		let status = 'LLM API Key not set';
 		if (getAboutData?.data?.llmActive) {
@@ -132,7 +132,7 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 							</Box>
 							<Box className={aboutTextInnerBox}>
 								<Text className={aboutTextKey}>Usage Analytics</Text>
-								<Text className={aboutTextValue}>{allowClarityTracking ? 'Tracking' : 'Not Tracking'}</Text>
+								<Text className={aboutTextValue}>{analytics?.clarityTag ? 'Tracking (MS Clarity)' : 'Not Tracking'}</Text>
 							</Box>
 						</Box>
 					</>

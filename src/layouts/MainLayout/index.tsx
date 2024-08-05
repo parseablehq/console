@@ -7,13 +7,12 @@ import { Outlet } from 'react-router-dom';
 import { heights } from '@/components/Mantine/sizing';
 import { useAppStore, appStoreReducers } from './providers/AppProvider';
 import _ from 'lodash';
-import { CLARITY_TAG } from '@/api/constants';
 
 const { toggleMaximize } = appStoreReducers;
 
 const MainLayout: FC = () => {
 	const [maximized, setAppStore] = useAppStore((store) => store.maximized);
-	const [allowClarityTracking] = useAppStore((store) => store.allowClarityTracking);
+	const [analytics] = useAppStore((store) => store.instanceConfig?.analytics);
 	const [trackingScriptsAdded, setTrackingScriptsAdded] = useState<boolean>(false);
 	const primaryHeaderHeight = !maximized ? PRIMARY_HEADER_HEIGHT : 0;
 	const navbarWidth = !maximized ? NAVBAR_WIDTH : 0;
@@ -35,17 +34,17 @@ const MainLayout: FC = () => {
 	}, [maximized]);
 
 	useEffect(() => {
-		if (allowClarityTracking && _.isString(CLARITY_TAG) && !_.isEmpty(CLARITY_TAG) && !trackingScriptsAdded) {
+		if (analytics && _.isString(analytics.clarityTag) && !_.isEmpty(analytics.clarityTag) && !trackingScriptsAdded) {
 			const script = document.createElement('script');
 			script.type = 'text/javascript';
-			script.innerHTML = `(function(c,l,a,r,i,t,y){ c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)}; t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i; y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y); })(window, document, "clarity", "script", "${CLARITY_TAG}");`;
+			script.innerHTML = `(function(c,l,a,r,i,t,y){ c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)}; t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i; y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y); })(window, document, "clarity", "script", "${analytics.clarityTag}");`;
 			document.body.appendChild(script);
 			setTrackingScriptsAdded(true);
 			return () => {
 				document.body.removeChild(script);
 			};
 		}
-	}, [allowClarityTracking]);
+	}, [analytics]);
 
 	return (
 		<Box style={{ width: '100vw', minWidth: 1000 }}>
