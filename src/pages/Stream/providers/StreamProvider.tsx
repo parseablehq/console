@@ -1,4 +1,4 @@
-import { LogStreamSchemaData, LogStreamStat, StreamInfo } from '@/@types/parseable/api/stream';
+import { HotTierConfig, LogStreamSchemaData, LogStreamStat, StreamInfo } from '@/@types/parseable/api/stream';
 import initContext from '@/utils/initContext';
 import _ from 'lodash';
 import { AxiosResponse } from 'axios';
@@ -83,6 +83,7 @@ type StreamStore = {
 		description: string;
 	};
 	alertsConfig: TransformedAlerts;
+	hotTier: HotTierConfig;
 	info: StreamInfo | {};
 	sideBarOpen: boolean;
 	cacheEnabled: boolean | null;
@@ -100,6 +101,7 @@ type LogsStoreReducers = {
 	toggleSideBar: (store: StreamStore) => ReducerOutput;
 	setCacheEnabled: (store: StreamStore, enabled: boolean) => ReducerOutput;
 	setStreamInfo: (_store: StreamStore, infoResponse: AxiosResponse<StreamInfo>) => ReducerOutput;
+	setHotTier: (_store: StreamStore, hotTier: HotTierConfig) => ReducerOutput;
 };
 
 const initialState: StreamStore = {
@@ -118,7 +120,8 @@ const initialState: StreamStore = {
 	},
 	info: {},
 	sideBarOpen: false,
-	cacheEnabled: null
+	cacheEnabled: null,
+	hotTier: {}
 };
 
 const { Provider: StreamProvider, useStore: useStreamStore } = initContext(initialState);
@@ -211,6 +214,12 @@ const setRetention = (_store: StreamStore, retention: { duration?: string; descr
 const setStreamInfo = (_store: StreamStore, infoResponse: AxiosResponse<StreamInfo>) => {
 	return {
 		info: infoResponse.data
+	}
+}
+
+const setHotTier = (_store: StreamStore, hotTier: HotTierConfig) => {
+	return {
+		hotTier
 	}
 }
 
@@ -328,7 +337,8 @@ const streamStoreReducers: LogsStoreReducers = {
 	setStats,
 	toggleSideBar,
 	setCacheEnabled,
-	setStreamInfo
+	setStreamInfo,
+	setHotTier
 };
 
 export { StreamProvider, useStreamStore, streamStoreReducers };
