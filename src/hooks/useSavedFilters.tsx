@@ -28,8 +28,7 @@ const useSavedFiltersQuery = () => {
 	);
 
 	const { mutate: updateSavedFilters, isLoading: isUpdating } = useMutation(
-		(data: { filter: SavedFilterType; onSuccess?: () => void }) =>
-			putSavedFilters(data.filter.filter_id, data.filter),
+		(data: { filter: SavedFilterType; onSuccess?: () => void }) => putSavedFilters(data.filter.filter_id, data.filter),
 		{
 			onSuccess: (_data, variables) => {
 				variables.onSuccess && variables.onSuccess();
@@ -48,8 +47,7 @@ const useSavedFiltersQuery = () => {
 	);
 
 	const { mutate: createSavedFilters, isLoading: isCreating } = useMutation(
-		(data: { filter: CreateSavedFilterType; onSuccess?: () => void }) =>
-			postSavedFilters(data.filter),
+		(data: { filter: CreateSavedFilterType; onSuccess?: () => void }) => postSavedFilters(data.filter),
 		{
 			onSuccess: (data, variables) => {
 				variables.onSuccess && variables.onSuccess();
@@ -69,17 +67,15 @@ const useSavedFiltersQuery = () => {
 	);
 
 	const { mutate: deleteSavedFilterMutation, isLoading: isDeleting } = useMutation(
-		(data: { filter_id: string; onSuccess?: () => void; onError?: () => void }) =>
-			deleteSavedFilter(data.filter_id),
+		(data: { filter_id: string; onSuccess?: () => void; onError?: () => void }) => deleteSavedFilter(data.filter_id),
 		{
 			onSuccess: (_data, variables) => {
 				setLogsStore((store) => updateSavedFilterId(store, null));
-				refetch();
-				variables.onSuccess && variables.onSuccess();
+				refetch().then(() => variables.onSuccess && variables.onSuccess());
 				notifySuccess({ message: 'Updated Successfully' });
 			},
 			onError: (data: AxiosError, variables) => {
-				variables.onError && variables.onError()
+				variables.onError && variables.onError();
 				if (isAxiosError(data) && data.response) {
 					const error = data.response?.data as string;
 					typeof error === 'string' && notifyError({ message: error });
@@ -100,7 +96,7 @@ const useSavedFiltersQuery = () => {
 		createSavedFilters,
 		isDeleting,
 		isUpdating,
-		isCreating
+		isCreating,
 	};
 };
 
