@@ -214,6 +214,22 @@ const SavedFiltersModal = () => {
 		closeModal();
 	}, []);
 
+	const activeSavedFilterList= _.map(activeSavedFilters, (filterItem) => {
+		return (
+			<SavedFilterItem
+				item={filterItem}
+				key={filterItem.filter_id}
+				onSqlSearchApply={onSqlSearchApply}
+				onFilterBuilderQueryApply={onFilterBuilderQueryApply}
+				currentStream={currentStream || ''}
+				savedFilterId={savedFilterId}
+				isStoredAndCurrentTimeRangeAreSame={isStoredAndCurrentTimeRangeAreSame}
+				hardRefresh={hardRefresh}
+				changeTimerange={changeTimerange}
+			/>
+		);
+	})
+
 	return (
 		<Modal
 			opened={isSavedFiltersModalOpen}
@@ -238,21 +254,7 @@ const SavedFiltersModal = () => {
 					</Stack>
 				) : (
 					<>
-						{_.map(activeSavedFilters, (filterItem) => {
-							return (
-								<SavedFilterItem
-									item={filterItem}
-									key={filterItem.filter_id}
-									onSqlSearchApply={onSqlSearchApply}
-									onFilterBuilderQueryApply={onFilterBuilderQueryApply}
-									currentStream={currentStream || ''}
-									savedFilterId={savedFilterId}
-									isStoredAndCurrentTimeRangeAreSame={isStoredAndCurrentTimeRangeAreSame}
-									hardRefresh={hardRefresh}
-									changeTimerange={changeTimerange}
-								/>
-							);
-						})}
+						{activeSavedFilterList}
 					</>
 				)}
 			</Stack>
