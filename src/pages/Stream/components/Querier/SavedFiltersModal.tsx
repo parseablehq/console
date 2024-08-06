@@ -54,8 +54,9 @@ const SavedFilterItem = (props: {
 	} = props;
 	const [showQuery, setShowQuery] = useState<boolean>(false);
 	const [showDeletePropmt, setShowDeletePrompt] = useState<boolean>(false);
-	const { deleteSavedFilterMutation, isDeleting } = useSavedFiltersQuery();
-	const [isRefetching, setIsRefetching] = useState<boolean>(isDeleting);
+	const { deleteSavedFilterMutation} = useSavedFiltersQuery();
+	const [isRefetching, setIsRefetching] = useState<boolean>(false);
+
 
 	const toggleShowQuery = useCallback(() => {
 		return setShowQuery((prev) => !prev);
@@ -65,6 +66,7 @@ const SavedFilterItem = (props: {
 		if (!showDeletePropmt) {
 			return setShowDeletePrompt(true);
 		}
+		setIsRefetching(true)
 		await deleteSavedFilterMutation({ filter_id });
 		setIsRefetching(false);
 	}, [showDeletePropmt,setIsRefetching]);
