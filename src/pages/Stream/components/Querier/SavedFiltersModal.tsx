@@ -44,6 +44,7 @@ const SavedFilterItem = (props: {
 	isStoredAndCurrentTimeRangeAreSame: (from: string, to: string) => boolean;
 	hardRefresh: () => void;
 	changeTimerange: (from: string, end: string) => void;
+	isRefetching: boolean
 }) => {
 	const {
 		item: { filter_name, time_filter, query, filter_id, stream_name },
@@ -102,7 +103,7 @@ const SavedFilterItem = (props: {
 				</Stack>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center', width: '40%', justifyContent: 'flex-end' }}>
 					{showDeletePropmt ? (
-						isDeleting ? (
+						isDeleting || props.isRefetching ? (
 							<Stack style={{ flex: 1, alignItems: 'center' }}>
 								<Loader size="md" />
 							</Stack>
@@ -226,6 +227,7 @@ const SavedFiltersModal = () => {
 				isStoredAndCurrentTimeRangeAreSame={isStoredAndCurrentTimeRangeAreSame}
 				hardRefresh={hardRefresh}
 				changeTimerange={changeTimerange}
+				isRefetching={isLoading}
 			/>
 		);
 	})
