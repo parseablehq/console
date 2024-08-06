@@ -44,7 +44,6 @@ const SavedFilterItem = (props: {
 	isStoredAndCurrentTimeRangeAreSame: (from: string, to: string) => boolean;
 	hardRefresh: () => void;
 	changeTimerange: (from: string, end: string) => void;
-	isRefetching: boolean
 }) => {
 	const {
 		item: { filter_name, time_filter, query, filter_id, stream_name },
@@ -56,6 +55,7 @@ const SavedFilterItem = (props: {
 	const [showQuery, setShowQuery] = useState<boolean>(false);
 	const [showDeletePropmt, setShowDeletePrompt] = useState<boolean>(false);
 	const { deleteSavedFilterMutation, isDeleting } = useSavedFiltersQuery();
+	const [isRefetching,setIsRefetching] =useState<boolean>(isDeleting)
 
 	const toggleShowQuery = useCallback(() => {
 		return setShowQuery((prev) => !prev);
@@ -65,7 +65,7 @@ const SavedFilterItem = (props: {
 		if (!showDeletePropmt) {
 			return setShowDeletePrompt(true);
 		}
-		deleteSavedFilterMutation({ filter_id, onSuccess: ()=> setShowDeletePrompt(false) });
+		deleteSavedFilterMutation({ filter_id, onSuccess: () => setIsRefetching(false), onError:()=> setIsRefetching(false) });
 	}, [showDeletePropmt]);
 
 	const onApplyFilters = useCallback(() => {
@@ -103,7 +103,7 @@ const SavedFilterItem = (props: {
 				</Stack>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center', width: '40%', justifyContent: 'flex-end' }}>
 					{showDeletePropmt ? (
-						isDeleting || props.isRefetching ? (
+						isRefetching ? (
 							<Stack style={{ flex: 1, alignItems: 'center' }}>
 								<Loader size="md" />
 							</Stack>
@@ -215,23 +215,6 @@ const SavedFiltersModal = () => {
 		closeModal();
 	}, []);
 
-	const activeSavedFilterList= _.map(activeSavedFilters, (filterItem) => {
-		return (
-			<SavedFilterItem
-				item={filterItem}
-				key={filterItem.filter_id}
-				onSqlSearchApply={onSqlSearchApply}
-				onFilterBuilderQueryApply={onFilterBuilderQueryApply}
-				currentStream={currentStream || ''}
-				savedFilterId={savedFilterId}
-				isStoredAndCurrentTimeRangeAreSame={isStoredAndCurrentTimeRangeAreSame}
-				hardRefresh={hardRefresh}
-				changeTimerange={changeTimerange}
-				isRefetching={isLoading}
-			/>
-		);
-	})
-
 	return (
 		<Modal
 			opened={isSavedFiltersModalOpen}
@@ -256,7 +239,21 @@ const SavedFiltersModal = () => {
 					</Stack>
 				) : (
 					<>
-						{activeSavedFilterList}
+						{_.map(activeSavedFilters, (filterItem) => {
+							return (
+								<SavedFilterItem
+									item={filterItem}
+									key={filterItem.filter_id}
+									onSqlSearchApply={onSqlSearchApply}
+									onFilterBuilderQueryApply={onFilterBuilderQueryApply}
+									currentStream={currentStream || ''}
+									savedFilterId={savedFilterId}
+									isStoredAndCurrentTimeRangeAreSame={isStoredAndCurrentTimeRangeAreSame}
+									hardRefresh={hardRefresh}
+									changeTimerange={changeTimerange}
+								/>
+							);
+						})}
 					</>
 				)}
 			</Stack>

@@ -69,16 +69,17 @@ const useSavedFiltersQuery = () => {
 	);
 
 	const { mutate: deleteSavedFilterMutation, isLoading: isDeleting } = useMutation(
-		(data: { filter_id: string; onSuccess?: () => void }) =>
+		(data: { filter_id: string; onSuccess?: () => void; onError?: () => void }) =>
 			deleteSavedFilter(data.filter_id),
 		{
 			onSuccess: (_data, variables) => {
-				variables.onSuccess && variables.onSuccess();
 				setLogsStore((store) => updateSavedFilterId(store, null));
 				refetch();
+				variables.onSuccess && variables.onSuccess();
 				notifySuccess({ message: 'Updated Successfully' });
 			},
-			onError: (data: AxiosError) => {
+			onError: (data: AxiosError, variables) => {
+				variables.onError && variables.onError()
 				if (isAxiosError(data) && data.response) {
 					const error = data.response?.data as string;
 					typeof error === 'string' && notifyError({ message: error });
