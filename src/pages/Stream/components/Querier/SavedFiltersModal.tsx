@@ -64,7 +64,7 @@ const SavedFilterItem = (props: {
 		if (!showDeletePropmt) {
 			return setShowDeletePrompt(true);
 		}
-		deleteSavedFilterMutation({ filter_id });
+		deleteSavedFilterMutation({ filter_id, onSuccess: () => setShowDeletePrompt(false) });
 	}, [showDeletePropmt]);
 
 	const onApplyFilters = useCallback(() => {
