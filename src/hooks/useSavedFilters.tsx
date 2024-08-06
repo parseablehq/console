@@ -14,7 +14,7 @@ const useSavedFiltersQuery = () => {
 	const [, setAppStore] = useAppStore((_store) => null);
 	const [, setLogsStore] = useLogsStore((_store) => null);
 	const username = Cookies.get('username');
-	const { isError, isSuccess, isLoading, refetch } = useQuery(
+	const { isError, isSuccess, isLoading, refetch, isRefetching } = useQuery(
 		['saved-filters'],
 		() => getSavedFilters(username || ''),
 		{
@@ -90,6 +90,7 @@ const useSavedFiltersQuery = () => {
 		isError,
 		isSuccess,
 		isLoading,
+		isRefetching,
 		refetch,
 		updateSavedFilters,
 		deleteSavedFilterMutation,

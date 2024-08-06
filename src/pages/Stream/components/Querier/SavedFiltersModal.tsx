@@ -54,22 +54,19 @@ const SavedFilterItem = (props: {
 	} = props;
 	const [showQuery, setShowQuery] = useState<boolean>(false);
 	const [showDeletePropmt, setShowDeletePrompt] = useState<boolean>(false);
-	const { deleteSavedFilterMutation} = useSavedFiltersQuery();
-	const [isRefetching, setIsRefetching] = useState<boolean>(false);
-
+	const { deleteSavedFilterMutation, isDeleting, isRefetching } = useSavedFiltersQuery();
 
 	const toggleShowQuery = useCallback(() => {
 		return setShowQuery((prev) => !prev);
 	}, []);
 
-	const handleDelete = useCallback(async () => {
+	const handleDelete = useCallback(() => {
 		if (!showDeletePropmt) {
 			return setShowDeletePrompt(true);
 		}
-		setIsRefetching(true)
-		await deleteSavedFilterMutation({ filter_id });
-		setIsRefetching(false);
-	}, [showDeletePropmt,setIsRefetching]);
+		deleteSavedFilterMutation({ filter_id });
+	}, [showDeletePropmt]);
+
 
 	const onApplyFilters = useCallback(() => {
 		if (_.isString(query.filter_query)) {
@@ -106,7 +103,7 @@ const SavedFilterItem = (props: {
 				</Stack>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center', width: '40%', justifyContent: 'flex-end' }}>
 					{showDeletePropmt ? (
-						isRefetching ? (
+						isDeleting|| isRefetching ? (
 							<Stack style={{ flex: 1, alignItems: 'center' }}>
 								<Loader size="md" />
 							</Stack>
