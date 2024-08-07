@@ -24,7 +24,7 @@ const TotalCount = (props: { totalCount: number }) => {
 
 const renderExportIcon = () => <IconDownload size={px('0.8rem')} stroke={1.8} />;
 
-const TotalLogsCount = (props: { hasTableLoaded: boolean; isFetchingCount: boolean; isTableEmpty: boolean }) => {
+const TotalLogsCount = (props: { hasTableLoaded: boolean; isFetchingCount: number; isTableEmpty: boolean }) => {
 	const [{ totalCount, perPage, pageData }] = useLogsStore((store) => store.tableOpts);
 	const displayedCount = _.size(pageData);
 	const showingCount = displayedCount < perPage ? displayedCount : perPage;
@@ -32,7 +32,7 @@ const TotalLogsCount = (props: { hasTableLoaded: boolean; isFetchingCount: boole
 	return (
 		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }} gap={6}>
 			{props.hasTableLoaded ? (
-				props.isFetchingCount ? (
+				props.isFetchingCount !==0 ? (
 					<Loader type="dots" />
 				) : (
 					<>
@@ -93,7 +93,7 @@ const LimitControl: FC = () => {
 	);
 };
 
-const Footer = (props: { loaded: boolean; isLoading: boolean; hasNoData: boolean }) => {
+const Footer = (props: { loaded: boolean; isLoading: number; hasNoData: boolean }) => {
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const [filteredData] = useLogsStore((store) => store.data.filteredData);
 	const { totalPages, currentOffset, currentPage, perPage, headers, totalCount } = tableOpts;

@@ -138,7 +138,7 @@ interface SectionRefs {
 }
 
 const LogTable = (props: {
-	isFetchingCount: boolean;
+	isFetchingCount: number;
 	errorMessage: string | null;
 	hasNoData: boolean;
 	showTable: boolean;

@@ -175,7 +175,7 @@ const TableContainer = (props: { children: ReactNode }) => {
 };
 
 const JsonView = (props: {
-	isFetchingCount: boolean;
+	isFetchingCount: number;
 	errorMessage: string | null;
 	hasNoData: boolean;
 	showTable: boolean;
