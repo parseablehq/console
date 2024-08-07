@@ -24,7 +24,7 @@ const useLogsFetcher = (props: {schemaLoading: boolean}) => {
 			getQueryData();
 			fetchCount();
 		}
-	}, [currentPage]);
+	}, [currentPage, currentStream]);
 
 	useEffect(() => {
 		if (currentOffset !== 0 && currentPage !== 0) {
