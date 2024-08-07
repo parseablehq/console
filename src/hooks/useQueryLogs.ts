@@ -117,7 +117,7 @@ export const useQueryLogs = () => {
 		if (response) {
 			setLogsStore((store) => setTotalCount(store, response?.count));
 		}
-	}, [fetchQueryMutation.data, timeRange]);
+	}, [fetchQueryMutation.data]);
 
 	const fetchCount = () => {
 		try {

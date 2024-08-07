@@ -5,10 +5,10 @@ import { useQueryLogs } from '@/hooks/useQueryLogs';
 
 const { setCleanStoreForStreamChange } = logsStoreReducers;
 
-const useLogsFetcher = (props: {schemaLoading: boolean}) => {
-	const {schemaLoading} = props;
+const useLogsFetcher = (props: { schemaLoading: boolean }) => {
+	const { schemaLoading } = props;
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
+	const [{ tableOpts, timeRange }, setLogsStore] = useLogsStore((store) => store);
 	const { currentOffset, currentPage, pageData } = tableOpts;
 	const { getQueryData, loading: logsLoading, error: errorMessage, fetchCount, isFetchingCount } = useQueryLogs();
 	const hasContentLoaded = schemaLoading === false && logsLoading === false;
@@ -24,7 +24,7 @@ const useLogsFetcher = (props: {schemaLoading: boolean}) => {
 			getQueryData();
 			fetchCount();
 		}
-	}, [currentPage, currentStream]);
+	}, [currentPage, currentStream, timeRange]);
 
 	useEffect(() => {
 		if (currentOffset !== 0 && currentPage !== 0) {
