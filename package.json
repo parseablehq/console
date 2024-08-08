@@ -5,8 +5,8 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite --host --port 3001",
-		"build": "tsc && vite build",
-		"build:test": "tsc && vite build --mode test",
+		"build": "vite build",
+		"build:test": "vite build --mode test",
 		"lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
 		"start": "vite preview --host --port 3002",
 		"tsCheck": "tsc --noEmit",
