@@ -4,11 +4,11 @@ import { AxiosError, isAxiosError } from 'axios';
 import Cookies from 'js-cookie';
 import _, { isError } from 'lodash';
 import { useDashboardsStore, dashboardsStoreReducers } from '@/pages/Dashboards/providers/DashboardsProvider';
-import { getDashboards, getQueryData, postDashboard, putDashboard } from '@/api/dashboard';
+import { getDashboards, getQueryData, postDashboard, putDashboard, removeDashboard } from '@/api/dashboard';
 import { useCallback, useState } from 'react';
 import { CreateDashboardType, TileQuery, TileQueryResponse, UpdateDashboardType } from '@/@types/parseable/api/dashboards';
 
-const { setDashboards } = dashboardsStoreReducers;
+const { setDashboards, setTileData } = dashboardsStoreReducers;
 
 export const useDashboardsQuery = () => {
 	const [, setDashbaordsStore] = useDashboardsStore((_store) => null);
@@ -56,9 +56,28 @@ export const useDashboardsQuery = () => {
 			putDashboard(data.dashboard.dashboard_id, data.dashboard),
 		{
 			onSuccess: (_data, variables) => {
-				variables.onSuccess && variables.onSuccess();
 				fetchDashboards();
+				variables.onSuccess && variables.onSuccess();
 				notifySuccess({ message: 'Updated Successfully' });
+			},
+			onError: (data: AxiosError) => {
+				if (isAxiosError(data) && data.response) {
+					const error = data.response?.data as string;
+					typeof error === 'string' && notifyError({ message: error });
+				} else if (data.message && typeof data.message === 'string') {
+					notifyError({ message: data.message });
+				}
+			},
+		},
+	);
+
+	const { mutate: deleteDashboard, isLoading: isDeleting } = useMutation(
+		(data: { dashboardId: string; onSuccess?: () => void }) => removeDashboard(data.dashboardId),
+		{
+			onSuccess: (_data, variables) => {
+				fetchDashboards();
+				variables.onSuccess && variables.onSuccess();
+				notifySuccess({ message: 'Deleted Successfully' });
 			},
 			onError: (data: AxiosError) => {
 				if (isAxiosError(data) && data.response) {
@@ -81,11 +100,15 @@ export const useDashboardsQuery = () => {
 		isCreatingDashboard,
 		updateDashboard,
 		isUpdatingDashboard,
+
+		deleteDashboard,
+		isDeleting
 	};
 };
 
-export const useTileQuery = (opts: { onSuccess: (data: TileQueryResponse) => void }) => {
-	const { onSuccess } = opts;
+export const useTileQuery = (opts?: { tileId?: string, onSuccess?: (data: TileQueryResponse) => void }) => {
+	const [, setDashbaordsStore] = useDashboardsStore((_store) => null);
+	const { onSuccess } = opts || {};
 	const [fetchState, setFetchState] = useState<{
 		isLoading: boolean;
 		isError: null | boolean;
@@ -97,9 +120,9 @@ export const useTileQuery = (opts: { onSuccess: (data: TileQueryResponse) => voi
 			try {
 				setFetchState({ isLoading: true, isError: null, isSuccess: null });
 				const res = await getQueryData(queryOpts);
-				// debug
-				// if no result, fill {records: [], fields: []}
-				onSuccess(res.data);
+				const tileData = _.isEmpty(res) ? { records: [], fields: [] } : res.data;
+				opts?.tileId && setDashbaordsStore((store) => setTileData(store, opts.tileId || '', tileData));
+				opts?.onSuccess && opts.onSuccess(tileData);
 				setFetchState({ isLoading: false, isError: false, isSuccess: true });
 			} catch (e) {
 				setFetchState({ isLoading: false, isError: true, isSuccess: false });

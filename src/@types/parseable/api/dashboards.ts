@@ -56,7 +56,7 @@ export type TileQueryResponse = {
     records: TileData
 }
 
-export interface FormOpts extends Omit<Tile, 'tile_id' | 'visualization' | 'order'> {
+export interface FormOpts extends Omit<Tile, 'tile_id' | 'visualization'> {
 	isQueryValidated: boolean;
 	data: TileQueryResponse;
 	visualization: Visualization;
@@ -69,7 +69,6 @@ export type TileFormType = UseFormReturnType<FormOpts, (values: FormOpts) => For
 export type Tile = {
 	name: string;
 	description: string;
-	stream: string;
 	visualization: Visualization;
 	query: string;
 	tile_id: string;

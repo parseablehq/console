@@ -9,6 +9,7 @@ export const LIST_SAVED_FILTERS_URL = (userId: string) => `${API_V1}/filters/${u
 export const LIST_DASHBOARDS = (userId: string) => `${API_V1}/dashboards/${userId}`;
 export const UPDATE_SAVED_FILTERS_URL = (filterId: string) => `${API_V1}/filters/filter/${filterId}`;
 export const UPDATE_DASHBOARDS_URL = (dashboardId: string) => `${API_V1}/dashboards/dashboard/${dashboardId}`;
+export const DELETE_DASHBOARDS_URL = (dashboardId: string) => `${API_V1}/dashboards/dashboard/${dashboardId}`;
 export const CREATE_SAVED_FILTERS_URL = `${API_V1}/filters`;
 export const CREATE_DASHBOARDS_URL = `${API_V1}/dashboards`;
 export const DELETE_SAVED_FILTERS_URL = (filterId: string) => `${API_V1}/filters/filter/${filterId}`;

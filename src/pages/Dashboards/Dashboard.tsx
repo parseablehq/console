@@ -1,33 +1,31 @@
-import { Box, Button, Stack, Text, ThemeIcon } from '@mantine/core';
+import { Box, Button, Modal, Stack, Text, ThemeIcon } from '@mantine/core';
 import Toolbar from './Toolbar';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import './styles/ReactGridLayout.css';
 import GridLayout from 'react-grid-layout';
 import { DASHBOARDS_SIDEBAR_WIDTH, NAVBAR_WIDTH } from '@/constants/theme';
-import Tile from './Tile';
 // import classes from './styles/tile.module.css';
 import classes from './styles/DashboardView.module.css';
-import { useDashboardsStore, dashboardsStoreReducers, genLayout } from './providers/DashboardsProvider';
+import { useDashboardsStore, dashboardsStoreReducers, genLayout, assignOrderToTiles } from './providers/DashboardsProvider';
 import _ from 'lodash';
 import { IconChartBar } from '@tabler/icons-react';
 import { useCallback } from 'react';
 import { makeExportClassName } from '@/utils/exportImage';
+import { useDashboardsQuery } from '@/hooks/useDashboards';
+import Tile from './Tile';
+import { Dashboard as DashboardType } from '@/@types/parseable/api/dashboards';
 
-const { toggleCreateDashboardModal, toggleCreateTileModal } = dashboardsStoreReducers;
+const { toggleCreateDashboardModal, toggleCreateTileModal, toggleDeleteTileModal } = dashboardsStoreReducers;
 
 const TilesView = () => {
 	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
 	const [allowDrag] = useDashboardsStore(store => store.allowDrag)
+	const [layout] = useDashboardsStore(store => store.layout)
 	const hasNoTiles = _.size(activeDashboard?.tiles) < 1;
 
 	if (hasNoTiles || !activeDashboard) return <NoTilesView />;
 
-	const { tiles } = activeDashboard;
-
-	// debug - memo
-	const layout = genLayout(tiles);
-	console.log(layout, "given layout")
 	return (
 		<Stack className={classes.tilesViewConatiner}>
 			<GridLayout
@@ -65,6 +63,57 @@ const TilesView = () => {
 				</div> */}
 			</GridLayout>
 		</Stack>
+	);
+};
+
+const DeleteTileModal = () => {
+	const [activeDashboard, setDashboardsStore] = useDashboardsStore((store) => store.activeDashboard as DashboardType);
+	const [deleteTileModalOpen] = useDashboardsStore((store) => store.deleteTileModalOpen);
+	const [deleteTileId] = useDashboardsStore((store) => store.deleteTileId);
+	const selectedTile = _.find(activeDashboard?.tiles, (tile) => tile.tile_id === deleteTileId);
+
+	const { updateDashboard, isUpdatingDashboard } = useDashboardsQuery();
+
+	const onClose = useCallback(() => {
+		setDashboardsStore((store) => toggleDeleteTileModal(store, false, null));
+	}, []);
+
+	const onConfirm = useCallback(() => {
+		const allTiles = activeDashboard.tiles.filter(tile => tile.tile_id !== selectedTile?.tile_id);
+		const tilesWithUpdatedOrder = assignOrderToTiles(allTiles);
+
+		updateDashboard({ dashboard: { ...activeDashboard, tiles: tilesWithUpdatedOrder }, onSuccess: onClose });
+	}, [selectedTile?.tile_id, activeDashboard.tiles]);
+
+	if (!activeDashboard?.dashboard_id || !deleteTileId || !selectedTile) return null;
+
+	return (
+		<Modal
+			opened={deleteTileModalOpen}
+			onClose={onClose}
+			size="auto"
+			centered
+			styles={{
+				body: { padding: '0 1rem 1rem 1rem', width: 400 },
+				header: { padding: '1rem', paddingBottom: '0.4rem' },
+			}}
+			title={<Text style={{ fontSize: '0.9rem', fontWeight: 600 }}>Delete Tile</Text>}>
+			<Stack>
+				<Stack gap={12}>
+					<Text className={classes.deleteWarningText}>
+						Are you sure want to delete this tile ?
+					</Text>
+				</Stack>
+				<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+					<Box>
+						<Button variant="outline">Cancel</Button>
+					</Box>
+					<Box>
+						<Button loading={isUpdatingDashboard} onClick={onConfirm}>Delete</Button>
+					</Box>
+				</Stack>
+			</Stack>
+		</Modal>
 	);
 };
 
@@ -120,10 +169,15 @@ const NoTilesView = () => {
 
 const Dashboard = () => {
 	const [dashboards] = useDashboardsStore((store) => store.dashboards);
+	const [deleteTileModalOpen] = useDashboardsStore((store) => store.deleteTileModalOpen);
+	const [deleteTileId] = useDashboardsStore((store) => store.deleteTileId);
+
+	console.log({deleteTileId, deleteTileModalOpen})
 	if (_.isEmpty(dashboards)) return <NoDashboardsView />;
 
 	return (
 		<Stack style={{ flex: 1 }} gap={0}>
+			<DeleteTileModal />
 			<Toolbar />
 			<TilesView />
 		</Stack>

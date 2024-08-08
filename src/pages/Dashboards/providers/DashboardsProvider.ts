@@ -3,7 +3,13 @@ import initContext from '@/utils/initContext';
 import _ from 'lodash';
 import { Layout } from 'react-grid-layout';
 
-export const genLayout = (tiles: Tile[]): Layout => {
+export const assignOrderToTiles = (tiles: Tile[]) => {
+	return _.map(tiles, (tile, index) => {
+		return { ...tile, order: index + 1 };
+	});
+}
+
+export const genLayout = (tiles: Tile[]): Layout[] => {
 	return _.reduce(
 		tiles,
 		(acc, tile) => {
@@ -61,9 +67,12 @@ type DashboardsStore = {
 	vizEditorModalOpen: boolean;
 	allowDrag: boolean;
 	editTileId: string | null;
-	tileData: {
+	tilesData: {
 		[key: string]: TileQueryResponse;
-	}
+	},
+	layout: Layout[],
+	deleteTileModalOpen: boolean;
+	deleteTileId: string | null;
 };
 
 const mockDashboards = [
@@ -244,7 +253,10 @@ const initialState: DashboardsStore = {
 	vizEditorModalOpen: false,
 	allowDrag: false,
 	editTileId: null,
-	tileData: {}
+	tilesData: {}, 
+	layout: [],
+	deleteTileModalOpen: false,
+	deleteTileId: null
 };
 
 type ReducerOutput = Partial<DashboardsStore>;
@@ -254,10 +266,12 @@ type DashboardsStoreReducers = {
 	toggleCreateDashboardModal: (store: DashboardsStore, val: boolean) => ReducerOutput;
 	toggleEditDashboardModal: (store: DashboardsStore, val: boolean) => ReducerOutput;
 	selectDashboard: (store: DashboardsStore, dashboardId: string) => ReducerOutput;
-	toggleCreateTileModal: (store: DashboardsStore, val: boolean) => ReducerOutput;
+	toggleCreateTileModal: (store: DashboardsStore, val: boolean, tileId?: string | null) => ReducerOutput;
 	toggleVizEditorModal: (store: DashboardsStore, val: boolean) => ReducerOutput;
 	toggleAllowDrag: (store: DashboardsStore) => ReducerOutput;
 	toggleDeleteDashboardModal: (store: DashboardsStore, val: boolean) => ReducerOutput;
+	setTileData: (store: DashboardsStore, tileId: string, data: TileQueryResponse) => ReducerOutput;
+	toggleDeleteTileModal: (store: DashboardsStore, val: boolean, tileId: string | null) => ReducerOutput;
 };
 
 const toggleCreateDashboardModal = (_store: DashboardsStore, val: boolean) => {
@@ -292,7 +306,6 @@ const toggleDeleteDashboardModal = (_store: DashboardsStore, val: boolean) => {
 	};
 };
 
-
 const toggleAllowDrag = (store: DashboardsStore) => {
 	return {
 		allowDrag: !store.allowDrag
@@ -314,6 +327,7 @@ const setDashboards = (store: DashboardsStore, dashboards: Dashboard[]) => {
 	return {
 		dashboards,
 		activeDashboard,
+		layout: activeDashboard ? genLayout(activeDashboard.tiles) : []
 	};
 };
 
@@ -323,8 +337,25 @@ const selectDashboard = (store: DashboardsStore, dashboardId: string) => {
 		...initialState,
 		dashboards: store.dashboards,
 		activeDashboard: activeDashboard || null,
+		layout: activeDashboard ? genLayout(activeDashboard.tiles) : []
 	};
 };
+
+const setTileData = (store: DashboardsStore, tileId: string, data: TileQueryResponse) => {
+	return {
+		tilesData: {
+			...store.tilesData,
+			[tileId]: data
+		}
+	}
+}
+
+const toggleDeleteTileModal = (_store: DashboardsStore, val: boolean, tileId: string | null) => {
+	return {
+		deleteTileModalOpen: val,
+		deleteTileId: tileId
+	}
+}
 
 const { Provider: DashbaordsProvider, useStore: useDashboardsStore } = initContext(initialState);
 
@@ -336,7 +367,9 @@ const dashboardsStoreReducers: DashboardsStoreReducers = {
 	toggleVizEditorModal,
 	toggleEditDashboardModal,
 	toggleAllowDrag,
-	toggleDeleteDashboardModal
+	toggleDeleteDashboardModal,
+	setTileData,
+	toggleDeleteTileModal
 };
 
 export { DashbaordsProvider, useDashboardsStore, dashboardsStoreReducers };

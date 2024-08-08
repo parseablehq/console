@@ -1,9 +1,8 @@
-import { Dashboard } from "@/pages/Dashboards/providers/DashboardsProvider";
 import { Axios } from "./axios";
-import { CREATE_DASHBOARDS_URL, LIST_DASHBOARDS, LOG_QUERY_URL, UPDATE_DASHBOARDS_URL } from "./constants";
+import { CREATE_DASHBOARDS_URL, DELETE_DASHBOARDS_URL, LIST_DASHBOARDS, LOG_QUERY_URL, UPDATE_DASHBOARDS_URL } from "./constants";
 import timeRangeUtils from "@/utils/timeRangeUtils";
 import _ from "lodash";
-import { CreateDashboardType, TileQuery, TileQueryResponse } from "@/@types/parseable/api/dashboards";
+import { CreateDashboardType, Dashboard, TileQuery, TileQueryResponse } from "@/@types/parseable/api/dashboards";
 
 const {optimizeEndTime} = timeRangeUtils;
 
@@ -19,9 +18,9 @@ export const postDashboard = (dashboard: CreateDashboardType, userId: string) =>
 	return Axios().post(CREATE_DASHBOARDS_URL, {...dashboard, user_id: userId});
 };
 
-// export const deleteDashboard = (filterId: string) => {
-// 	return Axios().delete(DELETE_SAVED_FILTERS_URL(filterId));
-// };
+export const removeDashboard = (dashboardId: string) => {
+	return Axios().delete(DELETE_DASHBOARDS_URL(dashboardId));
+};
 
 // using just for the dashboard tile now
 // refactor once the fields are included in the /query in the response

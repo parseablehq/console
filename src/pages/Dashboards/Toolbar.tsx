@@ -5,6 +5,7 @@ import classes from './styles/toolbar.module.css';
 import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
 import { useCallback, useState } from 'react';
 import IconButton from '@/components/Button/IconButton';
+import { useDashboardsQuery } from '@/hooks/useDashboards';
 
 const { toggleEditDashboardModal, toggleAllowDrag, toggleCreateTileModal, toggleDeleteDashboardModal } = dashboardsStoreReducers;
 
@@ -52,7 +53,7 @@ const DeleteDashboardModal = () => {
 	const [activeDashboard, setDashbaordsStore] = useDashboardsStore((store) => store.activeDashboard);
 	const [deleteDashboardModalOpen] = useDashboardsStore((store) => store.deleteDashboardModalOpen);
 	const [confirmText, setConfirmText] = useState<string>('');
-
+	const {isDeleting, deleteDashboard} = useDashboardsQuery()
 	const closeModal = useCallback(() => {
 		setDashbaordsStore((store) => toggleDeleteDashboardModal(store, false));
 	}, []);
@@ -61,7 +62,11 @@ const DeleteDashboardModal = () => {
 		setConfirmText(e.target.value);
 	}, []);
 
-	const onDelete = useCallback(() => {}, [activeDashboard?.dashboard_id]);
+	const onDelete = useCallback(() => {
+		if (activeDashboard?.dashboard_id) {
+			deleteDashboard({ dashboardId: activeDashboard?.dashboard_id });
+		}
+	}, [activeDashboard?.dashboard_id]);
 
 	if (!activeDashboard?.dashboard_id) return null;
 
@@ -92,7 +97,12 @@ const DeleteDashboardModal = () => {
 						<Button variant="outline">Cancel</Button>
 					</Box>
 					<Box>
-						<Button disabled={confirmText !== activeDashboard.name}>Delete</Button>
+						<Button
+							disabled={confirmText !== activeDashboard.name || isDeleting}
+							onClick={onDelete}
+							loading={isDeleting}>
+							Delete
+						</Button>
 					</Box>
 				</Stack>
 			</Stack>

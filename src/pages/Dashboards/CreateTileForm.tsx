@@ -1,4 +1,4 @@
-import { Box, Button, Select, Stack, Text, TextInput } from '@mantine/core';
+import { Box, Button, Divider, Select, Stack, Text, TextInput } from '@mantine/core';
 import classes from './styles/Form.module.css';
 import { useForm } from '@mantine/form';
 import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
@@ -12,7 +12,7 @@ import VizEditorModal, { Viz } from './VizEditorModal';
 import { SchemaList } from '../Stream/components/Querier/QueryCodeEditor';
 import { IconAlertTriangle, IconArrowLeft, IconChartPie } from '@tabler/icons-react';
 import { useDashboardsQuery, useTileQuery } from '@/hooks/useDashboards';
-import { Dashboard, EditTileType, FormOpts, TileFormType, TileQueryResponse } from '@/@types/parseable/api/dashboards';
+import { Dashboard, EditTileType, FormOpts, Tile, TileFormType, TileQueryResponse } from '@/@types/parseable/api/dashboards';
 import { CodeHighlight } from '@mantine/code-highlight';
 import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 import { useLogsStore } from '../Stream/providers/LogsProvider';
@@ -30,15 +30,13 @@ const invalidVizConfig = 'Invalid visualization config';
 const { toggleVizEditorModal, toggleCreateTileModal } = dashboardsStoreReducers;
 
 const getErrorMsg = (form: TileFormType, configType: 'basic' | 'data' | 'viz'): string | null => {
-	const { stream, dashboardId, isQueryValidated, data, visualization } = form.values;
+	const { dashboardId, isQueryValidated, data, visualization } = form.values;
 	const hasVizConfigErrors = _.some(_.keys(form.errors), (key) => _.startsWith(key, 'visualization.'));
 	// form.validateField('visualization')
 
 	const hasNoData = _.isEmpty(data) || _.isEmpty(data.records);
 	if (_.isEmpty(dashboardId)) {
 		return selectDashboardWarningText;
-	} else if (_.isEmpty(stream)) {
-		return selectStreamWarningText;
 	} else if (configType === 'data' || configType === 'viz') {
 		if (!isQueryValidated) {
 			return validateQueryWarningText;
@@ -125,8 +123,6 @@ const VisPreview = (props: { form: TileFormType }) => {
 		...(errorMsg ? {} : { actionBtnProps: { label: 'Edit', onClick: openVizModal } }),
 	};
 
-	console.log(sectionHeaderProps);
-
 	return (
 		<Stack className={classes.sectionContainer} {...(errorMsg ? { gap: 0 } : { gap: 0 })}>
 			<VizEditorModal form={props.form} />
@@ -182,13 +178,18 @@ const DataPreview = (props: { form: TileFormType }) => {
 	);
 };
 
-const useTileForm = (opts: FormOpts) => {
+const useTileForm = (opts: {
+	activeDashboard: Dashboard | null;
+	editTileId: string | null;
+	tileData: TileQueryResponse;
+}) => {
+	const { activeDashboard, editTileId, tileData } = opts;
+	const formOpts = genTileFormOpts({ activeDashboard, editTileId, tileData });
 	const form = useForm<FormOpts>({
 		mode: 'controlled',
-		initialValues: opts,
+		initialValues: formOpts,
 		validate: {
 			name: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
-			stream: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
 			description: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
 			query: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
 			isQueryValidated: (val) => (val === true ? null : 'Query not validated'),
@@ -242,6 +243,12 @@ const useTileForm = (opts: FormOpts) => {
 		validateInputOnBlur: true,
 	});
 
+	// useEffect(() => {
+	// 	if (_.isFunction(form.setValues)) {
+	// 		form.setValues(genTileFormOpts({ activeDashboard, editTileId, tileData }));
+	// 	}
+	// }, [activeDashboard?.dashboard_id, editTileId]);
+
 	const colors = form.values.visualization?.colors;
 
 	const onChangeValue = useCallback((key: string, value: any) => {
@@ -273,30 +280,31 @@ const fetchStreamFields = async (stream: string, setFields: (fields: Field[]) =>
 const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: any) => void }) => {
 	const {
 		form: {
-			values: { stream, query, isQueryValidated, dashboardId },
+			values: { query, isQueryValidated, dashboardId },
 		},
 		onChangeValue,
 	} = props;
 	const [llmActive] = useAppStore((store) => store.instanceConfig?.llmActive);
 	const containerRef = useRef(null);
+	const [localStream, setLocalStream] = useState<string>('');
 	const [fields, setFields] = useState<Field[]>([]);
 	const [initialHeight, setInitialHeight] = useState(0);
-	const isValidStream = !_.isEmpty(stream);
 	const [dashboards] = useDashboardsStore((store) => store.dashboards);
 	const [timeRange] = useLogsStore((store) => store.timeRange);
-
-	useEffect(() => {
-		setFields([]);
-		if (_.size(stream) > 0) {
-			fetchStreamFields(stream, (fields: Field[]) => setFields(fields));
-		}
-	}, [stream]);
-
+	const [userSpecificStreams] = useAppStore((store) => store.userSpecificStreams);
+	const allStreams = useMemo(
+		() => _.map(userSpecificStreams, (stream) => ({ label: stream.name, value: stream.name })),
+		[userSpecificStreams],
+	);
 	useEffect(() => {
 		if (containerRef.current) {
 			setInitialHeight(containerRef.current.offsetHeight);
 		}
-	}, [isValidStream]);
+		setFields([]);
+		if (_.size(localStream) > 0) {
+			fetchStreamFields(localStream, (fields: Field[]) => setFields(fields));
+		}
+	}, [localStream]);
 
 	const onFetchTileSuccess = useCallback((data: TileQueryResponse) => {
 		props.form.setFieldValue('isQueryValidated', true);
@@ -324,13 +332,23 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 		// onChangeValue('data', null)
 	}, []);
 
+	const onStreamSelect = useCallback((val: string | null) => {
+		setLocalStream(val || '');
+	}, [])
+
 	const errorMsg = getErrorMsg(props.form, 'basic');
 
 	return (
 		<Stack style={{ padding: '0 1rem', flex: 1 }} gap={4}>
-			<Text className={classes.fieldTitle}>Query</Text>
+			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+				<Text className={classes.fieldTitle}>Query</Text>
+				<Stack style={{ flexDirection: 'row', ...(errorMsg ? {display: 'none'} : {})}}>
+					<TimeRange />
+					<Select data={allStreams} onChange={onStreamSelect} classNames={{ label: classes.fieldTitle }} key="stream" placeholder="Stream" />
+				</Stack>
+			</Stack>
 			{errorMsg && <Text className={classes.warningText}>{errorMsg}</Text>}
-			<Stack className={classes.queryCodeContainer} style={{ flex: 1, ...(isValidStream ? {} : { display: 'none' }) }}>
+			<Stack className={classes.queryCodeContainer} style={{ marginTop: '1rem', flex: 1, ...(errorMsg ? {display: 'none'} : {}) }}>
 				<Box style={{ marginBottom: 8 }}>
 					{llmActive ? (
 						<Stack gap={0} style={{ flexDirection: 'row', width: '100%' }}>
@@ -357,7 +375,7 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 				</Box>
 				<Stack ref={containerRef} style={{ flex: 1 }}>
 					<Stack style={{ maxHeight: `${initialHeight * 0.4}px`, overflowY: 'auto' }}>
-						<SchemaList currentStream={stream} fields={fields} />
+						<SchemaList currentStream={localStream} fields={fields} />
 					</Stack>
 					<Stack style={{ maxHeight: `${initialHeight * 0.5}px`, flex: 1 }}>
 						<Editor
@@ -384,7 +402,7 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 					alignItems: 'flex-end',
 					justifyContent: 'flex-end',
 					padding: '1rem 0',
-					...(isValidStream ? {} : { display: 'none' }),
+					...(errorMsg ? {display: 'none'} : {})
 				}}>
 				<Box>
 					<Button
@@ -421,7 +439,7 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 					label="Name"
 					key="name"
 					{...form.getInputProps('name')}
-					style={{ width: '33%' }}
+					style={{ width: '50%' }}
 				/>
 				<Select
 					data={allDashboards}
@@ -429,15 +447,7 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 					label="Dashboard"
 					key="dashboardId"
 					{...form.getInputProps('dashboardId')}
-					style={{ width: '33%' }}
-				/>
-				<Select
-					data={allStreams}
-					classNames={{ label: classes.fieldTitle }}
-					label="Stream"
-					key="stream"
-					{...form.getInputProps('stream')}
-					style={{ width: '33%' }}
+					style={{ width: '50%' }}
 				/>
 			</Stack>
 			<Stack style={{ padding: '0 1rem' }}>
@@ -448,35 +458,18 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 					{...form.getInputProps('description')}
 				/>
 			</Stack>
+			<Divider my="0.6rem"/>
 			<Query form={form} onChangeValue={onChangeValue} />
 		</Stack>
 	);
 };
 
-const defaultTileOpts = {
-	name: '',
-	description: '',
-	stream: '',
-	isQueryValidated: false,
-	isVizValidated: false,
-	query: '',
-	data: { records: [], fields: [] },
-	dashboardId: null,
-	visualization: {
-		visualization_type: 'donut-chart' as 'donut-chart',
-		size: 'sm',
-		color_config: [],
-		circular_chart_config: {},
-	},
-};
-
-const sanitizeFormValues = (form: TileFormType, type: 'create' | 'update', order: number): EditTileType => {
-	const { name, description, stream, query, visualization, tile_id } = form.values;
+const sanitizeFormValues = (form: TileFormType, type: 'create' | 'update'): EditTileType => {
+	const { name, description, query, visualization, tile_id, order } = form.values;
 	const { visualization_type, size, circular_chart_config } = visualization;
 	return {
 		name,
 		description,
-		stream,
 		query,
 		visualization: {
 			visualization_type,
@@ -485,30 +478,52 @@ const sanitizeFormValues = (form: TileFormType, type: 'create' | 'update', order
 			color_config: [],
 		},
 		order,
-		...(type === 'create' && _.isString(tile_id) ? { tile_id } : {}),
+		...(type === 'update' && _.isString(tile_id) ? { tile_id } : {}),
 	};
 };
 
-const genTileFormOpts = (opts: { activeDashboard: Dashboard | null, editTileId: string | null }) => {
+const defaultVizOpts = {
+	visualization_type: 'donut-chart' as 'donut-chart',
+	size: 'sm',
+	color_config: [],
+	circular_chart_config: {},
+	graph_config: {},
+};
+
+const defaultFormOpts = {
+	name: '',
+	description: '',
+	isQueryValidated: false,
+	isVizValidated: false,
+	query: '',
+	data: { records: [], fields: [] },
+	dashboardId: null,
+	visualization: defaultVizOpts,
+};
+
+const genTileFormOpts = (opts: {
+	activeDashboard: Dashboard | null;
+	editTileId: string | null;
+	tileData: TileQueryResponse;
+}) => {
 	const { activeDashboard, editTileId } = opts;
 
-	const currentTile = _.find(activeDashboard?.tiles, )
+	if (!editTileId) return {...defaultFormOpts, dashboardId: activeDashboard?.dashboard_id, order: _.size(activeDashboard?.tiles) + 1};
+
+	const currentTile = _.find(activeDashboard?.tiles, (tile) => tile.tile_id === editTileId);
+
+	if (!currentTile) return {...defaultFormOpts, dashboardId: activeDashboard?.dashboard_id, order: _.size(activeDashboard?.tiles) + 1};
 
 	return {
-		name: '',
-		description: '',
-		stream: '',
-		isQueryValidated: false,
-		isVizValidated: false,
-		query: '',
-		data: { records: [], fields: [] },
-		dashboardId: activeDashboard?.dashboard_id || null,
+		...currentTile,
+		isQueryValidated: true,
+		isVizValidated: true,
+		data: opts.tileData,
 		visualization: {
-			visualization_type: 'donut-chart' as 'donut-chart',
-			size: 'sm',
-			color_config: [],
-			circular_chart_config: {},
+			...defaultVizOpts,
+			...currentTile.visualization,
 		},
+		dashboardId: activeDashboard ? activeDashboard.dashboard_id : null,
 	};
 };
 
@@ -516,8 +531,9 @@ const CreateTileForm = () => {
 	const [dashboards, setDashbaordsStore] = useDashboardsStore((store) => store.dashboards);
 	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
 	const [editTileId] = useDashboardsStore((store) => store.editTileId);
-
-	const { form, onChangeValue } = useTileForm(genTileFormOpts({ activeDashboard, editTileId }));
+	const [tilesData] = useDashboardsStore((store) => store.tilesData);
+	const tileData = _.get(tilesData, editTileId || '', { records: [], fields: [] });
+	const { form, onChangeValue } = useTileForm({ activeDashboard, editTileId, tileData });
 
 	const closeForm = useCallback(() => {
 		setDashbaordsStore((store) => toggleCreateTileModal(store, false));
@@ -532,9 +548,16 @@ const CreateTileForm = () => {
 		if (!dashboard) return;
 
 		const existingTiles = dashboard.tiles;
-		const newTile = sanitizeFormValues(form, 'create', _.size(existingTiles) + 1);
-		updateDashboard({ dashboard: { ...dashboard, tiles: [...existingTiles, newTile] } });
-	}, [form, dashboards]);
+		if (editTileId) {
+			const updatedTile = sanitizeFormValues(form, 'update');
+			const tileIndex = _.findIndex(existingTiles, tile => tile.tile_id === editTileId);
+			existingTiles[tileIndex] = updatedTile as Tile;
+			updateDashboard({ dashboard: { ...dashboard, tiles: [...existingTiles] } });
+		} else {
+			const newTile = sanitizeFormValues(form, 'create');
+			updateDashboard({ dashboard: { ...dashboard, tiles: [...existingTiles, newTile] } });
+		}
+	}, [form, dashboards, editTileId]);
 
 	return (
 		<Stack style={{ height: '100%', width: '100%' }} gap={0}>
@@ -544,9 +567,13 @@ const CreateTileForm = () => {
 					<Text style={{ fontSize: '0.8rem', fontWeight: 600 }}>Create Tile</Text>
 				</Stack>
 				<Stack style={{ flexDirection: 'row' }} gap={20}>
-					<TimeRange />
 					<Box>
-						<Button disabled={!form.isValid()} onClick={onCreate} loading={isUpdatingDashboard} variant="filled">
+						<Button onClick={closeForm} loading={isUpdatingDashboard} variant="outline">
+							Cancel
+						</Button>
+					</Box>
+					<Box>
+						<Button disabled={!form.isValid() || !form.isDirty()} onClick={onCreate} loading={isUpdatingDashboard} variant="filled">
 							Save Changes
 						</Button>
 					</Box>
