@@ -7,6 +7,11 @@ export type LogStreamSchemaData = {
 	metadata: Record<string, string>;
 };
 
+export type LogStreamQueryWithFields = {
+	fields: string[];
+	records: Record<string, string>;
+}
+
 export type LogStreamStat = {
 	ingestion: {
 		count: number;

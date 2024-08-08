@@ -1,10 +1,10 @@
 import { Log } from '@/@types/parseable/api/query';
-import { LogStreamData, LogStreamSchemaData } from '@/@types/parseable/api/stream';
+import { LogStreamData, LogStreamQueryWithFields, LogStreamSchemaData } from '@/@types/parseable/api/stream';
 import { FIXED_DURATIONS, FixedDuration } from '@/constants/timeConstants';
 import initContext from '@/utils/initContext';
 import dayjs, { Dayjs } from 'dayjs';
 import { addOrRemoveElement } from '@/utils';
-import { getPageSlice, makeHeadersFromSchema, makeHeadersfromData } from '../utils';
+import { getPageSlice, makeHeadersFromQueryFields, makeHeadersfromData } from '../utils';
 import _ from 'lodash';
 import { sanitizeCSVData } from '@/utils/exportHelpers';
 
@@ -260,7 +260,7 @@ type LogsStoreReducers = {
 	getCleanStoreForRefetch: (store: LogsStore) => ReducerOutput;
 
 	// data reducers
-	setData: (store: LogsStore, data: Log[], schema: LogStreamSchemaData | null, jqFilteredData?: Log[]) => ReducerOutput;
+	setData: (store: LogsStore, data: Log[], queryResponse: LogStreamQueryWithFields | null, jqFilteredData?: Log[]) => ReducerOutput;
 	setStreamSchema: (store: LogsStore, schema: LogStreamSchemaData) => ReducerOutput;
 	applyCustomQuery: (
 		store: LogsStore,
@@ -272,7 +272,7 @@ type LogsStoreReducers = {
 	getUniqueValues: (data: Log[], key: string) => string[];
 	makeExportData: (data: Log[], headers: string[], type: string) => Log[];
 	setRetention: (store: LogsStore, retention: { description: string; duration: string }) => ReducerOutput;
-	setTableHeaders: (store: LogsStore, schema: LogStreamSchemaData) => ReducerOutput;
+	setTableHeaders: (store: LogsStore, queryResponse: LogStreamQueryWithFields) => ReducerOutput;
 
 	setCleanStoreForStreamChange: (store: LogsStore) => ReducerOutput;
 	updateSavedFilterId: (store: LogsStore, savedFilterId: string | null) => ReducerOutput;
@@ -527,13 +527,13 @@ const searchAndSortData = (opts: { searchValue: string }, data: Log[]) => {
 	return sortedData;
 };
 
-const setTableHeaders = (store: LogsStore, schema: LogStreamSchemaData) => {
+const setTableHeaders = (store: LogsStore, queryResponse: LogStreamQueryWithFields) => {
 	const { data: existingData, custQuerySearchState, tableOpts } = store;
 	const { filteredData } = existingData;
 	const newHeaders =
 		filteredData && custQuerySearchState.isQuerySearchActive
 			? makeHeadersfromData(filteredData)
-			: makeHeadersFromSchema(schema);
+			: makeHeadersFromQueryFields(queryResponse);
 	return {
 		tableOpts: {
 			...tableOpts,
@@ -546,7 +546,7 @@ export const isJqSearch = (value: string) => {
 	return _.startsWith(value, 'jq .');
 };
 
-const setData = (store: LogsStore, data: Log[], schema: LogStreamSchemaData | null, jqFilteredData?: Log[]) => {
+const setData = (store: LogsStore, data: Log[], queryResponse: LogStreamQueryWithFields | null, jqFilteredData?: Log[]) => {
 	const {
 		data: existingData,
 		tableOpts,
@@ -563,7 +563,7 @@ const setData = (store: LogsStore, data: Log[], schema: LogStreamSchemaData | nu
 			: filterAndSortData(tableOpts, data);
 	const newPageSlice = filteredData && getPageSlice(currentPage, tableOpts.perPage, filteredData);
 	const newHeaders =
-		isQuerySearchActive && activeMode === 'sql' ? makeHeadersfromData(data) : makeHeadersFromSchema(schema);
+		isQuerySearchActive && activeMode === 'sql' ? makeHeadersfromData(data) : makeHeadersFromQueryFields(queryResponse);
 
 	return {
 		tableOpts: {

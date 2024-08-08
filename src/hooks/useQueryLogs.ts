@@ -7,7 +7,7 @@ import { useLogsStore, logsStoreReducers, LOAD_LIMIT, isJqSearch } from '@/pages
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useQueryResult } from './useQueryResult';
 import _ from 'lodash';
-import { useStreamStore } from '@/pages/Stream/providers/StreamProvider';
+// import { useStreamStore } from '@/pages/Stream/providers/StreamProvider';
 import { AxiosError } from 'axios';
 import jqSearch from '@/utils/jqSearch';
 
@@ -43,7 +43,7 @@ export const useQueryLogs = () => {
 		},
 	});
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const [schema] = useStreamStore((store) => store.schema);
+	// const [schema] = useStreamStore((store) => store.schema);
 	const [
 		{
 			timeRange,
@@ -88,24 +88,24 @@ export const useQueryLogs = () => {
 			setError(null);
 
 			const logsQueryRes = isQuerySearchActive
-				? await getQueryResult({ ...logsQuery, access: [] }, appendOffsetToQuery(custSearchQuery, logsQuery.pageOffset))
-				: await getQueryLogs(logsQuery);
+				? await getQueryResult({ ...logsQuery, access: [] }, appendOffsetToQuery(custSearchQuery, logsQuery.pageOffset),true)
+				: await getQueryLogs(logsQuery, true);
 
-			const data = logsQueryRes.data;
+			const data = logsQueryRes.data.records;
 
 			if (logsQueryRes.status === StatusCodes.OK) {
 				const jqFilteredData = isJqSearch(instantSearchValue) ? await jqSearch(data, instantSearchValue) : [];
-				return setLogsStore((store) => setData(store, data, schema, jqFilteredData));
+				return setLogsStore((store) => setData(store, data, logsQueryRes.data, jqFilteredData));
 			}
 			if (typeof data === 'string' && data.includes('Stream is not initialized yet')) {
-				return setLogsStore((store) => setData(store, [], schema));
+				return setLogsStore((store) => setData(store, [], logsQueryRes.data));
 			}
 			setError('Failed to query log');
 		} catch (e) {
 			const axiosError = e as AxiosError;
 			const errorMessage = axiosError?.response?.data;
 			setError(_.isString(errorMessage) && !_.isEmpty(errorMessage) ? errorMessage : 'Failed to query log');
-			return setLogsStore((store) => setData(store, [], schema));
+			return setLogsStore((store) => setData(store, [], null));
 		} finally {
 			setLoading(false);
 		}
