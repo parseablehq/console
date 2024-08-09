@@ -7,7 +7,6 @@ import { useLogsStore, logsStoreReducers, LOAD_LIMIT, isJqSearch } from '@/pages
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useQueryResult } from './useQueryResult';
 import _ from 'lodash';
-// import { useStreamStore } from '@/pages/Stream/providers/StreamProvider';
 import { AxiosError } from 'axios';
 import jqSearch from '@/utils/jqSearch';
 
@@ -43,7 +42,6 @@ export const useQueryLogs = () => {
 		},
 	});
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	// const [schema] = useStreamStore((store) => store.schema);
 	const [
 		{
 			timeRange,
