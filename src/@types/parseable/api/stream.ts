@@ -9,7 +9,7 @@ export type LogStreamSchemaData = {
 
 export type LogStreamQueryWithFields = {
 	fields: string[];
-	records: Record<string, string>;
+	records: string[];
 }
 
 export type LogStreamStat = {
