@@ -1,5 +1,5 @@
 import { Log } from "@/@types/parseable/api/query";
-import { LogStreamSchemaData, LogStreamQueryWithFields } from "@/@types/parseable/api/stream";
+import { LogStreamQueryWithFields } from "@/@types/parseable/api/stream";
 import { columnsToSkip } from "./providers/LogsProvider";
 
 export const getPageSlice = (page = 1, perPage: number, data: Log[]) => {
@@ -8,14 +8,6 @@ export const getPageSlice = (page = 1, perPage: number, data: Log[]) => {
 	return data ? data.slice(firstPageIndex, lastPageIndex) : [];
 };
 
-export const makeHeadersFromSchema = (schema: LogStreamSchemaData | null): string[] => {
-	if (schema) {
-		const { fields } = schema;
-		return fields.map((field) => field.name);
-	} else {
-		return [];
-	}
-};
 
 export const makeHeadersFromQueryFields = (queryResponse: LogStreamQueryWithFields |null): string[] =>{
 	if (queryResponse) {

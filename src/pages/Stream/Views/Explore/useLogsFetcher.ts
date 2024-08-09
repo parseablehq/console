@@ -2,6 +2,7 @@ import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useEffect } from 'react';
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { useQueryLogs } from '@/hooks/useQueryLogs';
+import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 
 const { setCleanStoreForStreamChange } = logsStoreReducers;
 
@@ -14,6 +15,7 @@ const useLogsFetcher = (props: {schemaLoading: boolean}) => {
 	const hasContentLoaded = schemaLoading === false && logsLoading === false;
 	const hasNoData = hasContentLoaded && !errorMessage && pageData.length === 0;
 	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
+	const {getDataSchema} = useGetLogStreamSchema()
 
 	useEffect(() => {
 		setLogsStore(setCleanStoreForStreamChange);
@@ -21,6 +23,7 @@ const useLogsFetcher = (props: {schemaLoading: boolean}) => {
 
 	useEffect(() => {
 		if (currentPage === 0 && currentOffset === 0) {
+			getDataSchema();
 			getQueryData();
 			fetchCount();
 		}

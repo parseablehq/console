@@ -11,7 +11,10 @@ type QueryLogs = {
 	pageOffset: number;
 };
 
-const fieldParms = "?fields=true"
+type QueryParams = {
+	params: string;
+}
+
 
 // to optimize performace, it has been decided to round off the time at the given level
 // so making the end-time inclusive
@@ -19,12 +22,13 @@ const optimizeEndTime = (endTime: Date) => {
 	return dayjs(endTime).add(1, 'minute').toDate();
 };
 
-export const getQueryLogs = (logsQuery: QueryLogs, withFields?:boolean) => {
+export const getQueryLogs = (logsQuery: QueryLogs, QueryParams?:QueryParams) => {
 	const { startTime, endTime, streamName, limit, pageOffset } = logsQuery;
-	const endPoint = LOG_QUERY_URL
+	const params = QueryParams && QueryParams.params
+	const endPoint = LOG_QUERY_URL.concat("?" +(params||''))
 	const query = `SELECT * FROM ${streamName} LIMIT ${limit} OFFSET ${pageOffset}`;
 	return Axios().post(
-		(withFields? endPoint.concat(fieldParms):endPoint),
+		endPoint,
 		{
 			query,
 			startTime,
@@ -34,12 +38,13 @@ export const getQueryLogs = (logsQuery: QueryLogs, withFields?:boolean) => {
 	);
 };
 
-export const getQueryResult = (logsQuery: LogsQuery, query = '', withFields?:boolean) => {
+export const getQueryResult = (logsQuery: LogsQuery, query = '', QueryParams?:QueryParams) => {
 	const { startTime, endTime } = logsQuery;
-	const endPoint = LOG_QUERY_URL
+	const params = QueryParams && QueryParams.params
+	const endPoint = LOG_QUERY_URL.concat("?" +(params||''))
 
 	return Axios().post(
-		(withFields? endPoint.concat(fieldParms):endPoint),
+		endPoint,
 		{
 			query,
 			startTime,

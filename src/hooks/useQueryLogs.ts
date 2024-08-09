@@ -86,8 +86,8 @@ export const useQueryLogs = () => {
 			setError(null);
 
 			const logsQueryRes = isQuerySearchActive
-				? await getQueryResult({ ...logsQuery, access: [] }, appendOffsetToQuery(custSearchQuery, logsQuery.pageOffset),true)
-				: await getQueryLogs(logsQuery, true);
+				? await getQueryResult({ ...logsQuery, access: [] }, appendOffsetToQuery(custSearchQuery, logsQuery.pageOffset),{params:"fields=true"})
+				: await getQueryLogs(logsQuery, {params:"fields=true"});
 
 			const data = logsQueryRes.data.records;
 
