@@ -3,7 +3,15 @@ const API_V1 = 'api/v1';
 // Streams Management
 export const LOG_STREAM_LIST_URL = `${API_V1}/logstream`;
 export const LOG_STREAMS_SCHEMA_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/schema`;
-export const LOG_QUERY_URL = `${API_V1}/query`;
+export const LOG_QUERY_URL = (params?: Record<string, string>) => {
+	if (params) {
+		for (let i in params) {
+			const queryParams = `${i}=${params[i]}`;
+			return `${API_V1}/query?${queryParams}`;
+		}
+	}
+	return `${API_V1}/query`;
+};
 export const LOG_STREAMS_ALERTS_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/alert`;
 export const LIST_SAVED_FILTERS_URL = (userId: string) => `${API_V1}/filters/${userId}`;
 export const UPDATE_SAVED_FILTERS_URL = (filterId: string) => `${API_V1}/filters/filter/${filterId}`;
