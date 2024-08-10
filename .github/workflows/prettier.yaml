@@ -17,5 +17,5 @@ jobs:
         uses: creyD/prettier_action@v4.3
         with:
           prettier_options: --check **/*.{ts,tsx,js,json}
-          dry: True
-          only_changed: True
+          dry: true
+          only_changed: true
