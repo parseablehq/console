@@ -11,7 +11,8 @@ import { ClusterProvider } from '@/pages/Systems/providers/ClusterProvider';
 
 export const HomeElement: FC = () => {
 	return (
-		<SuspensePage><Home />
+		<SuspensePage>
+			<Home />
 		</SuspensePage>
 	);
 };
