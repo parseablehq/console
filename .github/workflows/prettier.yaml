@@ -1,6 +1,5 @@
 name: Continuous Integration
 
-# This action works with pull requests and pushes
 on:
   pull_request
 
@@ -14,3 +13,5 @@ jobs:
 
       - name: Prettify code
         uses: creyD/prettier_action@v4.3
+        with:
+          prettier_options: --write "**/*.{ts,tsx,json}"
