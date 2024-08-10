@@ -11,7 +11,7 @@ export type LogStreamSchemaData = {
 export type LogStreamQueryWithFields = {
 	fields: string[];
 	records: Log[];
-}
+};
 
 export type LogStreamStat = {
 	ingestion: {
@@ -40,24 +40,26 @@ export type action = {
 };
 
 export type StreamInfo = {
-	"created-at": string;
-	"first-event-at": string;
+	'created-at': string;
+	'first-event-at': string;
 	cache_enabled: boolean;
 	time_partition: string;
 	static_schema_flag: boolean;
-    time_partition_limit: string,
-    custom_partition: string,
-}
+	time_partition_limit: string;
+	custom_partition: string;
+};
 
 export type LogStreamRetention = Array<action>;
 
-export type HotTierConfig = {
-	size: string;
-	used_size: string;
-	available_size: string;
-	oldest_date_time_entry: string;
-} | {};
+export type HotTierConfig =
+	| {
+			size: string;
+			used_size: string;
+			available_size: string;
+			oldest_date_time_entry: string;
+	  }
+	| {};
 
 export type UpdateHotTierConfig = {
 	size: string;
-}
+};

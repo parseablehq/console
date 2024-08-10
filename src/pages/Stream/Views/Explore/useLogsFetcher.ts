@@ -6,8 +6,8 @@ import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 
 const { setCleanStoreForStreamChange } = logsStoreReducers;
 
-const useLogsFetcher = (props: {schemaLoading: boolean}) => {
-	const {schemaLoading} = props;
+const useLogsFetcher = (props: { schemaLoading: boolean }) => {
+	const { schemaLoading } = props;
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const { currentOffset, currentPage, pageData } = tableOpts;
@@ -15,7 +15,7 @@ const useLogsFetcher = (props: {schemaLoading: boolean}) => {
 	const hasContentLoaded = schemaLoading === false && logsLoading === false;
 	const hasNoData = hasContentLoaded && !errorMessage && pageData.length === 0;
 	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
-	const {getDataSchema} = useGetLogStreamSchema()
+	const { getDataSchema } = useGetLogStreamSchema();
 
 	useEffect(() => {
 		setLogsStore(setCleanStoreForStreamChange);

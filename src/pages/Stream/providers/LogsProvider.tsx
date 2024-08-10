@@ -260,7 +260,12 @@ type LogsStoreReducers = {
 	getCleanStoreForRefetch: (store: LogsStore) => ReducerOutput;
 
 	// data reducers
-	setData: (store: LogsStore, data: Log[], queryResponse: LogStreamQueryWithFields | null, jqFilteredData?: Log[]) => ReducerOutput;
+	setData: (
+		store: LogsStore,
+		data: Log[],
+		queryResponse: LogStreamQueryWithFields | null,
+		jqFilteredData?: Log[],
+	) => ReducerOutput;
 	setStreamSchema: (store: LogsStore, schema: LogStreamSchemaData) => ReducerOutput;
 	applyCustomQuery: (
 		store: LogsStore,
@@ -359,7 +364,7 @@ const setTimeRange = (
 	return {
 		...cleanStore,
 		timeRange: { ...store.timeRange, startTime: startTime.toDate(), endTime: endTime.toDate(), label, interval, type },
-		viewMode: store.viewMode
+		viewMode: store.viewMode,
 	};
 };
 
@@ -546,7 +551,12 @@ export const isJqSearch = (value: string) => {
 	return _.startsWith(value, 'jq .');
 };
 
-const setData = (store: LogsStore, data: Log[], queryResponse: LogStreamQueryWithFields | null, jqFilteredData?: Log[]) => {
+const setData = (
+	store: LogsStore,
+	data: Log[],
+	queryResponse: LogStreamQueryWithFields | null,
+	jqFilteredData?: Log[],
+) => {
 	const {
 		data: existingData,
 		tableOpts,
@@ -871,7 +881,10 @@ const toggleSideBar = (store: LogsStore) => {
 
 const onToggleView = (store: LogsStore, viewMode: 'json' | 'table') => {
 	const { data, tableOpts } = store;
-	const filteredData = filterAndSortData({ sortOrder: defaultSortOrder, sortKey: defaultSortKey, filters: {} }, data.rawData);
+	const filteredData = filterAndSortData(
+		{ sortOrder: defaultSortOrder, sortKey: defaultSortKey, filters: {} },
+		data.rawData,
+	);
 	const currentPage = tableOpts.currentPage;
 	const newPageSlice = getPageSlice(currentPage, tableOpts.perPage, filteredData);
 
@@ -888,7 +901,7 @@ const onToggleView = (store: LogsStore, viewMode: 'json' | 'table') => {
 			currentPage,
 			totalPages: getTotalPages(filteredData, tableOpts.perPage),
 		},
-		viewMode
+		viewMode,
 	};
 };
 
