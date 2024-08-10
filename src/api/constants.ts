@@ -1,3 +1,5 @@
+import { paramsParser } from "@/utils/URLParamsParser";
+
 const API_V1 = 'api/v1';
 
 // Streams Management
@@ -5,10 +7,7 @@ export const LOG_STREAM_LIST_URL = `${API_V1}/logstream`;
 export const LOG_STREAMS_SCHEMA_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/schema`;
 export const LOG_QUERY_URL = (params?: Record<string, string>) => {
 	if (params) {
-		for (let i in params) {
-			const queryParams = `${i}=${params[i]}`;
-			return `${API_V1}/query?${queryParams}`;
-		}
+		return `${API_V1}/query?${paramsParser(params)}`;
 	}
 	return `${API_V1}/query`;
 };
