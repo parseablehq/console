@@ -1,4 +1,5 @@
 import { Field } from '../dataType';
+import { Log } from './query';
 
 export type LogStreamData = Array<{ name: string }>;
 
@@ -9,7 +10,7 @@ export type LogStreamSchemaData = {
 
 export type LogStreamQueryWithFields = {
 	fields: string[];
-	records: Record<string, string>[];
+	records: Log[];
 }
 
 export type LogStreamStat = {
