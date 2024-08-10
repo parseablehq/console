@@ -1,6 +1,6 @@
-import { Log } from "@/@types/parseable/api/query";
-import { LogStreamQueryWithFields } from "@/@types/parseable/api/stream";
-import { columnsToSkip } from "./providers/LogsProvider";
+import { Log } from '@/@types/parseable/api/query';
+import { LogStreamQueryWithFields } from '@/@types/parseable/api/stream';
+import { columnsToSkip } from './providers/LogsProvider';
 
 export const getPageSlice = (page = 1, perPage: number, data: Log[]) => {
 	const firstPageIndex = (page - 1) * perPage;
@@ -8,19 +8,18 @@ export const getPageSlice = (page = 1, perPage: number, data: Log[]) => {
 	return data ? data.slice(firstPageIndex, lastPageIndex) : [];
 };
 
-
-export const makeHeadersFromQueryFields = (queryResponse: LogStreamQueryWithFields |null): string[] =>{
+export const makeHeadersFromQueryFields = (queryResponse: LogStreamQueryWithFields | null): string[] => {
 	if (queryResponse) {
-		const {fields} = queryResponse;
-		return fields
+		const { fields } = queryResponse;
+		return fields;
 	}
-	return []
-}
+	return [];
+};
 
 export const makeHeadersfromData = (data: Log[]): string[] => {
 	const allKeys: string[] = [];
 
-	// cannot parse cust search query and get the possible keys. 
+	// cannot parse cust search query and get the possible keys.
 	// and also its not necessary that each record will have all the specified columns
 	// so go through all the records and get the keys
 	data.forEach((obj) => {
@@ -34,8 +33,13 @@ export const makeHeadersfromData = (data: Log[]): string[] => {
 	return allKeys;
 };
 
-export const genColumnsToShow = (opts: {disabledColumns: string[], headers: string[], isPinned: boolean, pinnedColumns: string[]}) => {
-	const {disabledColumns, headers, isPinned, pinnedColumns} = opts;
+export const genColumnsToShow = (opts: {
+	disabledColumns: string[];
+	headers: string[];
+	isPinned: boolean;
+	pinnedColumns: string[];
+}) => {
+	const { disabledColumns, headers, isPinned, pinnedColumns } = opts;
 
 	const columnsToIgnore = [
 		...disabledColumns,
@@ -43,4 +47,4 @@ export const genColumnsToShow = (opts: {disabledColumns: string[], headers: stri
 		...headers.filter((header) => (isPinned ? !pinnedColumns.includes(header) : pinnedColumns.includes(header))),
 	];
 	return headers.filter((header) => !columnsToIgnore.includes(header));
-}
+};
