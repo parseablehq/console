@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with: 
+          fetch-depth: 0
 
       - name: Prettify code
         uses: creyD/prettier_action@v4.3
@@ -17,4 +19,3 @@ jobs:
           prettier_options: --check **/*.{ts,tsx,js,json}
           dry: True
           only_changed: True
-
