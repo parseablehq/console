@@ -60,11 +60,11 @@ Enabling hot reload:
 
 1. Disable CORS on the server by setting `P_CORS=false`.
 2. Configure the following environment variables:
-    ```
-    VITE_USE_BASIC_AUTH=true
-    VITE_USERNAME=username
-    VITE_PASSWORD=password
-    ```
+   ```
+   VITE_USE_BASIC_AUTH=true
+   VITE_USERNAME=username
+   VITE_PASSWORD=password
+   ```
 
 To test production build
 
