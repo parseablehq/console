@@ -1,4 +1,4 @@
-import { UserRoles } from "@/layouts/MainLayout/providers/AppProvider";
+import { UserRoles } from '@/layouts/MainLayout/providers/AppProvider';
 
 const adminAccess = [
 	'Ingest',
@@ -18,7 +18,7 @@ const adminAccess = [
 	'DeleteUser',
 	'PutRoles',
 	'GetRole',
-	'Cluster'
+	'Cluster',
 ];
 const editorAccess = [
 	'Ingest',

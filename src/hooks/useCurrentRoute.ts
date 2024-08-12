@@ -1,9 +1,9 @@
-import { PATHS } from "@/constants/routes"
-import { matchRoutes, useLocation } from "react-router-dom"
+import { PATHS } from '@/constants/routes';
+import { matchRoutes, useLocation } from 'react-router-dom';
 
 const routes = Object.keys(PATHS).map((key: string) => {
 	const value = PATHS[key];
-	return {path: value};
+	return { path: value };
 });
 
 const useCurrentRoute = () => {

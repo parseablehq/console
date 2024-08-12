@@ -49,8 +49,8 @@ export const calcCompressionRate = (storageSize: string, ingestionSize: string) 
 
 	if (parsedIngestionSize === 0) return '0%';
 
-	const rate = (100 - (parsedStorageSize / parsedIngestionSize) * 100)
-	
+	const rate = 100 - (parsedStorageSize / parsedIngestionSize) * 100;
+
 	if (rate <= 0) return '0%';
 
 	return `${rate.toPrecision(4)}%`;

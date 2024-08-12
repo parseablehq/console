@@ -17,7 +17,7 @@ export const useRetentionQuery = (streamName: string) => {
 		refetch: getLogRetentionDataRefetch,
 	} = useQuery(['fetch-log-stream-retention', streamName], () => getLogStreamRetention(streamName), {
 		onSuccess: (data) => {
-			const retentionData = _.isArray(data.data) ? data.data[0] || {} : {}
+			const retentionData = _.isArray(data.data) ? data.data[0] || {} : {};
 			setStreamStore((store) => setRetention(store, retentionData));
 		},
 		retry: false,

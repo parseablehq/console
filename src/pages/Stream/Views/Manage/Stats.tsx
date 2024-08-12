@@ -145,7 +145,7 @@ const StorageSizeRow = () => {
 					style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
 					<Stack gap={0} style={{ flexDirection: 'row', alignItems: 'center' }}>
 						<Text size="md" mr="2px">{`(  `}</Text>
-						<Text  size="md" ta="center" className={classes.compressionText}>
+						<Text size="md" ta="center" className={classes.compressionText}>
 							{compressionSize}
 						</Text>
 						<IconArrowDown className={classes.compressionText} size="0.8rem" stroke={1.8} />

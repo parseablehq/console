@@ -264,7 +264,7 @@ export const FilterQueryBuilder = (props: { onClear: () => void; onApply: () => 
 	}, [query.rules, fields]);
 
 	return (
-		<Stack style={{ height: '100%', justifyContent:'space-between'}}>
+		<Stack style={{ height: '100%', justifyContent: 'space-between' }}>
 			<ScrollArea>
 				<Stack gap={0} pl={20} pr={20}>
 					{query.rules.map((ruleSet) => {

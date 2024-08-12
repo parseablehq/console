@@ -5,8 +5,8 @@ import { useQueryLogs } from '@/hooks/useQueryLogs';
 
 const { setCleanStoreForStreamChange } = logsStoreReducers;
 
-const useLogsFetcher = (props: {schemaLoading: boolean}) => {
-	const {schemaLoading} = props;
+const useLogsFetcher = (props: { schemaLoading: boolean }) => {
+	const { schemaLoading } = props;
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const { currentOffset, currentPage, pageData } = tableOpts;

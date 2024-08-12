@@ -10,13 +10,13 @@ const ModalTitle = () => {
 type UserModalProps = {
 	opened: boolean;
 	onClose: () => void;
-	userData: {[key: string]: string}
-}
+	userData: { [key: string]: string };
+};
 
 const UserModal = (props: UserModalProps) => {
 	const username = Cookies.get('username');
 
-	const [userRoles] = useAppStore(store => store.userRoles);
+	const [userRoles] = useAppStore((store) => store.userRoles);
 	if (!userRoles) return null;
 
 	return (

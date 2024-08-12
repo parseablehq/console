@@ -15,6 +15,6 @@ export type AboutData = {
 	oidcActive: boolean;
 	cache: string;
 	analytics: {
-        clarityTag: string;
-    }
+		clarityTag: string;
+	};
 };

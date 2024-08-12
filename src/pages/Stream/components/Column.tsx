@@ -73,8 +73,8 @@ const Column: FC<Column> = (props) => {
 	}, []);
 
 	const openPopover = useCallback(() => {
-		setPopoverOpen(true)
-	}, [])
+		setPopoverOpen(true);
+	}, []);
 
 	const onSearch = useCallback(
 		(e: ChangeEvent<HTMLInputElement>) => {
@@ -125,7 +125,7 @@ const Column: FC<Column> = (props) => {
 				</Popover.Target>
 				<Popover.Dropdown>
 					<Box style={{ width: rem(400) }}>
-						<SortWidget columnName={columnName} closePopover={closePopover}/>
+						<SortWidget columnName={columnName} closePopover={closePopover} />
 						<Stack gap={8} mt={16} style={{ flexDirection: 'row' }}>
 							<IconFilter stroke={1} size="1rem" />
 							<Text>Filter by values:</Text>

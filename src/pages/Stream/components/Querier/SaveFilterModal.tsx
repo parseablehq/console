@@ -74,7 +74,7 @@ const makeTimeRangeOptions = ({
 							to: selected.to,
 						},
 					},
-			  ]
+				]
 			: []),
 	];
 };

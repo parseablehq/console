@@ -8,7 +8,7 @@ type Props = {
 	setValue: (val: string) => void;
 	placeholder: string;
 	error: string;
-	style?: Record<string, string | number>
+	style?: Record<string, string | number>;
 };
 
 export function CreatableSelect(props: Props) {
@@ -16,18 +16,18 @@ export function CreatableSelect(props: Props) {
 		onDropdownClose: () => combobox.resetSelectedOption(),
 	});
 
-	const { data, setData, value, setValue, style = {}} = props;
+	const { data, setData, value, setValue, style = {} } = props;
 	const [search, setSearch] = useState('');
 
 	const exactOptionMatch = data.some((item) => item === search);
 	const filteredOptions = exactOptionMatch
 		? data
 		: data.filter((item) => item.toLowerCase().includes(search.toLowerCase().trim()));
-    const canAddValueAsOption = !exactOptionMatch && search.trim().length > 0 
-	
+	const canAddValueAsOption = !exactOptionMatch && search.trim().length > 0;
+
 	const handleEnterKeyPress = (event: KeyboardEvent) => {
 		if (event.key === 'Enter' && canAddValueAsOption) {
-			setData((prev) => [...prev, search])
+			setData((prev) => [...prev, search]);
 			setValue(search);
 			combobox.closeDropdown();
 		}
@@ -51,7 +51,7 @@ export function CreatableSelect(props: Props) {
 			window.removeEventListener('keydown', handleEnterKeyPress);
 		};
 	}, [canAddValueAsOption, search]);
-	
+
 	const options = filteredOptions.map((item) => (
 		<Combobox.Option value={item} key={item}>
 			{item}
@@ -72,8 +72,7 @@ export function CreatableSelect(props: Props) {
 				}
 
 				combobox.closeDropdown();
-			}}
-			>
+			}}>
 			<Combobox.Target>
 				<InputBase
 					rightSection={<Combobox.Chevron />}
@@ -98,7 +97,7 @@ export function CreatableSelect(props: Props) {
 			<Combobox.Dropdown>
 				<Combobox.Options>
 					{options}
-					{ canAddValueAsOption ? (
+					{canAddValueAsOption ? (
 						<Combobox.Option value="$create">+ Create {search}</Combobox.Option>
 					) : (
 						<Combobox.Option disabled value="$create">

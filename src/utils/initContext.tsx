@@ -53,10 +53,10 @@ export default function initContext<Store>(initialState: Store) {
 
 		const setStore = useCallback(
 			(updateFn: (store: Store) => Partial<Store>) => {
-			  store.set(updateFn(store.get()));
+				store.set(updateFn(store.get()));
 			},
 			[store],
-		  );
+		);
 
 		return [state, setStore];
 	}

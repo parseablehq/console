@@ -72,7 +72,7 @@ const QuerierModal = (props: {
 	onSqlSearchApply: (query: string) => void;
 	onFiltersApply: () => void;
 }) => {
-	const [currentStream] = useAppStore(store => store.currentStream)
+	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [{ showQueryBuilder, viewMode }, setLogsStore] = useLogsStore((store) => store.custQuerySearchState);
 	const onClose = useCallback(() => {
 		setLogsStore((store) => toggleQueryBuilder(store, false));
