@@ -1,4 +1,16 @@
-import { Button, Stack, Text, Box, Tooltip, Modal, TextInput, Select, Checkbox, NumberInput, Loader } from '@mantine/core';
+import {
+	Button,
+	Stack,
+	Text,
+	Box,
+	Tooltip,
+	Modal,
+	TextInput,
+	Select,
+	Checkbox,
+	NumberInput,
+	Loader,
+} from '@mantine/core';
 import classes from '../../styles/Management.module.css';
 import { TransformedAlert } from '../../providers/StreamProvider';
 import _ from 'lodash';
@@ -9,7 +21,7 @@ import { useStreamStore, streamStoreReducers } from '../../providers/StreamProvi
 
 const defaultColumnTypeConfig = { column: '', operator: '=', value: '', repeats: 1, ignoreCase: false };
 const defaultColumnTypeRule = { type: 'column' as 'column', config: defaultColumnTypeConfig };
-const {transformAlerts} = streamStoreReducers;
+const { transformAlerts } = streamStoreReducers;
 
 const stringOperators = [
 	{ value: '=', label: 'equals to' },
@@ -102,7 +114,8 @@ const useAlertsForm = (opts: FormOpts) => {
 			name: (value) => isValidName(value, opts.allAlertNames || []),
 			message: (value) => (_.isEmpty(value) ? 'Message cannot be empty' : null),
 			rule: {
-				type: (value: 'column' | 'composite') => (_.includes([columnRuleType, compositeRuleType], value) ? null : 'Unknown rule type'),
+				type: (value: 'column' | 'composite') =>
+					_.includes([columnRuleType, compositeRuleType], value) ? null : 'Unknown rule type',
 			},
 			targets: {
 				endpoint: (value) => (_.isEmpty(value) ? 'Cannot be empty' : null),
@@ -143,7 +156,11 @@ const RuleSectionHeader = (props: RuleSectionHeaderProps) => {
 				<Text className={classes.fieldTitle}>Rule</Text>
 				<Text className={classes.fieldDescription}>Description for rule</Text>
 			</Stack>
-			<Select w="30%" data={[columnRuleType as 'column', compositeRuleType as 'composite']} {...form.getInputProps('rule.type')} />
+			<Select
+				w="30%"
+				data={[columnRuleType as 'column', compositeRuleType as 'composite']}
+				{...form.getInputProps('rule.type')}
+			/>
 		</Stack>
 	);
 };
@@ -393,11 +410,10 @@ const TargetsSection = (props: TargetsSectionProps) => {
 			</Stack>
 			<Box mt={8}>
 				<Button
-					leftSection={<IconPlus stroke={1.2} size="1rem"/>}
+					leftSection={<IconPlus stroke={1.2} size="1rem" />}
 					variant="outline"
 					onClick={addTarget}
-					className={classes.formBtn}
-					>
+					className={classes.formBtn}>
 					Add Target
 				</Button>
 			</Box>
@@ -475,7 +491,12 @@ const AlertForm = (props: { form: AlertsFormType }) => {
 
 type AlertsFormType = UseFormReturnType<TransformedAlert, (values: TransformedAlert) => TransformedAlert>;
 
-const AlertsModal = (props: { open: boolean; alertName: string; onClose: () => void, updateAlerts: ({ config, onSuccess }: { config: any, onSuccess: () => void }) => void; }) => {
+const AlertsModal = (props: {
+	open: boolean;
+	alertName: string;
+	onClose: () => void;
+	updateAlerts: ({ config, onSuccess }: { config: any; onSuccess: () => void }) => void;
+}) => {
 	const { open, alertName, onClose, updateAlerts } = props;
 	const [alertsConfig] = useStreamStore((store) => store.alertsConfig);
 	const { alerts } = alertsConfig;
@@ -494,26 +515,26 @@ const AlertsModal = (props: { open: boolean; alertName: string; onClose: () => v
 	const onSubmitSuccess = useCallback(() => {
 		form.setValues(defaultAlert);
 		onClose();
-	}, [])
+	}, []);
 
 	const onSubmit = useCallback(() => {
-		const errors = form.validate()
+		const errors = form.validate();
 		if (!errors.hasErrors) {
 			const formValues = form.values;
 			const allAlerts = (() => {
 				if (alert) {
-					const alertIndex = _.findIndex(alerts, alert => alert.name === formValues.name)
+					const alertIndex = _.findIndex(alerts, (alert) => alert.name === formValues.name);
 					const modifiedAlerts = _.clone(alerts);
-					modifiedAlerts[alertIndex] = formValues; 
+					modifiedAlerts[alertIndex] = formValues;
 					return modifiedAlerts;
 				} else {
-					return [...alerts, formValues]
+					return [...alerts, formValues];
 				}
-			})()
-			const transformedAlerts = transformAlerts(allAlerts)
-			updateAlerts({config: {...alertsConfig, alerts: transformedAlerts}, onSuccess: onSubmitSuccess})
+			})();
+			const transformedAlerts = transformAlerts(allAlerts);
+			updateAlerts({ config: { ...alertsConfig, alerts: transformedAlerts }, onSuccess: onSubmitSuccess });
 		}
-	}, [updateAlerts, form, alertsConfig, alert])
+	}, [updateAlerts, form, alertsConfig, alert]);
 
 	return (
 		<Modal
@@ -544,9 +565,9 @@ const AlertsModal = (props: { open: boolean; alertName: string; onClose: () => v
 	);
 };
 
-const Header = (props: { selectAlert: selectAlert, isLoading: boolean }) => {
+const Header = (props: { selectAlert: selectAlert; isLoading: boolean }) => {
 	return (
-		<Stack className={classes.headerContainer} style={{minHeight: '3rem', maxHeight: '3rem'}}>
+		<Stack className={classes.headerContainer} style={{ minHeight: '3rem', maxHeight: '3rem' }}>
 			<Text className={classes.title}>Alerts</Text>
 			{!props.isLoading && (
 				<Box>
@@ -554,7 +575,7 @@ const Header = (props: { selectAlert: selectAlert, isLoading: boolean }) => {
 						variant="outline"
 						onClick={() => props.selectAlert('')}
 						// h={'2rem'}
-						leftSection={<IconPlus stroke={2} size={'1rem'}/>}>
+						leftSection={<IconPlus stroke={2} size={'1rem'} />}>
 						New Alert
 					</Button>
 				</Box>
@@ -563,7 +584,11 @@ const Header = (props: { selectAlert: selectAlert, isLoading: boolean }) => {
 	);
 };
 
-const AlertItem = (props: { alert: TransformedAlert; selectAlert: selectAlert, onDeleteAlert: (name: string) => void; }) => {
+const AlertItem = (props: {
+	alert: TransformedAlert;
+	selectAlert: selectAlert;
+	onDeleteAlert: (name: string) => void;
+}) => {
 	const { alert, selectAlert } = props;
 	const { name } = alert;
 
@@ -584,7 +609,11 @@ const AlertItem = (props: { alert: TransformedAlert; selectAlert: selectAlert, o
 
 type selectAlert = (title: string) => void;
 
-const AlertList = (props: { selectAlert: selectAlert, isLoading: boolean, updateAlerts: ({ config }: { config: any }) => void; }) => {
+const AlertList = (props: {
+	selectAlert: selectAlert;
+	isLoading: boolean;
+	updateAlerts: ({ config }: { config: any }) => void;
+}) => {
 	const [alertsConfig] = useStreamStore((store) => store.alertsConfig);
 	const { alerts } = alertsConfig;
 
@@ -593,14 +622,14 @@ const AlertList = (props: { selectAlert: selectAlert, isLoading: boolean, update
 			const alertIndex = _.findIndex(alerts, (alert) => alert.name === alertName);
 			const modifiedAlerts = _.clone(alerts);
 			modifiedAlerts.splice(alertIndex, 1);
-			const transformedAlerts = transformAlerts(modifiedAlerts)
+			const transformedAlerts = transformAlerts(modifiedAlerts);
 			props.updateAlerts({ config: { ...alertsConfig, alerts: transformedAlerts } });
 		},
 		[alertsConfig],
 	);
 
 	return (
-		<Stack className={classes.listContainer} gap={0} style={{flex: 1, overflow: 'scroll'}}>
+		<Stack className={classes.listContainer} gap={0} style={{ flex: 1, overflow: 'scroll' }}>
 			{props.isLoading ? (
 				<Stack style={{ flex: 1, width: '100%', alignItems: 'centrer', justifyContent: 'center' }}>
 					<Stack style={{ alignItems: 'center' }}>
@@ -610,7 +639,7 @@ const AlertList = (props: { selectAlert: selectAlert, isLoading: boolean, update
 			) : (
 				<>
 					{_.map(alerts, (alert) => {
-						return <AlertItem alert={alert} selectAlert={props.selectAlert} onDeleteAlert={onDeleteAlert}/>;
+						return <AlertItem alert={alert} selectAlert={props.selectAlert} onDeleteAlert={onDeleteAlert} />;
 					})}
 				</>
 			)}
@@ -621,7 +650,7 @@ const AlertList = (props: { selectAlert: selectAlert, isLoading: boolean, update
 const Alerts = (props: {
 	isLoading: boolean;
 	schemaLoading: boolean;
-	updateAlerts: ({ config, onSuccess }: { config: any, onSuccess?: () => void; }) => void;
+	updateAlerts: ({ config, onSuccess }: { config: any; onSuccess?: () => void }) => void;
 }) => {
 	const [alertName, setAlertName] = useState<string>('');
 	const [alertModalOpen, setAlertModalOpen] = useState<boolean>(false);
@@ -636,10 +665,10 @@ const Alerts = (props: {
 	}, []);
 
 	return (
-		<Stack className={classes.sectionContainer} gap={0} style={{flex: 1}}>
-			<AlertsModal open={alertModalOpen} alertName={alertName} onClose={closeModal} updateAlerts={props.updateAlerts}/>
+		<Stack className={classes.sectionContainer} gap={0} style={{ flex: 1 }}>
+			<AlertsModal open={alertModalOpen} alertName={alertName} onClose={closeModal} updateAlerts={props.updateAlerts} />
 			<Header selectAlert={selectAlert} isLoading={props.isLoading} />
-			<AlertList selectAlert={selectAlert} isLoading={props.isLoading} updateAlerts={props.updateAlerts}/>
+			<AlertList selectAlert={selectAlert} isLoading={props.isLoading} updateAlerts={props.updateAlerts} />
 		</Stack>
 	);
 };

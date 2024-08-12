@@ -12,27 +12,27 @@ export const FIXED_DURATIONS: ReadonlyArray<FixedDuration> = [
 	{
 		name: 'last 10 minutes',
 		milliseconds: dayjs.duration({ minutes: 10 }).asMilliseconds(),
-		label: '10M'
+		label: '10M',
 	},
 	{
 		name: 'last 1 hour',
 		milliseconds: dayjs.duration({ hours: 1 }).asMilliseconds(),
-		label: '1H'
+		label: '1H',
 	},
 	{
 		name: 'last 5 hours',
 		milliseconds: dayjs.duration({ hours: 5 }).asMilliseconds(),
-		label: '5H'
+		label: '5H',
 	},
 	{
 		name: 'last 24 hours',
 		milliseconds: dayjs.duration({ days: 1 }).asMilliseconds(),
-		label: '1D'
+		label: '1D',
 	},
 	{
 		name: 'last 3 days',
 		milliseconds: dayjs.duration({ days: 3 }).asMilliseconds(),
-		label: '3D'
+		label: '3D',
 	},
 ] as const;
 

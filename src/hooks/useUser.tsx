@@ -131,7 +131,7 @@ export const useGetUser = () => {
 		refetch: getUserRefetch,
 	} = useQuery(['fetch-user'], () => getUsers(), {
 		retry: false,
-		refetchOnWindowFocus: false
+		refetchOnWindowFocus: false,
 	});
 	return {
 		getUserRefetch,

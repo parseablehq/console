@@ -1,18 +1,18 @@
-import { FC, useCallback } from "react";
-import { useLogsStore, logsStoreReducers, LOAD_LIMIT, LOG_QUERY_LIMITS } from "../../providers/LogsProvider";
-import { useAppStore } from "@/layouts/MainLayout/providers/AppProvider";
-import { usePagination } from "@mantine/hooks";
-import { downloadDataAsCSV, downloadDataAsJson } from "@/utils/exportHelpers";
-import { Box, Center, Group, Loader, Menu, Pagination, px, Stack, Tooltip } from "@mantine/core";
-import _ from "lodash";
-import { Text } from "@mantine/core";
-import { HumanizeNumber } from "@/utils/formatBytes";
-import IconButton from "@/components/Button/IconButton";
-import { IconDownload, IconSelector } from "@tabler/icons-react";
-import useMountedState from "@/hooks/useMountedState";
-import classes from '../../styles/Footer.module.css'
+import { FC, useCallback } from 'react';
+import { useLogsStore, logsStoreReducers, LOAD_LIMIT, LOG_QUERY_LIMITS } from '../../providers/LogsProvider';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { usePagination } from '@mantine/hooks';
+import { downloadDataAsCSV, downloadDataAsJson } from '@/utils/exportHelpers';
+import { Box, Center, Group, Loader, Menu, Pagination, px, Stack, Tooltip } from '@mantine/core';
+import _ from 'lodash';
+import { Text } from '@mantine/core';
+import { HumanizeNumber } from '@/utils/formatBytes';
+import IconButton from '@/components/Button/IconButton';
+import { IconDownload, IconSelector } from '@tabler/icons-react';
+import useMountedState from '@/hooks/useMountedState';
+import classes from '../../styles/Footer.module.css';
 
-const {setPageAndPageData, setCurrentPage, setCurrentOffset, makeExportData} = logsStoreReducers;
+const { setPageAndPageData, setCurrentPage, setCurrentOffset, makeExportData } = logsStoreReducers;
 
 const TotalCount = (props: { totalCount: number }) => {
 	return (
@@ -47,7 +47,6 @@ const TotalLogsCount = (props: { hasTableLoaded: boolean; isFetchingCount: boole
 		</Stack>
 	);
 };
-
 
 const LimitControl: FC = () => {
 	const [opened, setOpened] = useMountedState(false);
@@ -151,7 +150,7 @@ const Footer = (props: { loaded: boolean; isLoading: boolean; hasNoData: boolean
 							pagination.setPage(page);
 						}}
 						size="sm">
-						<Group  gap={5} justify="center">
+						<Group gap={5} justify="center">
 							<Pagination.First
 								onClick={() => {
 									currentOffset !== 0 && onChangeOffset('prev');

@@ -5,7 +5,7 @@ import type { ImageProps } from '@mantine/core';
 import { Box, Button, Center, Group, Image, Text, Title } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import type { FC } from 'react';
-import errorStyles from './styles/Errors.module.css'
+import errorStyles from './styles/Errors.module.css';
 
 const Illustration: FC<ImageProps> = (props) => {
 	return <Image src={bugError} {...props} alt="Bug" mx="auto" />;

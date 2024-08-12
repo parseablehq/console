@@ -67,7 +67,6 @@ const SavedFilterItem = (props: {
 		deleteSavedFilterMutation({ filter_id });
 	}, [showDeletePropmt]);
 
-
 	const onApplyFilters = useCallback(() => {
 		if (_.isString(query.filter_query)) {
 			props.onSqlSearchApply(query.filter_query, filter_id, time_filter);
@@ -141,8 +140,8 @@ const SavedFilterItem = (props: {
 							_.isString(query.filter_query)
 								? query.filter_query
 								: query.filter_builder
-								? parseQuery(query.filter_builder, stream_name).parsedQuery
-								: ''
+									? parseQuery(query.filter_builder, stream_name).parsedQuery
+									: ''
 						}
 						language="sql"
 						withCopyButton={false}

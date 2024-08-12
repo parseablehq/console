@@ -506,7 +506,7 @@ const filterAndSortData = (
 					return doesMatch ? [...acc, d] : acc;
 				},
 				[],
-		  ) as Log[]);
+			) as Log[]);
 	const sortedData = _.orderBy(filteredData, [sortKey], [sortOrder]);
 	return sortedData;
 };
@@ -527,7 +527,7 @@ const searchAndSortData = (opts: { searchValue: string }, data: Log[]) => {
 					return doesMatch ? [...acc, d] : acc;
 				},
 				[],
-		  ) as Log[]);
+			) as Log[]);
 	const sortedData = _.orderBy(filteredData, [defaultSortKey], [defaultSortOrder]);
 	return sortedData;
 };

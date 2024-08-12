@@ -18,7 +18,7 @@ import { IconPlus, IconTrash, IconX } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import { useRole } from '@/hooks/useRole';
-import styles from './styles/AccessManagement.module.css'
+import styles from './styles/AccessManagement.module.css';
 
 interface PrivilegeTRProps {
 	roleName: string;
@@ -252,7 +252,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 					) : getRoleIsLoading ? (
 						'loading..'
 					) : getRoleData?.data ? (
-						<Stack style={{flexDirection:'row', alignItems: 'center'}} gap={8}>
+						<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={8}>
 							{getBadges(getRoleData?.data)}
 							<Tooltip
 								label={'Add a Privilege'}
@@ -260,7 +260,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 								withArrow
 								position="right">
 								<Badge color="green" onClick={openUpdateRole}>
-									<IconPlus size={'0.7rem'} stroke={2} style={{paddingTop: '2px'}}/>
+									<IconPlus size={'0.7rem'} stroke={2} style={{ paddingTop: '2px' }} />
 								</Badge>
 							</Tooltip>
 						</Stack>

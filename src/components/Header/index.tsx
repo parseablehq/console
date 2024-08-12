@@ -1,5 +1,3 @@
-import PrimaryHeader from "./PrimaryHeader";
+import PrimaryHeader from './PrimaryHeader';
 
-export {
-    PrimaryHeader,
-}
+export { PrimaryHeader };

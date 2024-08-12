@@ -21,7 +21,7 @@ export const useRole = () => {
 				typeof error === 'string' && notifyError({ message: error });
 			} else if (data.message && typeof data.message === 'string') {
 				notifyError({ message: data.message });
-			}			
+			}
 		},
 	});
 
@@ -77,7 +77,7 @@ export const useRole = () => {
 				typeof error === 'string' && notifyError({ message: error });
 			} else if (data.message && typeof data.message === 'string') {
 				notifyError({ message: data.message });
-			}			
+			}
 		},
 	});
 

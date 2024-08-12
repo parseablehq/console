@@ -15,7 +15,7 @@ import _ from 'lodash';
 import StreamingButton from '@/components/Header/StreamingButton';
 import { useLogsStore, logsStoreReducers } from '../providers/LogsProvider';
 import { filterStoreReducers, useFilterStore } from '../providers/FilterProvider';
-import classes from './styles/PrimaryToolbar.module.css'
+import classes from './styles/PrimaryToolbar.module.css';
 
 const { toggleDeleteModal, onToggleView } = logsStoreReducers;
 const { toggleSavedFiltersModal } = filterStoreReducers;
@@ -85,7 +85,7 @@ const ViewToggle = () => {
 			]}
 		/>
 	);
-}
+};
 
 const PrimaryToolbar = () => {
 	const [maximized] = useAppStore((store) => store.maximized);
@@ -113,11 +113,11 @@ const PrimaryToolbar = () => {
 				<Stack style={{ flexDirection: 'row', height: STREAM_PRIMARY_TOOLBAR_HEIGHT }} w="100%">
 					<StreamDropdown />
 					<Querier />
-					<SavedFiltersButton/>
+					<SavedFiltersButton />
 					<TimeRange />
 					<RefreshInterval />
 					<RefreshNow />
-					<ViewToggle/>
+					<ViewToggle />
 					<MaximizeButton />
 				</Stack>
 			) : view === 'live-tail' ? (
@@ -126,14 +126,12 @@ const PrimaryToolbar = () => {
 					<StreamingButton />
 					<MaximizeButton />
 				</Stack>
-			) 
-			: view === 'manage' ? (
+			) : view === 'manage' ? (
 				<Stack style={{ flexDirection: 'row', height: STREAM_PRIMARY_TOOLBAR_HEIGHT }} w="100%">
 					<StreamDropdown />
 					<DeleteStreamButton />
 				</Stack>
-			)
-			 : null}
+			) : null}
 		</Stack>
 	);
 };
