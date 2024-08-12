@@ -359,7 +359,7 @@ const setTimeRange = (
 	return {
 		...cleanStore,
 		timeRange: { ...store.timeRange, startTime: startTime.toDate(), endTime: endTime.toDate(), label, interval, type },
-		viewMode: store.viewMode
+		viewMode: store.viewMode,
 	};
 };
 
@@ -501,7 +501,7 @@ const filterAndSortData = (
 					return doesMatch ? [...acc, d] : acc;
 				},
 				[],
-		  ) as Log[]);
+			) as Log[]);
 	const sortedData = _.orderBy(filteredData, [sortKey], [sortOrder]);
 	return sortedData;
 };
@@ -522,7 +522,7 @@ const searchAndSortData = (opts: { searchValue: string }, data: Log[]) => {
 					return doesMatch ? [...acc, d] : acc;
 				},
 				[],
-		  ) as Log[]);
+			) as Log[]);
 	const sortedData = _.orderBy(filteredData, [defaultSortKey], [defaultSortOrder]);
 	return sortedData;
 };
@@ -871,7 +871,10 @@ const toggleSideBar = (store: LogsStore) => {
 
 const onToggleView = (store: LogsStore, viewMode: 'json' | 'table') => {
 	const { data, tableOpts } = store;
-	const filteredData = filterAndSortData({ sortOrder: defaultSortOrder, sortKey: defaultSortKey, filters: {} }, data.rawData);
+	const filteredData = filterAndSortData(
+		{ sortOrder: defaultSortOrder, sortKey: defaultSortKey, filters: {} },
+		data.rawData,
+	);
 	const currentPage = tableOpts.currentPage;
 	const newPageSlice = getPageSlice(currentPage, tableOpts.perPage, filteredData);
 
@@ -888,7 +891,7 @@ const onToggleView = (store: LogsStore, viewMode: 'json' | 'table') => {
 			currentPage,
 			totalPages: getTotalPages(filteredData, tableOpts.perPage),
 		},
-		viewMode
+		viewMode,
 	};
 };
 

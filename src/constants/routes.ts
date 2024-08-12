@@ -9,9 +9,9 @@ export const EXPLORE_ROUTE = '/:streamName/explore';
 export const USERS_MANAGEMENT_ROUTE = '/users';
 export const OIDC_NOT_CONFIGURED_ROUTE = '/oidc-not-configured';
 export const CLUSTER_ROUTE = '/cluster';
-export const STREAM_ROUTE = '/:streamName/:view?'
+export const STREAM_ROUTE = '/:streamName/:view?';
 
-export const STREAM_VIEWS = ['explore', 'manage', 'live-tail']
+export const STREAM_VIEWS = ['explore', 'manage', 'live-tail'];
 
 export const PATHS = {
 	all: '/*',

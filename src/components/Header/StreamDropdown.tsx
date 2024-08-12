@@ -10,23 +10,26 @@ import { STREAM_PRIMARY_TOOLBAR_HEIGHT } from '@/constants/theme';
 const StreamDropdown = () => {
 	const { streamName, view } = useParams();
 
-	const [currentStream] = useAppStore(store => store.currentStream)
-	const [userSpecificStreams] = useAppStore(store => store.userSpecificStreams)
+	const [currentStream] = useAppStore((store) => store.currentStream);
+	const [userSpecificStreams] = useAppStore((store) => store.userSpecificStreams);
 	const valueRef = useRef<string | null>(currentStream);
 	const navigate = useNavigate();
 
-	const handleChange: (value: string | null) => void = useCallback((value: string | null) => {
-		if (value === null) return;
+	const handleChange: (value: string | null) => void = useCallback(
+		(value: string | null) => {
+			if (value === null) return;
 
-		valueRef.current = value;
+			valueRef.current = value;
 
-		const targetView = _.includes(STREAM_VIEWS, view) ? view : 'explore'
-		navigate(`/${value}/${targetView}`);
-	}, [view]);
+			const targetView = _.includes(STREAM_VIEWS, view) ? view : 'explore';
+			navigate(`/${value}/${targetView}`);
+		},
+		[view],
+	);
 
 	useEffect(() => {
 		valueRef.current = streamName || null;
-	}, [streamName])
+	}, [streamName]);
 
 	return (
 		<Select
@@ -36,9 +39,11 @@ const StreamDropdown = () => {
 			h="100%"
 			classNames={{ input: classes.streamInput, description: classes.streamSelectDescription }}
 			onChange={handleChange}
-			styles={{input: {
-				height: STREAM_PRIMARY_TOOLBAR_HEIGHT
-			}}}
+			styles={{
+				input: {
+					height: STREAM_PRIMARY_TOOLBAR_HEIGHT,
+				},
+			}}
 			data={userSpecificStreams?.map((stream: any) => ({ value: stream.name, label: stream.name })) ?? []}
 		/>
 	);

@@ -89,7 +89,7 @@ const Logs: FC = () => {
 					error ? (
 						<SchemaErrorView error={error} fetchSchema={fetchSchema} />
 					) : (
-						<LogsView schemaLoading={isSchemaLoading}/>
+						<LogsView schemaLoading={isSchemaLoading} />
 					)
 				) : view === 'live-tail' ? (
 					<LiveLogTable />

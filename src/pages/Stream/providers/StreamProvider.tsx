@@ -121,7 +121,7 @@ const initialState: StreamStore = {
 	info: {},
 	sideBarOpen: false,
 	cacheEnabled: null,
-	hotTier: {}
+	hotTier: {},
 };
 
 const { Provider: StreamProvider, useStore: useStreamStore } = initContext(initialState);
@@ -132,15 +132,15 @@ const streamChangeCleanup = (store: StreamStore) => {
 
 const toggleSideBar = (store: StreamStore) => {
 	return {
-		sideBarOpen: !store.sideBarOpen
-	}
-}
+		sideBarOpen: !store.sideBarOpen,
+	};
+};
 
 const setCacheEnabled = (_store: StreamStore, enabled: boolean) => {
 	return {
-		cacheEnabled: enabled
-	}
-}
+		cacheEnabled: enabled,
+	};
+};
 
 const parseType = (type: any): 'text' | 'number' => {
 	if (typeof type === 'object') {
@@ -213,15 +213,15 @@ const setRetention = (_store: StreamStore, retention: { duration?: string; descr
 
 const setStreamInfo = (_store: StreamStore, infoResponse: AxiosResponse<StreamInfo>) => {
 	return {
-		info: infoResponse.data
-	}
-}
+		info: infoResponse.data,
+	};
+};
 
 const setHotTier = (_store: StreamStore, hotTier: HotTierConfig) => {
 	return {
-		hotTier
-	}
-}
+		hotTier,
+	};
+};
 
 const operatorLabelMap = {
 	lessThanEquals: '<=',
@@ -338,7 +338,7 @@ const streamStoreReducers: LogsStoreReducers = {
 	toggleSideBar,
 	setCacheEnabled,
 	setStreamInfo,
-	setHotTier
+	setHotTier,
 };
 
 export { StreamProvider, useStreamStore, streamStoreReducers };

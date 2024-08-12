@@ -62,7 +62,7 @@ export const useLoginForm = () => {
 						const pathname = location.state?.from?.pathname || HOME_ROUTE;
 						nav(
 							{
-								pathname
+								pathname,
 							},
 							{ replace: true },
 						);

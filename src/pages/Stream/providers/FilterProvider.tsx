@@ -160,7 +160,7 @@ const addRuleToGroup = (store: FilterStore, groupId: string) => {
 								...ruleSet.rules,
 								{ id: `rule-${generateRandomId(6)}`, field: fields[0].name, value: '', operator: '=' },
 							],
-					  };
+						};
 			}),
 		},
 	};
@@ -297,24 +297,24 @@ const setFields = (_store: FilterStore, schema: LogStreamSchemaData) => {
 
 const toggleSaveFiltersModal = (_store: FilterStore, val: boolean) => {
 	return {
-		isSaveFiltersModalOpen: val
-	}
-}
+		isSaveFiltersModalOpen: val,
+	};
+};
 
 const toggleSavedFiltersModal = (_store: FilterStore, val: boolean) => {
 	return {
-		isSavedFiltersModalOpen: val
-	}
-}
+		isSavedFiltersModalOpen: val,
+	};
+};
 
 const applySavedFilters = (store: FilterStore, query: QueryType) => {
 	return {
 		...store,
 		appliedQuery: query,
 		query,
-		isSumbitDisabled: true
-	}
-}
+		isSumbitDisabled: true,
+	};
+};
 
 const filterStoreReducers: FilterStoreReducers = {
 	storeAppliedQuery,
@@ -330,7 +330,7 @@ const filterStoreReducers: FilterStoreReducers = {
 	toggleSubmitBtn,
 	toggleSaveFiltersModal,
 	toggleSavedFiltersModal,
-	applySavedFilters
+	applySavedFilters,
 };
 
 export { FilterProvider, useFilterStore, filterStoreReducers };

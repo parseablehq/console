@@ -28,7 +28,7 @@ const StreamingButton: FC = () => {
 	const { streamButton } = classes;
 
 	return (
-		<Button className={streamButton} onClick={handleStreaming} style={{height: STREAM_PRIMARY_TOOLBAR_HEIGHT}}>
+		<Button className={streamButton} onClick={handleStreaming} style={{ height: STREAM_PRIMARY_TOOLBAR_HEIGHT }}>
 			<Box mr="10px">{liveTailConfig.liveTailStatus === 'streaming' ? '🔴' : '🟢'}</Box>
 			{liveTailConfig.liveTailStatus === 'streaming' ? 'Stop' : 'Start'}
 		</Button>

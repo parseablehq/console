@@ -1,4 +1,4 @@
-import { HumanizeNumber, formatBytes } from "@/utils/formatBytes";
+import { HumanizeNumber, formatBytes } from '@/utils/formatBytes';
 
 interface Label {
 	[key: string]: string;
@@ -83,9 +83,14 @@ export type SanitizedMetrics = {
 };
 
 export const sanitizeIngestorData = (prometheusResponse: PrometheusMetricResponse): SanitizedMetrics | null => {
-	const {parseable_events_ingested, parseable_staging_files, parseable_storage_size, process_resident_memory_bytes} = prometheusResponse
-	const streamWiseDataStorage = Array.isArray(parseable_storage_size) ? parseable_storage_size.filter((d) => d.type === 'data') : []
-	const streamWiseStagingStorage = Array.isArray(parseable_storage_size) ? parseable_storage_size.filter((d) => d.type === 'staging') : []
+	const { parseable_events_ingested, parseable_staging_files, parseable_storage_size, process_resident_memory_bytes } =
+		prometheusResponse;
+	const streamWiseDataStorage = Array.isArray(parseable_storage_size)
+		? parseable_storage_size.filter((d) => d.type === 'data')
+		: [];
+	const streamWiseStagingStorage = Array.isArray(parseable_storage_size)
+		? parseable_storage_size.filter((d) => d.type === 'staging')
+		: [];
 	const totalEventsIngested = parseStreamDataMetrics(parseable_events_ingested);
 	const totalBytesIngested = parseStreamDataMetrics(streamWiseDataStorage);
 	const stagingFilesCount = parseStreamDataMetrics(parseable_staging_files);

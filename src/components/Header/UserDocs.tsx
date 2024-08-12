@@ -4,20 +4,20 @@ import type { FC } from 'react';
 import styles from './styles/LogQuery.module.css';
 
 const DocsUser: FC = () => {
-    const classes = styles;
+	const classes = styles;
 	const { refreshNowBtn } = classes;
 
 	return (
-        <Tooltip label={'Docs'} style={{ color: 'white', backgroundColor: 'black' }} withArrow position="left">
-        <Button
-            variant="default"
-            className={refreshNowBtn}
-            onClick={() => {
-                window.open('https://www.parseable.io/docs/rbac', '_blank');
-            }}>
-            <IconBook2 size={px('1.2rem')} stroke={1.5} />
-        </Button>
-    </Tooltip>
+		<Tooltip label={'Docs'} style={{ color: 'white', backgroundColor: 'black' }} withArrow position="left">
+			<Button
+				variant="default"
+				className={refreshNowBtn}
+				onClick={() => {
+					window.open('https://www.parseable.io/docs/rbac', '_blank');
+				}}>
+				<IconBook2 size={px('1.2rem')} stroke={1.5} />
+			</Button>
+		</Tooltip>
 	);
 };
 

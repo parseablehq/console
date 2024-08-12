@@ -1,8 +1,8 @@
-import { useCallback } from "react";
-import { useLogsStore, logsStoreReducers } from "../../providers/LogsProvider";
-import { Center, Loader, Stack, Text } from "@mantine/core";
-import { RetryBtn } from "@/components/Button/Retry";
-import classes from '../../styles/Logs.module.css'
+import { useCallback } from 'react';
+import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
+import { Center, Loader, Stack, Text } from '@mantine/core';
+import { RetryBtn } from '@/components/Button/Retry';
+import classes from '../../styles/Logs.module.css';
 
 const { getCleanStoreForRefetch } = logsStoreReducers;
 
