@@ -8,7 +8,7 @@ export function paramsParser(queryParams: Record<string, string>) {
 	}
 
 	if (parsedParams.endsWith('&')) {
-		parsedParams = parsedParams.slice(0, -1);
+		parsedParams = `?${parsedParams.slice(0, -1)}`;
 	}
 	return parsedParams;
 }
