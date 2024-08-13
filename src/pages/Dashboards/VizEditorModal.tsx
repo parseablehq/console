@@ -1,24 +1,10 @@
-import { Box, Button, Modal, MultiSelect, Select, Stack, Text, TextInput } from '@mantine/core';
+import { Button, Modal, MultiSelect, Select, Stack, Text } from '@mantine/core';
 import classes from './styles/VizEditor.module.css';
 import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
-import { useForm, UseFormReturnType } from '@mantine/form';
 import { useCallback, useEffect } from 'react';
 import _ from 'lodash';
-import {
-	isCircularChart,
-	renderCircularChart,
-	renderGraph,
-} from './Charts';
-import charts from './Charts';
-import {
-	FormOpts,
-	TileFormType,
-	TileQuery,
-	TileQueryResponse,
-	tileSizes,
-	Visualization,
-	visualizations,
-} from '@/@types/parseable/api/dashboards';
+import { isCircularChart, renderCircularChart, renderGraph } from './Charts';
+import { TileFormType, tileSizes, visualizations } from '@/@types/parseable/api/dashboards';
 import { IconAlertTriangle } from '@tabler/icons-react';
 import TableViz from './Table';
 const { toggleVizEditorModal } = dashboardsStoreReducers;
@@ -77,7 +63,7 @@ const Table = (props: { form: TileFormType }) => {
 export const Viz = (props: { form: TileFormType }) => {
 	const {
 		form: {
-			values: { visualization, data },
+			values: { visualization },
 		},
 	} = props;
 
@@ -89,13 +75,7 @@ export const Viz = (props: { form: TileFormType }) => {
 	return (
 		<Stack className={classes.vizContainer}>
 			<Stack style={{ flex: 1 }}>
-				{showWarning ? (
-					<WarningView msg={inValidVizType} />
-				) : (
-					// <Stack style={{ flex: 1 }} className={classes.chartContainer}>
-						<Viss form={props.form} />
-					// </Stack>
-				)}
+				{showWarning ? <WarningView msg={inValidVizType} /> : <Viss form={props.form} />}
 			</Stack>
 		</Stack>
 	);
@@ -155,7 +135,6 @@ const CircularChartConfig = (props: { form: TileFormType }) => {
 	const {
 		form: {
 			values: { data },
-			errors,
 		},
 	} = props;
 
@@ -237,7 +216,7 @@ const TickConfig = (props: { form: TileFormType }) => {
 	);
 };
 
-const Config = (props: { form: TileFormType; updateColors: (key: string, value: string) => void }) => {
+const Config = (props: { form: TileFormType }) => {
 	return (
 		<Stack className={classes.configContainer}>
 			<Stack gap={28}>
@@ -268,34 +247,6 @@ const Config = (props: { form: TileFormType; updateColors: (key: string, value: 
 	);
 };
 
-const useVizForm = (opts: Visualization) => {
-	const form = useForm<Visualization>({
-		mode: 'controlled',
-		initialValues: opts,
-		validate: {},
-		validateInputOnChange: true,
-		validateInputOnBlur: true,
-	});
-
-	const onChangeValue = useCallback((key: string, value: any) => {
-		form.setFieldValue(key, value);
-	}, []);
-
-	const updateColors = useCallback(
-		(key: string, value: string) => {
-			form.setFieldValue('colors', {
-				...form.values.colors,
-				[key]: value,
-			});
-		},
-		[form],
-	);
-
-	return { form, onChangeValue, updateColors };
-};
-
-type VizFormReturnType = UseFormReturnType<Visualization, (values: Visualization) => Visualization>;
-
 const VizEditorModal = (props: { form: TileFormType }) => {
 	const { form } = props;
 	const [vizEditorModalOpen] = useDashboardsStore((store) => store.vizEditorModalOpen);
@@ -303,7 +254,7 @@ const VizEditorModal = (props: { form: TileFormType }) => {
 	const closeVizModal = useCallback(() => {
 		setDashboardStore((store) => toggleVizEditorModal(store, false));
 	}, []);
-	const isTableViz = form.values.visualization.visualization_type === 'table'
+	const isTableViz = form.values.visualization.visualization_type === 'table';
 	return (
 		<Modal
 			opened={vizEditorModalOpen}
@@ -315,7 +266,7 @@ const VizEditorModal = (props: { form: TileFormType }) => {
 			classNames={{ title: classes.modalTitle }}>
 			<Stack className={classes.container}>
 				<Stack style={{ width: '40%', justifyContent: 'center' }}>
-					<Stack style={{ width: '100%', height: '50%' }} className={!isTableViz && classes.chartContainer || ''}>
+					<Stack style={{ width: '100%', height: '50%' }} className={(!isTableViz && classes.chartContainer) || ''}>
 						<Viz form={form} />
 					</Stack>
 				</Stack>

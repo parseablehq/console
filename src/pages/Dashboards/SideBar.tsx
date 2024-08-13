@@ -2,9 +2,10 @@ import { DASHBOARDS_SIDEBAR_WIDTH } from '@/constants/theme';
 import { Button, Stack, Text } from '@mantine/core';
 import classes from './styles/sidebar.module.css';
 import { IconPlus } from '@tabler/icons-react';
-import { Dashboard, useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
-import { useCallback, useEffect, useState } from 'react';
+import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
+import { useCallback } from 'react';
 import _ from 'lodash';
+import { Dashboard } from '@/@types/parseable/api/dashboards';
 
 const {selectDashboard, toggleCreateDashboardModal} = dashboardsStoreReducers;
 

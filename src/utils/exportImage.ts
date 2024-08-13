@@ -9,7 +9,7 @@ export const makeExportClassName = (name: string) => {
 const handleCapture = (opts: { className: string, fileName: string }) => {
 	const { className, fileName = 'png-export' } = opts;
 	try {
-		const element = document.querySelector(`.${className}`);
+		const element = document.querySelector(`.${className}`) as HTMLElement;
 		if (element) {
 			html2canvas(element).then((canvas) => {
 				const imgData = canvas.toDataURL('image/png');

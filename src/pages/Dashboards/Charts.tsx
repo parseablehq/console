@@ -1,12 +1,12 @@
-import { TileData, TileQueryResponse, TileRecord } from '@/@types/parseable/api/dashboards';
+import { TileData, TileQueryResponse } from '@/@types/parseable/api/dashboards';
 import { AreaChart, BarChart, DonutChart, LineChart, PieChart } from '@mantine/charts';
 import { Stack, Text } from '@mantine/core';
 import _ from 'lodash';
-// import { circularChartTypes, graphTypes } from './providers/DashboardsProvider';
 import { circularChartTypes, graphTypes } from '@/@types/parseable/api/dashboards';
 import { IconAlertTriangle } from '@tabler/icons-react';
 import classes from './styles/Charts.module.css'
 import { CodeHighlight } from '@mantine/code-highlight';
+import { Log } from '@/@types/parseable/api/query';
 
 export const chartColorsMap = {
 	'black': 'dark.6',
@@ -41,17 +41,23 @@ export const colors = [
 ];
 export const nullColor = 'gray'
 
-export const getVizComponent = (viz: string) => {
-	if (viz === 'donut-chart') {
-		return Donut;
-	} else if (viz === 'pie-chart') {
-		return Pie;
-	} else if (viz === 'line-chart') {
+export const getGraphVizComponent = (viz: string) => {
+	if (viz === 'line-chart') {
 		return Line;
 	} else if (viz === 'bar-chart') {
 		return Bar;
 	} else if (viz === 'area-chart') {
 		return Area;
+	} else {
+		return null;
+	}
+};
+
+export const getCircularVizComponent = (viz: string) => {
+	if (viz === 'donut-chart') {
+		return Donut;
+	} else if (viz === 'pie-chart') {
+		return Pie;
 	} else {
 		return null;
 	}
@@ -91,7 +97,7 @@ const validateCircularChartData = (data: CircularChartData) => {
 export const renderCircularChart = (opts: {queryResponse: TileQueryResponse | null, name_key: string, value_key: string, chart: string }) => {
 	const { queryResponse, name_key, value_key, chart } = opts;
 
-	const VizComponent = getVizComponent(chart);
+	const VizComponent = getCircularVizComponent(chart);
 	const data = makeCircularChartData(queryResponse?.records || [], name_key, value_key);
 
 	const isInvalidKey = _.isEmpty(name_key) || _.isEmpty(value_key);
@@ -120,9 +126,9 @@ export const renderJsonView = (opts: {queryResponse: TileQueryResponse | null}) 
 	);
 }
 
-export const renderGraph = (opts: {queryResponse: TileQueryResponse | null, x_key: string, y_keys: string[], chart}) => {
+export const renderGraph = (opts: {queryResponse: TileQueryResponse | null, x_key: string, y_keys: string[], chart: string}) => {
 	const { queryResponse, x_key, y_keys, chart } = opts;
-	const VizComponent = getVizComponent(chart);
+	const VizComponent = getGraphVizComponent(chart);
 	const seriesData = makeSeriesData(queryResponse?.records || [], y_keys);
 
 	const data = queryResponse?.records || []
@@ -137,20 +143,21 @@ export const renderGraph = (opts: {queryResponse: TileQueryResponse | null, x_ke
 	);
 }
 
-export const makeCircularChartData = (data: TileData | null, name_key: string, value_key: string): CircularChartData => {
+export const makeCircularChartData = (data: Log[], name_key: string, value_key: string): CircularChartData => {
 	if (!_.isArray(data)) return [];
 
 	const topN = 5;
 	const chartData = _.reduce(
 		data,
-		(acc, rec: TileRecord) => {
+		(acc, rec: Log) => {
 			if (!_.has(rec, name_key) || !_.has(rec, value_key)) {
 				return acc;
 			}
 
+			const key = _.toString(rec[name_key]);
 			return {
 				...acc,
-				[rec[name_key]]: rec[value_key],
+				[key]: rec[value_key],
 			};
 		},
 		{},
@@ -164,9 +171,11 @@ export const makeCircularChartData = (data: TileData | null, name_key: string, v
 		topNObject,
 		(acc: { topNArcs: CircularChartData; index: number }, value, key) => {
 			const { topNArcs, index } = acc;
-			const color = _.difference(colors, usedColors)[index] || nullColor;
-			usedColors = [...usedColors, color];
-			return { topNArcs: [...topNArcs, { name: key, value, color: chartColorsMap[color] || 'gray.6' }], index: index + 1 };
+			const colorkey = _.difference(colors, usedColors)[index] || nullColor;
+			usedColors = [...usedColors, colorkey];
+			const colorKey = _.difference(colors, usedColors)[index] || nullColor;
+			const color = colorKey in chartColorsMap ? chartColorsMap[colorKey as keyof typeof chartColorsMap] : nullColor;
+			return { topNArcs: [...topNArcs, { name: key, value, color: color || 'gray.6' }], index: index + 1 };
 		},
 		{ topNArcs: [], index: 0 },
 	);
@@ -175,7 +184,7 @@ export const makeCircularChartData = (data: TileData | null, name_key: string, v
 	return [...topNArcs, ...(restArcValue !== 0 ? [{ name: 'Others', value: restArcValue, color: 'gray.6' }] : [])];
 }
 
-const makeSeriesData = (data: TileData | null, y_key: string[]) => {
+const makeSeriesData = (data: Log[], y_key: string[]) => {
 	if (!_.isArray(data)) return [];
 
 	let usedColors: string[] = [];
@@ -183,8 +192,9 @@ const makeSeriesData = (data: TileData | null, y_key: string[]) => {
 	return _.reduce<string, { color: string; name: string }[]>(
 		y_key,
 		(acc, key: string, index: number) => {
-			const color =  _.difference(colors, usedColors)[index] || nullColor;
-			return [...acc, { color: chartColorsMap[color] || 'gray.6', name: key }];
+			const colorKey =  _.difference(colors, usedColors)[index] || nullColor;
+			const color = colorKey in chartColorsMap ? chartColorsMap[colorKey as keyof typeof chartColorsMap] : nullColor;
+			return [...acc, { color: color || 'gray.6', name: key }];
 		},
 		[],
 	);

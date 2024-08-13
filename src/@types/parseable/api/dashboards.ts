@@ -1,4 +1,5 @@
 import { UseFormReturnType } from "@mantine/form";
+import { Log } from "./query";
 
 export type VizType = (typeof visualizations)[number];
 export type TileSize = (typeof tileSizes)[number];
@@ -45,15 +46,11 @@ export type UpdateDashboardType = Omit<Dashboard, 'tiles'> & {
 
 export type TileQuery = {query: string, startTime: Date, endTime: Date}
 
-export type TileRecord = {
-	[key: string | number]: number | string;
-}
-
-export type TileData = TileRecord[];
+export type TileData = Log[];
 
 export type TileQueryResponse = {
     fields: string[];
-    records: TileData
+    records: TileData;
 }
 
 export interface FormOpts extends Omit<Tile, 'tile_id' | 'visualization'> {

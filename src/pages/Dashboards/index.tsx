@@ -1,4 +1,4 @@
-import { Box, Loader, px, Stack } from '@mantine/core';
+import { Box, Loader, Stack } from '@mantine/core';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import SideBar from './SideBar';
@@ -11,11 +11,11 @@ import CreateTileForm from './CreateTileForm';
 
 const LoadingView = () => {
 	return (
-		<Stack style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-			<Loader/>
+		<Stack style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+			<Loader />
 		</Stack>
-	)
-}
+	);
+};
 
 const Dashboards = () => {
 	const [dashboards] = useDashboardsStore((store) => store.dashboards);

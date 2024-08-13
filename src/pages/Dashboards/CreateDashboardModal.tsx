@@ -1,23 +1,18 @@
 import { Box, Button, Loader, Modal, Select, Stack, Text, TextInput } from '@mantine/core';
 import classes from './styles/CreateDashboardModal.module.css';
-import { useDashboardsStore, dashboardsStoreReducers, Tile } from './providers/DashboardsProvider';
-import { useCallback, useEffect, useState } from 'react';
-import _, { initial } from 'lodash';
+import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
+import { useCallback, useEffect } from 'react';
+import _ from 'lodash';
 import { useDashboardsQuery } from '@/hooks/useDashboards';
 import { useForm } from '@mantine/form';
 import { useLogsStore } from '../Stream/providers/LogsProvider';
 import timeRangeUtils from '@/utils/timeRangeUtils';
+import { Tile } from '@/@types/parseable/api/dashboards';
 
-const { toggleCreateDashboardModal, toggleEditDashboardModal,  } = dashboardsStoreReducers;
-const {defaultTimeRangeOption, makeTimeRangeOptions, getDefaultTimeRangeOption} = timeRangeUtils;
+const { toggleCreateDashboardModal, toggleEditDashboardModal } = dashboardsStoreReducers;
+const { makeTimeRangeOptions, getDefaultTimeRangeOption } = timeRangeUtils;
 
 const DEFAULT_REFRESH_INTERVAL = 60;
-
-type ModalProps = {
-	isEdit?: boolean;
-};
-
-const defaultDashboard = {};
 
 type FormOpts = {
 	name: string;
@@ -60,7 +55,10 @@ const CreateDashboardModal = () => {
 	const [editMode] = useDashboardsStore((store) => store.editDashboardModalOpen);
 	const [timeRange] = useLogsStore((store) => store.timeRange);
 	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
-	const timeRangeOptions = makeTimeRangeOptions({ selected: editMode && activeDashboard ? activeDashboard.time_filter : null , current: timeRange });
+	const timeRangeOptions = makeTimeRangeOptions({
+		selected: editMode && activeDashboard ? activeDashboard.time_filter : null,
+		current: timeRange,
+	});
 	const selectedTimeRangeOption = getDefaultTimeRangeOption(timeRangeOptions);
 	const { form } = useDashboardForm(defaultOpts);
 	const { createDashboard, updateDashboard, isCreatingDashboard, isUpdatingDashboard } = useDashboardsQuery();
@@ -136,7 +134,7 @@ const CreateDashboardModal = () => {
 							<Select
 								data={timeRangeOptions}
 								{...form.getInputProps('time_filter')}
-								{...(form.values.time_filter === null ?  {value: "none"} : {})}
+								{...(form.values.time_filter === null ? { value: 'none' } : {})}
 							/>
 						</Stack>
 					</Stack>
@@ -155,7 +153,7 @@ const CreateDashboardModal = () => {
 							</Box>
 							<Box>
 								<Button disabled={!form.isValid()} onClick={onSubmit}>
-									Create
+									{!editMode ? "Create" : "Edit"}
 								</Button>
 							</Box>
 						</>

@@ -3,14 +3,15 @@ import { Box, Button, Modal, px, Stack, Text, TextInput } from '@mantine/core';
 import { IconCheck, IconPencil, IconPlus, IconTrash } from '@tabler/icons-react';
 import classes from './styles/toolbar.module.css';
 import { useDashboardsStore, dashboardsStoreReducers, sortTilesByOrder } from './providers/DashboardsProvider';
-import { useCallback, useState } from 'react';
+import { ChangeEvent, useCallback, useState } from 'react';
 import IconButton from '@/components/Button/IconButton';
 import { useDashboardsQuery } from '@/hooks/useDashboards';
 import _ from 'lodash';
+import ReactGridLayout, { Layout } from 'react-grid-layout';
 
 const { toggleEditDashboardModal, toggleAllowDrag, toggleCreateTileModal, toggleDeleteDashboardModal } = dashboardsStoreReducers;
 
-const tileIdsbyOrder = (layout) => {
+const tileIdsbyOrder = (layout: Layout[]) => {
 	return layout
 		.slice()
 		.sort((a, b) => {
@@ -22,7 +23,7 @@ const tileIdsbyOrder = (layout) => {
 		.map((item) => item.i);
 };
 
-const EditLayoutButton = (props) => {
+const EditLayoutButton = (props: {layoutRef:  React.MutableRefObject<ReactGridLayout.Layout[]>}) => {
 	const [allowDrag, setDashbaordsStore] = useDashboardsStore((store) => store.allowDrag);
 	const [activeDashboard] = useDashboardsStore(store => store.activeDashboard)
 
@@ -85,7 +86,7 @@ const DeleteDashboardModal = () => {
 		setDashbaordsStore((store) => toggleDeleteDashboardModal(store, false));
 	}, []);
 
-	const onChangeHandler = useCallback((e) => {
+	const onChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
 		setConfirmText(e.target.value);
 	}, []);
 
@@ -145,7 +146,7 @@ const DeleteDashboardButton = () => {
 	return <IconButton renderIcon={renderDeleteIcon} size={36} onClick={onClick} tooltipLabel="Delete Dashboard" />;
 };
 
-const Toolbar = (props) => {
+const Toolbar = (props: {layoutRef:  React.MutableRefObject<ReactGridLayout.Layout[]>}) => {
 	const [activeDashboard, setDashbaordsStore] = useDashboardsStore((store) => store.activeDashboard);
 	const openEditDashboardModal = useCallback(() => {
 		setDashbaordsStore((store) => toggleEditDashboardModal(store, true));

@@ -2,7 +2,7 @@ import { Axios } from "./axios";
 import { CREATE_DASHBOARDS_URL, DELETE_DASHBOARDS_URL, LIST_DASHBOARDS, LOG_QUERY_URL, UPDATE_DASHBOARDS_URL } from "./constants";
 import timeRangeUtils from "@/utils/timeRangeUtils";
 import _ from "lodash";
-import { CreateDashboardType, Dashboard, TileQuery, TileQueryResponse } from "@/@types/parseable/api/dashboards";
+import { CreateDashboardType, Dashboard, TileQuery, TileQueryResponse, UpdateDashboardType } from "@/@types/parseable/api/dashboards";
 
 const {optimizeEndTime} = timeRangeUtils;
 
@@ -10,7 +10,7 @@ export const getDashboards = (userId: string) => {
 	return Axios().get<Dashboard[]>(LIST_DASHBOARDS(userId));
 };
 
-export const putDashboard = (dashboardId: string, dashboard: Dashboard) => {
+export const putDashboard = (dashboardId: string, dashboard: UpdateDashboardType) => {
 	return Axios().put(UPDATE_DASHBOARDS_URL(dashboardId), dashboard);
 };
 

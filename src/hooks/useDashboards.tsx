@@ -2,7 +2,7 @@ import { useMutation, useQuery } from 'react-query';
 import { notifyError, notifySuccess } from '@/utils/notification';
 import { AxiosError, isAxiosError } from 'axios';
 import Cookies from 'js-cookie';
-import _, { isError } from 'lodash';
+import _ from 'lodash';
 import { useDashboardsStore, dashboardsStoreReducers } from '@/pages/Dashboards/providers/DashboardsProvider';
 import { getDashboards, getQueryData, postDashboard, putDashboard, removeDashboard } from '@/api/dashboard';
 import { useCallback, useState } from 'react';
@@ -53,7 +53,6 @@ export const useDashboardsQuery = () => {
 
 	const { mutate: updateDashboard, isLoading: isUpdatingDashboard } = useMutation(
 		(data: { dashboard: UpdateDashboardType; onSuccess?: () => void }) => {
-			console.log("sending", data.dashboard)
 			return putDashboard(data.dashboard.dashboard_id, data.dashboard);
 		},
 		{
@@ -126,9 +125,9 @@ export const useTileQuery = (opts?: { tileId?: string, onSuccess?: (data: TileQu
 				opts?.tileId && setDashbaordsStore((store) => setTileData(store, opts.tileId || '', tileData));
 				opts?.onSuccess && opts.onSuccess(tileData);
 				setFetchState({ isLoading: false, isError: false, isSuccess: true });
-			} catch (e) {
+			} catch (e: any) {
 				setFetchState({ isLoading: false, isError: true, isSuccess: false });
-				notifyError({message: _.isString(e.response.data) ? e.response.data : ''}) 
+				notifyError({message: _.isString(e.response.data) ? e.response.data : 'Unable to fetch tile data'}) 
 			}
 		},
 		[onSuccess],

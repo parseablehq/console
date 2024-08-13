@@ -2,7 +2,7 @@ import { Box, Button, Divider, Select, Stack, Text, TextInput } from '@mantine/c
 import classes from './styles/Form.module.css';
 import { useForm } from '@mantine/form';
 import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
 import { getLogStreamSchema } from '@/api/logStream';
@@ -33,8 +33,6 @@ const { toggleVizEditorModal, toggleCreateTileModal } = dashboardsStoreReducers;
 const getErrorMsg = (form: TileFormType, configType: 'basic' | 'data' | 'viz'): string | null => {
 	const { dashboardId, isQueryValidated, data, visualization } = form.values;
 	const hasVizConfigErrors = _.some(_.keys(form.errors), (key) => _.startsWith(key, 'visualization.'));
-	// form.validateField('visualization')
-
 	const hasNoData = _.isEmpty(data) || _.isEmpty(data.records);
 	if (_.isEmpty(dashboardId)) {
 		return selectDashboardWarningText;
@@ -114,7 +112,7 @@ const VisPreview = (props: { form: TileFormType }) => {
 		props.form.validateField('visualization');
 	}, [visualization]);
 
-	const [, setDashbaordsStore] = useDashboardsStore((store) => null);
+	const [, setDashbaordsStore] = useDashboardsStore((_store) => null);
 
 	const openVizModal = useCallback(() => setDashbaordsStore((store) => toggleVizEditorModal(store, true)), []);
 	const sectionHeaderProps = {
@@ -143,7 +141,7 @@ const DataPreview = (props: { form: TileFormType }) => {
 			values: { data },
 		},
 	} = props;
-	const containerRef = useRef(null);
+	const containerRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
 	const [containerSize, setContainerSize] = useState({ height: 0, width: 0 });
 	useEffect(() => {
 		if (containerRef.current) {
@@ -242,13 +240,7 @@ const useTileForm = (opts: {
 		validateInputOnBlur: true,
 	});
 
-	// useEffect(() => {
-	// 	if (_.isFunction(form.setValues)) {
-	// 		form.setValues(genTileFormOpts({ activeDashboard, editTileId, tileData }));
-	// 	}
-	// }, [activeDashboard?.dashboard_id, editTileId]);
-
-	const colors = form.values.visualization?.colors;
+	const colors = form.values.visualization?.color_config;
 
 	const onChangeValue = useCallback((key: string, value: any) => {
 		form.setFieldValue(key, value);
@@ -284,7 +276,7 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 		onChangeValue,
 	} = props;
 	const [llmActive] = useAppStore((store) => store.instanceConfig?.llmActive);
-	const containerRef = useRef(null);
+	const containerRef:MutableRefObject<HTMLDivElement | null> = useRef(null);
 	const [localStream, setLocalStream] = useState<string>('');
 	const [fields, setFields] = useState<Field[]>([]);
 	const [initialHeight, setInitialHeight] = useState(0);
@@ -442,12 +434,7 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 
 const Config = (props: { form: TileFormType; onChangeValue: (key: string, value: any) => void }) => {
 	const { form, onChangeValue } = props;
-	const [userSpecificStreams] = useAppStore((store) => store.userSpecificStreams);
 	const [dashboards] = useDashboardsStore((store) => store.dashboards);
-	const allStreams = useMemo(
-		() => _.map(userSpecificStreams, (stream) => ({ label: stream.name, value: stream.name })),
-		[userSpecificStreams],
-	);
 	const allDashboards = useMemo(
 		() => _.map(dashboards, (dashboard) => ({ label: dashboard.name, value: dashboard.dashboard_id })),
 		[dashboards],
@@ -534,13 +521,13 @@ const genTileFormOpts = (opts: {
 	tileData: TileQueryResponse;
 }) => {
 	const { activeDashboard, editTileId } = opts;
-	if (!editTileId) return {...defaultFormOpts, dashboardId: activeDashboard?.dashboard_id, order: _.size(activeDashboard?.tiles) + 1};
+	if (!editTileId) return {...defaultFormOpts, dashboardId: activeDashboard?.dashboard_id || null, order: _.size(activeDashboard?.tiles) + 1};
 
 	const currentTile = _.find(activeDashboard?.tiles, (tile) => tile.tile_id === editTileId);
 	if (!currentTile)
 		return {
 			...defaultFormOpts,
-			dashboardId: activeDashboard?.dashboard_id,
+			dashboardId: activeDashboard?.dashboard_id || null,
 			order: _.size(activeDashboard?.tiles) + 1,
 		};
 	const {

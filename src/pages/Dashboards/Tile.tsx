@@ -1,4 +1,4 @@
-import { Loader, px, Stack, Text, Menu, Button, rem, SegmentedControl, Modal, TextInput, Box } from '@mantine/core';
+import { Loader, Stack, Text, Menu } from '@mantine/core';
 import classes from './styles/tile.module.css';
 import {
 	IconAlertTriangle,
@@ -7,22 +7,21 @@ import {
 	IconGripVertical,
 	IconPencil,
 	IconPhoto,
-	IconTable,	
+	IconTable,
 	IconTrash,
 } from '@tabler/icons-react';
-import charts, {
-	getVizComponent,
+import {
 	isCircularChart,
 	isGraph,
 	renderCircularChart,
 	renderGraph,
-	renderJsonView,
+	// renderJsonView,
 } from './Charts';
 import handleCapture, { makeExportClassName } from '@/utils/exportImage';
 import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
 import _ from 'lodash';
 import { useTileQuery } from '@/hooks/useDashboards';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Tile as TileType, TileQueryResponse } from '@/@types/parseable/api/dashboards';
 import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 import Table from './Table';
@@ -76,15 +75,15 @@ const Graph = (props: { tile: TileType; data: TileQueryResponse }) => {
 	);
 };
 
-const JsonView = (props: { tile: TileType; data: TileQueryResponse }) => {
-	const { tile, data } = props;
-	return (
-		<Stack style={{ flex: 1, width: '100%', overflowY: 'scroll' }}>{renderJsonView({ queryResponse: data })}</Stack>
-	);
-};
+// const JsonView = (props: { tile: TileType; data: TileQueryResponse }) => {
+// 	const { data } = props;
+// 	return (
+// 		<Stack style={{ flex: 1, width: '100%', overflowY: 'scroll' }}>{renderJsonView({ queryResponse: data })}</Stack>
+// 	);
+// };
 
 const getViz = (vizType: string | null) => {
-	if (!vizType) return <></>;
+	if (!vizType) return null;
 
 	if (vizType === 'table') {
 		return Table;
@@ -93,14 +92,14 @@ const getViz = (vizType: string | null) => {
 	} else if (isGraph(vizType)) {
 		return Graph;
 	} else {
-		return <></>;
+		return null;
 	}
 };
 
 function TileControls(props: { tile: TileType; data: TileQueryResponse }) {
 	const {
 		tile: { name, tile_id },
-		data = {},
+		data,
 	} = props;
 	const { records = [], fields = [] } = data;
 	const [allowDrag] = useDashboardsStore((store) => store.allowDrag);
@@ -174,7 +173,7 @@ function TileControls(props: { tile: TileType; data: TileQueryResponse }) {
 }
 
 const Tile = (props: { id: string }) => {
-	const [showJson, setShowJson] = useState<boolean>(false);
+	// const [showJson, setShowJson] = useState<boolean>(false);
 	const [timeRange] = useLogsStore((store) => store.timeRange);
 	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
 	const [tilesData] = useDashboardsStore((store) => store.tilesData);
@@ -192,12 +191,12 @@ const Tile = (props: { id: string }) => {
 		fetchTileData({ query: santizedQuery, startTime: timeRange.startTime, endTime: timeRange.endTime });
 	}, [timeRange]);
 
-	const toggleJsonView = useCallback(() => {
-		return setShowJson((prev) => !prev);
-	}, []);
+	// const toggleJsonView = useCallback(() => {
+	// 	return setShowJson((prev) => !prev);
+	// }, []);
 	const hasData = !_.isEmpty(tileData);
 	const vizType = _.get(tile, 'visualization.visualization_type', null);
-	const Viz = showJson ? JsonView : getViz(vizType);
+	const Viz = getViz(vizType);
 
 	return (
 		<Stack h="100%" gap={0} className={classes.container}>
@@ -212,7 +211,7 @@ const Tile = (props: { id: string }) => {
 			{!hasData && !isLoading && <NoDataView />}
 			{!isLoading && hasData && (
 				<Stack className={classes.tileContainer} style={{ flex: 1 }}>
-					<Viz tile={tile} data={tileData} />
+					{Viz && <Viz tile={tile} data={tileData} />}
 				</Stack>
 			)}
 		</Stack>

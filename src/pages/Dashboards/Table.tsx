@@ -1,16 +1,19 @@
-import { Stack, Table, Text } from "@mantine/core"
-import { TileQueryResponse } from "@/@types/parseable/api/dashboards";
-import classes from './styles/Table.module.css'
-import _ from "lodash";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { IconAlertTriangle } from "@tabler/icons-react";
+import { Stack, Table, Text } from '@mantine/core';
+import { TileQueryResponse } from '@/@types/parseable/api/dashboards';
+import classes from './styles/Table.module.css';
+import _ from 'lodash';
+import { MutableRefObject, useEffect, useMemo, useRef, useState } from 'react';
+import { IconAlertTriangle } from '@tabler/icons-react';
 
 const makeRowData = (data: TileQueryResponse) => {
-    const {fields, records} = data;
-    return _.map(records, rec => {
-        return _.at(rec, fields);
-    })
-}
+	const { fields, records } = data;
+	return _.map(records, (rec) => {
+		return _.chain(rec)
+			.at(fields)
+			.map((i) => _.toString(i))
+			.value();
+	});
+};
 
 const NoDataView = () => {
 	return (
@@ -25,10 +28,9 @@ const TableViz = (props: { data: TileQueryResponse }) => {
 	const {
 		data: { fields, records },
 	} = props;
-	// debug
 	const rowData = useMemo(() => makeRowData({ fields, records }), []);
 
-	const containerRef = useRef(null);
+	const containerRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
 	const [initialHeight, setInitialHeight] = useState(0);
 
 	useEffect(() => {
@@ -36,7 +38,7 @@ const TableViz = (props: { data: TileQueryResponse }) => {
 			setInitialHeight(containerRef.current.offsetHeight);
 		}
 	}, []);
-	const hasNoData = _.isEmpty(records) || _.isEmpty(fields)
+	const hasNoData = _.isEmpty(records) || _.isEmpty(fields);
 
 	return (
 		<Stack ref={containerRef} style={{ flex: 1, width: '100%', overflow: 'auto' }}>
