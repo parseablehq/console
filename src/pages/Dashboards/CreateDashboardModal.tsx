@@ -84,10 +84,6 @@ const CreateDashboardModal = () => {
 		}
 	}, [createMode, editMode]);
 
-	const onCreateSuccess = useCallback(() => {
-		closeModal();
-	}, []);
-
 	const onSubmit = useCallback(() => {
 		const dashboard = form.values;
 		const timeFilter =
@@ -97,11 +93,11 @@ const CreateDashboardModal = () => {
 			if (dashboardId) {
 				updateDashboard({
 					dashboard: { ...dashboard, dashboard_id: dashboardId, time_filter: timeFilter },
-					onSuccess: onCreateSuccess,
+					onSuccess: closeModal,
 				});
 			}
 		} else {
-			createDashboard({ dashboard: { ...dashboard, time_filter: timeFilter }, onSuccess: onCreateSuccess });
+			createDashboard({ dashboard: { ...dashboard, time_filter: timeFilter }, onSuccess: closeModal });
 		}
 	}, [form.values, editMode, createMode, timeRangeOptions]);
 
