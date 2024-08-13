@@ -13,7 +13,6 @@ import { useCallback, useRef } from 'react';
 import { makeExportClassName } from '@/utils/exportImage';
 import { useDashboardsQuery } from '@/hooks/useDashboards';
 import Tile from './Tile';
-import { Dashboard as DashboardType } from '@/@types/parseable/api/dashboards';
 import { Layout } from 'react-grid-layout';
 
 const { toggleCreateDashboardModal, toggleCreateTileModal, toggleDeleteTileModal } = dashboardsStoreReducers;
@@ -57,7 +56,7 @@ const TilesView = (props: { onLayoutChange: (layout: Layout[]) => void }) => {
 };
 
 const DeleteTileModal = () => {
-	const [activeDashboard, setDashboardsStore] = useDashboardsStore((store) => store.activeDashboard as DashboardType);
+	const [activeDashboard, setDashboardsStore] = useDashboardsStore((store) => store.activeDashboard);
 	const [deleteTileModalOpen] = useDashboardsStore((store) => store.deleteTileModalOpen);
 	const [deleteTileId] = useDashboardsStore((store) => store.deleteTileId);
 	const selectedTile = _.find(activeDashboard?.tiles, (tile) => tile.tile_id === deleteTileId);
@@ -69,11 +68,12 @@ const DeleteTileModal = () => {
 	}, []);
 
 	const onConfirm = useCallback(() => {
-		const allTiles = activeDashboard.tiles.filter((tile) => tile.tile_id !== selectedTile?.tile_id);
-		const tilesWithUpdatedOrder = assignOrderToTiles(allTiles);
+		const allTiles = activeDashboard?.tiles.filter((tile) => tile.tile_id !== selectedTile?.tile_id);
+		if (_.isEmpty(allTiles) || _.isUndefined(allTiles) || !activeDashboard) return;
 
+		const tilesWithUpdatedOrder = assignOrderToTiles(allTiles);
 		updateDashboard({ dashboard: { ...activeDashboard, tiles: tilesWithUpdatedOrder }, onSuccess: onClose });
-	}, [selectedTile?.tile_id, activeDashboard.tiles]);
+	}, [selectedTile?.tile_id, activeDashboard?.tiles]);
 
 	if (!activeDashboard?.dashboard_id || !deleteTileId || !selectedTile) return null;
 
