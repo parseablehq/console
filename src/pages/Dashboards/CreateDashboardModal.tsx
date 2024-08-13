@@ -128,7 +128,8 @@ const CreateDashboardModal = () => {
 						key="description"
 						{...form.getInputProps('description')}
 					/>
-					<Stack style={{ flexDirection: 'row', alignItems: 'center' }}>
+					<Stack
+						style={{ flexDirection: 'row', alignItems: 'center', ...(activeDashboard ? {} : { display: 'none' }) }}>
 						<Stack gap={4} style={{ width: '100%' }}>
 							<Text style={{ fontSize: '0.7rem', fontWeight: 500 }}>Time Range</Text>
 							<Select
@@ -153,7 +154,7 @@ const CreateDashboardModal = () => {
 							</Box>
 							<Box>
 								<Button disabled={!form.isValid()} onClick={onSubmit}>
-									{!editMode ? "Create" : "Edit"}
+									{!editMode ? 'Create' : 'Edit'}
 								</Button>
 							</Box>
 						</>
