@@ -160,14 +160,13 @@ const NoTilesView = () => {
 const Dashboard = () => {
 	const [dashboards] = useDashboardsStore((store) => store.dashboards);
 	const layoutRef = useRef<Layout[]>([]);
-	if (_.isEmpty(dashboards)) return <NoDashboardsView />;
-
 	const onLayoutChange = useCallback(
 		(layout: Layout[]) => {
 			layoutRef.current = layout;
 		},
 		[layoutRef.current],
 	);
+	if (_.isEmpty(dashboards)) return <NoDashboardsView />;
 
 	return (
 		<Stack style={{ flex: 1 }} gap={0}>
