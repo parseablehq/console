@@ -3,6 +3,16 @@ import initContext from '@/utils/initContext';
 import _ from 'lodash';
 import { Layout } from 'react-grid-layout';
 
+export const sortTilesByOrder = (tiles: Tile[], idsByOrder: string[]): Tile[] => {
+	return _.chain(idsByOrder)
+		.map((tile_id, index) => {
+			const tile = _.find(tiles, (tile) => tile.tile_id === tile_id);
+			return !tile ? null : { ...tile, order: index + 1 };
+		})
+		.compact()
+		.value();
+}
+
 export const assignOrderToTiles = (tiles: Tile[]) => {
 	return _.map(tiles, (tile, index) => {
 		return { ...tile, order: index + 1 };
@@ -272,6 +282,7 @@ type DashboardsStoreReducers = {
 	toggleDeleteDashboardModal: (store: DashboardsStore, val: boolean) => ReducerOutput;
 	setTileData: (store: DashboardsStore, tileId: string, data: TileQueryResponse) => ReducerOutput;
 	toggleDeleteTileModal: (store: DashboardsStore, val: boolean, tileId: string | null) => ReducerOutput;
+	resetTilesData: (store: DashboardsStore) => ReducerOutput;
 };
 
 const toggleCreateDashboardModal = (_store: DashboardsStore, val: boolean) => {
@@ -357,6 +368,12 @@ const toggleDeleteTileModal = (_store: DashboardsStore, val: boolean, tileId: st
 	}
 }
 
+const resetTilesData = (_store: DashboardsStore) => {
+	return {
+		tilesData: {},
+	};
+};
+
 const { Provider: DashbaordsProvider, useStore: useDashboardsStore } = initContext(initialState);
 
 const dashboardsStoreReducers: DashboardsStoreReducers = {
@@ -369,7 +386,8 @@ const dashboardsStoreReducers: DashboardsStoreReducers = {
 	toggleAllowDrag,
 	toggleDeleteDashboardModal,
 	setTileData,
-	toggleDeleteTileModal
+	toggleDeleteTileModal,
+	resetTilesData
 };
 
 export { DashbaordsProvider, useDashboardsStore, dashboardsStoreReducers };

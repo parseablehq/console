@@ -61,3 +61,7 @@
     font-size: 0.7rem;
     padding: 0.25rem 0.25rem;
 }
+
+.dragIcon {
+    color: var(--mantine-color-brandPrimary-3);
+}

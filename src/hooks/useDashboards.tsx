@@ -52,8 +52,10 @@ export const useDashboardsQuery = () => {
 	);
 
 	const { mutate: updateDashboard, isLoading: isUpdatingDashboard } = useMutation(
-		(data: { dashboard: UpdateDashboardType; onSuccess?: () => void }) =>
-			putDashboard(data.dashboard.dashboard_id, data.dashboard),
+		(data: { dashboard: UpdateDashboardType; onSuccess?: () => void }) => {
+			console.log("sending", data.dashboard)
+			return putDashboard(data.dashboard.dashboard_id, data.dashboard);
+		},
 		{
 			onSuccess: (_data, variables) => {
 				fetchDashboards();

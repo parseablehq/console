@@ -32,8 +32,10 @@ const DashboardList = () => {
 	const [activeDashboardId] = useDashboardsStore((store) => store.activeDashboard?.dashboard_id);
 
 	const onSelectDashboardId = useCallback((dashboardId: string) => {
+		if (activeDashboardId === dashboardId) return;
+
 		setDashbaordsStore((store) => selectDashboard(store, dashboardId));
-	}, []);
+	}, [activeDashboardId]);
 
 	return (
 		<Stack style={{}}>

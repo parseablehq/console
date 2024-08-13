@@ -1,15 +1,27 @@
-import { Modal, MultiSelect, Select, Stack, Text, TextInput } from '@mantine/core';
+import { Box, Button, Modal, MultiSelect, Select, Stack, Text, TextInput } from '@mantine/core';
 import classes from './styles/VizEditor.module.css';
-import { useDashboardsStore,  dashboardsStoreReducers } from './providers/DashboardsProvider';
+import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
 import { useForm, UseFormReturnType } from '@mantine/form';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import _ from 'lodash';
-import { colors as defaultColors, DonutData, isCircularChart, renderCircularChart, renderGraph, sanitizeDonutData, sanitizeDonutData2 } from './Charts';
+import {
+	isCircularChart,
+	renderCircularChart,
+	renderGraph,
+} from './Charts';
 import charts from './Charts';
-import { FormOpts, TileFormType, TileQuery, TileQueryResponse, tileSizes, Visualization, visualizations } from '@/@types/parseable/api/dashboards';
+import {
+	FormOpts,
+	TileFormType,
+	TileQuery,
+	TileQueryResponse,
+	tileSizes,
+	Visualization,
+	visualizations,
+} from '@/@types/parseable/api/dashboards';
 import { IconAlertTriangle } from '@tabler/icons-react';
 import TableViz from './Table';
-const {toggleVizEditorModal} = dashboardsStoreReducers;
+const { toggleVizEditorModal } = dashboardsStoreReducers;
 
 const inValidVizType = 'Select a visualization type';
 
@@ -42,28 +54,34 @@ const Graph = (props: { form: TileFormType }) => {
 		visualization: { visualization_type, graph_config },
 		data,
 	} = props.form.values;
-	const x_key = _.get(graph_config, 'xAxis', '');
-	const y_key = _.get(graph_config, 'yAxis', []);
+	const x_key = _.get(graph_config, 'x_key', '');
+	const y_keys = _.get(graph_config, 'y_keys', []);
 	return (
-		<Stack style={{ flex: 1, width: '100%' }}>{renderGraph({ queryResponse: data, x_key, y_key, chart: visualization_type })}</Stack>
+		<Stack style={{ flex: 1, width: '100%' }}>
+			{renderGraph({ queryResponse: data, x_key, y_keys, chart: visualization_type })}
+		</Stack>
 	);
 };
 
-const Table = (props: {form: TileFormType }) => {
+const Table = (props: { form: TileFormType }) => {
 	const data = props.form.values.data;
 	return (
 		<Stack style={{ width: '100%', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-			<Stack className={classes.tableContainer} style={{ width: '100%', height: '90%' }}>
+			<Stack className={classes.tableContainer} style={{ width: '100%', height: '100%' }}>
 				<TableViz data={data} />
 			</Stack>
 		</Stack>
 	);
 };
 
-export const Viz = (props: {form: TileFormType}) => {
-    const {form: {values: {visualization, data}}} = props;
+export const Viz = (props: { form: TileFormType }) => {
+	const {
+		form: {
+			values: { visualization, data },
+		},
+	} = props;
 
-	const {visualization_type} = visualization;
+	const { visualization_type } = visualization;
 	const isValidVizType = _.includes(visualizations, visualization_type);
 	const showWarning = !isValidVizType;
 	const Viss = visualization_type === 'table' ? Table : isCircularChart(visualization_type) ? CircularChart : Graph;
@@ -71,29 +89,35 @@ export const Viz = (props: {form: TileFormType}) => {
 	return (
 		<Stack className={classes.vizContainer}>
 			<Stack style={{ flex: 1 }}>
-				{showWarning ? <WarningView msg={inValidVizType} /> : <Viss form={props.form} />}
+				{showWarning ? (
+					<WarningView msg={inValidVizType} />
+				) : (
+					// <Stack style={{ flex: 1 }} className={classes.chartContainer}>
+						<Viss form={props.form} />
+					// </Stack>
+				)}
 			</Stack>
 		</Stack>
 	);
 };
 
 const vizLabelMap = {
-    'donut-chart': 'Donut Chart',
-    'pie-chart': 'Pie Chart',
-    'table': 'Table',
-    'line-chart': 'Line Chart',
-    'bar-chart': 'Bar Chart',
-	'area-chart': 'Area Chart'
-}
+	'donut-chart': 'Donut Chart',
+	'pie-chart': 'Pie Chart',
+	table: 'Table',
+	'line-chart': 'Line Chart',
+	'bar-chart': 'Bar Chart',
+	'area-chart': 'Area Chart',
+};
 
 const sizeLabelMap = {
-   'sm': 'Small',
-   'md': 'Medium',
-   'lg': 'Large',
-   'xl': 'Full'
-}
+	sm: 'Small',
+	md: 'Medium',
+	lg: 'Large',
+	xl: 'Full',
+};
 
-const BasicConfig = (props: {form: TileFormType}) => {
+const BasicConfig = (props: { form: TileFormType }) => {
 	useEffect(() => {
 		props.form.validate();
 	}, [props.form.values.visualization.visualization_type]);
@@ -125,10 +149,15 @@ const BasicConfig = (props: {form: TileFormType}) => {
 			</Stack>
 		</Stack>
 	);
-}
+};
 
-const CircularChartConfig = (props: {form: TileFormType}) => {
-	const {form: {values: {data}, errors}} = props;
+const CircularChartConfig = (props: { form: TileFormType }) => {
+	const {
+		form: {
+			values: { data },
+			errors,
+		},
+	} = props;
 
 	return (
 		<Stack style={{ flexDirection: 'row' }}>
@@ -152,10 +181,14 @@ const CircularChartConfig = (props: {form: TileFormType}) => {
 			/>
 		</Stack>
 	);
-}
+};
 
-const GraphConfig = (props: {form: TileFormType}) => {
-	const {form: {values: {data}}} = props;
+const GraphConfig = (props: { form: TileFormType }) => {
+	const {
+		form: {
+			values: { data },
+		},
+	} = props;
 
 	return (
 		<Stack>
@@ -164,8 +197,8 @@ const GraphConfig = (props: {form: TileFormType}) => {
 				classNames={{ label: classes.fieldTitle }}
 				label="X Axis"
 				placeholder="X Axis"
-				key="visualization.graph_config.xAxis"
-				{...props.form.getInputProps('visualization.graph_config.xAxis')}
+				key="visualization.graph_config.x_key"
+				{...props.form.getInputProps('visualization.graph_config.x_key')}
 				style={{ width: '50%' }}
 			/>
 			<MultiSelect
@@ -173,17 +206,21 @@ const GraphConfig = (props: {form: TileFormType}) => {
 				classNames={{ label: classes.fieldTitle }}
 				label="Y Axis"
 				placeholder="Y Axis"
-				key="visualization.graph_config.yAxis"
-				{...props.form.getInputProps('visualization.graph_config.yAxis')}
+				key="visualization.graph_config.y_keys"
+				{...props.form.getInputProps('visualization.graph_config.y_keys')}
 				style={{ width: '50%' }}
 				limit={6}
 			/>
 		</Stack>
 	);
-}
+};
 
-const TickConfig = (props: {form: TileFormType}) => {
-	if (props.form.values.visualization.visualization_type === 'table' || _.isEmpty(props.form.values.visualization.visualization_type)) return null;
+const TickConfig = (props: { form: TileFormType }) => {
+	if (
+		props.form.values.visualization.visualization_type === 'table' ||
+		_.isEmpty(props.form.values.visualization.visualization_type)
+	)
+		return null;
 
 	return (
 		<Stack gap={4}>
@@ -198,14 +235,14 @@ const TickConfig = (props: {form: TileFormType}) => {
 			)}
 		</Stack>
 	);
-}
+};
 
-const Config = (props: {form: TileFormType, updateColors: (key: string, value: string) => void;}) => {
+const Config = (props: { form: TileFormType; updateColors: (key: string, value: string) => void }) => {
 	return (
 		<Stack className={classes.configContainer}>
 			<Stack gap={28}>
-				<BasicConfig form={props.form}/>
-				<TickConfig form={props.form}/> 
+				<BasicConfig form={props.form} />
+				<TickConfig form={props.form} />
 				{/* <Stack gap={2}>
 					<Text className={classes.fieldTitle}>Colors</Text>
 					<Stack>
@@ -259,28 +296,36 @@ const useVizForm = (opts: Visualization) => {
 
 type VizFormReturnType = UseFormReturnType<Visualization, (values: Visualization) => Visualization>;
 
-const VizEditorModal = (props: {form: TileFormType}) => {
-	const {form} = props;
+const VizEditorModal = (props: { form: TileFormType }) => {
+	const { form } = props;
 	const [vizEditorModalOpen] = useDashboardsStore((store) => store.vizEditorModalOpen);
 	const [, setDashboardStore] = useDashboardsStore((_store) => null);
 	const closeVizModal = useCallback(() => {
 		setDashboardStore((store) => toggleVizEditorModal(store, false));
 	}, []);
+	const isTableViz = form.values.visualization.visualization_type === 'table'
 	return (
 		<Modal
 			opened={vizEditorModalOpen}
 			onClose={closeVizModal}
 			centered
-			size="80rem"
+			size="90rem"
 			title={'Edit Visualization'}
 			styles={{ body: { padding: '0 1rem' }, header: { padding: '1rem', paddingBottom: '0' } }}
 			classNames={{ title: classes.modalTitle }}>
 			<Stack className={classes.container}>
-				<Stack style={{ width: '40%' }}>
-					<Viz form={form} />
+				<Stack style={{ width: '40%', justifyContent: 'center' }}>
+					<Stack style={{ width: '100%', height: '50%' }} className={!isTableViz && classes.chartContainer || ''}>
+						<Viz form={form} />
+					</Stack>
 				</Stack>
 				<Stack className={classes.divider} />
-				<Config form={form} />
+				<Stack style={{ flex: 1, justifyContent: 'space-between' }}>
+					<Config form={form} />
+					<Stack style={{ alignItems: 'flex-end', margin: '1rem', marginBottom: '1.5rem', marginRight: '0.5rem' }}>
+						<Button onClick={closeVizModal}>Done</Button>
+					</Stack>
+				</Stack>
 			</Stack>
 		</Modal>
 	);

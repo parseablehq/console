@@ -20,8 +20,8 @@ export type ColorConfig = {
 export type Visualization = {
 	visualization_type: VizType;
 	size: TileSize;
-	circular_chart_config?: {} | { name_key: string; value_key: string };
-	graph_config?: {} | {xAxis: string; yAxis: string};
+	circular_chart_config?: null | { name_key: string; value_key: string } | {};
+	graph_config?: null | { x_key: string; y_keys: string[] } | {};
 	color_config: ColorConfig[];
 };
 

@@ -1,6 +1,6 @@
 .modalTitle {
-	font-size: 1rem;
-	font-weight: 600;
+    font-size: 1rem;
+    font-weight: 600;
 }
 
 .container {
@@ -10,13 +10,11 @@
 }
 
 .vizContainer {
-   justify-content: center;
-   height: 100%;
+    justify-content: center;
+    height: 100%;
 }
 
-.configContainer {
-    width: 60%;
-}
+.configContainer {}
 
 .divider {
     border: 0.5px solid var(--mantine-color-gray-2);
@@ -37,6 +35,11 @@
 }
 
 .tableContainer {
+    border: 1px solid var(--mantine-color-gray-2);
+    border-radius: 0.2rem;
+}
+
+.chartContainer {
     border: 1px solid var(--mantine-color-gray-2);
     border-radius: 0.2rem;
 }

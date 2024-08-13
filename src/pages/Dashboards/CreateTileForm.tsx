@@ -19,9 +19,10 @@ import { useLogsStore } from '../Stream/providers/LogsProvider';
 import dayjs from 'dayjs';
 import TimeRange from '@/components/Header/TimeRange';
 import { isCircularChart, isGraph } from './Charts';
+import { usePostLLM } from '@/hooks/usePostLLM';
+import { notify } from '@/utils/notification';
 
 const selectDashboardWarningText = 'Select a dashboard to continue';
-const selectStreamWarningText = 'Select a stream to continue';
 const validateQueryWarningText = 'Validate query to continue';
 const emptyVizWarning = 'No visualization selected for the tile';
 const noDataWarning = 'No data available for the query';
@@ -63,11 +64,9 @@ const SectionHeader = (props: { title: string; actionBtnProps?: { label: string;
 		<Stack className={classes.sectionHeader}>
 			<Text style={{ fontSize: '0.725rem', fontWeight: 500 }}>{title}</Text>
 			{actionBtnProps && (
-				// <Box>
 				<Button onClick={actionBtnProps.onClick} variant="outline">
 					{actionBtnProps.label}
 				</Button>
-				// </Box>
 			)}
 		</Stack>
 	);
@@ -218,22 +217,22 @@ const useTileForm = (opts: {
 					},
 				},
 				graph_config: {
-					xAxis: (_value, values, _path) => {
+					x_key: (_value, values, _path) => {
 						const {
 							visualization: { visualization_type, graph_config },
 						} = values;
 						if (isGraph(visualization_type)) {
-							const xAxis = _.get(graph_config, 'xAxis', null);
-							return _.isEmpty(xAxis) ? 'Cannot be empty' : null;
+							const x_key = _.get(graph_config, 'x_key', null);
+							return _.isEmpty(x_key) ? 'Cannot be empty' : null;
 						}
 					},
-					yAxis: (_value, values, _path) => {
+					y_keys: (_value, values, _path) => {
 						const {
 							visualization: { visualization_type, graph_config },
 						} = values;
 						if (isGraph(visualization_type)) {
-							const yAxis = _.get(graph_config, 'yAxis', null);
-							return _.isEmpty(yAxis) ? 'Cannot be empty' : null;
+							const y_keys = _.get(graph_config, 'y_keys', null);
+							return _.isEmpty(y_keys) ? 'Cannot be empty' : null;
 						}
 					},
 				},
@@ -291,11 +290,27 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 	const [initialHeight, setInitialHeight] = useState(0);
 	const [dashboards] = useDashboardsStore((store) => store.dashboards);
 	const [timeRange] = useLogsStore((store) => store.timeRange);
+	const [aiQuery, setAiQuery] = useState('');
 	const [userSpecificStreams] = useAppStore((store) => store.userSpecificStreams);
 	const allStreams = useMemo(
 		() => _.map(userSpecificStreams, (stream) => ({ label: stream.name, value: stream.name })),
 		[userSpecificStreams],
 	);
+	const { data: resAIQuery, postLLMQuery } = usePostLLM();
+
+	const onEditorChange = useCallback((query: string | undefined) => {
+		onChangeValue('query', query || '');
+		onChangeValue('isQueryValidated', false);
+	}, []);
+
+	useEffect(() => {
+		if (resAIQuery) {
+			const warningMsg =
+				'-- LLM generated query is experimental and may produce incorrect answers\n-- Always verify the generated SQL before executing\n\n';
+			onEditorChange(warningMsg + resAIQuery);
+		}
+	}, [resAIQuery]);
+
 	useEffect(() => {
 		if (containerRef.current) {
 			setInitialHeight(containerRef.current.offsetHeight);
@@ -324,18 +339,21 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 		onChangeValue('query', santizedQuery);
 		const { from, to } = selectedDashboard.time_filter || { from: timeRange.startTime, to: timeRange.endTime };
 		fetchTileData({ query: santizedQuery, startTime: dayjs(from).toDate(), endTime: dayjs(to).toDate() });
-	}, [query, dashboardId, dashboards]);
+	}, [query, dashboardId, dashboards, timeRange]);
 
-	const onEditorChange = useCallback((query: string | undefined) => {
-		onChangeValue('query', query || '');
-		onChangeValue('isQueryValidated', false);
-		// onChangeValue('data', null)
-	}, []);
-
+	
 	const onStreamSelect = useCallback((val: string | null) => {
 		setLocalStream(val || '');
 	}, [])
 
+	const isValidStream = !_.isEmpty(localStream);
+	const handleAIGenerate = useCallback(() => {
+		if (!aiQuery?.length) {
+			notify({ message: 'Please enter a valid query' });
+			return;
+		}
+		localStream && postLLMQuery(aiQuery, localStream);
+	}, [aiQuery, localStream]);
 	const errorMsg = getErrorMsg(props.form, 'basic');
 
 	return (
@@ -344,24 +362,25 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 				<Text className={classes.fieldTitle}>Query</Text>
 				<Stack style={{ flexDirection: 'row', ...(errorMsg ? {display: 'none'} : {})}}>
 					<TimeRange />
-					<Select data={allStreams} onChange={onStreamSelect} classNames={{ label: classes.fieldTitle }} key="stream" placeholder="Stream" />
+					<Select data={allStreams} onChange={onStreamSelect} classNames={{ label: classes.fieldTitle }} key="stream" placeholder="Select Schema" />
 				</Stack>
 			</Stack>
 			{errorMsg && <Text className={classes.warningText}>{errorMsg}</Text>}
 			<Stack className={classes.queryCodeContainer} style={{ marginTop: '1rem', flex: 1, ...(errorMsg ? {display: 'none'} : {}) }}>
 				<Box style={{ marginBottom: 8 }}>
-					{llmActive ? (
+					{llmActive? (
 						<Stack gap={0} style={{ flexDirection: 'row', width: '100%' }}>
 							<TextInput
 								type="text"
 								name="ai_query"
 								id="ai_query"
-								value={''}
-								// onChange={(e) => setAiQuery(e.target.value)}
-								placeholder="Enter plain text to generate SQL query using OpenAI"
+								value={aiQuery}
+								onChange={(e) => setAiQuery(e.target.value)}
+								placeholder={isValidStream ? "Enter plain text to generate SQL query using OpenAI" : "Choose a schema to generate AI query"}
 								style={{ flex: 1 }}
+								disabled={!isValidStream}
 							/>
-							<Button variant="filled" color="brandPrimary.4" radius={0} onClick={() => {}}>
+							<Button variant="filled" color="brandPrimary.4" radius={0} onClick={handleAIGenerate} disabled={!isValidStream}>
 								✨ Generate
 							</Button>
 						</Stack>
@@ -407,10 +426,13 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 				<Box>
 					<Button
 						variant="outline"
-						disabled={_.isEmpty(query) || isQueryValidated || isLoading}
+						disabled={_.isEmpty(query) || isLoading}
 						loading={isLoading}
-						onClick={validateQuery}>
-						Validate Query
+						onClick={validateQuery}
+						w="10rem"
+						>
+						
+						{!isQueryValidated ? "Validate Query" : 'Refetch Data'}
 					</Button>
 				</Box>
 			</Stack>
@@ -466,7 +488,12 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 
 const sanitizeFormValues = (form: TileFormType, type: 'create' | 'update'): EditTileType => {
 	const { name, description, query, visualization, tile_id, order } = form.values;
-	const { visualization_type, size, circular_chart_config } = visualization;
+	const { visualization_type, size, circular_chart_config, graph_config, color_config } = visualization;
+	const vizElementConfig = isCircularChart(visualization_type)
+		? { circular_chart_config }
+		: isGraph(visualization_type)
+		? { graph_config }
+		: {};
 	return {
 		name,
 		description,
@@ -474,8 +501,8 @@ const sanitizeFormValues = (form: TileFormType, type: 'create' | 'update'): Edit
 		visualization: {
 			visualization_type,
 			size,
-			circular_chart_config,
-			color_config: [],
+			...vizElementConfig,
+			color_config,
 		},
 		order,
 		...(type === 'update' && _.isString(tile_id) ? { tile_id } : {}),
@@ -507,12 +534,18 @@ const genTileFormOpts = (opts: {
 	tileData: TileQueryResponse;
 }) => {
 	const { activeDashboard, editTileId } = opts;
-
 	if (!editTileId) return {...defaultFormOpts, dashboardId: activeDashboard?.dashboard_id, order: _.size(activeDashboard?.tiles) + 1};
 
 	const currentTile = _.find(activeDashboard?.tiles, (tile) => tile.tile_id === editTileId);
-
-	if (!currentTile) return {...defaultFormOpts, dashboardId: activeDashboard?.dashboard_id, order: _.size(activeDashboard?.tiles) + 1};
+	if (!currentTile)
+		return {
+			...defaultFormOpts,
+			dashboardId: activeDashboard?.dashboard_id,
+			order: _.size(activeDashboard?.tiles) + 1,
+		};
+	const {
+		visualization: { circular_chart_config, graph_config },
+	} = currentTile;
 
 	return {
 		...currentTile,
@@ -522,6 +555,8 @@ const genTileFormOpts = (opts: {
 		visualization: {
 			...defaultVizOpts,
 			...currentTile.visualization,
+			circular_chart_config: _.isEmpty(circular_chart_config) ? {} : circular_chart_config,
+			graph_config: _.isEmpty(graph_config) ? {} : graph_config,
 		},
 		dashboardId: activeDashboard ? activeDashboard.dashboard_id : null,
 	};
@@ -550,12 +585,12 @@ const CreateTileForm = () => {
 		const existingTiles = dashboard.tiles;
 		if (editTileId) {
 			const updatedTile = sanitizeFormValues(form, 'update');
-			const tileIndex = _.findIndex(existingTiles, tile => tile.tile_id === editTileId);
+			const tileIndex = _.findIndex(existingTiles, (tile) => tile.tile_id === editTileId);
 			existingTiles[tileIndex] = updatedTile as Tile;
-			updateDashboard({ dashboard: { ...dashboard, tiles: [...existingTiles] } });
+			updateDashboard({ dashboard: { ...dashboard, tiles: [...existingTiles] }, onSuccess: closeForm });
 		} else {
 			const newTile = sanitizeFormValues(form, 'create');
-			updateDashboard({ dashboard: { ...dashboard, tiles: [...existingTiles, newTile] } });
+			updateDashboard({ dashboard: { ...dashboard, tiles: [...existingTiles, newTile] }, onSuccess: closeForm });
 		}
 	}, [form, dashboards, editTileId]);
 
@@ -573,7 +608,11 @@ const CreateTileForm = () => {
 						</Button>
 					</Box>
 					<Box>
-						<Button disabled={!form.isValid() || !form.isDirty()} onClick={onCreate} loading={isUpdatingDashboard} variant="filled">
+						<Button
+							disabled={!form.isValid() || !form.isDirty()}
+							onClick={onCreate}
+							loading={isUpdatingDashboard}
+							variant="filled">
 							Save Changes
 						</Button>
 					</Box>

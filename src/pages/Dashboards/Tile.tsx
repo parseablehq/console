@@ -2,18 +2,12 @@ import { Loader, px, Stack, Text, Menu, Button, rem, SegmentedControl, Modal, Te
 import classes from './styles/tile.module.css';
 import {
 	IconAlertTriangle,
-	IconArrowsLeftRight,
 	IconBraces,
 	IconDotsVertical,
-	IconFileSpreadsheet,
 	IconGripVertical,
-	IconJson,
-	IconMessageCircle,
 	IconPencil,
 	IconPhoto,
-	IconSearch,
-	IconSettings,
-	IconTable,
+	IconTable,	
 	IconTrash,
 } from '@tabler/icons-react';
 import charts, {
@@ -29,7 +23,7 @@ import { useDashboardsStore, dashboardsStoreReducers } from './providers/Dashboa
 import _ from 'lodash';
 import { useTileQuery } from '@/hooks/useDashboards';
 import { useCallback, useEffect, useState } from 'react';
-import {  Tile as TileType, TileQueryResponse } from '@/@types/parseable/api/dashboards';
+import { Tile as TileType, TileQueryResponse } from '@/@types/parseable/api/dashboards';
 import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 import Table from './Table';
 import { downloadDataAsCSV, downloadDataAsJson } from '@/utils/exportHelpers';
@@ -74,10 +68,10 @@ const Graph = (props: { tile: TileType; data: TileQueryResponse }) => {
 		visualization: { visualization_type, graph_config },
 	} = tile;
 	const x_key = _.get(graph_config, 'x_key', '');
-	const y_key = _.get(graph_config, 'y_key', []);
+	const y_keys = _.get(graph_config, 'y_keys', []);
 	return (
 		<Stack style={{ flex: 1, width: '100%' }}>
-			{renderGraph({ queryResponse: data, x_key, y_key, chart: visualization_type })}
+			{renderGraph({ queryResponse: data, x_key, y_keys, chart: visualization_type })}
 		</Stack>
 	);
 };
@@ -132,7 +126,8 @@ function TileControls(props: { tile: TileType; data: TileQueryResponse }) {
 		setDashboardsStore((store) => toggleDeleteTileModal(store, true, tile_id));
 	}, []);
 
-	if (allowDrag) return <IconGripVertical className={classes.tileControlIcon} stroke={1} size="1rem" />;
+	if (allowDrag)
+		return <IconGripVertical className={classes.tileControlIcon + ' ' + classes.dragIcon} stroke={2} size="1rem" />;
 
 	return (
 		<Menu shadow="md" width={240} position="bottom-start">
@@ -154,7 +149,6 @@ function TileControls(props: { tile: TileType; data: TileQueryResponse }) {
 					<Text className={classes.tileCtrlItemText}>Delete</Text>
 				</Menu.Item>
 				<Menu.Divider />
-
 				<Text className={classes.tileCtrlLabel}>Exports</Text>
 				<Menu.Item
 					onClick={exportPng}
@@ -196,7 +190,7 @@ const Tile = (props: { id: string }) => {
 		const shouldNotify = false;
 		const santizedQuery = sanitiseSqlString(tile.query, shouldNotify, 100);
 		fetchTileData({ query: santizedQuery, startTime: timeRange.startTime, endTime: timeRange.endTime });
-	}, []);
+	}, [timeRange]);
 
 	const toggleJsonView = useCallback(() => {
 		return setShowJson((prev) => !prev);

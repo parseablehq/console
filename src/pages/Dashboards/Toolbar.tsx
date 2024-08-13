@@ -2,24 +2,51 @@ import TimeRange from '@/components/Header/TimeRange';
 import { Box, Button, Modal, px, Stack, Text, TextInput } from '@mantine/core';
 import { IconCheck, IconPencil, IconPlus, IconTrash } from '@tabler/icons-react';
 import classes from './styles/toolbar.module.css';
-import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
+import { useDashboardsStore, dashboardsStoreReducers, sortTilesByOrder } from './providers/DashboardsProvider';
 import { useCallback, useState } from 'react';
 import IconButton from '@/components/Button/IconButton';
 import { useDashboardsQuery } from '@/hooks/useDashboards';
+import _ from 'lodash';
 
 const { toggleEditDashboardModal, toggleAllowDrag, toggleCreateTileModal, toggleDeleteDashboardModal } = dashboardsStoreReducers;
 
-const EditLayoutButton = () => {
-	const [allowDrag, setDashbaordsStore] = useDashboardsStore((store) => store.allowDrag);
+const tileIdsbyOrder = (layout) => {
+	return layout
+		.slice()
+		.sort((a, b) => {
+			if (a.y === b.y) {
+				return a.x - b.x;
+			}
+			return a.y - b.y;
+		})
+		.map((item) => item.i);
+};
 
-	const onClick = useCallback(() => {
+const EditLayoutButton = (props) => {
+	const [allowDrag, setDashbaordsStore] = useDashboardsStore((store) => store.allowDrag);
+	const [activeDashboard] = useDashboardsStore(store => store.activeDashboard)
+
+	const onToggle = useCallback(() => {
 		setDashbaordsStore(toggleAllowDrag);
 	}, []);
+
+	const {updateDashboard, isUpdatingDashboard} = useDashboardsQuery();
+	const onClick = useCallback(() => {
+		if (allowDrag && activeDashboard) {
+			const allTiles = activeDashboard.tiles;
+			const updatedTiles = sortTilesByOrder(allTiles, tileIdsbyOrder(props.layoutRef.current));
+			updateDashboard({ dashboard: { ...activeDashboard, tiles: updatedTiles }, onSuccess: onToggle });
+		} else {
+			onToggle();
+		}
+
+	}, [allowDrag, activeDashboard]);
 
 	return (
 		<Stack style={{ width: '7rem' }}>
 			<Button
 				onClick={onClick}
+				loading={isUpdatingDashboard}
 				className={`${classes.editLayoutBtn} ${allowDrag ? classes.active : ''}`}
 				variant={allowDrag ? 'filled' : 'outline'}
 				leftSection={allowDrag ? <IconCheck stroke={1.4} size="1rem" /> : <IconPencil stroke={1.4} size="1rem" />}>
@@ -118,7 +145,7 @@ const DeleteDashboardButton = () => {
 	return <IconButton renderIcon={renderDeleteIcon} size={36} onClick={onClick} tooltipLabel="Delete Dashboard" />;
 };
 
-const Toolbar = () => {
+const Toolbar = (props) => {
 	const [activeDashboard, setDashbaordsStore] = useDashboardsStore((store) => store.activeDashboard);
 	const openEditDashboardModal = useCallback(() => {
 		setDashbaordsStore((store) => toggleEditDashboardModal(store, true));
@@ -127,6 +154,7 @@ const Toolbar = () => {
 	if (!activeDashboard) return null;
 
 	const { name, description } = activeDashboard;
+
 	return (
 		<Stack
 			className={classes.toolbarContainer}
@@ -149,7 +177,7 @@ const Toolbar = () => {
 			<Stack style={{ flexDirection: 'row' }}>
 				<TimeRange />
 				<AddTileButton/>
-				<EditLayoutButton />
+				<EditLayoutButton layoutRef={props.layoutRef}/>
 				<DeleteDashboardButton/>
 			</Stack>
 		</Stack>

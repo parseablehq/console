@@ -10,21 +10,30 @@ import classes from './styles/DashboardView.module.css';
 import { useDashboardsStore, dashboardsStoreReducers, genLayout, assignOrderToTiles } from './providers/DashboardsProvider';
 import _ from 'lodash';
 import { IconChartBar } from '@tabler/icons-react';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { makeExportClassName } from '@/utils/exportImage';
 import { useDashboardsQuery } from '@/hooks/useDashboards';
 import Tile from './Tile';
 import { Dashboard as DashboardType } from '@/@types/parseable/api/dashboards';
+import { useLogsStore } from '../Stream/providers/LogsProvider';
 
-const { toggleCreateDashboardModal, toggleCreateTileModal, toggleDeleteTileModal } = dashboardsStoreReducers;
+const { toggleCreateDashboardModal, toggleCreateTileModal, toggleDeleteTileModal, resetTilesData } = dashboardsStoreReducers;
 
-const TilesView = () => {
-	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
+const TilesView = (props) => {
+	const [activeDashboard, setDashbaordsStore] = useDashboardsStore((store) => store.activeDashboard);
 	const [allowDrag] = useDashboardsStore(store => store.allowDrag)
 	const [layout] = useDashboardsStore(store => store.layout)
 	const hasNoTiles = _.size(activeDashboard?.tiles) < 1;
+	const showNoTilesView = hasNoTiles || !activeDashboard
+	const [timeRange] = useLogsStore(store => store.timeRange)
 
-	if (hasNoTiles || !activeDashboard) return <NoTilesView />;
+	// useEffect(() => {
+	// 	if (!showNoTilesView) {
+	// 		setDashbaordsStore(resetTilesData);
+	// 	}
+	// }, [timeRange]);
+
+	if (showNoTilesView) return <NoTilesView />;
 
 	return (
 		<Stack className={classes.tilesViewConatiner}>
@@ -39,8 +48,7 @@ const TilesView = () => {
 				containerPadding={[20, 10]}
 				compactType="horizontal"
 				isDraggable={allowDrag}
-				onLayoutChange={(layout) => console.log(layout, "made layout")}
-				>
+				onLayoutChange={(layout) => props.onLayoutChang(layout)}>
 				{_.map(layout, (item) => {
 					return (
 						<div
@@ -106,7 +114,7 @@ const DeleteTileModal = () => {
 				</Stack>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
 					<Box>
-						<Button variant="outline">Cancel</Button>
+						<Button onClick={onClose} variant="outline">Cancel</Button>
 					</Box>
 					<Box>
 						<Button loading={isUpdatingDashboard} onClick={onConfirm}>Delete</Button>
@@ -169,17 +177,20 @@ const NoTilesView = () => {
 
 const Dashboard = () => {
 	const [dashboards] = useDashboardsStore((store) => store.dashboards);
-	const [deleteTileModalOpen] = useDashboardsStore((store) => store.deleteTileModalOpen);
-	const [deleteTileId] = useDashboardsStore((store) => store.deleteTileId);
-
-	console.log({deleteTileId, deleteTileModalOpen})
+	const layoutRef = useRef(null);
 	if (_.isEmpty(dashboards)) return <NoDashboardsView />;
+
+	const onLayoutChange = useCallback((layout) => {
+		const tileIdsWithUpdatedOrder = _.map(layout, (layoutItem) => layoutItem.i);
+		layoutRef.current = layout
+		console.log(layout, "onchange")
+	}, [layoutRef.current])
 
 	return (
 		<Stack style={{ flex: 1 }} gap={0}>
 			<DeleteTileModal />
-			<Toolbar />
-			<TilesView />
+			<Toolbar layoutRef={layoutRef}/>
+			<TilesView onLayoutChang={onLayoutChange}/>
 		</Stack>
 	);
 };

@@ -120,13 +120,13 @@ export const renderJsonView = (opts: {queryResponse: TileQueryResponse | null}) 
 	);
 }
 
-export const renderGraph = (opts: {queryResponse: TileQueryResponse | null, x_key: string, y_key: string[], chart}) => {
-	const { queryResponse, x_key, y_key, chart } = opts;
+export const renderGraph = (opts: {queryResponse: TileQueryResponse | null, x_key: string, y_keys: string[], chart}) => {
+	const { queryResponse, x_key, y_keys, chart } = opts;
 	const VizComponent = getVizComponent(chart);
-	const seriesData = makeSeriesData(queryResponse?.records || [], y_key);
+	const seriesData = makeSeriesData(queryResponse?.records || [], y_keys);
 
 	const data = queryResponse?.records || []
-	const isInvalidKey = _.isEmpty(x_key) || _.isEmpty(y_key);
+	const isInvalidKey = _.isEmpty(x_key) || _.isEmpty(y_keys);
 	const hasNoData = _.isEmpty(seriesData) || _.isEmpty(data);
 	const warningMsg = isInvalidKey ? invalidConfigMsg : hasNoData ? noDataMsg : null;
 
@@ -135,12 +135,6 @@ export const renderGraph = (opts: {queryResponse: TileQueryResponse | null, x_ke
 			{warningMsg ? <WarningView msg={warningMsg} /> : VizComponent ? <VizComponent data={data} dataKey={x_key} series={seriesData}/> : null}
 		</Stack>
 	);
-
-	// return (
-	// 	<Stack style={{ flex: 1, height: '100%', padding: '1rem' }}>
-	// 		{VizComponent ? <VizComponent data={queryResponse?.records || []} dataKey={x_key} series={seriesData} /> : null}
-	// 	</Stack>
-	// );
 }
 
 export const makeCircularChartData = (data: TileData | null, name_key: string, value_key: string): CircularChartData => {
@@ -218,7 +212,7 @@ const Bar = (props: { data: TileData; dataKey: string; series: SeriesType }) => 
 
 const Area = (props: { data: TileData; dataKey: string; series: SeriesType }) => {
 	return (
-		<AreaChart withLegend data={props.data} dataKey={props.dataKey}  series={props.series} />
+		<AreaChart h="100%" w="100%" withLegend data={props.data} dataKey={props.dataKey}  series={props.series} />
 	);
 };
 
