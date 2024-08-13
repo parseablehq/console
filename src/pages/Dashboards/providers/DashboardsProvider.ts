@@ -107,7 +107,7 @@ type DashboardsStoreReducers = {
 	setDashboards: (store: DashboardsStore, dashboards: Dashboard[]) => ReducerOutput;
 	toggleCreateDashboardModal: (store: DashboardsStore, val: boolean) => ReducerOutput;
 	toggleEditDashboardModal: (store: DashboardsStore, val: boolean) => ReducerOutput;
-	selectDashboard: (store: DashboardsStore, dashboardId: string) => ReducerOutput;
+	selectDashboard: (store: DashboardsStore, dashboardId?: string | null, dashboard?: Dashboard) => ReducerOutput;
 	toggleCreateTileModal: (store: DashboardsStore, val: boolean, tileId?: string | null) => ReducerOutput;
 	toggleVizEditorModal: (store: DashboardsStore, val: boolean) => ReducerOutput;
 	toggleAllowDrag: (store: DashboardsStore) => ReducerOutput;
@@ -167,6 +167,9 @@ const setDashboards = (store: DashboardsStore, dashboards: Dashboard[]) => {
 			return defaultActiveDashboard;
 		}
 	})();
+
+	console.log({activeDashboardFromStore})
+
 	return {
 		dashboards,
 		activeDashboard,
@@ -174,13 +177,18 @@ const setDashboards = (store: DashboardsStore, dashboards: Dashboard[]) => {
 	};
 };
 
-const selectDashboard = (store: DashboardsStore, dashboardId: string) => {
-	const activeDashboard = _.find(store.dashboards, (dashboard) => dashboard.dashboard_id === dashboardId);
+const selectDashboard = (store: DashboardsStore, dashboardId?: string | null, dashboard?: Dashboard) => {
+	const activeDashboard =
+		dashboard && _.isObject(dashboard) && !_.isEmpty(dashboard.dashboard_id)
+			? dashboard
+			: _.find(store.dashboards, (dashboard) => dashboard.dashboard_id === dashboardId);
+	if (!activeDashboard) return {}
+
 	return {
 		...initialState,
 		dashboards: store.dashboards,
 		activeDashboard: activeDashboard || null,
-		layout: activeDashboard ? genLayout(activeDashboard.tiles) : []
+		layout: activeDashboard ? genLayout(activeDashboard.tiles) : [],
 	};
 };
 

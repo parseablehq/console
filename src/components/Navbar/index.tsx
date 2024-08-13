@@ -98,10 +98,11 @@ const Navbar: FC = () => {
 	const [infoModalOpened, { toggle: toggleInfoModal, close: closeInfoModal }] = useDisclosure(false);
 	const { getLogStreamListData } = useLogStream();
 	const { getUserRolesData, getUserRolesMutation } = useUser();
+	const shouldRedirectToHome = _.isEmpty(userSpecificStreams) || _.isNil(userSpecificStreams);
 	const navigateToPage = useCallback(
 		(route: string) => {
 			if (route === STREAM_ROUTE) {
-				if (_.isEmpty(userSpecificStreams) || _.isNil(userSpecificStreams)) return navigate('/');
+				if (shouldRedirectToHome) return navigate('/');
 
 				const defaultStream = currentStream && currentStream.length !== 0 ? currentStream : userSpecificStreams[0].name;
 				const stream = !streamName || streamName.length === 0 ? defaultStream : streamName;
@@ -112,6 +113,9 @@ const Navbar: FC = () => {
 					navigate(path);
 				}
 			} else {
+				if (shouldRedirectToHome && route === DASHBOARDS_ROUTE) {
+					return navigate('/');
+				}
 				return navigate(route);
 			}
 		},

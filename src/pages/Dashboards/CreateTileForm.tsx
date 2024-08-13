@@ -590,7 +590,7 @@ const CreateTileForm = () => {
 				</Stack>
 				<Stack style={{ flexDirection: 'row' }} gap={20}>
 					<Box>
-						<Button onClick={closeForm} loading={isUpdatingDashboard} variant="outline">
+						<Button onClick={closeForm} disabled={isUpdatingDashboard} variant="outline">
 							Cancel
 						</Button>
 					</Box>

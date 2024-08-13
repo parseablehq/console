@@ -23,11 +23,10 @@ const TilesView = (props: { onLayoutChange: (layout: Layout[]) => void }) => {
 	const [layout] = useDashboardsStore((store) => store.layout);
 	const hasNoTiles = _.size(activeDashboard?.tiles) < 1;
 	const showNoTilesView = hasNoTiles || !activeDashboard;
-
 	if (showNoTilesView) return <NoTilesView />;
 
 	return (
-		<Stack className={classes.tilesViewConatiner}>
+		<Stack className={classes.tilesViewConatiner} style={{ overflowY: 'scroll' }}>
 			<GridLayout
 				className="layout"
 				layout={layout}
@@ -36,7 +35,7 @@ const TilesView = (props: { onLayoutChange: (layout: Layout[]) => void }) => {
 				width={window.innerWidth - NAVBAR_WIDTH - DASHBOARDS_SIDEBAR_WIDTH}
 				isResizable={false}
 				margin={[16, 16]}
-				containerPadding={[20, 10]}
+				containerPadding={[16, 16]}
 				compactType="horizontal"
 				isDraggable={allowDrag}
 				onLayoutChange={(layout) => props.onLayoutChange(layout)}>
@@ -44,7 +43,10 @@ const TilesView = (props: { onLayoutChange: (layout: Layout[]) => void }) => {
 					return (
 						<div
 							key={item.i}
-							style={{ transition: 'none', background: 'white' }}
+							style={{
+								transition: 'none',
+								background: 'white',
+							}}
 							className={`${classes.container} ${makeExportClassName(item.i)}`}>
 							<Tile id={item.i} />
 						</div>

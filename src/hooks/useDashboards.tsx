@@ -8,7 +8,7 @@ import { getDashboards, getQueryData, postDashboard, putDashboard, removeDashboa
 import { useCallback, useState } from 'react';
 import { CreateDashboardType, TileQuery, TileQueryResponse, UpdateDashboardType } from '@/@types/parseable/api/dashboards';
 
-const { setDashboards, setTileData } = dashboardsStoreReducers;
+const { setDashboards, setTileData, selectDashboard } = dashboardsStoreReducers;
 
 export const useDashboardsQuery = () => {
 	const [, setDashbaordsStore] = useDashboardsStore((_store) => null);
@@ -26,7 +26,6 @@ export const useDashboardsQuery = () => {
 		onSuccess: (data) => {
 			setDashbaordsStore((store) => setDashboards(store, data.data || []));
 		},
-		// remove debug
 		onError: () => {
 			setDashbaordsStore((store) => setDashboards(store, []));
 		},
@@ -35,9 +34,13 @@ export const useDashboardsQuery = () => {
 	const { mutate: createDashboard, isLoading: isCreatingDashboard } = useMutation(
 		(data: { dashboard: CreateDashboardType; onSuccess?: () => void }) => postDashboard(data.dashboard, username || ''),
 		{
-			onSuccess: (_data, variables) => {
-				variables.onSuccess && variables.onSuccess();
+			onSuccess: (response, variables) => {
+				const { dashboard_id } = response.data;
+				if (_.isString(dashboard_id) && !_.isEmpty(dashboard_id)) {
+					setDashbaordsStore((store) => selectDashboard(store, null, response.data));
+				}
 				fetchDashboards();
+				variables.onSuccess && variables.onSuccess();
 				notifySuccess({ message: 'Created Successfully' });
 			},
 			onError: (data: AxiosError) => {
@@ -76,8 +79,9 @@ export const useDashboardsQuery = () => {
 		(data: { dashboardId: string; onSuccess?: () => void }) => removeDashboard(data.dashboardId),
 		{
 			onSuccess: (_data, variables) => {
-				fetchDashboards();
-				variables.onSuccess && variables.onSuccess();
+				fetchDashboards().then(() => {
+					variables.onSuccess && variables.onSuccess();
+				});
 				notifySuccess({ message: 'Deleted Successfully' });
 			},
 			onError: (data: AxiosError) => {

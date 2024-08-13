@@ -92,7 +92,13 @@ const DeleteDashboardModal = () => {
 
 	const onDelete = useCallback(() => {
 		if (activeDashboard?.dashboard_id) {
-			deleteDashboard({ dashboardId: activeDashboard?.dashboard_id });
+			deleteDashboard({
+				dashboardId: activeDashboard?.dashboard_id,
+				onSuccess: () => {
+					closeModal();
+					setConfirmText('');
+				},
+			});
 		}
 	}, [activeDashboard?.dashboard_id]);
 

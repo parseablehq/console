@@ -151,7 +151,7 @@ const CreateDashboardModal = () => {
 							</Box>
 							<Box>
 								<Button disabled={!form.isValid()} onClick={onSubmit}>
-									{!editMode ? 'Create' : 'Edit'}
+									{!editMode ? 'Create' : 'Save'}
 								</Button>
 							</Box>
 						</>

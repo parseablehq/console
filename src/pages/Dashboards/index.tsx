@@ -33,6 +33,7 @@ const Dashboards = () => {
 				position: 'relative',
 				flexDirection: 'row',
 				width: '100%',
+				overflow: 'hidden',
 			}}>
 			{dashboards === null ? (
 				<LoadingView />

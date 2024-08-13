@@ -45,7 +45,7 @@ const DashboardList = () => {
 	);
 
 	return (
-		<Stack style={{}}>
+		<Stack style={{ flex: 1, overflowY: 'scroll' }}>
 			{_.map(dashboards, (dashboard) => {
 				return (
 					<DashboardListItem
