@@ -7,8 +7,7 @@ import { useCallback } from 'react';
 import _ from 'lodash';
 import { Dashboard } from '@/@types/parseable/api/dashboards';
 
-const {selectDashboard, toggleCreateDashboardModal} = dashboardsStoreReducers;
-
+const { selectDashboard, toggleCreateDashboardModal } = dashboardsStoreReducers;
 interface DashboardItemProps extends Dashboard {
 	activeDashboardId: undefined | string;
 	onSelect: (id: string) => void;
@@ -19,10 +18,14 @@ const DashboardListItem = (props: DashboardItemProps) => {
 	const totalTiles = _.size(tiles);
 	const isActive = dashboard_id === activeDashboardId;
 
-	const selectDashboard = useCallback(() => onSelect(dashboard_id), [])
+	const selectDashboard = useCallback(() => {
+		!isActive && onSelect(dashboard_id);
+	}, [isActive]);
 	return (
 		<Stack gap={0} className={`${classes.dashboardItem} ${isActive ? classes.active : ''}`} onClick={selectDashboard}>
-			<Text className={classes.dashboardTitle} lineClamp={1}>{name}</Text>
+			<Text className={classes.dashboardTitle} lineClamp={1}>
+				{name}
+			</Text>
 			<Text className={classes.tilesCountText}>{`${totalTiles} Tile${totalTiles === 1 ? '' : 's'}`}</Text>
 		</Stack>
 	);
@@ -32,17 +35,25 @@ const DashboardList = () => {
 	const [dashboards, setDashbaordsStore] = useDashboardsStore((store) => store.dashboards);
 	const [activeDashboardId] = useDashboardsStore((store) => store.activeDashboard?.dashboard_id);
 
-	const onSelectDashboardId = useCallback((dashboardId: string) => {
-		if (activeDashboardId === dashboardId) return;
+	const onSelectDashboardId = useCallback(
+		(dashboardId: string) => {
+			if (activeDashboardId === dashboardId) return;
 
-		setDashbaordsStore((store) => selectDashboard(store, dashboardId));
-	}, [activeDashboardId]);
+			setDashbaordsStore((store) => selectDashboard(store, dashboardId));
+		},
+		[activeDashboardId],
+	);
 
 	return (
 		<Stack style={{}}>
 			{_.map(dashboards, (dashboard) => {
 				return (
-					<DashboardListItem key={dashboard.dashboard_id} {...dashboard} activeDashboardId={activeDashboardId} onSelect={onSelectDashboardId} />
+					<DashboardListItem
+						key={dashboard.dashboard_id}
+						{...dashboard}
+						activeDashboardId={activeDashboardId}
+						onSelect={onSelectDashboardId}
+					/>
 				);
 			})}
 		</Stack>
