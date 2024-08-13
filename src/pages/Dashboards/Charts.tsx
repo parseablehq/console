@@ -9,20 +9,20 @@ import { CodeHighlight } from '@mantine/code-highlight';
 import { Log } from '@/@types/parseable/api/query';
 
 export const chartColorsMap = {
-	'black': 'dark.6',
-	'gray': 'gray.6',
-	'red': 'red.6',
-	'pink': 'pink.6',
-	'grape': 'grape.6',
-	'violet': 'violet.6',
-	'indigo': 'indigo.6',
-	'cyan': 'cyan.6',
-	'blue': 'blue.6',
-	'teal': 'teal.6',
-	'green': 'green.6',
-	'lime': 'lime.6',
-	'yellow': 'yellow.6',
-	'orange': 'orange.6',
+	'black': 'dark.5',
+	'gray': 'gray.5',
+	'red': 'red.5',
+	'pink': 'pink.5',
+	'grape': 'grape.5',
+	'violet': 'violet.5',
+	'indigo': 'indigo.5',
+	'cyan': 'cyan.5',
+	'blue': 'blue.5',
+	'teal': 'teal.5',
+	'green': 'green.5',
+	'lime': 'lime.5',
+	'yellow': 'yellow.5',
+	'orange': 'orange.5',
 }
 
 export const colors = [
@@ -175,13 +175,13 @@ export const makeCircularChartData = (data: Log[], name_key: string, value_key: 
 			usedColors = [...usedColors, colorkey];
 			const colorKey = _.difference(colors, usedColors)[index] || nullColor;
 			const color = colorKey in chartColorsMap ? chartColorsMap[colorKey as keyof typeof chartColorsMap] : nullColor;
-			return { topNArcs: [...topNArcs, { name: key, value, color: color || 'gray.6' }], index: index + 1 };
+			return { topNArcs: [...topNArcs, { name: key, value, color: color || 'gray.4' }], index: index + 1 };
 		},
 		{ topNArcs: [], index: 0 },
 	);
 
 	const restArcValue = _.sum(_.values(restObject));
-	return [...topNArcs, ...(restArcValue !== 0 ? [{ name: 'Others', value: restArcValue, color: 'gray.6' }] : [])];
+	return [...topNArcs, ...(restArcValue !== 0 ? [{ name: 'Others', value: restArcValue, color: 'gray.4' }] : [])];
 }
 
 const makeSeriesData = (data: Log[], y_key: string[]) => {
@@ -194,7 +194,7 @@ const makeSeriesData = (data: Log[], y_key: string[]) => {
 		(acc, key: string, index: number) => {
 			const colorKey =  _.difference(colors, usedColors)[index] || nullColor;
 			const color = colorKey in chartColorsMap ? chartColorsMap[colorKey as keyof typeof chartColorsMap] : nullColor;
-			return [...acc, { color: color || 'gray.6', name: key }];
+			return [...acc, { color: color || 'gray.4', name: key }];
 		},
 		[],
 	);
