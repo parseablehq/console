@@ -3,13 +3,17 @@ import { LogsQuery } from '@/@types/parseable/api/query';
 import { notifications } from '@mantine/notifications';
 import { isAxiosError, AxiosError } from 'axios';
 import { IconCheck, IconFileAlert } from '@tabler/icons-react';
-import { useMutation } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
+import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
+import _ from 'lodash';
 
 type QueryData = {
 	logsQuery: LogsQuery;
 	query: string;
 	onSuccess?: () => void;
 };
+
+type FooterCountResponse = { [count: string]: number }[];
 
 export const useQueryResult = () => {
 	const fetchQueryHandler = async (data: QueryData) => {
@@ -46,5 +50,27 @@ export const useQueryResult = () => {
 		},
 	});
 
-	return { fetchQueryMutation };
+	const useFetchFooterCount = (queryData: QueryData | null) => {
+		const { setTotalCount } = logsStoreReducers;
+		const [, setLogsStore] = useLogsStore((store) => store);
+		const {
+			isLoading: footerCountLoading,
+			isRefetching: footerCountRefetching,
+			refetch: footerCountRefetch,
+		} = useQuery(['fetchQuery'], () => fetchQueryHandler(queryData!), {
+			onSuccess: (data: FooterCountResponse) => {
+				const footerCount = _.first(data)?.count || 0;
+				console.log(data);
+				setLogsStore((store) => setTotalCount(store, footerCount));
+			},
+		});
+
+		return {
+			footerCountLoading,
+			footerCountRefetch,
+			footerCountRefetching,
+		};
+	};
+
+	return { fetchQueryMutation, useFetchFooterCount };
 };

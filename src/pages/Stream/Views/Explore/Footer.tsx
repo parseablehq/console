@@ -1,18 +1,20 @@
-import { FC, useCallback } from "react";
-import { useLogsStore, logsStoreReducers, LOAD_LIMIT, LOG_QUERY_LIMITS } from "../../providers/LogsProvider";
-import { useAppStore } from "@/layouts/MainLayout/providers/AppProvider";
-import { usePagination } from "@mantine/hooks";
-import { downloadDataAsCSV, downloadDataAsJson } from "@/utils/exportHelpers";
-import { Box, Center, Group, Loader, Menu, Pagination, px, Stack, Tooltip } from "@mantine/core";
-import _ from "lodash";
-import { Text } from "@mantine/core";
-import { HumanizeNumber } from "@/utils/formatBytes";
-import IconButton from "@/components/Button/IconButton";
-import { IconDownload, IconSelector } from "@tabler/icons-react";
-import useMountedState from "@/hooks/useMountedState";
-import classes from '../../styles/Footer.module.css'
+import { FC, useCallback, useState, useEffect } from 'react';
+import { useLogsStore, logsStoreReducers, LOAD_LIMIT, LOG_QUERY_LIMITS } from '../../providers/LogsProvider';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { usePagination } from '@mantine/hooks';
+import { downloadDataAsCSV, downloadDataAsJson } from '@/utils/exportHelpers';
+import { Box, Center, Group, Loader, Menu, Pagination, px, Stack, Tooltip } from '@mantine/core';
+import _ from 'lodash';
+import { Text } from '@mantine/core';
+import { HumanizeNumber } from '@/utils/formatBytes';
+import IconButton from '@/components/Button/IconButton';
+import { IconDownload, IconSelector } from '@tabler/icons-react';
+import useMountedState from '@/hooks/useMountedState';
+import { useQueryLogs } from '@/hooks/useQueryLogs';
+import { useQueryResult } from '@/hooks/useQueryResult';
+import classes from '../../styles/Footer.module.css';
 
-const {setPageAndPageData, setCurrentPage, setCurrentOffset, makeExportData} = logsStoreReducers;
+const { setPageAndPageData, setCurrentPage, setCurrentOffset, makeExportData } = logsStoreReducers;
 
 const TotalCount = (props: { totalCount: number }) => {
 	return (
@@ -24,7 +26,7 @@ const TotalCount = (props: { totalCount: number }) => {
 
 const renderExportIcon = () => <IconDownload size={px('0.8rem')} stroke={1.8} />;
 
-const TotalLogsCount = (props: { hasTableLoaded: boolean; isFetchingCount: number; isTableEmpty: boolean }) => {
+const TotalLogsCount = (props: { hasTableLoaded: boolean; isFetchingCount: boolean; isTableEmpty: boolean }) => {
 	const [{ totalCount, perPage, pageData }] = useLogsStore((store) => store.tableOpts);
 	const displayedCount = _.size(pageData);
 	const showingCount = displayedCount < perPage ? displayedCount : perPage;
@@ -32,7 +34,7 @@ const TotalLogsCount = (props: { hasTableLoaded: boolean; isFetchingCount: numbe
 	return (
 		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }} gap={6}>
 			{props.hasTableLoaded ? (
-				props.isFetchingCount !==0 ? (
+				props.isFetchingCount ? (
 					<Loader type="dots" />
 				) : (
 					<>
@@ -47,7 +49,6 @@ const TotalLogsCount = (props: { hasTableLoaded: boolean; isFetchingCount: numbe
 		</Stack>
 	);
 };
-
 
 const LimitControl: FC = () => {
 	const [opened, setOpened] = useMountedState(false);
@@ -93,7 +94,17 @@ const LimitControl: FC = () => {
 	);
 };
 
-const Footer = (props: { loaded: boolean; isLoading: number; hasNoData: boolean }) => {
+const Footer = (props: { loaded: boolean; hasNoData: boolean }) => {
+	const [isFetchingCount, setIsFetchingCount] = useState<boolean>(false);
+	const { footerQuery } = useQueryLogs();
+	const { useFetchFooterCount } = useQueryResult();
+	const queryData = footerQuery();
+	const { footerCountLoading, footerCountRefetching } = useFetchFooterCount(queryData);
+
+	useEffect(() => {
+		setIsFetchingCount(footerCountLoading || footerCountRefetching);
+	}, [queryData]);
+
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const [filteredData] = useLogsStore((store) => store.data.filteredData);
 	const { totalPages, currentOffset, currentPage, perPage, headers, totalCount } = tableOpts;
@@ -138,7 +149,7 @@ const Footer = (props: { loaded: boolean; isLoading: number; hasNoData: boolean 
 			<Stack w="100%" justify="center" align="flex-start">
 				<TotalLogsCount
 					hasTableLoaded={props.loaded}
-					isFetchingCount={props.isLoading}
+					isFetchingCount={isFetchingCount}
 					isTableEmpty={props.hasNoData}
 				/>
 			</Stack>
@@ -151,7 +162,7 @@ const Footer = (props: { loaded: boolean; isLoading: number; hasNoData: boolean 
 							pagination.setPage(page);
 						}}
 						size="sm">
-						<Group  gap={5} justify="center">
+						<Group gap={5} justify="center">
 							<Pagination.First
 								onClick={() => {
 									currentOffset !== 0 && onChangeOffset('prev');

@@ -10,7 +10,11 @@ import EmptyBox from '@/components/Empty';
 import Column from '../../components/Column';
 import FilterPills from '../../components/FilterPills';
 import tableStyles from '../../styles/Logs.module.css';
-import { PRIMARY_HEADER_HEIGHT, STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT, STREAM_SECONDARY_TOOLBAR_HRIGHT } from '@/constants/theme';
+import {
+	PRIMARY_HEADER_HEIGHT,
+	STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT,
+	STREAM_SECONDARY_TOOLBAR_HRIGHT,
+} from '@/constants/theme';
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
@@ -137,13 +141,8 @@ interface SectionRefs {
 	pinnedContainerRef: HTMLDivRef;
 }
 
-const LogTable = (props: {
-	isFetchingCount: number;
-	errorMessage: string | null;
-	hasNoData: boolean;
-	showTable: boolean;
-}) => {
-	const { isFetchingCount, errorMessage, hasNoData, showTable } = props;
+const LogTable = (props: { errorMessage: string | null; hasNoData: boolean; showTable: boolean }) => {
+	const { errorMessage, hasNoData, showTable } = props;
 	const [containerRefs, _setContainerRefs] = useState<SectionRefs>({
 		activeSectionRef: useRef<'left' | 'right'>('left'),
 		leftSectionRef: useRef<HTMLDivElement>(null),
@@ -176,7 +175,7 @@ const LogTable = (props: {
 			) : (
 				<ErrorView message={errorMessage} />
 			)}
-			<Footer loaded={showTable} isLoading={isFetchingCount} hasNoData={hasNoData} />
+			<Footer loaded={showTable} hasNoData={hasNoData} />
 		</TableContainer>
 	);
 };
