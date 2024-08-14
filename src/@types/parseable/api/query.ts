@@ -34,6 +34,11 @@ export type Log = {
 	[key: string]: string | number | null | Date;
 };
 
+export type LogsResponseWithHeaders = {
+	fields: string[];
+	records: Log[];
+} | null;
+
 export type LogSelectedTimeRange = {
 	state: 'fixed' | 'custom';
 	value: string;

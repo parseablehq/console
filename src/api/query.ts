@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { Axios } from './axios';
 import { LOG_QUERY_URL } from './constants';
-import { LogsQuery } from '@/@types/parseable/api/query';
+import { Log, LogsQuery, LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 
 type QueryLogs = {
 	streamName: string;
@@ -11,38 +11,47 @@ type QueryLogs = {
 	pageOffset: number;
 };
 
-// to optimize performace, it has been decided to round off the time at the given level
+// to optimize query performace, it has been decided to round off the time at the given level
 // so making the end-time inclusive
 const optimizeEndTime = (endTime: Date) => {
 	return dayjs(endTime).add(1, 'minute').toDate();
 };
 
-export const getQueryLogs = (logsQuery: QueryLogs) => {
+// ------ Default sql query
+
+const makeDefaultQueryRequestData = (logsQuery: QueryLogs) => {
 	const { startTime, endTime, streamName, limit, pageOffset } = logsQuery;
-
 	const query = `SELECT * FROM ${streamName} LIMIT ${limit} OFFSET ${pageOffset}`;
+	return { query, startTime, endTime: optimizeEndTime(endTime) };
+};
 
-	return Axios().post(
-		LOG_QUERY_URL,
-		{
-			query,
-			startTime,
-			endTime: optimizeEndTime(endTime),
-		},
+export const getQueryLogs = (logsQuery: QueryLogs) => {
+	return Axios().post<Log[]>(LOG_QUERY_URL(), makeDefaultQueryRequestData(logsQuery), {});
+};
+
+export const getQueryLogsWithHeaders = (logsQuery: QueryLogs) => {
+	return Axios().post<LogsResponseWithHeaders>(
+		LOG_QUERY_URL({ fields: true }),
+		makeDefaultQueryRequestData(logsQuery),
 		{},
 	);
 };
 
-export const getQueryResult = (logsQuery: LogsQuery, query = '') => {
-	const { startTime, endTime } = logsQuery;
+// ------ Custom sql query
 
-	return Axios().post(
-		LOG_QUERY_URL,
-		{
-			query,
-			startTime,
-			endTime: optimizeEndTime(endTime),
-		},
+const makeCustomQueryRequestData = (logsQuery: LogsQuery, query: string) => {
+	const { startTime, endTime } = logsQuery;
+	return { query, startTime, endTime: optimizeEndTime(endTime) };
+};
+
+export const getQueryResult = (logsQuery: LogsQuery, query = '') => {
+	return Axios().post<Log[]>(LOG_QUERY_URL(), makeCustomQueryRequestData(logsQuery, query), {});
+};
+
+export const getQueryResultWithHeaders = (logsQuery: LogsQuery, query = '') => {
+	return Axios().post<LogsResponseWithHeaders>(
+		LOG_QUERY_URL({ fields: true }),
+		makeCustomQueryRequestData(logsQuery, query),
 		{},
 	);
 };
