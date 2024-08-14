@@ -119,16 +119,15 @@ const NoDashboardsView = () => {
 	}, []);
 
 	return (
-		<Stack className={classes.noDashboardsContainer}>
+		<Stack className={classes.noDashboardsContainer} gap={4}>
 			<Stack className={classes.dashboardIconContainer}>
 				<IconChartBar className={classes.dashboardIcon} stroke={1.2} />
 			</Stack>
-			<Text className={classes.noDashboardsViewTitle}>Create Dashboard Title Placeholder</Text>
+			<Text className={classes.noDashboardsViewTitle}>Create dashboard</Text>
 			<Text className={classes.noDashboardsViewDescription}>
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-				magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+				Create your first dashboard to visualize log events from various streams.
 			</Text>
-			<Box>
+			<Box mt={4}>
 				<Button onClick={openCreateDashboardModal}>Create Dashboard</Button>
 			</Box>
 		</Stack>
@@ -147,10 +146,10 @@ const NoTilesView = () => {
 			<Stack className={classes.dashboardIconContainer}>
 				<IconChartBar className={classes.dashboardIcon} stroke={1.2} />
 			</Stack>
-			<Text className={classes.noDashboardsViewTitle}>Create Tile Title Placeholder</Text>
+			<Text className={classes.noDashboardsViewTitle}>Add tiles to the dashboard</Text>
 			<Text className={classes.noDashboardsViewDescription}>
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-				magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+				A tile is single unit of visualization. It is a visualization window based on a SQL query. A dashboard is made
+				up of tiles. Create your first tile for this dashboard.
 			</Text>
 			<Box mt={4}>
 				<Button onClick={openCreateTileModal}>Add Tile</Button>
