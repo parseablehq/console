@@ -19,7 +19,7 @@ import { IconEdit, IconInfoCircleFilled, IconPlus, IconTrash } from '@tabler/ico
 import { UseFormReturnType, useForm } from '@mantine/form';
 import { useStreamStore, streamStoreReducers } from '../../providers/StreamProvider';
 
-const defaultColumnTypeConfig = { column: '', operator: '=', value: '', repeats: 1, ignoreCase: false };
+const defaultColumnTypeConfig = { column: '', operator: '=', value: 0, repeats: 1, ignoreCase: false };
 const defaultColumnTypeRule = { type: 'column' as 'column', config: defaultColumnTypeConfig };
 const { transformAlerts } = streamStoreReducers;
 
@@ -439,15 +439,17 @@ const RepeatIntervalLabel = () => {
 
 const AlertForm = (props: { form: AlertsFormType }) => {
 	const { form } = props;
-	const {
-		rule: { type },
-	} = form.getValues();
+	const { rule } = form.getValues();
+	const { type } = rule;
 
 	useEffect(() => {
-		if (type === 'column') {
+		if (type === 'column' && _.isEmpty(rule.config)) {
 			form.setFieldValue('rule.config', defaultColumnTypeConfig);
+		} else if (type === 'column' && !_.isEmpty(rule.config)) {
+			form.setFieldValue('rule.config', rule.config);
 		} else {
-			form.setFieldValue('rule.config', '');
+			// form.setFieldValue('rule.config', '');
+			console.log(type);
 		}
 	}, [type]);
 
@@ -480,7 +482,7 @@ const AlertForm = (props: { form: AlertsFormType }) => {
 						label="Config"
 						placeholder="Config"
 						key="config"
-						{...form.getInputProps('rule.config')}
+						// {...form.getInputProps('rule.config')}
 					/>
 				)}
 			</Stack>
