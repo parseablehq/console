@@ -441,15 +441,11 @@ const AlertForm = (props: { form: AlertsFormType }) => {
 	const { form } = props;
 	const { rule } = form.getValues();
 	const { type } = rule;
-
 	useEffect(() => {
-		if (type === 'column' && _.isEmpty(rule.config)) {
-			form.setFieldValue('rule.config', defaultColumnTypeConfig);
-		} else if (type === 'column' && !_.isEmpty(rule.config)) {
+		if (type === 'column' && !_.isEmpty(rule.config)) {
 			form.setFieldValue('rule.config', rule.config);
 		} else {
-			// form.setFieldValue('rule.config', '');
-			console.log(type);
+			form.setFieldValue('rule.config', defaultColumnTypeConfig);
 		}
 	}, [type]);
 
@@ -482,7 +478,6 @@ const AlertForm = (props: { form: AlertsFormType }) => {
 						label="Config"
 						placeholder="Config"
 						key="config"
-						// {...form.getInputProps('rule.config')}
 					/>
 				)}
 			</Stack>
