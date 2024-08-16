@@ -112,23 +112,6 @@ export const useQueryLogs = () => {
 		}
 	};
 
-	const footerQuery = useCallback(() => {
-		const defaultQuery = `select count(*) as count from ${currentStream}`;
-		const query = isQuerySearchActive
-			? custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM')
-			: defaultQuery;
-		if (currentStream && query?.length > 0) {
-			const logsQuery = {
-				streamName: currentStream,
-				startTime: timeRange.startTime,
-				endTime: timeRange.endTime,
-				access: [],
-			};
-			return { logsQuery, query };
-		}
-		return null;
-	}, [currentStream, timeRange, custSearchQuery]);
-
 	const resetData = () => {
 		_dataRef.current = null;
 		setPageLogData(null);
@@ -144,6 +127,5 @@ export const useQueryLogs = () => {
 		loading: loading,
 		getQueryData,
 		resetData,
-		footerQuery,
 	};
 };

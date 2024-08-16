@@ -11,9 +11,9 @@ const useLogsFetcher = (props: { schemaLoading: boolean }) => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [{ tableOpts, timeRange }, setLogsStore] = useLogsStore((store) => store);
 	const { currentOffset, currentPage, pageData } = tableOpts;
-	const { getQueryData, loading: logsLoading, error: errorMessage, footerQuery } = useQueryLogs();
+	const { getQueryData, loading: logsLoading, error: errorMessage } = useQueryLogs();
 	const { useFetchFooterCount } = useQueryResult();
-	const { footerCountRefetch } = useFetchFooterCount(footerQuery());
+	const { footerCountRefetch } = useFetchFooterCount();
 	const hasContentLoaded = schemaLoading === false && logsLoading === false;
 	const hasNoData = hasContentLoaded && !errorMessage && pageData.length === 0;
 	const showTable = hasContentLoaded && !hasNoData && !errorMessage;

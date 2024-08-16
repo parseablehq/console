@@ -11,7 +11,6 @@ import IconButton from '@/components/Button/IconButton';
 import { IconDownload, IconSelector } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
 import { useQueryResult } from '@/hooks/useQueryResult';
-import { useQueryLogs } from '@/hooks/useQueryLogs';
 import classes from '../../styles/Footer.module.css';
 
 const { setPageAndPageData, setCurrentPage, setCurrentOffset, makeExportData } = logsStoreReducers;
@@ -100,14 +99,12 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean }) => {
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const [filteredData] = useLogsStore((store) => store.data.filteredData);
 	const { totalPages, currentOffset, currentPage, perPage, headers, totalCount } = tableOpts;
-	const { footerQuery } = useQueryLogs();
-	const queryData = footerQuery();
 	const { useFetchFooterCount } = useQueryResult();
 
-	const { footerCountLoading, footerCountRefetching } = useFetchFooterCount(queryData);
+	const { footerCountLoading, footerCountRefetching } = useFetchFooterCount();
 	useEffect(() => {
 		setIsFetchingCount(footerCountLoading || footerCountRefetching);
-	}, [footerCountLoading, footerCountRefetching, queryData]);
+	}, [footerCountLoading, footerCountRefetching]);
 
 	const onPageChange = useCallback((page: number) => {
 		setLogsStore((store) => setPageAndPageData(store, page));
