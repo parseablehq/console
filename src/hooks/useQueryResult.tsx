@@ -6,7 +6,6 @@ import { IconCheck, IconFileAlert } from '@tabler/icons-react';
 import { useMutation, useQuery } from 'react-query';
 import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
 import _ from 'lodash';
-import { useCallback } from 'react';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 type QueryData = {
@@ -63,28 +62,23 @@ export const useQueryResult = () => {
 		const [{ timeRange, custQuerySearchState }, setLogsStore] = useLogsStore((store) => store);
 		const { isQuerySearchActive, custSearchQuery } = custQuerySearchState;
 
-		const footerQuery = useCallback(() => {
-			const defaultQuery = `select count(*) as count from ${currentStream}`;
-			const query = isQuerySearchActive
-				? custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM')
-				: defaultQuery;
-			if (currentStream && query?.length > 0) {
-				const logsQuery = {
-					streamName: currentStream,
-					startTime: timeRange.startTime,
-					endTime: timeRange.endTime,
-					access: [],
-				};
-				return { logsQuery, query };
-			}
-			return null;
-		}, [currentStream, timeRange, custSearchQuery]);
+		const defaultQuery = `select count(*) as count from ${currentStream}`;
+		const query = isQuerySearchActive
+			? custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM')
+			: defaultQuery;
+
+		const logsQuery = {
+			streamName: currentStream || '',
+			startTime: timeRange.startTime,
+			endTime: timeRange.endTime,
+			access: [],
+		};
 
 		const {
 			isLoading: footerCountLoading,
 			isRefetching: footerCountRefetching,
 			refetch: footerCountRefetch,
-		} = useQuery(['fetchQuery', footerQuery()?.logsQuery], () => fetchQueryHandler(footerQuery()!), {
+		} = useQuery(['fetchQuery', logsQuery], () => fetchQueryHandler({ logsQuery, query }), {
 			onSuccess: (data: FooterCountResponse) => {
 				const footerCount = _.first(data.records)?.count || 0;
 				setLogsStore((store) => setTotalCount(store, footerCount));
