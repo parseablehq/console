@@ -3,12 +3,23 @@ import { LogsQuery } from '@/@types/parseable/api/query';
 import { notifications } from '@mantine/notifications';
 import { isAxiosError, AxiosError } from 'axios';
 import { IconCheck, IconFileAlert } from '@tabler/icons-react';
-import { useMutation } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
+import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
+import _ from 'lodash';
+import { useCallback } from 'react';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 type QueryData = {
 	logsQuery: LogsQuery;
 	query: string;
 	onSuccess?: () => void;
+};
+
+type FooterCountResponse = {
+	fields: string[];
+	records: {
+		count: number;
+	}[];
 };
 
 export const useQueryResult = () => {
@@ -46,5 +57,47 @@ export const useQueryResult = () => {
 		},
 	});
 
-	return { fetchQueryMutation };
+	const useFetchFooterCount = () => {
+		const [currentStream] = useAppStore((store) => store.currentStream);
+		const { setTotalCount } = logsStoreReducers;
+		const [{ timeRange, custQuerySearchState }, setLogsStore] = useLogsStore((store) => store);
+		const { isQuerySearchActive, custSearchQuery } = custQuerySearchState;
+
+		const footerQuery = useCallback(() => {
+			const defaultQuery = `select count(*) as count from ${currentStream}`;
+			const query = isQuerySearchActive
+				? custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM')
+				: defaultQuery;
+			if (currentStream && query?.length > 0) {
+				const logsQuery = {
+					streamName: currentStream,
+					startTime: timeRange.startTime,
+					endTime: timeRange.endTime,
+					access: [],
+				};
+				return { logsQuery, query };
+			}
+			return null;
+		}, [currentStream, timeRange, custSearchQuery]);
+
+		const {
+			isLoading: footerCountLoading,
+			isRefetching: footerCountRefetching,
+			refetch: footerCountRefetch,
+		} = useQuery(['fetchQuery', footerQuery()?.logsQuery], () => fetchQueryHandler(footerQuery()!), {
+			onSuccess: (data: FooterCountResponse) => {
+				const footerCount = _.first(data.records)?.count || 0;
+				setLogsStore((store) => setTotalCount(store, footerCount));
+			},
+			refetchOnWindowFocus: false,
+		});
+
+		return {
+			footerCountLoading,
+			footerCountRefetch,
+			footerCountRefetching,
+		};
+	};
+
+	return { fetchQueryMutation, useFetchFooterCount };
 };

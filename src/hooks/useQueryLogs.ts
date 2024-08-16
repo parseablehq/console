@@ -2,16 +2,15 @@ import { SortOrder, type Log, type LogsData, type LogsSearch } from '@/@types/pa
 import { getQueryLogsWithHeaders, getQueryResultWithHeaders } from '@/api/query';
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { useLogsStore, logsStoreReducers, LOAD_LIMIT, isJqSearch } from '@/pages/Stream/providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { useQueryResult } from './useQueryResult';
 import _ from 'lodash';
 import { AxiosError } from 'axios';
 import jqSearch from '@/utils/jqSearch';
 import { useGetLogStreamSchema } from './useGetLogStreamSchema';
 
-const { setLogData, setTotalCount } = logsStoreReducers;
+const { setLogData } = logsStoreReducers;
 
 type QueryLogs = {
 	streamName: string;
@@ -32,7 +31,6 @@ export const useQueryLogs = () => {
 	const _dataRef = useRef<Log[] | null>(null);
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
-	const [isFetchingCount, setIsFetchingCount] = useMountedState<boolean>(false);
 	const [pageLogData, setPageLogData] = useMountedState<LogsData | null>(null);
 	const { getDataSchema } = useGetLogStreamSchema();
 	const [querySearch, setQuerySearch] = useMountedState<LogsSearch>({
@@ -111,44 +109,6 @@ export const useQueryLogs = () => {
 		}
 	};
 
-	// fetchQueryMutation is used only on fetching count
-	// refactor this hook if you want to use mutation anywhere else
-	const { fetchQueryMutation } = useQueryResult();
-
-	useEffect(() => {
-		const { fields = [], records = [] } = fetchQueryMutation.data || {};
-		const firstRecord = _.first(records);
-		if (_.includes(fields, 'count') && _.includes(_.keys(firstRecord), 'count')) {
-			const count = _.get(firstRecord, 'count', 0);
-			setLogsStore((store) => setTotalCount(store, _.toInteger(count)));
-		}
-	}, [fetchQueryMutation.data]);
-
-	const fetchCount = () => {
-		try {
-			setIsFetchingCount(true);
-			const defaultQuery = `select count(*) as count from ${currentStream}`;
-			const query = isQuerySearchActive
-				? custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM')
-				: defaultQuery;
-			if (currentStream && query?.length > 0) {
-				const logsQuery = {
-					streamName: currentStream,
-					startTime: timeRange.startTime,
-					endTime: timeRange.endTime,
-					access: [],
-				};
-				fetchQueryMutation.mutate({
-					logsQuery,
-					query,
-					onSuccess: () => setIsFetchingCount(false),
-				});
-			}
-		} catch (e) {
-			console.log(e);
-		}
-	};
-
 	const resetData = () => {
 		_dataRef.current = null;
 		setPageLogData(null);
@@ -164,7 +124,5 @@ export const useQueryLogs = () => {
 		loading: loading,
 		getQueryData,
 		resetData,
-		fetchCount,
-		isFetchingCount,
 	};
 };

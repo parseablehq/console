@@ -174,15 +174,10 @@ const TableContainer = (props: { children: ReactNode }) => {
 	return <Box className={classes.container}>{props.children}</Box>;
 };
 
-const JsonView = (props: {
-	isFetchingCount: boolean;
-	errorMessage: string | null;
-	hasNoData: boolean;
-	showTable: boolean;
-}) => {
+const JsonView = (props: { errorMessage: string | null; hasNoData: boolean; showTable: boolean }) => {
 	const [maximized] = useAppStore((store) => store.maximized);
 
-	const { isFetchingCount, errorMessage, hasNoData, showTable } = props;
+	const { errorMessage, hasNoData, showTable } = props;
 	const [isSearching, setSearching] = useState(false);
 	const primaryHeaderHeight = !maximized
 		? PRIMARY_HEADER_HEIGHT + STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT + STREAM_SECONDARY_TOOLBAR_HRIGHT
@@ -214,7 +209,7 @@ const JsonView = (props: {
 			) : (
 				<ErrorView message={errorMessage} />
 			)}
-			<Footer loaded={showTable} isLoading={isFetchingCount} hasNoData={hasNoData} />
+			<Footer loaded={showTable} hasNoData={hasNoData} />
 		</TableContainer>
 	);
 };
