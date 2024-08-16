@@ -8,6 +8,8 @@ import { HumanizeNumber } from '@/utils/formatBytes';
 import { logsStoreReducers, useLogsStore } from '../providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useFilterStore, filterStoreReducers } from '../providers/FilterProvider';
+import { LogsResponseWithHeaders } from '@/@types/parseable/api/query';
+import _ from 'lodash';
 const { setTimeRange } = logsStoreReducers;
 
 const { parseQuery } = filterStoreReducers;
@@ -156,29 +158,36 @@ const NoDataView = () => {
 	);
 };
 
-type GraphRecord = {
-	date_bin_timestamp: string;
-	log_count: number;
-};
+const calcAverage = (data: LogsResponseWithHeaders | undefined) => {
+	if (!data || !Array.isArray(data?.records)) return 0;
 
-const calcAverage = (data: GraphRecord[]) => {
-	if (!Array.isArray(data) || data.length === 0) return 0;
+	const { fields, records } = data;
+	if (_.isEmpty(records) || !_.includes(fields, 'log_count')) return 0;
 
-	const total = data.reduce((acc, d) => {
-		return acc + d.log_count;
+	const total = records.reduce((acc, d) => {
+		return acc + _.toNumber(d.log_count) || 0;
 	}, 0);
-	return parseInt(Math.abs(total / data.length).toFixed(0));
+	return parseInt(Math.abs(total / records.length).toFixed(0));
 };
 
 // date_bin removes tz info
 // filling data with empty values where there is no rec
-const parseGraphData = (data: GraphRecord[] = [], avg: number, startTime: Date, endTime: Date, interval: number) => {
-	if (!Array.isArray(data)) return [];
-	const { modifiedEndTime, modifiedStartTime, compactType } = getModifiedTimeRange(startTime, endTime, interval);
+const parseGraphData = (
+	data: LogsResponseWithHeaders | undefined,
+	avg: number,
+	startTime: Date,
+	endTime: Date,
+	interval: number,
+) => {
+	if (!data || !Array.isArray(data?.records)) return [];
 
+	const { fields, records } = data;
+	if (_.isEmpty(records) || !_.includes(fields, 'log_count') || !_.includes(fields, 'date_bin_timestamp')) return [];
+
+	const { modifiedEndTime, modifiedStartTime, compactType } = getModifiedTimeRange(startTime, endTime, interval);
 	const allTimestamps = getAllIntervals(modifiedStartTime, modifiedEndTime, compactType);
 	const parsedData = allTimestamps.map((ts) => {
-		const countData = data.find((d) => {
+		const countData = records.find((d) => {
 			return new Date(`${d.date_bin_timestamp}Z`).toISOString() === ts.toISOString();
 		});
 
@@ -190,7 +199,7 @@ const parseGraphData = (data: GraphRecord[] = [], avg: number, startTime: Date, 
 				compactType,
 			};
 		} else {
-			const aboveAvgCount = countData.log_count - avg;
+			const aboveAvgCount = _.toNumber(countData.log_count) - avg;
 			const aboveAvgPercent = parseInt(((aboveAvgCount / avg) * 100).toFixed(2));
 			return {
 				events: countData.log_count,
