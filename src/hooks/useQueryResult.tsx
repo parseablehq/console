@@ -80,8 +80,8 @@ export const useQueryResult = () => {
 			refetch: footerCountRefetch,
 		} = useQuery(['fetchQuery', logsQuery], () => fetchQueryHandler({ logsQuery, query }), {
 			onSuccess: (data: FooterCountResponse) => {
-				const footerCount = _.first(data.records)?.count || 0;
-				setLogsStore((store) => setTotalCount(store, footerCount));
+				const footerCount = _.first(data.records)?.count;
+				footerCount && setLogsStore((store) => setTotalCount(store, footerCount));
 			},
 			refetchOnWindowFocus: false,
 		});
