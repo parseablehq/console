@@ -11,7 +11,7 @@ const AccessSpecificRoute: FC<AccessSpecificRouteProps> = (props) => {
 	const { accessRequired } = props;
 	const navigate = useNavigate();
 
-	const [streamSpecificUserAccess] = useAppStore(store => store.streamSpecificUserAccess)
+	const [streamSpecificUserAccess] = useAppStore((store) => store.streamSpecificUserAccess);
 
 	useEffect(() => {
 		if (

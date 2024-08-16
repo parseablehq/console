@@ -1,7 +1,7 @@
 import type { CenterProps, TextProps } from '@mantine/core';
 import { Center, Text } from '@mantine/core';
 import type { FC } from 'react';
-import styles from './Empty.module.css'
+import styles from './Empty.module.css';
 
 type EmptyProps = {
 	height?: number | string;

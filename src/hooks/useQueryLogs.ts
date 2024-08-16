@@ -1,19 +1,16 @@
 import { SortOrder, type Log, type LogsData, type LogsSearch } from '@/@types/parseable/api/query';
-import { getQueryLogs, getQueryResult } from '@/api/query';
+import { getQueryLogsWithHeaders, getQueryResultWithHeaders } from '@/api/query';
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
 import { useCallback, useRef } from 'react';
 import { useLogsStore, logsStoreReducers, LOAD_LIMIT, isJqSearch } from '@/pages/Stream/providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
-import { useStreamStore } from '@/pages/Stream/providers/StreamProvider';
 import { AxiosError } from 'axios';
 import jqSearch from '@/utils/jqSearch';
+import { useGetLogStreamSchema } from './useGetLogStreamSchema';
 
-const {
-	setData,
-	//  setTotalCount
-} = logsStoreReducers;
+const { setLogData } = logsStoreReducers;
 
 type QueryLogs = {
 	streamName: string;
@@ -35,6 +32,7 @@ export const useQueryLogs = () => {
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
 	const [pageLogData, setPageLogData] = useMountedState<LogsData | null>(null);
+	const { getDataSchema } = useGetLogStreamSchema();
 	const [querySearch, setQuerySearch] = useMountedState<LogsSearch>({
 		search: '',
 		filters: {},
@@ -44,7 +42,6 @@ export const useQueryLogs = () => {
 		},
 	});
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const [schema] = useStreamStore((store) => store.schema);
 	const [
 		{
 			timeRange,
@@ -87,26 +84,26 @@ export const useQueryLogs = () => {
 		try {
 			setLoading(true);
 			setError(null);
-
+			getDataSchema(); // fetch schema parallelly every time we fetch logs
 			const logsQueryRes = isQuerySearchActive
-				? await getQueryResult({ ...logsQuery, access: [] }, appendOffsetToQuery(custSearchQuery, logsQuery.pageOffset))
-				: await getQueryLogs(logsQuery);
+				? await getQueryResultWithHeaders(
+						{ ...logsQuery, access: [] },
+						appendOffsetToQuery(custSearchQuery, logsQuery.pageOffset),
+				  )
+				: await getQueryLogsWithHeaders(logsQuery);
 
-			const data = logsQueryRes.data;
+			const logs = logsQueryRes.data;
+			const isInvalidResponse = _.isEmpty(logs) || _.isNil(logs) || logsQueryRes.status !== StatusCodes.OK;
+			if (isInvalidResponse) return setError('Failed to query log');
 
-			if (logsQueryRes.status === StatusCodes.OK) {
-				const jqFilteredData = isJqSearch(instantSearchValue) ? await jqSearch(data, instantSearchValue) : [];
-				return setLogsStore((store) => setData(store, data, schema, jqFilteredData));
-			}
-			if (typeof data === 'string' && data.includes('Stream is not initialized yet')) {
-				return setLogsStore((store) => setData(store, [], schema));
-			}
-			setError('Failed to query log');
+			const { records, fields } = logs;
+			const jqFilteredData = isJqSearch(instantSearchValue) ? await jqSearch(records, instantSearchValue) : [];
+			return setLogsStore((store) => setLogData(store, records, fields, jqFilteredData));
 		} catch (e) {
 			const axiosError = e as AxiosError;
 			const errorMessage = axiosError?.response?.data;
 			setError(_.isString(errorMessage) && !_.isEmpty(errorMessage) ? errorMessage : 'Failed to query log');
-			return setLogsStore((store) => setData(store, [], schema));
+			return setLogsStore((store) => setLogData(store, [], []));
 		} finally {
 			setLoading(false);
 		}

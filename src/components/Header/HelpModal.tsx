@@ -50,15 +50,21 @@ const HelpCard: FC<HelpCardProps> = (props) => {
 	);
 };
 
-
 const HelpModal: FC = () => {
-	const [helpModalOpen, setAppStore] = useAppStore(store => store.helpModalOpen)
+	const [helpModalOpen, setAppStore] = useAppStore((store) => store.helpModalOpen);
 	const classes = styles;
 	const { container, aboutTitle, aboutDescription, helpIconContainer } = classes;
-	const onClose = useCallback(() => setAppStore((store) => appStoreReducers.toggleHelpModal(store, false)), [])
+	const onClose = useCallback(() => setAppStore((store) => appStoreReducers.toggleHelpModal(store, false)), []);
 
 	return (
-		<Modal opened={helpModalOpen} onClose={onClose} withinPortal withCloseButton={false} size="xl" centered padding={40}>
+		<Modal
+			opened={helpModalOpen}
+			onClose={onClose}
+			withinPortal
+			withCloseButton={false}
+			size="xl"
+			centered
+			padding={40}>
 			<Box className={container}>
 				<Text className={aboutTitle}>Need help?</Text>
 				<Text className={aboutDescription}>Ensure uninterrupted deployment</Text>

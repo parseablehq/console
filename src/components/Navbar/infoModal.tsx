@@ -132,7 +132,9 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 							</Box>
 							<Box className={aboutTextInnerBox}>
 								<Text className={aboutTextKey}>Usage Analytics</Text>
-								<Text className={aboutTextValue}>{analytics?.clarityTag ? 'Tracking (MS Clarity)' : 'Not Tracking'}</Text>
+								<Text className={aboutTextValue}>
+									{analytics?.clarityTag ? 'Tracking (MS Clarity)' : 'Not Tracking'}
+								</Text>
 							</Box>
 						</Box>
 					</>

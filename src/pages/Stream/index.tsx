@@ -50,7 +50,7 @@ const Logs: FC = () => {
 	}, [currentStream]);
 
 	useEffect(() => {
-		if (!_.isEmpty(currentStream)) {
+		if (!_.isEmpty(currentStream) && view !== 'explore') {
 			fetchSchema();
 		}
 	}, [currentStream]);
@@ -89,7 +89,7 @@ const Logs: FC = () => {
 					error ? (
 						<SchemaErrorView error={error} fetchSchema={fetchSchema} />
 					) : (
-						<LogsView schemaLoading={isSchemaLoading}/>
+						<LogsView schemaLoading={isSchemaLoading} />
 					)
 				) : view === 'live-tail' ? (
 					<LiveLogTable />

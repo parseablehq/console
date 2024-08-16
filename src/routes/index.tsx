@@ -5,7 +5,7 @@ import {
 	OIDC_NOT_CONFIGURED_ROUTE,
 	USERS_MANAGEMENT_ROUTE,
 	CLUSTER_ROUTE,
-	STREAM_ROUTE
+	STREAM_ROUTE,
 } from '@/constants/routes';
 import FullPageLayout from '@/layouts/FullPageLayout';
 import NotFound from '@/pages/Errors/NotFound';

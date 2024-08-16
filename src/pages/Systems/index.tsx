@@ -5,8 +5,8 @@ import Cluster from './Cluster';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const Systems: FC = () => {
-	const { getAboutIsLoading, getAboutIsError} = useAbout();
-	const [isStandAloneMode] = useAppStore(store => store.isStandAloneMode)
+	const { getAboutIsLoading, getAboutIsError } = useAbout();
+	const [isStandAloneMode] = useAppStore((store) => store.isStandAloneMode);
 	if (getAboutIsLoading || getAboutIsError || isStandAloneMode !== false) return null;
 
 	return (

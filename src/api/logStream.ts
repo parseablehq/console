@@ -13,7 +13,7 @@ import {
 	UPDATE_SAVED_FILTERS_URL,
 	DELETE_SAVED_FILTERS_URL,
 	CREATE_SAVED_FILTERS_URL,
-	LOG_STREAM_HOT_TIER
+	LOG_STREAM_HOT_TIER,
 } from './constants';
 import { HotTierConfig, LogStreamData, LogStreamSchemaData } from '@/@types/parseable/api/stream';
 
@@ -79,7 +79,7 @@ export const getLogStreamInfo = (streamName: string) => {
 
 export const getHotTierInfo = (streamName: string) => {
 	return Axios().get<HotTierConfig>(LOG_STREAM_HOT_TIER(streamName));
-}
+};
 
 export const updateHotTierInfo = (streamName: string, data: any) => {
 	return Axios().put(LOG_STREAM_HOT_TIER(streamName), data);

@@ -5,19 +5,19 @@ import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import PrivilegeTR from './PrivilegeTR';
 import { IconBook2, IconPencil, IconUserPlus } from '@tabler/icons-react';
 import { useRole } from '@/hooks/useRole';
-import classes from './styles/AccessManagement.module.css'
+import classes from './styles/AccessManagement.module.css';
 import IconButton from '@/components/Button/IconButton';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const navigateToDocs = () => {
 	return window.open('https://www.parseable.io/docs/rbac', '_blank');
-}
+};
 
-const renderDocsIcon = () => <IconBook2 stroke={1.5} size="1rem"/>
+const renderDocsIcon = () => <IconBook2 stroke={1.5} size="1rem" />;
 
 const Roles: FC = () => {
 	useDocumentTitle('Parseable | Users');
-	const [oidcActive] = useAppStore(store => store.instanceConfig?.oidcActive)
+	const [oidcActive] = useAppStore((store) => store.instanceConfig?.oidcActive);
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
 
 	const [defaultRoleModalOpen, setDefaultRoleModalOpen] = useState<boolean>(false);
@@ -172,9 +172,7 @@ const Roles: FC = () => {
 	return (
 		<Box className={classes.container}>
 			<Stack className={classes.header} gap={0}>
-				<Text style={{ fontWeight: 600 }}>
-					Roles
-				</Text>
+				<Text style={{ fontWeight: 600 }}>Roles</Text>
 				<Stack style={{ flexDirection: 'row' }} gap={0}>
 					<Button
 						className={classes.createUserBtn}

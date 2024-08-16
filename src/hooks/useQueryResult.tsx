@@ -1,4 +1,4 @@
-import { getQueryResult } from '@/api/query';
+import { getQueryResultWithHeaders } from '@/api/query';
 import { LogsQuery } from '@/@types/parseable/api/query';
 import { notifications } from '@mantine/notifications';
 import { isAxiosError, AxiosError } from 'axios';
@@ -19,7 +19,7 @@ type FooterCountResponse = { [count: string]: number }[];
 
 export const useQueryResult = () => {
 	const fetchQueryHandler = async (data: QueryData) => {
-		const response = await getQueryResult(data.logsQuery, data.query);
+		const response = await getQueryResultWithHeaders(data.logsQuery, data.query);
 		if (response.status !== 200) {
 			throw new Error(response.statusText);
 		}

@@ -3,22 +3,22 @@ import { getCachingStatus, updateCaching } from '@/api/caching';
 import { notifySuccess } from '@/utils/notification';
 import { useStreamStore, streamStoreReducers } from '@/pages/Stream/providers/StreamProvider';
 
-const {setCacheEnabled} = streamStoreReducers
+const { setCacheEnabled } = streamStoreReducers;
 
 export const useCacheToggle = (streamName: string) => {
-	const [, setStreamStore] = useStreamStore(_store => null)
+	const [, setStreamStore] = useStreamStore((_store) => null);
 	const {
 		data: checkCacheData,
 		refetch: getCacheStatusRefetch,
 		isError: getCacheError,
-		isLoading: getCacheLoading
+		isLoading: getCacheLoading,
 	} = useQuery(['fetch-cache-status', streamName], () => getCachingStatus(streamName), {
 		retry: false,
 		enabled: streamName !== '',
 		refetchOnWindowFocus: false,
 		onSuccess: (data) => {
-			setStreamStore(store => setCacheEnabled(store, data.data))
-		}
+			setStreamStore((store) => setCacheEnabled(store, data.data));
+		},
 	});
 
 	const { mutate: updateCacheStatus } = useMutation(
@@ -36,6 +36,6 @@ export const useCacheToggle = (streamName: string) => {
 		isCacheEnabled: checkCacheData?.data,
 		getCacheError,
 		updateCacheStatus,
-		getCacheLoading
+		getCacheLoading,
 	};
 };
