@@ -60,9 +60,9 @@ export const useQueryResult = () => {
 		} = useQuery(['fetchQuery'], () => fetchQueryHandler(queryData!), {
 			onSuccess: (data: FooterCountResponse) => {
 				const footerCount = _.first(data)?.count || 0;
-				console.log(data);
 				setLogsStore((store) => setTotalCount(store, footerCount));
 			},
+			refetchOnWindowFocus: false,
 		});
 
 		return {

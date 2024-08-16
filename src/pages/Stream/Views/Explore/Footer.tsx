@@ -10,7 +10,6 @@ import { HumanizeNumber } from '@/utils/formatBytes';
 import IconButton from '@/components/Button/IconButton';
 import { IconDownload, IconSelector } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
-import { useQueryLogs } from '@/hooks/useQueryLogs';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import classes from '../../styles/Footer.module.css';
 
@@ -96,22 +95,34 @@ const LimitControl: FC = () => {
 
 const Footer = (props: { loaded: boolean; hasNoData: boolean }) => {
 	const [isFetchingCount, setIsFetchingCount] = useState<boolean>(false);
-	const { footerQuery } = useQueryLogs();
-	const { useFetchFooterCount } = useQueryResult();
-	const queryData = footerQuery();
-	const { footerCountLoading, footerCountRefetching } = useFetchFooterCount(queryData);
-
-	useEffect(() => {
-		setIsFetchingCount(footerCountLoading || footerCountRefetching);
-	}, [queryData]);
-
+	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const [filteredData] = useLogsStore((store) => store.data.filteredData);
 	const { totalPages, currentOffset, currentPage, perPage, headers, totalCount } = tableOpts;
+	const [{ timeRange, custQuerySearchState }] = useLogsStore((store) => store);
+	const { isQuerySearchActive, custSearchQuery } = custQuerySearchState;
+	const { useFetchFooterCount } = useQueryResult();
+	const defaultQuery = `select count(*) as count from ${currentStream}`;
+	const query = isQuerySearchActive
+		? custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM')
+		: defaultQuery;
+
+	const logsQuery = {
+		streamName: currentStream || '',
+		startTime: timeRange.startTime,
+		endTime: timeRange.endTime,
+		access: [],
+	};
+
+	const { footerCountLoading, footerCountRefetching } = useFetchFooterCount({ logsQuery, query });
+	useEffect(() => {
+		setIsFetchingCount(footerCountLoading || footerCountRefetching);
+	}, [footerCountLoading, footerCountRefetching, query]);
+
 	const onPageChange = useCallback((page: number) => {
 		setLogsStore((store) => setPageAndPageData(store, page));
 	}, []);
-	const [currentStream] = useAppStore((store) => store.currentStream);
+
 	const pagination = usePagination({ total: totalPages ?? 1, initialPage: 1, onChange: onPageChange });
 	const onChangeOffset = useCallback(
 		(key: 'prev' | 'next') => {
