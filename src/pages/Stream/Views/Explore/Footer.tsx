@@ -11,6 +11,7 @@ import IconButton from '@/components/Button/IconButton';
 import { IconDownload, IconSelector } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
 import { useQueryResult } from '@/hooks/useQueryResult';
+import { useQueryLogs } from '@/hooks/useQueryLogs';
 import classes from '../../styles/Footer.module.css';
 
 const { setPageAndPageData, setCurrentPage, setCurrentOffset, makeExportData } = logsStoreReducers;
@@ -99,25 +100,14 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean }) => {
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const [filteredData] = useLogsStore((store) => store.data.filteredData);
 	const { totalPages, currentOffset, currentPage, perPage, headers, totalCount } = tableOpts;
-	const [{ timeRange, custQuerySearchState }] = useLogsStore((store) => store);
-	const { isQuerySearchActive, custSearchQuery } = custQuerySearchState;
+	const { footerQuery } = useQueryLogs();
+	const queryData = footerQuery();
 	const { useFetchFooterCount } = useQueryResult();
-	const defaultQuery = `select count(*) as count from ${currentStream}`;
-	const query = isQuerySearchActive
-		? custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM')
-		: defaultQuery;
 
-	const logsQuery = {
-		streamName: currentStream || '',
-		startTime: timeRange.startTime,
-		endTime: timeRange.endTime,
-		access: [],
-	};
-
-	const { footerCountLoading, footerCountRefetching } = useFetchFooterCount({ logsQuery, query });
+	const { footerCountLoading, footerCountRefetching } = useFetchFooterCount(queryData);
 	useEffect(() => {
 		setIsFetchingCount(footerCountLoading || footerCountRefetching);
-	}, [footerCountLoading, footerCountRefetching, query]);
+	}, [footerCountLoading, footerCountRefetching, queryData]);
 
 	const onPageChange = useCallback((page: number) => {
 		setLogsStore((store) => setPageAndPageData(store, page));
