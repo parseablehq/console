@@ -127,7 +127,7 @@ export const useQueryLogs = () => {
 			return { logsQuery, query };
 		}
 		return null;
-	}, [currentStream, timeRange]);
+	}, [currentStream, timeRange, custSearchQuery]);
 
 	const resetData = () => {
 		_dataRef.current = null;
