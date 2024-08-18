@@ -1,4 +1,4 @@
-import { FC, useCallback, useState, useEffect } from 'react';
+import { FC, useCallback } from 'react';
 import { useLogsStore, logsStoreReducers, LOAD_LIMIT, LOG_QUERY_LIMITS } from '../../providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { usePagination } from '@mantine/hooks';
@@ -10,7 +10,6 @@ import { HumanizeNumber } from '@/utils/formatBytes';
 import IconButton from '@/components/Button/IconButton';
 import { IconDownload, IconSelector } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
-import { useQueryResult } from '@/hooks/useQueryResult';
 import classes from '../../styles/Footer.module.css';
 
 const { setPageAndPageData, setCurrentPage, setCurrentOffset, makeExportData } = logsStoreReducers;
@@ -93,18 +92,11 @@ const LimitControl: FC = () => {
 	);
 };
 
-const Footer = (props: { loaded: boolean; hasNoData: boolean }) => {
-	const [isFetchingCount, setIsFetchingCount] = useState<boolean>(false);
+const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: boolean }) => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const [filteredData] = useLogsStore((store) => store.data.filteredData);
 	const { totalPages, currentOffset, currentPage, perPage, headers, totalCount } = tableOpts;
-	const { useFetchFooterCount } = useQueryResult();
-
-	const { footerCountLoading, footerCountRefetching } = useFetchFooterCount();
-	useEffect(() => {
-		setIsFetchingCount(footerCountLoading || footerCountRefetching);
-	}, [footerCountLoading, footerCountRefetching]);
 
 	const onPageChange = useCallback((page: number) => {
 		setLogsStore((store) => setPageAndPageData(store, page));
@@ -147,7 +139,7 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean }) => {
 			<Stack w="100%" justify="center" align="flex-start">
 				<TotalLogsCount
 					hasTableLoaded={props.loaded}
-					isFetchingCount={isFetchingCount}
+					isFetchingCount={props.isFetchingCount}
 					isTableEmpty={props.hasNoData}
 				/>
 			</Stack>

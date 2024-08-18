@@ -141,7 +141,12 @@ interface SectionRefs {
 	pinnedContainerRef: HTMLDivRef;
 }
 
-const LogTable = (props: { errorMessage: string | null; hasNoData: boolean; showTable: boolean }) => {
+const LogTable = (props: {
+	errorMessage: string | null;
+	hasNoData: boolean;
+	showTable: boolean;
+	isFetchingCount: boolean;
+}) => {
 	const { errorMessage, hasNoData, showTable } = props;
 	const [containerRefs, _setContainerRefs] = useState<SectionRefs>({
 		activeSectionRef: useRef<'left' | 'right'>('left'),
@@ -175,7 +180,7 @@ const LogTable = (props: { errorMessage: string | null; hasNoData: boolean; show
 			) : (
 				<ErrorView message={errorMessage} />
 			)}
-			<Footer loaded={showTable} hasNoData={hasNoData} />
+			<Footer loaded={showTable} hasNoData={hasNoData} isFetchingCount={props.isFetchingCount} />
 		</TableContainer>
 	);
 };

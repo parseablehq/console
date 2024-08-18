@@ -13,7 +13,7 @@ const useLogsFetcher = (props: { schemaLoading: boolean }) => {
 	const { currentOffset, currentPage, pageData } = tableOpts;
 	const { getQueryData, loading: logsLoading, error: errorMessage } = useQueryLogs();
 	const { useFetchFooterCount } = useQueryResult();
-	const { footerCountRefetch } = useFetchFooterCount();
+	const { footerCountRefetch, footerCountLoading, footerCountRefetching } = useFetchFooterCount();
 	const hasContentLoaded = schemaLoading === false && logsLoading === false;
 	const hasNoData = hasContentLoaded && !errorMessage && pageData.length === 0;
 	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
@@ -41,6 +41,8 @@ const useLogsFetcher = (props: { schemaLoading: boolean }) => {
 		hasContentLoaded,
 		hasNoData,
 		showTable,
+		footerCountLoading,
+		footerCountRefetching,
 	};
 };
 
