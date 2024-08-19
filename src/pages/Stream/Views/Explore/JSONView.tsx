@@ -182,7 +182,7 @@ const JsonView = (props: {
 }) => {
 	const [maximized] = useAppStore((store) => store.maximized);
 
-	const { errorMessage, hasNoData, showTable } = props;
+	const { errorMessage, hasNoData, showTable, isFetchingCount } = props;
 	const [isSearching, setSearching] = useState(false);
 	const primaryHeaderHeight = !maximized
 		? PRIMARY_HEADER_HEIGHT + STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT + STREAM_SECONDARY_TOOLBAR_HRIGHT
@@ -214,7 +214,7 @@ const JsonView = (props: {
 			) : (
 				<ErrorView message={errorMessage} />
 			)}
-			<Footer loaded={showTable} hasNoData={hasNoData} isFetchingCount={props.isFetchingCount} />
+			<Footer loaded={showTable} hasNoData={hasNoData} isFetchingCount={isFetchingCount} />
 		</TableContainer>
 	);
 };

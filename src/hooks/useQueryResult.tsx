@@ -18,48 +18,41 @@ type CountResponse = {
 	count: number;
 }[];
 
-const fetchQueryHandlerWithFields = async (data: QueryData) => {
-	const response = await getQueryResultWithHeaders(data.logsQuery, data.query);
-	if (response.status !== 200) {
-		throw new Error(response.statusText);
-	}
-	return response.data;
-};
-
-const fetchQueryHandler = async (data: QueryData) => {
-	const response = await getQueryResult(data.logsQuery, data.query);
-	if (response.status !== 200) {
-		throw new Error(response.statusText);
-	}
-	return response.data;
-};
-
 export const useQueryResult = () => {
-	const fetchQueryMutation = useMutation(fetchQueryHandlerWithFields, {
-		onError: (data: AxiosError) => {
-			if (isAxiosError(data) && data.response) {
+	const fetchQueryMutation = useMutation(
+		async (data: QueryData) => {
+			const response = await getQueryResultWithHeaders(data.logsQuery, data.query);
+			if (response.status !== 200) {
+				throw new Error(response.statusText);
+			}
+			return response.data;
+		},
+		{
+			onError: (data: AxiosError) => {
+				if (isAxiosError(data) && data.response) {
+					notifications.update({
+						id: 'load-data',
+						color: 'red',
+						title: 'Error occurred',
+						message: 'Error occurred, please check your query and try again',
+						icon: <IconFileAlert size="1rem" />,
+						autoClose: 2000,
+					});
+				}
+			},
+			onSuccess: (_data, variables) => {
+				variables.onSuccess && variables.onSuccess();
 				notifications.update({
 					id: 'load-data',
-					color: 'red',
-					title: 'Error occurred',
-					message: 'Error occurred, please check your query and try again',
-					icon: <IconFileAlert size="1rem" />,
-					autoClose: 2000,
+					color: 'green',
+					title: 'Data was loaded',
+					message: 'Successfully Loaded',
+					icon: <IconCheck size="1rem" />,
+					autoClose: 1000,
 				});
-			}
+			},
 		},
-		onSuccess: (_data, variables) => {
-			variables.onSuccess && variables.onSuccess();
-			notifications.update({
-				id: 'load-data',
-				color: 'green',
-				title: 'Data was loaded',
-				message: 'Successfully Loaded',
-				icon: <IconCheck size="1rem" />,
-				autoClose: 1000,
-			});
-		},
-	});
+	);
 
 	return { fetchQueryMutation };
 };
@@ -85,20 +78,30 @@ export const useFetchCount = () => {
 	const {
 		isLoading: isCountLoading,
 		isRefetching: isCountRefetching,
-		refetch: countRefetch,
-	} = useQuery(['fetchCount', logsQuery], () => fetchQueryHandler({ logsQuery, query }), {
-		onSuccess: (data: CountResponse) => {
-			const footerCount = _.first(data)?.count;
-			footerCount && setLogsStore((store) => setTotalCount(store, footerCount));
+		refetch: refetchCount,
+	} = useQuery(
+		['fetchCount', logsQuery],
+		async () => {
+			const response = await getQueryResult(logsQuery, query);
+			if (response.status !== 200) {
+				throw new Error(response.statusText);
+			}
+			return response.data;
 		},
-		refetchOnWindowFocus: false,
-		retry: false,
-		enabled: currentStream !== null,
-	});
+		{
+			onSuccess: (data: CountResponse) => {
+				const footerCount = _.first(data)?.count;
+				footerCount !== undefined && setLogsStore((store) => setTotalCount(store, footerCount));
+			},
+			refetchOnWindowFocus: false,
+			retry: false,
+			enabled: currentStream !== null,
+		},
+	);
 
 	return {
 		isCountLoading,
 		isCountRefetching,
-		countRefetch,
+		refetchCount,
 	};
 };

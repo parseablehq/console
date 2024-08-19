@@ -12,7 +12,7 @@ const useLogsFetcher = (props: { schemaLoading: boolean }) => {
 	const [{ tableOpts, timeRange }, setLogsStore] = useLogsStore((store) => store);
 	const { currentOffset, currentPage, pageData } = tableOpts;
 	const { getQueryData, loading: logsLoading, error: errorMessage } = useQueryLogs();
-	const { countRefetch, isCountLoading, isCountRefetching } = useFetchCount();
+	const { refetchCount, isCountLoading, isCountRefetching } = useFetchCount();
 	const hasContentLoaded = schemaLoading === false && logsLoading === false;
 	const hasNoData = hasContentLoaded && !errorMessage && pageData.length === 0;
 	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
@@ -24,7 +24,7 @@ const useLogsFetcher = (props: { schemaLoading: boolean }) => {
 	useEffect(() => {
 		if (currentPage === 0 && currentOffset === 0) {
 			getQueryData();
-			countRefetch();
+			refetchCount();
 		}
 	}, [currentPage, currentStream, timeRange]);
 
