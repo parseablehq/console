@@ -3,10 +3,11 @@ import { LogsQuery } from '@/@types/parseable/api/query';
 import { notifications } from '@mantine/notifications';
 import { isAxiosError, AxiosError } from 'axios';
 import { IconCheck, IconFileAlert } from '@tabler/icons-react';
-import { useMutation, useQuery } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
 import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { useCallback } from 'react';
 
 type QueryData = {
 	logsQuery: LogsQuery;
@@ -56,6 +57,11 @@ export const useQueryResult = () => {
 		},
 	});
 
+	const invalidateFooterQuery = useCallback(() => {
+		const queryClient = useQueryClient();
+		queryClient.invalidateQueries({ queryKey: ['fetchFooterCount'] });
+	}, [useQueryClient]);
+
 	const useFetchFooterCount = () => {
 		const [currentStream] = useAppStore((store) => store.currentStream);
 		const { setTotalCount } = logsStoreReducers;
@@ -73,17 +79,19 @@ export const useQueryResult = () => {
 			endTime: timeRange.endTime,
 			access: [],
 		};
-
 		const {
 			isLoading: footerCountLoading,
 			isRefetching: footerCountRefetching,
 			refetch: footerCountRefetch,
-		} = useQuery(['fetchQuery', logsQuery], () => fetchQueryHandler({ logsQuery, query }), {
+		} = useQuery(['fetchFooterCount', logsQuery], () => fetchQueryHandler({ logsQuery, query }), {
 			onSuccess: (data: FooterCountResponse) => {
 				const footerCount = _.first(data.records)?.count;
 				footerCount && setLogsStore((store) => setTotalCount(store, footerCount));
 			},
+			cacheTime: 30 * 1000,
 			refetchOnWindowFocus: false,
+			retry: false,
+			enabled: currentStream !== null,
 		});
 
 		return {
@@ -93,5 +101,5 @@ export const useQueryResult = () => {
 		};
 	};
 
-	return { fetchQueryMutation, useFetchFooterCount };
+	return { fetchQueryMutation, useFetchFooterCount, invalidateFooterQuery };
 };
