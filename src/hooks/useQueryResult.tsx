@@ -1,4 +1,4 @@
-import { getQueryResultWithHeaders } from '@/api/query';
+import { getQueryResultWithHeaders, getQueryResult } from '@/api/query';
 import { LogsQuery } from '@/@types/parseable/api/query';
 import { notifications } from '@mantine/notifications';
 import { isAxiosError, AxiosError } from 'axios';
@@ -15,12 +15,10 @@ type QueryData = {
 };
 
 type CountResponse = {
-	records: {
-		count: number;
-	}[];
-};
+	count: number;
+}[];
 
-const fetchQueryHandler = async (data: QueryData) => {
+const fetchQueryHandlerWithFields = async (data: QueryData) => {
 	const response = await getQueryResultWithHeaders(data.logsQuery, data.query);
 	if (response.status !== 200) {
 		throw new Error(response.statusText);
@@ -28,8 +26,16 @@ const fetchQueryHandler = async (data: QueryData) => {
 	return response.data;
 };
 
+const fetchQueryHandler = async (data: QueryData) => {
+	const response = await getQueryResult(data.logsQuery, data.query);
+	if (response.status !== 200) {
+		throw new Error(response.statusText);
+	}
+	return response.data;
+};
+
 export const useQueryResult = () => {
-	const fetchQueryMutation = useMutation(fetchQueryHandler, {
+	const fetchQueryMutation = useMutation(fetchQueryHandlerWithFields, {
 		onError: (data: AxiosError) => {
 			if (isAxiosError(data) && data.response) {
 				notifications.update({
@@ -82,7 +88,7 @@ export const useFetchCount = () => {
 		refetch: countRefetch,
 	} = useQuery(['fetchCount', logsQuery], () => fetchQueryHandler({ logsQuery, query }), {
 		onSuccess: (data: CountResponse) => {
-			const footerCount = _.first(data.records)?.count;
+			const footerCount = _.first(data)?.count;
 			footerCount && setLogsStore((store) => setTotalCount(store, footerCount));
 		},
 		refetchOnWindowFocus: false,
