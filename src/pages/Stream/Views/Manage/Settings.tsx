@@ -106,27 +106,19 @@ const RetentionForm = (props: { updateRetentionConfig: ({ config }: { config: an
 	);
 };
 
-function extractNumberAndUnit(value: string | null) {
-	if (_.isEmpty(value) || value === null) return { value: 0, unit: '' };
+function extractNumber(value: string | null) {
+	if (_.isEmpty(value) || value === null) return 0;
 
-	const sizeRegex = /^(\d+)/;
-	const unitRegex = /\b(MiB|GiB)\b/;
+	const regex = /^(\d+)/;
+	const match = value.match(regex);
 
-	const matchSize = value.match(sizeRegex);
-	const matchUnit = value.match(unitRegex);
-	if (matchUnit && matchSize) {
-		return { value: parseFloat(matchSize[0]), unit: matchUnit[0].trim() };
-	}
-	return { value: 0, unit: '' };
+	return match ? parseFloat(match[0]) : 0;
 }
 
-function convertGibToBytes(value: number, unit: string) {
+function convertGibToBytes(value: number) {
 	if (typeof value !== 'number') return;
-	if (unit === 'MiB') {
-		return value * Math.pow(1024, 2);
-	} else {
-		return value * Math.pow(1024, 3);
-	}
+
+	return value * Math.pow(1024, 3);
 }
 
 const DeleteHotTierModal = (props: {
@@ -189,8 +181,8 @@ const HotTierConfig = (props: {
 	const availableSize = sanitizeBytes(_.get(hotTier, 'available_size', ''));
 	const oldestEntry = _.get(hotTier, 'oldest_date_time_entry', '');
 	const humanizedSize = sanitizeBytes(size);
-	const sanitizedSize = extractNumberAndUnit(humanizedSize);
-	const [localSizeValue, setLocalSizeValue] = useState<number>(sanitizedSize.value);
+	const sanitizedSize = extractNumber(humanizedSize);
+	const [localSizeValue, setLocalSizeValue] = useState<number>(sanitizedSize);
 	const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 	const [isDirty, setIsDirty] = useState<boolean>(false);
 
@@ -199,20 +191,20 @@ const HotTierConfig = (props: {
 	}, []);
 
 	const onCancel = useCallback(() => {
-		setLocalSizeValue(sanitizedSize.value);
+		setLocalSizeValue(sanitizedSize);
 	}, [sanitizedSize]);
 
 	useEffect(() => {
-		setIsDirty(sanitizedSize.value !== localSizeValue);
+		setIsDirty(sanitizedSize !== localSizeValue);
 	}, [localSizeValue]);
 
 	useEffect(() => {
-		setLocalSizeValue(sanitizedSize.value);
-		setIsDirty(sanitizedSize.value !== localSizeValue);
+		setLocalSizeValue(sanitizedSize);
+		setIsDirty(sanitizedSize !== localSizeValue);
 	}, [hotTier]);
 
 	const onUpdate = useCallback(() => {
-		props.updateHotTierInfo({ size: `${convertGibToBytes(localSizeValue, sanitizedSize.unit)}` });
+		props.updateHotTierInfo({ size: `${convertGibToBytes(localSizeValue)}` });
 	}, [localSizeValue]);
 
 	const hotTierNotSet = _.isEmpty(size) || _.isEmpty(hotTier);
@@ -246,16 +238,20 @@ const HotTierConfig = (props: {
 				</Stack>
 				<Stack style={{ width: hotTierNotSet ? '100%' : '50%' }} gap={isDirty || hotTierNotSet ? 16 : 4}>
 					<Stack style={{}} gap={12}>
-						<NumberInput
-							classNames={{ label: classes.fieldDescription }}
-							placeholder="Duration in days"
-							key="duration"
-							value={localSizeValue}
-							onChange={onChangeHandler}
-							min={0}
-							suffix={` ${sanitizedSize.unit}`}
-							style={{ flex: 1 }}
-						/>
+						{streamType === 'UserDefined' ? (
+							<NumberInput
+								classNames={{ label: classes.fieldDescription }}
+								placeholder="Duration in days"
+								key="duration"
+								value={localSizeValue}
+								onChange={onChangeHandler}
+								min={0}
+								suffix=" GiB"
+								style={{ flex: 1 }}
+							/>
+						) : (
+							<Text ta="end">{humanizedSize}</Text>
+						)}
 						<Text
 							className={classes.fieldDescription}
 							ta="end"
