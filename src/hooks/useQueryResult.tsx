@@ -14,45 +14,40 @@ type QueryData = {
 	onSuccess?: () => void;
 };
 
-type CountResponse = {
-	count: number;
-}[];
-
 export const useQueryResult = () => {
-	const fetchQueryMutation = useMutation(
-		async (data: QueryData) => {
-			const response = await getQueryResultWithHeaders(data.logsQuery, data.query);
-			if (response.status !== 200) {
-				throw new Error(response.statusText);
-			}
-			return response.data;
-		},
-		{
-			onError: (data: AxiosError) => {
-				if (isAxiosError(data) && data.response) {
-					notifications.update({
-						id: 'load-data',
-						color: 'red',
-						title: 'Error occurred',
-						message: 'Error occurred, please check your query and try again',
-						icon: <IconFileAlert size="1rem" />,
-						autoClose: 2000,
-					});
-				}
-			},
-			onSuccess: (_data, variables) => {
-				variables.onSuccess && variables.onSuccess();
+	const fetchQueryHandler = async (data: QueryData) => {
+		const response = await getQueryResultWithHeaders(data.logsQuery, data.query);
+		if (response.status !== 200) {
+			throw new Error(response.statusText);
+		}
+		return response.data;
+	};
+
+	const fetchQueryMutation = useMutation(fetchQueryHandler, {
+		onError: (data: AxiosError) => {
+			if (isAxiosError(data) && data.response) {
 				notifications.update({
 					id: 'load-data',
-					color: 'green',
-					title: 'Data was loaded',
-					message: 'Successfully Loaded',
-					icon: <IconCheck size="1rem" />,
-					autoClose: 1000,
+					color: 'red',
+					title: 'Error occurred',
+					message: 'Error occurred, please check your query and try again',
+					icon: <IconFileAlert size="1rem" />,
+					autoClose: 2000,
 				});
-			},
+			}
 		},
-	);
+		onSuccess: (_data, variables) => {
+			variables.onSuccess && variables.onSuccess();
+			notifications.update({
+				id: 'load-data',
+				color: 'green',
+				title: 'Data was loaded',
+				message: 'Successfully Loaded',
+				icon: <IconCheck size="1rem" />,
+				autoClose: 1000,
+			});
+		},
+	});
 
 	return { fetchQueryMutation };
 };
@@ -79,25 +74,15 @@ export const useFetchCount = () => {
 		isLoading: isCountLoading,
 		isRefetching: isCountRefetching,
 		refetch: refetchCount,
-	} = useQuery(
-		['fetchCount', logsQuery],
-		async () => {
-			const response = await getQueryResult(logsQuery, query);
-			if (response.status !== 200) {
-				throw new Error(response.statusText);
-			}
-			return response.data;
+	} = useQuery(['fetchCount', logsQuery], () => getQueryResult(logsQuery, query), {
+		onSuccess: (resp) => {
+			const count = _.first(resp.data)?.count;
+			typeof count === 'number' && setLogsStore((store) => setTotalCount(store, count));
 		},
-		{
-			onSuccess: (data: CountResponse) => {
-				const count = _.first(data)?.count;
-				count !== undefined && setLogsStore((store) => setTotalCount(store, count));
-			},
-			refetchOnWindowFocus: false,
-			retry: false,
-			enabled: currentStream !== null,
-		},
-	);
+		refetchOnWindowFocus: false,
+		retry: false,
+		enabled: currentStream !== null,
+	});
 
 	return {
 		isCountLoading,
