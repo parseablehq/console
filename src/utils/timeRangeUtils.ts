@@ -1,5 +1,5 @@
-import dayjs from "dayjs";
-import _ from "lodash";
+import dayjs from 'dayjs';
+import _ from 'lodash';
 
 const defaultTimeRangeOption = {
 	value: 'none',
@@ -40,8 +40,8 @@ const makeTimeRangeOptions = ({
 };
 
 const makeTimeRangeLabel = (startTime: Date | string, endTime: Date | string) => {
-	return `${dayjs(startTime).format('hh:mm A DD MMM YY')} to ${dayjs(endTime).format('hh:mm A DD MMM YY')}`
-}
+	return `${dayjs(startTime).format('hh:mm A DD MMM YY')} to ${dayjs(endTime).format('hh:mm A DD MMM YY')}`;
+};
 
 // to optimize performace, it has been decided to round off the time at the given level
 // so making the end-time inclusive
@@ -57,12 +57,12 @@ const getDefaultTimeRangeOption = (
 };
 
 const timeRangeUtils = {
-    defaultTimeRangeOption,
+	defaultTimeRangeOption,
 
-    makeTimeRangeOptions,
-    makeTimeRangeLabel,
+	makeTimeRangeOptions,
+	makeTimeRangeLabel,
 	optimizeEndTime,
-	getDefaultTimeRangeOption
-}
+	getDefaultTimeRangeOption,
+};
 
 export default timeRangeUtils;

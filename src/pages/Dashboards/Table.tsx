@@ -10,11 +10,11 @@ const makeRowData = (data: TileQueryResponse, fieldUnitMap: Record<string, UnitT
 	const { fields, records } = data;
 	return _.map(records, (rec) => {
 		return _.chain(rec)
-			.thru(rec => {
-				return _.map(fields, field => {
-					const colValue =  _.get(rec, field, '-');
-					return tickFormatter(colValue, fieldUnitMap[field])
-				})
+			.thru((rec) => {
+				return _.map(fields, (field) => {
+					const colValue = _.get(rec, field, '-');
+					return tickFormatter(colValue, fieldUnitMap[field]);
+				});
 			})
 			.value();
 	});
@@ -33,19 +33,18 @@ const makeFieldUnitMap = (tick_config: TickConfig[]) => {
 	return _.reduce(
 		tick_config,
 		(acc, config) => {
-			return { ...acc, [config.key]: config.unit};
+			return { ...acc, [config.key]: config.unit };
 		},
 		{},
 	);
 };
 
-
-const TableViz = (props: { data: TileQueryResponse, tick_config: TickConfig[] }) => {
+const TableViz = (props: { data: TileQueryResponse; tick_config: TickConfig[] }) => {
 	const {
 		data: { fields, records },
-		tick_config
+		tick_config,
 	} = props;
-	const fieldUnitMap = useMemo(() => makeFieldUnitMap(tick_config), [fields])
+	const fieldUnitMap = useMemo(() => makeFieldUnitMap(tick_config), [fields]);
 	const rowData = useMemo(() => makeRowData({ fields, records }, fieldUnitMap), [records]);
 
 	const containerRef: MutableRefObject<HTMLDivElement | null> = useRef(null);

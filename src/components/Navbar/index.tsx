@@ -7,7 +7,7 @@ import {
 	IconServerCog,
 	IconHomeStats,
 	IconListDetails,
-	IconChartInfographic
+	IconChartInfographic,
 } from '@tabler/icons-react';
 import { FC, useCallback, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
@@ -196,10 +196,10 @@ const Navbar: FC = () => {
 								navAction.key === 'about'
 									? toggleInfoModal
 									: navAction.key === 'user'
-										? toggleUserModal
-										: navAction.key === 'logout'
-											? signOutHandler
-											: () => {};
+									? toggleUserModal
+									: navAction.key === 'logout'
+									? signOutHandler
+									: () => {};
 							return (
 								<Stack
 									className={`${styles.navItemContainer} ${isActiveItem && styles.navItemActive}`}

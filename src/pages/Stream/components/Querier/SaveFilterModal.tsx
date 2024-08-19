@@ -10,7 +10,7 @@ import useSavedFiltersQuery from '@/hooks/useSavedFilters';
 import Cookies from 'js-cookie';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 
-const {defaultTimeRangeOption, makeTimeRangeOptions, getDefaultTimeRangeOption} = timeRangeUtils;
+const { defaultTimeRangeOption, makeTimeRangeOptions, getDefaultTimeRangeOption } = timeRangeUtils;
 const { toggleSaveFiltersModal } = filterStoreReducers;
 
 interface FormObjectType extends Omit<SavedFilterType, 'filter_id' | 'version'> {

@@ -9,11 +9,11 @@
 }
 
 .dashboardIconContainer {
-   width: fit-content;
-   background-color: var(--mantine-color-brandPrimary-0);
-   border-radius: 50%;
-   padding: 0.5rem;
-   align-self: center;
+    width: fit-content;
+    background-color: var(--mantine-color-brandPrimary-0);
+    border-radius: 50%;
+    padding: 0.5rem;
+    align-self: center;
 }
 
 .dashboardIcon {
@@ -29,8 +29,4 @@
 .noDashboardsViewDescription {
     font-size: 0.8rem;
     text-align: center;
-}
-
-.tilesViewConatiner {
-   
 }

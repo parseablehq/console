@@ -6,7 +6,12 @@ import _ from 'lodash';
 import { useDashboardsStore, dashboardsStoreReducers } from '@/pages/Dashboards/providers/DashboardsProvider';
 import { getDashboards, getQueryData, postDashboard, putDashboard, removeDashboard } from '@/api/dashboard';
 import { useCallback, useState } from 'react';
-import { CreateDashboardType, TileQuery, TileQueryResponse, UpdateDashboardType } from '@/@types/parseable/api/dashboards';
+import {
+	CreateDashboardType,
+	TileQuery,
+	TileQueryResponse,
+	UpdateDashboardType,
+} from '@/@types/parseable/api/dashboards';
 
 const { setDashboards, setTileData, selectDashboard } = dashboardsStoreReducers;
 
@@ -107,11 +112,11 @@ export const useDashboardsQuery = () => {
 		isUpdatingDashboard,
 
 		deleteDashboard,
-		isDeleting
+		isDeleting,
 	};
 };
 
-export const useTileQuery = (opts?: { tileId?: string, onSuccess?: (data: TileQueryResponse) => void }) => {
+export const useTileQuery = (opts?: { tileId?: string; onSuccess?: (data: TileQueryResponse) => void }) => {
 	const [, setDashbaordsStore] = useDashboardsStore((_store) => null);
 	const { onSuccess } = opts || {};
 	const [fetchState, setFetchState] = useState<{
@@ -131,7 +136,7 @@ export const useTileQuery = (opts?: { tileId?: string, onSuccess?: (data: TileQu
 				setFetchState({ isLoading: false, isError: false, isSuccess: true });
 			} catch (e: any) {
 				setFetchState({ isLoading: false, isError: true, isSuccess: false });
-				notifyError({message: _.isString(e.response.data) ? e.response.data : 'Unable to fetch tile data'}) 
+				notifyError({ message: _.isString(e.response.data) ? e.response.data : 'Unable to fetch tile data' });
 			}
 		},
 		[onSuccess],

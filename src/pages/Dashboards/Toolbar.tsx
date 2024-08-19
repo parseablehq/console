@@ -9,7 +9,8 @@ import { useDashboardsQuery } from '@/hooks/useDashboards';
 import _ from 'lodash';
 import ReactGridLayout, { Layout } from 'react-grid-layout';
 
-const { toggleEditDashboardModal, toggleAllowDrag, toggleCreateTileModal, toggleDeleteDashboardModal } = dashboardsStoreReducers;
+const { toggleEditDashboardModal, toggleAllowDrag, toggleCreateTileModal, toggleDeleteDashboardModal } =
+	dashboardsStoreReducers;
 
 const tileIdsbyOrder = (layout: Layout[]) => {
 	return layout
@@ -23,15 +24,15 @@ const tileIdsbyOrder = (layout: Layout[]) => {
 		.map((item) => item.i);
 };
 
-const EditLayoutButton = (props: {layoutRef:  React.MutableRefObject<ReactGridLayout.Layout[]>}) => {
+const EditLayoutButton = (props: { layoutRef: React.MutableRefObject<ReactGridLayout.Layout[]> }) => {
 	const [allowDrag, setDashbaordsStore] = useDashboardsStore((store) => store.allowDrag);
-	const [activeDashboard] = useDashboardsStore(store => store.activeDashboard)
+	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
 
 	const onToggle = useCallback(() => {
 		setDashbaordsStore(toggleAllowDrag);
 	}, []);
 
-	const {updateDashboard, isUpdatingDashboard} = useDashboardsQuery();
+	const { updateDashboard, isUpdatingDashboard } = useDashboardsQuery();
 	const onClick = useCallback(() => {
 		if (allowDrag && activeDashboard) {
 			const allTiles = activeDashboard.tiles;
@@ -40,7 +41,6 @@ const EditLayoutButton = (props: {layoutRef:  React.MutableRefObject<ReactGridLa
 		} else {
 			onToggle();
 		}
-
 	}, [allowDrag, activeDashboard]);
 
 	return (
@@ -81,7 +81,7 @@ const DeleteDashboardModal = () => {
 	const [activeDashboard, setDashbaordsStore] = useDashboardsStore((store) => store.activeDashboard);
 	const [deleteDashboardModalOpen] = useDashboardsStore((store) => store.deleteDashboardModalOpen);
 	const [confirmText, setConfirmText] = useState<string>('');
-	const {isDeleting, deleteDashboard} = useDashboardsQuery()
+	const { isDeleting, deleteDashboard } = useDashboardsQuery();
 	const closeModal = useCallback(() => {
 		setDashbaordsStore((store) => toggleDeleteDashboardModal(store, false));
 	}, []);
@@ -148,11 +148,11 @@ const renderDeleteIcon = () => <IconTrash size={px('1rem')} stroke={1.5} />;
 
 const DeleteDashboardButton = () => {
 	const [_store, setDashbaordsStore] = useDashboardsStore((_store) => null);
-	const onClick = useCallback(() => setDashbaordsStore(store => toggleDeleteDashboardModal(store, true)), []);
+	const onClick = useCallback(() => setDashbaordsStore((store) => toggleDeleteDashboardModal(store, true)), []);
 	return <IconButton renderIcon={renderDeleteIcon} size={36} onClick={onClick} tooltipLabel="Delete Dashboard" />;
 };
 
-const Toolbar = (props: {layoutRef:  React.MutableRefObject<ReactGridLayout.Layout[]>}) => {
+const Toolbar = (props: { layoutRef: React.MutableRefObject<ReactGridLayout.Layout[]> }) => {
 	const [activeDashboard, setDashbaordsStore] = useDashboardsStore((store) => store.activeDashboard);
 	const openEditDashboardModal = useCallback(() => {
 		setDashbaordsStore((store) => toggleEditDashboardModal(store, true));
@@ -167,7 +167,7 @@ const Toolbar = (props: {layoutRef:  React.MutableRefObject<ReactGridLayout.Layo
 			className={classes.toolbarContainer}
 			style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
 			w="100%">
-				<DeleteDashboardModal/>
+			<DeleteDashboardModal />
 			<Stack gap={0}>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={0}>
 					<Text className={classes.dashboardTitle} lineClamp={1}>
@@ -183,9 +183,9 @@ const Toolbar = (props: {layoutRef:  React.MutableRefObject<ReactGridLayout.Layo
 			</Stack>
 			<Stack style={{ flexDirection: 'row' }}>
 				<TimeRange />
-				<AddTileButton/>
-				<EditLayoutButton layoutRef={props.layoutRef}/>
-				<DeleteDashboardButton/>
+				<AddTileButton />
+				<EditLayoutButton layoutRef={props.layoutRef} />
+				<DeleteDashboardButton />
 			</Stack>
 		</Stack>
 	);

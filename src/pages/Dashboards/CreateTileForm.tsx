@@ -12,7 +12,14 @@ import VizEditorModal, { Viz } from './VizEditorModal';
 import { SchemaList } from '../Stream/components/Querier/QueryCodeEditor';
 import { IconAlertTriangle, IconArrowLeft, IconChartPie } from '@tabler/icons-react';
 import { useDashboardsQuery, useTileQuery } from '@/hooks/useDashboards';
-import { Dashboard, EditTileType, FormOpts, Tile, TileFormType, TileQueryResponse } from '@/@types/parseable/api/dashboards';
+import {
+	Dashboard,
+	EditTileType,
+	FormOpts,
+	Tile,
+	TileFormType,
+	TileQueryResponse,
+} from '@/@types/parseable/api/dashboards';
 import { CodeHighlight } from '@mantine/code-highlight';
 import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 import { useLogsStore } from '../Stream/providers/LogsProvider';
@@ -276,7 +283,7 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 		onChangeValue,
 	} = props;
 	const [llmActive] = useAppStore((store) => store.instanceConfig?.llmActive);
-	const containerRef:MutableRefObject<HTMLDivElement | null> = useRef(null);
+	const containerRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
 	const [localStream, setLocalStream] = useState<string>('');
 	const [fields, setFields] = useState<Field[]>([]);
 	const [initialHeight, setInitialHeight] = useState(0);
@@ -333,10 +340,9 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 		fetchTileData({ query: santizedQuery, startTime: dayjs(from).toDate(), endTime: dayjs(to).toDate() });
 	}, [query, dashboardId, dashboards, timeRange]);
 
-	
 	const onStreamSelect = useCallback((val: string | null) => {
 		setLocalStream(val || '');
-	}, [])
+	}, []);
 
 	const isValidStream = !_.isEmpty(localStream);
 	const handleAIGenerate = useCallback(() => {
@@ -352,15 +358,23 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 		<Stack style={{ padding: '0 1rem', flex: 1 }} gap={4}>
 			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 				<Text className={classes.fieldTitle}>Query</Text>
-				<Stack style={{ flexDirection: 'row', ...(errorMsg ? {display: 'none'} : {})}}>
+				<Stack style={{ flexDirection: 'row', ...(errorMsg ? { display: 'none' } : {}) }}>
 					<TimeRange />
-					<Select data={allStreams} onChange={onStreamSelect} classNames={{ label: classes.fieldTitle }} key="stream" placeholder="Select Schema" />
+					<Select
+						data={allStreams}
+						onChange={onStreamSelect}
+						classNames={{ label: classes.fieldTitle }}
+						key="stream"
+						placeholder="Select Schema"
+					/>
 				</Stack>
 			</Stack>
 			{errorMsg && <Text className={classes.warningText}>{errorMsg}</Text>}
-			<Stack className={classes.queryCodeContainer} style={{ marginTop: '1rem', flex: 1, ...(errorMsg ? {display: 'none'} : {}) }}>
+			<Stack
+				className={classes.queryCodeContainer}
+				style={{ marginTop: '1rem', flex: 1, ...(errorMsg ? { display: 'none' } : {}) }}>
 				<Box style={{ marginBottom: 8 }}>
-					{llmActive? (
+					{llmActive ? (
 						<Stack gap={0} style={{ flexDirection: 'row', width: '100%' }}>
 							<TextInput
 								type="text"
@@ -368,11 +382,20 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 								id="ai_query"
 								value={aiQuery}
 								onChange={(e) => setAiQuery(e.target.value)}
-								placeholder={isValidStream ? "Enter plain text to generate SQL query using OpenAI" : "Choose a schema to generate AI query"}
+								placeholder={
+									isValidStream
+										? 'Enter plain text to generate SQL query using OpenAI'
+										: 'Choose a schema to generate AI query'
+								}
 								style={{ flex: 1 }}
 								disabled={!isValidStream}
 							/>
-							<Button variant="filled" color="brandPrimary.4" radius={0} onClick={handleAIGenerate} disabled={!isValidStream}>
+							<Button
+								variant="filled"
+								color="brandPrimary.4"
+								radius={0}
+								onClick={handleAIGenerate}
+								disabled={!isValidStream}>
 								✨ Generate
 							</Button>
 						</Stack>
@@ -413,7 +436,7 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 					alignItems: 'flex-end',
 					justifyContent: 'flex-end',
 					padding: '1rem 0',
-					...(errorMsg ? {display: 'none'} : {})
+					...(errorMsg ? { display: 'none' } : {}),
 				}}>
 				<Box>
 					<Button
@@ -421,10 +444,8 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 						disabled={_.isEmpty(query) || isLoading}
 						loading={isLoading}
 						onClick={validateQuery}
-						w="10rem"
-						>
-						
-						{!isQueryValidated ? "Validate Query" : 'Refetch Data'}
+						w="10rem">
+						{!isQueryValidated ? 'Validate Query' : 'Refetch Data'}
 					</Button>
 				</Box>
 			</Stack>
@@ -467,7 +488,7 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 					{...form.getInputProps('description')}
 				/>
 			</Stack>
-			<Divider my="0.6rem"/>
+			<Divider my="0.6rem" />
 			<Query form={form} onChangeValue={onChangeValue} />
 		</Stack>
 	);
@@ -490,7 +511,7 @@ const sanitizeFormValues = (form: TileFormType, type: 'create' | 'update'): Edit
 			size,
 			...vizElementConfig,
 			color_config,
-			tick_config
+			tick_config,
 		},
 		order,
 		...(type === 'update' && _.isString(tile_id) ? { tile_id } : {}),
@@ -523,7 +544,12 @@ const genTileFormOpts = (opts: {
 	tileData: TileQueryResponse;
 }) => {
 	const { activeDashboard, editTileId } = opts;
-	if (!editTileId) return {...defaultFormOpts, dashboardId: activeDashboard?.dashboard_id || null, order: _.size(activeDashboard?.tiles) + 1};
+	if (!editTileId)
+		return {
+			...defaultFormOpts,
+			dashboardId: activeDashboard?.dashboard_id || null,
+			order: _.size(activeDashboard?.tiles) + 1,
+		};
 
 	const currentTile = _.find(activeDashboard?.tiles, (tile) => tile.tile_id === editTileId);
 	if (!currentTile)

@@ -13,7 +13,7 @@ import {
 	UPDATE_SAVED_FILTERS_URL,
 	DELETE_SAVED_FILTERS_URL,
 	CREATE_SAVED_FILTERS_URL,
-	LOG_STREAM_HOT_TIER
+	LOG_STREAM_HOT_TIER,
 } from './constants';
 import { HotTierConfig, LogStreamData, LogStreamSchemaData } from '@/@types/parseable/api/stream';
 

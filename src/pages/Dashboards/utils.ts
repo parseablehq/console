@@ -15,7 +15,7 @@ const formatTickValue = (value: any, unit: (typeof tickUnits)[number] | null) =>
 	if (unit === null) {
 		return HumanizeNumber(value);
 	} else if (unit === 'bytes') {
-		return formatBytes(value)
+		return formatBytes(value);
 	} else {
 		return value;
 	}

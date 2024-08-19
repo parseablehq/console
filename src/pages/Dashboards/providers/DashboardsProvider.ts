@@ -11,13 +11,13 @@ export const sortTilesByOrder = (tiles: Tile[], idsByOrder: string[]): Tile[] =>
 		})
 		.compact()
 		.value();
-}
+};
 
 export const assignOrderToTiles = (tiles: Tile[]) => {
 	return _.map(tiles, (tile, index) => {
 		return { ...tile, order: index + 1 };
 	});
-}
+};
 
 export const genLayout = (tiles: Tile[]): Layout[] => {
 	return _.reduce(
@@ -79,8 +79,8 @@ type DashboardsStore = {
 	editTileId: string | null;
 	tilesData: {
 		[key: string]: TileQueryResponse;
-	},
-	layout: Layout[],
+	};
+	layout: Layout[];
 	deleteTileModalOpen: boolean;
 	deleteTileId: string | null;
 };
@@ -95,10 +95,10 @@ const initialState: DashboardsStore = {
 	vizEditorModalOpen: false,
 	allowDrag: false,
 	editTileId: null,
-	tilesData: {}, 
+	tilesData: {},
 	layout: [],
 	deleteTileModalOpen: false,
-	deleteTileId: null
+	deleteTileId: null,
 };
 
 type ReducerOutput = Partial<DashboardsStore>;
@@ -132,7 +132,7 @@ const toggleEditDashboardModal = (_store: DashboardsStore, val: boolean) => {
 const toggleCreateTileModal = (_store: DashboardsStore, val: boolean, tileId: string | null = null) => {
 	return {
 		createTileFormOpen: val,
-		editTileId: tileId
+		editTileId: tileId,
 	};
 };
 
@@ -142,7 +142,6 @@ const toggleVizEditorModal = (_store: DashboardsStore, val: boolean) => {
 	};
 };
 
-
 const toggleDeleteDashboardModal = (_store: DashboardsStore, val: boolean) => {
 	return {
 		deleteDashboardModalOpen: val,
@@ -151,7 +150,7 @@ const toggleDeleteDashboardModal = (_store: DashboardsStore, val: boolean) => {
 
 const toggleAllowDrag = (store: DashboardsStore) => {
 	return {
-		allowDrag: !store.allowDrag
+		allowDrag: !store.allowDrag,
 	};
 };
 
@@ -168,12 +167,10 @@ const setDashboards = (store: DashboardsStore, dashboards: Dashboard[]) => {
 		}
 	})();
 
-	console.log({activeDashboardFromStore})
-
 	return {
 		dashboards,
 		activeDashboard,
-		layout: activeDashboard ? genLayout(activeDashboard.tiles) : []
+		layout: activeDashboard ? genLayout(activeDashboard.tiles) : [],
 	};
 };
 
@@ -182,7 +179,7 @@ const selectDashboard = (store: DashboardsStore, dashboardId?: string | null, da
 		dashboard && _.isObject(dashboard) && !_.isEmpty(dashboard.dashboard_id)
 			? dashboard
 			: _.find(store.dashboards, (dashboard) => dashboard.dashboard_id === dashboardId);
-	if (!activeDashboard) return {}
+	if (!activeDashboard) return {};
 
 	return {
 		...initialState,
@@ -196,17 +193,17 @@ const setTileData = (store: DashboardsStore, tileId: string, data: TileQueryResp
 	return {
 		tilesData: {
 			...store.tilesData,
-			[tileId]: data
-		}
-	}
-}
+			[tileId]: data,
+		},
+	};
+};
 
 const toggleDeleteTileModal = (_store: DashboardsStore, val: boolean, tileId: string | null) => {
 	return {
 		deleteTileModalOpen: val,
-		deleteTileId: tileId
-	}
-}
+		deleteTileId: tileId,
+	};
+};
 
 const resetTilesData = (_store: DashboardsStore) => {
 	return {
@@ -227,7 +224,7 @@ const dashboardsStoreReducers: DashboardsStoreReducers = {
 	toggleDeleteDashboardModal,
 	setTileData,
 	toggleDeleteTileModal,
-	resetTilesData
+	resetTilesData,
 };
 
 export { DashbaordsProvider, useDashboardsStore, dashboardsStoreReducers };

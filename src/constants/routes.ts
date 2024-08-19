@@ -9,8 +9,8 @@ export const EXPLORE_ROUTE = '/:streamName/explore';
 export const USERS_MANAGEMENT_ROUTE = '/users';
 export const OIDC_NOT_CONFIGURED_ROUTE = '/oidc-not-configured';
 export const CLUSTER_ROUTE = '/cluster';
-export const STREAM_ROUTE = '/:streamName/:view?'
-export const DASHBOARDS_ROUTE = '/dashboards'
+export const STREAM_ROUTE = '/:streamName/:view?';
+export const DASHBOARDS_ROUTE = '/dashboards';
 
 export const STREAM_VIEWS = ['explore', 'manage', 'live-tail'];
 
@@ -26,5 +26,5 @@ export const PATHS = {
 	oidcNotConfigured: '/oidc-not-configured',
 	cluster: '/cluster',
 	manage: '/:streamName/:view?',
-	dashboards: '/dashboards'
+	dashboards: '/dashboards',
 } as { [key: string]: string };

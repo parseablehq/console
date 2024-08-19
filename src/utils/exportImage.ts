@@ -2,11 +2,11 @@ import html2canvas from 'html2canvas';
 import _ from 'lodash';
 
 export const makeExportClassName = (name: string) => {
-  const sanitizedName = _.replace(name, /\./g, '-');
-  return `png-capture-${sanitizedName}`
-}
+	const sanitizedName = _.replace(name, /\./g, '-');
+	return `png-capture-${sanitizedName}`;
+};
 
-const handleCapture = (opts: { className: string, fileName: string }) => {
+const handleCapture = (opts: { className: string; fileName: string }) => {
 	const { className, fileName = 'png-export' } = opts;
 	try {
 		const element = document.querySelector(`.${className}`) as HTMLElement;

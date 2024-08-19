@@ -20,19 +20,20 @@
 }
 
 .addTileBtn {
-	background-color: white;
-	color: var(--mantine-color-gray-7);
-	border: 1px #e9ecef solid;
+    background-color: white;
+    color: var(--mantine-color-gray-7);
+    border: 1px #e9ecef solid;
     border-radius: rem(8px);
-	font-size: 0.65rem;
-	&:hover {
-		color: black;
-	}
-  }
-  
-  .addTileBtn:hover {
+    font-size: 0.65rem;
+
+    &:hover {
+        color: black;
+    }
+}
+
+.addTileBtn:hover {
     background-color: #E0E0E0;
-  }
+}
 
 .editLayoutBtn:hover {
     background-color: #E0E0E0;

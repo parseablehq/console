@@ -28,7 +28,7 @@ const CircularChart = (props: { form: TileFormType }) => {
 	} = props.form.values;
 	const name_key = _.get(circular_chart_config, 'name_key', '');
 	const value_key = _.get(circular_chart_config, 'value_key', '');
-	const unit = getRandomUnitTypeForChart(tick_config)
+	const unit = getRandomUnitTypeForChart(tick_config);
 
 	return (
 		<Stack style={{ flex: 1, width: '100%' }}>
@@ -53,12 +53,15 @@ const Graph = (props: { form: TileFormType }) => {
 };
 
 const Table = (props: { form: TileFormType }) => {
-	const {visualization: {tick_config}, data} = props.form.values;
+	const {
+		visualization: { tick_config },
+		data,
+	} = props.form.values;
 
 	return (
 		<Stack style={{ width: '100%', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
 			<Stack className={classes.tableContainer} style={{ width: '100%', height: '100%' }}>
-				<TableViz data={data} tick_config={tick_config}/>
+				<TableViz data={data} tick_config={tick_config} />
 			</Stack>
 		</Stack>
 	);
@@ -220,15 +223,19 @@ const ChartConfig = (props: { form: TileFormType }) => {
 	);
 };
 
-const AddTickConfigButton = (props: {onClick: () => void;}) => {
+const AddTickConfigButton = (props: { onClick: () => void }) => {
 	return (
 		<Box>
-			<Button variant="outline" onClick={props.onClick} color="gray.6" leftSection={<IconPlus stroke={1.2} size="1rem" />}>
+			<Button
+				variant="outline"
+				onClick={props.onClick}
+				color="gray.6"
+				leftSection={<IconPlus stroke={1.2} size="1rem" />}>
 				Add config
 			</Button>
 		</Box>
 	);
-}
+};
 
 const TickUnitTypeConfig = (props: { form: TileFormType }) => {
 	const {
@@ -240,10 +247,10 @@ const TickUnitTypeConfig = (props: { form: TileFormType }) => {
 		},
 	} = props;
 
-	const fieldPath = 'visualization.tick_config'
+	const fieldPath = 'visualization.tick_config';
 	const onAddConfig = useCallback(() => {
-		props.form.insertListItem(fieldPath, { key: '', unit: tickUnits[0] })
-	}, [])
+		props.form.insertListItem(fieldPath, { key: '', unit: tickUnits[0] });
+	}, []);
 
 	return (
 		<Stack>
@@ -293,15 +300,15 @@ const TickConfig = (props: { form: TileFormType }) => {
 			<Text className={classes.fieldTitle} style={{ marginBottom: '0.25rem', fontSize: '0.8rem', fontWeight: 500 }}>
 				Tick Config
 			</Text>
-			<TickUnitTypeConfig form={props.form}/>
+			<TickUnitTypeConfig form={props.form} />
 		</Stack>
 	);
 };
 
 const Config = (props: { form: TileFormType }) => {
 	return (
-		<Stack className={classes.configContainer} >
-			<Stack gap={28} style={{overflowY: 'scroll'}}>
+		<Stack className={classes.configContainer}>
+			<Stack gap={28} style={{ overflowY: 'scroll' }}>
 				<BasicConfig form={props.form} />
 				<ChartConfig form={props.form} />
 				<TickConfig form={props.form} />
@@ -325,7 +332,7 @@ const VizEditorModal = (props: { form: TileFormType }) => {
 			centered
 			size="90rem"
 			title={'Edit Visualization'}
-			styles={{ body: { padding: '0 1rem' }, header: { padding: '1rem', paddingBottom: '0' }}}
+			styles={{ body: { padding: '0 1rem' }, header: { padding: '1rem', paddingBottom: '0' } }}
 			classNames={{ title: classes.modalTitle }}>
 			<Stack className={classes.container}>
 				<Stack style={{ width: '40%', justifyContent: 'center' }}>
