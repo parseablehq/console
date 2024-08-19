@@ -165,7 +165,7 @@ export const renderGraph = (opts: {
 export const makeCircularChartData = (data: Log[], name_key: string, value_key: string): CircularChartData => {
 	if (!_.isArray(data)) return [];
 
-	const topN = 2;
+	const topN = 5;
 	const chartData = _.reduce(
 		data,
 		(acc, rec: Log) => {
