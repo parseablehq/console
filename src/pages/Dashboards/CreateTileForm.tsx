@@ -475,7 +475,7 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 
 const sanitizeFormValues = (form: TileFormType, type: 'create' | 'update'): EditTileType => {
 	const { name, description, query, visualization, tile_id, order } = form.values;
-	const { visualization_type, size, circular_chart_config, graph_config, color_config } = visualization;
+	const { visualization_type, size, circular_chart_config, graph_config, color_config, tick_config } = visualization;
 	const vizElementConfig = isCircularChart(visualization_type)
 		? { circular_chart_config }
 		: isGraph(visualization_type)
@@ -490,6 +490,7 @@ const sanitizeFormValues = (form: TileFormType, type: 'create' | 'update'): Edit
 			size,
 			...vizElementConfig,
 			color_config,
+			tick_config
 		},
 		order,
 		...(type === 'update' && _.isString(tile_id) ? { tile_id } : {}),
@@ -500,6 +501,7 @@ const defaultVizOpts = {
 	visualization_type: 'donut-chart' as 'donut-chart',
 	size: 'sm',
 	color_config: [],
+	tick_config: [],
 	circular_chart_config: {},
 	graph_config: {},
 };

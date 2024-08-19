@@ -1,16 +1,21 @@
 import { Stack, Table, Text } from '@mantine/core';
-import { TileQueryResponse } from '@/@types/parseable/api/dashboards';
+import { TickConfig, TileQueryResponse, UnitType } from '@/@types/parseable/api/dashboards';
 import classes from './styles/Table.module.css';
 import _ from 'lodash';
 import { MutableRefObject, useEffect, useMemo, useRef, useState } from 'react';
 import { IconAlertTriangle } from '@tabler/icons-react';
+import { tickFormatter } from './utils';
 
-const makeRowData = (data: TileQueryResponse) => {
+const makeRowData = (data: TileQueryResponse, fieldUnitMap: Record<string, UnitType>) => {
 	const { fields, records } = data;
 	return _.map(records, (rec) => {
 		return _.chain(rec)
-			.at(fields)
-			.map((i) => _.toString(i))
+			.thru(rec => {
+				return _.map(fields, field => {
+					const colValue =  _.get(rec, field, '-');
+					return tickFormatter(colValue, fieldUnitMap[field])
+				})
+			})
 			.value();
 	});
 };
@@ -24,11 +29,24 @@ const NoDataView = () => {
 	);
 };
 
-const TableViz = (props: { data: TileQueryResponse }) => {
+const makeFieldUnitMap = (tick_config: TickConfig[]) => {
+	return _.reduce(
+		tick_config,
+		(acc, config) => {
+			return { ...acc, [config.key]: config.unit};
+		},
+		{},
+	);
+};
+
+
+const TableViz = (props: { data: TileQueryResponse, tick_config: TickConfig[] }) => {
 	const {
 		data: { fields, records },
+		tick_config
 	} = props;
-	const rowData = useMemo(() => makeRowData({ fields, records }), []);
+	const fieldUnitMap = useMemo(() => makeFieldUnitMap(tick_config), [fields])
+	const rowData = useMemo(() => makeRowData({ fields, records }, fieldUnitMap), [records]);
 
 	const containerRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
 	const [initialHeight, setInitialHeight] = useState(0);

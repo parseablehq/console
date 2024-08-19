@@ -1,12 +1,13 @@
-import { Button, Modal, MultiSelect, Select, Stack, Text } from '@mantine/core';
+import { ActionIcon, Button, CloseIcon, Modal, MultiSelect, Select, Stack, Text, Box } from '@mantine/core';
 import classes from './styles/VizEditor.module.css';
 import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
 import { useCallback, useEffect } from 'react';
 import _ from 'lodash';
 import { isCircularChart, renderCircularChart, renderGraph } from './Charts';
-import { TileFormType, tileSizes, visualizations } from '@/@types/parseable/api/dashboards';
-import { IconAlertTriangle } from '@tabler/icons-react';
+import { tickUnits, TileFormType, tileSizes, visualizations } from '@/@types/parseable/api/dashboards';
+import { IconAlertTriangle, IconPlus } from '@tabler/icons-react';
 import TableViz from './Table';
+import { getRandomUnitTypeForChart } from './utils';
 const { toggleVizEditorModal } = dashboardsStoreReducers;
 
 const inValidVizType = 'Select a visualization type';
@@ -22,39 +23,42 @@ const WarningView = (props: { msg: string | null }) => {
 
 const CircularChart = (props: { form: TileFormType }) => {
 	const {
-		visualization: { visualization_type, circular_chart_config },
+		visualization: { visualization_type, circular_chart_config, tick_config },
 		data,
 	} = props.form.values;
 	const name_key = _.get(circular_chart_config, 'name_key', '');
 	const value_key = _.get(circular_chart_config, 'value_key', '');
+	const unit = getRandomUnitTypeForChart(tick_config)
 
 	return (
 		<Stack style={{ flex: 1, width: '100%' }}>
-			{renderCircularChart({ queryResponse: data, name_key, value_key, chart: visualization_type })}
+			{renderCircularChart({ queryResponse: data, name_key, value_key, chart: visualization_type, unit })}
 		</Stack>
 	);
 };
 
 const Graph = (props: { form: TileFormType }) => {
 	const {
-		visualization: { visualization_type, graph_config },
+		visualization: { visualization_type, graph_config, tick_config },
 		data,
 	} = props.form.values;
 	const x_key = _.get(graph_config, 'x_key', '');
 	const y_keys = _.get(graph_config, 'y_keys', []);
+	const unit = getRandomUnitTypeForChart(tick_config);
 	return (
 		<Stack style={{ flex: 1, width: '100%' }}>
-			{renderGraph({ queryResponse: data, x_key, y_keys, chart: visualization_type })}
+			{renderGraph({ queryResponse: data, x_key, y_keys, chart: visualization_type, unit })}
 		</Stack>
 	);
 };
 
 const Table = (props: { form: TileFormType }) => {
-	const data = props.form.values.data;
+	const {visualization: {tick_config}, data} = props.form.values;
+
 	return (
 		<Stack style={{ width: '100%', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
 			<Stack className={classes.tableContainer} style={{ width: '100%', height: '100%' }}>
-				<TableViz data={data} />
+				<TableViz data={data} tick_config={tick_config}/>
 			</Stack>
 		</Stack>
 	);
@@ -194,7 +198,7 @@ const GraphConfig = (props: { form: TileFormType }) => {
 	);
 };
 
-const TickConfig = (props: { form: TileFormType }) => {
+const ChartConfig = (props: { form: TileFormType }) => {
 	if (
 		props.form.values.visualization.visualization_type === 'table' ||
 		_.isEmpty(props.form.values.visualization.visualization_type)
@@ -216,32 +220,91 @@ const TickConfig = (props: { form: TileFormType }) => {
 	);
 };
 
+const AddTickConfigButton = (props: {onClick: () => void;}) => {
+	return (
+		<Box>
+			<Button variant="outline" onClick={props.onClick} color="gray.6" leftSection={<IconPlus stroke={1.2} size="1rem" />}>
+				Add config
+			</Button>
+		</Box>
+	);
+}
+
+const TickUnitTypeConfig = (props: { form: TileFormType }) => {
+	const {
+		form: {
+			values: {
+				data,
+				visualization: { tick_config },
+			},
+		},
+	} = props;
+
+	const fieldPath = 'visualization.tick_config'
+	const onAddConfig = useCallback(() => {
+		props.form.insertListItem(fieldPath, { key: '', unit: tickUnits[0] })
+	}, [])
+
+	return (
+		<Stack>
+			{_.map(tick_config, (_tick, index) => {
+				const keyFieldPath = fieldPath + '.' + index + '.key';
+				const unitFieldPath = fieldPath + '.' + index + '.unit';
+				return (
+					<Stack key={index}>
+						<Stack style={{ flexDirection: 'row' }}>
+							<Select
+								data={_.map(data?.fields, (field) => ({ label: field, value: field }))}
+								classNames={{ label: classes.fieldTitle }}
+								placeholder="Tick"
+								key={keyFieldPath}
+								{...props.form.getInputProps(keyFieldPath)}
+								style={{ width: '50%' }}
+							/>
+							<Select
+								data={tickUnits}
+								classNames={{ label: classes.fieldTitle }}
+								placeholder="Unit"
+								key={unitFieldPath}
+								{...props.form.getInputProps(unitFieldPath)}
+								style={{ width: '50%' }}
+							/>
+							<ActionIcon onClick={() => props.form.removeListItem(fieldPath, index)} variant="light">
+								<CloseIcon />
+							</ActionIcon>
+						</Stack>
+					</Stack>
+				);
+			})}
+			<AddTickConfigButton onClick={onAddConfig} />
+		</Stack>
+	);
+};
+
+const TickConfig = (props: { form: TileFormType }) => {
+	if (
+		props.form.values.visualization.visualization_type === 'table' ||
+		_.isEmpty(props.form.values.visualization.visualization_type)
+	)
+		return null;
+
+	return (
+		<Stack gap={4}>
+			<Text className={classes.fieldTitle} style={{ marginBottom: '0.25rem', fontSize: '0.8rem', fontWeight: 500 }}>
+				Tick Config
+			</Text>
+			<TickUnitTypeConfig form={props.form}/>
+		</Stack>
+	);
+};
+
 const Config = (props: { form: TileFormType }) => {
 	return (
-		<Stack className={classes.configContainer}>
-			<Stack gap={28}>
+		<Stack className={classes.configContainer} >
+			<Stack gap={28} style={{overflowY: 'scroll'}}>
 				<BasicConfig form={props.form} />
+				<ChartConfig form={props.form} />
 				<TickConfig form={props.form} />
-				{/* <Stack gap={2}>
-					<Text className={classes.fieldTitle}>Colors</Text>
-					<Stack>
-						{_.map(dataKeys, (dataKey) => {
-							return (
-								<Stack style={{flexDirection: 'row'}}>
-									<TextInput value={dataKey} w="40%" disabled />
-									<Select
-										data={[{label: 'Default', value: ''}, ..._.map(defaultColors, (color) => ({ label: _.capitalize(color), value: color }))]}
-										w="40%"
-                                        defaultValue=''
-										value=''
-                                        // value={colors[dataKey] || ''}
-                                        onChange={color => props.updateColors(dataKey, color || '')}
-									/>
-								</Stack>
-							);
-						})}
-					</Stack>
-				</Stack> */}
 			</Stack>
 		</Stack>
 	);
@@ -262,7 +325,7 @@ const VizEditorModal = (props: { form: TileFormType }) => {
 			centered
 			size="90rem"
 			title={'Edit Visualization'}
-			styles={{ body: { padding: '0 1rem' }, header: { padding: '1rem', paddingBottom: '0' } }}
+			styles={{ body: { padding: '0 1rem' }, header: { padding: '1rem', paddingBottom: '0' }}}
 			classNames={{ title: classes.modalTitle }}>
 			<Stack className={classes.container}>
 				<Stack style={{ width: '40%', justifyContent: 'center' }}>
@@ -271,7 +334,7 @@ const VizEditorModal = (props: { form: TileFormType }) => {
 					</Stack>
 				</Stack>
 				<Stack className={classes.divider} />
-				<Stack style={{ flex: 1, justifyContent: 'space-between' }}>
+				<Stack style={{ justifyContent: 'space-between', overflow: 'scroll', flex: 1, height: 'auto' }}>
 					<Config form={form} />
 					<Stack style={{ alignItems: 'flex-end', margin: '1rem', marginBottom: '1.5rem', marginRight: '0.5rem' }}>
 						<Button onClick={closeVizModal}>Done</Button>

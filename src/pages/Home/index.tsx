@@ -111,7 +111,7 @@ const BigNumber = (props: { label: string; value: any; color?: string }) => {
 	);
 };
 
-const sizetoInteger = (str: string) => {
+const bytesStringToInteger = (str: string) => {
 	if (!str || typeof str !== 'string') return null;
 
 	const strChuncks = str?.split(' ');
@@ -119,7 +119,7 @@ const sizetoInteger = (str: string) => {
 };
 
 const sanitizeBytes = (str: any) => {
-	const size = sizetoInteger(str);
+	const size = bytesStringToInteger(str);
 	return size ? formatBytes(size) : '–';
 };
 

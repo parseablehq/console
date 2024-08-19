@@ -29,7 +29,7 @@ export const sanitizeEventsCount = (val: any) => {
 	return typeof val === 'number' ? HumanizeNumber(val) : '0';
 };
 
-export const sizetoInteger = (str: string) => {
+export const bytesStringToInteger = (str: string) => {
 	if (!str || typeof str !== 'string') return null;
 
 	const strChuncks = str?.split(' ');
@@ -37,13 +37,13 @@ export const sizetoInteger = (str: string) => {
 };
 
 export const sanitizeBytes = (str: any) => {
-	const size = sizetoInteger(str);
+	const size = bytesStringToInteger(str);
 	return size ? formatBytes(size) : '0 bytes';
 };
 
 export const calcCompressionRate = (storageSize: string, ingestionSize: string) => {
-	const parsedStorageSize = sizetoInteger(storageSize);
-	const parsedIngestionSize = sizetoInteger(ingestionSize);
+	const parsedStorageSize = bytesStringToInteger(storageSize);
+	const parsedIngestionSize = bytesStringToInteger(ingestionSize);
 
 	if (parsedIngestionSize === null || parsedStorageSize === null) return '–';
 

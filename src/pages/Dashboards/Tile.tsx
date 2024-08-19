@@ -27,6 +27,7 @@ import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 import Table from './Table';
 import { downloadDataAsCSV, downloadDataAsJson } from '@/utils/exportHelpers';
 import { makeExportData, useLogsStore } from '../Stream/providers/LogsProvider';
+import { getRandomUnitTypeForChart } from './utils';
 
 const { toggleCreateTileModal, toggleDeleteTileModal } = dashboardsStoreReducers;
 
@@ -50,13 +51,14 @@ const LoadingView = () => {
 const CircularChart = (props: { tile: TileType; data: TileQueryResponse }) => {
 	const { tile, data } = props;
 	const {
-		visualization: { visualization_type, circular_chart_config },
+		visualization: { visualization_type, circular_chart_config, tick_config },
 	} = tile;
 	const name_key = _.get(circular_chart_config, 'name_key', '');
 	const value_key = _.get(circular_chart_config, 'value_key', '');
+	const unit = getRandomUnitTypeForChart(tick_config);
 	return (
 		<Stack style={{ flex: 1, width: '100%' }}>
-			{renderCircularChart({ queryResponse: data, name_key, value_key, chart: visualization_type })}
+			{renderCircularChart({ queryResponse: data, name_key, value_key, chart: visualization_type, unit })}
 		</Stack>
 	);
 };
@@ -64,13 +66,14 @@ const CircularChart = (props: { tile: TileType; data: TileQueryResponse }) => {
 const Graph = (props: { tile: TileType; data: TileQueryResponse }) => {
 	const { tile, data } = props;
 	const {
-		visualization: { visualization_type, graph_config },
+		visualization: { visualization_type, graph_config, tick_config },
 	} = tile;
 	const x_key = _.get(graph_config, 'x_key', '');
 	const y_keys = _.get(graph_config, 'y_keys', []);
+	const unit = getRandomUnitTypeForChart(tick_config);
 	return (
 		<Stack style={{ flex: 1, width: '100%' }}>
-			{renderGraph({ queryResponse: data, x_key, y_keys, chart: visualization_type })}
+			{renderGraph({ queryResponse: data, x_key, y_keys, chart: visualization_type, unit })}
 		</Stack>
 	);
 };
@@ -196,6 +199,7 @@ const Tile = (props: { id: string }) => {
 	// }, []);
 	const hasData = !_.isEmpty(tileData);
 	const vizType = _.get(tile, 'visualization.visualization_type', null);
+	const tick_config = _.get(tile, 'visualization.tick_config', []);
 	const Viz = getViz(vizType);
 
 	return (
@@ -211,7 +215,7 @@ const Tile = (props: { id: string }) => {
 			{!hasData && !isLoading && <NoDataView />}
 			{!isLoading && hasData && (
 				<Stack className={classes.tileContainer} style={{ flex: 1 }}>
-					{Viz && <Viz tile={tile} data={tileData} />}
+					{Viz && <Viz tile={tile} data={tileData} tick_config={tick_config} />}
 				</Stack>
 			)}
 		</Stack>
