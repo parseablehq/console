@@ -177,10 +177,12 @@ const HotTierConfig = (props: {
 	const [info] = useStreamStore((store) => store.info);
 	const streamType = 'stream_type' in info ? info.stream_type : '';
 	const size = _.get(hotTier, 'size', '');
-	const usedSize = sanitizeBytes(_.get(hotTier, 'used_size', ''));
-	const availableSize = sanitizeBytes(_.get(hotTier, 'available_size', ''));
+	const usedSize = _.get(hotTier, 'used_size', '');
+	const availableSize = _.get(hotTier, 'available_size', '');
 	const oldestEntry = _.get(hotTier, 'oldest_date_time_entry', '');
 	const humanizedSize = sanitizeBytes(size);
+	const humanizedUsedSize = sanitizeBytes(usedSize);
+	const humanizedAvailableSize = sanitizeBytes(availableSize);
 	const sanitizedSize = extractNumber(humanizedSize);
 	const [localSizeValue, setLocalSizeValue] = useState<number>(sanitizedSize);
 	const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
@@ -256,7 +258,7 @@ const HotTierConfig = (props: {
 							className={classes.fieldDescription}
 							ta="end"
 							style={{ ...(isDirty || hotTierNotSet ? { display: 'none' } : {}) }}>
-							{usedSize} used | {availableSize} available
+							{humanizedUsedSize} used | {humanizedAvailableSize} available
 						</Text>
 					</Stack>
 					<Stack
