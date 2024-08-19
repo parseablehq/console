@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { Axios } from './axios';
 import { LOG_QUERY_URL } from './constants';
 import { Log, LogsQuery, LogsResponseWithHeaders } from '@/@types/parseable/api/query';

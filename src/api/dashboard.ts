@@ -27,10 +27,9 @@ export const removeDashboard = (dashboardId: string) => {
 export const getQueryData = (opts?: TileQuery) => {
 	if (_.isEmpty(opts)) throw 'Invalid Arguments'
 
-    const includeFields = true;
 	const { query, startTime, endTime } = opts;
 	return Axios().post<TileQueryResponse>(
-		LOG_QUERY_URL(includeFields),
+		LOG_QUERY_URL({ fields: true }),
 		{
 			query,
 			startTime,
