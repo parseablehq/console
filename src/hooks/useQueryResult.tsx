@@ -90,8 +90,8 @@ export const useFetchCount = () => {
 		},
 		{
 			onSuccess: (data: CountResponse) => {
-				const footerCount = _.first(data)?.count;
-				footerCount !== undefined && setLogsStore((store) => setTotalCount(store, footerCount));
+				const count = _.first(data)?.count;
+				count !== undefined && setLogsStore((store) => setTotalCount(store, count));
 			},
 			refetchOnWindowFocus: false,
 			retry: false,
