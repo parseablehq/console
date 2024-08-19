@@ -14,7 +14,7 @@ type QueryData = {
 	onSuccess?: () => void;
 };
 
-type FooterCountResponse = {
+type CountResponse = {
 	records: {
 		count: number;
 	}[];
@@ -81,7 +81,7 @@ export const useFetchCount = () => {
 		isRefetching: isCountRefetching,
 		refetch: countRefetch,
 	} = useQuery(['fetchCount', logsQuery], () => fetchQueryHandler({ logsQuery, query }), {
-		onSuccess: (data: FooterCountResponse) => {
+		onSuccess: (data: CountResponse) => {
 			const footerCount = _.first(data.records)?.count;
 			footerCount && setLogsStore((store) => setTotalCount(store, footerCount));
 		},
