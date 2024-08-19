@@ -1,7 +1,6 @@
 import { Box, Stack, rem } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useCallback, useEffect } from 'react';
-import StaticLogTable from './Views/Explore/StaticLogTable';
 import LiveLogTable from './Views/LiveTail/LiveLogTable';
 import ViewLog from './components/ViewLog';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
@@ -17,6 +16,7 @@ import { useParams } from 'react-router-dom';
 import { STREAM_VIEWS } from '@/constants/routes';
 import { Text } from '@mantine/core';
 import { RetryBtn } from '@/components/Button/Retry';
+import LogsView from './Views/Explore/LogsView';
 
 const { streamChangeCleanup } = streamStoreReducers;
 
@@ -50,7 +50,7 @@ const Logs: FC = () => {
 	}, [currentStream]);
 
 	useEffect(() => {
-		if (!_.isEmpty(currentStream)) {
+		if (!_.isEmpty(currentStream) && view !== 'explore') {
 			fetchSchema();
 		}
 	}, [currentStream]);
@@ -64,7 +64,14 @@ const Logs: FC = () => {
 	// todo - have separate ui components for loading and error states
 
 	return (
-		<Box style={{ flex: 1, display: 'flex', position: 'relative', flexDirection: 'row', width: '100%' }}>
+		<Box
+			style={{
+				flex: 1,
+				display: 'flex',
+				position: 'relative',
+				flexDirection: 'row',
+				width: '100%',
+			}}>
 			<ViewLog />
 			<Stack style={{ width: sideBarWidth }}>
 				<SideBar />
@@ -73,7 +80,7 @@ const Logs: FC = () => {
 				gap={0}
 				style={{
 					maxHeight: `calc(100vh - ${maximized ? 0 : PRIMARY_HEADER_HEIGHT}px )`,
-					overflow: 'scroll',
+					overflowY: 'scroll',
 					flex: 1,
 				}}>
 				<PrimaryToolbar />
@@ -82,7 +89,7 @@ const Logs: FC = () => {
 					error ? (
 						<SchemaErrorView error={error} fetchSchema={fetchSchema} />
 					) : (
-						<StaticLogTable schemaLoading={isSchemaLoading} />
+						<LogsView schemaLoading={isSchemaLoading} />
 					)
 				) : view === 'live-tail' ? (
 					<LiveLogTable />

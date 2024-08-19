@@ -32,6 +32,7 @@
 		"html2canvas": "^1.4.1",
 		"http-status-codes": "^2.2.0",
 		"immer": "^10.0.2",
+		"jq-web": "^0.5.1",
 		"js-cookie": "^3.0.5",
 		"just-compare": "^2.3.0",
 		"lodash": "^4.17.21",

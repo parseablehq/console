@@ -27,7 +27,7 @@ interface RoleTRProps {
 		id: string;
 		method: string;
 	};
-	deleteUserMutation: (data: { userName: string, onSuccess?: () => void; }) => void;
+	deleteUserMutation: (data: { userName: string; onSuccess?: () => void }) => void;
 	updateUserPasswordIsError: boolean;
 	getUserRolesIsError: boolean;
 	getUserRolesIsLoading: boolean;

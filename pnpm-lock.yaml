@@ -65,6 +65,9 @@ importers:
       immer:
         specifier: ^10.0.2
         version: 10.0.2
+      jq-web:
+        specifier: ^0.5.1
+        version: 0.5.1
       js-cookie:
         specifier: ^3.0.5
         version: 3.0.5
@@ -1579,6 +1582,9 @@ packages:
     resolution: {integrity: sha512-muId7Zzn9ywDsyXgTIafTry2sV3nySZeUDe6YedVd1Hvuuep5AsIlqK+XefWpYTyJG5e503F2xIuT2lcU6rCSw==}
     peerDependencies:
       ws: '*'
+
+  jq-web@0.5.1:
+    resolution: {integrity: sha512-3Fa3E6g3U1O1j46ljy0EM10yRr4txzILga8J7bqOG8F89gZ6Lilz82WG9z6TItWpYEO0YGa4W8yFGj+NMM1xqQ==}
 
   js-base64@3.7.5:
     resolution: {integrity: sha512-3MEt5DTINKqfScXKfJFrRbxkrnk2AxPWGBL/ycjz4dK8iqiSJ06UxD8jh8xuh6p10TX4t2+7FsBYVxxQbMg+qA==}
@@ -3884,6 +3890,8 @@ snapshots:
     dependencies:
       ws: 8.17.0
 
+  jq-web@0.5.1: {}
+
   js-base64@3.7.5: {}
 
   js-cookie@3.0.5: {}
@@ -4321,6 +4329,7 @@ snapshots:
     dependencies:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
+
 
   react-resizable@3.0.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:

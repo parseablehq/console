@@ -29,7 +29,7 @@ const RefreshInterval: FC = () => {
 					console.log(e);
 				}
 			}
-		}
+		};
 
 		clearIntervalInstance();
 		if (refreshInterval !== null) {
@@ -39,7 +39,7 @@ const RefreshInterval: FC = () => {
 			timerRef.current = intervalId;
 		}
 
-		return () => timerRef.current ? clearInterval(timerRef.current) : _.noop();
+		return () => (timerRef.current ? clearInterval(timerRef.current) : _.noop());
 	}, [refreshInterval]);
 
 	const { intervalbtn } = classes;

@@ -1,4 +1,4 @@
-import React, { FC, MutableRefObject, useCallback, useEffect } from 'react';
+import React, { FC, MutableRefObject, useCallback, useEffect, useState, useRef } from 'react';
 import Editor from '@monaco-editor/react';
 import { Box, Button, Flex, ScrollArea, Stack, Text, TextInput } from '@mantine/core';
 import { ErrorMarker, errChecker } from '../ErrorMarker';
@@ -9,7 +9,6 @@ import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 import { Field } from '@/@types/parseable/dataType';
 import queryCodeStyles from '../../styles/QueryCode.module.css';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { useFilterStore } from '../../providers/FilterProvider';
 import { LOAD_LIMIT, useLogsStore } from '../../providers/LogsProvider';
 import { useStreamStore } from '../../providers/StreamProvider';
 
@@ -30,18 +29,23 @@ const genColumnConfig = (fields: Field[]) => {
 	}, columnConfig);
 };
 
-const defaultCustSQLQuery = (streamName: string | null) => {
+export const defaultCustSQLQuery = (streamName: string | null) => {
 	if (streamName && streamName.length > 0) {
-		return `SELECT * FROM ${streamName} LIMIT ${LOAD_LIMIT};`
+		return `SELECT * FROM ${streamName} LIMIT ${LOAD_LIMIT};`;
 	} else {
-		return ''
+		return '';
 	}
-}
+};
 
-const QueryCodeEditor: FC<{ queryCodeEditorRef: MutableRefObject<any>, onSqlSearchApply: (query: string) => void; onClear: () => void; }> = (props) => {
+const QueryCodeEditor: FC<{
+	queryCodeEditorRef: MutableRefObject<any>;
+	onSqlSearchApply: (query: string) => void;
+	onClear: () => void;
+}> = (props) => {
 	const [llmActive] = useAppStore((store) => store.instanceConfig?.llmActive);
-	const [] = useFilterStore((store) => store);
-	const [{ isQuerySearchActive, activeMode, savedFilterId, custSearchQuery }] = useLogsStore((store) => store.custQuerySearchState);
+	const [{ isQuerySearchActive, activeMode, savedFilterId, custSearchQuery }] = useLogsStore(
+		(store) => store.custQuerySearchState,
+	);
 	const [schema] = useStreamStore((store) => store.schema);
 	const fields = schema?.fields || [];
 	const editorRef = React.useRef<any>();
@@ -68,9 +72,9 @@ const QueryCodeEditor: FC<{ queryCodeEditorRef: MutableRefObject<any>, onSqlSear
 
 	useEffect(() => {
 		if (savedFilterId && isSqlSearchActive) {
-			updateQuery(custSearchQuery)
+			updateQuery(custSearchQuery);
 		}
-	}, [savedFilterId])
+	}, [savedFilterId]);
 
 	const handleAIGenerate = useCallback(() => {
 		if (!aiQuery?.length) {
@@ -113,56 +117,54 @@ const QueryCodeEditor: FC<{ queryCodeEditorRef: MutableRefObject<any>, onSqlSear
 		const sanitizedQuery = sanitiseSqlString(query);
 		const parsedQuery = sanitizedQuery.replace(/(\r\n|\n|\r)/gm, '');
 		updateQuery(sanitizedQuery);
-		props.onSqlSearchApply(parsedQuery)
+		props.onSqlSearchApply(parsedQuery);
 	}, [query]);
 
 	return (
-		<Stack style={{ flex: 1 }}>
-			<ScrollArea>
-				<Box style={{ marginBottom: 8 }}>
-					{localLlmActive ? (
-						<Stack gap={0} style={{ flexDirection: 'row', width: '100%' }}>
-							<TextInput
-								type="text"
-								name="ai_query"
-								id="ai_query"
-								value={aiQuery}
-								onChange={(e) => setAiQuery(e.target.value)}
-								placeholder="Enter plain text to generate SQL query using OpenAI"
-								w="85%"
-							/>
-							<Button variant="filled" w="15%" color="brandPrimary.4" radius={0} onClick={handleAIGenerate}>
-								✨ Generate
-							</Button>
-						</Stack>
-					) : (
-						<Box style={{ width: '100%' }}>
-							<Box component="a" href="https://www.parseable.com/docs/integrations/llm" target="_blank">
-								Know More: How to enable SQL generation with OpenAI ?
-							</Box>
+		<Stack style={{ flex: 1, justifyContent: 'space-between' }}>
+			<Box style={{ marginBottom: 8 }}>
+				{localLlmActive ? (
+					<Stack gap={0} style={{ flexDirection: 'row', width: '100%' }}>
+						<TextInput
+							type="text"
+							name="ai_query"
+							id="ai_query"
+							value={aiQuery}
+							onChange={(e) => setAiQuery(e.target.value)}
+							placeholder="Enter plain text to generate SQL query using OpenAI"
+							w="85%"
+						/>
+						<Button variant="filled" w="15%" color="brandPrimary.4" radius={0} onClick={handleAIGenerate}>
+							✨ Generate
+						</Button>
+					</Stack>
+				) : (
+					<Box style={{ width: '100%' }}>
+						<Box component="a" href="https://www.parseable.com/docs/integrations/llm" target="_blank">
+							Know More: How to enable SQL generation with OpenAI ?
 						</Box>
-					)}
-				</Box>
-				<SchemaList {...{ currentStream, fields }} />
-				<Stack style={{ height: 200, flex: 1 }}>
-					<Editor
-						defaultLanguage="sql"
-						value={query}
-						onChange={handleEditorChange}
-						options={{
-							scrollBeyondLastLine: false,
-							readOnly: false,
-							fontSize: 10,
-							wordWrap: 'on',
-							minimap: { enabled: false },
-							automaticLayout: true,
-							mouseWheelZoom: true,
-							padding: { top: 8 },
-						}}
-						// onMount={handleEditorDidMount}
-					/>
-				</Stack>
-			</ScrollArea>
+					</Box>
+				)}
+			</Box>
+			<SchemaList {...{ currentStream, fields }} />
+			<Stack style={{ height: 200, flex: 1 }}>
+				<Editor
+					defaultLanguage="sql"
+					value={query}
+					onChange={handleEditorChange}
+					options={{
+						scrollBeyondLastLine: false,
+						readOnly: false,
+						fontSize: 10,
+						wordWrap: 'on',
+						minimap: { enabled: false },
+						automaticLayout: true,
+						mouseWheelZoom: true,
+						padding: { top: 8 },
+					}}
+					// onMount={handleEditorDidMount}
+				/>
+			</Stack>
 			<Stack className={queryCodeStyles.footer} style={{ alignItems: 'center' }}>
 				<Button onClick={props.onClear} disabled={!isSqlSearchActive} variant="outline">
 					Clear
@@ -174,40 +176,65 @@ const QueryCodeEditor: FC<{ queryCodeEditorRef: MutableRefObject<any>, onSqlSear
 };
 
 export const SchemaList = (props: { currentStream: string | null; fields: Field[] }) => {
+	const schemaListDivRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
+	const [schemaDivHeight, setSchemaDivHeight] = useState<number>(0);
+	const [scrollPosition, onScrollPositionChange] = useState({ x: 0, y: 0 });
+
+	useEffect(() => {
+		const height = schemaListDivRef.current && schemaListDivRef.current.offsetHeight;
+		setSchemaDivHeight(height ? height : 0);
+	}, []);
+
 	const { currentStream, fields } = props;
 	if (!fields || fields.length === 0) return null;
 
 	const { leftColumns, rightColumns } = genColumnConfig(fields);
+	const showShadow =
+		schemaDivHeight > 190
+			? !(schemaDivHeight - 190 === scrollPosition.y)
+				? queryCodeStyles.schemaListShadow
+				: ''
+			: '';
+
 	return (
-		<Box>
-			<Text
-				style={{
-					fontSize: '0.7rem',
-					color: '#098658',
-					fontFamily: 'monospace',
-				}}>{`/* Schema for ${currentStream}`}</Text>
-			<Flex style={{ alignItems: 'flex-start', padding: 6, paddingTop: 4 }}>
-				<Box style={{ width: '50%' }}>
-					{leftColumns.map((config, index) => {
-						return (
-							<Text
-								key={index}
-								style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
-						);
-					})}
+		<Stack className={showShadow} style={{ height: 190 }}>
+			<ScrollArea scrollbars="y" onScrollPositionChange={onScrollPositionChange}>
+				<Box ref={schemaListDivRef}>
+					<Text
+						style={{
+							fontSize: '0.7rem',
+							color: '#098658',
+							fontFamily: 'monospace',
+						}}>{`/* Schema for ${currentStream}`}</Text>
+					<Flex style={{ alignItems: 'flex-start', padding: 6, paddingTop: 4 }}>
+						<Box style={{ width: '50%' }}>
+							{leftColumns.map((config, index) => {
+								return (
+									<Text
+										key={index}
+										style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
+								);
+							})}
+						</Box>
+						<Box style={{ width: '50%' }}>
+							{rightColumns.map((config, index) => {
+								return (
+									<Text
+										key={index}
+										style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
+								);
+							})}
+						</Box>
+					</Flex>
+					<Text style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}> */</Text>
 				</Box>
-				<Box style={{ width: '50%' }}>
-					{rightColumns.map((config, index) => {
-						return (
-							<Text
-								key={index}
-								style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
-						);
-					})}
-				</Box>
-			</Flex>
-			<Text style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}> */</Text>
-		</Box>
+			</ScrollArea>
+			{schemaDivHeight > 190 && scrollPosition.y < 10 ? (
+				<Text style={{ fontSize: '0.8rem', color: '#095286', textAlign: 'center', paddingBottom: '0.2rem' }}>
+					Scroll to see more
+				</Text>
+			) : null}
+		</Stack>
 	);
 };
 

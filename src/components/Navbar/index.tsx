@@ -196,10 +196,10 @@ const Navbar: FC = () => {
 								navAction.key === 'about'
 									? toggleInfoModal
 									: navAction.key === 'user'
-									? toggleUserModal
-									: navAction.key === 'logout'
-									? signOutHandler
-									: () => {};
+										? toggleUserModal
+										: navAction.key === 'logout'
+											? signOutHandler
+											: () => {};
 							return (
 								<Stack
 									className={`${styles.navItemContainer} ${isActiveItem && styles.navItemActive}`}

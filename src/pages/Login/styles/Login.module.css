@@ -4,15 +4,15 @@
 	width: 30vw;
 	background: radial-gradient(circle at 78.7% 87.8%, #FFFFFF 70%, #E1EAEE 60%);
 	padding: 20px;
-  }
-  
-  @media (max-width: 768px) {
+}
+
+@media (max-width: 768px) {
 	.sideContainer {
-	  display: none;
+		display: none;
 	}
-  }
-  
-  .container {
+}
+
+.container {
 	position: relative;
 	flex: 1;
 	display: flex;
@@ -20,50 +20,55 @@
 	justify-content: center;
 	background-repeat: no-repeat;
 	background-position: top center;
-  }
-  
-  .formContainer {
+}
+
+.formContainer {
 	position: relative;
 	padding: 24px;
 	border-radius: 4px;
 	box-shadow: 0 0 24px 0 rgba(0, 0, 0, 0.2);
 	border: 1px solid #D4D4D4;
-	width: 20rem;
+	width: 22rem;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-  }
-  
-  .formInput {
+}
+
+.formInput {
 	width: 100%;
-  }
-  
-  .titleStyle {
+}
+
+.titleStyle {
 	color: #10143E;
 	font-weight: 700;
 	font-size: 24px;
-  }
-  
-  .descriptionStyle {
+}
+
+.descriptionStyle {
 	text-align: center;
 	font-size: 14px;
 	color: #828282;
-  }
-  
-  .errorStyle {
+}
+
+.errorStyle {
 	color: #FC466B;
-  }
-  
-  .loginBtnStyle {
+}
+
+.loginBtnStyle {
 	width: 100%;
 	background-color: #545BEB;
+
 	&:hover {
 		background-color: #FC466B;
 	}
-  }
+}
 
-  .loginBtnStyle:disabled, 
-  .loginBtnStyle:disabled:hover 
-  {
+.loginBtnStyle:disabled,
+.loginBtnStyle:disabled:hover {
 	background-color: var(--mantine-color-gray-4);
-  }
+}
+
+.consentDescription {
+	font-size: 0.66rem;
+	color: var(--mantine-color-gray-6);
+}

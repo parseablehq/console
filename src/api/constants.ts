@@ -1,9 +1,26 @@
+import _ from 'lodash';
+
 const API_V1 = 'api/v1';
+
+export type Params = Record<string, string> | null | {} | undefined;
+
+const parseParamsToQueryString = (params: Params) => {
+	if (_.isEmpty(params) || _.isNil(params) || !params) return '';
+
+	return _.reduce(
+		params,
+		(acc, value, key) => {
+			const slugPartPrefix = acc === '?' ? '' : '&';
+			return acc + slugPartPrefix + key + '=' + value;
+		},
+		'?',
+	);
+};
 
 // Streams Management
 export const LOG_STREAM_LIST_URL = `${API_V1}/logstream`;
 export const LOG_STREAMS_SCHEMA_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/schema`;
-export const LOG_QUERY_URL = (includeFields?: boolean) => includeFields ? `${API_V1}/query?fields=true` : `${API_V1}/query`;
+export const LOG_QUERY_URL = (params?: Params) => `${API_V1}/query` + parseParamsToQueryString(params);
 export const LOG_STREAMS_ALERTS_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/alert`;
 export const LIST_SAVED_FILTERS_URL = (userId: string) => `${API_V1}/filters/${userId}`;
 export const LIST_DASHBOARDS = (userId: string) => `${API_V1}/dashboards/${userId}`;
@@ -18,6 +35,7 @@ export const LOG_STREAMS_STATS_URL = (streamName: string) => `${LOG_STREAM_LIST_
 export const LOG_STREAMS_INFO_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/info`;
 export const DELETE_STREAMS_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}`;
 export const CREATE_STREAM_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}`;
+export const LOG_STREAM_HOT_TIER = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/hottier`;
 
 // About Parsable Instance
 export const ABOUT_URL = `${API_V1}/about`;

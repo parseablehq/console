@@ -4,7 +4,7 @@ import { useLoginForm } from '@/hooks/useLoginForm';
 import { Box, Button, Divider, Image, PasswordInput, Text, TextInput, Transition, rem } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC } from 'react';
-import loginStyles from './styles/Login.module.css'
+import loginStyles from './styles/Login.module.css';
 const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 
 const Login: FC = () => {
@@ -34,7 +34,8 @@ const Login: FC = () => {
 					}}>
 					<Text size={'xl'}>Unified logs for all applications and infrastructure</Text>
 					<Text color="dimmed" size={'md'}>
-						Access, debug and analyze your log data here. Run sophisticated SQL queries on your log data, or look at tabular view. 
+						Access, debug and analyze your log data here. Run sophisticated SQL queries on your log data, or look at
+						tabular view.
 					</Text>
 				</Box>
 			</Box>

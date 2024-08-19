@@ -3,6 +3,7 @@ import {
 	Box,
 	Button,
 	CloseIcon,
+	Loader,
 	Modal,
 	NumberInput,
 	Select,
@@ -340,7 +341,7 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 				.map((field) => field.name)
 				.compact()
 				.value();
-	const { createLogStreamMutation } = useLogStream();
+	const { createLogStreamMutation, createLogStreamIsLoading } = useLogStream();
 	const { getLogStreamListRefetch } = useLogStream();
 	const onSuccessCallback = useCallback(() => {
 		props.toggleModal();
@@ -413,7 +414,16 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 			/>
 			<Stack style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
 				<Box>
-					<Button onClick={onSubmit}>Create</Button>
+					{!createLogStreamIsLoading ? (
+						<Button w="6rem" onClick={onSubmit}>
+							Create
+						</Button>
+					) : (
+						<Button w="6rem">
+							{' '}
+							<Loader size="sm" color="white" />
+						</Button>
+					)}
 				</Box>
 			</Stack>
 		</Stack>

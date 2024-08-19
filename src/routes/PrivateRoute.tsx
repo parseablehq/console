@@ -3,9 +3,8 @@ import type { FC } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
-
 const PrivateRoute: FC = () => {
-	const auth = Cookies.get('session') 
+	const auth = Cookies.get('session');
 	const { pathname } = useLocation();
 
 	return auth ? (

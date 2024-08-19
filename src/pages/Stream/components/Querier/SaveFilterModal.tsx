@@ -43,6 +43,51 @@ const sanitizeFilterItem = (formObject: FormObjectType): SavedFilterType => {
 	};
 };
 
+const defaultTimeRangeOption = {
+	value: 'none',
+	label: 'Time range not included',
+	time_filter: null,
+};
+
+const makeTimeRangeOptions = ({
+	selected,
+	current,
+}: {
+	selected: { from: string; to: string } | null;
+	current: { startTime: Date; endTime: Date };
+}) => {
+	return [
+		defaultTimeRangeOption,
+		{
+			value: 'current',
+			label: `Current - ${makeTimeRangeLabel(current.startTime, current.endTime)}`,
+			time_filter: {
+				from: current.startTime.toISOString(),
+				to: current.endTime.toISOString(),
+			},
+		},
+		...(selected
+			? [
+					{
+						value: 'selected',
+						label: `Stored - ${makeTimeRangeLabel(selected.from, selected.to)}`,
+						time_filter: {
+							from: selected.from,
+							to: selected.to,
+						},
+					},
+				]
+			: []),
+	];
+};
+
+const getDefaultTimeRangeOption = (
+	opts: { value: string; label: string; time_filter: null | { from: string; to: string } }[],
+) => {
+	const selectedTimeRange = _.find(opts, (option) => option.value === 'selected');
+	return selectedTimeRange ? selectedTimeRange : defaultTimeRangeOption;
+};
+
 const SaveFilterModal = () => {
 	const username = Cookies.get('username');
 	const [isSaveFiltersModalOpen, setFilterStore] = useFilterStore((store) => store.isSaveFiltersModalOpen);

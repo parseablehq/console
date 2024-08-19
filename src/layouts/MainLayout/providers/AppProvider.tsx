@@ -29,7 +29,7 @@ type AppStore = {
 	streamSpecificUserAccess: string[] | null;
 	instanceConfig: AboutData | null;
 	isStandAloneMode: boolean | null;
-	savedFilters: SavedFilterType[] | null;  // null to verify whether filters have been fetched or not
+	savedFilters: SavedFilterType[] | null; // null to verify whether filters have been fetched or not
 	activeSavedFilters: SavedFilterType[]; // stream specific
 };
 

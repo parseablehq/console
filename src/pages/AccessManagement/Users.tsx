@@ -13,9 +13,9 @@ import IconButton from '@/components/Button/IconButton';
 
 const navigateToDocs = () => {
 	return window.open('https://www.parseable.io/docs/rbac', '_blank');
-}
+};
 
-const renderDocsIcon = () => <IconBook2 stroke={1.5} size="1rem"/>
+const renderDocsIcon = () => <IconBook2 stroke={1.5} size="1rem" />;
 
 const Users: FC = () => {
 	useDocumentTitle('Parseable | Users');
@@ -107,17 +107,17 @@ const Users: FC = () => {
 	return (
 		<Box
 			className={classes.container}
-			style={{ maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2}px - ${20}px)`}}
-			>
+			style={{ maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2}px - ${20}px)` }}>
 			<Stack className={classes.header} gap={0}>
-				<Text style={{ fontWeight: 600 }}>
-					Users
-				</Text>
+				<Text style={{ fontWeight: 600 }}>Users</Text>
 				<Stack style={{ flexDirection: 'row' }} gap={0}>
-					<Button className={classes.createUserBtn} onClick={() => setModalOpen(true)} rightSection={<IconUserPlus size={px('1rem')} stroke={1.5} />}>
+					<Button
+						className={classes.createUserBtn}
+						onClick={() => setModalOpen(true)}
+						rightSection={<IconUserPlus size={px('1rem')} stroke={1.5} />}>
 						Create User
 					</Button>
-					<IconButton renderIcon={renderDocsIcon} onClick={navigateToDocs} tooltipLabel='Docs'/>
+					<IconButton renderIcon={renderDocsIcon} onClick={navigateToDocs} tooltipLabel="Docs" />
 				</Stack>
 			</Stack>
 			<ScrollArea className={classes.tableContainer} type="always">
@@ -126,8 +126,12 @@ const Users: FC = () => {
 						<tr>
 							<th className={classes.tableHeader}>Username</th>
 							<th className={classes.tableHeader}>Role</th>
-							<th className={classes.tableHeader} style={{ textAlign: 'center' }}>Delete</th>
-							<th className={classes.tableHeader} style={{ textAlign: 'center' }}>Reset Password</th>
+							<th className={classes.tableHeader} style={{ textAlign: 'center' }}>
+								Delete
+							</th>
+							<th className={classes.tableHeader} style={{ textAlign: 'center' }}>
+								Reset Password
+							</th>
 						</tr>
 					</thead>
 					<tbody>{rows}</tbody>

@@ -4,15 +4,18 @@ import { FIXED_DURATIONS, FixedDuration } from '@/constants/timeConstants';
 import initContext from '@/utils/initContext';
 import dayjs, { Dayjs } from 'dayjs';
 import { addOrRemoveElement } from '@/utils';
-import { getPageSlice, makeHeadersFromSchema, makeHeadersfromData } from '../utils';
+import { getPageSlice } from '../utils';
 import _ from 'lodash';
 import { sanitizeCSVData } from '@/utils/exportHelpers';
 
 export const DEFAULT_FIXED_DURATIONS = FIXED_DURATIONS[0];
 export const LOG_QUERY_LIMITS = [50, 100, 150, 200];
 export const LOAD_LIMIT = 1000;
+export const columnsToSkip = ['p_metadata', 'p_tags'];
 
 type ReducerOutput = Partial<LogsStore>;
+
+export type ViewMode = 'table' | 'json';
 
 export type ConfigType = {
 	column: string;
@@ -129,6 +132,10 @@ const getDefaultTimeRange = (duration: FixedDuration = DEFAULT_FIXED_DURATIONS) 
 	};
 };
 
+export const makeTimeRangeLabel = (startTime: Date | string, endTime: Date | string) => {
+	return `${dayjs(startTime).format('hh:mm A DD MMM YY')} to ${dayjs(endTime).format('hh:mm A DD MMM YY')}`;
+};
+
 const defaultQuickFilters = {
 	search: '',
 	filters: {},
@@ -153,7 +160,7 @@ const defaultCustQuerySearchState = {
 	custSearchQuery: '',
 	viewMode: 'filters',
 	activeMode: null,
-	savedFilterId: null
+	savedFilterId: null,
 };
 
 type LogQueryData = {
@@ -178,6 +185,8 @@ type LogsStore = {
 	selectedLog: Log | null;
 	custQuerySearchState: CustQuerySearchState;
 	sideBarOpen: boolean;
+	viewMode: ViewMode;
+
 	modalOpts: {
 		deleteModalOpen: boolean;
 		alertsModalOpen: boolean;
@@ -199,6 +208,7 @@ type LogsStore = {
 		sortKey: string;
 		sortOrder: 'asc' | 'desc';
 		filters: Record<string, string[]>;
+		instantSearchValue: string;
 	};
 
 	data: LogQueryData;
@@ -210,7 +220,6 @@ type LogsStore = {
 	};
 
 	alerts: TransformedAlerts;
-	
 };
 
 type LogsStoreReducers = {
@@ -230,7 +239,6 @@ type LogsStoreReducers = {
 	streamChangeCleanup: (store: LogsStore) => ReducerOutput;
 	toggleQueryBuilder: (store: LogsStore, val?: boolean) => ReducerOutput;
 	resetCustQuerySearchState: (store: LogsStore) => ReducerOutput;
-	setCustQuerySearchState: (store: LogsStore, payload: Partial<CustQuerySearchState>) => ReducerOutput;
 	toggleCustQuerySearchViewMode: (store: LogsStore, targetMode: 'sql' | 'filters') => ReducerOutput;
 	toggleDeleteModal: (store: LogsStore, val?: boolean) => ReducerOutput;
 	toggleAlertsModal: (store: LogsStore, val?: boolean) => ReducerOutput;
@@ -252,17 +260,29 @@ type LogsStoreReducers = {
 	getCleanStoreForRefetch: (store: LogsStore) => ReducerOutput;
 
 	// data reducers
-	setData: (store: LogsStore, data: Log[], schema: LogStreamSchemaData | null) => ReducerOutput;
+	setLogData: (store: LogsStore, data: Log[], headers: string[], jqFilteredData?: Log[]) => ReducerOutput;
 	setStreamSchema: (store: LogsStore, schema: LogStreamSchemaData) => ReducerOutput;
-	applyCustomQuery: (store: LogsStore, query: string, mode: 'filters' | 'sql', savedFilterId?: string, timeRangePayload?: { from: string; to: string; } | null) => ReducerOutput;
+	applyCustomQuery: (
+		store: LogsStore,
+		query: string,
+		mode: 'filters' | 'sql',
+		savedFilterId?: string,
+		timeRangePayload?: { from: string; to: string } | null,
+	) => ReducerOutput;
 	getUniqueValues: (data: Log[], key: string) => string[];
 	makeExportData: (data: Log[], headers: string[], type: string) => Log[];
 	setRetention: (store: LogsStore, retention: { description: string; duration: string }) => ReducerOutput;
-	setTableHeaders: (store: LogsStore, schema: LogStreamSchemaData) => ReducerOutput;
 
 	setCleanStoreForStreamChange: (store: LogsStore) => ReducerOutput;
 	updateSavedFilterId: (store: LogsStore, savedFilterId: string | null) => ReducerOutput;
+	setInstantSearchValue: (store: LogsStore, value: string) => ReducerOutput;
+	applyInstantSearch: (store: LogsStore) => ReducerOutput;
+	applyJqSearch: (store: LogsStore, jqFilteredData: any[]) => ReducerOutput;
+	onToggleView: (store: LogsStore, viewMode: 'json' | 'table') => ReducerOutput;
 };
+
+const defaultSortKey = 'p_timestamp';
+const defaultSortOrder = 'desc' as 'desc';
 
 const initialState: LogsStore = {
 	timeRange: getDefaultTimeRange(),
@@ -272,6 +292,7 @@ const initialState: LogsStore = {
 	selectedLog: null,
 	custQuerySearchState: defaultCustQuerySearchState,
 	sideBarOpen: false,
+	viewMode: 'table',
 	modalOpts: {
 		deleteModalOpen: false,
 		alertsModalOpen: false,
@@ -290,9 +311,10 @@ const initialState: LogsStore = {
 		currentPage: 0,
 		currentOffset: 0,
 		headers: [],
-		sortKey: 'p_timestamp',
-		sortOrder: 'desc',
+		sortKey: defaultSortKey,
+		sortOrder: defaultSortOrder,
 		filters: {},
+		instantSearchValue: '',
 	},
 
 	// data
@@ -332,9 +354,11 @@ const setTimeRange = (
 	const { startTime, endTime, type } = payload;
 	const label = `${startTime.format('hh:mm A DD MMM YY')} to ${endTime.format('hh:mm A DD MMM YY')}`;
 	const interval = endTime.diff(startTime, 'milliseconds');
+	const cleanStore = getCleanStoreForRefetch(store);
 	return {
-		...getCleanStoreForRefetch(store),
+		...cleanStore,
 		timeRange: { ...store.timeRange, startTime: startTime.toDate(), endTime: endTime.toDate(), label, interval, type },
+		viewMode: store.viewMode,
 	};
 };
 
@@ -370,6 +394,10 @@ const addFilterItem = (store: LogsStore, key: string, value: string[]) => {
 
 const resetQuickFilters = (_store: LogsStore) => {
 	return { quickFilters: defaultQuickFilters };
+};
+
+const setInstantSearchValue = (store: LogsStore, value: string) => {
+	return { tableOpts: { ...store.tableOpts, instantSearchValue: value } };
 };
 
 const setLiveTailStatus = (store: LogsStore, liveTailStatus: LiveTailStatus) => {
@@ -412,13 +440,6 @@ const resetCustQuerySearchState = (store: LogsStore) => {
 	return {
 		custQuerySearchState: { ...defaultCustQuerySearchState, viewMode: custQuerySearchState.viewMode },
 		...getCleanStoreForRefetch(store),
-	};
-};
-
-const setCustQuerySearchState = (store: LogsStore, payload: Partial<CustQuerySearchState>) => {
-	const { custQuerySearchState } = store;
-	return {
-		custQuerySearchState: { ...custQuerySearchState, ...payload, isQuerySearchActive: true, showQueryBuilder: false },
 	};
 };
 
@@ -484,41 +505,51 @@ const filterAndSortData = (
 	return sortedData;
 };
 
-const setTableHeaders = (store: LogsStore, schema: LogStreamSchemaData) => {
-	const { data: existingData, custQuerySearchState, tableOpts } = store;
-	const {filteredData} = existingData;
-	const newHeaders =
-	filteredData && custQuerySearchState.isQuerySearchActive
-		? makeHeadersfromData(filteredData)
-		: makeHeadersFromSchema(schema);
-	return {
-		tableOpts: {
-			...tableOpts,
-			headers: newHeaders
-		}
-	}
-}
+const searchAndSortData = (opts: { searchValue: string }, data: Log[]) => {
+	const { searchValue } = opts;
+	const regExp = new RegExp(searchValue, 'i');
+	const filteredData = _.isEmpty(searchValue)
+		? data
+		: (_.reduce(
+				data,
+				(acc: Log[], d: Log) => {
+					const allValues = _.chain(d)
+						.values()
+						.map((e) => _.toString(e))
+						.value();
+					const doesMatch = _.some(allValues, (str) => regExp.test(str));
+					return doesMatch ? [...acc, d] : acc;
+				},
+				[],
+		  ) as Log[]);
+	const sortedData = _.orderBy(filteredData, [defaultSortKey], [defaultSortOrder]);
+	return sortedData;
+};
 
-const setData = (store: LogsStore, data: Log[], schema: LogStreamSchemaData | null) => {
-	const {
-		data: existingData,
-		tableOpts,
-		custQuerySearchState: { isQuerySearchActive, activeMode },
-	} = store;
+export const isJqSearch = (value: string) => {
+	return _.startsWith(value, 'jq .');
+};
+
+const setLogData = (store: LogsStore, data: Log[], headers: string[], jqFilteredData?: Log[]) => {
+	const { data: existingData, tableOpts, viewMode } = store;
+	const isJsonView = viewMode === 'json';
 	const currentPage = tableOpts.currentPage === 0 ? 1 : tableOpts.currentPage;
-	const filteredData = filterAndSortData(tableOpts, data);
+	const filteredData =
+		isJsonView && !_.isEmpty(tableOpts.instantSearchValue)
+			? isJqSearch(tableOpts.instantSearchValue)
+				? jqFilteredData || []
+				: searchAndSortData({ searchValue: tableOpts.instantSearchValue }, data)
+			: filterAndSortData(tableOpts, data);
 	const newPageSlice = filteredData && getPageSlice(currentPage, tableOpts.perPage, filteredData);
-	const newHeaders = isQuerySearchActive && activeMode === 'sql' ? makeHeadersfromData(data) : makeHeadersFromSchema(schema);
-
 	return {
 		tableOpts: {
 			...store.tableOpts,
 			...(newPageSlice ? { pageData: newPageSlice } : {}),
-			...(!_.isEmpty(newHeaders) ? { headers: newHeaders } : {}),
+			headers,
 			currentPage,
 			totalPages: getTotalPages(filteredData, tableOpts.perPage),
 		},
-		data: { ...existingData, rawData: data, filteredData: data },
+		data: { ...existingData, rawData: data, filteredData: filteredData },
 	};
 };
 
@@ -629,7 +660,7 @@ const setCleanStoreForStreamChange = (store: LogsStore) => {
 			totalPages: 0,
 		},
 		...updatedTimeRange,
-		alerts
+		alerts,
 	};
 };
 
@@ -638,7 +669,7 @@ const applyCustomQuery = (
 	query: string,
 	mode: 'filters' | 'sql',
 	savedFilterId?: string,
-	timeRangePayload?: { from: string; to: string; } | null,
+	timeRangePayload?: { from: string; to: string } | null,
 ) => {
 	const { custQuerySearchState } = store;
 
@@ -674,7 +705,7 @@ const applyCustomQuery = (
 			viewMode: mode,
 		},
 		...getCleanStoreForRefetch(store),
-		...timeRange
+		...timeRange,
 	};
 };
 
@@ -683,10 +714,10 @@ const updateSavedFilterId = (store: LogsStore, savedFilterId: string | null) => 
 	return {
 		custQuerySearchState: {
 			...custQuerySearchState,
-			savedFilterId
+			savedFilterId,
 		},
 	};
-}
+};
 
 const setAndSortData = (store: LogsStore, sortKey: string, sortOrder: 'asc' | 'desc') => {
 	const { data, tableOpts } = store;
@@ -733,6 +764,48 @@ const setAndFilterData = (store: LogsStore, filterKey: string, filterValues: str
 	};
 };
 
+const applyInstantSearch = (store: LogsStore) => {
+	const { data, tableOpts } = store;
+	const { instantSearchValue: searchValue } = tableOpts;
+	const filteredData = searchAndSortData({ searchValue }, data.rawData);
+	const currentPage = 1;
+	const newPageSlice = getPageSlice(currentPage, tableOpts.perPage, filteredData);
+
+	return {
+		data: {
+			...data,
+			filteredData,
+		},
+		tableOpts: {
+			...tableOpts,
+			filters: {},
+			pageData: newPageSlice,
+			currentPage,
+			totalPages: getTotalPages(filteredData, tableOpts.perPage),
+		},
+	};
+};
+
+const applyJqSearch = (store: LogsStore, jqFilteredData: any[]) => {
+	const { data, tableOpts } = store;
+	const currentPage = 1;
+	const newPageSlice = getPageSlice(currentPage, tableOpts.perPage, jqFilteredData);
+
+	return {
+		data: {
+			...data,
+			filteredData: jqFilteredData,
+		},
+		tableOpts: {
+			...tableOpts,
+			filters: {},
+			pageData: newPageSlice,
+			currentPage,
+			totalPages: getTotalPages(jqFilteredData, tableOpts.perPage),
+		},
+	};
+};
+
 const getUniqueValues = (data: Log[], key: string) => {
 	return _.chain(data)
 		.map(key)
@@ -768,9 +841,35 @@ const setRetention = (_store: LogsStore, retention: { duration?: string; descrip
 
 const toggleSideBar = (store: LogsStore) => {
 	return {
-		sideBarOpen: !store.sideBarOpen
-	}
-}
+		sideBarOpen: !store.sideBarOpen,
+	};
+};
+
+const onToggleView = (store: LogsStore, viewMode: 'json' | 'table') => {
+	const { data, tableOpts } = store;
+	const filteredData = filterAndSortData(
+		{ sortOrder: defaultSortOrder, sortKey: defaultSortKey, filters: {} },
+		data.rawData,
+	);
+	const currentPage = tableOpts.currentPage;
+	const newPageSlice = getPageSlice(currentPage, tableOpts.perPage, filteredData);
+
+	return {
+		data: {
+			...data,
+			filteredData,
+		},
+		tableOpts: {
+			...tableOpts,
+			filters: {},
+			pageData: newPageSlice,
+			instantSearchValue: '',
+			currentPage,
+			totalPages: getTotalPages(filteredData, tableOpts.perPage),
+		},
+		viewMode,
+	};
+};
 
 const logsStoreReducers: LogsStoreReducers = {
 	setTimeRange,
@@ -786,14 +885,13 @@ const logsStoreReducers: LogsStoreReducers = {
 	streamChangeCleanup,
 	toggleQueryBuilder,
 	resetCustQuerySearchState,
-	setCustQuerySearchState,
 	toggleCustQuerySearchViewMode,
 	toggleAlertsModal,
 	toggleRetentionModal,
 	toggleDeleteModal,
 	toggleDisabledColumns,
 	togglePinnedColumns,
-	setData,
+	setLogData,
 	setStreamSchema,
 	setPerPage,
 	setCurrentPage,
@@ -811,8 +909,11 @@ const logsStoreReducers: LogsStoreReducers = {
 	setRetention,
 	setCleanStoreForStreamChange,
 	toggleSideBar,
-	setTableHeaders,
-	updateSavedFilterId
+	updateSavedFilterId,
+	setInstantSearchValue,
+	applyInstantSearch,
+	applyJqSearch,
+	onToggleView,
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };

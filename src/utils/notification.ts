@@ -1,8 +1,8 @@
-import type {  NotificationData } from '@mantine/notifications';
+import type { NotificationData } from '@mantine/notifications';
 import { showNotification } from '@mantine/notifications';
 
 export const notifyError = (payload?: NotificationData) => {
-	const title =  payload?.title || 'Oops!';
+	const title = payload?.title || 'Oops!';
 	const message = payload?.message || 'Something went wrong!.';
 	const color = payload?.color || 'red';
 	const autoClose = payload?.autoClose || 3000;
@@ -12,7 +12,7 @@ export const notifyError = (payload?: NotificationData) => {
 		message,
 		color,
 		autoClose,
-	})
+	});
 };
 
 export const notifySuccess = (payload?: NotificationData) => {
@@ -26,8 +26,8 @@ export const notifySuccess = (payload?: NotificationData) => {
 		message,
 		color,
 		autoClose,
-	})
-};	
+	});
+};
 
 export const notify = (payload: NotificationData) => {
 	const color = payload.color || 'green';

@@ -54,7 +54,7 @@ const SavedFilterItem = (props: {
 	} = props;
 	const [showQuery, setShowQuery] = useState<boolean>(false);
 	const [showDeletePropmt, setShowDeletePrompt] = useState<boolean>(false);
-	const { deleteSavedFilterMutation, isDeleting } = useSavedFiltersQuery();
+	const { deleteSavedFilterMutation, isDeleting, isRefetching } = useSavedFiltersQuery();
 
 	const toggleShowQuery = useCallback(() => {
 		return setShowQuery((prev) => !prev);
@@ -102,7 +102,7 @@ const SavedFilterItem = (props: {
 				</Stack>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center', width: '40%', justifyContent: 'flex-end' }}>
 					{showDeletePropmt ? (
-						isDeleting ? (
+						isDeleting || isRefetching ? (
 							<Stack style={{ flex: 1, alignItems: 'center' }}>
 								<Loader size="md" />
 							</Stack>
@@ -140,8 +140,8 @@ const SavedFilterItem = (props: {
 							_.isString(query.filter_query)
 								? query.filter_query
 								: query.filter_builder
-								? parseQuery(query.filter_builder, stream_name).parsedQuery
-								: ''
+									? parseQuery(query.filter_builder, stream_name).parsedQuery
+									: ''
 						}
 						language="sql"
 						withCopyButton={false}
@@ -170,7 +170,6 @@ const SavedFiltersModal = () => {
 	const onSqlSearchApply = useCallback(
 		(query: string, id: string, time_filter: null | { from: string; to: string }) => {
 			setFilterStore((store) => resetFilters(store));
-
 			setLogsStore((store) => applyCustomQuery(store, query, 'sql', id, time_filter));
 		},
 		[],

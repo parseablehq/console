@@ -16,7 +16,7 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 	const { opened, close } = props;
 
 	const { getAboutData, getAboutIsError, getAboutIsLoading } = useAbout();
-	const [, setAppStore] = useAppStore((_store) => null);
+	const [analytics, setAppStore] = useAppStore((store) => store.instanceConfig?.analytics);
 	const llmStatus = useMemo(() => {
 		let status = 'LLM API Key not set';
 		if (getAboutData?.data?.llmActive) {
@@ -114,7 +114,9 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 							<Box className={aboutTextInnerBox}>
 								<Text className={aboutTextKey}>Store</Text>
 								<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={4}>
-									<Text className={aboutTextValue} style={{width: '100%'}}>{getAboutData?.data?.store?.type}</Text>
+									<Text className={aboutTextValue} style={{ width: '100%' }}>
+										{getAboutData?.data?.store?.type}
+									</Text>
 									<Tooltip label={getAboutData?.data?.store?.path}>
 										<IconInfoCircle style={{ cursor: 'pointer' }} size="1.2rem" color="gray" stroke={1.5} />
 									</Tooltip>
@@ -127,6 +129,12 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 							<Box className={aboutTextInnerBox}>
 								<Text className={aboutTextKey}>LLM Status</Text>
 								<Text className={aboutTextValue}>{llmStatus}</Text>
+							</Box>
+							<Box className={aboutTextInnerBox}>
+								<Text className={aboutTextKey}>Usage Analytics</Text>
+								<Text className={aboutTextValue}>
+									{analytics?.clarityTag ? 'Tracking (MS Clarity)' : 'Not Tracking'}
+								</Text>
 							</Box>
 						</Box>
 					</>

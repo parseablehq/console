@@ -1,65 +1,69 @@
 .container {
-    display: flex;
-    border-bottom: 1px solid #e9ecef;
-    align-items: center;
-    height: 55px;
-    padding-bottom: 0.625rem;
-    width: 100%;
-    justify-content: space-between;
-    align-content: center;
+	display: flex;
+	border-bottom: 1px solid #e9ecef;
+	align-items: center;
+	height: 55px;
+	padding-bottom: 0.625rem;
+	width: 100%;
+	justify-content: space-between;
+	align-content: center;
 }
 
 .runQueryBtn {
-    color: #545BEB;
-    border-color: var(--mantine-color-gray-4);
-    border-radius: rem(8px);
-    height: 34px;
-    margin-left: 0.625rem;
+	color: #545beb;
+	border-color: var(--mantine-color-gray-4);
+	border-radius: rem(8px);
+	height: 34px;
+	margin-left: 0.625rem;
 }
 
 .runQueryBtn:hover {
-    color: #FC466B;
+	color: #fc466b;
 }
 
 .clearQueryBtn {
-    border-color: var(--mantine-color-gray-4);
-    border-radius: rem(8px);
-    height: 34px;
-    color: #545BEB;
+	border-color: var(--mantine-color-gray-4);
+	border-radius: rem(8px);
+	height: 34px;
+	color: #545beb;
 }
 
 .clearQueryBtn:disabled {
-    color: var(--mantine-color-gray-5)
+	color: var(--mantine-color-gray-5);
 }
 
 .clearQueryBtn:disabled:hover {
-    color: var(--mantine-color-gray-5)
+	color: var(--mantine-color-gray-5);
 }
 
 .clearQueryBtn:hover {
-    color: #FC466B;
+	color: #fc466b;
 }
 
 .actionBtn {
-    height: 34px;
-    width: 34px;
-    padding: 0px;
-    margin-inline-end: 0.625rem;
-    color: #777777;
-    border-color: var(--mantine-color-gray-4);
-    border-radius: rem(8px);
+	height: 34px;
+	width: 34px;
+	padding: 0px;
+	margin-inline-end: 0.625rem;
+	color: #777777;
+	border-color: var(--mantine-color-gray-4);
+	border-radius: rem(8px);
 }
 
 .textContext {
-    font-size: 1rem;
-    font-weight: 600;
+	font-size: 1rem;
+	font-weight: 600;
 }
 
 .footer {
-    border-top: 1px solid var(--mantine-color-gray-4) ;
-    flex-direction: row;
-    justify-content: flex-end;
-    padding: 1.5rem;
-    padding-right: 0rem;
-    padding-bottom: 0;
+	border-top: 1px solid var(--mantine-color-gray-4);
+	flex-direction: row;
+	justify-content: flex-end;
+	padding: 1.5rem;
+	padding-right: 0rem;
+	padding-bottom: 0;
+}
+
+.schemaListShadow {
+    box-shadow: #e3ebfb 0px -50px 20px -30px inset;
 }

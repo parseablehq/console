@@ -1,6 +1,5 @@
 import { Axios } from './axios';
-import {  LOGIN_URL } from './constants';
-
+import { LOGIN_URL } from './constants';
 
 export const loginIn = (username: string, password: string) => {
 	const credentials = btoa(`${username}:${password}`);

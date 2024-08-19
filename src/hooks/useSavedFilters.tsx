@@ -14,7 +14,7 @@ const useSavedFiltersQuery = () => {
 	const [, setAppStore] = useAppStore((_store) => null);
 	const [, setLogsStore] = useLogsStore((_store) => null);
 	const username = Cookies.get('username');
-	const { isError, isSuccess, isLoading, refetch } = useQuery(
+	const { isError, isSuccess, isLoading, refetch, isRefetching } = useQuery(
 		['saved-filters'],
 		() => getSavedFilters(username || ''),
 		{
@@ -28,8 +28,7 @@ const useSavedFiltersQuery = () => {
 	);
 
 	const { mutate: updateSavedFilters, isLoading: isUpdating } = useMutation(
-		(data: { filter: SavedFilterType; onSuccess?: () => void }) =>
-			putSavedFilters(data.filter.filter_id, data.filter),
+		(data: { filter: SavedFilterType; onSuccess?: () => void }) => putSavedFilters(data.filter.filter_id, data.filter),
 		{
 			onSuccess: (_data, variables) => {
 				variables.onSuccess && variables.onSuccess();
@@ -48,8 +47,7 @@ const useSavedFiltersQuery = () => {
 	);
 
 	const { mutate: createSavedFilters, isLoading: isCreating } = useMutation(
-		(data: { filter: CreateSavedFilterType; onSuccess?: () => void }) =>
-			postSavedFilters(data.filter),
+		(data: { filter: CreateSavedFilterType; onSuccess?: () => void }) => postSavedFilters(data.filter),
 		{
 			onSuccess: (data, variables) => {
 				variables.onSuccess && variables.onSuccess();
@@ -69,8 +67,7 @@ const useSavedFiltersQuery = () => {
 	);
 
 	const { mutate: deleteSavedFilterMutation, isLoading: isDeleting } = useMutation(
-		(data: { filter_id: string; onSuccess?: () => void }) =>
-			deleteSavedFilter(data.filter_id),
+		(data: { filter_id: string; onSuccess?: () => void }) => deleteSavedFilter(data.filter_id),
 		{
 			onSuccess: (_data, variables) => {
 				variables.onSuccess && variables.onSuccess();
@@ -93,13 +90,14 @@ const useSavedFiltersQuery = () => {
 		isError,
 		isSuccess,
 		isLoading,
+		isRefetching,
 		refetch,
 		updateSavedFilters,
 		deleteSavedFilterMutation,
 		createSavedFilters,
 		isDeleting,
 		isUpdating,
-		isCreating
+		isCreating,
 	};
 };
 
