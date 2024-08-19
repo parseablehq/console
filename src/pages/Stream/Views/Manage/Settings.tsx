@@ -7,6 +7,7 @@ import _ from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useStreamStore } from '../../providers/StreamProvider';
 import { IconCheck, IconTrash, IconX } from '@tabler/icons-react';
+import { sanitizeBytes } from '@/utils/formatBytes';
 
 const Header = () => {
 	return (
@@ -105,12 +106,27 @@ const RetentionForm = (props: { updateRetentionConfig: ({ config }: { config: an
 	);
 };
 
-function extractNumber(value: string | null) {
-	if (_.isEmpty(value) || value === null) return 0;
+function extractNumberAndUnit(value: string | null) {
+	if (_.isEmpty(value) || value === null) return { value: 0, unit: '' };
 
-	const regex = /^(\d+)/;
-	const match = value.match(regex);
-	return match ? parseFloat(match[0]) : 0;
+	const sizeRegex = /^(\d+)/;
+	const unitRegex = /\b(MiB|GiB)\b/;
+
+	const matchSize = value.match(sizeRegex);
+	const matchUnit = value.match(unitRegex);
+	if (matchUnit && matchSize) {
+		return { value: parseFloat(matchSize[0]), unit: matchUnit[0].trim() };
+	}
+	return { value: 0, unit: '' };
+}
+
+function convertGibToBytes(value: number, unit: string) {
+	if (typeof value !== 'number') return;
+	if (unit === 'MiB') {
+		return value * Math.pow(1024, 2);
+	} else {
+		return value * Math.pow(1024, 3);
+	}
 }
 
 const DeleteHotTierModal = (props: {
@@ -166,12 +182,15 @@ const HotTierConfig = (props: {
 	isUpdating: boolean;
 }) => {
 	const [hotTier] = useStreamStore((store) => store.hotTier);
+	const [info] = useStreamStore((store) => store.info);
+	const streamType = 'stream_type' in info ? info.stream_type : '';
 	const size = _.get(hotTier, 'size', '');
-	const usedSize = _.get(hotTier, 'used_size', '');
-	const availableSize = _.get(hotTier, 'available_size', '');
+	const usedSize = sanitizeBytes(_.get(hotTier, 'used_size', ''));
+	const availableSize = sanitizeBytes(_.get(hotTier, 'available_size', ''));
 	const oldestEntry = _.get(hotTier, 'oldest_date_time_entry', '');
-	const sanitizedSize = extractNumber(size);
-	const [localSizeValue, setLocalSizeValue] = useState<number>(sanitizedSize);
+	const humanizedSize = sanitizeBytes(size);
+	const sanitizedSize = extractNumberAndUnit(humanizedSize);
+	const [localSizeValue, setLocalSizeValue] = useState<number>(sanitizedSize.value);
 	const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 	const [isDirty, setIsDirty] = useState<boolean>(false);
 
@@ -180,20 +199,20 @@ const HotTierConfig = (props: {
 	}, []);
 
 	const onCancel = useCallback(() => {
-		setLocalSizeValue(sanitizedSize);
+		setLocalSizeValue(sanitizedSize.value);
 	}, [sanitizedSize]);
 
 	useEffect(() => {
-		setIsDirty(sanitizedSize !== localSizeValue);
+		setIsDirty(sanitizedSize.value !== localSizeValue);
 	}, [localSizeValue]);
 
 	useEffect(() => {
-		setLocalSizeValue(sanitizedSize);
-		setIsDirty(sanitizedSize !== localSizeValue);
+		setLocalSizeValue(sanitizedSize.value);
+		setIsDirty(sanitizedSize.value !== localSizeValue);
 	}, [hotTier]);
 
 	const onUpdate = useCallback(() => {
-		props.updateHotTierInfo({ size: `${localSizeValue}GiB` });
+		props.updateHotTierInfo({ size: `${convertGibToBytes(localSizeValue, sanitizedSize.unit)}` });
 	}, [localSizeValue]);
 
 	const hotTierNotSet = _.isEmpty(size) || _.isEmpty(hotTier);
@@ -214,15 +233,15 @@ const HotTierConfig = (props: {
 			/>
 			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between' }} gap={8}>
 				<Text className={classes.fieldTitle}>Hot Tier Storage Size</Text>
-				{!hotTierNotSet && (
+				{!hotTierNotSet && streamType === 'UserDefined' ? (
 					<IconTrash onClick={openDeleteModal} stroke={1.2} size="1.2rem" className={classes.deleteIcon} />
-				)}
+				) : null}
 			</Stack>
 			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between', height: '3.8rem' }}>
 				<Stack gap={4} style={{ ...(hotTierNotSet ? { display: 'none' } : {}) }}>
 					<Text className={classes.fieldDescription}>Oldest Record:</Text>
 					<Text className={classes.fieldDescription}>
-						{_.isEmpty(oldestEntry) ? 'No Entries Stored' : new Date(oldestEntry + ' UTC').toLocaleString()}
+						{_.isEmpty(oldestEntry) ? 'No Entries Stored' : new Date(oldestEntry).toLocaleString()}
 					</Text>
 				</Stack>
 				<Stack style={{ width: hotTierNotSet ? '100%' : '50%' }} gap={isDirty || hotTierNotSet ? 16 : 4}>
@@ -234,7 +253,7 @@ const HotTierConfig = (props: {
 							value={localSizeValue}
 							onChange={onChangeHandler}
 							min={0}
-							suffix=" GiB"
+							suffix={` ${sanitizedSize.unit}`}
 							style={{ flex: 1 }}
 						/>
 						<Text

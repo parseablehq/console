@@ -41,6 +41,7 @@ export type StreamInfo = {
 	static_schema_flag: boolean;
 	time_partition_limit: string;
 	custom_partition: string;
+	stream_type: string;
 };
 
 export type LogStreamRetention = Array<action>;
