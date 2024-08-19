@@ -206,8 +206,8 @@ const Tile = (props: { id: string }) => {
 		<Stack h="100%" gap={0} className={classes.container}>
 			<Stack className={classes.tileHeader} gap={0}>
 				<Stack gap={0}>
-					<Text className={classes.tileTitle}>{tile.name}</Text>
-					<Text className={classes.tileDescription}>{tile.description}</Text>
+					<Text title={tile.name} lineClamp={1} className={classes.tileTitle}>{tile.name}</Text>
+					<Text title={tile.description} className={classes.tileDescription} lineClamp={1}>{tile.description}</Text>
 				</Stack>
 				<TileControls tile={tile} data={tileData} />
 			</Stack>
