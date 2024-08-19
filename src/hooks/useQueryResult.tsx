@@ -15,21 +15,20 @@ type QueryData = {
 };
 
 type FooterCountResponse = {
-	fields: string[];
 	records: {
 		count: number;
 	}[];
 };
 
-export const useQueryResult = () => {
-	const fetchQueryHandler = async (data: QueryData) => {
-		const response = await getQueryResultWithHeaders(data.logsQuery, data.query);
-		if (response.status !== 200) {
-			throw new Error(response.statusText);
-		}
-		return response.data;
-	};
+const fetchQueryHandler = async (data: QueryData) => {
+	const response = await getQueryResultWithHeaders(data.logsQuery, data.query);
+	if (response.status !== 200) {
+		throw new Error(response.statusText);
+	}
+	return response.data;
+};
 
+export const useQueryResult = () => {
 	const fetchQueryMutation = useMutation(fetchQueryHandler, {
 		onError: (data: AxiosError) => {
 			if (isAxiosError(data) && data.response) {
@@ -56,44 +55,44 @@ export const useQueryResult = () => {
 		},
 	});
 
-	const useFetchFooterCount = () => {
-		const [currentStream] = useAppStore((store) => store.currentStream);
-		const { setTotalCount } = logsStoreReducers;
-		const [{ timeRange, custQuerySearchState }, setLogsStore] = useLogsStore((store) => store);
-		const { isQuerySearchActive, custSearchQuery } = custQuerySearchState;
+	return { fetchQueryMutation };
+};
 
-		const defaultQuery = `select count(*) as count from ${currentStream}`;
-		const query = isQuerySearchActive
-			? custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM')
-			: defaultQuery;
+export const useFetchCount = () => {
+	const [currentStream] = useAppStore((store) => store.currentStream);
+	const { setTotalCount } = logsStoreReducers;
+	const [custQuerySearchState] = useLogsStore((store) => store.custQuerySearchState);
+	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
+	const { isQuerySearchActive, custSearchQuery } = custQuerySearchState;
 
-		const logsQuery = {
-			streamName: currentStream || '',
-			startTime: timeRange.startTime,
-			endTime: timeRange.endTime,
-			access: [],
-		};
-		const {
-			isLoading: footerCountLoading,
-			isRefetching: footerCountRefetching,
-			refetch: footerCountRefetch,
-		} = useQuery(['fetchFooterCount', logsQuery], () => fetchQueryHandler({ logsQuery, query }), {
-			onSuccess: (data: FooterCountResponse) => {
-				const footerCount = _.first(data.records)?.count;
-				footerCount && setLogsStore((store) => setTotalCount(store, footerCount));
-			},
-			cacheTime: 30 * 1000,
-			refetchOnWindowFocus: false,
-			retry: false,
-			enabled: currentStream !== null,
-		});
+	const defaultQuery = `select count(*) as count from ${currentStream}`;
+	const query = isQuerySearchActive
+		? custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM')
+		: defaultQuery;
 
-		return {
-			footerCountLoading,
-			footerCountRefetch,
-			footerCountRefetching,
-		};
+	const logsQuery = {
+		streamName: currentStream || '',
+		startTime: timeRange.startTime,
+		endTime: timeRange.endTime,
+		access: [],
 	};
+	const {
+		isLoading: isCountLoading,
+		isRefetching: isCountRefetching,
+		refetch: countRefetch,
+	} = useQuery(['fetchCount', logsQuery], () => fetchQueryHandler({ logsQuery, query }), {
+		onSuccess: (data: FooterCountResponse) => {
+			const footerCount = _.first(data.records)?.count;
+			footerCount && setLogsStore((store) => setTotalCount(store, footerCount));
+		},
+		refetchOnWindowFocus: false,
+		retry: false,
+		enabled: currentStream !== null,
+	});
 
-	return { fetchQueryMutation, useFetchFooterCount };
+	return {
+		isCountLoading,
+		isCountRefetching,
+		countRefetch,
+	};
 };

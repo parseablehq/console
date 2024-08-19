@@ -2,7 +2,7 @@ import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useEffect } from 'react';
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { useQueryLogs } from '@/hooks/useQueryLogs';
-import { useQueryResult } from '@/hooks/useQueryResult';
+import { useFetchCount } from '@/hooks/useQueryResult';
 
 const { setCleanStoreForStreamChange } = logsStoreReducers;
 
@@ -12,8 +12,7 @@ const useLogsFetcher = (props: { schemaLoading: boolean }) => {
 	const [{ tableOpts, timeRange }, setLogsStore] = useLogsStore((store) => store);
 	const { currentOffset, currentPage, pageData } = tableOpts;
 	const { getQueryData, loading: logsLoading, error: errorMessage } = useQueryLogs();
-	const { useFetchFooterCount } = useQueryResult();
-	const { footerCountRefetch, footerCountLoading, footerCountRefetching } = useFetchFooterCount();
+	const { countRefetch, isCountLoading, isCountRefetching } = useFetchCount();
 	const hasContentLoaded = schemaLoading === false && logsLoading === false;
 	const hasNoData = hasContentLoaded && !errorMessage && pageData.length === 0;
 	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
@@ -25,7 +24,7 @@ const useLogsFetcher = (props: { schemaLoading: boolean }) => {
 	useEffect(() => {
 		if (currentPage === 0 && currentOffset === 0) {
 			getQueryData();
-			footerCountRefetch();
+			countRefetch();
 		}
 	}, [currentPage, currentStream, timeRange]);
 
@@ -41,8 +40,7 @@ const useLogsFetcher = (props: { schemaLoading: boolean }) => {
 		hasContentLoaded,
 		hasNoData,
 		showTable,
-		footerCountLoading,
-		footerCountRefetching,
+		isFetchingCount: isCountLoading || isCountRefetching,
 	};
 };
 

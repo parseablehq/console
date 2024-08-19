@@ -5,11 +5,10 @@ import useLogsFetcher from './useLogsFetcher';
 
 const LogsView = (props: { schemaLoading: boolean }) => {
 	const { schemaLoading } = props;
-	const { errorMessage, hasNoData, showTable, footerCountLoading, footerCountRefetching } = useLogsFetcher({
+	const { errorMessage, hasNoData, showTable, isFetchingCount } = useLogsFetcher({
 		schemaLoading,
 	});
 	const [viewMode] = useLogsStore((store) => store.viewMode);
-	const isFetchingCount = footerCountLoading || footerCountRefetching;
 	const viewOpts = {
 		errorMessage,
 		hasNoData,
