@@ -19,7 +19,7 @@ import { IconEdit, IconInfoCircleFilled, IconPlus, IconTrash } from '@tabler/ico
 import { UseFormReturnType, useForm } from '@mantine/form';
 import { useStreamStore, streamStoreReducers } from '../../providers/StreamProvider';
 
-const defaultColumnTypeConfig = { column: '', operator: '=', value: 0, repeats: 1, ignoreCase: false };
+const defaultColumnTypeConfig = { column: '', operator: '=', value: '', repeats: 1, ignoreCase: false };
 const defaultColumnTypeRule = { type: 'column' as 'column', config: defaultColumnTypeConfig };
 const { transformAlerts } = streamStoreReducers;
 
@@ -437,20 +437,25 @@ const RepeatIntervalLabel = () => {
 	);
 };
 
-const AlertForm = (props: { form: AlertsFormType }) => {
-	const { form } = props;
+const AlertForm = (props: { form: AlertsFormType; alert: TransformedAlert | undefined }) => {
+	const { form, alert } = props;
 	const { rule } = form.getValues();
+	const existingRule = alert && alert.rule;
 	const { type } = rule;
-	const existingConfig = rule.config;
+
 	useEffect(() => {
 		if (type === columnRuleType) {
-			if (!_.isEmpty(existingConfig)) {
-				form.setFieldValue('rule.config', existingConfig);
+			if (existingRule && !_.isEmpty(existingRule.config) && existingRule.type === columnRuleType) {
+				form.setFieldValue('rule.config', existingRule.config);
 			} else {
 				form.setFieldValue('rule.config', defaultColumnTypeConfig);
 			}
 		} else if (type === compositeRuleType) {
-			form.setFieldValue('rule.config', '');
+			if (existingRule && !_.isEmpty(existingRule.config) && existingRule.type === compositeRuleType) {
+				form.setFieldValue('rule.config', existingRule.config);
+			} else {
+				form.setFieldValue('rule.config', '');
+			}
 		}
 	}, [type]);
 	return (
@@ -550,7 +555,7 @@ const AlertsModal = (props: {
 			<Stack gap={0}>
 				<Stack mih={400} style={{ maxHeight: 600, overflow: 'scroll' }}>
 					{/* @ts-ignore */}
-					<AlertForm form={form} />
+					<AlertForm form={form} alert={alert} />
 				</Stack>
 				<Stack style={{ flexDirection: 'row', margin: '1.2rem 0', justifyContent: 'flex-end' }}>
 					<Box>
