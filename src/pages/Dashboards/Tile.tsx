@@ -27,7 +27,7 @@ import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 import Table from './Table';
 import { downloadDataAsCSV, downloadDataAsJson } from '@/utils/exportHelpers';
 import { makeExportData, useLogsStore } from '../Stream/providers/LogsProvider';
-import { getRandomUnitTypeForChart } from './utils';
+import { getRandomUnitTypeForChart, getUnitTypeByKey } from './utils';
 
 const { toggleCreateTileModal, toggleDeleteTileModal } = dashboardsStoreReducers;
 
@@ -70,10 +70,11 @@ const Graph = (props: { tile: TileType; data: TileQueryResponse }) => {
 	} = tile;
 	const x_key = _.get(graph_config, 'x_key', '');
 	const y_keys = _.get(graph_config, 'y_keys', []);
-	const unit = getRandomUnitTypeForChart(tick_config);
+	const yUnit = getRandomUnitTypeForChart(tick_config);
+	const xUnit = getUnitTypeByKey(x_key, tick_config);
 	return (
 		<Stack style={{ flex: 1, width: '100%' }}>
-			{renderGraph({ queryResponse: data, x_key, y_keys, chart: visualization_type, unit })}
+			{renderGraph({ queryResponse: data, x_key, y_keys, chart: visualization_type, yUnit, xUnit })}
 		</Stack>
 	);
 };
@@ -206,8 +207,12 @@ const Tile = (props: { id: string }) => {
 		<Stack h="100%" gap={0} className={classes.container}>
 			<Stack className={classes.tileHeader} gap={0}>
 				<Stack gap={0}>
-					<Text title={tile.name} lineClamp={1} className={classes.tileTitle}>{tile.name}</Text>
-					<Text title={tile.description} className={classes.tileDescription} lineClamp={1}>{tile.description}</Text>
+					<Text title={tile.name} lineClamp={1} className={classes.tileTitle}>
+						{tile.name}
+					</Text>
+					<Text title={tile.description} className={classes.tileDescription} lineClamp={1}>
+						{tile.description}
+					</Text>
 				</Stack>
 				<TileControls tile={tile} data={tileData} />
 			</Stack>

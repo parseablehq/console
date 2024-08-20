@@ -8,7 +8,7 @@ export type UnitType = (typeof tickUnits)[number] | null;
 // viz type constants
 export const visualizations = ['pie-chart', 'donut-chart', 'line-chart', 'bar-chart', 'area-chart', 'table'] as const;
 export const circularChartTypes = ['pie-chart', 'donut-chart'] as const;
-export const tickUnits = ['bytes'] as const;
+export const tickUnits = ['bytes', 'utc-timestamp'] as const;
 export const graphTypes = ['line-chart', 'bar-chart', 'area-chart'] as const;
 
 // vize size constants

@@ -39,8 +39,16 @@ const makeTimeRangeOptions = ({
 	];
 };
 
+const formatTime = (date: Date | string) => {
+	return dayjs(date).format('hh:mm A DD MMM YY');
+};
+
+const formatDay = (date: Date | string) => {
+	return dayjs(date).format('DD MMMYY');
+};
+
 const makeTimeRangeLabel = (startTime: Date | string, endTime: Date | string) => {
-	return `${dayjs(startTime).format('hh:mm A DD MMM YY')} to ${dayjs(endTime).format('hh:mm A DD MMM YY')}`;
+	return `${formatTime(startTime)} to ${formatTime(endTime)}`;
 };
 
 // to optimize performace, it has been decided to round off the time at the given level
@@ -63,6 +71,8 @@ const timeRangeUtils = {
 	makeTimeRangeLabel,
 	optimizeEndTime,
 	getDefaultTimeRangeOption,
+	formatTime,
+	formatDay,
 };
 
 export default timeRangeUtils;

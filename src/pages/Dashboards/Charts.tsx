@@ -140,9 +140,10 @@ export const renderGraph = (opts: {
 	x_key: string;
 	y_keys: string[];
 	chart: string;
-	unit: UnitType;
+	xUnit: UnitType;
+	yUnit: UnitType;
 }) => {
-	const { queryResponse, x_key, y_keys, chart, unit } = opts;
+	const { queryResponse, x_key, y_keys, chart, xUnit, yUnit } = opts;
 	const VizComponent = getGraphVizComponent(chart);
 	const seriesData = makeSeriesData(queryResponse?.records || [], y_keys);
 
@@ -156,7 +157,7 @@ export const renderGraph = (opts: {
 			{warningMsg ? (
 				<WarningView msg={warningMsg} />
 			) : VizComponent ? (
-				<VizComponent data={data} dataKey={x_key} series={seriesData} unit={unit} />
+				<VizComponent data={data} dataKey={x_key} series={seriesData} xUnit={xUnit} yUnit={yUnit} />
 			) : null}
 		</Stack>
 	);
@@ -220,21 +221,7 @@ const makeSeriesData = (data: Log[], y_key: string[]) => {
 };
 
 const Donut = (props: { data: CircularChartData; unit: UnitType }) => {
-	return (
-		<DonutChart
-			withLabelsLine={false}
-			thickness={30}
-			withLabels
-			data={props.data}
-			h="100%"
-			w="100%"
-			tooltipProps={{
-				content: ({ label, payload }) => (
-					<ChartTooltip label={label} payload={payload} unit={props.unit} chartType="donut" />
-				),
-			}}
-		/>
-	);
+	return <DonutChart withLabelsLine={false} thickness={30} withLabels data={props.data} h="100%" w="100%" />;
 };
 
 const Pie = (props: { data: CircularChartData; unit: UnitType }) => {
@@ -248,11 +235,6 @@ const Pie = (props: { data: CircularChartData; unit: UnitType }) => {
 			withTooltip
 			tooltipDataSource="all"
 			labelsType="percent"
-			tooltipProps={{
-				content: ({ label, payload }) => (
-					<ChartTooltip label={label} payload={payload} chartType="pie" unit={props.unit} />
-				),
-			}}
 		/>
 	);
 };
@@ -260,32 +242,36 @@ const Pie = (props: { data: CircularChartData; unit: UnitType }) => {
 interface ChartTooltipProps {
 	label: string;
 	payload: Record<string, any>[] | undefined;
-	unit: UnitType;
+	xUnit: UnitType;
+	yUnit: UnitType;
 	chartType: 'line' | 'bar' | 'area' | 'donut' | 'pie';
 }
 
-function ChartTooltip({ label, payload, unit, chartType }: ChartTooltipProps) {
+function ChartTooltip({ label, payload, xUnit, yUnit, chartType }: ChartTooltipProps) {
 	if (!payload) return null;
 
 	const sanitizedPayload = chartType === 'area' ? getFilteredChartTooltipPayload(payload) : payload;
 	return (
 		<Paper px="md" py="sm" withBorder shadow="md" radius="md">
-			<Text fw={500} mb={5}>
-				{label}
+			<Text fw={600} mb={5}>
+				{tickFormatter(label, xUnit)}
 			</Text>
-			{sanitizedPayload.map((item: any) => {
-				const { name = '', value = null } = item;
-				return (
-					<Text key={item.name} fz="sm">
-						{name}: {tickFormatter(value, unit)}
-					</Text>
-				);
-			})}
+			<Stack gap={4}>
+				{sanitizedPayload.map((item: any) => {
+					const { name = '', value = null } = item;
+					return (
+						<Stack style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+							<Text style={{ fontSize: '0.7rem' }}>{name}</Text>
+							<Text style={{ fontSize: '0.7rem' }}>{tickFormatter(value, yUnit)}</Text>
+						</Stack>
+					);
+				})}
+			</Stack>
 		</Paper>
 	);
 }
 
-const Line = (props: { data: TileData; dataKey: string; series: SeriesType; unit: UnitType }) => {
+const Line = (props: { data: TileData; dataKey: string; series: SeriesType; xUnit: UnitType; yUnit: UnitType }) => {
 	return (
 		<LineChart
 			h="100%"
@@ -296,18 +282,21 @@ const Line = (props: { data: TileData; dataKey: string; series: SeriesType; unit
 			curveType="linear"
 			series={props.series}
 			yAxisProps={{
-				tickFormatter: (value) => tickFormatter(value, props.unit),
+				tickFormatter: (value) => tickFormatter(value, props.yUnit),
+			}}
+			xAxisProps={{
+				tickFormatter: (value) => tickFormatter(value, props.xUnit),
 			}}
 			tooltipProps={{
 				content: ({ label, payload }) => (
-					<ChartTooltip label={label} payload={payload} unit={props.unit} chartType="line" />
+					<ChartTooltip label={label} payload={payload} xUnit={props.xUnit} yUnit={props.yUnit} chartType="line" />
 				),
 			}}
 		/>
 	);
 };
 
-const Bar = (props: { data: TileData; dataKey: string; series: SeriesType; unit: UnitType }) => {
+const Bar = (props: { data: TileData; dataKey: string; series: SeriesType; xUnit: UnitType; yUnit: UnitType }) => {
 	return (
 		<BarChart
 			h="100%"
@@ -318,18 +307,21 @@ const Bar = (props: { data: TileData; dataKey: string; series: SeriesType; unit:
 			dataKey={props.dataKey}
 			series={props.series}
 			yAxisProps={{
-				tickFormatter: (value) => tickFormatter(value, props.unit),
+				tickFormatter: (value) => tickFormatter(value, props.yUnit),
+			}}
+			xAxisProps={{
+				tickFormatter: (value) => tickFormatter(value, props.xUnit),
 			}}
 			tooltipProps={{
 				content: ({ label, payload }) => (
-					<ChartTooltip label={label} payload={payload} unit={props.unit} chartType="bar" />
+					<ChartTooltip label={label} payload={payload} xUnit={props.xUnit} yUnit={props.yUnit} chartType="bar" />
 				),
 			}}
 		/>
 	);
 };
 
-const Area = (props: { data: TileData; dataKey: string; series: SeriesType; unit: UnitType }) => {
+const Area = (props: { data: TileData; dataKey: string; series: SeriesType; xUnit: UnitType; yUnit: UnitType }) => {
 	return (
 		<AreaChart
 			h="100%"
@@ -339,11 +331,14 @@ const Area = (props: { data: TileData; dataKey: string; series: SeriesType; unit
 			dataKey={props.dataKey}
 			series={props.series}
 			yAxisProps={{
-				tickFormatter: (value) => tickFormatter(value, props.unit),
+				tickFormatter: (value) => tickFormatter(value, props.yUnit),
+			}}
+			xAxisProps={{
+				tickFormatter: (value) => tickFormatter(value, props.xUnit),
 			}}
 			tooltipProps={{
 				content: ({ label, payload }) => (
-					<ChartTooltip label={label} payload={payload} unit={props.unit} chartType="area" />
+					<ChartTooltip label={label} payload={payload} xUnit={props.xUnit} yUnit={props.yUnit} chartType="area" />
 				),
 			}}
 		/>
