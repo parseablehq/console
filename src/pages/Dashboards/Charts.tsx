@@ -257,10 +257,10 @@ function ChartTooltip({ label, payload, xUnit, yUnit, chartType }: ChartTooltipP
 				{tickFormatter(label, xUnit)}
 			</Text>
 			<Stack gap={4}>
-				{sanitizedPayload.map((item: any) => {
+				{sanitizedPayload.map((item: any, index: number) => {
 					const { name = '', value = null } = item;
 					return (
-						<Stack style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+						<Stack key={index} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 							<Text style={{ fontSize: '0.7rem' }}>{name}</Text>
 							<Text style={{ fontSize: '0.7rem' }}>{tickFormatter(value, yUnit)}</Text>
 						</Stack>

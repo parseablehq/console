@@ -70,10 +70,10 @@ const DeleteTileModal = () => {
 	}, []);
 
 	const onConfirm = useCallback(() => {
-		const allTiles = activeDashboard?.tiles.filter((tile) => tile.tile_id !== selectedTile?.tile_id);
-		if (_.isEmpty(allTiles) || _.isUndefined(allTiles) || !activeDashboard) return;
+		const remainingTiles = activeDashboard?.tiles.filter((tile) => tile.tile_id !== selectedTile?.tile_id);
+		if (_.isUndefined(remainingTiles) || !activeDashboard) return;
 
-		const tilesWithUpdatedOrder = assignOrderToTiles(allTiles);
+		const tilesWithUpdatedOrder = assignOrderToTiles(remainingTiles);
 		updateDashboard({ dashboard: { ...activeDashboard, tiles: tilesWithUpdatedOrder }, onSuccess: onClose });
 	}, [selectedTile?.tile_id, activeDashboard?.tiles]);
 

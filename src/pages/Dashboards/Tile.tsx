@@ -70,8 +70,9 @@ const Graph = (props: { tile: TileType; data: TileQueryResponse }) => {
 	} = tile;
 	const x_key = _.get(graph_config, 'x_key', '');
 	const y_keys = _.get(graph_config, 'y_keys', []);
-	const yUnit = getRandomUnitTypeForChart(tick_config);
 	const xUnit = getUnitTypeByKey(x_key, tick_config);
+	const yUnit = getUnitTypeByKey(_.head(y_keys) || '', tick_config);
+
 	return (
 		<Stack style={{ flex: 1, width: '100%' }}>
 			{renderGraph({ queryResponse: data, x_key, y_keys, chart: visualization_type, yUnit, xUnit })}

@@ -45,7 +45,7 @@ const Graph = (props: { form: TileFormType }) => {
 	} = props.form.values;
 	const x_key = _.get(graph_config, 'x_key', '');
 	const y_keys = _.get(graph_config, 'y_keys', []);
-	const yUnit = getRandomUnitTypeForChart(tick_config);
+	const yUnit = getUnitTypeByKey(_.head(y_keys) || '', tick_config);
 	const xUnit = getUnitTypeByKey(x_key, tick_config);
 
 	return (
@@ -290,7 +290,7 @@ const YAxisConfig = (props: { form: TileFormType; y_key: string; index: number; 
 	const onRemoveKey = useCallback(() => {
 		if (disableRemoveBtn) return;
 
-		onChangeUnit(null)
+		onChangeUnit(null);
 		props.form.removeListItem(yKeysPath, index);
 	}, [yKeysPath, index, disableRemoveBtn, onChangeUnit]);
 
@@ -324,22 +324,39 @@ const GraphConfig = (props: { form: TileFormType }) => {
 		form: {
 			values: {
 				visualization: { graph_config },
+				data: { fields },
 			},
 		},
 	} = props;
 
 	const y_keys = _.get(graph_config, 'y_keys', []);
 	const addAxes = useCallback(() => {
-		props.form.insertListItem(yKeysPath, _.head(y_keys));
-	}, []);
+		_.head(fields) && props.form.insertListItem(yKeysPath, _.head(fields));
+	}, [fields, props.form]);
+
+	useEffect(() => {
+		if (_.isEmpty(y_keys)) {
+			addAxes();
+		}
+		props.form.setFieldError(yKeysPath, null);
+	}, [y_keys]);
+
 	return (
 		<Stack>
 			<Stack>
 				<XAxisConfig form={props.form} />
-				<Text>Y axis</Text>
-				{_.map(y_keys, (y_key, index) => {
-					return <YAxisConfig form={props.form} y_key={y_key} index={index} key={index} totalKeys={_.size(y_keys)} />;
-				})}
+				<Stack gap={2}>
+					<Text className={classes.fieldTitle} style={{ fontSize: '0.8rem', fontWeight: 500 }}>
+						Y axis
+					</Text>
+					<Stack>
+						{_.map(y_keys, (y_key, index) => {
+							return (
+								<YAxisConfig form={props.form} y_key={y_key} index={index} key={index} totalKeys={_.size(y_keys)} />
+							);
+						})}
+					</Stack>
+				</Stack>
 				<AddYAxesBtn onClick={addAxes} />
 			</Stack>
 		</Stack>

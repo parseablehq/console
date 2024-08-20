@@ -426,7 +426,6 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 								mouseWheelZoom: true,
 								padding: { top: 8 },
 							}}
-							// onMount={handleEditorDidMount}
 						/>
 					</Stack>
 				</Stack>
@@ -524,7 +523,7 @@ const defaultVizOpts = {
 	color_config: [],
 	tick_config: [],
 	circular_chart_config: {},
-	graph_config: {},
+	graph_config: {x_key: '', y_keys: []},
 };
 
 const defaultFormOpts = {
