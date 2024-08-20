@@ -169,7 +169,7 @@ const HotTierConfig = (props: {
 }) => {
 	const [hotTier] = useStreamStore((store) => store.hotTier);
 	const [info] = useStreamStore((store) => store.info);
-	const streamType = 'stream_type' in info ? info.stream_type : '';
+	const streamType = 'stream_type' in info && info.stream_type;
 	const size = _.get(hotTier, 'size', '');
 	const usedSize = _.get(hotTier, 'used_size', '');
 	const availableSize = _.get(hotTier, 'available_size', '');
