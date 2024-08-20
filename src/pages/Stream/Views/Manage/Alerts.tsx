@@ -449,7 +449,7 @@ const AlertForm = (props: { form: AlertsFormType }) => {
 				form.setFieldValue('rule.config', defaultColumnTypeConfig);
 			}
 		} else if (type === compositeRuleType) {
-			console.log(type);
+			form.setFieldValue('rule.config', '');
 		}
 	}, [type]);
 	return (
