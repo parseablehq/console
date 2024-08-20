@@ -31,7 +31,7 @@ const DashboardListItem = (props: DashboardItemProps) => {
 	);
 };
 
-const DashboardList = () => {
+const DashboardList = (props: { updateTimeRange: (dashboard: Dashboard) => void }) => {
 	const [dashboards, setDashbaordsStore] = useDashboardsStore((store) => store.dashboards);
 	const [activeDashboardId] = useDashboardsStore((store) => store.activeDashboard?.dashboard_id);
 
@@ -39,9 +39,11 @@ const DashboardList = () => {
 		(dashboardId: string) => {
 			if (activeDashboardId === dashboardId) return;
 
+			const dashboard = _.find(dashboards, (dashboard) => dashboard.dashboard_id === dashboardId);
+			dashboard && props.updateTimeRange(dashboard);
 			setDashbaordsStore((store) => selectDashboard(store, dashboardId));
 		},
-		[activeDashboardId],
+		[activeDashboardId, dashboards],
 	);
 
 	return (
@@ -60,7 +62,7 @@ const DashboardList = () => {
 	);
 };
 
-const SideBar = () => {
+const SideBar = (props: { updateTimeRange: (dashboard: Dashboard) => void }) => {
 	const [dashboards, setDashbaordsStore] = useDashboardsStore((store) => store.dashboards);
 
 	const openCreateStreamModal = useCallback(() => {
@@ -80,7 +82,7 @@ const SideBar = () => {
 					New Dashboard
 				</Button>
 			</Stack>
-			<DashboardList />
+			<DashboardList updateTimeRange={props.updateTimeRange} />
 		</Stack>
 	);
 };

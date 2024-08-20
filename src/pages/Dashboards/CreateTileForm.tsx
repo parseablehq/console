@@ -589,7 +589,7 @@ const CreateTileForm = () => {
 		setDashbaordsStore((store) => toggleCreateTileModal(store, false));
 	}, []);
 
-	const { updateDashboard, isUpdatingDashboard } = useDashboardsQuery();
+	const { updateDashboard, isUpdatingDashboard } = useDashboardsQuery({});
 
 	const onCreate = useCallback(() => {
 		const { dashboardId } = form.values;

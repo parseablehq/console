@@ -61,7 +61,7 @@ const CreateDashboardModal = () => {
 	});
 	const selectedTimeRangeOption = getDefaultTimeRangeOption(timeRangeOptions);
 	const { form } = useDashboardForm(defaultOpts);
-	const { createDashboard, updateDashboard, isCreatingDashboard, isUpdatingDashboard } = useDashboardsQuery();
+	const { createDashboard, updateDashboard, isCreatingDashboard, isUpdatingDashboard } = useDashboardsQuery({});
 	const showLoader = isCreatingDashboard || isUpdatingDashboard;
 
 	useEffect(() => {

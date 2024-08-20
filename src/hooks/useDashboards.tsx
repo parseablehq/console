@@ -8,6 +8,7 @@ import { getDashboards, getQueryData, postDashboard, putDashboard, removeDashboa
 import { useCallback, useState } from 'react';
 import {
 	CreateDashboardType,
+	Dashboard,
 	TileQuery,
 	TileQueryResponse,
 	UpdateDashboardType,
@@ -15,8 +16,8 @@ import {
 
 const { setDashboards, setTileData, selectDashboard } = dashboardsStoreReducers;
 
-export const useDashboardsQuery = () => {
-	const [, setDashbaordsStore] = useDashboardsStore((_store) => null);
+export const useDashboardsQuery = (opts: { updateTimeRange?: (dashboard: Dashboard) => void }) => {
+	const [activeDashboard, setDashboardsStore] = useDashboardsStore((store) => store.activeDashboard);
 
 	const username = Cookies.get('username');
 	const {
@@ -29,10 +30,14 @@ export const useDashboardsQuery = () => {
 		enabled: false, // not on mount
 		refetchOnWindowFocus: false,
 		onSuccess: (data) => {
-			setDashbaordsStore((store) => setDashboards(store, data.data || []));
+			const firstDashboard = _.head(data.data);
+			if (!activeDashboard && firstDashboard && opts.updateTimeRange) {
+				opts.updateTimeRange(firstDashboard);
+			}
+			setDashboardsStore((store) => setDashboards(store, data.data || []));
 		},
 		onError: () => {
-			setDashbaordsStore((store) => setDashboards(store, []));
+			setDashboardsStore((store) => setDashboards(store, []));
 		},
 	});
 
@@ -42,7 +47,7 @@ export const useDashboardsQuery = () => {
 			onSuccess: (response, variables) => {
 				const { dashboard_id } = response.data;
 				if (_.isString(dashboard_id) && !_.isEmpty(dashboard_id)) {
-					setDashbaordsStore((store) => selectDashboard(store, null, response.data));
+					setDashboardsStore((store) => selectDashboard(store, null, response.data));
 				}
 				fetchDashboards();
 				variables.onSuccess && variables.onSuccess();
@@ -117,7 +122,7 @@ export const useDashboardsQuery = () => {
 };
 
 export const useTileQuery = (opts?: { tileId?: string; onSuccess?: (data: TileQueryResponse) => void }) => {
-	const [, setDashbaordsStore] = useDashboardsStore((_store) => null);
+	const [, setDashboardsStore] = useDashboardsStore((_store) => null);
 	const { onSuccess } = opts || {};
 	const [fetchState, setFetchState] = useState<{
 		isLoading: boolean;
@@ -131,7 +136,7 @@ export const useTileQuery = (opts?: { tileId?: string; onSuccess?: (data: TileQu
 				setFetchState({ isLoading: true, isError: null, isSuccess: null });
 				const res = await getQueryData(queryOpts);
 				const tileData = _.isEmpty(res) ? { records: [], fields: [] } : res.data;
-				opts?.tileId && setDashbaordsStore((store) => setTileData(store, opts.tileId || '', tileData));
+				opts?.tileId && setDashboardsStore((store) => setTileData(store, opts.tileId || '', tileData));
 				opts?.onSuccess && opts.onSuccess(tileData);
 				setFetchState({ isLoading: false, isError: false, isSuccess: true });
 			} catch (e: any) {

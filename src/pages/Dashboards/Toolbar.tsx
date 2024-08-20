@@ -32,7 +32,7 @@ const EditLayoutButton = (props: { layoutRef: React.MutableRefObject<ReactGridLa
 		setDashbaordsStore(toggleAllowDrag);
 	}, []);
 
-	const { updateDashboard, isUpdatingDashboard } = useDashboardsQuery();
+	const { updateDashboard, isUpdatingDashboard } = useDashboardsQuery({});
 	const onClick = useCallback(() => {
 		if (allowDrag && activeDashboard) {
 			const allTiles = activeDashboard.tiles;
@@ -81,7 +81,7 @@ const DeleteDashboardModal = () => {
 	const [activeDashboard, setDashbaordsStore] = useDashboardsStore((store) => store.activeDashboard);
 	const [deleteDashboardModalOpen] = useDashboardsStore((store) => store.deleteDashboardModalOpen);
 	const [confirmText, setConfirmText] = useState<string>('');
-	const { isDeleting, deleteDashboard } = useDashboardsQuery();
+	const { isDeleting, deleteDashboard } = useDashboardsQuery({});
 	const closeModal = useCallback(() => {
 		setDashbaordsStore((store) => toggleDeleteDashboardModal(store, false));
 	}, []);

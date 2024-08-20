@@ -7,7 +7,7 @@ import {
 	IconServerCog,
 	IconHomeStats,
 	IconListDetails,
-	IconChartInfographic,
+	IconLayoutDashboard,
 } from '@tabler/icons-react';
 import { FC, useCallback, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
@@ -37,7 +37,7 @@ const navItems = [
 		route: HOME_ROUTE,
 	},
 	{
-		icon: IconChartInfographic,
+		icon: IconLayoutDashboard,
 		label: 'Dashboards',
 		path: '/dashboards',
 		route: DASHBOARDS_ROUTE,

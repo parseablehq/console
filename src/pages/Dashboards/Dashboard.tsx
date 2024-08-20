@@ -63,7 +63,7 @@ const DeleteTileModal = () => {
 	const [deleteTileId] = useDashboardsStore((store) => store.deleteTileId);
 	const selectedTile = _.find(activeDashboard?.tiles, (tile) => tile.tile_id === deleteTileId);
 
-	const { updateDashboard, isUpdatingDashboard } = useDashboardsQuery();
+	const { updateDashboard, isUpdatingDashboard } = useDashboardsQuery({});
 
 	const onClose = useCallback(() => {
 		setDashboardsStore((store) => toggleDeleteTileModal(store, false, null));
