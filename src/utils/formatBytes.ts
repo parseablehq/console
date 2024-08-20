@@ -7,6 +7,12 @@ export const formatBytes = (a: number, b: number = 1) => {
 	}`;
 };
 
+export const convertGibToBytes = (value: number) => {
+	if (typeof value !== 'number') return 0;
+
+	return value * Math.pow(1024, 3);
+};
+
 export function HumanizeNumber(val: number) {
 	// Thousands, millions, billions etc..
 	let s = ['', ' K', ' M', ' B', ' T'];

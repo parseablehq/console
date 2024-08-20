@@ -7,6 +7,7 @@ import _ from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useStreamStore } from '../../providers/StreamProvider';
 import { IconCheck, IconTrash, IconX } from '@tabler/icons-react';
+import { sanitizeBytes, convertGibToBytes } from '@/utils/formatBytes';
 
 const Header = () => {
 	return (
@@ -110,6 +111,7 @@ function extractNumber(value: string | null) {
 
 	const regex = /^(\d+)/;
 	const match = value.match(regex);
+
 	return match ? parseFloat(match[0]) : 0;
 }
 
@@ -166,11 +168,16 @@ const HotTierConfig = (props: {
 	isUpdating: boolean;
 }) => {
 	const [hotTier] = useStreamStore((store) => store.hotTier);
+	const [info] = useStreamStore((store) => store.info);
+	const streamType = 'stream_type' in info && info.stream_type;
 	const size = _.get(hotTier, 'size', '');
 	const usedSize = _.get(hotTier, 'used_size', '');
 	const availableSize = _.get(hotTier, 'available_size', '');
 	const oldestEntry = _.get(hotTier, 'oldest_date_time_entry', '');
-	const sanitizedSize = extractNumber(size);
+	const humanizedSize = sanitizeBytes(size);
+	const humanizedUsedSize = sanitizeBytes(usedSize);
+	const humanizedAvailableSize = sanitizeBytes(availableSize);
+	const sanitizedSize = extractNumber(humanizedSize);
 	const [localSizeValue, setLocalSizeValue] = useState<number>(sanitizedSize);
 	const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 	const [isDirty, setIsDirty] = useState<boolean>(false);
@@ -193,7 +200,7 @@ const HotTierConfig = (props: {
 	}, [hotTier]);
 
 	const onUpdate = useCallback(() => {
-		props.updateHotTierInfo({ size: `${localSizeValue}GiB` });
+		props.updateHotTierInfo({ size: `${convertGibToBytes(localSizeValue)}` });
 	}, [localSizeValue]);
 
 	const hotTierNotSet = _.isEmpty(size) || _.isEmpty(hotTier);
@@ -203,6 +210,8 @@ const HotTierConfig = (props: {
 	const openDeleteModal = useCallback(() => {
 		return setShowDeleteModal(true);
 	}, []);
+
+	if (hotTierNotSet && streamType === 'Internal') return null;
 
 	return (
 		<Stack className={classes.fieldsContainer} style={{ border: 'none', gap: 16 }}>
@@ -214,34 +223,38 @@ const HotTierConfig = (props: {
 			/>
 			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between' }} gap={8}>
 				<Text className={classes.fieldTitle}>Hot Tier Storage Size</Text>
-				{!hotTierNotSet && (
+				{!hotTierNotSet && streamType === 'UserDefined' ? (
 					<IconTrash onClick={openDeleteModal} stroke={1.2} size="1.2rem" className={classes.deleteIcon} />
-				)}
+				) : null}
 			</Stack>
 			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between', height: '3.8rem' }}>
 				<Stack gap={4} style={{ ...(hotTierNotSet ? { display: 'none' } : {}) }}>
 					<Text className={classes.fieldDescription}>Oldest Record:</Text>
 					<Text className={classes.fieldDescription}>
-						{_.isEmpty(oldestEntry) ? 'No Entries Stored' : new Date(oldestEntry + ' UTC').toLocaleString()}
+						{_.isEmpty(oldestEntry) ? 'No Entries Stored' : new Date(oldestEntry).toLocaleString()}
 					</Text>
 				</Stack>
 				<Stack style={{ width: hotTierNotSet ? '100%' : '50%' }} gap={isDirty || hotTierNotSet ? 16 : 4}>
 					<Stack style={{}} gap={12}>
-						<NumberInput
-							classNames={{ label: classes.fieldDescription }}
-							placeholder="Duration in days"
-							key="duration"
-							value={localSizeValue}
-							onChange={onChangeHandler}
-							min={0}
-							suffix=" GiB"
-							style={{ flex: 1 }}
-						/>
+						{streamType === 'UserDefined' ? (
+							<NumberInput
+								classNames={{ label: classes.fieldDescription }}
+								placeholder="Size in GiB"
+								key="size"
+								value={localSizeValue}
+								onChange={onChangeHandler}
+								min={0}
+								suffix=" GiB"
+								style={{ flex: 1 }}
+							/>
+						) : !hotTierNotSet ? (
+							<DisabledInput size={humanizedSize} />
+						) : null}
 						<Text
 							className={classes.fieldDescription}
 							ta="end"
 							style={{ ...(isDirty || hotTierNotSet ? { display: 'none' } : {}) }}>
-							{usedSize} used | {availableSize} available
+							{humanizedUsedSize} used | {humanizedAvailableSize} available
 						</Text>
 					</Stack>
 					<Stack
@@ -282,6 +295,10 @@ const HotTierConfig = (props: {
 			</Stack>
 		</Stack>
 	);
+};
+
+const DisabledInput = (props: { size: string }) => {
+	return <TextInput classNames={{ label: classes.fieldDescription }} disabled value={props.size} style={{ flex: 1 }} />;
 };
 
 const Settings = (props: {
