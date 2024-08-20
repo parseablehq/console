@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import _ from 'lodash';
 
 export const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 
@@ -29,7 +30,7 @@ export const parseLogData = (value?: any, columnName?: string) => {
 	}
 
 	if (value) {
-		return value;
+		return _.toString(value);
 	}
 
 	return 'N/A';
