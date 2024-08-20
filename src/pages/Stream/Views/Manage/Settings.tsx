@@ -211,6 +211,8 @@ const HotTierConfig = (props: {
 		return setShowDeleteModal(true);
 	}, []);
 
+	if (hotTierNotSet && streamType === 'Internal') return null;
+
 	return (
 		<Stack className={classes.fieldsContainer} style={{ border: 'none', gap: 16 }}>
 			<DeleteHotTierModal
