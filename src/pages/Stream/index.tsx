@@ -50,7 +50,7 @@ const Logs: FC = () => {
 	}, [currentStream]);
 
 	useEffect(() => {
-		if (!_.isEmpty(currentStream)) {
+		if (!_.isEmpty(currentStream) && view !== 'explore') {
 			fetchSchema();
 		}
 	}, [currentStream]);

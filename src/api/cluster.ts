@@ -10,7 +10,7 @@ export const getIngestorInfo = (domain_name: string | null, startTime: Date, end
 	const query = `SELECT * FROM pmeta where address = '${domain_name}' ORDER BY event_time DESC LIMIT 10 OFFSET 0`;
 
 	return Axios().post<IngestorQueryRecord[]>(
-		LOG_QUERY_URL,
+		LOG_QUERY_URL(),
 		{
 			query,
 			startTime,

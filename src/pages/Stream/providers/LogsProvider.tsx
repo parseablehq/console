@@ -4,7 +4,7 @@ import { FIXED_DURATIONS, FixedDuration } from '@/constants/timeConstants';
 import initContext from '@/utils/initContext';
 import dayjs, { Dayjs } from 'dayjs';
 import { addOrRemoveElement } from '@/utils';
-import { getPageSlice, makeHeadersFromSchema, makeHeadersfromData } from '../utils';
+import { getPageSlice } from '../utils';
 import _ from 'lodash';
 import { sanitizeCSVData } from '@/utils/exportHelpers';
 
@@ -260,7 +260,7 @@ type LogsStoreReducers = {
 	getCleanStoreForRefetch: (store: LogsStore) => ReducerOutput;
 
 	// data reducers
-	setData: (store: LogsStore, data: Log[], schema: LogStreamSchemaData | null, jqFilteredData?: Log[]) => ReducerOutput;
+	setLogData: (store: LogsStore, data: Log[], headers: string[], jqFilteredData?: Log[]) => ReducerOutput;
 	setStreamSchema: (store: LogsStore, schema: LogStreamSchemaData) => ReducerOutput;
 	applyCustomQuery: (
 		store: LogsStore,
@@ -272,7 +272,6 @@ type LogsStoreReducers = {
 	getUniqueValues: (data: Log[], key: string) => string[];
 	makeExportData: (data: Log[], headers: string[], type: string) => Log[];
 	setRetention: (store: LogsStore, retention: { description: string; duration: string }) => ReducerOutput;
-	setTableHeaders: (store: LogsStore, schema: LogStreamSchemaData) => ReducerOutput;
 
 	setCleanStoreForStreamChange: (store: LogsStore) => ReducerOutput;
 	updateSavedFilterId: (store: LogsStore, savedFilterId: string | null) => ReducerOutput;
@@ -501,7 +500,7 @@ const filterAndSortData = (
 					return doesMatch ? [...acc, d] : acc;
 				},
 				[],
-			) as Log[]);
+		  ) as Log[]);
 	const sortedData = _.orderBy(filteredData, [sortKey], [sortOrder]);
 	return sortedData;
 };
@@ -522,37 +521,17 @@ const searchAndSortData = (opts: { searchValue: string }, data: Log[]) => {
 					return doesMatch ? [...acc, d] : acc;
 				},
 				[],
-			) as Log[]);
+		  ) as Log[]);
 	const sortedData = _.orderBy(filteredData, [defaultSortKey], [defaultSortOrder]);
 	return sortedData;
-};
-
-const setTableHeaders = (store: LogsStore, schema: LogStreamSchemaData) => {
-	const { data: existingData, custQuerySearchState, tableOpts } = store;
-	const { filteredData } = existingData;
-	const newHeaders =
-		filteredData && custQuerySearchState.isQuerySearchActive
-			? makeHeadersfromData(filteredData)
-			: makeHeadersFromSchema(schema);
-	return {
-		tableOpts: {
-			...tableOpts,
-			headers: newHeaders,
-		},
-	};
 };
 
 export const isJqSearch = (value: string) => {
 	return _.startsWith(value, 'jq .');
 };
 
-const setData = (store: LogsStore, data: Log[], schema: LogStreamSchemaData | null, jqFilteredData?: Log[]) => {
-	const {
-		data: existingData,
-		tableOpts,
-		custQuerySearchState: { isQuerySearchActive, activeMode },
-		viewMode,
-	} = store;
+const setLogData = (store: LogsStore, data: Log[], headers: string[], jqFilteredData?: Log[]) => {
+	const { data: existingData, tableOpts, viewMode } = store;
 	const isJsonView = viewMode === 'json';
 	const currentPage = tableOpts.currentPage === 0 ? 1 : tableOpts.currentPage;
 	const filteredData =
@@ -562,14 +541,11 @@ const setData = (store: LogsStore, data: Log[], schema: LogStreamSchemaData | nu
 				: searchAndSortData({ searchValue: tableOpts.instantSearchValue }, data)
 			: filterAndSortData(tableOpts, data);
 	const newPageSlice = filteredData && getPageSlice(currentPage, tableOpts.perPage, filteredData);
-	const newHeaders =
-		isQuerySearchActive && activeMode === 'sql' ? makeHeadersfromData(data) : makeHeadersFromSchema(schema);
-
 	return {
 		tableOpts: {
 			...store.tableOpts,
 			...(newPageSlice ? { pageData: newPageSlice } : {}),
-			...(!_.isEmpty(newHeaders) ? { headers: newHeaders } : {}),
+			headers,
 			currentPage,
 			totalPages: getTotalPages(filteredData, tableOpts.perPage),
 		},
@@ -915,7 +891,7 @@ const logsStoreReducers: LogsStoreReducers = {
 	toggleDeleteModal,
 	toggleDisabledColumns,
 	togglePinnedColumns,
-	setData,
+	setLogData,
 	setStreamSchema,
 	setPerPage,
 	setCurrentPage,
@@ -933,7 +909,6 @@ const logsStoreReducers: LogsStoreReducers = {
 	setRetention,
 	setCleanStoreForStreamChange,
 	toggleSideBar,
-	setTableHeaders,
 	updateSavedFilterId,
 	setInstantSearchValue,
 	applyInstantSearch,
