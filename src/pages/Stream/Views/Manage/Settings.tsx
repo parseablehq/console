@@ -245,9 +245,9 @@ const HotTierConfig = (props: {
 								suffix=" GiB"
 								style={{ flex: 1 }}
 							/>
-						) : (
-							<Text ta="end">{humanizedSize}</Text>
-						)}
+						) : !hotTierNotSet ? (
+							<DisabledInput size={humanizedSize} />
+						) : null}
 						<Text
 							className={classes.fieldDescription}
 							ta="end"
@@ -293,6 +293,10 @@ const HotTierConfig = (props: {
 			</Stack>
 		</Stack>
 	);
+};
+
+const DisabledInput = (props: { size: string }) => {
+	return <TextInput classNames={{ label: classes.fieldDescription }} disabled value={props.size} style={{ flex: 1 }} />;
 };
 
 const Settings = (props: {
