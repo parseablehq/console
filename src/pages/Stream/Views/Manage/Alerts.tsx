@@ -442,13 +442,16 @@ const AlertForm = (props: { form: AlertsFormType }) => {
 	const { rule } = form.getValues();
 	const { type } = rule;
 	useEffect(() => {
-		if (type === 'column' && !_.isEmpty(rule.config)) {
-			form.setFieldValue('rule.config', rule.config);
-		} else {
-			form.setFieldValue('rule.config', defaultColumnTypeConfig);
+		if (type === columnRuleType) {
+			if (!_.isEmpty(rule.config)) {
+				form.setFieldValue('rule.config', rule.config);
+			} else {
+				form.setFieldValue('rule.config', defaultColumnTypeConfig);
+			}
+		} else if (type === compositeRuleType) {
+			console.log(type);
 		}
 	}, [type]);
-
 	return (
 		<Stack gap={8}>
 			<TextInput
@@ -478,6 +481,7 @@ const AlertForm = (props: { form: AlertsFormType }) => {
 						label="Config"
 						placeholder="Config"
 						key="config"
+						{...form.getInputProps('rule.config')}
 					/>
 				)}
 			</Stack>
