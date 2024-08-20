@@ -92,14 +92,16 @@ const LimitControl: FC = () => {
 	);
 };
 
-const Footer = (props: { loaded: boolean; isLoading: boolean; hasNoData: boolean }) => {
+const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: boolean }) => {
+	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const [filteredData] = useLogsStore((store) => store.data.filteredData);
 	const { totalPages, currentOffset, currentPage, perPage, headers, totalCount } = tableOpts;
+
 	const onPageChange = useCallback((page: number) => {
 		setLogsStore((store) => setPageAndPageData(store, page));
 	}, []);
-	const [currentStream] = useAppStore((store) => store.currentStream);
+
 	const pagination = usePagination({ total: totalPages ?? 1, initialPage: 1, onChange: onPageChange });
 	const onChangeOffset = useCallback(
 		(key: 'prev' | 'next') => {
@@ -137,7 +139,7 @@ const Footer = (props: { loaded: boolean; isLoading: boolean; hasNoData: boolean
 			<Stack w="100%" justify="center" align="flex-start">
 				<TotalLogsCount
 					hasTableLoaded={props.loaded}
-					isFetchingCount={props.isLoading}
+					isFetchingCount={props.isFetchingCount}
 					isTableEmpty={props.hasNoData}
 				/>
 			</Stack>

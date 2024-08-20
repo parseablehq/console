@@ -1,9 +1,12 @@
-import { getQueryResultWithHeaders } from '@/api/query';
+import { getQueryResultWithHeaders, getQueryResult } from '@/api/query';
 import { LogsQuery } from '@/@types/parseable/api/query';
 import { notifications } from '@mantine/notifications';
 import { isAxiosError, AxiosError } from 'axios';
 import { IconCheck, IconFileAlert } from '@tabler/icons-react';
-import { useMutation } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
+import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
+import _ from 'lodash';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 type QueryData = {
 	logsQuery: LogsQuery;
@@ -47,4 +50,43 @@ export const useQueryResult = () => {
 	});
 
 	return { fetchQueryMutation };
+};
+
+export const useFetchCount = () => {
+	const [currentStream] = useAppStore((store) => store.currentStream);
+	const { setTotalCount } = logsStoreReducers;
+	const [custQuerySearchState] = useLogsStore((store) => store.custQuerySearchState);
+	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
+	const { isQuerySearchActive, custSearchQuery } = custQuerySearchState;
+
+	const defaultQuery = `select count(*) as count from ${currentStream}`;
+	const query = isQuerySearchActive
+		? custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM')
+		: defaultQuery;
+
+	const logsQuery = {
+		streamName: currentStream || '',
+		startTime: timeRange.startTime,
+		endTime: timeRange.endTime,
+		access: [],
+	};
+	const {
+		isLoading: isCountLoading,
+		isRefetching: isCountRefetching,
+		refetch: refetchCount,
+	} = useQuery(['fetchCount', logsQuery], () => getQueryResult(logsQuery, query), {
+		onSuccess: (resp) => {
+			const count = _.first(resp.data)?.count;
+			typeof count === 'number' && setLogsStore((store) => setTotalCount(store, count));
+		},
+		refetchOnWindowFocus: false,
+		retry: false,
+		enabled: currentStream !== null,
+	});
+
+	return {
+		isCountLoading,
+		isCountRefetching,
+		refetchCount,
+	};
 };
