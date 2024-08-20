@@ -74,7 +74,7 @@ const Row = (props: {
 				{_.isObject(log) ? (
 					_.map(headers, (header, index) => (
 						<Item
-							header={header}
+							header={_.toString(log[header]) && header}
 							key={index}
 							value={_.toString(log[header])}
 							highlight={disableHighlight ? false : shouldHighlight(log[header])}
