@@ -441,10 +441,11 @@ const AlertForm = (props: { form: AlertsFormType }) => {
 	const { form } = props;
 	const { rule } = form.getValues();
 	const { type } = rule;
+	const existingConfig = rule.config;
 	useEffect(() => {
 		if (type === columnRuleType) {
-			if (!_.isEmpty(rule.config)) {
-				form.setFieldValue('rule.config', rule.config);
+			if (!_.isEmpty(existingConfig)) {
+				form.setFieldValue('rule.config', existingConfig);
 			} else {
 				form.setFieldValue('rule.config', defaultColumnTypeConfig);
 			}
