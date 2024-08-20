@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useStreamStore } from '../../providers/StreamProvider';
 import { IconCheck, IconTrash, IconX } from '@tabler/icons-react';
-import { sanitizeBytes } from '@/utils/formatBytes';
+import { sanitizeBytes, convertGibToBytes } from '@/utils/formatBytes';
 
 const Header = () => {
 	return (
@@ -113,12 +113,6 @@ function extractNumber(value: string | null) {
 	const match = value.match(regex);
 
 	return match ? parseFloat(match[0]) : 0;
-}
-
-function convertGibToBytes(value: number) {
-	if (typeof value !== 'number') return;
-
-	return value * Math.pow(1024, 3);
 }
 
 const DeleteHotTierModal = (props: {
@@ -243,8 +237,8 @@ const HotTierConfig = (props: {
 						{streamType === 'UserDefined' ? (
 							<NumberInput
 								classNames={{ label: classes.fieldDescription }}
-								placeholder="Duration in days"
-								key="duration"
+								placeholder="Size in GiB"
+								key="size"
 								value={localSizeValue}
 								onChange={onChangeHandler}
 								min={0}
