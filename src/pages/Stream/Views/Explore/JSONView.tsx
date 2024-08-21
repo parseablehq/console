@@ -72,14 +72,18 @@ const Row = (props: {
 		<Stack style={{ flexDirection: 'row' }} className={classes.rowContainer} gap={0}>
 			<span>
 				{_.isObject(log) ? (
-					_.map(headers, (header, index) => (
-						<Item
-							header={_.toString(log[header]) && header}
-							key={index}
-							value={_.toString(log[header])}
-							highlight={disableHighlight ? false : shouldHighlight(log[header])}
-						/>
-					))
+					_.map(headers, (header, index) => {
+						const value = _.toString(log[header]);
+						const validHeader = value ? header : null;
+						return (
+							<Item
+								header={validHeader}
+								key={index}
+								value={value}
+								highlight={disableHighlight ? false : shouldHighlight(log[header])}
+							/>
+						);
+					})
 				) : (
 					<Item
 						header={null}
