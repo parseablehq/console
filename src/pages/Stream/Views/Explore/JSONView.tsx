@@ -67,17 +67,21 @@ const Row = (props: {
 	shouldHighlight: (val: number | string | Date | null) => boolean;
 }) => {
 	const { log, headers, disableHighlight, shouldHighlight } = props;
+	const validHeaders = headers.filter((header) => {
+		const value = log[header] === null ? 'null' : _.toString(log[header]);
+		return !_.isEmpty(value) && header;
+	});
 
 	return (
 		<Stack style={{ flexDirection: 'row' }} className={classes.rowContainer} gap={0}>
 			<span>
 				{_.isObject(log) ? (
-					_.map(headers, (header, index) => {
-						const value = _.toString(log[header]);
-						const validHeader = value ? header : null;
+					_.map(validHeaders, (header, index) => {
+						const value = log[header] === null ? 'null' : _.toString(log[header]);
+
 						return (
 							<Item
-								header={validHeader}
+								header={header}
 								key={index}
 								value={value}
 								highlight={disableHighlight ? false : shouldHighlight(log[header])}
