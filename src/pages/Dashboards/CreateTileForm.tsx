@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Select, Stack, Text, TextInput } from '@mantine/core';
+import { Box, Button, Divider, ScrollArea, Select, Stack, Text, TextInput } from '@mantine/core';
 import classes from './styles/Form.module.css';
 import { useForm } from '@mantine/form';
 import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
@@ -163,21 +163,23 @@ const DataPreview = (props: { form: TileFormType }) => {
 	return (
 		<Stack className={classes.sectionContainer} gap={0}>
 			<SectionHeader title="Data Preview" />
-			<Stack ref={containerRef} style={{ flex: 1, overflow: 'scroll' }}>
-				<Stack style={{ width: containerSize.width, height: containerSize.height }}>
-					{errorMsg ? (
-						<WarningView msg={errorMsg} />
-					) : (
-						<CodeHighlight
-							code={JSON.stringify(data?.records || [], null, 2)}
-							style={{ background: 'white' }}
-							language="json"
-							styles={{ copy: { marginLeft: '550px' } }}
-							copyLabel="Copy Records"
-						/>
-					)}
+			<ScrollArea style={{flex: 1}}>
+				<Stack ref={containerRef} style={{ flex: 1 }}>
+					<Stack style={{ width: containerSize.width, height: containerSize.height }}>
+						{errorMsg ? (
+							<WarningView msg={errorMsg} />
+						) : (
+							<CodeHighlight
+								code={JSON.stringify(data?.records || [], null, 2)}
+								style={{ background: 'white' }}
+								language="json"
+								styles={{ copy: { marginLeft: '550px' } }}
+								copyLabel="Copy Records"
+							/>
+						)}
+					</Stack>
 				</Stack>
-			</Stack>
+			</ScrollArea>
 		</Stack>
 	);
 };
@@ -408,10 +410,10 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 					)}
 				</Box>
 				<Stack ref={containerRef} style={{ flex: 1 }}>
-					<Stack style={{ maxHeight: `${initialHeight * 0.4}px`, overflowY: 'auto' }}>
-						<SchemaList currentStream={localStream} fields={fields} />
-					</Stack>
-					<Stack style={{ maxHeight: `${initialHeight * 0.5}px`, flex: 1 }}>
+						<Stack style={{ maxHeight: `${initialHeight * 0.5}px` }}>
+							<SchemaList currentStream={localStream} fields={fields} />
+						</Stack>
+					<Stack style={{ maxHeight: `${initialHeight * 0.4}px`, flex: 1 }}>
 						<Editor
 							defaultLanguage="sql"
 							value={query}
@@ -523,7 +525,7 @@ const defaultVizOpts = {
 	color_config: [],
 	tick_config: [],
 	circular_chart_config: {},
-	graph_config: {x_key: '', y_keys: []},
+	graph_config: { x_key: '', y_keys: [] },
 };
 
 const defaultFormOpts = {

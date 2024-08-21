@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Button, CloseIcon, Modal, Select, Stack, Text } from '@mantine/core';
+import { ActionIcon, Box, Button, CloseIcon, Modal, ScrollArea, Select, Stack, Text } from '@mantine/core';
 import classes from './styles/VizEditor.module.css';
 import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
 import { useCallback, useEffect } from 'react';
@@ -331,8 +331,14 @@ const GraphConfig = (props: { form: TileFormType }) => {
 
 	const y_keys = _.get(graph_config, 'y_keys', []);
 	const addAxes = useCallback(() => {
-		_.head(fields) && props.form.insertListItem(yKeysPath, _.head(fields));
-	}, [fields, props.form]);
+		if (!_.head(fields)) return;
+
+		if (_.isEmpty(y_keys)) {
+			props.form.setFieldValue(yKeysPath, [_.head(fields)]);
+		} else {
+			props.form.insertListItem(yKeysPath, _.head(fields));
+		}
+	}, [fields, props.form, y_keys]);
 
 	useEffect(() => {
 		if (_.isEmpty(y_keys)) {
@@ -388,7 +394,7 @@ const ChartConfig = (props: { form: TileFormType }) => {
 const Config = (props: { form: TileFormType }) => {
 	return (
 		<Stack className={classes.configContainer}>
-			<Stack gap={28} style={{ overflowY: 'scroll' }}>
+			<Stack gap={28}>
 				<BasicConfig form={props.form} />
 				<ChartConfig form={props.form} />
 			</Stack>
@@ -420,8 +426,10 @@ const VizEditorModal = (props: { form: TileFormType }) => {
 					</Stack>
 				</Stack>
 				<Stack className={classes.divider} />
-				<Stack style={{ justifyContent: 'space-between', overflow: 'scroll', flex: 1, height: 'auto' }}>
-					<Config form={form} />
+				<Stack style={{ justifyContent: 'space-between', flex: 1, height: 'auto' }}>
+					<ScrollArea style={{ flex: 1 }} offsetScrollbars>
+						<Config form={form} />
+					</ScrollArea>
 					<Stack style={{ alignItems: 'flex-end', margin: '1rem', marginBottom: '1.5rem', marginRight: '0.5rem' }}>
 						<Button onClick={closeVizModal}>Done</Button>
 					</Stack>

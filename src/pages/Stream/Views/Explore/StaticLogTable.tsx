@@ -98,6 +98,7 @@ const Columns = (props: { containerRefs: SectionRefs }) => {
 			viewportRef={rightSectionRef}
 			onScrollPositionChange={({ y }) => {
 				if (activeSectionRef.current === 'left') return;
+
 				leftSectionRef.current!.scrollTop = y;
 			}}>
 			<Box className={tableStyles.tableContainer}>

@@ -1,4 +1,4 @@
-import { Stack, Table, Text } from '@mantine/core';
+import { ScrollArea, Stack, Table, Text } from '@mantine/core';
 import { TickConfig, TileQueryResponse, UnitType } from '@/@types/parseable/api/dashboards';
 import classes from './styles/Table.module.css';
 import _ from 'lodash';
@@ -58,21 +58,23 @@ const TableViz = (props: { data: TileQueryResponse; tick_config: TickConfig[] })
 	const hasNoData = _.isEmpty(records) || _.isEmpty(fields);
 
 	return (
-		<Stack ref={containerRef} style={{ flex: 1, width: '100%', overflow: 'auto' }}>
-			<Stack style={{ overflow: 'scroll', height: initialHeight }}>
+		<Stack ref={containerRef} style={{ flex: 1, width: '100%' }}>
+			<Stack style={{ height: initialHeight }}>
 				{hasNoData ? (
 					<NoDataView />
 				) : (
-					<Table
-						striped
-						highlightOnHover
-						stickyHeader
-						classNames={{ thead: classes.thead, tbody: classes.tbody, table: classes.table }}
-						data={{
-							head: fields,
-							body: rowData,
-						}}
-					/>
+					<ScrollArea>
+						<Table
+							striped
+							highlightOnHover
+							stickyHeader
+							classNames={{ thead: classes.thead, tbody: classes.tbody, table: classes.table }}
+							data={{
+								head: fields,
+								body: rowData,
+							}}
+						/>
+					</ScrollArea>
 				)}
 			</Stack>
 		</Stack>

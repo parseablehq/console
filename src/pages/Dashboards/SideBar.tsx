@@ -1,5 +1,5 @@
 import { DASHBOARDS_SIDEBAR_WIDTH } from '@/constants/theme';
-import { Button, Stack, Text } from '@mantine/core';
+import { Button, ScrollArea, Stack, Text } from '@mantine/core';
 import classes from './styles/sidebar.module.css';
 import { IconPlus } from '@tabler/icons-react';
 import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
@@ -47,18 +47,20 @@ const DashboardList = (props: { updateTimeRange: (dashboard: Dashboard) => void 
 	);
 
 	return (
-		<Stack style={{ flex: 1, overflowY: 'scroll' }}>
-			{_.map(dashboards, (dashboard) => {
-				return (
-					<DashboardListItem
-						key={dashboard.dashboard_id}
-						{...dashboard}
-						activeDashboardId={activeDashboardId}
-						onSelect={onSelectDashboardId}
-					/>
-				);
-			})}
-		</Stack>
+		<ScrollArea scrollbars="y">
+			<Stack style={{ marginBottom: '1rem' }}>
+				{_.map(dashboards, (dashboard) => {
+					return (
+						<DashboardListItem
+							key={dashboard.dashboard_id}
+							{...dashboard}
+							activeDashboardId={activeDashboardId}
+							onSelect={onSelectDashboardId}
+						/>
+					);
+				})}
+			</Stack>
+		</ScrollArea>
 	);
 };
 

@@ -1,8 +1,8 @@
 .thead {
     th {
-        font-weight: 600;
+        font-weight: 500;
         font-size: 0.65rem;
-        padding: 0.6rem;
+        padding: 0.5rem;
         min-width: 5rem;
         max-width: 10rem;
         white-space: nowrap;
@@ -28,6 +28,7 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        font-size: 0.62rem;
     }
 }
 
