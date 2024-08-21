@@ -29,7 +29,7 @@ const useDashboardForm = (opts: FormOpts) => {
 		initialValues: opts,
 		validate: {
 			name: (val) => (_.isEmpty(val) ? 'Name cannot be empty' : null),
-			description: (val) => (_.isEmpty(val) ? 'Description cannot be empty' : null),
+			description: (_val) => (null),
 		},
 		validateInputOnChange: true,
 		validateInputOnBlur: true,
@@ -120,7 +120,7 @@ const CreateDashboardModal = () => {
 					/>
 					<TextInput
 						classNames={{ label: classes.fieldTitle }}
-						label="Description"
+						label="Description (Optional)"
 						key="description"
 						{...form.getInputProps('description')}
 					/>

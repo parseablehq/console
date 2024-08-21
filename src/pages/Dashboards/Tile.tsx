@@ -194,7 +194,7 @@ const Tile = (props: { id: string }) => {
 		const shouldNotify = false;
 		const santizedQuery = sanitiseSqlString(tile.query, shouldNotify, 100);
 		fetchTileData({ query: santizedQuery, startTime: timeRange.startTime, endTime: timeRange.endTime });
-	}, [timeRange]);
+	}, [timeRange.startTime, timeRange.endTime]);
 
 	// const toggleJsonView = useCallback(() => {
 	// 	return setShowJson((prev) => !prev);

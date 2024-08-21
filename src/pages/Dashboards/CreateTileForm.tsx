@@ -194,7 +194,7 @@ const useTileForm = (opts: {
 		initialValues: formOpts,
 		validate: {
 			name: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
-			description: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
+			description: (_val) => null,
 			query: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
 			isQueryValidated: (val) => (val === true ? null : 'Query not validated'),
 			dashboardId: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
@@ -482,7 +482,7 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 			<Stack style={{ padding: '0 1rem' }}>
 				<TextInput
 					classNames={{ label: classes.fieldTitle }}
-					label="Description"
+					label="Description (Optional)"
 					key="description"
 					{...form.getInputProps('description')}
 				/>

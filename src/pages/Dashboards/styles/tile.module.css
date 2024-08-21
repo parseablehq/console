@@ -12,17 +12,18 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    height: 3.4rem;
 }
 
 .tileTitle {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 500;
     flex: 1;
 }
 
 .tileDescription {
     color: var(--mantine-color-gray-6);
-    font-size: 0.7rem;
+    font-size: 0.65rem;
 }
 
 .tileContainer {

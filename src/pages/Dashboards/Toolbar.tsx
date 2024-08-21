@@ -165,7 +165,7 @@ const Toolbar = (props: { layoutRef: React.MutableRefObject<ReactGridLayout.Layo
 	return (
 		<Stack
 			className={classes.toolbarContainer}
-			style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+			style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', height: '3.2rem' }}
 			w="100%">
 			<DeleteDashboardModal />
 			<Stack gap={0}>

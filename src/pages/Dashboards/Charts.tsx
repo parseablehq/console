@@ -234,7 +234,6 @@ const Pie = (props: { data: CircularChartData; unit: UnitType }) => {
 			w="100%"
 			withTooltip
 			tooltipDataSource="all"
-			labelsType="percent"
 		/>
 	);
 };
