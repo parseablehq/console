@@ -8,7 +8,7 @@ import { DASHBOARDS_SIDEBAR_WIDTH, NAVBAR_WIDTH } from '@/constants/theme';
 import classes from './styles/DashboardView.module.css';
 import { useDashboardsStore, dashboardsStoreReducers, assignOrderToTiles } from './providers/DashboardsProvider';
 import _ from 'lodash';
-import { IconChartBar } from '@tabler/icons-react';
+import { IconLayoutDashboard } from '@tabler/icons-react';
 import { useCallback, useRef } from 'react';
 import { makeExportClassName } from '@/utils/exportImage';
 import { useDashboardsQuery } from '@/hooks/useDashboards';
@@ -121,7 +121,7 @@ const NoDashboardsView = () => {
 	return (
 		<Stack className={classes.noDashboardsContainer} gap={4}>
 			<Stack className={classes.dashboardIconContainer}>
-				<IconChartBar className={classes.dashboardIcon} stroke={1.2} />
+				<IconLayoutDashboard className={classes.dashboardIcon} stroke={1.2} />
 			</Stack>
 			<Text className={classes.noDashboardsViewTitle}>Create dashboard</Text>
 			<Text className={classes.noDashboardsViewDescription}>
@@ -144,7 +144,7 @@ const NoTilesView = () => {
 	return (
 		<Stack className={classes.noDashboardsContainer} gap={4}>
 			<Stack className={classes.dashboardIconContainer}>
-				<IconChartBar className={classes.dashboardIcon} stroke={1.2} />
+				<IconLayoutDashboard className={classes.dashboardIcon} stroke={1.2} />
 			</Stack>
 			<Text className={classes.noDashboardsViewTitle}>Add tiles to the dashboard</Text>
 			<Text className={classes.noDashboardsViewDescription}>

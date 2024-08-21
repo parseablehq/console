@@ -367,7 +367,7 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 						onChange={onStreamSelect}
 						classNames={{ label: classes.fieldTitle }}
 						key="stream"
-						placeholder="Select Schema"
+						placeholder="Select Stream"
 					/>
 				</Stack>
 			</Stack>
@@ -479,6 +479,7 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 					key="dashboardId"
 					{...form.getInputProps('dashboardId')}
 					style={{ width: '50%' }}
+					disabled
 				/>
 			</Stack>
 			<Stack style={{ padding: '0 1rem' }}>

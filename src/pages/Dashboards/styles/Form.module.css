@@ -27,7 +27,6 @@
     border: 1px solid var(--mantine-color-gray-2);
     border-radius: 0.2rem;
     padding: 1rem;
-    overflow-y: scroll;
 }
 
 .schemaListContainer {
