@@ -24,14 +24,15 @@ export const scrollTo = (opts?: ScrollToOptions) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const parseLogData = (value?: any, columnName?: string) => {
 	const dateColumnNames = ['date', 'datetime', 'time', 'timestamp', 'p_timestamp'];
-	const stringifiedValue = _.toString(value);
 
 	if (columnName && dateColumnNames.includes(columnName) && dayjs(value).isValid()) {
 		return dayjs(value).utc(true).format('DD/MM/YYYY HH:mm:ss');
 	}
 
-	if (!_.isEmpty(stringifiedValue)) {
-		return stringifiedValue;
+	if (typeof value === 'boolean' || typeof value === 'number') return _.toString(value);
+
+	if (value) {
+		return value;
 	}
 
 	return 'N/A';
