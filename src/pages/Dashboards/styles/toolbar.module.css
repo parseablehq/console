@@ -1,0 +1,71 @@
+.editLayoutBtn {
+    color: var(--mantine-color-gray-7);
+    border: 1px #e9ecef solid;
+    border-radius: rem(8px);
+    font-size: 0.65rem;
+
+    &:hover {
+        color: black;
+        background-color: white;
+    }
+
+    &.active {
+        color: white;
+
+        &:hover {
+            background-color: var(--mantine-color-brandPrimary-4);
+            color: white;
+        }
+    }
+}
+
+.addTileBtn {
+    background-color: white;
+    color: var(--mantine-color-gray-7);
+    border: 1px #e9ecef solid;
+    border-radius: rem(8px);
+    font-size: 0.65rem;
+
+    &:hover {
+        color: black;
+    }
+}
+
+.addTileBtn:hover {
+    background-color: #E0E0E0;
+}
+
+.editLayoutBtn:hover {
+    background-color: #E0E0E0;
+}
+
+.toolbarContainer {
+    padding: 0.4rem 0.8rem;
+    border-bottom: 1px solid var(--mantine-color-gray-1);
+}
+
+.dashboardTitle {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.dashboardDescription {
+    font-size: 0.7rem;
+    color: var(--mantine-color-gray-6);
+}
+
+.editIcon {
+    padding: 0.25rem;
+    cursor: pointer;
+    border-radius: 50%;
+    margin-left: 0.2rem;
+
+    &:hover {
+        background-color: var(--mantine-color-gray-1);
+    }
+}
+
+.deleteWarningText {
+    font-size: 0.7rem;
+    color: var(--mantine-color-gray-6);
+}

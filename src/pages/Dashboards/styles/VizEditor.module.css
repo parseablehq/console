@@ -1,0 +1,43 @@
+.modalTitle {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.container {
+    flex-direction: row;
+    gap: 20;
+    height: calc(100vh - 10rem)
+}
+
+.vizContainer {
+    justify-content: center;
+    height: 100%;
+}
+
+.divider {
+    border: 0.5px solid var(--mantine-color-gray-2);
+}
+
+.fieldTitle {
+    font-weight: 500;
+    font-size: 0.7rem;
+}
+
+.warningText {
+    color: var(--mantine-color-gray-5);
+    font-size: 0.75rem;
+}
+
+.warningIcon {
+    color: var(--mantine-color-gray-5);
+}
+
+.tableContainer {
+    border: 1px solid var(--mantine-color-gray-2);
+    border-radius: 0.2rem;
+}
+
+.chartContainer {
+    border: 1px solid var(--mantine-color-gray-2);
+    border-radius: 0.2rem;
+}

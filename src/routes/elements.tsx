@@ -8,11 +8,25 @@ import { LogsProvider } from '@/pages/Stream/providers/LogsProvider';
 import { FilterProvider } from '@/pages/Stream/providers/FilterProvider';
 import { StreamProvider } from '@/pages/Stream/providers/StreamProvider';
 import { ClusterProvider } from '@/pages/Systems/providers/ClusterProvider';
+import { DashbaordsProvider } from '@/pages/Dashboards/providers/DashboardsProvider';
+import Dashboards from '@/pages/Dashboards';
 
 export const HomeElement: FC = () => {
 	return (
 		<SuspensePage>
 			<Home />
+		</SuspensePage>
+	);
+};
+
+export const DashboardsElement: FC = () => {
+	return (
+		<SuspensePage>
+			<LogsProvider>
+				<DashbaordsProvider>
+					<Dashboards />
+				</DashbaordsProvider>
+			</LogsProvider>
 		</SuspensePage>
 	);
 };

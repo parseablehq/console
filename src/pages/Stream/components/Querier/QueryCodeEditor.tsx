@@ -175,7 +175,7 @@ const QueryCodeEditor: FC<{
 	);
 };
 
-const SchemaList = (props: { currentStream: string | null; fields: Field[] }) => {
+export const SchemaList = (props: { currentStream: string | null; fields: Field[] }) => {
 	const schemaListDivRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
 	const [schemaDivHeight, setSchemaDivHeight] = useState<number>(0);
 	const [scrollPosition, onScrollPositionChange] = useState({ x: 0, y: 0 });
@@ -184,6 +184,7 @@ const SchemaList = (props: { currentStream: string | null; fields: Field[] }) =>
 		const height = schemaListDivRef.current && schemaListDivRef.current.offsetHeight;
 		setSchemaDivHeight(height ? height : 0);
 	}, []);
+
 	const { currentStream, fields } = props;
 	if (!fields || fields.length === 0) return null;
 
