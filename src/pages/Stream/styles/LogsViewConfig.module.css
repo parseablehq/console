@@ -1,0 +1,80 @@
+.container {
+    border: 1px solid var(--mantine-color-gray-2);
+    border-top: none;
+    border-left: none;
+}
+
+.headerContainer {
+    border-top: none;
+    flex-direction: row;
+}
+
+.headerItem {
+    padding: 0.5rem;
+    width: 50%;
+    align-items: center;
+    cursor: pointer;
+    border-bottom: 1px solid var(--mantine-color-gray-2);
+
+    &.activeHeader {
+        border-bottom: 2px solid var(--mantine-color-brandPrimary-3);
+    }
+}
+
+.headerItemText {
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.schemaItemContainer {
+    flex-direction: row;
+    padding: 0.4rem 0.5rem;
+    margin: 0 0.5rem;
+    border-radius: 0.2rem;
+
+    .fieldName {
+        width: 50%;
+
+        .fieldNameText {
+            font-size: 0.65rem;
+        }
+    }
+
+    .fieldDataType {
+        width: 50%;
+        text-align: end;
+        color: var(--mantine-color-gray-6);
+
+        .fieldDataTypeText {
+            font-size: 0.65rem;
+        }
+    }
+
+    &:hover {
+        background-color: var(--mantine-color-gray-1);
+    }
+}
+
+.searchBarContainer {
+    padding: 0 0.5rem;
+}
+
+.columnItemContainer {
+    align-items: center;
+    flex-direction: row;
+    padding: 0.5rem 0.5rem;
+    margin: 0 0.5rem;
+    border-radius: 0.2rem;
+    .columnItemText {
+        font-size: 0.65rem;
+    }
+
+    .columnDragIcon {
+        color: var(--mantine-color-gray-6);
+        cursor: grab;
+    }
+
+    &:hover {
+        background-color: var(--mantine-color-gray-1);
+    }
+}
