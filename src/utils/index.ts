@@ -29,8 +29,6 @@ export const parseLogData = (value?: any, columnName?: string) => {
 		return dayjs(value).utc(true).format('DD/MM/YYYY HH:mm:ss');
 	}
 
-	if (typeof value === 'boolean' || typeof value === 'number') return _.toString(value);
-
 	if (value) {
 		return value;
 	}
