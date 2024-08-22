@@ -117,8 +117,7 @@
 	right: 2.25rem;
 	transition: transform 0.2s ease-in-out;
 	&:hover {
-		color: 'green';
-		transform: 'scale(1.03)';
+		transform: scale(1.03);
 		background-color: white;
 	}
 }
