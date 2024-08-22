@@ -6,6 +6,7 @@ import { Log } from '@/@types/parseable/api/query';
 import tableStyles from '../../styles/Logs.module.css';
 import { useLogsStore, logsStoreReducers, columnsToSkip } from '../../providers/LogsProvider';
 import { IconCopy, IconCheck } from '@tabler/icons-react';
+import _ from 'lodash';
 
 const { setSelectedLog } = logsStoreReducers;
 
@@ -84,6 +85,7 @@ const LogRow: FC<LogRowProps> = (props) => {
 				<tr key={logIndex} className={logIndex % 2 ? trStyle : trEvenStyle} onClick={() => onClick(log)}>
 					{columnsToShow.map((header, logSchemaIndex) => {
 						const parsedData = parseLogData(log[header], header);
+						const value = typeof parsedData === 'string' ? parsedData : _.toString(parsedData);
 						return (
 							<td
 								key={`${header}-${logSchemaIndex}`}
@@ -91,7 +93,7 @@ const LogRow: FC<LogRowProps> = (props) => {
 								onMouseEnter={() => handleMouseEnter(logIndex, logSchemaIndex)}
 								onMouseLeave={handleMouseLeave}>
 								<Group wrap="nowrap">
-									{parsedData}
+									{value}
 									{hoveredCell === `${logIndex}-${logSchemaIndex}` && (
 										<Stack
 											style={{
