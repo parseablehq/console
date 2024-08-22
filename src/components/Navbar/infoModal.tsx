@@ -41,6 +41,7 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 		aboutTextKey,
 		aboutTextValue,
 		aboutTextInnerBox,
+		actionBtnRed,
 	} = classes;
 
 	return (
@@ -84,7 +85,7 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 										component={'a'}
 										href="https://github.com/parseablehq/parseable/releases/latest"
 										target="_blank"
-										className={actionBtn}
+										className={actionBtnRed}
 										leftSection={<IconAlertCircle size={px('1.2rem')} stroke={1.5} />}>
 										Upgrade to latest version {getAboutData?.data.latestVersion}
 									</Button>
