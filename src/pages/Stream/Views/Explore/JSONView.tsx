@@ -68,8 +68,8 @@ const Row = (props: {
 }) => {
 	const { log, headers, disableHighlight, shouldHighlight } = props;
 	const validHeaders = headers.filter((header) => {
-		const value = log[header] === null ? 'null' : _.toString(log[header]);
-		return !_.isEmpty(value) && header;
+		const value = _.toString(log[header]);
+		return value && header;
 	});
 
 	return (
@@ -77,7 +77,7 @@ const Row = (props: {
 			<span>
 				{_.isObject(log) ? (
 					_.map(validHeaders, (header, index) => {
-						const value = log[header] === null ? 'null' : _.toString(log[header]);
+						const value = _.toString(log[header]);
 
 						return (
 							<Item
