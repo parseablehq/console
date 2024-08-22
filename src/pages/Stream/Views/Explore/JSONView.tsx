@@ -22,7 +22,9 @@ const Item = (props: { header: string | null; value: string | number | Date | nu
 	const { header, value, highlight } = props;
 	return (
 		<span className={classes.itemContainer}>
-			{props.header && <span className={classes.itemHeader}>{header}: </span>}
+			{props.header && (value || typeof value === 'boolean' || typeof value === 'number') && (
+				<span className={classes.itemHeader}>{header}: </span>
+			)}
 			<span className={classes.itemValue}>
 				{(value || typeof value === 'boolean' || typeof value === 'number') && (
 					<span style={{ background: highlight ? 'yellow' : 'transparent' }}>{value.toString()}</span>
@@ -70,16 +72,14 @@ const Row = (props: {
 	shouldHighlight: (val: number | string | Date | null) => boolean;
 }) => {
 	const { log, headers, disableHighlight, shouldHighlight } = props;
-	const validHeaders = headers.filter((header) => {
-		const value = _.toString(log[header]);
-		return value && header;
-	});
 
 	return (
 		<Stack style={{ flexDirection: 'row' }} className={classes.rowContainer} gap={0}>
 			<span>
 				{_.isObject(log) ? (
-					_.map(validHeaders, (header, index) => {
+					_.map(headers, (header, index) => {
+						if (!log[header]?.toString()) return;
+
 						return (
 							<Item
 								header={header}
