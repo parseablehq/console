@@ -18,12 +18,15 @@ import { IconCheck, IconCopy, IconSearch } from '@tabler/icons-react';
 
 const { setInstantSearchValue, applyInstantSearch, applyJqSearch } = logsStoreReducers;
 
-const Item = (props: { header: string | null; value: string; highlight: boolean }) => {
+const Item = (props: { header: string | null; value: string | number | Date | null; highlight: boolean }) => {
+	const { header, value, highlight } = props;
 	return (
 		<span className={classes.itemContainer}>
-			{props.header && <span className={classes.itemHeader}>{props.header}: </span>}
+			{props.header && <span className={classes.itemHeader}>{header}: </span>}
 			<span className={classes.itemValue}>
-				<span style={{ background: props.highlight ? 'yellow' : 'transparent' }}>{props.value}</span>{' '}
+				{(value || typeof value === 'boolean' || typeof value === 'number') && (
+					<span style={{ background: highlight ? 'yellow' : 'transparent' }}>{value.toString()}</span>
+				)}{' '}
 			</span>
 		</span>
 	);
@@ -77,13 +80,11 @@ const Row = (props: {
 			<span>
 				{_.isObject(log) ? (
 					_.map(validHeaders, (header, index) => {
-						const value = _.toString(log[header]);
-
 						return (
 							<Item
 								header={header}
 								key={index}
-								value={value}
+								value={log[header]}
 								highlight={disableHighlight ? false : shouldHighlight(log[header])}
 							/>
 						);
