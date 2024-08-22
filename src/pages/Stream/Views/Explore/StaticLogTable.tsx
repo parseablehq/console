@@ -104,7 +104,6 @@ const Columns = (props: { containerRefs: SectionRefs }) => {
 				<Table className={tableStyles.tableStyle}>
 					<Thead className={tableStyles.theadStyle}>
 						<TableHeader />
-						<ThColumnMenu />
 					</Thead>
 					<Tbody>
 						<LogRow rowArrows />
@@ -116,10 +115,10 @@ const Columns = (props: { containerRefs: SectionRefs }) => {
 };
 
 const TableHeader = (props: { isPinned?: boolean }) => {
-	const [{ headers, disabledColumns, pinnedColumns }] = useLogsStore((store) => store.tableOpts);
+	const [{ headers, orderedHeaders, disabledColumns, pinnedColumns }] = useLogsStore((store) => store.tableOpts);
 
-	if (headers.length > 0) {
-		return headers
+	if (orderedHeaders.length > 0) {
+		return orderedHeaders
 			.filter((tableHeader) => !disabledColumns.includes(tableHeader) && !skipFields.includes(tableHeader))
 			.filter((tableHeader) =>
 				props.isPinned ? pinnedColumns.includes(tableHeader) : !pinnedColumns.includes(tableHeader),
@@ -223,83 +222,6 @@ const ThColumnMenuItem: FC<ThColumnMenuItemProps> = (props) => {
 				</Menu.Item>
 			)}
 		</Draggable>
-	);
-};
-
-const ThColumnMenu: FC = () => {
-	const classes = tableStyles;
-	const { thColumnMenuBtn, thColumnMenuDropdown, thColumnMenuResetBtn } = classes;
-
-	const [{ pinnedColumns, disabledColumns, headers }, setLogsStore] = useLogsStore((store) => store.tableOpts);
-	const isColumnPinned = useCallback(
-		(column: string) => {
-			return pinnedColumns.includes(column);
-		},
-		[pinnedColumns],
-	);
-
-	const isColumnDisabled = useCallback(
-		(column: string) => {
-			return disabledColumns.includes(column);
-		},
-		[disabledColumns],
-	);
-
-	return (
-		<th>
-			<Menu withArrow withinPortal shadow="md" position="left-start" zIndex={2} closeOnItemClick={false}>
-				<Center>
-					<Menu.Target>
-						<ActionIcon className={thColumnMenuBtn}>
-							<IconSettings size={px('1.4rem')} />
-						</ActionIcon>
-					</Menu.Target>
-				</Center>
-				<DragDropContext
-					onDragEnd={({ destination, source }) => {
-						const tableHeader = headers[source.index];
-						const destIndex = destination?.index || 0;
-						// Disallow dragging pinned to unpinned area and vice versa
-						if (isColumnPinned(tableHeader) && destIndex >= pinnedColumns.length) return;
-						if (!isColumnPinned(tableHeader) && destIndex < pinnedColumns.length) return;
-
-						// reorderColumn(destIndex, source.index);
-					}}>
-					<Menu.Dropdown className={thColumnMenuDropdown}>
-						<Center>
-							<Button className={thColumnMenuResetBtn} variant="default" onClick={() => {}}>
-								Reset Columns
-							</Button>
-						</Center>
-						<Droppable droppableId="dnd-list" direction="vertical">
-							{(provided) => (
-								<div {...provided.droppableProps} ref={provided.innerRef}>
-									{headers.map((tableHeader, index) => {
-										return (
-											<ThColumnMenuItem
-												header={tableHeader}
-												index={index}
-												key={tableHeader}
-												isColumnDisabled={isColumnDisabled(tableHeader)}
-												toggleColumnPinned={(_columnName: string) => {
-													setLogsStore((store) => togglePinnedColumns(store, tableHeader));
-
-													// Place the field in correct order
-													// if (isPinned) reorderColumn(pinnedColumns.length - 1, index);
-													// else reorderColumn(0, index);
-												}}
-												isColumnPinned={isColumnPinned(tableHeader)}
-											/>
-										);
-									})}
-									{provided.placeholder}
-								</div>
-							)}
-						</Droppable>
-					</Menu.Dropdown>
-				</DragDropContext>
-			</Menu>
-		</th>
 	);
 };
 

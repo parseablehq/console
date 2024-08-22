@@ -205,10 +205,12 @@ type LogsStore = {
 		perPage: number;
 		currentOffset: number;
 		headers: string[];
+		orderedHeaders: string[]; 
 		sortKey: string;
 		sortOrder: 'asc' | 'desc';
 		filters: Record<string, string[]>;
 		instantSearchValue: string;
+		configViewType: 'schema' | 'columns';
 	};
 
 	data: LogQueryData;
@@ -279,6 +281,9 @@ type LogsStoreReducers = {
 	applyInstantSearch: (store: LogsStore) => ReducerOutput;
 	applyJqSearch: (store: LogsStore, jqFilteredData: any[]) => ReducerOutput;
 	onToggleView: (store: LogsStore, viewMode: 'json' | 'table') => ReducerOutput;
+	toggleConfigViewType: (store: LogsStore) => ReducerOutput;
+	setDisabledColumns: (store: LogsStore, columns: string[]) => ReducerOutput;
+	setOrderedHeaders: (store: LogsStore, columns: string[]) => ReducerOutput;
 };
 
 const defaultSortKey = 'p_timestamp';
@@ -311,10 +316,12 @@ const initialState: LogsStore = {
 		currentPage: 0,
 		currentOffset: 0,
 		headers: [],
+		orderedHeaders: [],
 		sortKey: defaultSortKey,
 		sortOrder: defaultSortOrder,
 		filters: {},
 		instantSearchValue: '',
+		configViewType: 'schema',
 	},
 
 	// data
@@ -476,6 +483,15 @@ const toggleDisabledColumns = (store: LogsStore, columnName: string) => {
 	};
 };
 
+const setDisabledColumns = (store: LogsStore, columns: string[]) => {
+	return {
+		tableOpts: {
+			...store.tableOpts,
+			disabledColumns: columns
+		}
+	}
+}
+
 const togglePinnedColumns = (store: LogsStore, columnName: string) => {
 	const { tableOpts } = store;
 	return {
@@ -532,6 +548,7 @@ export const isJqSearch = (value: string) => {
 
 const setLogData = (store: LogsStore, data: Log[], headers: string[], jqFilteredData?: Log[]) => {
 	const { data: existingData, tableOpts, viewMode } = store;
+	const { orderedHeaders } = tableOpts;
 	const isJsonView = viewMode === 'json';
 	const currentPage = tableOpts.currentPage === 0 ? 1 : tableOpts.currentPage;
 	const filteredData =
@@ -541,6 +558,8 @@ const setLogData = (store: LogsStore, data: Log[], headers: string[], jqFiltered
 				: searchAndSortData({ searchValue: tableOpts.instantSearchValue }, data)
 			: filterAndSortData(tableOpts, data);
 	const newPageSlice = filteredData && getPageSlice(currentPage, tableOpts.perPage, filteredData);
+	const unknownHeaders = _.difference(headers, orderedHeaders);
+	const updatedOrderedHeaders = _.chain([...orderedHeaders, ...unknownHeaders]).uniq().without(...columnsToSkip).value();
 	return {
 		tableOpts: {
 			...store.tableOpts,
@@ -548,6 +567,7 @@ const setLogData = (store: LogsStore, data: Log[], headers: string[], jqFiltered
 			headers,
 			currentPage,
 			totalPages: getTotalPages(filteredData, tableOpts.perPage),
+			orderedHeaders: updatedOrderedHeaders,
 		},
 		data: { ...existingData, rawData: data, filteredData: filteredData },
 	};
@@ -633,6 +653,7 @@ const getCleanStoreForRefetch = (store: LogsStore) => {
 			currentPage: 0,
 			currentOffset: 0,
 			totalPages: 0,
+			orderedHeaders: []
 		},
 		data: {
 			...data,
@@ -658,6 +679,7 @@ const setCleanStoreForStreamChange = (store: LogsStore) => {
 			currentPage: 0,
 			currentOffset: 0,
 			totalPages: 0,
+			orderedHeaders: [],
 		},
 		...updatedTimeRange,
 		alerts,
@@ -871,6 +893,27 @@ const onToggleView = (store: LogsStore, viewMode: 'json' | 'table') => {
 	};
 };
 
+const toggleConfigViewType = (store: LogsStore) => {
+	const configViewType =
+		store.tableOpts.configViewType === 'schema' ? ('columns' as 'columns') : ('schema' as 'schema');
+
+	return {
+		tableOpts: {
+			...store.tableOpts,
+			configViewType,
+		},
+	};
+};
+
+const setOrderedHeaders = (store: LogsStore, headers: string[]) => {
+	return {
+		tableOpts: {
+			...store.tableOpts,
+			orderedHeaders: headers
+		}
+	}
+}
+
 const logsStoreReducers: LogsStoreReducers = {
 	setTimeRange,
 	setshiftInterval,
@@ -914,6 +957,9 @@ const logsStoreReducers: LogsStoreReducers = {
 	applyInstantSearch,
 	applyJqSearch,
 	onToggleView,
+	toggleConfigViewType,
+	setDisabledColumns,
+	setOrderedHeaders
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };
