@@ -1,14 +1,16 @@
 import { Box, Button, Loader, Modal, Select, Stack, Text, TextInput } from '@mantine/core';
 import { filterStoreReducers, useFilterStore } from '../../providers/FilterProvider';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
-import { makeTimeRangeLabel, useLogsStore } from '../../providers/LogsProvider';
+import { useLogsStore } from '../../providers/LogsProvider';
 import { CodeHighlight } from '@mantine/code-highlight';
 import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { CreateSavedFilterType, SavedFilterType } from '@/@types/parseable/api/savedFilters';
 import useSavedFiltersQuery from '@/hooks/useSavedFilters';
 import Cookies from 'js-cookie';
+import timeRangeUtils from '@/utils/timeRangeUtils';
 
+const { defaultTimeRangeOption, makeTimeRangeOptions, getDefaultTimeRangeOption } = timeRangeUtils;
 const { toggleSaveFiltersModal } = filterStoreReducers;
 
 interface FormObjectType extends Omit<SavedFilterType, 'filter_id' | 'version'> {
@@ -39,51 +41,6 @@ const sanitizeFilterItem = (formObject: FormObjectType): SavedFilterType => {
 		query,
 		user_id,
 	};
-};
-
-const defaultTimeRangeOption = {
-	value: 'none',
-	label: 'Time range not included',
-	time_filter: null,
-};
-
-const makeTimeRangeOptions = ({
-	selected,
-	current,
-}: {
-	selected: { from: string; to: string } | null;
-	current: { startTime: Date; endTime: Date };
-}) => {
-	return [
-		defaultTimeRangeOption,
-		{
-			value: 'current',
-			label: `Current - ${makeTimeRangeLabel(current.startTime, current.endTime)}`,
-			time_filter: {
-				from: current.startTime.toISOString(),
-				to: current.endTime.toISOString(),
-			},
-		},
-		...(selected
-			? [
-					{
-						value: 'selected',
-						label: `Stored - ${makeTimeRangeLabel(selected.from, selected.to)}`,
-						time_filter: {
-							from: selected.from,
-							to: selected.to,
-						},
-					},
-				]
-			: []),
-	];
-};
-
-const getDefaultTimeRangeOption = (
-	opts: { value: string; label: string; time_filter: null | { from: string; to: string } }[],
-) => {
-	const selectedTimeRange = _.find(opts, (option) => option.value === 'selected');
-	return selectedTimeRange ? selectedTimeRange : defaultTimeRangeOption;
 };
 
 const SaveFilterModal = () => {

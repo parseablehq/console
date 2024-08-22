@@ -437,20 +437,27 @@ const RepeatIntervalLabel = () => {
 	);
 };
 
-const AlertForm = (props: { form: AlertsFormType }) => {
-	const { form } = props;
-	const {
-		rule: { type },
-	} = form.getValues();
+const AlertForm = (props: { form: AlertsFormType; alert: TransformedAlert | undefined }) => {
+	const { form, alert } = props;
+	const { rule } = form.getValues();
+	const existingRule = alert && alert.rule;
+	const { type } = rule;
 
 	useEffect(() => {
-		if (type === 'column') {
-			form.setFieldValue('rule.config', defaultColumnTypeConfig);
-		} else {
-			form.setFieldValue('rule.config', '');
+		if (type === columnRuleType) {
+			if (existingRule && !_.isEmpty(existingRule.config) && existingRule.type === columnRuleType) {
+				form.setFieldValue('rule.config', existingRule.config);
+			} else {
+				form.setFieldValue('rule.config', defaultColumnTypeConfig);
+			}
+		} else if (type === compositeRuleType) {
+			if (existingRule && !_.isEmpty(existingRule.config) && existingRule.type === compositeRuleType) {
+				form.setFieldValue('rule.config', existingRule.config);
+			} else {
+				form.setFieldValue('rule.config', '');
+			}
 		}
 	}, [type]);
-
 	return (
 		<Stack gap={8}>
 			<TextInput
@@ -548,7 +555,7 @@ const AlertsModal = (props: {
 			<Stack gap={0}>
 				<Stack mih={400} style={{ maxHeight: 600, overflow: 'scroll' }}>
 					{/* @ts-ignore */}
-					<AlertForm form={form} />
+					<AlertForm form={form} alert={alert} />
 				</Stack>
 				<Stack style={{ flexDirection: 'row', margin: '1.2rem 0', justifyContent: 'flex-end' }}>
 					<Box>

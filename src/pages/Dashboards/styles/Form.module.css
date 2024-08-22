@@ -1,0 +1,77 @@
+.sectionContainer {
+    height: 50%;
+    border-radius: 0.4rem;
+    border: 1px solid var(--mantine-color-gray-2);
+}
+
+.sectionHeader {
+    border-bottom: 1px solid var(--mantine-color-gray-2);
+    padding: 0.75rem;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 3rem;
+}
+
+.configContainer {
+    height: 100%;
+}
+
+.fieldTitle {
+    font-weight: 500;
+    font-size: 0.7rem;
+}
+
+.queryCodeContainer {
+    height: 22rem;
+    border: 1px solid var(--mantine-color-gray-2);
+    border-radius: 0.2rem;
+    padding: 1rem;
+}
+
+.schemaListContainer {
+    width: 30%;
+    overflow: hidden;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    border: 1px solid var(--mantine-color-gray-1);
+}
+
+.schemaTableHeader {
+    background-color: var(--mantine-color-gray-1);
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    padding: 0.5rem;
+}
+
+.schemaList {
+    overflow: scroll;
+    padding: 0.5rem 0rem;
+}
+
+.schemaListItem {
+    padding: 0 0.5rem;
+    border-bottom: 1px solid var(--mantine-color-gray-1);
+}
+
+.schemaItemText {
+    font-size: 0.7rem;
+}
+
+.schemaItemDataType {
+    font-size: 0.7rem;
+}
+
+.warningText {
+    color: var(--mantine-color-gray-5);
+    font-size: 0.75rem;
+}
+
+.warningIcon {
+    color: var(--mantine-color-gray-5);
+}
+
+.arrowLeftIcon {
+    color: var(--mantine-color-gray-7);
+    cursor: pointer;
+}

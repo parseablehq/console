@@ -6,13 +6,22 @@ import {
 	USERS_MANAGEMENT_ROUTE,
 	CLUSTER_ROUTE,
 	STREAM_ROUTE,
+	DASHBOARDS_ROUTE,
 } from '@/constants/routes';
 import FullPageLayout from '@/layouts/FullPageLayout';
 import NotFound from '@/pages/Errors/NotFound';
 import type { FC } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
-import { HomeElement, LoginElement, StreamElement, MainLayoutElement, SystemsElement, UsersElement } from './elements';
+import {
+	HomeElement,
+	LoginElement,
+	StreamElement,
+	MainLayoutElement,
+	SystemsElement,
+	UsersElement,
+	DashboardsElement,
+} from './elements';
 import AccessSpecificRoute from './AccessSpecificRoute';
 import OIDCNotConFigured from '@/pages/Errors/OIDC';
 
@@ -23,6 +32,7 @@ const AppRouter: FC = () => {
 				<Route element={<PrivateRoute />}>
 					<Route element={<MainLayoutElement />}>
 						<Route path={HOME_ROUTE} element={<HomeElement />} />
+						<Route path={DASHBOARDS_ROUTE} element={<DashboardsElement />} />
 						<Route element={<AccessSpecificRoute accessRequired={['ListUser']} />}>
 							<Route path={USERS_MANAGEMENT_ROUTE} element={<UsersElement />} />
 						</Route>

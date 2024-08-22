@@ -7,12 +7,13 @@ import {
 	IconServerCog,
 	IconHomeStats,
 	IconListDetails,
+	IconLayoutDashboard,
 } from '@tabler/icons-react';
 import { FC, useCallback, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
-import { HOME_ROUTE, CLUSTER_ROUTE, USERS_MANAGEMENT_ROUTE, STREAM_ROUTE } from '@/constants/routes';
+import { HOME_ROUTE, CLUSTER_ROUTE, USERS_MANAGEMENT_ROUTE, STREAM_ROUTE, DASHBOARDS_ROUTE } from '@/constants/routes';
 import InfoModal from './infoModal';
 import { getStreamsSepcificAccess, getUserSepcificStreams } from './rolesHandler';
 import Cookies from 'js-cookie';
@@ -34,6 +35,12 @@ const navItems = [
 		label: 'Home',
 		path: '/',
 		route: HOME_ROUTE,
+	},
+	{
+		icon: IconLayoutDashboard,
+		label: 'Dashboards',
+		path: '/dashboards',
+		route: DASHBOARDS_ROUTE,
 	},
 	{
 		icon: IconListDetails,
@@ -91,10 +98,11 @@ const Navbar: FC = () => {
 	const [infoModalOpened, { toggle: toggleInfoModal, close: closeInfoModal }] = useDisclosure(false);
 	const { getLogStreamListData } = useLogStream();
 	const { getUserRolesData, getUserRolesMutation } = useUser();
+	const shouldRedirectToHome = _.isEmpty(userSpecificStreams) || _.isNil(userSpecificStreams);
 	const navigateToPage = useCallback(
 		(route: string) => {
 			if (route === STREAM_ROUTE) {
-				if (_.isEmpty(userSpecificStreams) || _.isNil(userSpecificStreams)) return navigate('/');
+				if (shouldRedirectToHome) return navigate('/');
 
 				const defaultStream = currentStream && currentStream.length !== 0 ? currentStream : userSpecificStreams[0].name;
 				const stream = !streamName || streamName.length === 0 ? defaultStream : streamName;
@@ -105,6 +113,9 @@ const Navbar: FC = () => {
 					navigate(path);
 				}
 			} else {
+				if (shouldRedirectToHome && route === DASHBOARDS_ROUTE) {
+					return navigate('/');
+				}
 				return navigate(route);
 			}
 		},
@@ -185,10 +196,10 @@ const Navbar: FC = () => {
 								navAction.key === 'about'
 									? toggleInfoModal
 									: navAction.key === 'user'
-										? toggleUserModal
-										: navAction.key === 'logout'
-											? signOutHandler
-											: () => {};
+									? toggleUserModal
+									: navAction.key === 'logout'
+									? signOutHandler
+									: () => {};
 							return (
 								<Stack
 									className={`${styles.navItemContainer} ${isActiveItem && styles.navItemActive}`}
