@@ -79,17 +79,17 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 							<Box className={aboutTextInnerBox}>
 								<Text className={aboutTextKey}> Version: </Text>
 								<Text className={aboutTextValue}> {getAboutData?.data.version} </Text>
-								{getAboutData?.data.updateAvailable ? (
-									<Button
-										variant="outline"
-										component={'a'}
-										href="https://github.com/parseablehq/parseable/releases/latest"
-										target="_blank"
-										className={actionBtnRed}
-										leftSection={<IconAlertCircle size={px('1.2rem')} stroke={1.5} />}>
-										Upgrade to latest version {getAboutData?.data.latestVersion}
-									</Button>
-								) : null}
+								{/* {getAboutData?.data.updateAvailable ? ( */}
+								<Button
+									variant="outline"
+									component={'a'}
+									href="https://github.com/parseablehq/parseable/releases/latest"
+									target="_blank"
+									className={actionBtnRed}
+									leftSection={<IconAlertCircle size={px('1.2rem')} stroke={1.5} />}>
+									Upgrade to latest version {getAboutData?.data.latestVersion}
+								</Button>
+								{/* ) : null} */}
 							</Box>
 							<Box className={aboutTextInnerBox}>
 								<Text className={aboutTextKey}> UI Version: </Text>
