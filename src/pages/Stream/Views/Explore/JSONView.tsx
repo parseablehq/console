@@ -73,7 +73,7 @@ const Row = (props: {
 			<span>
 				{_.isObject(log) ? (
 					_.map(headers, (header, index) => {
-						if (!log[header]?.toString()) return;
+						if (!_.toString(log[header])) return;
 
 						return (
 							<Item
