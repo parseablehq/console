@@ -74,6 +74,7 @@ const Row = (props: {
 					_.map(log, (value, key) => {
 						//skiping fields with empty strings
 						if (!_.toString(value)) return;
+
 						return (
 							<Item
 								header={key}
