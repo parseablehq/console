@@ -83,6 +83,8 @@ const Row = (props: {
 								/>
 							);
 						}
+
+						return null;
 					})
 				) : (
 					<Item
