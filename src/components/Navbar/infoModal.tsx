@@ -1,7 +1,7 @@
-import { Box, Button, Modal, Stack, Text, Tooltip, px } from '@mantine/core';
+import { Box, Button, Modal, Stack, Text, Tooltip } from '@mantine/core';
 import { FC, useEffect, useMemo } from 'react';
 import { useAbout } from '@/hooks/useGetAbout';
-import { IconAlertCircle, IconInfoCircle } from '@tabler/icons-react';
+import { IconInfoCircle } from '@tabler/icons-react';
 import styles from './styles/InfoModal.module.css';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
@@ -41,7 +41,6 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 		aboutTextKey,
 		aboutTextValue,
 		aboutTextInnerBox,
-		actionBtnRed,
 	} = classes;
 
 	return (
@@ -85,8 +84,7 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 										component={'a'}
 										href="https://github.com/parseablehq/parseable/releases/latest"
 										target="_blank"
-										className={actionBtnRed}
-										leftSection={<IconAlertCircle size={px('1.2rem')} stroke={1.5} />}>
+										className={actionBtn}>
 										Upgrade to latest version {getAboutData?.data.latestVersion}
 									</Button>
 								) : null}
