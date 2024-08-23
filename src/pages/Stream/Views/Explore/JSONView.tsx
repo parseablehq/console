@@ -10,7 +10,7 @@ import {
 	STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT,
 	STREAM_SECONDARY_TOOLBAR_HRIGHT,
 } from '@/constants/theme';
-import { columnsToSkip, useLogsStore, logsStoreReducers, isJqSearch } from '../../providers/LogsProvider';
+import { useLogsStore, logsStoreReducers, isJqSearch } from '../../providers/LogsProvider';
 import { Log } from '@/@types/parseable/api/query';
 import _ from 'lodash';
 import jqSearch from '@/utils/jqSearch';
@@ -61,25 +61,29 @@ const CopyIcon = (props: { log: Log }) => {
 
 const Row = (props: {
 	log: Log;
-	headers: string[];
 	searchValue: string;
 	disableHighlight: boolean;
 	shouldHighlight: (val: number | string | Date | null) => boolean;
 }) => {
-	const { log, headers, disableHighlight, shouldHighlight } = props;
+	const { log, disableHighlight, shouldHighlight } = props;
 
 	return (
 		<Stack style={{ flexDirection: 'row' }} className={classes.rowContainer} gap={0}>
 			<span>
 				{_.isObject(log) ? (
-					_.map(headers, (header, index) => (
-						<Item
-							header={header}
-							key={index}
-							value={_.toString(log[header])}
-							highlight={disableHighlight ? false : shouldHighlight(log[header])}
-						/>
-					))
+					_.map(log, (value, key) => {
+						//skiping fields with empty strings
+						if (!_.toString(value)) return;
+
+						return (
+							<Item
+								header={key}
+								key={key}
+								value={_.toString(value)}
+								highlight={disableHighlight ? false : shouldHighlight(value)}
+							/>
+						);
+					})
 				) : (
 					<Item
 						header={null}
@@ -94,8 +98,7 @@ const Row = (props: {
 };
 
 const JsonRows = (props: { isSearching: boolean }) => {
-	const [{ pageData, headers, instantSearchValue }] = useLogsStore((store) => store.tableOpts);
-	const sanitizedHeaders = _.without(headers, ...columnsToSkip);
+	const [{ pageData, instantSearchValue }] = useLogsStore((store) => store.tableOpts);
 	const disableHighlight = props.isSearching || _.isEmpty(instantSearchValue) || isJqSearch(instantSearchValue);
 	const regExp = disableHighlight ? null : new RegExp(instantSearchValue, 'i');
 
@@ -112,7 +115,6 @@ const JsonRows = (props: { isSearching: boolean }) => {
 				<Row
 					log={d}
 					key={index}
-					headers={sanitizedHeaders}
 					searchValue={instantSearchValue}
 					disableHighlight={disableHighlight}
 					shouldHighlight={shouldHighlight}
