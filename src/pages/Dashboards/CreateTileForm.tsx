@@ -616,7 +616,7 @@ const CreateTileForm = () => {
 			<Stack style={{ justifyContent: 'space-between', padding: '1rem', flexDirection: 'row' }}>
 				<Stack gap={10} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
 					<IconArrowLeft onClick={closeForm} stroke={1.2} size={'1.4rem'} className={classes.arrowLeftIcon} />
-					<Text style={{ fontSize: '0.8rem', fontWeight: 600 }}>Create Tile</Text>
+					<Text style={{ fontSize: '0.8rem', fontWeight: 600 }}>{editTileId ? 'Edit Tile' : 'Create Tile'}</Text>
 				</Stack>
 				<Stack style={{ flexDirection: 'row' }} gap={20}>
 					<Box>
