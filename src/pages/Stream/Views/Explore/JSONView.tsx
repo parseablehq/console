@@ -73,16 +73,16 @@ const Row = (props: {
 			<span>
 				{_.isObject(log) ? (
 					_.map(headers, (header, index) => {
-						if (!_.toString(log[header])) return;
-
-						return (
-							<Item
-								header={header}
-								key={index}
-								value={_.toString(log[header])}
-								highlight={disableHighlight ? false : shouldHighlight(log[header])}
-							/>
-						);
+						if (_.toString(log[header])) {
+							return (
+								<Item
+									header={header}
+									key={index}
+									value={_.toString(log[header])}
+									highlight={disableHighlight ? false : shouldHighlight(log[header])}
+								/>
+							);
+						}
 					})
 				) : (
 					<Item
