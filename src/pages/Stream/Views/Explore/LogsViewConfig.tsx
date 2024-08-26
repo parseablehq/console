@@ -134,13 +134,12 @@ const ColumnItem = (props: {
 				</Stack>
 				<Checkbox value={props.column} checked={props.visible} readOnly onChange={onToggle} />
 			</Stack>
-			<Stack style={{ width: LOGS_CONFIG_SIDEBAR_WIDTH * 0.6, height: '1rem' }}>
-				<Text
-					className={classes.fieldNameText}
-					style={{ width: LOGS_CONFIG_SIDEBAR_WIDTH * 0.6, fontSize: '0.7rem' }}
-					lineClamp={1}>
-					{props.column}
-				</Text>
+			<Stack>
+				<Tooltip label={props.column}>
+					<Text className={classes.fieldNameText} style={{ whiteSpace: 'normal' }} lineClamp={1}>
+						{props.column}
+					</Text>
+				</Tooltip>
 			</Stack>
 		</Stack>
 	);

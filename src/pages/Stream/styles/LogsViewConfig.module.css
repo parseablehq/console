@@ -26,33 +26,33 @@
     font-weight: 500;
 }
 
+.fieldNameText {
+    width: 6rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    font-size: 0.65rem;
+}
+
+.fieldDataType {
+    width: 40%;
+    text-align: end;
+    color: var(--mantine-color-gray-6);
+
+    .fieldDataTypeText {
+        font-size: 0.65rem;
+    }
+}
+
 .schemaItemContainer {
     flex-direction: row;
     padding: 0.4rem 0.5rem;
     margin: 0 0.5rem;
     border-radius: 0.2rem;
 
-    .fieldName {
-        .fieldNameText {
-            width: 6rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            overflow-wrap: break-word;
-            max-width: 100%; 
-            font-size: 0.65rem;
-        }
-    }
 
-    .fieldDataType {
-        width: 40%;
-        text-align: end;
-        color: var(--mantine-color-gray-6);
-
-        .fieldDataTypeText {
-            font-size: 0.65rem;
-        }
-    }
 
     &:hover {
         background-color: var(--mantine-color-gray-1);
@@ -69,6 +69,7 @@
     padding: 0.5rem 0.5rem;
     margin: 0 0.5rem;
     border-radius: 0.2rem;
+
     .columnItemText {
         font-size: 0.65rem;
     }
@@ -86,4 +87,3 @@
         background-color: var(--mantine-color-gray-1);
     }
 }
-
