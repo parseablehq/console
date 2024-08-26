@@ -1,5 +1,5 @@
 import { parseLogData } from '@/utils';
-import { Group, Stack, ActionIcon, Tooltip, Box } from '@mantine/core';
+import { Group, Stack, ActionIcon, Tooltip, Box, Text } from '@mantine/core';
 import { IconArrowNarrowRight } from '@tabler/icons-react';
 import { FC, Fragment, useCallback, MouseEvent, useState, useEffect } from 'react';
 import { Log } from '@/@types/parseable/api/query';
@@ -104,6 +104,7 @@ const LogRow: FC<LogRowProps> = (props) => {
 									)}
 								</Group>
 							</td>
+						
 						);
 					})}
 					{rowArrows && <ViewLogArrow />}
@@ -118,9 +119,11 @@ const ViewLogArrow: FC = () => {
 	const { tdArrow, tdArrowContainer } = classes;
 
 	return (
-		<td className={tdArrow}>
+		<td className={tdArrow} 
+		style={{paddingTop: '0', paddingBottom: '0'}}
+		>
 			<Box className={tdArrowContainer}>
-				<IconArrowNarrowRight size={'1.4rem'} stroke={1} />
+				<IconArrowNarrowRight size={'1rem'} stroke={1} />
 			</Box>
 		</td>
 	);

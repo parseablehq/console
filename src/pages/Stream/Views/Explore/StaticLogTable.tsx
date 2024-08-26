@@ -79,7 +79,7 @@ const PinnedColumns = (props: { containerRefs: SectionRefs }) => {
 						<TableHeader isPinned />
 					</Thead>
 					<Tbody>
-						<LogRow isPinned={true} />
+						<LogRow isPinned />
 					</Tbody>
 				</Table>
 			</Box>

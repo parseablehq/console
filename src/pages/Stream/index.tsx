@@ -63,6 +63,8 @@ const Logs: FC = () => {
 	const isSchemaLoading = !error && loading;
 	// todo - have separate ui components for loading and error states
 
+	console.log("parent parent", loading)
+
 	return (
 		<Box
 			style={{

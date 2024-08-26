@@ -70,11 +70,16 @@
     }
 
     .columnDragIcon {
-        color: var(--mantine-color-gray-6);
+        color: var(--mantine-color-gray-7);
         cursor: grab;
+    }
+
+    .columnPinIcon {
+        color: var(--mantine-color-gray-7);
     }
 
     &:hover {
         background-color: var(--mantine-color-gray-1);
     }
 }
+
