@@ -33,15 +33,19 @@
     border-radius: 0.2rem;
 
     .fieldName {
-        width: 50%;
-
         .fieldNameText {
+            width: 6rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            overflow-wrap: break-word;
+            max-width: 100%; 
             font-size: 0.65rem;
         }
     }
 
     .fieldDataType {
-        width: 50%;
+        width: 40%;
         text-align: end;
         color: var(--mantine-color-gray-6);
 

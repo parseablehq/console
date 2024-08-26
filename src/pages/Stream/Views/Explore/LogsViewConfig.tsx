@@ -1,5 +1,5 @@
 import { LOGS_CONFIG_SIDEBAR_WIDTH } from '@/constants/theme';
-import { Checkbox, CheckboxGroup, ScrollArea, Skeleton, Stack, Text, TextInput } from '@mantine/core';
+import { Box, Checkbox, CheckboxGroup, ScrollArea, Skeleton, Stack, Text, TextInput, Tooltip } from '@mantine/core';
 import classes from '../../styles/LogsViewConfig.module.css';
 import { useStreamStore } from '../../providers/StreamProvider';
 import _, { head } from 'lodash';
@@ -41,7 +41,11 @@ const SchemaItem = (props: { schemaField: Field }) => {
 	return (
 		<Stack className={classes.schemaItemContainer} gap={0}>
 			<Stack className={classes.fieldName}>
-				<Text className={classes.fieldNameText} lineClamp={1}>{name}</Text>
+				<Tooltip label={name}>
+					<Text className={classes.fieldNameText} style={{ width: LOGS_CONFIG_SIDEBAR_WIDTH * 0.5 }}>
+						{name}
+					</Text>
+				</Tooltip>
 			</Stack>
 			<Stack className={classes.fieldDataType}>
 				<Text className={classes.fieldDataTypeText}>{sanitizedDataType}</Text>
@@ -59,7 +63,7 @@ const SearchBar = (props: { disabled: boolean; value: string; onChangeHandler: (
 	);
 };
 
-const SchemaList = (props: {isLoading: boolean}) => {
+const SchemaList = (props: { isLoading: boolean }) => {
 	const [schema] = useStreamStore((store) => store.schema);
 	const [searchValue, setSearchValue] = useState<string>('');
 
@@ -75,7 +79,7 @@ const SchemaList = (props: {isLoading: boolean}) => {
 		return _.filter(fields, (field) => regex.test(field.name));
 	}, [searchValue, schema?.fields]);
 
-	if (props.isLoading) return <LoadingView/>;
+	if (props.isLoading) return <LoadingView />;
 
 	return (
 		<>
@@ -85,12 +89,12 @@ const SchemaList = (props: {isLoading: boolean}) => {
 				onChangeHandler={onChangeHandler}
 				disabled={_.isEmpty(schemaFields)}
 			/>
-			<ScrollArea style={{flex: 1}}>
+			<ScrollArea style={{ flex: 1 }}>
 				{_.map(schemaFields, (schemaField, index) => {
 					return <SchemaItem key={index} schemaField={schemaField} />;
 				})}
 			</ScrollArea>
-			<Stack/>
+			<Stack />
 		</>
 	);
 };
@@ -111,31 +115,32 @@ const ColumnItem = (props: {
 	}, []);
 
 	return (
-		<Stack className={classes.columnItemContainer} gap={8} style={{ cursor: 'default' }}>
-			<Stack style={{ cursor: 'pointer' }} onClick={onPin}>
-				{props.pinned ? (
-					<IconPinFilled className={classes.columnPinIcon} size="1rem" />
-				) : (
-					<IconPin className={classes.columnPinIcon} size="1rem" />
-				)}
+		<Stack className={classes.columnItemContainer} gap={8} style={{ cursor: 'default', alignItems: 'center' }}>
+			<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={4}>
+				<Stack style={{ cursor: 'pointer' }} onClick={onPin}>
+					{props.pinned ? (
+						<IconPinFilled className={classes.columnPinIcon} size="1rem" />
+					) : (
+						<IconPin className={classes.columnPinIcon} size="1rem" />
+					)}
+				</Stack>
+				<Stack>
+					<IconGripVertical className={classes.columnDragIcon} size="1rem" />
+				</Stack>
+				<Checkbox value={props.column} checked={props.visible} readOnly onChange={onToggle} />
 			</Stack>
-			<IconGripVertical className={classes.columnDragIcon} size="1rem" />
-			<Checkbox
-				value={props.column}
-				checked={props.visible}
-				label={props.column}
-				styles={{ labelWrapper: { width: '100%' } }}
-				style={{ width: '100%' }}
-				readOnly
-				onChange={onToggle}
-			/>
+			<Stack style={{ width: LOGS_CONFIG_SIDEBAR_WIDTH * 0.6, height: '1rem' }}>
+				<Text className={classes.fieldNameText} style={{ width: LOGS_CONFIG_SIDEBAR_WIDTH * 0.6, fontSize: '0.7rem' }} lineClamp={1}>
+					{props.column}
+				</Text>
+			</Stack>
 		</Stack>
 	);
 };
 
 const LoadingView = () => {
 	return (
-		<Stack style={{padding: '0.5rem 0.7rem'}}>
+		<Stack style={{ padding: '0.5rem 0.7rem' }}>
 			<Skeleton height="2.2rem" />
 			<Skeleton height="2.2rem" />
 			<Skeleton height="2.2rem" />
@@ -143,8 +148,8 @@ const LoadingView = () => {
 			<Skeleton height="2.2rem" />
 			<Skeleton height="2.2rem" />
 		</Stack>
-	)
-}
+	);
+};
 
 const ColumnsList = (props: { isLoading: boolean }) => {
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
@@ -203,7 +208,7 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 				onChangeHandler={onSearchHandler}
 				disabled={_.isEmpty(headers)}
 			/>
-			<ScrollArea>
+			<ScrollArea scrollbars="y">
 				<DragDropContext onDragEnd={onDropEnd}>
 					<Droppable droppableId="columns">
 						{(provided) => (
@@ -234,12 +239,16 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 	);
 };
 
-const LogsViewConfig = (props: {schemaLoading: boolean, logsLoading: boolean}) => {
+const LogsViewConfig = (props: { schemaLoading: boolean; logsLoading: boolean }) => {
 	const [configViewType] = useLogsStore((store) => store.tableOpts.configViewType);
 	return (
 		<Stack style={{ width: LOGS_CONFIG_SIDEBAR_WIDTH }} className={classes.container}>
 			<Header />
-			{configViewType === 'schema' ? <SchemaList isLoading={props.schemaLoading}/> : <ColumnsList isLoading={props.logsLoading}/>}
+			{configViewType === 'schema' ? (
+				<SchemaList isLoading={props.schemaLoading} />
+			) : (
+				<ColumnsList isLoading={props.logsLoading} />
+			)}
 		</Stack>
 	);
 };

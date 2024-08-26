@@ -47,6 +47,7 @@ const Logs: FC = () => {
 		isLoading: isSchemaLoading,
 		errorMessage: schemaFetchErrorMessage,
 		isError: isSchemaError,
+		isRefetching: isSchemaRefetching
 	} = useGetStreamSchema({ streamName: currentStream || '' });
 
 	const fetchSchema = useCallback(() => {
@@ -64,6 +65,7 @@ const Logs: FC = () => {
 
 	if (!currentStream) return null;
 	if (!_.includes(STREAM_VIEWS, view)) return null;
+	const isSchemaFetching = isSchemaRefetching || isSchemaLoading
 
 	return (
 		<Box
@@ -91,12 +93,12 @@ const Logs: FC = () => {
 					isSchemaError ? (
 						<SchemaErrorView error={schemaFetchErrorMessage} fetchSchema={fetchSchema} />
 					) : (
-						<LogsView schemaLoading={isSchemaLoading} />
+						<LogsView schemaLoading={isSchemaFetching} />
 					)
 				) : view === 'live-tail' ? (
 					<LiveLogTable />
 				) : (
-					<Management schemaLoading={isSchemaLoading} />
+					<Management schemaLoading={isSchemaFetching} />
 				)}
 			</Stack>
 		</Box>
