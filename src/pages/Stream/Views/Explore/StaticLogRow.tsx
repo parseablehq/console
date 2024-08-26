@@ -1,5 +1,5 @@
 import { parseLogData } from '@/utils';
-import { Group, Stack, ActionIcon, Tooltip, Box } from '@mantine/core';
+import { Group, Stack, ActionIcon, Tooltip, Box, Text } from '@mantine/core';
 import { IconArrowNarrowRight } from '@tabler/icons-react';
 import { FC, Fragment, useCallback, MouseEvent, useState, useEffect } from 'react';
 import { Log } from '@/@types/parseable/api/query';
