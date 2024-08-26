@@ -680,6 +680,8 @@ const setCleanStoreForStreamChange = (store: LogsStore) => {
 			currentOffset: 0,
 			totalPages: 0,
 			orderedHeaders: [],
+			disabledColumns: [],
+			pinnedColumns: []
 		},
 		...updatedTimeRange,
 		alerts,
@@ -888,6 +890,7 @@ const onToggleView = (store: LogsStore, viewMode: 'json' | 'table') => {
 			instantSearchValue: '',
 			currentPage,
 			totalPages: getTotalPages(filteredData, tableOpts.perPage),
+			configViewType: 'schema' as 'schema'
 		},
 		viewMode,
 	};

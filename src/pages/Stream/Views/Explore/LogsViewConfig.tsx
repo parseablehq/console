@@ -13,6 +13,7 @@ const { toggleConfigViewType, toggleDisabledColumns, setOrderedHeaders, togglePi
 
 const Header = () => {
 	const [configViewType, setLogsStore] = useLogsStore((store) => store.tableOpts.configViewType);
+	const [viewMode] = useLogsStore((store) => store.viewMode);
 
 	const onToggle = useCallback(() => {
 		setLogsStore(toggleConfigViewType);
@@ -20,14 +21,16 @@ const Header = () => {
 	return (
 		<Stack className={classes.headerContainer} gap={0}>
 			<Stack
-				className={`${classes.headerItem} ${configViewType === 'schema' && classes.activeHeader}`}
-				onClick={onToggle}>
+				className={`${classes.headerItem} ${configViewType === 'schema' && viewMode !== 'json' && classes.activeHeader}`}
+				style={{ width: viewMode === 'json' ? '100%' : '50%' }}
+				onClick={configViewType === 'columns' ? onToggle : _.noop}>
 				<Text className={classes.headerItemText}>Schema</Text>
 			</Stack>
 			<Stack
 				className={`${classes.headerItem} ${configViewType === 'columns' && classes.activeHeader}`}
-				onClick={onToggle}>
-				<Text className={classes.headerItemText}>Columns</Text>
+				style={{ ...(viewMode === 'json' ? { display: 'none' } : {}) }}
+				onClick={configViewType === 'schema' ? onToggle : _.noop}>
+				<Text className={classes.headerItemText}>Fields</Text>
 			</Stack>
 		</Stack>
 	);
