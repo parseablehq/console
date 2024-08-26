@@ -3,7 +3,7 @@ import _ from 'lodash';
 
 //accepts a date-time string and outputs a human readable string with timezone
 const getDateTimeWithTZ = (dateTime: string | undefined) => {
-	if (!dateTime && typeof dateTime !== 'string' && _.isEmpty(dateTime)) return '-';
+	if (!dateTime && typeof dateTime !== 'string' && _.isEmpty(dateTime)) return;
 
 	const sysTimeZone = moment.tz.guess();
 	const convertedDate = moment.tz(dateTime, sysTimeZone);

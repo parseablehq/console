@@ -66,8 +66,8 @@ const InfoData = (props: { isLoading: boolean }) => {
 				<Stack style={{ flex: 1, padding: '1.5rem', justifyContent: 'space-between' }}>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Name" value={currentStream || ''} />
-						<InfoItem title="Created At" value={createdAt} />
-						<InfoItem title="First Event At" value={firstEventAt} />
+						<InfoItem title="Created At" value={createdAt ? createdAt : '-'} />
+						<InfoItem title="First Event At" value={firstEventAt ? firstEventAt : '-'} />
 					</Stack>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Schema Type" value={staticSchemaFlag} />
