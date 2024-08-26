@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useStreamStore } from '../../providers/StreamProvider';
 import { IconCheck, IconTrash, IconX } from '@tabler/icons-react';
 import { sanitizeBytes, convertGibToBytes } from '@/utils/formatBytes';
+import dateTimeUtils from '@/utils/dateTimeUtil';
 
 const Header = () => {
 	return (
@@ -169,6 +170,7 @@ const HotTierConfig = (props: {
 }) => {
 	const [hotTier] = useStreamStore((store) => store.hotTier);
 	const [info] = useStreamStore((store) => store.info);
+	const { getDateTimeWithTZ } = dateTimeUtils;
 	const streamType = 'stream_type' in info && info.stream_type;
 	const size = _.get(hotTier, 'size', '');
 	const usedSize = _.get(hotTier, 'used_size', '');
@@ -231,7 +233,7 @@ const HotTierConfig = (props: {
 				<Stack gap={4} style={{ ...(hotTierNotSet ? { display: 'none' } : {}) }}>
 					<Text className={classes.fieldDescription}>Oldest Record:</Text>
 					<Text className={classes.fieldDescription}>
-						{_.isEmpty(oldestEntry) ? 'No Entries Stored' : new Date(oldestEntry).toLocaleString()}
+						{_.isEmpty(oldestEntry) ? 'No Entries Stored' : getDateTimeWithTZ(oldestEntry)}
 					</Text>
 				</Stack>
 				<Stack style={{ width: hotTierNotSet ? '100%' : '50%' }} gap={isDirty || hotTierNotSet ? 16 : 4}>

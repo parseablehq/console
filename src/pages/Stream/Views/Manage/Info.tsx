@@ -3,9 +3,9 @@ import classes from '../../styles/Management.module.css';
 import { useStreamStore } from '../../providers/StreamProvider';
 import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import dayjs from 'dayjs';
 import UpdateTimePartitionLimit from './UpdateTimePartitionLimit';
 import UpdateCustomPartitionField from './UpdateCustomPartitionField';
+import dateTimeUtils from '@/utils/dateTimeUtil';
 
 const Header = () => {
 	return (
@@ -43,15 +43,11 @@ const InfoItem = (props: { title: string; value: string; fullWidth?: boolean }) 
 const InfoData = (props: { isLoading: boolean }) => {
 	const [info] = useStreamStore((store) => store.info);
 	const [currentStream] = useAppStore((store) => store.currentStream);
+	const { getDateTimeWithTZ } = dateTimeUtils;
 
-	const createdAt = _.chain(info)
-		.get('created-at', '')
-		.thru((val) => (val !== '' ? dayjs(val).format('HH:mm A DD MMM YYYY') : '-'))
-		.value();
-	const firstEventAt = _.chain(info)
-		.get('first-event-at', '')
-		.thru((val) => (val !== '' ? dayjs(val).format('HH:mm A DD MMM YYYY') : '-'))
-		.value();
+	const createdAt = getDateTimeWithTZ(_.get(info, 'created-at', '-'));
+	const firstEventAt = getDateTimeWithTZ(_.get(info, 'first-event-at', '-'));
+
 	const timePartition = _.get(info, 'time_partition', '-');
 	const staticSchemaFlag = _.chain(info)
 		.get('static_schema_flag', '')
