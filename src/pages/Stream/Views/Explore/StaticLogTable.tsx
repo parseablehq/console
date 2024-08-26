@@ -1,11 +1,9 @@
 import { Tbody, Thead } from '@/components/Table';
-import { Box, Center, Checkbox, Menu, ScrollArea, Table, px, ActionIcon, Flex, Button } from '@mantine/core';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import type { FC, MutableRefObject, ReactNode, RefObject } from 'react';
+import { Box, ScrollArea, Table } from '@mantine/core';
+import { useEffect, useRef, useState } from 'react';
+import type { MutableRefObject, ReactNode, RefObject } from 'react';
 import LogRow from './StaticLogRow';
 import useMountedState from '@/hooks/useMountedState';
-import { IconGripVertical, IconPin, IconPinFilled, IconSettings } from '@tabler/icons-react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import EmptyBox from '@/components/Empty';
 import Column from '../../components/Column';
 import FilterPills from '../../components/FilterPills';
@@ -15,15 +13,13 @@ import {
 	STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT,
 	STREAM_SECONDARY_TOOLBAR_HRIGHT,
 } from '@/constants/theme';
-import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
+import { useLogsStore } from '../../providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
 import Footer from './Footer';
 import { ErrorView, LoadingView } from './LoadingViews';
 
 const skipFields = ['p_metadata', 'p_tags'];
-
-const { togglePinnedColumns, toggleDisabledColumns } = logsStoreReducers;
 
 const TableContainer = (props: { children: ReactNode }) => {
 	return <Box className={tableStyles.container}>{props.children}</Box>;
@@ -116,7 +112,7 @@ const Columns = (props: { containerRefs: SectionRefs }) => {
 };
 
 const TableHeader = (props: { isPinned?: boolean }) => {
-	const [{ headers, orderedHeaders, disabledColumns, pinnedColumns }] = useLogsStore((store) => store.tableOpts);
+	const [{ orderedHeaders, disabledColumns, pinnedColumns }] = useLogsStore((store) => store.tableOpts);
 
 	if (orderedHeaders.length > 0) {
 		return orderedHeaders
@@ -182,47 +178,6 @@ const LogTable = (props: {
 			)}
 			<Footer loaded={showTable} hasNoData={hasNoData} isFetchingCount={isFetchingCount} />
 		</TableContainer>
-	);
-};
-
-type ThColumnMenuItemProps = {
-	header: string;
-	index: number;
-	isColumnPinned: boolean;
-	isColumnDisabled: boolean;
-	toggleColumnPinned: (columnName: string) => void;
-};
-
-const ThColumnMenuItem: FC<ThColumnMenuItemProps> = (props) => {
-	const { header, index, isColumnPinned, isColumnDisabled, toggleColumnPinned } = props;
-	const classes = tableStyles;
-	const [, setLogsStore] = useLogsStore((_store) => null);
-
-	const toggleDisabledStatus = useCallback(() => {
-		setLogsStore((store) => toggleDisabledColumns(store, header));
-	}, []);
-
-	if (skipFields.includes(header)) return null;
-	return (
-		<Draggable key={header} index={index} draggableId={header}>
-			{(provided) => (
-				<Menu.Item
-					className={classes.thColumnMenuDraggable}
-					style={{ cursor: 'default' }}
-					ref={provided.innerRef}
-					{...provided.draggableProps}>
-					<Flex>
-						<Box onClick={() => toggleColumnPinned(header)}>
-							{isColumnPinned ? <IconPinFilled size="1.05rem" /> : <IconPin size="1.05rem" />}
-						</Box>
-						<Box className={classes.thColumnMenuDragHandle} {...provided.dragHandleProps}>
-							<IconGripVertical size="1.05rem" stroke={1.5} />
-						</Box>
-						<Checkbox color="red" label={header} checked={!isColumnDisabled} onChange={toggleDisabledStatus} />
-					</Flex>
-				</Menu.Item>
-			)}
-		</Draggable>
 	);
 };
 

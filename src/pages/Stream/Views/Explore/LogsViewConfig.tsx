@@ -1,12 +1,12 @@
 import { LOGS_CONFIG_SIDEBAR_WIDTH } from '@/constants/theme';
-import { Box, Checkbox, CheckboxGroup, ScrollArea, Skeleton, Stack, Text, TextInput, Tooltip } from '@mantine/core';
+import { Checkbox, ScrollArea, Skeleton, Stack, Text, TextInput, Tooltip } from '@mantine/core';
 import classes from '../../styles/LogsViewConfig.module.css';
 import { useStreamStore } from '../../providers/StreamProvider';
-import _, { head } from 'lodash';
+import _ from 'lodash';
 import { Field } from '@/@types/parseable/dataType';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
-import { IconEye, IconGripVertical, IconPin, IconPinFilled } from '@tabler/icons-react';
+import { IconGripVertical, IconPin, IconPinFilled } from '@tabler/icons-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
 const { toggleConfigViewType, toggleDisabledColumns, setOrderedHeaders, togglePinnedColumns } = logsStoreReducers;
@@ -54,7 +54,12 @@ const SchemaItem = (props: { schemaField: Field }) => {
 	);
 };
 
-const SearchBar = (props: { disabled: boolean; value: string; onChangeHandler: (e) => void; placeholder: string }) => {
+const SearchBar = (props: {
+	disabled: boolean;
+	value: string;
+	onChangeHandler: (e: ChangeEvent<HTMLInputElement>) => void;
+	placeholder: string;
+}) => {
 	const { placeholder, value, onChangeHandler } = props;
 	return (
 		<Stack className={classes.searchBarContainer}>
@@ -67,7 +72,7 @@ const SchemaList = (props: { isLoading: boolean }) => {
 	const [schema] = useStreamStore((store) => store.schema);
 	const [searchValue, setSearchValue] = useState<string>('');
 
-	const onChangeHandler = useCallback((e) => {
+	const onChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
 		setSearchValue(e.target.value);
 	}, []);
 
@@ -130,7 +135,10 @@ const ColumnItem = (props: {
 				<Checkbox value={props.column} checked={props.visible} readOnly onChange={onToggle} />
 			</Stack>
 			<Stack style={{ width: LOGS_CONFIG_SIDEBAR_WIDTH * 0.6, height: '1rem' }}>
-				<Text className={classes.fieldNameText} style={{ width: LOGS_CONFIG_SIDEBAR_WIDTH * 0.6, fontSize: '0.7rem' }} lineClamp={1}>
+				<Text
+					className={classes.fieldNameText}
+					style={{ width: LOGS_CONFIG_SIDEBAR_WIDTH * 0.6, fontSize: '0.7rem' }}
+					lineClamp={1}>
 					{props.column}
 				</Text>
 			</Stack>
@@ -162,7 +170,7 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 	}, [orderedHeaders]);
 
 	const onSearchHandler = useCallback(
-		(e) => {
+		(e: ChangeEvent<HTMLInputElement>) => {
 			if (_.isEmpty(e.target.value)) {
 				columnsToShowRef.current = orderedHeaders;
 			} else {
