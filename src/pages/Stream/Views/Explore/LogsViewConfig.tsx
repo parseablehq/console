@@ -99,7 +99,6 @@ const SchemaList = (props: { isLoading: boolean }) => {
 					return <SchemaItem key={index} schemaField={schemaField} />;
 				})}
 			</ScrollArea>
-			<Stack />
 		</>
 	);
 };
@@ -241,7 +240,6 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 					</Droppable>
 				</DragDropContext>
 			</ScrollArea>
-			<Stack />
 		</>
 	);
 };
