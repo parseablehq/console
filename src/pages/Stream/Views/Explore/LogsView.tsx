@@ -7,7 +7,7 @@ import LogsViewConfig from './LogsViewConfig';
 
 const LogsView = (props: { schemaLoading: boolean }) => {
 	const { schemaLoading } = props;
-	const { errorMessage, hasNoData, showTable, isFetchingCount } = useLogsFetcher({
+	const { errorMessage, hasNoData, showTable, isFetchingCount, logsLoading } = useLogsFetcher({
 		schemaLoading,
 	});
 	const [viewMode] = useLogsStore((store) => store.viewMode);
@@ -18,11 +18,9 @@ const LogsView = (props: { schemaLoading: boolean }) => {
 		isFetchingCount,
 	};
 
-	console.log(schemaLoading, "parent")
-
 	return (
-		<Box style={{display: 'flex', flex: 1, overflow: 'hidden'}}>
-			<LogsViewConfig schemaLoading={schemaLoading}/>
+		<Box style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+			<LogsViewConfig schemaLoading={schemaLoading} logsLoading={logsLoading} />
 			{viewMode === 'table' ? <LogTable {...viewOpts} /> : <JsonView {...viewOpts} />}
 		</Box>
 	);

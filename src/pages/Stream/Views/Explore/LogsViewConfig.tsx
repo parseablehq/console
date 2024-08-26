@@ -41,7 +41,7 @@ const SchemaItem = (props: { schemaField: Field }) => {
 	return (
 		<Stack className={classes.schemaItemContainer} gap={0}>
 			<Stack className={classes.fieldName}>
-				<Text className={classes.fieldNameText}>{name}</Text>
+				<Text className={classes.fieldNameText} lineClamp={1}>{name}</Text>
 			</Stack>
 			<Stack className={classes.fieldDataType}>
 				<Text className={classes.fieldDataTypeText}>{sanitizedDataType}</Text>
@@ -77,22 +77,21 @@ const SchemaList = (props: {isLoading: boolean}) => {
 
 	if (props.isLoading) return <LoadingView/>;
 
-	console.log(props.isLoading)
-
 	return (
-		<Stack>
+		<>
 			<SearchBar
 				placeholder="Search Schema"
 				value={searchValue}
 				onChangeHandler={onChangeHandler}
 				disabled={_.isEmpty(schemaFields)}
 			/>
-			<ScrollArea>
+			<ScrollArea style={{flex: 1}}>
 				{_.map(schemaFields, (schemaField, index) => {
 					return <SchemaItem key={index} schemaField={schemaField} />;
 				})}
 			</ScrollArea>
-		</Stack>
+			<Stack/>
+		</>
 	);
 };
 
@@ -147,7 +146,7 @@ const LoadingView = () => {
 	)
 }
 
-const ColumnsList = () => {
+const ColumnsList = (props: { isLoading: boolean }) => {
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const [searchValue, setSearchValue] = useState<string>('');
 	const { headers, disabledColumns, orderedHeaders, pinnedColumns } = tableOpts;
@@ -194,10 +193,10 @@ const ColumnsList = () => {
 		setLogsStore((store) => setOrderedHeaders(store, reorderedColumns));
 	};
 
-	return <LoadingView />
+	if (props.isLoading) return <LoadingView />;
 
 	return (
-		<Stack>
+		<>
 			<SearchBar
 				placeholder="Search Columns"
 				value={searchValue}
@@ -230,16 +229,17 @@ const ColumnsList = () => {
 					</Droppable>
 				</DragDropContext>
 			</ScrollArea>
-		</Stack>
+			<Stack />
+		</>
 	);
 };
 
-const LogsViewConfig = (props: {schemaLoading: boolean}) => {
+const LogsViewConfig = (props: {schemaLoading: boolean, logsLoading: boolean}) => {
 	const [configViewType] = useLogsStore((store) => store.tableOpts.configViewType);
 	return (
 		<Stack style={{ width: LOGS_CONFIG_SIDEBAR_WIDTH }} className={classes.container}>
 			<Header />
-			{configViewType === 'schema' ? <SchemaList isLoading={props.schemaLoading}/> : <ColumnsList />}
+			{configViewType === 'schema' ? <SchemaList isLoading={props.schemaLoading}/> : <ColumnsList isLoading={props.logsLoading}/>}
 		</Stack>
 	);
 };

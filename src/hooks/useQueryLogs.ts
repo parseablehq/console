@@ -8,7 +8,7 @@ import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
 import { AxiosError } from 'axios';
 import jqSearch from '@/utils/jqSearch';
-import { useGetLogStreamSchema } from './useGetLogStreamSchema';
+import { useGetStreamSchema } from '@/hooks/useGetLogStreamSchema';
 
 const { setLogData } = logsStoreReducers;
 
@@ -32,7 +32,6 @@ export const useQueryLogs = () => {
 	const [error, setError] = useMountedState<string | null>(null);
 	const [loading, setLoading] = useMountedState<boolean>(false);
 	const [pageLogData, setPageLogData] = useMountedState<LogsData | null>(null);
-	const { getDataSchema } = useGetLogStreamSchema();
 	const [querySearch, setQuerySearch] = useMountedState<LogsSearch>({
 		search: '',
 		filters: {},
@@ -41,7 +40,9 @@ export const useQueryLogs = () => {
 			order: SortOrder.DESCENDING,
 		},
 	});
+
 	const [currentStream] = useAppStore((store) => store.currentStream);
+	const { refetch: refetchSchema } = useGetStreamSchema({ streamName: currentStream || '' });
 	const [
 		{
 			timeRange,
@@ -84,7 +85,7 @@ export const useQueryLogs = () => {
 		try {
 			setLoading(true);
 			setError(null);
-			getDataSchema(); // fetch schema parallelly every time we fetch logs
+			refetchSchema(); // fetch schema parallelly every time we fetch logs
 			const logsQueryRes = isQuerySearchActive
 				? await getQueryResultWithHeaders(
 						{ ...logsQuery, access: [] },
