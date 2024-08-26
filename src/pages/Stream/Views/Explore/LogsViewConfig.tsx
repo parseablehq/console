@@ -1,15 +1,15 @@
 import { LOGS_CONFIG_SIDEBAR_WIDTH } from '@/constants/theme';
-import { Checkbox, CheckboxGroup, ScrollArea, Stack, Text, TextInput } from '@mantine/core';
+import { Checkbox, CheckboxGroup, ScrollArea, Skeleton, Stack, Text, TextInput } from '@mantine/core';
 import classes from '../../styles/LogsViewConfig.module.css';
 import { useStreamStore } from '../../providers/StreamProvider';
 import _, { head } from 'lodash';
 import { Field } from '@/@types/parseable/dataType';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
-import { IconEye, IconGripVertical } from '@tabler/icons-react';
+import { IconEye, IconGripVertical, IconPin, IconPinFilled } from '@tabler/icons-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
-const { toggleConfigViewType, toggleDisabledColumns, setOrderedHeaders } = logsStoreReducers;
+const { toggleConfigViewType, toggleDisabledColumns, setOrderedHeaders, togglePinnedColumns } = logsStoreReducers;
 
 const Header = () => {
 	const [configViewType, setLogsStore] = useLogsStore((store) => store.tableOpts.configViewType);
@@ -59,7 +59,7 @@ const SearchBar = (props: { disabled: boolean; value: string; onChangeHandler: (
 	);
 };
 
-const SchemaList = () => {
+const SchemaList = (props: {isLoading: boolean}) => {
 	const [schema] = useStreamStore((store) => store.schema);
 	const [searchValue, setSearchValue] = useState<string>('');
 
@@ -74,6 +74,10 @@ const SchemaList = () => {
 		const regex = new RegExp(searchValue, 'i');
 		return _.filter(fields, (field) => regex.test(field.name));
 	}, [searchValue, schema?.fields]);
+
+	if (props.isLoading) return <LoadingView/>;
+
+	console.log(props.isLoading)
 
 	return (
 		<Stack>
@@ -92,12 +96,30 @@ const SchemaList = () => {
 	);
 };
 
-const ColumnItem = (props: { column: string; visible: boolean; onToggleColumn: (column: string) => void }) => {
-	const onClick = useCallback(() => {
+const ColumnItem = (props: {
+	column: string;
+	visible: boolean;
+	onToggleColumn: (column: string) => void;
+	pinned: boolean;
+	onPinColumn: (column: string) => void;
+}) => {
+	const onToggle = useCallback(() => {
 		props.onToggleColumn(props.column);
 	}, []);
+
+	const onPin = useCallback(() => {
+		props.onPinColumn(props.column);
+	}, []);
+
 	return (
-		<Stack className={classes.columnItemContainer} gap={8}>
+		<Stack className={classes.columnItemContainer} gap={8} style={{ cursor: 'default' }}>
+			<Stack style={{ cursor: 'pointer' }} onClick={onPin}>
+				{props.pinned ? (
+					<IconPinFilled className={classes.columnPinIcon} size="1rem" />
+				) : (
+					<IconPin className={classes.columnPinIcon} size="1rem" />
+				)}
+			</Stack>
 			<IconGripVertical className={classes.columnDragIcon} size="1rem" />
 			<Checkbox
 				value={props.column}
@@ -106,21 +128,34 @@ const ColumnItem = (props: { column: string; visible: boolean; onToggleColumn: (
 				styles={{ labelWrapper: { width: '100%' } }}
 				style={{ width: '100%' }}
 				readOnly
-				onChange={onClick}
+				onChange={onToggle}
 			/>
 		</Stack>
 	);
 };
 
+const LoadingView = () => {
+	return (
+		<Stack style={{padding: '0.5rem 0.7rem'}}>
+			<Skeleton height="2.2rem" />
+			<Skeleton height="2.2rem" />
+			<Skeleton height="2.2rem" />
+			<Skeleton height="2.2rem" />
+			<Skeleton height="2.2rem" />
+			<Skeleton height="2.2rem" />
+		</Stack>
+	)
+}
+
 const ColumnsList = () => {
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const [searchValue, setSearchValue] = useState<string>('');
-	const { headers, disabledColumns, orderedHeaders } = tableOpts;
+	const { headers, disabledColumns, orderedHeaders, pinnedColumns } = tableOpts;
 	const columnsToShowRef = useRef(orderedHeaders);
 
 	useEffect(() => {
-		columnsToShowRef.current = orderedHeaders
-	}, [orderedHeaders])
+		columnsToShowRef.current = orderedHeaders;
+	}, [orderedHeaders]);
 
 	const onSearchHandler = useCallback(
 		(e) => {
@@ -137,8 +172,11 @@ const ColumnsList = () => {
 	);
 
 	const onToggleColumn = useCallback((column: string) => {
-		console.log('toggling for', column);
 		setLogsStore((store) => toggleDisabledColumns(store, column));
+	}, []);
+
+	const onPinColumn = useCallback((column: string) => {
+		setLogsStore((store) => togglePinnedColumns(store, column));
 	}, []);
 
 	const onDropEnd = (result: DropResult) => {
@@ -155,6 +193,8 @@ const ColumnsList = () => {
 		columnsToShowRef.current = reorderedColumns;
 		setLogsStore((store) => setOrderedHeaders(store, reorderedColumns));
 	};
+
+	return <LoadingView />
 
 	return (
 		<Stack>
@@ -177,6 +217,8 @@ const ColumnsList = () => {
 													onToggleColumn={onToggleColumn}
 													column={column}
 													visible={!_.includes(disabledColumns, column)}
+													pinned={_.includes(pinnedColumns, column)}
+													onPinColumn={onPinColumn}
 												/>
 											</div>
 										)}
@@ -192,13 +234,12 @@ const ColumnsList = () => {
 	);
 };
 
-
-const LogsViewConfig = () => {
+const LogsViewConfig = (props: {schemaLoading: boolean}) => {
 	const [configViewType] = useLogsStore((store) => store.tableOpts.configViewType);
 	return (
 		<Stack style={{ width: LOGS_CONFIG_SIDEBAR_WIDTH }} className={classes.container}>
 			<Header />
-			{configViewType === 'schema' ? <SchemaList /> : <ColumnsList />}
+			{configViewType === 'schema' ? <SchemaList isLoading={props.schemaLoading}/> : <ColumnsList />}
 		</Stack>
 	);
 };

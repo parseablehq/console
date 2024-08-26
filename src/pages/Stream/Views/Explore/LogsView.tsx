@@ -18,9 +18,11 @@ const LogsView = (props: { schemaLoading: boolean }) => {
 		isFetchingCount,
 	};
 
+	console.log(schemaLoading, "parent")
+
 	return (
 		<Box style={{display: 'flex', flex: 1, overflow: 'hidden'}}>
-			<LogsViewConfig />
+			<LogsViewConfig schemaLoading={schemaLoading}/>
 			{viewMode === 'table' ? <LogTable {...viewOpts} /> : <JsonView {...viewOpts} />}
 		</Box>
 	);

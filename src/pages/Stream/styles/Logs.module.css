@@ -56,10 +56,10 @@
 	position: sticky;
 	top: 0;
 	background-color: #fff;
+	z-index: 2;
 }
 
 .trStyle {
-	cursor: pointer;
 	background-color: #fff;
 	&:hover {
 		background-color: #f1f3f5;
@@ -69,7 +69,7 @@
 
 	td {
 		border-top: none !important;
-		padding: 0.25rem 1rem;
+		padding: 0.5rem 1rem;
 		font-size: 0.6rem;
 	}
 }
@@ -84,7 +84,7 @@
 	border-color: #ff0000;
 	td {
 		border-top: none !important;
-		padding: 0.25rem 1rem;
+		padding: 0.5rem 1rem;
 		font-size: 0.6rem;
 	}
 }
