@@ -45,8 +45,8 @@ const InfoData = (props: { isLoading: boolean }) => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const { getDateTimeWithTZ } = dateTimeUtils;
 
-	const createdAt = getDateTimeWithTZ(_.get(info, 'created-at', '-'));
-	const firstEventAt = getDateTimeWithTZ(_.get(info, 'first-event-at', '-'));
+	const createdAt = getDateTimeWithTZ(_.get(info, 'created-at'));
+	const firstEventAt = getDateTimeWithTZ(_.get(info, 'first-event-at'));
 
 	const timePartition = _.get(info, 'time_partition', '-');
 	const staticSchemaFlag = _.chain(info)
