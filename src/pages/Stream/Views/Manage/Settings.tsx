@@ -10,6 +10,8 @@ import { IconCheck, IconTrash, IconX } from '@tabler/icons-react';
 import { sanitizeBytes, convertGibToBytes } from '@/utils/formatBytes';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 
+const { getDateTimeWithTZ } = timeRangeUtils;
+
 const Header = () => {
 	return (
 		<Stack className={classes.headerContainer} style={{ minHeight: '3rem', maxHeight: '3rem' }}>
@@ -170,7 +172,6 @@ const HotTierConfig = (props: {
 }) => {
 	const [hotTier] = useStreamStore((store) => store.hotTier);
 	const [info] = useStreamStore((store) => store.info);
-	const { getDateTimeWithTZ } = timeRangeUtils;
 	const streamType = 'stream_type' in info && info.stream_type;
 	const size = _.get(hotTier, 'size', '');
 	const usedSize = _.get(hotTier, 'used_size', '');

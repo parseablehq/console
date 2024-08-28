@@ -46,12 +46,10 @@ const InfoData = (props: { isLoading: boolean }) => {
 	const [info] = useStreamStore((store) => store.info);
 	const [currentStream] = useAppStore((store) => store.currentStream);
 
-	const createdAt = _.get(info, 'created-at', '-');
-	const firstEventAt = _.get(info, 'first-event-at', '-');
-	const createdAtParsed = getDateTimeWithTZ(createdAt);
-	const firstEventAtParsed = getDateTimeWithTZ(firstEventAt);
-	const validCreatedAt = createdAtParsed !== 'Invalid date' ? createdAtParsed : '-';
-	const validFirstEventAt = firstEventAtParsed !== 'Invalid date' ? firstEventAtParsed : '-';
+	const createdAt = _.get(info, 'created-at');
+	const firstEventAt = _.get(info, 'first-event-at');
+	const createdAtParsed = !createdAt ? '-' : getDateTimeWithTZ(createdAt);
+	const firstEventAtParsed = !firstEventAt ? '-' : getDateTimeWithTZ(firstEventAt);
 
 	const timePartition = _.get(info, 'time_partition', '-');
 	const staticSchemaFlag = _.chain(info)
@@ -71,8 +69,8 @@ const InfoData = (props: { isLoading: boolean }) => {
 				<Stack style={{ flex: 1, padding: '1.5rem', justifyContent: 'space-between' }}>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Name" value={currentStream || ''} />
-						<InfoItem title="Created At" value={validCreatedAt} />
-						<InfoItem title="First Event At" value={validFirstEventAt} />
+						<InfoItem title="Created At" value={createdAtParsed} />
+						<InfoItem title="First Event At" value={firstEventAtParsed} />
 					</Stack>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Schema Type" value={staticSchemaFlag} />
