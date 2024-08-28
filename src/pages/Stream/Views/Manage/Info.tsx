@@ -7,7 +7,7 @@ import UpdateTimePartitionLimit from './UpdateTimePartitionLimit';
 import UpdateCustomPartitionField from './UpdateCustomPartitionField';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 
-const { getDateTimeWithTZ } = timeRangeUtils;
+const { formatDateWithTimezone } = timeRangeUtils;
 
 const Header = () => {
 	return (
@@ -46,10 +46,10 @@ const InfoData = (props: { isLoading: boolean }) => {
 	const [info] = useStreamStore((store) => store.info);
 	const [currentStream] = useAppStore((store) => store.currentStream);
 
-	const createdAt = _.get(info, 'created-at');
-	const firstEventAt = _.get(info, 'first-event-at');
-	const createdAtParsed = !createdAt ? '-' : getDateTimeWithTZ(createdAt);
-	const firstEventAtParsed = !firstEventAt ? '-' : getDateTimeWithTZ(firstEventAt);
+	const createdAt = _.get(info, 'created-at', '-');
+	const firstEventAt = _.get(info, 'first-event-at', '-');
+	const createdAtFormatted = formatDateWithTimezone(createdAt);
+	const firstEventAtFormatted = formatDateWithTimezone(firstEventAt);
 
 	const timePartition = _.get(info, 'time_partition', '-');
 	const staticSchemaFlag = _.chain(info)
@@ -69,8 +69,8 @@ const InfoData = (props: { isLoading: boolean }) => {
 				<Stack style={{ flex: 1, padding: '1.5rem', justifyContent: 'space-between' }}>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Name" value={currentStream || ''} />
-						<InfoItem title="Created At" value={createdAtParsed} />
-						<InfoItem title="First Event At" value={firstEventAtParsed} />
+						<InfoItem title="Created At" value={createdAtFormatted ? createdAtFormatted : '-'} />
+						<InfoItem title="First Event At" value={firstEventAtFormatted ? firstEventAtFormatted : '-'} />
 					</Stack>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Schema Type" value={staticSchemaFlag} />
