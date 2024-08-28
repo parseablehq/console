@@ -8,7 +8,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useStreamStore } from '../../providers/StreamProvider';
 import { IconCheck, IconTrash, IconX } from '@tabler/icons-react';
 import { sanitizeBytes, convertGibToBytes } from '@/utils/formatBytes';
-import dateTimeUtils from '@/utils/dateTimeUtil';
+import timeRangeUtils from '@/utils/timeRangeUtils';
 
 const Header = () => {
 	return (
@@ -170,7 +170,7 @@ const HotTierConfig = (props: {
 }) => {
 	const [hotTier] = useStreamStore((store) => store.hotTier);
 	const [info] = useStreamStore((store) => store.info);
-	const { getDateTimeWithTZ } = dateTimeUtils;
+	const { getDateTimeWithTZ } = timeRangeUtils;
 	const streamType = 'stream_type' in info && info.stream_type;
 	const size = _.get(hotTier, 'size', '');
 	const usedSize = _.get(hotTier, 'used_size', '');

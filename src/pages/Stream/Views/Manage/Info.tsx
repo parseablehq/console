@@ -5,7 +5,9 @@ import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import UpdateTimePartitionLimit from './UpdateTimePartitionLimit';
 import UpdateCustomPartitionField from './UpdateCustomPartitionField';
-import dateTimeUtils from '@/utils/dateTimeUtil';
+import timeRangeUtils from '@/utils/timeRangeUtils';
+
+const { getDateTimeWithTZ } = timeRangeUtils;
 
 const Header = () => {
 	return (
@@ -43,10 +45,13 @@ const InfoItem = (props: { title: string; value: string; fullWidth?: boolean }) 
 const InfoData = (props: { isLoading: boolean }) => {
 	const [info] = useStreamStore((store) => store.info);
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const { getDateTimeWithTZ } = dateTimeUtils;
 
-	const createdAt = getDateTimeWithTZ(_.get(info, 'created-at'));
-	const firstEventAt = getDateTimeWithTZ(_.get(info, 'first-event-at'));
+	const createdAt = _.get(info, 'created-at', '-');
+	const firstEventAt = _.get(info, 'first-event-at', '-');
+	const createdAtParsed = getDateTimeWithTZ(createdAt);
+	const firstEventAtParsed = getDateTimeWithTZ(firstEventAt);
+	const validCreatedAt = createdAtParsed !== 'Invalid date' ? createdAtParsed : '-';
+	const validFirstEventAt = firstEventAtParsed !== 'Invalid date' ? firstEventAtParsed : '-';
 
 	const timePartition = _.get(info, 'time_partition', '-');
 	const staticSchemaFlag = _.chain(info)
@@ -66,8 +71,8 @@ const InfoData = (props: { isLoading: boolean }) => {
 				<Stack style={{ flex: 1, padding: '1.5rem', justifyContent: 'space-between' }}>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Name" value={currentStream || ''} />
-						<InfoItem title="Created At" value={createdAt ? createdAt : '-'} />
-						<InfoItem title="First Event At" value={firstEventAt ? firstEventAt : '-'} />
+						<InfoItem title="Created At" value={validCreatedAt} />
+						<InfoItem title="First Event At" value={validFirstEventAt} />
 					</Stack>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Schema Type" value={staticSchemaFlag} />

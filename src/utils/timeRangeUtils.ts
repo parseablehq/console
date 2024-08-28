@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import moment from 'moment-timezone';
 import _ from 'lodash';
 
 const defaultTimeRangeOption = {
@@ -64,9 +65,19 @@ const getDefaultTimeRangeOption = (
 	return selectedTimeRange ? selectedTimeRange : defaultTimeRangeOption;
 };
 
+//accepts a date-time string and outputs a human readable string with timezone
+//output format 31/12/1990 11:59 pm IST
+const getDateTimeWithTZ = (dateTime: string, format?: string) => {
+	const sysTimeZone = moment.tz.guess();
+	const convertedDate = moment.tz(dateTime, sysTimeZone);
+	const parseDateTime = format ? convertedDate.format(format) : convertedDate.format('DD/MM/YYYY h:mm a z');
+
+	return parseDateTime;
+};
+
 const timeRangeUtils = {
 	defaultTimeRangeOption,
-
+	getDateTimeWithTZ,
 	makeTimeRangeOptions,
 	makeTimeRangeLabel,
 	optimizeEndTime,
