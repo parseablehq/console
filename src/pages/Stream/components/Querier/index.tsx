@@ -180,7 +180,7 @@ const Querier = () => {
 
 		// trigger query fetch if the rules were updated by the remove btn on pills
 		// -----------------------------------
-		if ((!showQueryBuilder && activeMode === 'filters') || savedFilterId) {
+		if (!showQueryBuilder && (activeMode === 'filters' || savedFilterId)) {
 			if (!shouldSumbitDisabled) {
 				onFiltersApply({ isUncontrolled: true });
 			} else {
