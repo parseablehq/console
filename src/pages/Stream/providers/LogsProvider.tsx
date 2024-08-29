@@ -546,7 +546,7 @@ const setLogData = (store: LogsStore, data: Log[], headers: string[], jqFiltered
 			...store.tableOpts,
 			...(newPageSlice ? { pageData: newPageSlice } : {}),
 			headers,
-			currentPage,
+			currentPage: 1,
 			totalPages: getTotalPages(filteredData, tableOpts.perPage),
 		},
 		data: { ...existingData, rawData: data, filteredData: filteredData },
