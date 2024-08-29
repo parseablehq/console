@@ -67,15 +67,10 @@ const getDefaultTimeRangeOption = (
 
 //accepts a date-time string and outputs a human readable string with timezone
 //output format 31/12/1990 11:59 pm IST as default
-const formatDateWithTimezone = (dateTime: string, format: string = 'DD/MM/YYYY h:mm a z') => {
-	const parsedDate = Date.parse(dateTime);
-
-	if (!parsedDate) return;
-
+const formatDateWithTimezone = (dateTime: string, format: string = 'DD/MM/YYYY h:mm a z'): string => {
 	const localTimeZone = moment.tz.guess();
 	const convertedDate = moment.tz(dateTime, localTimeZone);
-	const formattedDate = convertedDate.format(format);
-	return formattedDate;
+	return convertedDate.format(format);
 };
 
 const timeRangeUtils = {
