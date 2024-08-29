@@ -584,6 +584,7 @@ const setCurrentOffset = (store: LogsStore, currentOffset: number) => {
 	return {
 		tableOpts: {
 			...store.tableOpts,
+			currentPage: 1,
 			currentOffset,
 		},
 	};
