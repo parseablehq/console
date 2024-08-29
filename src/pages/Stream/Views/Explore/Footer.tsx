@@ -109,11 +109,12 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: b
 				const targetOffset = currentOffset - LOAD_LIMIT;
 				if (currentOffset < 0) return;
 
+				setLogsStore((store) => setCurrentOffset(store, targetOffset));
+
 				if (targetOffset === 0 && currentOffset > 0) {
 					// hack to initiate fetch
 					setLogsStore((store) => setCurrentPage(store, 0));
 				}
-				setLogsStore((store) => setCurrentOffset(store, targetOffset));
 			} else {
 				const targetOffset = currentOffset + LOAD_LIMIT;
 				setLogsStore((store) => setCurrentOffset(store, targetOffset));
