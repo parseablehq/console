@@ -1,6 +1,6 @@
 import { Box, Button, Group, Modal, ScrollArea, Select, Stack, Table, Text, TextInput, px } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
-import { FC, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { useGetUser, useUser } from '@/hooks/useUser';
 import RoleTR from './RoleTR';
 import { IconBook2, IconUserPlus } from '@tabler/icons-react';
@@ -73,7 +73,6 @@ const Users: FC = () => {
 				<td>error</td>
 			</tr>
 		);
-
 	const handleClose = () => {
 		setCreateUserInput('');
 		setModalOpen(false);
@@ -90,19 +89,15 @@ const Users: FC = () => {
 		createUserMutation({ userName: createUserInput, roles: userRole, onSuccess: getUserRefetch });
 	};
 
-	const createVaildtion = () => {
-		if (getUserData?.data?.includes(createUserInput) || createUserInput.length < 3) {
-			return true;
+	const createVaildtion = useCallback(() => {
+		if (getUserData?.data?.includes(createUserInput) || createUserInput.length < 3 || SelectedRole !== '') {
+			if (getRolesData?.data?.includes(SelectedRole)) {
+				return true;
+			}
 		}
 
-		if (SelectedRole !== '') {
-			if (getRolesData?.data?.includes(SelectedRole)) {
-				return false;
-			}
-			return true;
-		}
 		return false;
-	};
+	}, [SelectedRole, createUserInput]);
 
 	return (
 		<Box
