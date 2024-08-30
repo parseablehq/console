@@ -3,9 +3,11 @@ import classes from '../../styles/Management.module.css';
 import { useStreamStore } from '../../providers/StreamProvider';
 import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import dayjs from 'dayjs';
 import UpdateTimePartitionLimit from './UpdateTimePartitionLimit';
 import UpdateCustomPartitionField from './UpdateCustomPartitionField';
+import timeRangeUtils from '@/utils/timeRangeUtils';
+
+const { formatDateWithTimezone } = timeRangeUtils;
 
 const Header = () => {
 	return (
@@ -44,14 +46,11 @@ const InfoData = (props: { isLoading: boolean }) => {
 	const [info] = useStreamStore((store) => store.info);
 	const [currentStream] = useAppStore((store) => store.currentStream);
 
-	const createdAt = _.chain(info)
-		.get('created-at', '')
-		.thru((val) => (val !== '' ? dayjs(val).format('HH:mm A DD MMM YYYY') : '-'))
-		.value();
-	const firstEventAt = _.chain(info)
-		.get('first-event-at', '')
-		.thru((val) => (val !== '' ? dayjs(val).format('HH:mm A DD MMM YYYY') : '-'))
-		.value();
+	const createdAt = _.get(info, 'created-at');
+	const firstEventAt = _.get(info, 'first-event-at');
+	const createdAtWithTz = createdAt ? formatDateWithTimezone(createdAt) : '-';
+	const firstEventAtWithTz = firstEventAt ? formatDateWithTimezone(firstEventAt) : '-';
+
 	const timePartition = _.get(info, 'time_partition', '-');
 	const staticSchemaFlag = _.chain(info)
 		.get('static_schema_flag', '')
@@ -70,8 +69,8 @@ const InfoData = (props: { isLoading: boolean }) => {
 				<Stack style={{ flex: 1, padding: '1.5rem', justifyContent: 'space-between' }}>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Name" value={currentStream || ''} />
-						<InfoItem title="Created At" value={createdAt} />
-						<InfoItem title="First Event At" value={firstEventAt} />
+						<InfoItem title="Created At" value={createdAtWithTz} />
+						<InfoItem title="First Event At" value={firstEventAtWithTz} />
 					</Stack>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Schema Type" value={staticSchemaFlag} />
