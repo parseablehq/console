@@ -533,7 +533,7 @@ export const isJqSearch = (value: string) => {
 const setLogData = (store: LogsStore, data: Log[], headers: string[], jqFilteredData?: Log[]) => {
 	const { data: existingData, tableOpts, viewMode } = store;
 	const isJsonView = viewMode === 'json';
-	const currentPage = tableOpts.currentPage === 0 ? 1 : tableOpts.currentPage;
+	const currentPage = 1;
 	const filteredData =
 		isJsonView && !_.isEmpty(tableOpts.instantSearchValue)
 			? isJqSearch(tableOpts.instantSearchValue)
@@ -546,7 +546,7 @@ const setLogData = (store: LogsStore, data: Log[], headers: string[], jqFiltered
 			...store.tableOpts,
 			...(newPageSlice ? { pageData: newPageSlice } : {}),
 			headers,
-			currentPage: 1,
+			currentPage,
 			totalPages: getTotalPages(filteredData, tableOpts.perPage),
 		},
 		data: { ...existingData, rawData: data, filteredData: filteredData },
