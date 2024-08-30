@@ -658,6 +658,7 @@ const setCleanStoreForStreamChange = (store: LogsStore) => {
 			currentPage: 0,
 			currentOffset: 0,
 			totalPages: 0,
+			filters: {},
 		},
 		...updatedTimeRange,
 		alerts,
