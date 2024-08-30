@@ -198,7 +198,7 @@ const Users: FC = () => {
 						color="gray"
 						className={classes.modalActionBtn}
 						onClick={handleCreateUser}
-						disabled={createVaildtion() || !!createUserData?.data}>
+						disabled={!createVaildtion() || !!createUserData?.data}>
 						Create
 					</Button>
 					<Button onClick={handleClose} variant="outline" color="gray" className={classes.modalCancelBtn}>
