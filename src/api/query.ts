@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import { Axios } from './axios';
 import { LOG_QUERY_URL } from './constants';
 import { Log, LogsQuery, LogsResponseWithHeaders } from '@/@types/parseable/api/query';
@@ -12,9 +11,11 @@ type QueryLogs = {
 };
 
 // to optimize query performace, it has been decided to round off the time at the given level
-// so making the end-time inclusive
-const optimizeEndTime = (endTime: Date) => {
-	return dayjs(endTime).add(1, 'minute').toDate();
+const optimizeTime = (date: Date) => {
+	const tempDate = new Date(date);
+	tempDate.setSeconds(0);
+	tempDate.setMilliseconds(0);
+	return tempDate;
 };
 
 // ------ Default sql query
@@ -22,7 +23,7 @@ const optimizeEndTime = (endTime: Date) => {
 const makeDefaultQueryRequestData = (logsQuery: QueryLogs) => {
 	const { startTime, endTime, streamName, limit, pageOffset } = logsQuery;
 	const query = `SELECT * FROM ${streamName} LIMIT ${limit} OFFSET ${pageOffset}`;
-	return { query, startTime, endTime: optimizeEndTime(endTime) };
+	return { query, startTime: optimizeTime(startTime), endTime: optimizeTime(endTime) };
 };
 
 export const getQueryLogs = (logsQuery: QueryLogs) => {
@@ -41,7 +42,7 @@ export const getQueryLogsWithHeaders = (logsQuery: QueryLogs) => {
 
 const makeCustomQueryRequestData = (logsQuery: LogsQuery, query: string) => {
 	const { startTime, endTime } = logsQuery;
-	return { query, startTime, endTime: optimizeEndTime(endTime) };
+	return { query, startTime: optimizeTime(startTime), endTime: optimizeTime(endTime) };
 };
 
 export const getQueryResult = (logsQuery: LogsQuery, query = '') => {
