@@ -9,7 +9,7 @@ const { setCleanStoreForStreamChange } = logsStoreReducers;
 const useLogsFetcher = (props: { schemaLoading: boolean }) => {
 	const { schemaLoading } = props;
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const [{ tableOpts, timeRange }, setLogsStore] = useLogsStore((store) => store);
+	const [{ tableOpts }, setLogsStore] = useLogsStore((store) => store);
 	const { currentOffset, currentPage, pageData } = tableOpts;
 	const { getQueryData, loading: logsLoading, error: errorMessage } = useQueryLogs();
 	const { refetchCount, isCountLoading, isCountRefetching } = useFetchCount();
@@ -26,7 +26,7 @@ const useLogsFetcher = (props: { schemaLoading: boolean }) => {
 			getQueryData();
 			refetchCount();
 		}
-	}, [currentPage, currentStream, timeRange]);
+	}, [currentPage, currentStream]);
 
 	useEffect(() => {
 		if (currentOffset !== 0 && currentPage !== 0) {
