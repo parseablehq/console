@@ -684,7 +684,7 @@ const setCleanStoreForStreamChange = (store: LogsStore) => {
 			totalPages: 0,
 			orderedHeaders: [],
 			disabledColumns: [],
-			pinnedColumns: []
+			pinnedColumns: [],
 			filters: {},
 		},
 		...updatedTimeRange,
