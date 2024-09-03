@@ -82,36 +82,33 @@ const getEndOfTs = (time: Date, compactType: CompactInterval): Date => {
 	}
 };
 
+const incrementDateByCompactType = (date: Date, type: CompactInterval): Date => {
+	let tempDate = new Date(date);
+	if (type === 'minute') {
+		tempDate.setMinutes(tempDate.getMinutes() + 1);
+	} else if (type === 'hour') {
+		tempDate.setHours(tempDate.getHours() + 1);
+	} else if (type === 'day') {
+		tempDate.setDate(tempDate.getDate() + 1);
+	} else if (type === 'quarter-hour') {
+		tempDate.setMinutes(tempDate.getMinutes() + 15);
+	} else if (type === 'half-hour') {
+		tempDate.setMinutes(tempDate.getMinutes() + 30);
+	} else if (type === 'month') {
+		tempDate.setMonth(tempDate.getMonth() + 1);
+	} else {
+		tempDate;
+	}
+	return new Date(tempDate);
+};
+
 const getAllIntervals = (start: Date, end: Date, compactType: CompactInterval): Date[] => {
 	const result = [];
-	const current = new Date(start);
+	let currentDate = new Date(start);
 
-	const increment = (date: Date, type: CompactInterval) => {
-		switch (type) {
-			case 'minute':
-				date.setMinutes(date.getMinutes() + 1);
-				break;
-			case 'hour':
-				date.setHours(date.getHours() + 1);
-				break;
-			case 'day':
-				date.setDate(date.getDate() + 1);
-				break;
-			case 'quarter-hour':
-				date.setMinutes(date.getMinutes() + 15);
-				break;
-			case 'half-hour':
-				date.setMinutes(date.getMinutes() + 30);
-				break;
-			case 'month':
-				date.setMonth(date.getMonth() + 1);
-				break;
-		}
-	};
-
-	while (current <= end) {
-		result.push(new Date(current));
-		increment(current, compactType);
+	while (currentDate <= end) {
+		result.push(new Date(currentDate));
+		currentDate = incrementDateByCompactType(currentDate, compactType);
 	}
 
 	return result;
@@ -170,6 +167,15 @@ const calcAverage = (data: LogsResponseWithHeaders | undefined) => {
 	return parseInt(Math.abs(total / records.length).toFixed(0));
 };
 
+type GraphTickItem = {
+	events: number;
+	minute: Date;
+	aboveAvgPercent: number;
+	compactType: CompactInterval;
+	startTime: dayjs.Dayjs;
+	endTime: dayjs.Dayjs;
+};
+
 // date_bin removes tz info
 // filling data with empty values where there is no rec
 const parseGraphData = (
@@ -178,7 +184,7 @@ const parseGraphData = (
 	startTime: Date,
 	endTime: Date,
 	interval: number,
-) => {
+): GraphTickItem[] => {
 	if (!data || !Array.isArray(data?.records)) return [];
 
 	const { fields, records } = data;
@@ -191,21 +197,28 @@ const parseGraphData = (
 			return new Date(`${d.date_bin_timestamp}Z`).toISOString() === ts.toISOString();
 		});
 
+		const startTime = dayjs(ts);
+		const endTimeByCompactType = incrementDateByCompactType(startTime.toDate(), compactType);
+		const endTime = dayjs(endTimeByCompactType);
+
+		const defaultOpts = {
+			events: 0,
+			minute: ts,
+			aboveAvgPercent: 0,
+			compactType,
+			startTime,
+			endTime,
+		};
+
 		if (!countData || typeof countData !== 'object') {
-			return {
-				events: 0,
-				minute: ts,
-				aboveAvgPercent: 0,
-				compactType,
-			};
+			return defaultOpts;
 		} else {
 			const aboveAvgCount = _.toNumber(countData.log_count) - avg;
 			const aboveAvgPercent = parseInt(((aboveAvgCount / avg) * 100).toFixed(2));
 			return {
-				events: countData.log_count,
-				minute: ts,
+				...defaultOpts,
+				events: _.toNumber(countData.log_count),
 				aboveAvgPercent,
-				compactType,
 			};
 		}
 	});
@@ -216,19 +229,8 @@ const parseGraphData = (
 function ChartTooltip({ payload }: ChartTooltipProps) {
 	if (!payload || (Array.isArray(payload) && payload.length === 0)) return null;
 
-	const { minute, aboveAvgPercent, events, compactType } = payload[0]?.payload || {};
+	const { aboveAvgPercent, events, startTime, endTime } = payload[0]?.payload as GraphTickItem;
 	const isAboveAvg = aboveAvgPercent > 0;
-	const startTime = dayjs(minute).utc(true);
-	const endTime = (() => {
-		if (compactType === 'half-hour') {
-			return dayjs(minute).add(30, 'minute');
-		} else if (compactType === 'quarter-hour') {
-			return dayjs(minute).add(15, 'minute');
-		} else {
-			return dayjs(minute).add(1, compactType);
-		}
-	})();
-
 	return (
 		<Paper px="md" py="sm" withBorder shadow="md" radius="md">
 			<Text fw={600} mb={5}>
@@ -286,12 +288,13 @@ const EventTimeLineGraph = () => {
 		const activePayload = barValue?.activePayload;
 		if (!Array.isArray(activePayload) || activePayload.length === 0) return;
 
-		const samplePayload = activePayload[0];
-		if (!samplePayload || typeof samplePayload !== 'object') return;
+		const currentPayload = activePayload[0];
+		if (!currentPayload || typeof currentPayload !== 'object') return;
 
-		const { minute, compactType } = samplePayload.payload || {};
-		const startTime = dayjs(minute);
-		const endTime = dayjs(minute).add(1, compactType);
+		const graphTickItem = currentPayload.payload as GraphTickItem;
+		if (!graphTickItem || typeof graphTickItem !== 'object' || _.isEmpty(graphTickItem)) return;
+
+		const { startTime, endTime } = graphTickItem;
 		setLogsStore((store) => setTimeRange(store, { type: 'custom', startTime: startTime, endTime: endTime }));
 	}, []);
 
