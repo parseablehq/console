@@ -8,6 +8,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { useStreamStore } from '../../providers/StreamProvider';
 import { IconCheck, IconTrash, IconX } from '@tabler/icons-react';
 import { sanitizeBytes, convertGibToBytes } from '@/utils/formatBytes';
+import timeRangeUtils from '@/utils/timeRangeUtils';
+
+const { formatDateWithTimezone } = timeRangeUtils;
 
 const Header = () => {
 	return (
@@ -231,7 +234,7 @@ const HotTierConfig = (props: {
 				<Stack gap={4} style={{ ...(hotTierNotSet ? { display: 'none' } : {}) }}>
 					<Text className={classes.fieldDescription}>Oldest Record:</Text>
 					<Text className={classes.fieldDescription}>
-						{_.isEmpty(oldestEntry) ? 'No Entries Stored' : new Date(oldestEntry).toLocaleString()}
+						{_.isEmpty(oldestEntry) ? 'No Entries Stored' : formatDateWithTimezone(oldestEntry)}
 					</Text>
 				</Stack>
 				<Stack style={{ width: hotTierNotSet ? '100%' : '50%' }} gap={isDirty || hotTierNotSet ? 16 : 4}>

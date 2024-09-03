@@ -553,7 +553,7 @@ const setLogData = (store: LogsStore, data: Log[], headers: string[], jqFiltered
 	const { data: existingData, tableOpts, viewMode } = store;
 	const { orderedHeaders } = tableOpts;
 	const isJsonView = viewMode === 'json';
-	const currentPage = tableOpts.currentPage === 0 ? 1 : tableOpts.currentPage;
+	const currentPage = 1;
 	const filteredData =
 		isJsonView && !_.isEmpty(tableOpts.instantSearchValue)
 			? isJqSearch(tableOpts.instantSearchValue)
@@ -685,6 +685,7 @@ const setCleanStoreForStreamChange = (store: LogsStore) => {
 			orderedHeaders: [],
 			disabledColumns: [],
 			pinnedColumns: []
+			filters: {},
 		},
 		...updatedTimeRange,
 		alerts,

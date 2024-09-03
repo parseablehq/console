@@ -160,7 +160,7 @@ const addRuleToGroup = (store: FilterStore, groupId: string) => {
 								...ruleSet.rules,
 								{ id: `rule-${generateRandomId(6)}`, field: fields[0].name, value: '', operator: '=' },
 							],
-						};
+					  };
 			}),
 		},
 	};
