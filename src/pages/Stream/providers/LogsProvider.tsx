@@ -643,11 +643,11 @@ const getCleanStoreForRefetch = (store: LogsStore) => {
 	};
 };
 
-const setCleanStoreForStreamChange = (store: LogsStore) => {
-	const { tableOpts, timeRange, alerts } = store;
-	const { interval, type } = timeRange;
-	const duration = _.find(FIXED_DURATIONS, (duration) => duration.milliseconds === timeRange.interval);
-	const updatedTimeRange = interval && type === 'fixed' ? { timeRange: getDefaultTimeRange(duration) } : { timeRange };
+const setCleanStoreForStreamChange = (_store: LogsStore) => {
+	// const { tableOpts, timeRange, alerts } = store;
+	// const { interval, type } = timeRange;
+	// const duration = _.find(FIXED_DURATIONS, (duration) => duration.milliseconds === timeRange.interval);
+	// const updatedTimeRange = interval && type === 'fixed' ? { timeRange: getDefaultTimeRange(duration) } : { timeRange };
 	// return {
 	// 	...initialState,
 	// 	tableOpts: {

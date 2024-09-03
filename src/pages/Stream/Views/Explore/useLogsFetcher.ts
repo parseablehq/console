@@ -18,7 +18,7 @@ const useLogsFetcher = (props: { schemaLoading: boolean }) => {
 	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
 
 	useEffect(() => {
-		setLogsStore(setCleanStoreForStreamChange);
+		setLogsStore((store) => setCleanStoreForStreamChange(store));
 	}, [currentStream]);
 
 	useEffect(() => {
