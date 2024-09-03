@@ -16,6 +16,7 @@ const LogsView = (props: { schemaLoading: boolean }) => {
 		hasNoData,
 		showTable,
 		isFetchingCount,
+		logsLoading
 	};
 
 	return (

@@ -288,25 +288,40 @@ const LogTable = (props: {
 	hasNoData: boolean;
 	showTable: boolean;
 	isFetchingCount: boolean;
+	logsLoading: boolean;
 }) => {
-	const { errorMessage, hasNoData, showTable, isFetchingCount } = props;
+	const { errorMessage, hasNoData, showTable, isFetchingCount, logsLoading } = props;
 	const [maximized] = useAppStore((store) => store.maximized);
 	const primaryHeaderHeight = !maximized
 		? PRIMARY_HEADER_HEIGHT + STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT + STREAM_SECONDARY_TOOLBAR_HRIGHT
 		: 0;
 
+	const showTableOrLoader = logsLoading || showTable || !errorMessage || !hasNoData;
+
 	return (
 		<TableContainer>
 			<FilterPills />
 			{!errorMessage ? (
-				showTable ? (
+				showTableOrLoader ? (
 					<Box className={tableStyles.innerContainer} style={{ maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
 						<Box
 							className={tableStyles.innerContainer}
 							style={{
 								maxHeight: `calc(100vh - ${primaryHeaderHeight}px )`,
 								height: `calc(100vh - ${primaryHeaderHeight}px )`,
+								position: 'relative',
 							}}>
+							<Box
+								style={{
+									position: 'absolute',
+									...(logsLoading ? {} : { display: 'none' }),
+									height: '100%',
+									width: '100%',
+									background: 'white',
+									zIndex: 9999,
+								}}>
+								{logsLoading && <LoadingView />}
+							</Box>
 							<Tablee primaryHeaderHeight={primaryHeaderHeight} />
 						</Box>
 					</Box>
