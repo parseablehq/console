@@ -1,14 +1,11 @@
-import { Tbody, Thead } from '@/components/Table';
-import { Box, ScrollArea, Stack, Table } from '@mantine/core';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import type { MutableRefObject, ReactNode, RefObject } from 'react';
-import LogRow from './StaticLogRow';
-import useMountedState from '@/hooks/useMountedState';
+import { Box } from '@mantine/core';
+import { useMemo } from 'react';
+import type { ReactNode } from 'react';
 import EmptyBox from '@/components/Empty';
-import Column from '../../components/Column';
 import FilterPills from '../../components/FilterPills';
 import tableStyles from '../../styles/Logs.module.css';
 import {
+	LOGS_FOOTER_HEIGHT,
 	PRIMARY_HEADER_HEIGHT,
 	STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT,
 	STREAM_SECONDARY_TOOLBAR_HRIGHT,
@@ -19,129 +16,16 @@ import _ from 'lodash';
 import Footer from './Footer';
 import { ErrorView, LoadingView } from './LoadingViews';
 import { MantineReactTable } from 'mantine-react-table';
-const skipFields = ['p_metadata', 'p_tags'];
 
 const TableContainer = (props: { children: ReactNode }) => {
 	return <Box className={tableStyles.container}>{props.children}</Box>;
 };
 
-const PinnedColumns = (props: { containerRefs: SectionRefs }) => {
-	const { containerRefs } = props;
-	const { leftSectionRef, rightSectionRef, activeSectionRef, pinnedContainerRef } = containerRefs;
-
-	const [{ pinnedColumns }] = useLogsStore((store) => store.tableOpts);
-	const [pinnedColumnsWidth, setPinnedColumnsWidth] = useMountedState(0);
-
-	useEffect(() => {
-		if (
-			pinnedContainerRef.current?.offsetWidth &&
-			pinnedContainerRef.current?.clientWidth < 500 &&
-			pinnedColumns.length > 0
-		) {
-			setPinnedColumnsWidth(pinnedContainerRef.current?.clientWidth);
-		} else if (
-			pinnedContainerRef.current?.offsetWidth &&
-			pinnedContainerRef.current?.clientWidth > 500 &&
-			pinnedColumns.length > 0
-		) {
-			setPinnedColumnsWidth(500);
-		} else {
-			setPinnedColumnsWidth(0);
-		}
-	}, [pinnedContainerRef, pinnedColumns]);
-
-	return (
-		<ScrollArea
-			w={`${pinnedColumnsWidth}px`}
-			className={tableStyles.pinnedScrollView}
-			styles={() => ({
-				scrollbar: {
-					'&[data-orientation="vertical"] .mantine-ScrollArea-thumb': {
-						display: 'none',
-					},
-				},
-			})}
-			onMouseEnter={() => {
-				activeSectionRef.current = 'left';
-			}}
-			viewportRef={leftSectionRef}
-			onScrollPositionChange={({ y }) => {
-				if (activeSectionRef.current === 'right') return;
-				rightSectionRef.current!.scrollTop = y;
-			}}>
-			<Box className={tableStyles.pinnedTableContainer} ref={pinnedContainerRef}>
-				<Table className={tableStyles.tableStyle}>
-					<Thead className={tableStyles.theadStylePinned}>
-						<TableHeader isPinned />
-					</Thead>
-					<Tbody>
-						<LogRow isPinned />
-					</Tbody>
-				</Table>
-			</Box>
-		</ScrollArea>
-	);
-};
-
-const Columns = (props: { containerRefs: SectionRefs }) => {
-	const { containerRefs } = props;
-	const { leftSectionRef, rightSectionRef, activeSectionRef } = containerRefs;
-	return (
-		<ScrollArea
-			onMouseEnter={() => {
-				activeSectionRef.current = 'right';
-			}}
-			viewportRef={rightSectionRef}
-			onScrollPositionChange={({ y }) => {
-				if (activeSectionRef.current === 'left') return;
-
-				leftSectionRef.current!.scrollTop = y;
-			}}>
-			<Box className={tableStyles.tableContainer}>
-				<Table className={tableStyles.tableStyle}>
-					<Thead className={tableStyles.theadStyle}>
-						<TableHeader />
-					</Thead>
-					<Tbody>
-						<LogRow rowArrows />
-					</Tbody>
-				</Table>
-			</Box>
-		</ScrollArea>
-	);
-};
-
-const TableHeader = (props: { isPinned?: boolean }) => {
-	const [{ orderedHeaders, disabledColumns, pinnedColumns }] = useLogsStore((store) => store.tableOpts);
-
-	if (orderedHeaders.length > 0) {
-		return orderedHeaders
-			.filter((tableHeader) => !disabledColumns.includes(tableHeader) && !skipFields.includes(tableHeader))
-			.filter((tableHeader) =>
-				props.isPinned ? pinnedColumns.includes(tableHeader) : !pinnedColumns.includes(tableHeader),
-			)
-			.map((tableHeader) => {
-				return <Column key={tableHeader} columnName={tableHeader} />;
-			});
-	}
-
-	return null;
-};
-
-type HTMLDivRef = RefObject<HTMLDivElement>;
-
-interface SectionRefs {
-	activeSectionRef: MutableRefObject<string>;
-	leftSectionRef: HTMLDivRef;
-	rightSectionRef: HTMLDivRef;
-	pinnedContainerRef: HTMLDivRef;
-}
-
 const makeHeaderOpts = (headers: string[]) => {
 	return _.reduce(
 		headers,
 		(acc, header) => {
-			return [...acc, { accessorKey: header, header, grow: true}];
+			return [...acc, { accessorKey: header, header, grow: true }];
 		},
 		[],
 	);
@@ -149,72 +33,188 @@ const makeHeaderOpts = (headers: string[]) => {
 
 export const Example = () => {
 	const columns = useMemo(
-	  () => [
-		{
-		  accessorKey: 'firstName',
-		  header: 'First Name', //uses the default width from defaultColumn prop
-		},
-		{
-		  accessorKey: 'lastName',
-		  header: 'Last Name',
-		  enableResizing: false, //disable resizing for this column
-		},
-		{
-		  accessorKey: 'email',
-		  header: 'Email Address',
-		  size: 200, //increase the width of this column
-		},
-		{
-		  accessorKey: 'city',
-		  header: 'City',
-		  size: 120, //decrease the width of this column
-		},
-		{
-		  accessorKey: 'country',
-		  header: 'Country',
-		  size: 100, //decrease the width of this column
-		},
-	  ],
-	  [],
+		() => [
+			{
+				accessorKey: 'firstName',
+				header: 'First Name', //uses the default width from defaultColumn prop
+			},
+			{
+				accessorKey: 'lastName',
+				header: 'Last Name',
+				enableResizing: false, //disable resizing for this column
+			},
+			{
+				accessorKey: 'email',
+				header: 'Email Address',
+				size: 200, //increase the width of this column
+			},
+			{
+				accessorKey: 'city',
+				header: 'City',
+				size: 120, //decrease the width of this column
+			},
+			{
+				accessorKey: 'country',
+				header: 'Country',
+				size: 100, //decrease the width of this column
+			},
+		],
+		[],
 	);
-  
+
 	return (
-	  <MantineReactTable
-		columns={columns}
-		data={[ {
-			firstName: 'Dylan',
-			lastName: 'Murray',
-			email: 'dmurray@yopmail.com',
-			city: 'East Daphne',
-			country: 'USA',
-		  },
-		  {
-			firstName: 'Raquel',
-			lastName: 'Kohler',
-			email: 'rkholer33@yopmail.com',
-			city: 'Columbus',
-			country: 'USA',
-		  },]}
-		//optionally override the default column widths
-		defaultColumn={{
-		  maxSize: 400,
-		  minSize: 80,
-		  size: 150, //default size is usually 180
-		}}
-		enableColumnResizing
-		columnResizeMode="onChange" //default
-	  />
+		<MantineReactTable
+			columns={columns}
+			data={[
+				{
+					firstName: 'Dylan',
+					lastName: 'Murray',
+					email: 'dmurray@yopmail.com',
+					city: 'East Daphne',
+					country: 'USA',
+				},
+				{
+					firstName: 'Raquel',
+					lastName: 'Kohler',
+					email: 'rkholer33@yopmail.com',
+					city: 'Columbus',
+					country: 'USA',
+				},
+				{
+					firstName: 'Raquel',
+					lastName: 'Kohler',
+					email: 'rkholer33@yopmail.com',
+					city: 'Columbus',
+					country: 'USA',
+				},
+				{
+					firstName: 'Raquel',
+					lastName: 'Kohler',
+					email: 'rkholer33@yopmail.com',
+					city: 'Columbus',
+					country: 'USA',
+				},
+				{
+					firstName: 'Raquel',
+					lastName: 'Kohler',
+					email: 'rkholer33@yopmail.com',
+					city: 'Columbus',
+					country: 'USA',
+				},
+				{
+					firstName: 'Raquel',
+					lastName: 'Kohler',
+					email: 'rkholer33@yopmail.com',
+					city: 'Columbus',
+					country: 'USA',
+				},
+				{
+					firstName: 'Raquel',
+					lastName: 'Kohler',
+					email: 'rkholer33@yopmail.com',
+					city: 'Columbus',
+					country: 'USA',
+				},
+				{
+					firstName: 'Raquel',
+					lastName: 'Kohler',
+					email: 'rkholer33@yopmail.com',
+					city: 'Columbus',
+					country: 'USA',
+				},
+				{
+					firstName: 'Raquel',
+					lastName: 'Kohler',
+					email: 'rkholer33@yopmail.com',
+					city: 'Columbus',
+					country: 'USA',
+				},
+				{
+					firstName: 'Raquel',
+					lastName: 'Kohler',
+					email: 'rkholer33@yopmail.com',
+					city: 'Columbus',
+					country: 'USA',
+				},
+				{
+					firstName: 'Raquel',
+					lastName: 'Kohler',
+					email: 'rkholer33@yopmail.com',
+					city: 'Columbus',
+					country: 'USA',
+				},
+				{
+					firstName: 'Raquel',
+					lastName: 'Kohler',
+					email: 'rkholer33@yopmail.com',
+					city: 'Columbus',
+					country: 'USA',
+				},
+				{
+					firstName: 'Raquel',
+					lastName: 'Kohler',
+					email: 'rkholer33@yopmail.com',
+					city: 'Columbus',
+					country: 'USA',
+				},
+				{
+					firstName: 'Raquel',
+					lastName: 'Kohler',
+					email: 'rkholer33@yopmail.com',
+					city: 'Columbus',
+					country: 'USA',
+				},
+				{
+					firstName: 'Raquel',
+					lastName: 'Kohler',
+					email: 'rkholer33@yopmail.com',
+					city: 'Columbus',
+					country: 'USA',
+				},
+				{
+					firstName: 'Raquel',
+					lastName: 'Kohler',
+					email: 'rkholer33@yopmail.com',
+					city: 'Columbus',
+					country: 'USA',
+				},
+				{
+					firstName: 'Raquel',
+					lastName: 'Kohler',
+					email: 'rkholer33@yopmail.com',
+					city: 'Columbus',
+					country: 'USA',
+				},
+				{
+					firstName: 'Raquel',
+					lastName: 'Kohler',
+					email: 'rkholer33@yopmail.com',
+					city: 'Columbus',
+					country: 'USA',
+				},
+			]}
+			//optionally override the default column widths
+			defaultColumn={{
+				maxSize: 400,
+				minSize: 80,
+				size: 150, //default size is usually 180
+			}}
+			enableColumnResizing
+			columnResizeMode="onChange" //default
+		/>
 	);
-  };
+};
 
 const makeColumnVisiblityOpts = (columns: string[]) => {
-	return _.reduce(columns, (acc, column) => ({...acc, [column]: false}), {})
-}
+	return _.reduce(columns, (acc, column) => ({ ...acc, [column]: false }), {});
+};
 
 const Tablee = (props) => {
-	const [{ orderedHeaders, disabledColumns, pinnedColumns, pageData, enableWordWrap }] = useLogsStore((store) => store.tableOpts);
+	const [{ orderedHeaders, disabledColumns, pinnedColumns, pageData, enableWordWrap }] = useLogsStore(
+		(store) => store.tableOpts,
+	);
 	const columns = useMemo(() => makeHeaderOpts(orderedHeaders), [orderedHeaders]);
-	const columnVisibility = useMemo(() => makeColumnVisiblityOpts(disabledColumns), [disabledColumns, orderedHeaders])
+	const columnVisibility = useMemo(() => makeColumnVisiblityOpts(disabledColumns), [disabledColumns, orderedHeaders]);
 
 	return (
 		<MantineReactTable
@@ -241,7 +241,14 @@ const Tablee = (props) => {
 					padding: '0.5rem 1rem',
 				},
 			}}
-			mantineTableBodyRowProps={{ style: { border: 'none' } }}
+			mantineTableBodyRowProps={({ row }) => {
+				return {
+					style: {
+						border: 'none',
+						background: row.index % 2 === 0 ? '#f8f9fa' : 'white',
+					},
+				};
+			}}
 			mantineTableHeadProps={{
 				style: {
 					border: 'none',
@@ -267,9 +274,14 @@ const Tablee = (props) => {
 				columnVisibility,
 				columnOrder: orderedHeaders,
 			}}
+			mantineTableContainerProps={{
+				style: {
+					height: `calc(100vh - ${props.primaryHeaderHeight + LOGS_FOOTER_HEIGHT}px )`,
+				},
+			}}
 		/>
 	);
-}
+};
 
 const LogTable = (props: {
 	errorMessage: string | null;
@@ -293,6 +305,7 @@ const LogTable = (props: {
 							className={tableStyles.innerContainer}
 							style={{
 								maxHeight: `calc(100vh - ${primaryHeaderHeight}px )`,
+								height: `calc(100vh - ${primaryHeaderHeight}px )`,
 							}}>
 							<Tablee primaryHeaderHeight={primaryHeaderHeight} />
 						</Box>
