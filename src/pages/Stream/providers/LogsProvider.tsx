@@ -648,21 +648,22 @@ const setCleanStoreForStreamChange = (store: LogsStore) => {
 	const { interval, type } = timeRange;
 	const duration = _.find(FIXED_DURATIONS, (duration) => duration.milliseconds === timeRange.interval);
 	const updatedTimeRange = interval && type === 'fixed' ? { timeRange: getDefaultTimeRange(duration) } : { timeRange };
-	return {
-		...initialState,
-		tableOpts: {
-			...tableOpts,
-			pageData: [],
-			totalCount: 0,
-			displayedCount: 0,
-			currentPage: 0,
-			currentOffset: 0,
-			totalPages: 0,
-			filters: {},
-		},
-		...updatedTimeRange,
-		alerts,
-	};
+	// return {
+	// 	...initialState,
+	// 	tableOpts: {
+	// 		...tableOpts,
+	// 		pageData: [],
+	// 		totalCount: 0,
+	// 		displayedCount: 0,
+	// 		currentPage: 0,
+	// 		currentOffset: 0,
+	// 		totalPages: 0,
+	// 		filters: {},
+	// 	},
+	// 	alerts,
+	// 	...updatedTimeRange,
+	// };
+	return initialState;
 };
 
 const applyCustomQuery = (
