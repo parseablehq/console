@@ -21,7 +21,7 @@ const Users: FC = () => {
 	useDocumentTitle('Parseable | Users');
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
 	const [createUserInput, setCreateUserInput] = useState<string>('');
-	const [SelectedRole, setSelectedRole] = useState<string>('');
+	const [selectedRole, setSelectedRole] = useState<string>('');
 	const [roleSearchValue, setRoleSearchValue] = useState<string>('');
 
 	const {
@@ -83,21 +83,23 @@ const Users: FC = () => {
 
 	const handleCreateUser = () => {
 		const userRole: any = [];
-		if (SelectedRole !== '') {
-			userRole.push(SelectedRole);
+		if (selectedRole !== '') {
+			userRole.push(selectedRole);
 		}
 		createUserMutation({ userName: createUserInput, roles: userRole, onSuccess: getUserRefetch });
 	};
 
 	const createVaildtion = useCallback(() => {
-		if (getUserData?.data?.includes(createUserInput) || createUserInput.length < 3 || SelectedRole !== '') {
-			if (getRolesData?.data?.includes(SelectedRole)) {
-				return true;
-			}
+		if (
+			getUserData?.data?.includes(createUserInput) ||
+			createUserInput.length < 3 ||
+			(selectedRole !== '' && getRolesData?.data?.includes(selectedRole))
+		) {
+			return true;
 		}
 
 		return false;
-	}, [SelectedRole, createUserInput]);
+	}, [selectedRole, createUserInput]);
 
 	return (
 		<Box
@@ -156,10 +158,10 @@ const Users: FC = () => {
 							setSelectedRole(value ?? '');
 						}}
 						nothingFoundMessage="No roles found"
-						value={SelectedRole}
+						value={selectedRole}
 						searchValue={roleSearchValue}
 						onSearchChange={(value) => setRoleSearchValue(value)}
-						onDropdownClose={() => setRoleSearchValue(SelectedRole)}
+						onDropdownClose={() => setRoleSearchValue(selectedRole)}
 						onDropdownOpen={() => setRoleSearchValue('')}
 						data={getRolesData?.data || []}
 						searchable
