@@ -1,15 +1,15 @@
 import { LOGS_CONFIG_SIDEBAR_WIDTH } from '@/constants/theme';
-import { Checkbox, ScrollArea, Skeleton, Stack, Text, TextInput, Tooltip } from '@mantine/core';
+import { Checkbox, ScrollArea, Skeleton, Stack, Switch, Text, TextInput, Tooltip } from '@mantine/core';
 import classes from '../../styles/LogsViewConfig.module.css';
 import { useStreamStore } from '../../providers/StreamProvider';
 import _ from 'lodash';
 import { Field } from '@/@types/parseable/dataType';
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
-import { IconGripVertical, IconPin, IconPinFilled } from '@tabler/icons-react';
+import { IconCaretUpDown, IconGripVertical, IconPin, IconPinFilled } from '@tabler/icons-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
-const { toggleConfigViewType, toggleDisabledColumns, setOrderedHeaders, togglePinnedColumns } = logsStoreReducers;
+const { toggleConfigViewType, toggleDisabledColumns, toggleWordWrap, setOrderedHeaders, togglePinnedColumns } = logsStoreReducers;
 
 const Header = () => {
 	const [configViewType, setLogsStore] = useLogsStore((store) => store.tableOpts.configViewType);
@@ -20,17 +20,16 @@ const Header = () => {
 	}, []);
 	return (
 		<Stack className={classes.headerContainer} gap={0}>
+			<Text className={classes.headerItemText}>{configViewType === 'columns' ? 'Table Headers' : 'Schema Fields'}</Text>
 			<Stack
-				className={`${classes.headerItem} ${configViewType === 'schema' && viewMode !== 'json' && classes.activeHeader}`}
-				style={{ width: viewMode === 'json' ? '100%' : '50%' }}
-				onClick={configViewType === 'columns' ? onToggle : _.noop}>
-				<Text className={classes.headerItemText}>Schema</Text>
-			</Stack>
-			<Stack
-				className={`${classes.headerItem} ${configViewType === 'columns' && classes.activeHeader}`}
-				style={{ ...(viewMode === 'json' ? { display: 'none' } : {}) }}
-				onClick={configViewType === 'schema' ? onToggle : _.noop}>
-				<Text className={classes.headerItemText}>Fields</Text>
+				style={{
+					...(viewMode === 'json' ? { display: 'none' } : {}),
+					position: 'absolute',
+					right: 20,
+					cursor: 'pointer',
+				}}
+				onClick={onToggle}>
+				<IconCaretUpDown stroke={1.2} size="1rem" style={{ color: 'gray' }} />
 			</Stack>
 		</Stack>
 	);
@@ -92,7 +91,7 @@ const SchemaList = (props: { isLoading: boolean }) => {
 	return (
 		<>
 			<SearchBar
-				placeholder="Search Schema"
+				placeholder="Search Fields"
 				value={searchValue}
 				onChangeHandler={onChangeHandler}
 				disabled={_.isEmpty(schemaFields)}
@@ -126,13 +125,13 @@ const ColumnItem = (props: {
 			<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={4}>
 				<Stack style={{ cursor: 'pointer' }} onClick={onPin}>
 					{props.pinned ? (
-						<IconPinFilled className={classes.columnPinIcon} size="1rem" />
+						<IconPinFilled className={classes.columnPinIcon} size="1rem" stroke={1.8} />
 					) : (
-						<IconPin className={classes.columnPinIcon} size="1rem" />
+						<IconPin className={classes.columnPinIcon} size="1rem" stroke={1.8} />
 					)}
 				</Stack>
 				<Stack>
-					<IconGripVertical className={classes.columnDragIcon} size="1rem" />
+					<IconGripVertical className={classes.columnDragIcon} size="1rem" stroke={1.2} />
 				</Stack>
 				<Checkbox value={props.column} checked={props.visible} readOnly onChange={onToggle} />
 			</Stack>
@@ -163,7 +162,7 @@ const LoadingView = () => {
 const ColumnsList = (props: { isLoading: boolean }) => {
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const [searchValue, setSearchValue] = useState<string>('');
-	const { headers, disabledColumns, orderedHeaders, pinnedColumns } = tableOpts;
+	const { headers, disabledColumns, orderedHeaders, pinnedColumns, enableWordWrap } = tableOpts;
 	const columnsToShowRef = useRef(orderedHeaders);
 
 	useEffect(() => {
@@ -188,6 +187,10 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 		setLogsStore((store) => toggleDisabledColumns(store, column));
 	}, []);
 
+	const onToggleWordWrap = useCallback(() => {
+		setLogsStore((store) => toggleWordWrap(store));
+	}, [])
+
 	const onPinColumn = useCallback((column: string) => {
 		setLogsStore((store) => togglePinnedColumns(store, column));
 	}, []);
@@ -211,8 +214,11 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 
 	return (
 		<>
+			<Stack style={{ alignItems: 'flex-end', padding: '0 0.5rem' }}>
+				<Switch styles={{label: {fontSize: '0.7rem'}}} labelPosition="left" label="Wrap Words" checked={enableWordWrap} onChange={onToggleWordWrap} />
+			</Stack>
 			<SearchBar
-				placeholder="Search Columns"
+				placeholder="Search Headers"
 				value={searchValue}
 				onChangeHandler={onSearchHandler}
 				disabled={_.isEmpty(headers)}

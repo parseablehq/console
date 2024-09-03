@@ -211,6 +211,7 @@ type LogsStore = {
 		filters: Record<string, string[]>;
 		instantSearchValue: string;
 		configViewType: 'schema' | 'columns';
+		enableWordWrap: boolean;
 	};
 
 	data: LogQueryData;
@@ -284,6 +285,7 @@ type LogsStoreReducers = {
 	toggleConfigViewType: (store: LogsStore) => ReducerOutput;
 	setDisabledColumns: (store: LogsStore, columns: string[]) => ReducerOutput;
 	setOrderedHeaders: (store: LogsStore, columns: string[]) => ReducerOutput;
+	toggleWordWrap: (store: LogsStore) => ReducerOutput;
 };
 
 const defaultSortKey = 'p_timestamp';
@@ -321,7 +323,8 @@ const initialState: LogsStore = {
 		sortOrder: defaultSortOrder,
 		filters: {},
 		instantSearchValue: '',
-		configViewType: 'schema',
+		configViewType: 'columns',
+		enableWordWrap: true
 	},
 
 	// data
@@ -917,6 +920,15 @@ const setOrderedHeaders = (store: LogsStore, headers: string[]) => {
 	}
 }
 
+const toggleWordWrap = (store: LogsStore) => {
+	return {
+		tableOpts: {
+			...store.tableOpts,
+			enableWordWrap: !store.tableOpts.enableWordWrap,
+		},
+	};
+};
+
 const logsStoreReducers: LogsStoreReducers = {
 	setTimeRange,
 	setshiftInterval,
@@ -962,7 +974,8 @@ const logsStoreReducers: LogsStoreReducers = {
 	onToggleView,
 	toggleConfigViewType,
 	setDisabledColumns,
-	setOrderedHeaders
+	setOrderedHeaders,
+	toggleWordWrap
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };
