@@ -16,6 +16,7 @@ import _ from 'lodash';
 import Footer from './Footer';
 import { ErrorView, LoadingView } from './LoadingViews';
 import { MantineReactTable } from 'mantine-react-table';
+import Column from '../../components/Column';
 
 const TableContainer = (props: { children: ReactNode }) => {
 	return <Box className={tableStyles.container}>{props.children}</Box>;
@@ -24,7 +25,7 @@ const TableContainer = (props: { children: ReactNode }) => {
 const makeHeaderOpts = (headers: string[]) => {
 	return _.reduce(
 		headers,
-		(acc, header) => {
+		(acc: { accessorKey: string; header: string; grow: boolean }[], header) => {
 			return [...acc, { accessorKey: header, header, grow: true }];
 		},
 		[],
@@ -209,19 +210,18 @@ const makeColumnVisiblityOpts = (columns: string[]) => {
 	return _.reduce(columns, (acc, column) => ({ ...acc, [column]: false }), {});
 };
 
-const Tablee = (props) => {
+const Table = (props: { primaryHeaderHeight: number }) => {
 	const [{ orderedHeaders, disabledColumns, pinnedColumns, pageData, enableWordWrap }] = useLogsStore(
 		(store) => store.tableOpts,
 	);
 	const columns = useMemo(() => makeHeaderOpts(orderedHeaders), [orderedHeaders]);
 	const columnVisibility = useMemo(() => makeColumnVisiblityOpts(disabledColumns), [disabledColumns, orderedHeaders]);
-
 	return (
 		<MantineReactTable
 			enableBottomToolbar={false}
+			// enableColumnActions={false}
 			enableTopToolbar={false}
 			enableColumnResizing={true}
-			enableSorting={false}
 			mantineTableBodyCellProps={{
 				style: {
 					padding: '0.5rem 1rem',
@@ -279,6 +279,9 @@ const Tablee = (props) => {
 					height: `calc(100vh - ${props.primaryHeaderHeight + LOGS_FOOTER_HEIGHT}px )`,
 				},
 			}}
+			renderColumnActionsMenuItems={({ column }) => {
+				return <Column columnName={column.id} />;
+			}}
 		/>
 	);
 };
@@ -318,15 +321,19 @@ const LogTable = (props: {
 									height: '100%',
 									width: '100%',
 									background: 'white',
-									zIndex: 9999,
+									zIndex: 9,
 								}}>
 								{logsLoading && <LoadingView />}
 							</Box>
-							<Tablee primaryHeaderHeight={primaryHeaderHeight} />
+							{hasNoData ? (
+								<EmptyBox message="No Matching Rows" />
+							) : (
+								<Table primaryHeaderHeight={primaryHeaderHeight} />
+							)}
 						</Box>
 					</Box>
 				) : hasNoData ? (
-					<EmptyBox message="No Matching Rows" />
+					<></>
 				) : (
 					<LoadingView />
 				)
