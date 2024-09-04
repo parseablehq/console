@@ -258,15 +258,15 @@
 	position: relative;
 
 	&:hover {
-		.cello {
-			.copyy {
+		.customCellContainer {
+			.copyIconContainer {
 				display: block;
 			}
 		}
 	}
 
-	.cello {
-		.copyy {
+	.customCellContainer {
+		.copyIconContainer {
 			position: absolute;
 			top: 25%;
 			right: 0;

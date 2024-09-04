@@ -39,9 +39,9 @@ const makeHeaderOpts = (headers: string[]) => {
 					Cell: ({ cell }: { cell: any }) => {
 						const value = _.isFunction(cell.getValue) ? cell.getValue() : '';
 						return (
-							<div className={tableStyles.cello} style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+							<div className={tableStyles.customCellContainer} style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
 								{value}
-								<div className={tableStyles.copyy}>
+								<div className={tableStyles.copyIconContainer}>
 									<CopyIcon value={value} />
 								</div>
 							</div>
