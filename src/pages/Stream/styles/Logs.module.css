@@ -250,6 +250,27 @@
 .copyIcon {
 	color: #211f1f;
 }
-.copyIcon:hover {
-	background-color: #f1f3f5;
+.copyIcon:hover {background-color: #f1f3f5;
+}
+
+
+.customCell {
+	position: relative;
+
+	&:hover {
+		.cello {
+			.copyy {
+				display: block;
+			}
+		}
+	}
+
+	.cello {
+		.copyy {
+			position: absolute;
+			top: 25%;
+			right: 0;
+			display: none;
+		}
+	}
 }

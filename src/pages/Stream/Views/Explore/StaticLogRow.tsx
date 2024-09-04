@@ -106,7 +106,6 @@ const LogRow: FC<LogRowProps> = (props) => {
 									)}
 								</Group>
 							</td>
-						
 						);
 					})}
 					{rowArrows && <ViewLogArrow />}

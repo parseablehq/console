@@ -1,36 +1,41 @@
 import { LOGS_CONFIG_SIDEBAR_WIDTH } from '@/constants/theme';
-import { Checkbox, ScrollArea, Skeleton, Stack, Switch, Text, TextInput, Tooltip } from '@mantine/core';
+import { Checkbox, ScrollArea, Select, Skeleton, Stack, Switch, Text, TextInput, Tooltip } from '@mantine/core';
 import classes from '../../styles/LogsViewConfig.module.css';
 import { useStreamStore } from '../../providers/StreamProvider';
 import _ from 'lodash';
 import { Field } from '@/@types/parseable/dataType';
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
-import { IconCaretUpDown, IconGripVertical, IconPin, IconPinFilled } from '@tabler/icons-react';
+import { IconGripVertical, IconPin, IconPinFilled } from '@tabler/icons-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
-const { toggleConfigViewType, toggleDisabledColumns, toggleWordWrap, setOrderedHeaders, togglePinnedColumns } = logsStoreReducers;
+const { toggleConfigViewType, toggleDisabledColumns, toggleWordWrap, setOrderedHeaders, togglePinnedColumns } =
+	logsStoreReducers;
 
 const Header = () => {
 	const [configViewType, setLogsStore] = useLogsStore((store) => store.tableOpts.configViewType);
-	const [viewMode] = useLogsStore((store) => store.viewMode);
 
-	const onToggle = useCallback(() => {
-		setLogsStore(toggleConfigViewType);
-	}, []);
+	const onChange = useCallback(
+		(value: string | null) => {
+			if (!value || value === configViewType) return;
+
+			setLogsStore(toggleConfigViewType);
+		},
+		[configViewType],
+	);
+
 	return (
 		<Stack className={classes.headerContainer} gap={0}>
-			<Text className={classes.headerItemText}>{configViewType === 'columns' ? 'Table Headers' : 'Schema Fields'}</Text>
-			<Stack
-				style={{
-					...(viewMode === 'json' ? { display: 'none' } : {}),
-					position: 'absolute',
-					right: 20,
-					cursor: 'pointer',
-				}}
-				onClick={onToggle}>
-				<IconCaretUpDown stroke={1.2} size="1rem" style={{ color: 'gray' }} />
-			</Stack>
+			<Select
+				data={[
+					{ label: 'Table Headers', value: 'columns' },
+					{ label: 'Schema Fields', value: 'schema' },
+				]}
+				value={configViewType}
+				allowDeselect={false}
+				onChange={(value) => onChange(value)}
+				style={{ width: '100%', height: '100%' }}
+			/>
 		</Stack>
 	);
 };
@@ -189,7 +194,7 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 
 	const onToggleWordWrap = useCallback(() => {
 		setLogsStore((store) => toggleWordWrap(store));
-	}, [])
+	}, []);
 
 	const onPinColumn = useCallback((column: string) => {
 		setLogsStore((store) => togglePinnedColumns(store, column));
@@ -215,7 +220,13 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 	return (
 		<>
 			<Stack style={{ alignItems: 'flex-end', padding: '0 0.5rem' }}>
-				<Switch styles={{label: {fontSize: '0.7rem'}}} labelPosition="left" label="Wrap Words" checked={enableWordWrap} onChange={onToggleWordWrap} />
+				<Switch
+					styles={{ label: { fontSize: '0.7rem' } }}
+					labelPosition="left"
+					label="Wrap Words"
+					checked={enableWordWrap}
+					onChange={onToggleWordWrap}
+				/>
 			</Stack>
 			<SearchBar
 				placeholder="Search Headers"

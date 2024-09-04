@@ -29,16 +29,17 @@ const Item = (props: { header: string | null; value: string; highlight: boolean 
 	);
 };
 
-const CopyIcon = (props: { log: Log }) => {
+export const CopyIcon = (props: { value: Log | string }) => {
 	const copyIconRef = useRef<HTMLDivElement>(null);
 	const copiedIconRef = useRef<HTMLDivElement>(null);
 
-	const onCopy = async () => {
+	const onCopy = async (e: React.MouseEvent<HTMLDivElement>) => {
+		e.stopPropagation();
 		if (copyIconRef.current && copiedIconRef.current) {
 			copyIconRef.current.style.display = 'none';
 			copiedIconRef.current.style.display = 'flex';
 		}
-		await navigator.clipboard.writeText(JSON.stringify(props.log, null, 2));
+		await navigator.clipboard.writeText(JSON.stringify(props.value, null, 2));
 		setTimeout(() => {
 			if (copyIconRef.current && copiedIconRef.current) {
 				copiedIconRef.current.style.display = 'none';
@@ -50,10 +51,10 @@ const CopyIcon = (props: { log: Log }) => {
 	return (
 		<Stack style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 2 }} className={classes.toggleIcon}>
 			<Box ref={copyIconRef} style={{ display: 'flex', height: 'auto' }} onClick={onCopy} className={classes.copyIcon}>
-				<IconCopy stroke={1.2} size={'1rem'} />
+				<IconCopy stroke={1.2} size={'0.8rem'} />
 			</Box>
 			<Box ref={copiedIconRef} style={{ display: 'none', color: 'green' }}>
-				<IconCheck stroke={1.2} size={'1rem'} />
+				<IconCheck stroke={1.2} size={'0.8rem'} />
 			</Box>
 		</Stack>
 	);
@@ -92,7 +93,7 @@ const Row = (props: {
 					/>
 				)}
 			</span>
-			<CopyIcon log={log} />
+			<CopyIcon value={log} />
 		</Stack>
 	);
 };

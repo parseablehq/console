@@ -16,12 +16,12 @@ const LogsView = (props: { schemaLoading: boolean }) => {
 		hasNoData,
 		showTable,
 		isFetchingCount,
-		logsLoading
+		logsLoading,
 	};
 
 	return (
 		<Box style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-			<LogsViewConfig schemaLoading={schemaLoading} logsLoading={logsLoading} />
+			{viewMode === 'table' && <LogsViewConfig schemaLoading={schemaLoading} logsLoading={logsLoading} />}
 			{viewMode === 'table' ? <LogTable {...viewOpts} /> : <JsonView {...viewOpts} />}
 		</Box>
 	);

@@ -22,7 +22,7 @@
 	&:hover {
 		background-color: var(--mantine-color-gray-1);
 		.copyIcon {
-			color: var(--mantine-color-gray-7);
+			color: var(--mantine-color-gray-8);
 		}
 	}
 
