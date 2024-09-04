@@ -663,6 +663,7 @@ const setCleanStoreForStreamChange = (_store: LogsStore) => {
 	// 	alerts,
 	// 	...updatedTimeRange,
 	// };
+
 	return initialState;
 };
 
