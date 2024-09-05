@@ -145,11 +145,13 @@ const generateCountQuery = (
 	return `SELECT DATE_BIN('${range}', p_timestamp, '${startTime.toISOString()}') AS date_bin_timestamp, COUNT(*) AS log_count FROM ${streamName} WHERE p_timestamp BETWEEN '${startTime.toISOString()}' AND '${endTime.toISOString()}' AND ${whereClause} GROUP BY date_bin_timestamp ORDER BY date_bin_timestamp`;
 };
 
-const NoDataView = () => {
+const NoDataView = (props: { isError: boolean }) => {
 	return (
 		<Stack style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
 			<Stack className={classes.noDataContainer}>
-				<Text className={classes.noDataText}>No new events in the selected time range.</Text>
+				<Text className={classes.noDataText}>
+					{props.isError ? 'Failed to fetch data' : ' No new events in the selected time range.'}
+				</Text>
 			</Stack>
 		</Stack>
 	);
@@ -329,7 +331,7 @@ const EventTimeLineGraph = () => {
 						dotProps={{ strokeWidth: 1, r: 2.5 }}
 					/>
 				) : (
-					<NoDataView />
+					<NoDataView isError={fetchQueryMutation.isError}/>
 				)}
 			</Skeleton>
 		</Stack>
