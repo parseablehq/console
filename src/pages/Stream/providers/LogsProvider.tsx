@@ -649,7 +649,7 @@ const setCleanLogStoreForStreamChange = (store: LogsStore) => {
 	const duration = _.find(FIXED_DURATIONS, (duration) => duration.milliseconds === timeRange.interval);
 	const updatedTimeRange = interval && type === 'fixed' ? { timeRange: getDefaultTimeRange(duration) } : { timeRange };
 
-	return { ...initialState, timeRange: updatedTimeRange.timeRange };
+	return { ...initialState, ...updatedTimeRange };
 };
 
 const applyCustomQuery = (
