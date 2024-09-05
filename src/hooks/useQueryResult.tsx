@@ -2,11 +2,12 @@ import { getQueryResultWithHeaders, getQueryResult } from '@/api/query';
 import { LogsQuery } from '@/@types/parseable/api/query';
 import { notifications } from '@mantine/notifications';
 import { isAxiosError, AxiosError } from 'axios';
-import { IconCheck, IconFileAlert } from '@tabler/icons-react';
+import { IconCheck } from '@tabler/icons-react';
 import { useMutation, useQuery } from 'react-query';
 import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
 import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { notifyError } from '@/utils/notification';
 
 type QueryData = {
 	logsQuery: LogsQuery;
@@ -26,14 +27,10 @@ export const useQueryResult = () => {
 	const fetchQueryMutation = useMutation(fetchQueryHandler, {
 		onError: (data: AxiosError) => {
 			if (isAxiosError(data) && data.response) {
-				notifications.update({
-					id: 'load-data',
-					color: 'red',
-					title: 'Error occurred',
-					message: 'Error occurred, please check your query and try again',
-					icon: <IconFileAlert size="1rem" />,
-					autoClose: 2000,
-				});
+				const error = data.response?.data as string;
+				typeof error === 'string' && notifyError({ message: error });
+			} else if (data.message && typeof data.message === 'string') {
+				notifyError({ message: data.message });
 			}
 		},
 		onSuccess: (_data, variables) => {
