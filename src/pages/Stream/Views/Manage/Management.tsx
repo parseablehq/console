@@ -21,19 +21,17 @@ const Management = (props: { schemaLoading: boolean }) => {
 	const hotTierFetch = useHotTier(currentStream || '');
 
 	// todo - handle loading and error states separately
-	const isStatsLoading = getStreamStats.getLogStreamStatsDataIsLoading || getStreamStats.getLogStreamStatsDataIsError;
 	const isAlertsLoading = getStreamAlertsConfig.isError || getStreamAlertsConfig.isLoading;
 	const isRetentionLoading =
-		getRetentionConfig.getLogRetentionIsLoading || getRetentionConfig.getLogRetentionIsError || instanceConfig === null;
-	const isStreamInfoLoading = getStreamInfo.getStreamInfoLoading || getStreamInfo.getStreamInfoError;
+		getRetentionConfig.getLogRetentionIsLoading || instanceConfig === null;
 	const isHotTierLoading = hotTierFetch.getHotTierInfoLoading;
 
 	return (
 		<Stack style={{ padding: '1rem', paddingTop: '0', height: '90%' }}>
 			<DeleteStreamModal />
 			<Stack style={{ flexDirection: 'row', height: '40%' }} gap={24}>
-				<Stats isLoading={isStatsLoading} />
-				<Info isLoading={isStreamInfoLoading} />
+				<Stats isLoading={getStreamStats.getLogStreamStatsDataIsLoading} isError={getStreamStats.getLogStreamStatsDataIsError} />
+				<Info isLoading={getStreamInfo.getStreamInfoLoading} isError={getStreamInfo.getStreamInfoError} />
 			</Stack>
 			<Stack style={{ flexDirection: 'row', height: '57%' }} gap={24}>
 				<Stack w="49.4%">
@@ -44,12 +42,14 @@ const Management = (props: { schemaLoading: boolean }) => {
 						deleteHotTierInfo={hotTierFetch.deleteHotTier}
 						isDeleting={hotTierFetch.isDeleting}
 						isUpdating={hotTierFetch.isUpdating}
+						isRetentionError={getRetentionConfig.getLogRetentionIsError}
 					/>
 				</Stack>
 				<Alerts
 					isLoading={isAlertsLoading}
 					schemaLoading={props.schemaLoading}
 					updateAlerts={getStreamAlertsConfig.updateLogStreamAlerts}
+					isError={getStreamAlertsConfig.isError}
 				/>
 			</Stack>
 		</Stack>

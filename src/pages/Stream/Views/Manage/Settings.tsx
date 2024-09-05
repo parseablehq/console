@@ -9,6 +9,7 @@ import { useStreamStore } from '../../providers/StreamProvider';
 import { IconCheck, IconTrash, IconX } from '@tabler/icons-react';
 import { sanitizeBytes, convertGibToBytes } from '@/utils/formatBytes';
 import timeRangeUtils from '@/utils/timeRangeUtils';
+import ErrorView from './ErrorView';
 
 const { formatDateWithTimezone } = timeRangeUtils;
 
@@ -311,6 +312,7 @@ const Settings = (props: {
 	deleteHotTierInfo: ({ onSuccess }: { onSuccess: () => void }) => void;
 	isDeleting: boolean;
 	isUpdating: boolean;
+	isRetentionError: boolean;
 }) => {
 	const [isStandAloneMode] = useAppStore((store) => store.isStandAloneMode);
 	return (
@@ -336,7 +338,11 @@ const Settings = (props: {
 						<Divider />
 						<Stack className={classes.fieldsContainer} style={{ border: 'none', flex: 1, gap: 4 }}>
 							<Text className={classes.fieldTitle}>Retention</Text>
-							<RetentionForm updateRetentionConfig={props.updateRetentionConfig} />
+							{!props.isRetentionError ? (
+								<RetentionForm updateRetentionConfig={props.updateRetentionConfig} />
+							) : (
+								<ErrorView />
+							)}
 						</Stack>
 					</>
 				)}
