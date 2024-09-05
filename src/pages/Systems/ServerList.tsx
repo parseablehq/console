@@ -1,4 +1,4 @@
-import { Pill, Stack, Text, ThemeIcon, Skeleton } from '@mantine/core';
+import { Pill, Stack, Text, ThemeIcon, Skeleton, ScrollArea } from '@mantine/core';
 import classes from './styles/Systems.module.css';
 import { IconActivity } from '@tabler/icons-react';
 import _ from 'lodash';
@@ -78,12 +78,14 @@ const List = () => {
 
 const ServerList = () => {
 	return (
-		<Stack className={classes.sectionContainerr}>
+		<>
 			<Stack style={{ padding: '1rem 1rem 0.5rem 1.5rem', flexDirection: 'row', alignItems: 'center' }} gap={8}>
 				<Text className={classes.leftSectionTitle}>Cluster Machines</Text>
 			</Stack>
-			<List />
-		</Stack>
+			<ScrollArea>
+				<List />
+			</ScrollArea>
+		</>
 	);
 };
 
