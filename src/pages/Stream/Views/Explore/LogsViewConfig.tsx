@@ -1,5 +1,5 @@
 import { LOGS_CONFIG_SIDEBAR_WIDTH } from '@/constants/theme';
-import { Checkbox, ScrollArea, Select, Skeleton, Stack, Switch, Text, TextInput, Tooltip } from '@mantine/core';
+import { Checkbox, ScrollArea, Select, Skeleton, Stack, Text, TextInput, Tooltip } from '@mantine/core';
 import classes from '../../styles/LogsViewConfig.module.css';
 import { useStreamStore } from '../../providers/StreamProvider';
 import _ from 'lodash';
@@ -9,7 +9,7 @@ import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { IconGripVertical, IconPin, IconPinFilled } from '@tabler/icons-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
-const { toggleConfigViewType, toggleDisabledColumns, toggleWordWrap, setOrderedHeaders, togglePinnedColumns } =
+const { toggleConfigViewType, toggleDisabledColumns, setOrderedHeaders, togglePinnedColumns } =
 	logsStoreReducers;
 
 const Header = () => {
@@ -167,7 +167,7 @@ const LoadingView = () => {
 const ColumnsList = (props: { isLoading: boolean }) => {
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const [searchValue, setSearchValue] = useState<string>('');
-	const { headers, disabledColumns, orderedHeaders, pinnedColumns, enableWordWrap } = tableOpts;
+	const { headers, disabledColumns, orderedHeaders, pinnedColumns } = tableOpts;
 	const columnsToShowRef = useRef(orderedHeaders);
 
 	useEffect(() => {
@@ -192,9 +192,9 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 		setLogsStore((store) => toggleDisabledColumns(store, column));
 	}, []);
 
-	const onToggleWordWrap = useCallback(() => {
-		setLogsStore((store) => toggleWordWrap(store));
-	}, []);
+	// const onToggleWordWrap = useCallback(() => {
+	// 	setLogsStore((store) => toggleWordWrap(store));
+	// }, []);
 
 	const onPinColumn = useCallback((column: string) => {
 		setLogsStore((store) => togglePinnedColumns(store, column));
@@ -219,7 +219,7 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 
 	return (
 		<>
-			<Stack style={{ alignItems: 'flex-end', padding: '0 0.5rem' }}>
+			{/* <Stack style={{ alignItems: 'flex-end', padding: '0 0.5rem' }}>
 				<Switch
 					styles={{ label: { fontSize: '0.7rem' } }}
 					labelPosition="left"
@@ -227,7 +227,7 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 					checked={enableWordWrap}
 					onChange={onToggleWordWrap}
 				/>
-			</Stack>
+			</Stack> */}
 			<SearchBar
 				placeholder="Search Headers"
 				value={searchValue}
