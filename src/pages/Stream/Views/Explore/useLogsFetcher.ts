@@ -4,7 +4,7 @@ import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { useQueryLogs } from '@/hooks/useQueryLogs';
 import { useFetchCount } from '@/hooks/useQueryResult';
 
-const { setCleanStoreForStreamChange } = logsStoreReducers;
+const { setCleanLogStoreForStreamChange } = logsStoreReducers;
 
 const useLogsFetcher = (props: { schemaLoading: boolean }) => {
 	const { schemaLoading } = props;
@@ -18,7 +18,7 @@ const useLogsFetcher = (props: { schemaLoading: boolean }) => {
 	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
 
 	useEffect(() => {
-		setLogsStore(setCleanStoreForStreamChange);
+		setLogsStore(setCleanLogStoreForStreamChange);
 	}, [currentStream]);
 
 	useEffect(() => {

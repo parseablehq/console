@@ -81,7 +81,7 @@ export const useFetchCount = () => {
 		},
 		refetchOnWindowFocus: false,
 		retry: false,
-		enabled: currentStream !== null,
+		enabled: false,
 	});
 
 	return {

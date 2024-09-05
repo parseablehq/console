@@ -273,7 +273,7 @@ type LogsStoreReducers = {
 	makeExportData: (data: Log[], headers: string[], type: string) => Log[];
 	setRetention: (store: LogsStore, retention: { description: string; duration: string }) => ReducerOutput;
 
-	setCleanStoreForStreamChange: (store: LogsStore) => ReducerOutput;
+	setCleanLogStoreForStreamChange: (store: LogsStore) => ReducerOutput;
 	updateSavedFilterId: (store: LogsStore, savedFilterId: string | null) => ReducerOutput;
 	setInstantSearchValue: (store: LogsStore, value: string) => ReducerOutput;
 	applyInstantSearch: (store: LogsStore) => ReducerOutput;
@@ -643,28 +643,13 @@ const getCleanStoreForRefetch = (store: LogsStore) => {
 	};
 };
 
-const setCleanStoreForStreamChange = (_store: LogsStore) => {
-	// const { tableOpts, timeRange, alerts } = store;
-	// const { interval, type } = timeRange;
-	// const duration = _.find(FIXED_DURATIONS, (duration) => duration.milliseconds === timeRange.interval);
-	// const updatedTimeRange = interval && type === 'fixed' ? { timeRange: getDefaultTimeRange(duration) } : { timeRange };
-	// return {
-	// 	...initialState,
-	// 	tableOpts: {
-	// 		...tableOpts,
-	// 		pageData: [],
-	// 		totalCount: 0,
-	// 		displayedCount: 0,
-	// 		currentPage: 0,
-	// 		currentOffset: 0,
-	// 		totalPages: 0,
-	// 		filters: {},
-	// 	},
-	// 	alerts,
-	// 	...updatedTimeRange,
-	// };
+const setCleanLogStoreForStreamChange = (store: LogsStore) => {
+	const { timeRange } = store;
+	const { interval, type } = timeRange;
+	const duration = _.find(FIXED_DURATIONS, (duration) => duration.milliseconds === timeRange.interval);
+	const updatedTimeRange = interval && type === 'fixed' ? { timeRange: getDefaultTimeRange(duration) } : { timeRange };
 
-	return initialState;
+	return { ...initialState, timeRange: updatedTimeRange.timeRange };
 };
 
 const applyCustomQuery = (
@@ -910,7 +895,7 @@ const logsStoreReducers: LogsStoreReducers = {
 	setSelectedLog,
 	makeExportData,
 	setRetention,
-	setCleanStoreForStreamChange,
+	setCleanLogStoreForStreamChange,
 	toggleSideBar,
 	updateSavedFilterId,
 	setInstantSearchValue,
