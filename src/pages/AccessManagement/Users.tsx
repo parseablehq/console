@@ -1,6 +1,6 @@
 import { Box, Button, Group, Modal, ScrollArea, Select, Stack, Table, Text, TextInput, px } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
-import { FC, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { useGetUser, useUser } from '@/hooks/useUser';
 import RoleTR from './RoleTR';
 import { IconBook2, IconUserPlus } from '@tabler/icons-react';
@@ -21,7 +21,7 @@ const Users: FC = () => {
 	useDocumentTitle('Parseable | Users');
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
 	const [createUserInput, setCreateUserInput] = useState<string>('');
-	const [SelectedRole, setSelectedRole] = useState<string>('');
+	const [selectedRole, setSelectedRole] = useState<string>('');
 	const [roleSearchValue, setRoleSearchValue] = useState<string>('');
 
 	const {
@@ -73,7 +73,6 @@ const Users: FC = () => {
 				<td>error</td>
 			</tr>
 		);
-
 	const handleClose = () => {
 		setCreateUserInput('');
 		setModalOpen(false);
@@ -84,25 +83,22 @@ const Users: FC = () => {
 
 	const handleCreateUser = () => {
 		const userRole: any = [];
-		if (SelectedRole !== '') {
-			userRole.push(SelectedRole);
+		if (selectedRole !== '') {
+			userRole.push(selectedRole);
 		}
 		createUserMutation({ userName: createUserInput, roles: userRole, onSuccess: getUserRefetch });
 	};
 
-	const createVaildtion = () => {
-		if (getUserData?.data?.includes(createUserInput) || createUserInput.length < 3) {
+	const createVaildtion = useCallback(() => {
+		if (
+			(createUserInput.length >= 3 || getUserData?.data?.includes(createUserInput)) &&
+			selectedRole !== '' &&
+			getRolesData?.data?.includes(selectedRole)
+		)
 			return true;
-		}
 
-		if (SelectedRole !== '') {
-			if (getRolesData?.data?.includes(SelectedRole)) {
-				return false;
-			}
-			return true;
-		}
 		return false;
-	};
+	}, [selectedRole, createUserInput]);
 
 	return (
 		<Box
@@ -161,10 +157,10 @@ const Users: FC = () => {
 							setSelectedRole(value ?? '');
 						}}
 						nothingFoundMessage="No roles found"
-						value={SelectedRole}
+						value={selectedRole}
 						searchValue={roleSearchValue}
 						onSearchChange={(value) => setRoleSearchValue(value)}
-						onDropdownClose={() => setRoleSearchValue(SelectedRole)}
+						onDropdownClose={() => setRoleSearchValue(selectedRole)}
 						onDropdownOpen={() => setRoleSearchValue('')}
 						data={getRolesData?.data || []}
 						searchable
@@ -203,7 +199,7 @@ const Users: FC = () => {
 						color="gray"
 						className={classes.modalActionBtn}
 						onClick={handleCreateUser}
-						disabled={createVaildtion() || !!createUserData?.data}>
+						disabled={!createVaildtion() || !!createUserData?.data}>
 						Create
 					</Button>
 					<Button onClick={handleClose} variant="outline" color="gray" className={classes.modalCancelBtn}>
