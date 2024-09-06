@@ -33,8 +33,8 @@ export const putLogStreamAlerts = (streamName: string, data: any) => {
 	return Axios().put(LOG_STREAMS_ALERTS_URL(streamName), data);
 };
 
-export const getSavedFilters = (userId: string) => {
-	return Axios().get<SavedFilterType[]>(LIST_SAVED_FILTERS_URL(userId));
+export const getSavedFilters = () => {
+	return Axios().get<SavedFilterType[]>(LIST_SAVED_FILTERS_URL);
 };
 
 export const putSavedFilters = (filterId: string, filter: SavedFilterType) => {
