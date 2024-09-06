@@ -134,6 +134,8 @@ const Roles: FC = () => {
 	};
 
 	const createVaildtion = () => {
+		if (createRoleInput.length <= 0 || selectedPrivilege === '') return true;
+
 		if (getRolesData?.data?.includes(createRoleInput) && createRoleInput.length > 0) {
 			return true;
 		}
@@ -272,6 +274,7 @@ const Roles: FC = () => {
 						}}
 						value={selectedPrivilege}
 						nothingFoundMessage="No options"
+						required
 					/>
 
 					{selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingestor' ? (
