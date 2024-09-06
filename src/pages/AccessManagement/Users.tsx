@@ -91,12 +91,11 @@ const Users: FC = () => {
 
 	const createVaildtion = useCallback(() => {
 		if (
+			createUserInput.length >= 3 ||
 			getUserData?.data?.includes(createUserInput) ||
-			createUserInput.length < 3 ||
 			(selectedRole !== '' && getRolesData?.data?.includes(selectedRole))
-		) {
+		)
 			return true;
-		}
 
 		return false;
 	}, [selectedRole, createUserInput]);
