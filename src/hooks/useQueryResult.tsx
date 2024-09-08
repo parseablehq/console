@@ -54,13 +54,21 @@ export const useFetchCount = () => {
 	const { setTotalCount } = logsStoreReducers;
 	const [custQuerySearchState] = useLogsStore((store) => store.custQuerySearchState);
 	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
-	const { isQuerySearchActive, custSearchQuery } = custQuerySearchState;
+	const { isQuerySearchActive, custSearchQuery, activeMode } = custQuerySearchState;
 
 	const defaultQuery = `select count(*) as count from ${currentStream}`;
-	const query = isQuerySearchActive
-		? custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM')
-		: defaultQuery;
-
+	const query = (() => {
+		if (isQuerySearchActive) {
+			const finalQuery = custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM');
+			if (activeMode === 'filters') {
+				return finalQuery;
+			} else {
+				return finalQuery.replace(/ORDER\s+BY\s+[\w\s,.]+(?:ASC|DESC)?\s*(LIMIT\s+\d+)?\s*;?/i, '');
+			}
+		} else {
+			return defaultQuery;
+		}
+	})();
 	const logsQuery = {
 		streamName: currentStream || '',
 		startTime: timeRange.startTime,

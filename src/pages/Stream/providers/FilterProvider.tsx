@@ -3,6 +3,7 @@ import { generateRandomId } from '@/utils';
 import initContext from '@/utils/initContext';
 import { Field, RuleGroupType, RuleType, formatQuery } from 'react-querybuilder';
 import { LOAD_LIMIT } from './LogsProvider';
+import { timeRangeSQLCondition } from '@/api/query';
 
 // write transformer (for saved filters) if you are updating the operators below
 export const textFieldOperators = [
@@ -126,7 +127,11 @@ type FilterStoreReducers = {
 	updateGroupCombinator: (store: FilterStore, id: string, op: Combinator) => ReducerOutput;
 	updateParentCombinator: (store: FilterStore, combinator: Combinator) => ReducerOutput;
 	updateRule: (store: FilterStore, groupId: string, ruleId: string, updateOpts: RuleUpdateOpts) => ReducerOutput;
-	parseQuery: (query: QueryType, currentStream: string) => { where: string; parsedQuery: string };
+	parseQuery: (
+		query: QueryType,
+		currentStream: string,
+		timeRangeOpts?: { startTime: Date; endTime: Date },
+	) => { where: string; parsedQuery: string };
 	toggleSubmitBtn: (store: FilterStore, val: boolean) => ReducerOutput;
 	toggleSaveFiltersModal: (_store: FilterStore, val: boolean) => ReducerOutput;
 	toggleSavedFiltersModal: (_store: FilterStore, val: boolean) => ReducerOutput;
@@ -235,10 +240,13 @@ const toggleSubmitBtn = (_store: FilterStore, val: boolean) => {
 };
 
 // todo - custom rule processor to prevent converting number strings into numbers for text fields
-const parseQuery = (query: QueryType, currentStream: string) => {
+const parseQuery = (query: QueryType, currentStream: string, timeRangeOpts?: { startTime: Date; endTime: Date }) => {
 	// todo - custom rule processor to prevent converting number strings into numbers for text fields
 	const where = formatQuery(query, { format: 'sql', parseNumbers: true, quoteFieldNamesWith: ['"', '"'] });
-	const parsedQuery = `select * from ${currentStream} where ${where} limit ${LOAD_LIMIT}`;
+	const timeRangeCondition = timeRangeOpts
+		? timeRangeSQLCondition('p_timestamp', timeRangeOpts.startTime, timeRangeOpts.endTime)
+		: '(1=1)';
+	const parsedQuery = `select * from ${currentStream} where ${where} AND ${timeRangeCondition} limit ${LOAD_LIMIT}`;
 	return { where, parsedQuery };
 };
 
