@@ -31,7 +31,6 @@ const genColumnConfig = (fields: Field[]) => {
 };
 
 export const defaultCustSQLQuery = (streamName: string | null, startTime: Date, endTime: Date) => {
-	console.log(startTime, 'yalla');
 	if (streamName && streamName.length > 0) {
 		// return `SELECT * FROM ${streamName} LIMIT ${LOAD_LIMIT};`;
 		const { query } = formQueryOpts({ streamName: streamName || '', limit: LOAD_LIMIT, startTime, endTime });
