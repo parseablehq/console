@@ -9,16 +9,9 @@ import _ from 'lodash';
 import { AxiosError } from 'axios';
 import jqSearch from '@/utils/jqSearch';
 import { useGetStreamSchema } from '@/hooks/useGetLogStreamSchema';
+import { useStreamStore } from '@/pages/Stream/providers/StreamProvider';
 
 const { setLogData } = logsStoreReducers;
-
-type QueryLogs = {
-	streamName: string;
-	startTime: Date;
-	endTime: Date;
-	limit: number;
-	pageOffset: number;
-};
 
 const appendOffsetToQuery = (query: string, offset: number) => {
 	const hasOffset = query.toLowerCase().includes('offset');
@@ -40,8 +33,9 @@ export const useQueryLogs = () => {
 			order: SortOrder.DESCENDING,
 		},
 	});
-
+	const [streamInfo] = useStreamStore(store => store.info)
 	const [currentStream] = useAppStore((store) => store.currentStream);
+	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp')
 	const { refetch: refetchSchema } = useGetStreamSchema({ streamName: currentStream || '' });
 	const [
 		{
@@ -80,18 +74,19 @@ export const useQueryLogs = () => {
 		endTime: timeRange.endTime,
 		limit: LOAD_LIMIT,
 		pageOffset: currentOffset,
+		timePartitionColumn
 	};
-	const getQueryData = async (logsQuery: QueryLogs = defaultQueryOpts) => {
+	const getQueryData = async () => {
 		try {
 			setLoading(true);
 			setError(null);
 			refetchSchema(); // fetch schema parallelly every time we fetch logs
 			const logsQueryRes = isQuerySearchActive
 				? await getQueryResultWithHeaders(
-						{ ...logsQuery, access: [] },
-						appendOffsetToQuery(custSearchQuery, logsQuery.pageOffset),
+						{ ...defaultQueryOpts, access: [] },
+						appendOffsetToQuery(custSearchQuery, defaultQueryOpts.pageOffset),
 				  )
-				: await getQueryLogsWithHeaders(logsQuery);
+				: await getQueryLogsWithHeaders(defaultQueryOpts);
 
 			const logs = logsQueryRes.data;
 			const isInvalidResponse = _.isEmpty(logs) || _.isNil(logs) || logsQueryRes.status !== StatusCodes.OK;

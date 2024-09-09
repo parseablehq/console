@@ -80,7 +80,7 @@ export const useFetchCount = () => {
 		isLoading: isCountLoading,
 		isRefetching: isCountRefetching,
 		refetch: refetchCount,
-	} = useQuery(['fetchCount', logsQuery], () => getQueryResult(logsQuery, query), {
+	} = useQuery(['fetchCount', logsQuery], () => getQueryResult(logsQuery, query, false), {
 		onSuccess: (resp) => {
 			const count = _.first(resp.data)?.count;
 			typeof count === 'number' && setLogsStore((store) => setTotalCount(store, count));
