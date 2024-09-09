@@ -1,4 +1,5 @@
 import type { Log } from '@/@types/parseable/api/query';
+import _ from 'lodash';
 
 type Data = Log[] | null;
 
@@ -35,11 +36,25 @@ export const downloadDataAsCSV = (data: Data, filename: string) => {
 };
 
 // makes sure no records has missing cells
+
+const _isVulnerableValue = (val: string | number | Date) => {
+	if (!_.isString(val)) return false;
+
+	return _.chain(val)
+		.head()
+		.thru((startChar) => _.includes(['=', '+', '-', '@'], startChar))
+		.value();
+}
+	
 export const sanitizeCSVData = (data: Data, headers: string[]): any[] => {
 	if (data) {
 		return data.map((d) => {
 			return headers.reduce((acc, header) => {
-				return { ...acc, [header]: d[header] || '' };
+				const cellValue = _.chain(d)
+					.get(header, '')
+					.thru((val) => (_isVulnerableValue(val) ? `'${val}'` : val))
+					.value();
+				return { ...acc, [header]: cellValue || '' };
 			}, {});
 		});
 	} else {
