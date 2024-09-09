@@ -1,0 +1,8 @@
+
+.warningIcon {
+    color: var(--mantine-color-gray-5);
+}
+
+.errorMsgText {
+    color: var(--mantine-color-gray-5);
+}

@@ -18,6 +18,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { IconEdit, IconInfoCircleFilled, IconPlus, IconTrash } from '@tabler/icons-react';
 import { UseFormReturnType, useForm } from '@mantine/form';
 import { useStreamStore, streamStoreReducers } from '../../providers/StreamProvider';
+import ErrorView from './ErrorView';
 
 const defaultColumnTypeConfig = { column: '', operator: '=', value: '', repeats: 1, ignoreCase: false };
 const defaultColumnTypeRule = { type: 'column' as 'column', config: defaultColumnTypeConfig };
@@ -657,6 +658,7 @@ const AlertList = (props: {
 const Alerts = (props: {
 	isLoading: boolean;
 	schemaLoading: boolean;
+	isError: boolean;
 	updateAlerts: ({ config, onSuccess }: { config: any; onSuccess?: () => void }) => void;
 }) => {
 	const [alertName, setAlertName] = useState<string>('');
@@ -675,7 +677,15 @@ const Alerts = (props: {
 		<Stack className={classes.sectionContainer} gap={0} style={{ flex: 1 }}>
 			<AlertsModal open={alertModalOpen} alertName={alertName} onClose={closeModal} updateAlerts={props.updateAlerts} />
 			<Header selectAlert={selectAlert} isLoading={props.isLoading} />
-			<AlertList selectAlert={selectAlert} isLoading={props.isLoading} updateAlerts={props.updateAlerts} />
+			{props.isError ? (
+				<ErrorView />
+			) : (
+				<AlertList
+					selectAlert={selectAlert}
+					isLoading={props.isLoading || props.schemaLoading}
+					updateAlerts={props.updateAlerts}
+				/>
+			)}
 		</Stack>
 	);
 };

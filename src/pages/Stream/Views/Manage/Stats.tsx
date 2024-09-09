@@ -4,6 +4,7 @@ import { useStreamStore } from '../../providers/StreamProvider';
 import _ from 'lodash';
 import { calcCompressionRate, sanitizeBytes, sanitizeEventsCount } from '@/utils/formatBytes';
 import { IconArrowDown } from '@tabler/icons-react';
+import ErrorView from './ErrorView';
 
 const Header = () => {
 	return (
@@ -188,11 +189,11 @@ const StatsTable = (props: { isLoading: boolean }) => {
 	);
 };
 
-const Stats = (props: { isLoading: boolean }) => {
+const Stats = (props: { isLoading: boolean; isError: boolean }) => {
 	return (
 		<Stack className={classes.sectionContainer} gap={0}>
 			<Header />
-			<StatsTable isLoading={props.isLoading} />
+			{!props.isError ? <StatsTable isLoading={props.isLoading} /> : <ErrorView />}
 		</Stack>
 	);
 };
