@@ -644,12 +644,29 @@ const getCleanStoreForRefetch = (store: LogsStore) => {
 };
 
 const setCleanLogStoreForStreamChange = (store: LogsStore) => {
-	const { timeRange } = store;
+	const { tableOpts, timeRange, alerts } = store;
 	const { interval, type } = timeRange;
 	const duration = _.find(FIXED_DURATIONS, (duration) => duration.milliseconds === timeRange.interval);
 	const updatedTimeRange = interval && type === 'fixed' ? { timeRange: getDefaultTimeRange(duration) } : { timeRange };
 
-	return { ...initialState, ...updatedTimeRange };
+	return {
+		...initialState,
+		tableOpts: {
+			...tableOpts,
+			pageData: [],
+			totalCount: 0,
+			displayedCount: 0,
+			currentPage: 0,
+			currentOffset: 0,
+			totalPages: 0,
+			orderedHeaders: [],
+			disabledColumns: [],
+			pinnedColumns: [],
+			filters: {},
+		},
+		...updatedTimeRange,
+		alerts,
+	};
 };
 
 const applyCustomQuery = (
