@@ -56,13 +56,13 @@ const LogRow: FC<LogRowProps> = (props) => {
 	const classes = tableStyles;
 	const { trStyle, trEvenStyle } = classes;
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
-	const { pinnedColumns, disabledColumns, headers, pageData } = tableOpts;
+	const { pinnedColumns, disabledColumns, orderedHeaders, pageData } = tableOpts;
 	const columnsToIgnore = [
 		...disabledColumns,
 		...columnsToSkip,
-		...headers.filter((header) => (isPinned ? !pinnedColumns.includes(header) : pinnedColumns.includes(header))),
+		...orderedHeaders.filter((header) => (isPinned ? !pinnedColumns.includes(header) : pinnedColumns.includes(header))),
 	];
-	const columnsToShow = headers.filter((header) => !columnsToIgnore.includes(header));
+	const columnsToShow = orderedHeaders.filter((header) => !columnsToIgnore.includes(header));
 
 	const handleMouseLeave = useCallback(() => {
 		setHoveredCell(null);
@@ -120,9 +120,11 @@ const ViewLogArrow: FC = () => {
 	const { tdArrow, tdArrowContainer } = classes;
 
 	return (
-		<td className={tdArrow}>
+		<td className={tdArrow} 
+		style={{paddingTop: '0', paddingBottom: '0'}}
+		>
 			<Box className={tdArrowContainer}>
-				<IconArrowNarrowRight size={'1.4rem'} stroke={1} />
+				<IconArrowNarrowRight size={'1rem'} stroke={1} />
 			</Box>
 		</td>
 	);

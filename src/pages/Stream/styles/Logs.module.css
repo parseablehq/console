@@ -44,12 +44,6 @@
 	background-color: #fff;
 	top: 0;
 	z-index: 2;
-	& th:last-of-type {
-		position: sticky;
-		box-shadow: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 0 0.625rem 0.9375rem -0.3125rem,
-			rgba(0, 0, 0, 0.04) 0 0.4375rem 0.4375rem -0.3125rem;
-		right: 0;
-	}
 }
 
 .liveTheadStyle {
@@ -62,10 +56,10 @@
 	position: sticky;
 	top: 0;
 	background-color: #fff;
+	z-index: 2;
 }
 
 .trStyle {
-	cursor: pointer;
 	background-color: #fff;
 	&:hover {
 		background-color: #f1f3f5;
@@ -75,7 +69,7 @@
 
 	td {
 		border-top: none !important;
-		padding: 0.25rem 1rem;
+		padding: 0.5rem 1rem;
 		font-size: 0.6rem;
 	}
 }
@@ -90,7 +84,7 @@
 	border-color: #ff0000;
 	td {
 		border-top: none !important;
-		padding: 0.25rem 1rem;
+		padding: 0.5rem 1rem;
 		font-size: 0.6rem;
 	}
 }
@@ -256,6 +250,27 @@
 .copyIcon {
 	color: #211f1f;
 }
-.copyIcon:hover {
-	background-color: #f1f3f5;
+.copyIcon:hover {background-color: #f1f3f5;
+}
+
+
+.customCell {
+	position: relative;
+
+	&:hover {
+		.customCellContainer {
+			.copyIconContainer {
+				display: block;
+			}
+		}
+	}
+
+	.customCellContainer {
+		.copyIconContainer {
+			position: absolute;
+			top: 25%;
+			right: 0;
+			display: none;
+		}
+	}
 }
