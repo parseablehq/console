@@ -1,5 +1,5 @@
 import { Axios } from './axios';
-import { LOG_QUERY_URL } from './constants';
+import { LOG_QUERY_URL, LOG_TRINO_QUERY_URL } from './constants';
 import { Log, LogsQuery, LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 
@@ -45,11 +45,11 @@ export const formQueryOpts = (logsQuery: FormQueryOptsType) => {
 };
 
 export const getQueryLogs = (logsQuery: QueryLogs) => {
-	return Axios().post<Log[]>(LOG_QUERY_URL(), formQueryOpts(logsQuery), {});
+	return Axios().post<Log[]>(LOG_TRINO_QUERY_URL(), formQueryOpts(logsQuery), {});
 };
 
 export const getQueryLogsWithHeaders = (logsQuery: QueryLogs) => {
-	return Axios().post<LogsResponseWithHeaders>(LOG_QUERY_URL({ fields: true }), formQueryOpts(logsQuery), {});
+	return Axios().post<LogsResponseWithHeaders>(LOG_TRINO_QUERY_URL({ fields: true }), formQueryOpts(logsQuery), {});
 };
 
 // ------ Custom sql query
@@ -60,13 +60,10 @@ const makeCustomQueryRequestData = (logsQuery: LogsQuery, query: string) => {
 };
 
 export const getQueryResult = (logsQuery: LogsQuery, query = '') => {
-	return Axios().post<Log[]>(LOG_QUERY_URL(), makeCustomQueryRequestData(logsQuery, query), {});
+	return Axios().post<Log[]>(LOG_TRINO_QUERY_URL(), makeCustomQueryRequestData(logsQuery, query), {});
 };
 
-export const getQueryResultWithHeaders = (logsQuery: LogsQuery, query = '') => {
-	return Axios().post<LogsResponseWithHeaders>(
-		LOG_QUERY_URL({ fields: true }),
-		makeCustomQueryRequestData(logsQuery, query),
-		{},
-	);
+export const getQueryResultWithHeaders = (logsQuery: LogsQuery, query = '', useTrino = true) => {
+	const endPoint = useTrino ? LOG_TRINO_QUERY_URL({ fields: true }) : LOG_QUERY_URL({ fields: true });
+	return Axios().post<LogsResponseWithHeaders>(endPoint, makeCustomQueryRequestData(logsQuery, query), {});
 };

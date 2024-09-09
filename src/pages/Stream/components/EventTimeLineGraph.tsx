@@ -275,6 +275,7 @@ const EventTimeLineGraph = () => {
 		fetchQueryMutation.mutate({
 			logsQuery,
 			query,
+			useTrino: false
 		});
 	}, [currentStream, startTime.toISOString(), endTime.toISOString(), custSearchQuery]);
 

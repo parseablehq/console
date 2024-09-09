@@ -13,11 +13,12 @@ type QueryData = {
 	logsQuery: LogsQuery;
 	query: string;
 	onSuccess?: () => void;
+	useTrino?: boolean;
 };
 
 export const useQueryResult = () => {
 	const fetchQueryHandler = async (data: QueryData) => {
-		const response = await getQueryResultWithHeaders(data.logsQuery, data.query);
+		const response = await getQueryResultWithHeaders(data.logsQuery, data.query, data.useTrino);
 		if (response.status !== 200) {
 			throw new Error(response.statusText);
 		}
