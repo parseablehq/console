@@ -20,6 +20,14 @@ export const useRetentionQuery = (streamName: string) => {
 			const retentionData = _.isArray(data.data) ? data.data[0] || {} : {};
 			setStreamStore((store) => setRetention(store, retentionData));
 		},
+		onError: (data: AxiosError) => {
+			if (isAxiosError(data) && data.response) {
+				const error = data.response?.data as string;
+				typeof error === 'string' && notifyError({ message: error });
+			} else if (data.message && typeof data.message === 'string') {
+				notifyError({ message: data.message });
+			}
+		},
 		retry: false,
 		enabled: streamName !== '',
 		refetchOnWindowFocus: false,

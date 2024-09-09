@@ -6,6 +6,7 @@ import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import UpdateTimePartitionLimit from './UpdateTimePartitionLimit';
 import UpdateCustomPartitionField from './UpdateCustomPartitionField';
 import timeRangeUtils from '@/utils/timeRangeUtils';
+import ErrorView from './ErrorView';
 
 const { formatDateWithTimezone } = timeRangeUtils;
 
@@ -92,11 +93,11 @@ const InfoData = (props: { isLoading: boolean }) => {
 	);
 };
 
-const Info = (props: { isLoading: boolean }) => {
+const Info = (props: { isLoading: boolean; isError: boolean }) => {
 	return (
 		<Stack className={classes.sectionContainer} gap={0}>
 			<Header />
-			<InfoData isLoading={props.isLoading} />
+			{props.isError ? <ErrorView /> : <InfoData isLoading={props.isLoading} />}
 		</Stack>
 	);
 };
