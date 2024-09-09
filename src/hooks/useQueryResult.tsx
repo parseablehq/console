@@ -81,7 +81,6 @@ export const useFetchCount = () => {
 		},
 		refetchOnWindowFocus: false,
 		retry: false,
-		enabled: false,
 	});
 
 	return {
