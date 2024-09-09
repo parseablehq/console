@@ -33,6 +33,7 @@ export const useQueryLogs = () => {
 			order: SortOrder.DESCENDING,
 		},
 	});
+
 	const [streamInfo] = useStreamStore(store => store.info)
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp')
