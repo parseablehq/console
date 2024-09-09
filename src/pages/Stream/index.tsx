@@ -6,7 +6,6 @@ import ViewLog from './components/ViewLog';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import SideBar from './components/Sidebar';
 import Management from './Views/Manage/Management';
-import { useGetLogStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useStreamStore, streamStoreReducers } from './providers/StreamProvider';
 import _ from 'lodash';
 import SecondaryToolbar from './components/SecondaryToolbar';
@@ -17,10 +16,11 @@ import { STREAM_VIEWS } from '@/constants/routes';
 import { Text } from '@mantine/core';
 import { RetryBtn } from '@/components/Button/Retry';
 import LogsView from './Views/Explore/LogsView';
+import { useGetStreamSchema } from '@/hooks/useGetLogStreamSchema';
 
 const { streamChangeCleanup } = streamStoreReducers;
 
-const SchemaErrorView = (props: { error: string; fetchSchema: () => void }) => {
+const SchemaErrorView = (props: { error: string | null; fetchSchema: () => void }) => {
 	return (
 		<Stack style={{ height: '100%', alignItems: 'center', justifyContent: 'center' }}>
 			<Stack gap={0} style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -42,11 +42,17 @@ const Logs: FC = () => {
 	const [maximized] = useAppStore((store) => store.maximized);
 	const [sideBarOpen, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
 
-	const { getDataSchema, loading, error } = useGetLogStreamSchema();
+	const {
+		refetch: refetchSchema,
+		isLoading: isSchemaLoading,
+		errorMessage: schemaFetchErrorMessage,
+		isError: isSchemaError,
+		isRefetching: isSchemaRefetching
+	} = useGetStreamSchema({ streamName: currentStream || '' });
 
 	const fetchSchema = useCallback(() => {
 		setStreamStore(streamChangeCleanup);
-		getDataSchema();
+		refetchSchema();
 	}, [currentStream]);
 
 	useEffect(() => {
@@ -59,9 +65,7 @@ const Logs: FC = () => {
 
 	if (!currentStream) return null;
 	if (!_.includes(STREAM_VIEWS, view)) return null;
-
-	const isSchemaLoading = !error && loading;
-	// todo - have separate ui components for loading and error states
+	const isSchemaFetching = isSchemaRefetching || isSchemaLoading
 
 	return (
 		<Box
@@ -86,15 +90,15 @@ const Logs: FC = () => {
 				<PrimaryToolbar />
 				{view === 'explore' && <SecondaryToolbar />}
 				{view === 'explore' ? (
-					error ? (
-						<SchemaErrorView error={error} fetchSchema={fetchSchema} />
+					isSchemaError ? (
+						<SchemaErrorView error={schemaFetchErrorMessage} fetchSchema={fetchSchema} />
 					) : (
-						<LogsView schemaLoading={isSchemaLoading} />
+						<LogsView schemaLoading={isSchemaFetching} />
 					)
 				) : view === 'live-tail' ? (
 					<LiveLogTable />
 				) : (
-					<Management schemaLoading={isSchemaLoading} />
+					<Management schemaLoading={isSchemaFetching} />
 				)}
 			</Stack>
 		</Box>

@@ -11,6 +11,7 @@ import IconButton from '@/components/Button/IconButton';
 import { IconDownload, IconSelector } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
 import classes from '../../styles/Footer.module.css';
+import { LOGS_FOOTER_HEIGHT } from '@/constants/theme';
 
 const { setPageAndPageData, setCurrentPage, setCurrentOffset, makeExportData } = logsStoreReducers;
 
@@ -135,7 +136,7 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: b
 	);
 
 	return (
-		<Stack className={classes.footerContainer} gap={0}>
+		<Stack className={classes.footerContainer} gap={0} style={{height: LOGS_FOOTER_HEIGHT}}>
 			<Stack w="100%" justify="center" align="flex-start">
 				<TotalLogsCount
 					hasTableLoaded={props.loaded}

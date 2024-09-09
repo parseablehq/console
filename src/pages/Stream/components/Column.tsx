@@ -1,7 +1,7 @@
 import { Log } from '@/@types/parseable/api/query';
-import { Box, Checkbox, Popover, ScrollArea, Stack, TextInput, Tooltip, UnstyledButton, px, rem } from '@mantine/core';
+import { Box, Checkbox, Menu, ScrollArea, Stack, TextInput, Tooltip, px } from '@mantine/core';
 import { type ChangeEvent, type FC, Fragment, useRef, useCallback, useState, useEffect } from 'react';
-import { IconDotsVertical, IconFilter, IconSearch, IconSortAscending, IconSortDescending } from '@tabler/icons-react';
+import { IconFilter, IconSearch } from '@tabler/icons-react';
 import EmptyBox from '@/components/Empty';
 import { Button } from '@mantine/core';
 import columnStyles from '../styles/Column.module.css';
@@ -9,46 +9,7 @@ import { Text } from '@mantine/core';
 import { useLogsStore, logsStoreReducers } from '../providers/LogsProvider';
 import _ from 'lodash';
 
-type SortWidgetProps = {
-	columnName: string;
-	closePopover: () => void;
-};
-
-const { setAndSortData, getUniqueValues, setAndFilterData } = logsStoreReducers;
-
-/**
- * Component that allows selecting sorting by a given field
- */
-const SortWidget: FC<SortWidgetProps> = (props) => {
-	const { columnName, closePopover } = props;
-	const [, setLogsStore] = useLogsStore((_store) => null);
-	const toggleSort = useCallback((order: 'asc' | 'desc') => {
-		setLogsStore((store) => setAndSortData(store, columnName, order));
-		closePopover();
-	}, []);
-
-	const classes = columnStyles;
-	const { sortBtn, sortBtnActive } = classes;
-	const [sortKey] = useLogsStore((store) => store.tableOpts.sortKey);
-	const [sortOrder] = useLogsStore((store) => store.tableOpts.sortOrder);
-	const isSortActive = sortKey === columnName;
-	return (
-		<Stack gap={8}>
-			<Button
-				className={isSortActive && sortOrder === 'asc' ? sortBtnActive : sortBtn}
-				onClick={() => toggleSort('asc')}
-				leftSection={<IconSortAscending stroke={1} />}>
-				Sort by ascending order
-			</Button>
-			<Button
-				className={isSortActive && sortOrder === 'desc' ? sortBtnActive : sortBtn}
-				onClick={() => toggleSort('desc')}
-				leftSection={<IconSortDescending stroke={1} />}>
-				Sort by descending order
-			</Button>
-		</Stack>
-	);
-};
+const { getUniqueValues, setAndFilterData } = logsStoreReducers;
 
 type Column = {
 	columnName: string;
@@ -61,20 +22,11 @@ const Column: FC<Column> = (props) => {
 	const [selectedValues, setSelectedValues] = useState<string[]>([]);
 	const [rawData, setLogsStore] = useLogsStore((store) => store.data.rawData);
 	const inputValueRef = useRef('');
-	const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
 
 	useEffect(() => {
 		const uniqueValues = getUniqueValues(rawData, columnName);
 		setUniqueValues(uniqueValues);
 	}, [rawData]);
-
-	const closePopover = useCallback(() => {
-		setPopoverOpen(false);
-	}, []);
-
-	const openPopover = useCallback(() => {
-		setPopoverOpen(true);
-	}, []);
 
 	const onSearch = useCallback(
 		(e: ChangeEvent<HTMLInputElement>) => {
@@ -94,68 +46,46 @@ const Column: FC<Column> = (props) => {
 	}, []);
 
 	const onApply = () => {
-		closePopover();
 		setLogsStore((store) => setAndFilterData(store, columnName, selectedValues));
 	};
 	const classes = columnStyles;
-	const { labelBtn, applyBtn, labelIcon, searchInputStyle } = classes;
+	const { applyBtn, searchInputStyle } = classes;
 
 	const checkboxList =
 		filteredValues.length === 0 ? (inputValueRef.current.length === 0 ? uniqueValues : []) : filteredValues;
 	return (
-		<th
-			style={{
-				padding: 0,
-				textAlign: 'left',
-			}}>
-			<Popover
-				position="bottom"
-				opened={popoverOpen}
-				onClose={closePopover}
-				onOpen={openPopover}
-				withArrow
-				withinPortal
-				shadow="md"
-				zIndex={2}>
-				<Popover.Target>
-					<UnstyledButton className={labelBtn} onClick={openPopover}>
-						<span>{columnName}</span>
-						<IconDotsVertical size={px('0.75rem')} className={[labelIcon].filter(Boolean).join(' ')} />
-					</UnstyledButton>
-				</Popover.Target>
-				<Popover.Dropdown>
-					<Box style={{ width: rem(400) }}>
-						<SortWidget columnName={columnName} closePopover={closePopover} />
-						<Stack gap={8} mt={16} style={{ flexDirection: 'row' }}>
-							<IconFilter stroke={1} size="1rem" />
-							<Text>Filter by values:</Text>
-						</Stack>
-						<TextInput
-							className={searchInputStyle}
-							placeholder="Search"
-							leftSection={<IconSearch size={px('1rem')} />}
-							onChange={onSearch}
-							mt={8}
+		<div>
+			<Box style={{ width: '20rem', padding: '0.25rem 0.5rem 0.25rem 0.5rem' }}>
+				<Stack gap={8} my={16} style={{ flexDirection: 'row' }}>
+					<IconFilter stroke={1} size="1rem" />
+					<Text>Filter by values:</Text>
+				</Stack>
+				<TextInput
+					className={searchInputStyle}
+					placeholder="Search"
+					leftSection={<IconSearch size={px('1rem')} />}
+					onChange={onSearch}
+					mt={8}
+				/>
+				{checkboxList.length ? (
+					<Fragment>
+						<CheckboxVirtualList
+							columnName={columnName}
+							list={checkboxList}
+							selectedFilters={selectedValues}
+							onSelect={onSelect}
 						/>
-						{checkboxList.length ? (
-							<Fragment>
-								<CheckboxVirtualList
-									columnName={columnName}
-									list={checkboxList}
-									selectedFilters={selectedValues}
-									onSelect={onSelect}
-								/>
-								<Button className={applyBtn} onClick={onApply} disabled={selectedValues.length === 0}>
-									Apply
-								</Button>
-							</Fragment>
-						) : (
-							<EmptyBox mb="lg" />
-						)}
-					</Box>
-				</Popover.Dropdown>
-			</Popover>
-		</th>
+						<Menu.Item>
+							<Button className={applyBtn} onClick={onApply} disabled={selectedValues.length === 0}>
+								Apply
+							</Button>
+						</Menu.Item>
+					</Fragment>
+				) : (
+					<EmptyBox mb="lg" />
+				)}
+			</Box>
+		</div>
 	);
 };
 

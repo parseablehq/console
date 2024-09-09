@@ -6,6 +6,7 @@ import '@mantine/dates/styles.css';
 import '@mantine/code-highlight/styles.css';
 import '@mantine/charts/styles.css';
 import './utils/dayjsLoader';
+import 'mantine-react-table/styles.css'; //import MRT styles
 import ReactDOM from 'react-dom/client';
 import App from '@/components/App';
 import Mantine from '@/components/Mantine';
