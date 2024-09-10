@@ -26,16 +26,20 @@ import { GetInputPropsReturnType } from 'node_modules/@mantine/form/lib/types';
 
 const { toggleCreateStreamModal } = appStoreReducers;
 
+const allowedSpecialCharacters = ['-', '_'];
+
 const isValidStreamName = (val: string) => {
 	if (!/[A-Za-z]/.test(val)) {
 		return 'Name should contain at least one letter';
-	} else if (_.includes(val, ' ')) {
+	} else if (/\s/.test(val)) {
 		return 'Name should not contain whitespace';
-	} else if (!/^[a-zA-Z0-9]+$/.test(val)) {
-		return 'Name should not contain any special characters';
-	} else {
-		null;
+	} else if (!new RegExp(`^[a-zA-Z0-9${allowedSpecialCharacters.join('')}\]+$`).test(val)) {
+		return `Name should only contain letters, numbers, or these special characters: ${allowedSpecialCharacters.join(
+			' , ',
+		)}`;
 	}
+
+	return null;
 };
 
 const reservedFieldNames = ['p_metadata', 'p_tags', 'p_timestamp'];
