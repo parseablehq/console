@@ -120,6 +120,8 @@ const Querier = () => {
 		setLogsStore((store) => toggleQueryBuilder(store));
 	}, []);
 	const [schema] = useStreamStore((store) => store.schema);
+	const [streamInfo] = useStreamStore((store) => store.info);
+	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
 	const [{ query, isSumbitDisabled }, setFilterStore] = useFilterStore((store) => store);
 
 	useEffect(() => {
@@ -145,7 +147,7 @@ const Querier = () => {
 			if (!currentStream) return;
 
 			const { isUncontrolled } = opts || {};
-			const { parsedQuery } = parseQuery(query, currentStream, { startTime, endTime });
+			const { parsedQuery } = parseQuery(query, currentStream, timePartitionColumn, { startTime, endTime });
 			setFilterStore((store) => storeAppliedQuery(store));
 			triggerRefetch(parsedQuery, 'filters', isUncontrolled && savedFilterId ? savedFilterId : undefined);
 		},
