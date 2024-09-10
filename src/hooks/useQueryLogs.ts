@@ -15,10 +15,7 @@ const { setLogData } = logsStoreReducers;
 
 const appendOffsetToQuery = (query: string, offset: number) => {
 	const hasOffset = query.toLowerCase().includes('offset');
-
-	return hasOffset
-		? query.replace(/offset\s+\d+/i, `OFFSET ${offset}`)
-		: query.replace(/(\slimit)/i, ` OFFSET ${offset} limit`);
+	return hasOffset ? query.replace(/offset\s+\d+/i, `OFFSET ${offset}`) : `${query} OFFSET ${offset}`;
 };
 
 export const useQueryLogs = () => {
@@ -36,10 +33,9 @@ export const useQueryLogs = () => {
 			order: SortOrder.DESCENDING,
 		},
 	});
-
-	const [streamInfo] = useStreamStore((store) => store.info);
+	const [streamInfo] = useStreamStore(store => store.info)
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
+	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp')
 	const { refetch: refetchSchema } = useGetStreamSchema({ streamName: currentStream || '' });
 	const [
 		{
@@ -76,9 +72,9 @@ export const useQueryLogs = () => {
 		streamName: currentStream || '',
 		startTime: timeRange.startTime,
 		endTime: timeRange.endTime,
-		pageOffset: currentOffset,
 		limit: LOAD_LIMIT,
-		timePartitionColumn,
+		pageOffset: currentOffset,
+		timePartitionColumn
 	};
 	const getQueryData = async () => {
 		try {

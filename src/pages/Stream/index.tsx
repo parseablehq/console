@@ -17,7 +17,6 @@ import { Text } from '@mantine/core';
 import { RetryBtn } from '@/components/Button/Retry';
 import LogsView from './Views/Explore/LogsView';
 import { useGetStreamSchema } from '@/hooks/useGetLogStreamSchema';
-
 import { useGetStreamInfo } from '@/hooks/useGetStreamInfo';
 
 const { streamChangeCleanup } = streamStoreReducers;
@@ -75,7 +74,6 @@ const Stream: FC = () => {
 
 	const isSchemaFetching = isSchemaRefetching || isSchemaLoading;
 	const isInfoLoading = getStreamInfoLoading && view === 'explore'
-
 	return (
 		<Box
 			style={{

@@ -11,7 +11,6 @@ type QueryLogs = {
 	endTime: Date;
 	limit: number;
 	pageOffset: number;
-	timePartitionColumn: string;
 };
 
 // to optimize query performace, it has been decided to round off the time at the given level

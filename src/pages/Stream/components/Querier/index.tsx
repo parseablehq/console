@@ -74,13 +74,13 @@ const QuerierModal = (props: {
 }) => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [{ showQueryBuilder, viewMode }, setLogsStore] = useLogsStore((store) => store.custQuerySearchState);
+	const [streamInfo] = useStreamStore((store) => store.info);
 	const [timeRange] = useLogsStore((store) => store.timeRange);
+	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
 	const onClose = useCallback(() => {
 		setLogsStore((store) => toggleQueryBuilder(store, false));
 	}, []);
 	const queryCodeEditorRef = useRef<any>(''); // to store input value even after the editor unmounts
-	const [streamInfo] = useStreamStore((store) => store.info);
-	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
 
 	useEffect(() => {
 		queryCodeEditorRef.current = defaultCustSQLQuery(
@@ -128,8 +128,8 @@ const Querier = () => {
 	}, []);
 	const [schema] = useStreamStore((store) => store.schema);
 	const [streamInfo] = useStreamStore((store) => store.info);
-	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
 	const [{ query, isSumbitDisabled }, setFilterStore] = useFilterStore((store) => store);
+	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
 
 	useEffect(() => {
 		if (schema) {
@@ -154,11 +154,11 @@ const Querier = () => {
 			if (!currentStream) return;
 
 			const { isUncontrolled } = opts || {};
-			const { parsedQuery } = parseQuery(query, currentStream, timePartitionColumn, { startTime, endTime });
+			const { parsedQuery } = parseQuery(query, currentStream, { startTime, endTime, timePartitionColumn });
 			setFilterStore((store) => storeAppliedQuery(store));
 			triggerRefetch(parsedQuery, 'filters', isUncontrolled && savedFilterId ? savedFilterId : undefined);
 		},
-		[query, currentStream, savedFilterId, endTime, startTime],
+		[query, currentStream, savedFilterId, endTime, startTime, timePartitionColumn],
 	);
 
 	const onSqlSearchApply = useCallback(
