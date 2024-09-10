@@ -22,7 +22,7 @@ const optimizeTime = (date: Date) => {
 
 const makeDefaultQueryRequestData = (logsQuery: QueryLogs) => {
 	const { startTime, endTime, streamName, limit, pageOffset } = logsQuery;
-	const query = `SELECT * FROM ${streamName} LIMIT ${limit} OFFSET ${pageOffset}`;
+	const query = `SELECT * FROM \"${streamName}\" LIMIT ${limit} OFFSET ${pageOffset}`;
 	return { query, startTime: optimizeTime(startTime), endTime: optimizeTime(endTime) };
 };
 

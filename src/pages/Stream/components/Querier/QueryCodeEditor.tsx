@@ -31,7 +31,7 @@ const genColumnConfig = (fields: Field[]) => {
 
 export const defaultCustSQLQuery = (streamName: string | null) => {
 	if (streamName && streamName.length > 0) {
-		return `SELECT * FROM ${streamName} LIMIT ${LOAD_LIMIT};`;
+		return `SELECT * FROM \"${streamName}\" LIMIT ${LOAD_LIMIT};`;
 	} else {
 		return '';
 	}
@@ -103,7 +103,7 @@ const QueryCodeEditor: FC<{
 	useEffect(() => {
 		if (currentStream !== localStreamName) {
 			setlocalStreamName(currentStream);
-			const query = `SELECT * FROM ${currentStream} LIMIT ${LOAD_LIMIT}; `;
+			const query = `SELECT * FROM \"${currentStream}\" LIMIT ${LOAD_LIMIT}; `;
 			updateQuery(query);
 		}
 		setlocalLlmActive(isLlmActive);
