@@ -42,7 +42,7 @@ const Stream: FC = () => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [maximized] = useAppStore((store) => store.maximized);
 	const [sideBarOpen, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
-	const {getStreamInfoRefetch, getStreamInfoLoading} = useGetStreamInfo(currentStream || '');
+	const {getStreamInfoRefetch, getStreamInfoLoading, getStreamInfoRetching} = useGetStreamInfo(currentStream || '');
 
 	const {
 		refetch: refetchSchema,
@@ -60,6 +60,7 @@ const Stream: FC = () => {
 	useEffect(() => {
 		if (!_.isEmpty(currentStream)) {
 			if (view === 'explore') {
+				setStreamStore(streamChangeCleanup);
 				getStreamInfoRefetch();
 			} else {
 				fetchSchema();
@@ -73,7 +74,7 @@ const Stream: FC = () => {
 	if (!_.includes(STREAM_VIEWS, view)) return null;
 
 	const isSchemaFetching = isSchemaRefetching || isSchemaLoading;
-	const isInfoLoading = getStreamInfoLoading && view === 'explore'
+	const isInfoLoading = (getStreamInfoLoading || getStreamInfoRetching) && view === 'explore';
 	return (
 		<Box
 			style={{

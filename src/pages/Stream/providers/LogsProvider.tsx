@@ -703,7 +703,7 @@ const applyCustomQuery = (
 
 	const timeRange = (() => {
 		if (!timeRangePayload) {
-			return {};
+			return { timeRange: store.timeRange };
 		} else {
 			const startTime = dayjs(timeRangePayload.from);
 			const endTime = dayjs(timeRangePayload.to);

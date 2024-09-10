@@ -1,7 +1,7 @@
 import { Paper, Skeleton, Stack, Text } from '@mantine/core';
 import classes from '../styles/EventTimeLineGraph.module.css';
 import { useQueryResult } from '@/hooks/useQueryResult';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import { ChartTooltipProps, AreaChart } from '@mantine/charts';
 import { HumanizeNumber } from '@/utils/formatBytes';
@@ -257,27 +257,31 @@ const EventTimeLineGraph = () => {
 	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
 	const [{ activeMode, custSearchQuery }] = useLogsStore((store) => store.custQuerySearchState);
 	const [{ interval, startTime, endTime }] = useLogsStore((store) => store.timeRange);
+	const [localStream, setLocalStream] = useState<string | null>('');
 
 	useEffect(() => {
-		if (!currentStream || currentStream.length === 0) return;
+		setLocalStream(currentStream);
+	}, [currentStream]);
+
+	useEffect(() => {
+		if (!localStream || localStream.length === 0) return;
 		const { modifiedEndTime, modifiedStartTime, compactType } = getModifiedTimeRange(startTime, endTime, interval);
 
 		const logsQuery = {
-			streamName: currentStream,
+			streamName: localStream,
 			startTime: modifiedStartTime,
 			endTime: modifiedEndTime,
 			access: [],
 		};
-
 		const whereClause =
-			activeMode === 'sql' ? extractWhereClause(custSearchQuery) : parseQuery(appliedQuery, currentStream).where;
-		const query = generateCountQuery(currentStream, modifiedStartTime, modifiedEndTime, compactType, whereClause);
+			activeMode === 'sql' ? extractWhereClause(custSearchQuery) : parseQuery(appliedQuery, localStream).where;
+		const query = generateCountQuery(localStream, modifiedStartTime, modifiedEndTime, compactType, whereClause);
 		fetchQueryMutation.mutate({
 			logsQuery,
 			query,
-			useTrino: false
+			useTrino: false,
 		});
-	}, [currentStream, startTime.toISOString(), endTime.toISOString(), custSearchQuery]);
+	}, [localStream, startTime.toISOString(), endTime.toISOString(), custSearchQuery]);
 
 	const isLoading = fetchQueryMutation.isLoading;
 	const avgEventCount = useMemo(() => calcAverage(fetchQueryMutation?.data), [fetchQueryMutation?.data]);
