@@ -3,7 +3,6 @@ import { getSavedFilters, deleteSavedFilter, putSavedFilters, postSavedFilters }
 import { notifyError, notifySuccess } from '@/utils/notification';
 import { AxiosError, isAxiosError } from 'axios';
 import { useAppStore, appStoreReducers } from '@/layouts/MainLayout/providers/AppProvider';
-import Cookies from 'js-cookie';
 import _ from 'lodash';
 import { CreateSavedFilterType, SavedFilterType } from '@/@types/parseable/api/savedFilters';
 import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsProvider';
@@ -13,10 +12,9 @@ const { updateSavedFilterId } = logsStoreReducers;
 const useSavedFiltersQuery = () => {
 	const [, setAppStore] = useAppStore((_store) => null);
 	const [, setLogsStore] = useLogsStore((_store) => null);
-	const username = Cookies.get('username');
 	const { isError, isSuccess, isLoading, refetch, isRefetching } = useQuery(
 		['saved-filters'],
-		() => getSavedFilters(username || ''),
+		() => getSavedFilters(),
 		{
 			retry: false,
 			enabled: false, // not on mount
