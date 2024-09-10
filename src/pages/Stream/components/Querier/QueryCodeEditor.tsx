@@ -12,6 +12,7 @@ import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { LOAD_LIMIT, useLogsStore } from '../../providers/LogsProvider';
 import { useStreamStore } from '../../providers/StreamProvider';
 import { formQueryOpts } from '@/api/query';
+import _ from 'lodash';
 
 const genColumnConfig = (fields: Field[]) => {
 	const columnConfig = { leftColumns: [], rightColumns: [] };
@@ -30,10 +31,21 @@ const genColumnConfig = (fields: Field[]) => {
 	}, columnConfig);
 };
 
-export const defaultCustSQLQuery = (streamName: string | null, startTime: Date, endTime: Date) => {
+export const defaultCustSQLQuery = (
+	streamName: string | null,
+	startTime: Date,
+	endTime: Date,
+	timePartitionColumn: string,
+) => {
 	if (streamName && streamName.length > 0) {
 		// return `SELECT * FROM ${streamName} LIMIT ${LOAD_LIMIT};`;
-		const { query } = formQueryOpts({ streamName: streamName || '', limit: LOAD_LIMIT, startTime, endTime });
+		const { query } = formQueryOpts({
+			streamName: streamName || '',
+			limit: LOAD_LIMIT,
+			startTime,
+			endTime,
+			timePartitionColumn,
+		});
 		return query;
 	} else {
 		return '';
@@ -62,10 +74,17 @@ const QueryCodeEditor: FC<{
 	const isLlmActive = !!llmActive;
 	const isSqlSearchActive = isQuerySearchActive && activeMode === 'sql';
 	const [timeRange] = useLogsStore((store) => store.timeRange);
+	const [streamInfo] = useStreamStore((store) => store.info);
+	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
 
 	useEffect(() => {
 		if (props.queryCodeEditorRef.current === '' || currentStream !== localStreamName) {
-			props.queryCodeEditorRef.current = defaultCustSQLQuery(currentStream, timeRange.startTime, timeRange.endTime);
+			props.queryCodeEditorRef.current = defaultCustSQLQuery(
+				currentStream,
+				timeRange.startTime,
+				timeRange.endTime,
+				timePartitionColumn,
+			);
 		}
 	}, [currentStream, timeRange.startTime, timeRange.endTime]);
 

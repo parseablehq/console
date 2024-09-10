@@ -79,10 +79,17 @@ const QuerierModal = (props: {
 		setLogsStore((store) => toggleQueryBuilder(store, false));
 	}, []);
 	const queryCodeEditorRef = useRef<any>(''); // to store input value even after the editor unmounts
+	const [streamInfo] = useStreamStore((store) => store.info);
+	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
 
 	useEffect(() => {
-		queryCodeEditorRef.current = defaultCustSQLQuery(currentStream, timeRange.startTime, timeRange.endTime);
-	}, [currentStream, timeRange.endTime, timeRange.startTime]);
+		queryCodeEditorRef.current = defaultCustSQLQuery(
+			currentStream,
+			timeRange.startTime,
+			timeRange.endTime,
+			timePartitionColumn,
+		);
+	}, [currentStream, timeRange.endTime, timeRange.startTime, timePartitionColumn]);
 
 	return (
 		<Modal
