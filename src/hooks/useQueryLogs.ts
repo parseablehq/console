@@ -15,7 +15,7 @@ const { setLogData } = logsStoreReducers;
 
 const appendOffsetToQuery = (query: string, offset: number) => {
 	const hasOffset = query.toLowerCase().includes('offset');
-	// console.log(query.replace(/(\slimit)/i, ` OFFSET ${offset} limit`));
+
 	return hasOffset
 		? query.replace(/offset\s+\d+/i, `OFFSET ${offset}`)
 		: query.replace(/(\slimit)/i, ` OFFSET ${offset} limit`);
