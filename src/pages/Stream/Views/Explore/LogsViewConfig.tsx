@@ -264,15 +264,15 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 	);
 };
 
-const LogsViewConfig = (props: { schemaLoading: boolean; logsLoading: boolean }) => {
+const LogsViewConfig = (props: { schemaLoading: boolean; logsLoading: boolean, infoLoading: boolean }) => {
 	const [configViewType] = useLogsStore((store) => store.tableOpts.configViewType);
 	return (
 		<Stack style={{ width: LOGS_CONFIG_SIDEBAR_WIDTH }} className={classes.container}>
 			<Header />
 			{configViewType === 'schema' ? (
-				<SchemaList isLoading={props.schemaLoading} />
+				<SchemaList isLoading={props.schemaLoading || props.infoLoading} />
 			) : (
-				<ColumnsList isLoading={props.logsLoading} />
+				<ColumnsList isLoading={props.logsLoading || props.infoLoading} />
 			)}
 		</Stack>
 	);

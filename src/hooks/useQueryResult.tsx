@@ -13,11 +13,12 @@ type QueryData = {
 	logsQuery: LogsQuery;
 	query: string;
 	onSuccess?: () => void;
+	useTrino?: boolean;
 };
 
 export const useQueryResult = () => {
 	const fetchQueryHandler = async (data: QueryData) => {
-		const response = await getQueryResultWithHeaders(data.logsQuery, data.query);
+		const response = await getQueryResultWithHeaders(data.logsQuery, data.query, data.useTrino);
 		if (response.status !== 200) {
 			throw new Error(response.statusText);
 		}
@@ -54,13 +55,21 @@ export const useFetchCount = () => {
 	const { setTotalCount } = logsStoreReducers;
 	const [custQuerySearchState] = useLogsStore((store) => store.custQuerySearchState);
 	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
-	const { isQuerySearchActive, custSearchQuery } = custQuerySearchState;
+	const { isQuerySearchActive, custSearchQuery, activeMode } = custQuerySearchState;
 
 	const defaultQuery = `select count(*) as count from ${currentStream}`;
-	const query = isQuerySearchActive
-		? custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM')
-		: defaultQuery;
-
+	const query = (() => {
+		if (isQuerySearchActive) {
+			const finalQuery = custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM');
+			if (activeMode === 'filters') {
+				return finalQuery;
+			} else {
+				return finalQuery.replace(/ORDER\s+BY\s+[\w\s,.]+(?:ASC|DESC)?\s*(LIMIT\s+\d+)?\s*;?/i, '');
+			}
+		} else {
+			return defaultQuery;
+		}
+	})();
 	const logsQuery = {
 		streamName: currentStream || '',
 		startTime: timeRange.startTime,
@@ -71,7 +80,7 @@ export const useFetchCount = () => {
 		isLoading: isCountLoading,
 		isRefetching: isCountRefetching,
 		refetch: refetchCount,
-	} = useQuery(['fetchCount', logsQuery], () => getQueryResult(logsQuery, query), {
+	} = useQuery(['fetchCount', logsQuery], () => getQueryResult(logsQuery, query, false), {
 		onSuccess: (resp) => {
 			const count = _.first(resp.data)?.count;
 			typeof count === 'number' && setLogsStore((store) => setTotalCount(store, count));

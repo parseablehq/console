@@ -11,6 +11,8 @@ import queryCodeStyles from '../../styles/QueryCode.module.css';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { LOAD_LIMIT, useLogsStore } from '../../providers/LogsProvider';
 import { useStreamStore } from '../../providers/StreamProvider';
+import { formQueryOpts } from '@/api/query';
+import _ from 'lodash';
 
 const genColumnConfig = (fields: Field[]) => {
 	const columnConfig = { leftColumns: [], rightColumns: [] };
@@ -29,9 +31,10 @@ const genColumnConfig = (fields: Field[]) => {
 	}, columnConfig);
 };
 
-export const defaultCustSQLQuery = (streamName: string | null) => {
+export const defaultCustSQLQuery = (streamName: string | null, startTime: Date, endTime: Date, timePartitionColumn: string) => {
 	if (streamName && streamName.length > 0) {
-		return `SELECT * FROM ${streamName} LIMIT ${LOAD_LIMIT};`;
+		const { query } = formQueryOpts({ streamName: streamName || '', limit: LOAD_LIMIT, startTime, endTime, timePartitionColumn, pageOffset: 0 });
+		return query;
 	} else {
 		return '';
 	}
@@ -43,6 +46,8 @@ const QueryCodeEditor: FC<{
 	onClear: () => void;
 }> = (props) => {
 	const [llmActive] = useAppStore((store) => store.instanceConfig?.llmActive);
+	const [streamInfo] = useStreamStore((store) => store.info);
+	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
 	const [{ isQuerySearchActive, activeMode, savedFilterId, custSearchQuery }] = useLogsStore(
 		(store) => store.custQuerySearchState,
 	);
@@ -58,12 +63,13 @@ const QueryCodeEditor: FC<{
 	const { data: resAIQuery, postLLMQuery } = usePostLLM();
 	const isLlmActive = !!llmActive;
 	const isSqlSearchActive = isQuerySearchActive && activeMode === 'sql';
+	const [timeRange] = useLogsStore((store) => store.timeRange);
 
 	useEffect(() => {
 		if (props.queryCodeEditorRef.current === '' || currentStream !== localStreamName) {
-			props.queryCodeEditorRef.current = defaultCustSQLQuery(currentStream);
+			props.queryCodeEditorRef.current = defaultCustSQLQuery(currentStream, timeRange.startTime, timeRange.endTime, timePartitionColumn);
 		}
-	}, [currentStream]);
+	}, [currentStream, timeRange.startTime, timeRange.endTime, timePartitionColumn]);
 
 	const updateQuery = useCallback((query: string) => {
 		props.queryCodeEditorRef.current = query;
