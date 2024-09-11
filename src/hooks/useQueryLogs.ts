@@ -10,8 +10,10 @@ import { AxiosError } from 'axios';
 import jqSearch from '@/utils/jqSearch';
 import { useGetStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useStreamStore } from '@/pages/Stream/providers/StreamProvider';
+import { useFilterStore, filterStoreReducers } from '@/pages/Stream/providers/FilterProvider';
 
 const { setLogData } = logsStoreReducers;
+const { parseQuery } = filterStoreReducers;
 
 const appendOffsetToQuery = (query: string, offset: number) => {
 	const hasOffset = query.toLowerCase().includes('offset');
@@ -33,9 +35,9 @@ export const useQueryLogs = () => {
 			order: SortOrder.DESCENDING,
 		},
 	});
-	const [streamInfo] = useStreamStore(store => store.info)
+	const [streamInfo] = useStreamStore((store) => store.info);
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp')
+	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
 	const { refetch: refetchSchema } = useGetStreamSchema({ streamName: currentStream || '' });
 	const [
 		{
@@ -45,7 +47,8 @@ export const useQueryLogs = () => {
 		},
 		setLogsStore,
 	] = useLogsStore((store) => store);
-	const { isQuerySearchActive, custSearchQuery } = custQuerySearchState;
+	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
+	const { isQuerySearchActive, custSearchQuery, activeMode } = custQuerySearchState;
 
 	const getColumnFilters = useCallback(
 		(columnName: string) => {
@@ -74,20 +77,31 @@ export const useQueryLogs = () => {
 		endTime: timeRange.endTime,
 		limit: LOAD_LIMIT,
 		pageOffset: currentOffset,
-		timePartitionColumn
+		timePartitionColumn,
 	};
 	const getQueryData = async () => {
 		try {
 			setLoading(true);
 			setError(null);
 			refetchSchema(); // fetch schema parallelly every time we fetch logs
-			const logsQueryRes = isQuerySearchActive
-				? await getQueryResultWithHeaders(
-						{ ...defaultQueryOpts, access: [] },
-						appendOffsetToQuery(custSearchQuery, defaultQueryOpts.pageOffset),
-				  )
-				: await getQueryLogsWithHeaders(defaultQueryOpts);
-
+			const logsQueryRes = await (async () => {
+				if (isQuerySearchActive) {
+					if (activeMode === 'filters') {
+						const { parsedQuery } = parseQuery(appliedQuery, currentStream || '', {
+							startTime: timeRange.startTime,
+							endTime: timeRange.endTime,
+							timePartitionColumn,
+						});
+						const queryStrWithOffset = appendOffsetToQuery(parsedQuery, defaultQueryOpts.pageOffset);
+						return await getQueryResultWithHeaders({ ...defaultQueryOpts, access: [] }, queryStrWithOffset);
+					} else {
+						const queryStrWithOffset = appendOffsetToQuery(custSearchQuery, defaultQueryOpts.pageOffset);
+						return await getQueryResultWithHeaders({ ...defaultQueryOpts, access: [] }, queryStrWithOffset);
+					}
+				} else {
+					return await getQueryLogsWithHeaders(defaultQueryOpts);
+				}
+			})();
 			const logs = logsQueryRes.data;
 			const isInvalidResponse = _.isEmpty(logs) || _.isNil(logs) || logsQueryRes.status !== StatusCodes.OK;
 			if (isInvalidResponse) return setError('Failed to query log');
