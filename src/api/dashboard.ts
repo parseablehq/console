@@ -18,16 +18,16 @@ import {
 
 const { optimizeEndTime } = timeRangeUtils;
 
-export const getDashboards = (userId: string) => {
-	return Axios().get<Dashboard[]>(LIST_DASHBOARDS(userId));
+export const getDashboards = () => {
+	return Axios().get<Dashboard[]>(LIST_DASHBOARDS);
 };
 
 export const putDashboard = (dashboardId: string, dashboard: UpdateDashboardType) => {
 	return Axios().put(UPDATE_DASHBOARDS_URL(dashboardId), dashboard);
 };
 
-export const postDashboard = (dashboard: CreateDashboardType, userId: string) => {
-	return Axios().post(CREATE_DASHBOARDS_URL, { ...dashboard, user_id: userId });
+export const postDashboard = (dashboard: CreateDashboardType) => {
+	return Axios().post(CREATE_DASHBOARDS_URL, { ...dashboard});
 };
 
 export const removeDashboard = (dashboardId: string) => {

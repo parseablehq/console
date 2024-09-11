@@ -7,7 +7,6 @@ import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { CreateSavedFilterType, SavedFilterType } from '@/@types/parseable/api/savedFilters';
 import useSavedFiltersQuery from '@/hooks/useSavedFilters';
-import Cookies from 'js-cookie';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 
 const { defaultTimeRangeOption, makeTimeRangeOptions, getDefaultTimeRangeOption } = timeRangeUtils;
@@ -29,7 +28,6 @@ const sanitizeFilterItem = (formObject: FormObjectType): SavedFilterType => {
 		filter_id = '',
 		query,
 		selectedTimeRangeOption,
-		user_id,
 		version = '',
 	} = formObject;
 	return {
@@ -39,12 +37,10 @@ const sanitizeFilterItem = (formObject: FormObjectType): SavedFilterType => {
 		filter_name,
 		time_filter: selectedTimeRangeOption.time_filter,
 		query,
-		user_id,
 	};
 };
 
 const SaveFilterModal = () => {
-	const username = Cookies.get('username');
 	const [isSaveFiltersModalOpen, setFilterStore] = useFilterStore((store) => store.isSaveFiltersModalOpen);
 	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
 	const [activeSavedFilters] = useAppStore((store) => store.activeSavedFilters);
@@ -88,7 +84,6 @@ const SaveFilterModal = () => {
 				},
 				isNew: true,
 				isError: false,
-				user_id: username || '',
 				timeRangeOptions,
 				selectedTimeRangeOption,
 			});
@@ -129,7 +124,7 @@ const SaveFilterModal = () => {
 			});
 		}
 
-		if (!_.isEmpty(formObject.filter_id) && !_.isEmpty(formObject.user_id) && !_.isEmpty(formObject.version)) {
+		if (!_.isEmpty(formObject.filter_id) && !_.isEmpty(formObject.version)) {
 			updateSavedFilters({ filter: sanitizeFilterItem(formObject), onSuccess: closeModal });
 		} else {
 			const keysToRemove = ['filter_id', 'version'];

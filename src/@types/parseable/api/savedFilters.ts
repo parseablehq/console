@@ -5,7 +5,6 @@ export type SavedFilterType = {
 	stream_name: string;
 	filter_name: string;
 	filter_id: string;
-	user_id: string;
 	query: {
 		filter_type: 'sql' | 'builder';
 		filter_query?: string;

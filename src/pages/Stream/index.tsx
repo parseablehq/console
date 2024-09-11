@@ -17,10 +17,11 @@ import { Text } from '@mantine/core';
 import { RetryBtn } from '@/components/Button/Retry';
 import LogsView from './Views/Explore/LogsView';
 import { useGetStreamSchema } from '@/hooks/useGetLogStreamSchema';
+import { useGetStreamInfo } from '@/hooks/useGetStreamInfo';
 
 const { streamChangeCleanup } = streamStoreReducers;
 
-const SchemaErrorView = (props: { error: string | null; fetchSchema: () => void }) => {
+const ErrorView = (props: { error: string | null; onRetry: () => void }) => {
 	return (
 		<Stack style={{ height: '100%', alignItems: 'center', justifyContent: 'center' }}>
 			<Stack gap={0} style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -28,19 +29,20 @@ const SchemaErrorView = (props: { error: string | null; fetchSchema: () => void 
 					{props.error || 'Error'}
 				</Text>
 				<Box>
-					<RetryBtn onClick={props.fetchSchema} mt="md" />
+					<RetryBtn onClick={props.onRetry} mt="md" />
 				</Box>
 			</Stack>
 		</Stack>
 	);
 };
 
-const Logs: FC = () => {
+const Stream: FC = () => {
 	useDocumentTitle('Parseable | Stream');
 	const { view } = useParams();
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [maximized] = useAppStore((store) => store.maximized);
 	const [sideBarOpen, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
+	const {getStreamInfoRefetch, getStreamInfoLoading, getStreamInfoRetching} = useGetStreamInfo(currentStream || '');
 
 	const {
 		refetch: refetchSchema,
@@ -56,8 +58,13 @@ const Logs: FC = () => {
 	}, [currentStream]);
 
 	useEffect(() => {
-		if (!_.isEmpty(currentStream) && view !== 'explore') {
-			fetchSchema();
+		if (!_.isEmpty(currentStream)) {
+			if (view === 'explore') {
+				setStreamStore(streamChangeCleanup);
+				getStreamInfoRefetch();
+			} else {
+				fetchSchema();
+			}
 		}
 	}, [currentStream]);
 
@@ -65,8 +72,9 @@ const Logs: FC = () => {
 
 	if (!currentStream) return null;
 	if (!_.includes(STREAM_VIEWS, view)) return null;
-	const isSchemaFetching = isSchemaRefetching || isSchemaLoading
 
+	const isSchemaFetching = isSchemaRefetching || isSchemaLoading;
+	const isInfoLoading = (getStreamInfoLoading || getStreamInfoRetching) && view === 'explore';
 	return (
 		<Box
 			style={{
@@ -91,9 +99,9 @@ const Logs: FC = () => {
 				{view === 'explore' && <SecondaryToolbar />}
 				{view === 'explore' ? (
 					isSchemaError ? (
-						<SchemaErrorView error={schemaFetchErrorMessage} fetchSchema={fetchSchema} />
+						<ErrorView error={schemaFetchErrorMessage} onRetry={fetchSchema} />
 					) : (
-						<LogsView schemaLoading={isSchemaFetching} />
+						<LogsView schemaLoading={isSchemaFetching} infoLoading={isInfoLoading} />
 					)
 				) : view === 'live-tail' ? (
 					<LiveLogTable />
@@ -105,4 +113,4 @@ const Logs: FC = () => {
 	);
 };
 
-export default Logs;
+export default Stream;

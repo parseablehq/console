@@ -73,6 +73,10 @@ const formatDateWithTimezone = (dateTime: string, format: string = 'DD/MM/YYYY h
 	return convertedDate.format(format);
 };
 
+const formatDateAsCastType = (date: Date): string => {
+	return dayjs(date).utc().format('YYYY-MM-DD HH:mm:ss[Z]');
+};
+
 const timeRangeUtils = {
 	defaultTimeRangeOption,
 	formatDateWithTimezone,
@@ -82,6 +86,7 @@ const timeRangeUtils = {
 	getDefaultTimeRangeOption,
 	formatTime,
 	formatDay,
+	formatDateAsCastType,
 };
 
 export default timeRangeUtils;

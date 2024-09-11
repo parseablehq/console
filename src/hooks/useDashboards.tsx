@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from 'react-query';
 import { notifyError, notifySuccess } from '@/utils/notification';
 import { AxiosError, isAxiosError } from 'axios';
-import Cookies from 'js-cookie';
 import _ from 'lodash';
 import { useDashboardsStore, dashboardsStoreReducers } from '@/pages/Dashboards/providers/DashboardsProvider';
 import { getDashboards, getQueryData, postDashboard, putDashboard, removeDashboard } from '@/api/dashboard';
@@ -19,13 +18,12 @@ const { setDashboards, setTileData, selectDashboard } = dashboardsStoreReducers;
 export const useDashboardsQuery = (opts: { updateTimeRange?: (dashboard: Dashboard) => void }) => {
 	const [activeDashboard, setDashboardsStore] = useDashboardsStore((store) => store.activeDashboard);
 
-	const username = Cookies.get('username');
 	const {
 		isError: fetchDashaboardsError,
 		isSuccess: fetchDashboardsSuccess,
 		isLoading: fetchDashboardsLoading,
 		refetch: fetchDashboards,
-	} = useQuery(['dashboards'], () => getDashboards(username || ''), {
+	} = useQuery(['dashboards'], () => getDashboards(), {
 		retry: false,
 		enabled: false, // not on mount
 		refetchOnWindowFocus: false,
@@ -42,7 +40,7 @@ export const useDashboardsQuery = (opts: { updateTimeRange?: (dashboard: Dashboa
 	});
 
 	const { mutate: createDashboard, isLoading: isCreatingDashboard } = useMutation(
-		(data: { dashboard: CreateDashboardType; onSuccess?: () => void }) => postDashboard(data.dashboard, username || ''),
+		(data: { dashboard: CreateDashboardType; onSuccess?: () => void }) => postDashboard(data.dashboard),
 		{
 			onSuccess: (response, variables) => {
 				const { dashboard_id } = response.data;
