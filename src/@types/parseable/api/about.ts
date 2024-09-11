@@ -17,4 +17,5 @@ export type AboutData = {
 	analytics: {
 		clarityTag: string;
 	};
+	queryEngine: 'Trino' | 'Parseable';
 };

@@ -31,9 +31,26 @@ const genColumnConfig = (fields: Field[]) => {
 	}, columnConfig);
 };
 
-export const defaultCustSQLQuery = (streamName: string | null, startTime: Date, endTime: Date, timePartitionColumn: string) => {
+export const defaultCustSQLQuery = (
+	streamName: string | null,
+	startTime: Date,
+	endTime: Date,
+	timePartitionColumn: string,
+	useTrino: boolean,
+) => {
+	// const [instanceConfig] = useAppStore((store) => store.instanceConfig);
 	if (streamName && streamName.length > 0) {
-		const { query } = formQueryOpts({ streamName: streamName || '', limit: LOAD_LIMIT, startTime, endTime, timePartitionColumn, pageOffset: 0 });
+		const { query } = formQueryOpts(
+			{
+				streamName: streamName || '',
+				limit: LOAD_LIMIT,
+				startTime,
+				endTime,
+				timePartitionColumn,
+				pageOffset: 0,
+			},
+			useTrino,
+		);
 		return query;
 	} else {
 		return '';
@@ -45,7 +62,10 @@ const QueryCodeEditor: FC<{
 	onSqlSearchApply: (query: string) => void;
 	onClear: () => void;
 }> = (props) => {
-	const [llmActive] = useAppStore((store) => store.instanceConfig?.llmActive);
+	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
+	const llmActive = _.get(instanceConfig, 'llmActive', false);
+	const queryEngine = _.get(instanceConfig, 'queryEngine', 'Parseable');
+	const useTrino = queryEngine === 'Trino';
 	const [streamInfo] = useStreamStore((store) => store.info);
 	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
 	const [{ isQuerySearchActive, activeMode, savedFilterId, custSearchQuery }] = useLogsStore(
@@ -67,9 +87,15 @@ const QueryCodeEditor: FC<{
 
 	useEffect(() => {
 		if (props.queryCodeEditorRef.current === '' || currentStream !== localStreamName) {
-			props.queryCodeEditorRef.current = defaultCustSQLQuery(currentStream, timeRange.startTime, timeRange.endTime, timePartitionColumn);
+			props.queryCodeEditorRef.current = defaultCustSQLQuery(
+				currentStream,
+				timeRange.startTime,
+				timeRange.endTime,
+				timePartitionColumn,
+				useTrino,
+			);
 		}
-	}, [currentStream, timeRange.startTime, timeRange.endTime, timePartitionColumn]);
+	}, [useTrino, currentStream, timeRange.startTime, timeRange.endTime, timePartitionColumn]);
 
 	const updateQuery = useCallback((query: string) => {
 		props.queryCodeEditorRef.current = query;

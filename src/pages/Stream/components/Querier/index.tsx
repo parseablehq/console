@@ -73,6 +73,8 @@ const QuerierModal = (props: {
 	onFiltersApply: () => void;
 }) => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
+	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
+	const useTrino = instanceConfig?.queryEngine === 'Trino';
 	const [{ showQueryBuilder, viewMode }, setLogsStore] = useLogsStore((store) => store.custQuerySearchState);
 	const [streamInfo] = useStreamStore((store) => store.info);
 	const [timeRange] = useLogsStore((store) => store.timeRange);
@@ -88,6 +90,7 @@ const QuerierModal = (props: {
 			timeRange.startTime,
 			timeRange.endTime,
 			timePartitionColumn,
+			useTrino,
 		);
 	}, [currentStream, timeRange.endTime, timeRange.startTime, timePartitionColumn]);
 
