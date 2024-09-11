@@ -130,7 +130,7 @@ type FilterStoreReducers = {
 	parseQuery: (
 		query: QueryType,
 		currentStream: string,
-		timeRangeOpts?: { startTime: Date; endTime: Date, timePartitionColumn: string },
+		timeRangeOpts?: { startTime: Date; endTime: Date; timePartitionColumn: string },
 	) => { where: string; parsedQuery: string };
 	toggleSubmitBtn: (store: FilterStore, val: boolean) => ReducerOutput;
 	toggleSaveFiltersModal: (_store: FilterStore, val: boolean) => ReducerOutput;
@@ -240,13 +240,17 @@ const toggleSubmitBtn = (_store: FilterStore, val: boolean) => {
 };
 
 // todo - custom rule processor to prevent converting number strings into numbers for text fields
-const parseQuery = (query: QueryType, currentStream: string, timeRangeOpts?: { startTime: Date; endTime: Date, timePartitionColumn: string }) => {
+const parseQuery = (
+	query: QueryType,
+	currentStream: string,
+	timeRangeOpts?: { startTime: Date; endTime: Date; timePartitionColumn: string },
+) => {
 	// todo - custom rule processor to prevent converting number strings into numbers for text fields
 	const where = formatQuery(query, { format: 'sql', parseNumbers: true, quoteFieldNamesWith: ['"', '"'] });
 	const timeRangeCondition = timeRangeOpts
 		? timeRangeSQLCondition(timeRangeOpts.timePartitionColumn, timeRangeOpts.startTime, timeRangeOpts.endTime)
 		: '(1=1)';
-	const parsedQuery = `select * from ${currentStream} where ${where} AND ${timeRangeCondition} offset 0 limit ${LOAD_LIMIT}`;
+	const parsedQuery = `select * from \"${currentStream}\" where ${where} AND ${timeRangeCondition} offset 0 limit ${LOAD_LIMIT}`;
 	return { where, parsedQuery };
 };
 

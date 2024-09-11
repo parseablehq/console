@@ -142,7 +142,7 @@ const generateCountQuery = (
 	whereClause: string,
 ) => {
 	const range = compactTypeIntervalMap[compactType];
-	return `SELECT DATE_BIN('${range}', p_timestamp, '${startTime.toISOString()}') AS date_bin_timestamp, COUNT(*) AS log_count FROM ${streamName} WHERE p_timestamp BETWEEN '${startTime.toISOString()}' AND '${endTime.toISOString()}' AND ${whereClause} GROUP BY date_bin_timestamp ORDER BY date_bin_timestamp`;
+	return `SELECT DATE_BIN('${range}', p_timestamp, '${startTime.toISOString()}') AS date_bin_timestamp, COUNT(*) AS log_count FROM \"${streamName}\" WHERE p_timestamp BETWEEN '${startTime.toISOString()}' AND '${endTime.toISOString()}' AND ${whereClause} GROUP BY date_bin_timestamp ORDER BY date_bin_timestamp`;
 };
 
 const NoDataView = (props: { isError: boolean }) => {
@@ -336,7 +336,7 @@ const EventTimeLineGraph = () => {
 						dotProps={{ strokeWidth: 1, r: 2.5 }}
 					/>
 				) : (
-					<NoDataView isError={fetchQueryMutation.isError}/>
+					<NoDataView isError={fetchQueryMutation.isError} />
 				)}
 			</Skeleton>
 		</Stack>

@@ -31,9 +31,21 @@ const genColumnConfig = (fields: Field[]) => {
 	}, columnConfig);
 };
 
-export const defaultCustSQLQuery = (streamName: string | null, startTime: Date, endTime: Date, timePartitionColumn: string) => {
+export const defaultCustSQLQuery = (
+	streamName: string | null,
+	startTime: Date,
+	endTime: Date,
+	timePartitionColumn: string,
+) => {
 	if (streamName && streamName.length > 0) {
-		const { query } = formQueryOpts({ streamName: streamName || '', limit: LOAD_LIMIT, startTime, endTime, timePartitionColumn, pageOffset: 0 });
+		const { query } = formQueryOpts({
+			streamName: streamName || '',
+			limit: LOAD_LIMIT,
+			startTime,
+			endTime,
+			timePartitionColumn,
+			pageOffset: 0,
+		});
 		return query;
 	} else {
 		return '';
@@ -67,7 +79,12 @@ const QueryCodeEditor: FC<{
 
 	useEffect(() => {
 		if (props.queryCodeEditorRef.current === '' || currentStream !== localStreamName) {
-			props.queryCodeEditorRef.current = defaultCustSQLQuery(currentStream, timeRange.startTime, timeRange.endTime, timePartitionColumn);
+			props.queryCodeEditorRef.current = defaultCustSQLQuery(
+				currentStream,
+				timeRange.startTime,
+				timeRange.endTime,
+				timePartitionColumn,
+			);
 		}
 	}, [currentStream, timeRange.startTime, timeRange.endTime, timePartitionColumn]);
 
@@ -109,7 +126,7 @@ const QueryCodeEditor: FC<{
 	useEffect(() => {
 		if (currentStream !== localStreamName) {
 			setlocalStreamName(currentStream);
-			const query = `SELECT * FROM ${currentStream} LIMIT ${LOAD_LIMIT}; `;
+			const query = `SELECT * FROM \"${currentStream}\" LIMIT ${LOAD_LIMIT}; `;
 			updateQuery(query);
 		}
 		setlocalLlmActive(isLlmActive);

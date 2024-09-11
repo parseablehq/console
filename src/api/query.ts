@@ -41,7 +41,7 @@ export const formQueryOpts = (logsQuery: FormQueryOptsType) => {
 	const orderBy = `ORDER BY ${timePartitionColumn} desc`;
 	const timestampClause = timeRangeSQLCondition(timePartitionColumn, optimizedStartTime, optimizedEndTime);
 	const offsetPart = _.isNumber(pageOffset) ? `OFFSET ${pageOffset}` : '';
-	const query = `SELECT * FROM ${streamName} where ${timestampClause} ${orderBy} ${offsetPart} LIMIT ${limit} `;
+	const query = `SELECT * FROM \"${streamName}\" where ${timestampClause} ${orderBy} ${offsetPart} LIMIT ${limit} `;
 	return { query, startTime: optimizedStartTime, endTime: optimizedEndTime };
 };
 
