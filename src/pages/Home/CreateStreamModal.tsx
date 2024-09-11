@@ -352,6 +352,11 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 		getLogStreamListRefetch();
 	}, []);
 
+	const isStreamNameValid = useCallback(() => {
+		const { hasError } = form.validateField('name');
+		return !hasError;
+	}, [form]);
+
 	const onSubmit = useCallback(() => {
 		const { hasErrors } = form.validate();
 		const { schemaType, fields, partitionField, customPartitionFields, partitionLimit } = form.values;
@@ -419,7 +424,7 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 			<Stack style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
 				<Box>
 					{!createLogStreamIsLoading ? (
-						<Button w="6rem" onClick={onSubmit}>
+						<Button w="6rem" onClick={onSubmit} disabled={!isStreamNameValid()}>
 							Create
 						</Button>
 					) : (
