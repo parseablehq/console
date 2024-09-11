@@ -446,10 +446,11 @@ const toggleQueryBuilder = (store: LogsStore, val?: boolean) => {
 };
 
 const resetCustQuerySearchState = (store: LogsStore) => {
-	const { custQuerySearchState } = store;
+	const { custQuerySearchState, timeRange } = store;
 	return {
 		custQuerySearchState: { ...defaultCustQuerySearchState, viewMode: custQuerySearchState.viewMode },
 		...getCleanStoreForRefetch(store),
+		timeRange
 	};
 };
 
@@ -699,11 +700,11 @@ const applyCustomQuery = (
 	savedFilterId?: string,
 	timeRangePayload?: { from: string; to: string } | null,
 ) => {
-	const { custQuerySearchState } = store;
+	const { custQuerySearchState, timeRange } = store;
 
-	const timeRange = (() => {
+	const updatedTimeRange = (() => {
 		if (!timeRangePayload) {
-			return { timeRange: store.timeRange };
+			return { timeRange };
 		} else {
 			const startTime = dayjs(timeRangePayload.from);
 			const endTime = dayjs(timeRangePayload.to);
@@ -733,7 +734,7 @@ const applyCustomQuery = (
 			viewMode: mode,
 		},
 		...getCleanStoreForRefetch(store),
-		...timeRange,
+		...updatedTimeRange,
 	};
 };
 
