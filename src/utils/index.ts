@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import _ from 'lodash';
+import { logOut } from '@/api/auth';
 
 export const baseURL = import.meta.env.VITE_PARSEABLE_URL ?? '/';
 
@@ -62,10 +63,15 @@ export const generateQueryParam = (obj: object) => {
 	return `?q=${endcodedBase64}`;
 };
 
-export const signOutHandler = () => {
-	Cookies.remove('session');
-	Cookies.remove('username');
-	window.location.href = `${baseURL}api/v1/o/logout?redirect=${window.location.origin}/login`;
+export const signOutHandler = async () => {
+	try {
+		await logOut();
+		Cookies.remove('session');
+		Cookies.remove('username');
+		window.location.href = `${window.location.origin}/login`;
+	} catch (e) {
+		console.log(e);
+	}
 };
 
 export const generateRandomId = (length: number) =>

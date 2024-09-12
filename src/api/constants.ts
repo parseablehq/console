@@ -54,6 +54,7 @@ export const ROLE_URL = (roleName: string) => `${ROLES_LIST_URL}/${roleName}`;
 
 // USERS LOGIN
 export const LOGIN_URL = `${API_V1}/o/login?redirect=${window.location.origin}`;
+export const LOGOUT_URL = `${API_V1}/o/logout?redirect=${window.location.origin}`;
 
 // LLM queries
 export const LLM_QUERY_URL = `${API_V1}/llm`;

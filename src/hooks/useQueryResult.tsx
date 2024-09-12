@@ -57,7 +57,7 @@ export const useFetchCount = () => {
 	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
 	const { isQuerySearchActive, custSearchQuery, activeMode } = custQuerySearchState;
 
-	const defaultQuery = `select count(*) as count from ${currentStream}`;
+	const defaultQuery = `select count(*) as count from \"${currentStream}\"`;
 	const query = (() => {
 		if (isQuerySearchActive) {
 			const finalQuery = custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM');
