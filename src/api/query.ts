@@ -41,8 +41,8 @@ export const formQueryOpts = (logsQuery: FormQueryOptsType, useTrino = false) =>
 	const orderBy = `ORDER BY ${timePartitionColumn} desc`;
 	const timestampClause = timeRangeSQLCondition(timePartitionColumn, optimizedStartTime, optimizedEndTime);
 	const offsetPart = _.isNumber(pageOffset) ? `OFFSET ${pageOffset}` : '';
-	const parseableQuery = `SELECT * FROM ${streamName} ${offsetPart} LIMIT ${limit} `;
-	const trinoQuery = `SELECT * FROM ${streamName} where ${timestampClause} ${orderBy} ${offsetPart} LIMIT ${limit} `;
+	const parseableQuery = `SELECT * FROM \"${streamName}\" ${offsetPart} LIMIT ${limit} `;
+	const trinoQuery = `SELECT * FROM \"${streamName}\" where ${timestampClause} ${orderBy} ${offsetPart} LIMIT ${limit} `;
 	const query = useTrino ? trinoQuery : parseableQuery;
 	return { query, startTime: optimizedStartTime, endTime: optimizedEndTime };
 };
