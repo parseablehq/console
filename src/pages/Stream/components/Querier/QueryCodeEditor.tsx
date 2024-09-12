@@ -38,7 +38,6 @@ export const defaultCustSQLQuery = (
 	timePartitionColumn: string,
 	useTrino: boolean,
 ) => {
-	// const [instanceConfig] = useAppStore((store) => store.instanceConfig);
 	if (streamName && streamName.length > 0) {
 		const { query } = formQueryOpts(
 			{
@@ -135,7 +134,7 @@ const QueryCodeEditor: FC<{
 	useEffect(() => {
 		if (currentStream !== localStreamName) {
 			setlocalStreamName(currentStream);
-			const query = `SELECT * FROM ${currentStream} LIMIT ${LOAD_LIMIT}; `;
+			const query = `SELECT * FROM \"${currentStream}\" LIMIT ${LOAD_LIMIT}; `;
 			updateQuery(query);
 		}
 		setlocalLlmActive(isLlmActive);
