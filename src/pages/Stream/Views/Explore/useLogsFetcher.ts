@@ -6,7 +6,7 @@ import { useFetchCount } from '@/hooks/useQueryResult';
 
 const { setCleanStoreForStreamChange } = logsStoreReducers;
 
-const useLogsFetcher = (props: { schemaLoading: boolean, infoLoading: boolean }) => {
+const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
 	const { schemaLoading, infoLoading } = props;
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [{ tableOpts, timeRange }, setLogsStore] = useLogsStore((store) => store);
