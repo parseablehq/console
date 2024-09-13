@@ -1,8 +1,23 @@
 import _ from 'lodash';
 
 const API_V1 = 'api/v1';
+const resourcePaths = {
+	parseable: 'query',
+	trino: 'trinoquery',
+};
 
 export type Params = Record<string, string> | null | {} | undefined;
+
+type QueryEngine = 'Trino' | 'Parseable' | undefined;
+
+const getQueryResourcePath = (queryEngine: QueryEngine) => {
+	switch (queryEngine) {
+		case 'Trino':
+			return resourcePaths.trino;
+		default:
+			return resourcePaths.parseable;
+	}
+};
 
 const parseParamsToQueryString = (params: Params) => {
 	if (_.isEmpty(params) || _.isNil(params) || !params) return '';
@@ -20,11 +35,12 @@ const parseParamsToQueryString = (params: Params) => {
 // Streams Management
 export const LOG_STREAM_LIST_URL = `${API_V1}/logstream`;
 export const LOG_STREAMS_SCHEMA_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/schema`;
-export const LOG_QUERY_URL = (params?: Params) => `${API_V1}/query` + parseParamsToQueryString(params);
-export const LOG_TRINO_QUERY_URL = (params?: Params) => `${API_V1}/trinoquery` + parseParamsToQueryString(params);
+export const LOG_QUERY_URL = (queryEngine: QueryEngine, params?: Params) =>
+	`${API_V1}/${getQueryResourcePath(queryEngine)}` + parseParamsToQueryString(params);
+// export const LOG_TRINO_QUERY_URL = (params?: Params) => `${API_V1}/trinoquery` + parseParamsToQueryString(params);
 export const LOG_STREAMS_ALERTS_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/alert`;
 export const LIST_SAVED_FILTERS_URL = `${API_V1}/filters`;
-export const LIST_DASHBOARDS =  `${API_V1}/dashboards`;
+export const LIST_DASHBOARDS = `${API_V1}/dashboards`;
 export const UPDATE_SAVED_FILTERS_URL = (filterId: string) => `${API_V1}/filters/${filterId}`;
 export const UPDATE_DASHBOARDS_URL = (dashboardId: string) => `${API_V1}/dashboards/${dashboardId}`;
 export const DELETE_DASHBOARDS_URL = (dashboardId: string) => `${API_V1}/dashboards/${dashboardId}`;

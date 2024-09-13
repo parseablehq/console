@@ -277,9 +277,9 @@ const EventTimeLineGraph = () => {
 			activeMode === 'sql' ? extractWhereClause(custSearchQuery) : parseQuery(appliedQuery, localStream).where;
 		const query = generateCountQuery(localStream, modifiedStartTime, modifiedEndTime, compactType, whereClause);
 		fetchQueryMutation.mutate({
+			queryEngine: 'Parseable', // query for graph should always hit the endpoint for parseable query
 			logsQuery,
 			query,
-			useTrino: false,
 		});
 	}, [localStream, startTime.toISOString(), endTime.toISOString(), custSearchQuery]);
 

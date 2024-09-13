@@ -35,8 +35,7 @@ export const useQueryLogs = () => {
 			order: SortOrder.DESCENDING,
 		},
 	});
-	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
-	const useTrinoApi = instanceConfig?.queryEngine === 'Trino';
+	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
 	const [streamInfo] = useStreamStore((store) => store.info);
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
@@ -74,6 +73,7 @@ export const useQueryLogs = () => {
 
 	// refactor
 	const defaultQueryOpts = {
+		queryEngine,
 		streamName: currentStream || '',
 		startTime: timeRange.startTime,
 		endTime: timeRange.endTime,
@@ -96,20 +96,20 @@ export const useQueryLogs = () => {
 						});
 						const queryStrWithOffset = appendOffsetToQuery(parsedQuery, defaultQueryOpts.pageOffset);
 						return await getQueryResultWithHeaders(
+							queryEngine,
 							{ ...defaultQueryOpts, access: [] },
 							queryStrWithOffset,
-							useTrinoApi,
 						);
 					} else {
 						const queryStrWithOffset = appendOffsetToQuery(custSearchQuery, defaultQueryOpts.pageOffset);
 						return await getQueryResultWithHeaders(
+							queryEngine,
 							{ ...defaultQueryOpts, access: [] },
 							queryStrWithOffset,
-							useTrinoApi,
 						);
 					}
 				} else {
-					return await getQueryLogsWithHeaders(defaultQueryOpts, useTrinoApi);
+					return await getQueryLogsWithHeaders(defaultQueryOpts);
 				}
 			})();
 			const logs = logsQueryRes.data;

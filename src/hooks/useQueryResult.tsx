@@ -10,6 +10,7 @@ import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { notifyError } from '@/utils/notification';
 
 type QueryData = {
+	queryEngine: 'Parseable' | 'Trino' | undefined;
 	logsQuery: LogsQuery;
 	query: string;
 	onSuccess?: () => void;
@@ -18,7 +19,7 @@ type QueryData = {
 
 export const useQueryResult = () => {
 	const fetchQueryHandler = async (data: QueryData) => {
-		const response = await getQueryResultWithHeaders(data.logsQuery, data.query, data.useTrino);
+		const response = await getQueryResultWithHeaders(data.queryEngine, data.logsQuery, data.query);
 		if (response.status !== 200) {
 			throw new Error(response.statusText);
 		}
@@ -80,7 +81,8 @@ export const useFetchCount = () => {
 		isLoading: isCountLoading,
 		isRefetching: isCountRefetching,
 		refetch: refetchCount,
-	} = useQuery(['fetchCount', logsQuery], () => getQueryResult(logsQuery, query, false), {
+	} = useQuery(['fetchCount', logsQuery], () => getQueryResult('Parseable', logsQuery, query), {
+		// query for count should always hit the endpoint for parseable query
 		onSuccess: (resp) => {
 			const count = _.first(resp.data)?.count;
 			typeof count === 'number' && setLogsStore((store) => setTotalCount(store, count));

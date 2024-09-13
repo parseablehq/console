@@ -1,11 +1,13 @@
 import _ from 'lodash';
 import { Axios } from './axios';
-import { LOG_QUERY_URL, LOG_TRINO_QUERY_URL } from './constants';
+import { LOG_QUERY_URL } from './constants';
 import { Log, LogsQuery, LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 
 const { formatDateAsCastType } = timeRangeUtils;
+type QueryEngine = 'Trino' | 'Parseable' | undefined;
 type QueryLogs = {
+	queryEngine: QueryEngine;
 	streamName: string;
 	startTime: Date;
 	endTime: Date;
@@ -34,26 +36,49 @@ export const timeRangeSQLCondition = (timePartitionColumn: string, startTime: Da
 	)}' AS TIMESTAMP) and ${timePartitionColumn} < CAST('${formatDateAsCastType(optimizeTime(endTime))}' AS TIMESTAMP)`;
 };
 
-export const formQueryOpts = (logsQuery: FormQueryOptsType, useTrino = false) => {
-	const { startTime, endTime, streamName, limit, pageOffset, timePartitionColumn = 'p_timestamp' } = logsQuery;
+export const getQuery = (logsQuery: FormQueryOptsType) => {
+	const {
+		queryEngine,
+		startTime,
+		endTime,
+		streamName,
+		limit,
+		pageOffset,
+		timePartitionColumn = 'p_timestamp',
+	} = logsQuery;
 	const optimizedStartTime = optimizeTime(startTime);
 	const optimizedEndTime = optimizeTime(endTime);
 	const orderBy = `ORDER BY ${timePartitionColumn} desc`;
-	const timestampClause = timeRangeSQLCondition(timePartitionColumn, optimizedStartTime, optimizedEndTime);
 	const offsetPart = _.isNumber(pageOffset) ? `OFFSET ${pageOffset}` : '';
-	const parseableQuery = `SELECT * FROM \"${streamName}\" ${offsetPart} LIMIT ${limit} `;
+	const timestampClause = timeRangeSQLCondition(timePartitionColumn, optimizedStartTime, optimizedEndTime);
+	const parseableQueryTemplate = `SELECT * FROM \"${streamName}\" ${offsetPart} LIMIT ${limit} `;
 	const trinoQuery = `SELECT * FROM \"${streamName}\" where ${timestampClause} ${orderBy} ${offsetPart} LIMIT ${limit} `;
-	const query = useTrino ? trinoQuery : parseableQuery;
+
+	switch (queryEngine) {
+		case 'Trino':
+			return trinoQuery;
+		default:
+			return parseableQueryTemplate;
+	}
+};
+
+export const formQueryOpts = (logsQuery: FormQueryOptsType) => {
+	const { startTime, endTime } = logsQuery;
+	const optimizedStartTime = optimizeTime(startTime);
+	const optimizedEndTime = optimizeTime(endTime);
+	const query = getQuery(logsQuery);
 	return { query, startTime: optimizedStartTime, endTime: optimizedEndTime };
 };
 
 export const getQueryLogs = (logsQuery: QueryLogs) => {
-	return Axios().post<Log[]>(LOG_TRINO_QUERY_URL(), formQueryOpts(logsQuery), {});
+	const { queryEngine } = logsQuery;
+	return Axios().post<Log[]>(LOG_QUERY_URL(queryEngine), formQueryOpts(logsQuery), {});
 };
 
-export const getQueryLogsWithHeaders = (logsQuery: QueryLogs, useTrino = false) => {
-	const endPoint = useTrino ? LOG_TRINO_QUERY_URL({ fields: true }) : LOG_QUERY_URL({ fields: true });
-	return Axios().post<LogsResponseWithHeaders>(endPoint, formQueryOpts(logsQuery, useTrino), {});
+export const getQueryLogsWithHeaders = (logsQuery: QueryLogs) => {
+	const { queryEngine } = logsQuery;
+	const endPoint = LOG_QUERY_URL(queryEngine, { fields: true });
+	return Axios().post<LogsResponseWithHeaders>(endPoint, formQueryOpts(logsQuery), {});
 };
 
 // ------ Custom sql query
@@ -63,12 +88,12 @@ const makeCustomQueryRequestData = (logsQuery: LogsQuery, query: string) => {
 	return { query, startTime: optimizeTime(startTime), endTime: optimizeTime(endTime) };
 };
 
-export const getQueryResult = (logsQuery: LogsQuery, query = '', useTrino = false) => {
-	const endPoint = useTrino ? LOG_TRINO_QUERY_URL() : LOG_QUERY_URL();
+export const getQueryResult = (queryEngine: QueryEngine, logsQuery: LogsQuery, query = '') => {
+	const endPoint = LOG_QUERY_URL(queryEngine);
 	return Axios().post<Log[]>(endPoint, makeCustomQueryRequestData(logsQuery, query), {});
 };
 
-export const getQueryResultWithHeaders = (logsQuery: LogsQuery, query = '', useTrino = false) => {
-	const endPoint = useTrino ? LOG_TRINO_QUERY_URL({ fields: true }) : LOG_QUERY_URL({ fields: true });
+export const getQueryResultWithHeaders = (queryEngine: QueryEngine, logsQuery: LogsQuery, query = '') => {
+	const endPoint = LOG_QUERY_URL(queryEngine, { fields: true });
 	return Axios().post<LogsResponseWithHeaders>(endPoint, makeCustomQueryRequestData(logsQuery, query), {});
 };
