@@ -62,7 +62,6 @@ const QueryCodeEditor: FC<{
 	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
 	const llmActive = _.get(instanceConfig, 'llmActive', false);
 	const queryEngine = _.get(instanceConfig, 'queryEngine', 'Parseable');
-	const useTrino = queryEngine === 'Trino';
 	const [streamInfo] = useStreamStore((store) => store.info);
 	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
 	const [{ isQuerySearchActive, activeMode, savedFilterId, custSearchQuery }] = useLogsStore(
@@ -92,7 +91,7 @@ const QueryCodeEditor: FC<{
 				timePartitionColumn,
 			);
 		}
-	}, [useTrino, currentStream, timeRange.startTime, timeRange.endTime, timePartitionColumn]);
+	}, [currentStream, timeRange.startTime, timeRange.endTime, timePartitionColumn]);
 
 	const updateQuery = useCallback((query: string) => {
 		props.queryCodeEditorRef.current = query;
