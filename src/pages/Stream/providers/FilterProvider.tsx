@@ -5,6 +5,7 @@ import { FilterQueryBuilder } from '@/utils/queryBuilder';
 import { Field, RuleGroupType, RuleType, formatQuery } from 'react-querybuilder';
 import { LOAD_LIMIT } from './LogsProvider';
 import { timeRangeSQLCondition } from '@/api/query';
+import { QueryEngineType } from '@/@types/parseable/api/about';
 
 // write transformer (for saved filters) if you are updating the operators below
 export const textFieldOperators = [
@@ -243,7 +244,7 @@ const toggleSubmitBtn = (_store: FilterStore, val: boolean) => {
 
 // todo - custom rule processor to prevent converting number strings into numbers for text fields
 const parseQuery = (
-	queryEngine: 'Trino' | 'Parseable' | undefined,
+	queryEngine: QueryEngineType,
 	query: QueryType,
 	currentStream: string,
 	timeRangeOpts?: { startTime: Date; endTime: Date; timePartitionColumn: string },

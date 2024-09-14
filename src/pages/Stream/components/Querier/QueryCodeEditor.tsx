@@ -1,6 +1,7 @@
 import React, { FC, MutableRefObject, useCallback, useEffect, useState, useRef } from 'react';
 import Editor from '@monaco-editor/react';
 import { Box, Button, Flex, ScrollArea, Stack, Text, TextInput } from '@mantine/core';
+import { QueryEngineType } from '@/@types/parseable/api/about';
 import { ErrorMarker, errChecker } from '../ErrorMarker';
 import useMountedState from '@/hooks/useMountedState';
 import { notify } from '@/utils/notification';
@@ -32,7 +33,7 @@ const genColumnConfig = (fields: Field[]) => {
 };
 
 export const defaultCustSQLQuery = (
-	queryEngine: 'Trino' | 'Parseable' | undefined,
+	queryEngine: QueryEngineType,
 	streamName: string | null,
 	startTime: Date,
 	endTime: Date,

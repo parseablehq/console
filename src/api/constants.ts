@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { QueryEngineType } from '@/@types/parseable/api/about';
 
 const API_V1 = 'api/v1';
 const resourcePaths = {
@@ -8,7 +9,7 @@ const resourcePaths = {
 
 export type Params = Record<string, string> | null | {} | undefined;
 
-type QueryEngine = 'Trino' | 'Parseable' | undefined;
+type QueryEngine = QueryEngineType;
 
 const getQueryResourcePath = (queryEngine: QueryEngine) => {
 	switch (queryEngine) {

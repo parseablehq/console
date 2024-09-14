@@ -2,11 +2,12 @@ import _ from 'lodash';
 import { Axios } from './axios';
 import { LOG_QUERY_URL } from './constants';
 import { Log, LogsQuery, LogsResponseWithHeaders } from '@/@types/parseable/api/query';
+import { QueryEngineType } from '@/@types/parseable/api/about';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import { QueryBuilder } from '@/utils/queryBuilder';
 
 const { formatDateAsCastType } = timeRangeUtils;
-type QueryEngine = 'Trino' | 'Parseable' | undefined;
+type QueryEngine = QueryEngineType;
 type QueryLogs = {
 	queryEngine: QueryEngine;
 	streamName: string;

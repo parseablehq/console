@@ -1,3 +1,5 @@
+export type QueryEngineType = 'Trino' | 'Parseable' | undefined;
+
 export type AboutData = {
 	commit: string;
 	deploymentId: string;
@@ -17,5 +19,5 @@ export type AboutData = {
 	analytics: {
 		clarityTag: string;
 	};
-	queryEngine: 'Trino' | 'Parseable';
+	queryEngine: QueryEngineType;
 };

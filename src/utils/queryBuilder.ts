@@ -1,8 +1,9 @@
 import timeRangeUtils from '@/utils/timeRangeUtils';
+import { QueryEngineType } from '@/@types/parseable/api/about';
 
 const { formatDateAsCastType } = timeRangeUtils;
 
-type QueryEngine = 'Trino' | 'Parseable' | undefined;
+type QueryEngine = QueryEngineType;
 
 type QueryLogs = {
 	queryEngine: QueryEngine;
