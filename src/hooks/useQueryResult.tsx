@@ -8,9 +8,10 @@ import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsPr
 import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { notifyError } from '@/utils/notification';
+import { QueryEngineType } from '@/@types/parseable/api/about';
 
 type QueryData = {
-	queryEngine: 'Parseable' | 'Trino' | undefined;
+	queryEngine: QueryEngineType;
 	logsQuery: LogsQuery;
 	query: string;
 	onSuccess?: () => void;
@@ -19,7 +20,7 @@ type QueryData = {
 
 export const useQueryResult = () => {
 	const fetchQueryHandler = async (data: QueryData) => {
-		const response = await getQueryResultWithHeaders(data.queryEngine, data.logsQuery, data.query);
+		const response = await getQueryResultWithHeaders(data.logsQuery, data.query);
 		if (response.status !== 200) {
 			throw new Error(response.statusText);
 		}

@@ -48,13 +48,12 @@ export const formQueryOpts = (logsQuery: FormQueryOptsType) => {
 };
 
 export const getQueryLogs = (logsQuery: QueryLogs) => {
-	const { queryEngine } = logsQuery;
-	return Axios().post<Log[]>(LOG_QUERY_URL(queryEngine), formQueryOpts(logsQuery), {});
+	return Axios().post<Log[]>(LOG_QUERY_URL(), formQueryOpts(logsQuery), {});
 };
 
 export const getQueryLogsWithHeaders = (logsQuery: QueryLogs) => {
-	const { queryEngine } = logsQuery;
-	const endPoint = LOG_QUERY_URL({ fields: true }, queryEngine);
+	const queryBuilder = new QueryBuilder(logsQuery);
+	const endPoint = LOG_QUERY_URL({ fields: true }, queryBuilder.getResourcePath());
 	return Axios().post<LogsResponseWithHeaders>(endPoint, formQueryOpts(logsQuery), {});
 };
 
@@ -70,7 +69,8 @@ export const getQueryResult = (logsQuery: LogsQuery, query = '') => {
 	return Axios().post<Log[]>(endPoint, makeCustomQueryRequestData(logsQuery, query), {});
 };
 
-export const getQueryResultWithHeaders = (queryEngine: QueryEngine, logsQuery: LogsQuery, query = '') => {
-	const endPoint = LOG_QUERY_URL({ fields: true }, queryEngine);
+export const getQueryResultWithHeaders = (logsQuery: LogsQuery, query = '') => {
+	const queryBuilder = new QueryBuilder(logsQuery);
+	const endPoint = LOG_QUERY_URL({ fields: true }, queryBuilder.getResourcePath());
 	return Axios().post<LogsResponseWithHeaders>(endPoint, makeCustomQueryRequestData(logsQuery, query), {});
 };

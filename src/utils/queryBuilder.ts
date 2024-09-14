@@ -6,11 +6,11 @@ const { formatDateAsCastType } = timeRangeUtils;
 type QueryEngine = QueryEngineType;
 
 type QueryLogs = {
-	queryEngine: QueryEngine;
+	queryEngine?: QueryEngine;
 	streamName: string;
 	startTime: Date;
 	endTime: Date;
-	limit: number;
+	limit?: number;
 	pageOffset?: number;
 	timePartitionColumn?: string;
 };
@@ -22,6 +22,10 @@ type FilterQueryBuilderType = {
 	queryEngine?: QueryEngine;
 	timeRangeCondition?: string;
 };
+
+//! RESOURCE PATH CONSTANTS
+const PARSEABLE_RESOURCE_PATH = 'query';
+const TRINO_RESOURCE_PATH = 'trinoquery';
 
 const optimizeTime = (date: Date) => {
 	const tempDate = new Date(date);
@@ -35,7 +39,7 @@ export class QueryBuilder {
 	startTime: Date;
 	endTime: Date;
 	streamName: string;
-	limit: number;
+	limit?: number;
 	pageOffset?: number;
 	timePartitionColumn?: string;
 
@@ -65,7 +69,7 @@ export class QueryBuilder {
 		return formatDateAsCastType(optimizeTime(this.endTime));
 	}
 
-	getTrinoQuery(): string {
+	trinoQuery(): string {
 		const optimizedStartTime = this.getStartTime();
 		const optimizedEndTime = this.getEndTime();
 		const timestampClause = `${this.timePartitionColumn} >= CAST('${optimizedStartTime}' AS TIMESTAMP) AND ${this.timePartitionColumn} < CAST('${optimizedEndTime}' AS TIMESTAMP)`;
@@ -76,7 +80,7 @@ export class QueryBuilder {
 		return `SELECT * FROM \"${this.streamName}\" WHERE ${timestampClause} ${orderBy} ${offsetPart} LIMIT ${this.limit}`;
 	}
 
-	getParseableQuery(): string {
+	parseableQuery(): string {
 		const offsetPart = typeof this.pageOffset === 'number' ? `OFFSET ${this.pageOffset}` : '';
 		return `SELECT * FROM \"${this.streamName}\" ${offsetPart} LIMIT ${this.limit}`;
 	}
@@ -84,9 +88,18 @@ export class QueryBuilder {
 	getQuery(): string {
 		switch (this.queryEngine) {
 			case 'Trino':
-				return this.getTrinoQuery();
+				return this.trinoQuery();
 			default:
-				return this.getParseableQuery();
+				return this.parseableQuery();
+		}
+	}
+
+	getResourcePath(): string {
+		switch (this.queryEngine) {
+			case 'Trino':
+				return TRINO_RESOURCE_PATH;
+			default:
+				return PARSEABLE_RESOURCE_PATH;
 		}
 	}
 }

@@ -1,24 +1,8 @@
 import _ from 'lodash';
-import { QueryEngineType } from '@/@types/parseable/api/about';
 
 const API_V1 = 'api/v1';
-const resourcePaths = {
-	parseable: 'query',
-	trino: 'trinoquery',
-};
 
 export type Params = Record<string, string> | null | {} | undefined;
-
-type QueryEngine = QueryEngineType;
-
-const getQueryResourcePath = (queryEngine: QueryEngine) => {
-	switch (queryEngine) {
-		case 'Trino':
-			return resourcePaths.trino;
-		default:
-			return resourcePaths.parseable;
-	}
-};
 
 const parseParamsToQueryString = (params: Params) => {
 	if (_.isEmpty(params) || _.isNil(params) || !params) return '';
@@ -36,8 +20,8 @@ const parseParamsToQueryString = (params: Params) => {
 // Streams Management
 export const LOG_STREAM_LIST_URL = `${API_V1}/logstream`;
 export const LOG_STREAMS_SCHEMA_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/schema`;
-export const LOG_QUERY_URL = (params?: Params, queryEngine: QueryEngine = 'Parseable') =>
-	`${API_V1}/${getQueryResourcePath(queryEngine)}` + parseParamsToQueryString(params);
+export const LOG_QUERY_URL = (params?: Params, resourcePath: string = 'query') =>
+	`${API_V1}/${resourcePath}` + parseParamsToQueryString(params);
 export const LOG_STREAMS_ALERTS_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/alert`;
 export const LIST_SAVED_FILTERS_URL = `${API_V1}/filters`;
 export const LIST_DASHBOARDS = `${API_V1}/dashboards`;

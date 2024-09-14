@@ -95,18 +95,10 @@ export const useQueryLogs = () => {
 							timePartitionColumn,
 						});
 						const queryStrWithOffset = appendOffsetToQuery(parsedQuery, defaultQueryOpts.pageOffset);
-						return await getQueryResultWithHeaders(
-							queryEngine,
-							{ ...defaultQueryOpts, access: [] },
-							queryStrWithOffset,
-						);
+						return await getQueryResultWithHeaders({ ...defaultQueryOpts, access: [] }, queryStrWithOffset);
 					} else {
 						const queryStrWithOffset = appendOffsetToQuery(custSearchQuery, defaultQueryOpts.pageOffset);
-						return await getQueryResultWithHeaders(
-							queryEngine,
-							{ ...defaultQueryOpts, access: [] },
-							queryStrWithOffset,
-						);
+						return await getQueryResultWithHeaders({ ...defaultQueryOpts, access: [] }, queryStrWithOffset);
 					}
 				} else {
 					return await getQueryLogsWithHeaders(defaultQueryOpts);
