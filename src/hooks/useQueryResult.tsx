@@ -81,7 +81,7 @@ export const useFetchCount = () => {
 		isLoading: isCountLoading,
 		isRefetching: isCountRefetching,
 		refetch: refetchCount,
-	} = useQuery(['fetchCount', logsQuery], () => getQueryResult('Parseable', logsQuery, query), {
+	} = useQuery(['fetchCount', logsQuery], () => getQueryResult(logsQuery, query), {
 		// query for count should always hit the endpoint for parseable query
 		onSuccess: (resp) => {
 			const count = _.first(resp.data)?.count;

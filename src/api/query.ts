@@ -3,6 +3,7 @@ import { Axios } from './axios';
 import { LOG_QUERY_URL } from './constants';
 import { Log, LogsQuery, LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 import timeRangeUtils from '@/utils/timeRangeUtils';
+import { QueryBuilder } from '@/utils/queryBuilder';
 
 const { formatDateAsCastType } = timeRangeUtils;
 type QueryEngine = 'Trino' | 'Parseable' | undefined;
@@ -36,38 +37,13 @@ export const timeRangeSQLCondition = (timePartitionColumn: string, startTime: Da
 	)}' AS TIMESTAMP) and ${timePartitionColumn} < CAST('${formatDateAsCastType(optimizeTime(endTime))}' AS TIMESTAMP)`;
 };
 
-export const getQuery = (logsQuery: FormQueryOptsType) => {
-	const {
-		queryEngine,
-		startTime,
-		endTime,
-		streamName,
-		limit,
-		pageOffset,
-		timePartitionColumn = 'p_timestamp',
-	} = logsQuery;
-	const optimizedStartTime = optimizeTime(startTime);
-	const optimizedEndTime = optimizeTime(endTime);
-	const orderBy = `ORDER BY ${timePartitionColumn} desc`;
-	const offsetPart = _.isNumber(pageOffset) ? `OFFSET ${pageOffset}` : '';
-	const timestampClause = timeRangeSQLCondition(timePartitionColumn, optimizedStartTime, optimizedEndTime);
-	const parseableQuery = `SELECT * FROM \"${streamName}\" ${offsetPart} LIMIT ${limit} `;
-	const trinoQuery = `SELECT * FROM \"${streamName}\" where ${timestampClause} ${orderBy} ${offsetPart} LIMIT ${limit} `;
-
-	switch (queryEngine) {
-		case 'Trino':
-			return trinoQuery;
-		default:
-			return parseableQuery;
-	}
-};
-
 export const formQueryOpts = (logsQuery: FormQueryOptsType) => {
-	const { startTime, endTime } = logsQuery;
-	const optimizedStartTime = optimizeTime(startTime);
-	const optimizedEndTime = optimizeTime(endTime);
-	const query = getQuery(logsQuery);
-	return { query, startTime: optimizedStartTime, endTime: optimizedEndTime };
+	const queryBuilder = new QueryBuilder(logsQuery);
+	const query = queryBuilder.getQuery();
+	const startTime = queryBuilder.getStartTime();
+	const endTime = queryBuilder.getEndTime();
+
+	return { query, startTime, endTime };
 };
 
 export const getQueryLogs = (logsQuery: QueryLogs) => {
@@ -77,7 +53,7 @@ export const getQueryLogs = (logsQuery: QueryLogs) => {
 
 export const getQueryLogsWithHeaders = (logsQuery: QueryLogs) => {
 	const { queryEngine } = logsQuery;
-	const endPoint = LOG_QUERY_URL(queryEngine, { fields: true });
+	const endPoint = LOG_QUERY_URL({ fields: true }, queryEngine);
 	return Axios().post<LogsResponseWithHeaders>(endPoint, formQueryOpts(logsQuery), {});
 };
 
@@ -88,12 +64,12 @@ const makeCustomQueryRequestData = (logsQuery: LogsQuery, query: string) => {
 	return { query, startTime: optimizeTime(startTime), endTime: optimizeTime(endTime) };
 };
 
-export const getQueryResult = (queryEngine: QueryEngine, logsQuery: LogsQuery, query = '') => {
-	const endPoint = LOG_QUERY_URL(queryEngine);
+export const getQueryResult = (logsQuery: LogsQuery, query = '') => {
+	const endPoint = LOG_QUERY_URL();
 	return Axios().post<Log[]>(endPoint, makeCustomQueryRequestData(logsQuery, query), {});
 };
 
 export const getQueryResultWithHeaders = (queryEngine: QueryEngine, logsQuery: LogsQuery, query = '') => {
-	const endPoint = LOG_QUERY_URL(queryEngine, { fields: true });
+	const endPoint = LOG_QUERY_URL({ fields: true }, queryEngine);
 	return Axios().post<LogsResponseWithHeaders>(endPoint, makeCustomQueryRequestData(logsQuery, query), {});
 };
