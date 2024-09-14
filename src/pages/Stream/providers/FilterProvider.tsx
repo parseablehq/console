@@ -1,6 +1,7 @@
 import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
 import { generateRandomId } from '@/utils';
 import initContext from '@/utils/initContext';
+import { FilterQueryBuilder } from '@/utils/queryBuilder';
 import { Field, RuleGroupType, RuleType, formatQuery } from 'react-querybuilder';
 import { LOAD_LIMIT } from './LogsProvider';
 import { timeRangeSQLCondition } from '@/api/query';
@@ -128,6 +129,7 @@ type FilterStoreReducers = {
 	updateParentCombinator: (store: FilterStore, combinator: Combinator) => ReducerOutput;
 	updateRule: (store: FilterStore, groupId: string, ruleId: string, updateOpts: RuleUpdateOpts) => ReducerOutput;
 	parseQuery: (
+		queryEngine: 'Parseable' | 'Trino' | undefined,
 		query: QueryType,
 		currentStream: string,
 		timeRangeOpts?: { startTime: Date; endTime: Date; timePartitionColumn: string },
@@ -241,6 +243,7 @@ const toggleSubmitBtn = (_store: FilterStore, val: boolean) => {
 
 // todo - custom rule processor to prevent converting number strings into numbers for text fields
 const parseQuery = (
+	queryEngine: 'Trino' | 'Parseable' | undefined,
 	query: QueryType,
 	currentStream: string,
 	timeRangeOpts?: { startTime: Date; endTime: Date; timePartitionColumn: string },
@@ -250,8 +253,15 @@ const parseQuery = (
 	const timeRangeCondition = timeRangeOpts
 		? timeRangeSQLCondition(timeRangeOpts.timePartitionColumn, timeRangeOpts.startTime, timeRangeOpts.endTime)
 		: '(1=1)';
-	const parsedQuery = `select * from \"${currentStream}\" where ${where} AND ${timeRangeCondition} offset 0 limit ${LOAD_LIMIT}`;
-	return { where, parsedQuery };
+
+	const filterQueryBuilder = new FilterQueryBuilder({
+		queryEngine,
+		streamName: currentStream,
+		whereClause: where,
+		timeRangeCondition,
+		limit: LOAD_LIMIT,
+	});
+	return { where, parsedQuery: filterQueryBuilder.getQuery() };
 };
 
 const storeAppliedQuery = (store: FilterStore) => {

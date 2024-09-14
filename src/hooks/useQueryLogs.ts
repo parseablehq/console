@@ -89,7 +89,7 @@ export const useQueryLogs = () => {
 			const logsQueryRes = await (async () => {
 				if (isQuerySearchActive) {
 					if (activeMode === 'filters') {
-						const { parsedQuery } = parseQuery(appliedQuery, currentStream || '', {
+						const { parsedQuery } = parseQuery(queryEngine, appliedQuery, currentStream || '', {
 							startTime: timeRange.startTime,
 							endTime: timeRange.endTime,
 							timePartitionColumn,
