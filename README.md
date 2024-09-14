@@ -32,7 +32,7 @@ For complete Parseable API documentation, refer to [Parseable API workspace on P
 <table>
 <tr>
     <td>URL</td>
-    <td><a href="https://demo.parseable.io" target="_blank">https://demo.parseable.com</a></td>
+    <td><a href="https://demo.parseable.com" target="_blank">https://demo.parseable.com</a></td>
 </tr>
 <tr>
     <td>Username</td>
