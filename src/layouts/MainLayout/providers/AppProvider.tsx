@@ -1,5 +1,4 @@
 import { LogStreamData } from '@/@types/parseable/api/stream';
-import { getStreamsSepcificAccess } from '@/components/Navbar/rolesHandler';
 import initContext from '@/utils/initContext';
 import { AboutData } from '@/@types/parseable/api/about';
 import _ from 'lodash';
@@ -40,7 +39,7 @@ type AppStoreReducers = {
 	setUserRoles: (store: AppStore, roles: UserRoles | null) => ReducerOutput;
 	setUserSpecificStreams: (store: AppStore, userSpecficStreams: LogStreamData | null) => ReducerOutput;
 	setUserAccessMap: (store: AppStore, accessRoles: string[] | null) => ReducerOutput;
-	setStreamSpecificUserAccess: (store: AppStore) => ReducerOutput;
+	setStreamSpecificUserAccess: (store: AppStore, streamSpecificUserAccess: string[]) => ReducerOutput;
 	setInstanceConfig: (store: AppStore, instanceConfig: AboutData) => ReducerOutput;
 	toggleCreateStreamModal: (store: AppStore, val?: boolean) => ReducerOutput;
 	setSavedFilters: (store: AppStore, savedFilters: AxiosResponse<SavedFilterType[]>) => ReducerOutput;
@@ -70,6 +69,8 @@ const accessKeyMap: { [key: string]: string } = {
 	hasUpdateAlertAccess: 'PutAlert',
 	hasGetAlertAccess: 'GetAlert',
 	hasCreateStreamAccess: 'CreateStream',
+	hasDeleteStreamAccess: 'DeleteStream',
+	hasClusterAccess: 'Cluster',
 };
 
 const generateUserAcccessMap = (accessRoles: string[] | null) => {
@@ -113,12 +114,8 @@ const setUserAccessMap = (_store: AppStore, accessRoles: string[] | null) => {
 	return { userAccessMap: generateUserAcccessMap(accessRoles) };
 };
 
-const setStreamSpecificUserAccess = (store: AppStore) => {
-	if (store.userRoles && store.currentStream) {
-		return { streamSpecificUserAccess: getStreamsSepcificAccess(store.userRoles, store.currentStream) };
-	} else {
-		return store;
-	}
+const setStreamSpecificUserAccess = (_store: AppStore, streamSpecificUserAccess: string[]) => {
+	return { streamSpecificUserAccess };
 };
 
 const setInstanceConfig = (_store: AppStore, instanceConfig: AboutData | null) => {

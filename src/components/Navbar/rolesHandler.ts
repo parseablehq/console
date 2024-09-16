@@ -4,6 +4,7 @@ const adminAccess = [
 	'Ingest',
 	'Query',
 	'CreateStream',
+	'DeleteStream',
 	'ListStream',
 	'GetSchema',
 	'GetStats',
@@ -19,11 +20,13 @@ const adminAccess = [
 	'PutRoles',
 	'GetRole',
 	'Cluster',
+	'Dashboard',
 ];
 const editorAccess = [
 	'Ingest',
 	'Query',
 	'CreateStream',
+	'DeleteStream',
 	'ListStream',
 	'GetSchema',
 	'GetStats',
@@ -31,6 +34,7 @@ const editorAccess = [
 	'PutRetention',
 	'PutAlert',
 	'GetAlert',
+	'Dashboard',
 ];
 const writerAccess = [
 	'Ingest',
@@ -42,8 +46,18 @@ const writerAccess = [
 	'PutAlert',
 	'GetAlert',
 	'GetLiveTail',
+	'Dashboard',
 ];
-const readerAccess = ['Query', 'ListStream', 'GetSchema', 'GetStats', 'GetRetention', 'GetAlert', 'GetLiveTail'];
+const readerAccess = [
+	'Query',
+	'ListStream',
+	'GetSchema',
+	'GetStats',
+	'GetRetention',
+	'GetAlert',
+	'GetLiveTail',
+	'Dashboard',
+];
 const ingestorAccess = ['Ingest'];
 
 const getStreamsSepcificAccess = (rolesWithRoleName: UserRoles, stream?: string) => {

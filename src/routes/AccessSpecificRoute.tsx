@@ -1,8 +1,7 @@
-import { LOGIN_ROUTE } from '@/constants/routes';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useEffect, type FC } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-
+import _ from 'lodash';
 interface AccessSpecificRouteProps {
 	accessRequired: string[];
 }
@@ -15,10 +14,10 @@ const AccessSpecificRoute: FC<AccessSpecificRouteProps> = (props) => {
 
 	useEffect(() => {
 		if (
-			streamSpecificUserAccess &&
+			!_.isEmpty(streamSpecificUserAccess) &&
 			!streamSpecificUserAccess?.some((access: string) => accessRequired.includes(access))
 		) {
-			navigate(LOGIN_ROUTE);
+			navigate('/');
 		}
 	}, [streamSpecificUserAccess]);
 
