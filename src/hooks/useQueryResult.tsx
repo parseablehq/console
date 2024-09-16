@@ -87,16 +87,21 @@ export const useFetchCount = () => {
 		isLoading: isCountLoading,
 		isRefetching: isCountRefetching,
 		refetch: refetchCount,
-	} = useQuery(['fetchCount', logsQuery], () => getQueryResult(logsQuery, query), {
-		// query for count should always hit the endpoint for parseable query
-		onSuccess: (resp) => {
-			const count = _.first(resp.data)?.count;
+	} = useQuery(
+		['fetchCount', logsQuery],
+		async () => {
+			const data = await getQueryResult(logsQuery, query);
+			const count = _.first(data.data)?.count;
 			typeof count === 'number' && setLogsStore((store) => setTotalCount(store, count));
+			return data;
 		},
-		refetchOnWindowFocus: false,
-		retry: false,
-		enabled: false,
-	});
+		{
+			// query for count should always hit the endpoint for parseable query
+			refetchOnWindowFocus: false,
+			retry: false,
+			enabled: false,
+		},
+	);
 
 	return {
 		isCountLoading,
