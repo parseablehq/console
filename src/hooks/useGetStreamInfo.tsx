@@ -6,7 +6,7 @@ import { useQuery } from 'react-query';
 
 const { setStreamInfo } = streamStoreReducers;
 
-export const useGetStreamInfo = (currentStream: string) => {
+export const useGetStreamInfo = (currentStream: string, initialFetch: boolean) => {
 	const [, setStreamStore] = useStreamStore((_store) => null);
 	const {
 		data: getStreamInfoData,
@@ -14,14 +14,15 @@ export const useGetStreamInfo = (currentStream: string) => {
 		isSuccess: getStreamInfoSuccess,
 		isLoading: getStreamInfoLoading,
 		refetch: getStreamInfoRefetch,
-		isRefetching: getStreamInfoRetching
+		isRefetching: getStreamInfoRefetching,
 	} = useQuery(['stream-info', currentStream], () => getLogStreamInfo(currentStream), {
 		retry: false,
 		refetchOnWindowFocus: false,
 		refetchOnMount: true,
-		enabled: currentStream !== '',
+		enabled: initialFetch,
+		// currentStream !== '',
 		onSuccess: (data) => {
-			setStreamStore((store) => setStreamInfo(store, data))
+			setStreamStore((store) => setStreamInfo(store, data));
 		},
 		onError: (data: AxiosError) => {
 			if (isAxiosError(data) && data.response) {
@@ -39,6 +40,6 @@ export const useGetStreamInfo = (currentStream: string) => {
 		getStreamInfoSuccess,
 		getStreamInfoLoading,
 		getStreamInfoRefetch,
-		getStreamInfoRetching
+		getStreamInfoRefetching,
 	};
 };

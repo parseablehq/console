@@ -39,7 +39,7 @@ const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean })
 	}, [currentOffset, infoLoading]);
 
 	return {
-		logsLoading,
+		logsLoading: infoLoading || logsLoading,
 		errorMessage,
 		hasContentLoaded,
 		hasNoData,

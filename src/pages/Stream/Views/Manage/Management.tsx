@@ -17,20 +17,22 @@ const Management = (props: { schemaLoading: boolean }) => {
 	const getStreamAlertsConfig = useAlertsQuery(currentStream || '');
 	const getStreamStats = useLogStreamStats(currentStream || '');
 	const getRetentionConfig = useRetentionQuery(currentStream || '');
-	const getStreamInfo = useGetStreamInfo(currentStream || '');
+	const getStreamInfo = useGetStreamInfo(currentStream || '', currentStream !== null);
 	const hotTierFetch = useHotTier(currentStream || '');
 
 	// todo - handle loading and error states separately
 	const isAlertsLoading = getStreamAlertsConfig.isError || getStreamAlertsConfig.isLoading;
-	const isRetentionLoading =
-		getRetentionConfig.getLogRetentionIsLoading || instanceConfig === null;
+	const isRetentionLoading = getRetentionConfig.getLogRetentionIsLoading || instanceConfig === null;
 	const isHotTierLoading = hotTierFetch.getHotTierInfoLoading;
 
 	return (
 		<Stack style={{ padding: '1rem', paddingTop: '0', height: '90%' }}>
 			<DeleteStreamModal />
 			<Stack style={{ flexDirection: 'row', height: '40%' }} gap={24}>
-				<Stats isLoading={getStreamStats.getLogStreamStatsDataIsLoading} isError={getStreamStats.getLogStreamStatsDataIsError} />
+				<Stats
+					isLoading={getStreamStats.getLogStreamStatsDataIsLoading}
+					isError={getStreamStats.getLogStreamStatsDataIsError}
+				/>
 				<Info isLoading={getStreamInfo.getStreamInfoLoading} isError={getStreamInfo.getStreamInfoError} />
 			</Stack>
 			<Stack style={{ flexDirection: 'row', height: '57%' }} gap={24}>
