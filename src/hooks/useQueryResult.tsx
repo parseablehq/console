@@ -64,9 +64,14 @@ export const useFetchCount = () => {
 		if (isQuerySearchActive) {
 			const finalQuery = custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM');
 			if (activeMode === 'filters') {
-				return finalQuery;
+				return finalQuery
+					.replace(/LIMIT\s*\d+\s*(OFFSET\s*\d+)?\s*;?/i, '') // Removes LIMIT and optional OFFSET
+					.replace(/OFFSET\s*\d+\s*;?/i, '');
 			} else {
-				return finalQuery.replace(/ORDER\s+BY\s+[\w\s,.]+(?:ASC|DESC)?\s*(LIMIT\s+\d+)?\s*;?/i, '');
+				return finalQuery
+					.replace(/ORDER\s+BY\s+[\w\s,.]+(?:ASC|DESC)?\s*(LIMIT\s*\d+)?\s*(OFFSET\s*\d+)?\s*;?/i, '') // Removes ORDER BY, LIMIT, and OFFSET
+					.replace(/LIMIT\s*\d+\s*(OFFSET\s*\d+)?\s*;?/i, '') // Removes LIMIT and optional OFFSET
+					.replace(/OFFSET\s*\d+\s*;?/i, '');
 			}
 		} else {
 			return defaultQuery;

@@ -60,7 +60,6 @@ export class QueryBuilder {
 		this.pageOffset = pageOffset;
 		this.timePartitionColumn = timePartitionColumn;
 	}
-
 	getStartTime(): string {
 		return formatDateAsCastType(optimizeTime(this.startTime));
 	}
@@ -120,11 +119,11 @@ export class FilterQueryBuilder {
 	}
 
 	getTrinoQuery(): string {
-		return `select * from \"${this.streamName}\" where ${this.whereClause} AND ${this.timeRangeCondition} offset 0 limit ${this.limit}`;
+		return `select * from \"${this.streamName}\" where ${this.whereClause} AND ${this.timeRangeCondition} offset 0 LIMIT ${this.limit}`;
 	}
 
 	getParseableQuery(): string {
-		return `select * from \"${this.streamName}\" where ${this.whereClause} limit ${this.limit}`;
+		return `select * from \"${this.streamName}\" where ${this.whereClause} LIMIT ${this.limit}`;
 	}
 
 	getQuery(): string {
