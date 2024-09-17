@@ -70,7 +70,7 @@ const accessKeyMap: { [key: string]: string } = {
 	hasDeleteStreamAccess: 'DeleteStream',
 	hasClusterAccess: 'Cluster',
 	hasAlertsAccess: 'Alerts',
-	hasSettingsAccess: 'StreamSettings'
+	hasSettingsAccess: 'StreamSettings',
 };
 
 const generateUserAcccessMap = (accessRoles: string[] | null) => {

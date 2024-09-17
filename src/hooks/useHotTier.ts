@@ -6,7 +6,7 @@ import { AxiosError, isAxiosError } from 'axios';
 
 const { setHotTier } = streamStoreReducers;
 
-export const useHotTier = (streamName: string) => {
+export const useHotTier = (streamName: string, hasSettingsAccess: boolean) => {
 	const [, setStreamStore] = useStreamStore((_store) => null);
 	const {
 		refetch: refetchHotTierInfo,
@@ -14,7 +14,7 @@ export const useHotTier = (streamName: string) => {
 		isLoading: getHotTierInfoLoading,
 	} = useQuery(['fetch-hot-tier-info', streamName], () => getHotTierInfo(streamName), {
 		retry: false,
-		enabled: streamName !== '',
+		enabled: streamName !== '' && hasSettingsAccess,
 		refetchOnWindowFocus: false,
 		onSuccess: (data) => {
 			setStreamStore((store) => setHotTier(store, data.data));

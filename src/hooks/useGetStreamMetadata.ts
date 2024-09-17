@@ -1,5 +1,8 @@
 import { LogStreamRetention, LogStreamStat } from '@/@types/parseable/api/stream';
 import { getLogStreamRetention, getLogStreamStats } from '@/api/logStream';
+import { getStreamsSepcificAccess } from '@/components/Navbar/rolesHandler';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import _ from 'lodash';
 import { useCallback, useState } from 'react';
 
 type MetaData = {
@@ -14,6 +17,7 @@ export const useGetStreamMetadata = () => {
 	const [isLoading, setLoading] = useState<Boolean>(false);
 	const [error, setError] = useState<Boolean>(false);
 	const [metaData, setMetadata] = useState<MetaData | null>(null);
+	const [userRoles] = useAppStore((store) => store.userRoles);
 
 	const getStreamMetadata = useCallback(async (streams: string[]) => {
 		setLoading(true);
@@ -23,7 +27,10 @@ export const useGetStreamMetadata = () => {
 			const allStatsRes = await Promise.all(allStatsReqs);
 
 			// retention
-			const allretentionReqs = streams.map((stream) => getLogStreamRetention(stream));
+			const streamsWithSettingsAccess = _.filter(streams, (stream) =>
+				_.includes(getStreamsSepcificAccess(userRoles, stream), 'StreamSettings'),
+			);
+			const allretentionReqs = streamsWithSettingsAccess.map((stream) => getLogStreamRetention(stream));
 			const allretentionRes = await Promise.all(allretentionReqs);
 
 			const metadata = streams.reduce((acc, stream, index) => {

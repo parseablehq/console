@@ -67,7 +67,7 @@ const readerAccess = [
 ];
 const ingestorAccess = ['Ingest'];
 
-const getStreamsSepcificAccess = (rolesWithRoleName: UserRoles, stream?: string): string[] | null => {
+const getStreamsSepcificAccess = (rolesWithRoleName: UserRoles | null, stream?: string): string[] | null => {
 	if (!rolesWithRoleName) {
 		return null;
 	}

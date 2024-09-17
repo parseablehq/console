@@ -14,25 +14,27 @@ import { useHotTier } from '@/hooks/useHotTier';
 const Management = (props: { schemaLoading: boolean }) => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
-	const [userAccessMap] = useAppStore(store => store.userAccessMap);
-	const {hasAlertsAccess, hasSettingsAccess} = userAccessMap;
+	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
+	const { hasAlertsAccess, hasSettingsAccess } = userAccessMap;
 	const getStreamAlertsConfig = useAlertsQuery(currentStream || '', hasAlertsAccess);
 	const getStreamStats = useLogStreamStats(currentStream || '');
-	const getRetentionConfig = useRetentionQuery(currentStream || '');
+	const getRetentionConfig = useRetentionQuery(currentStream || '', hasSettingsAccess);
 	const getStreamInfo = useGetStreamInfo(currentStream || '');
-	const hotTierFetch = useHotTier(currentStream || '');
+	const hotTierFetch = useHotTier(currentStream || '', hasSettingsAccess);
 
 	// todo - handle loading and error states separately
 	const isAlertsLoading = getStreamAlertsConfig.isError || getStreamAlertsConfig.isLoading;
-	const isRetentionLoading =
-		getRetentionConfig.getLogRetentionIsLoading || instanceConfig === null;
+	const isRetentionLoading = getRetentionConfig.getLogRetentionIsLoading || instanceConfig === null;
 	const isHotTierLoading = hotTierFetch.getHotTierInfoLoading;
 
 	return (
 		<Stack style={{ padding: '1rem', paddingTop: '0', height: '90%' }}>
 			<DeleteStreamModal />
 			<Stack style={{ flexDirection: 'row', height: '40%' }} gap={24}>
-				<Stats isLoading={getStreamStats.getLogStreamStatsDataIsLoading} isError={getStreamStats.getLogStreamStatsDataIsError} />
+				<Stats
+					isLoading={getStreamStats.getLogStreamStatsDataIsLoading}
+					isError={getStreamStats.getLogStreamStatsDataIsError}
+				/>
 				<Info isLoading={getStreamInfo.getStreamInfoLoading} isError={getStreamInfo.getStreamInfoError} />
 			</Stack>
 			<Stack style={{ flexDirection: 'row', height: '57%' }} gap={24}>

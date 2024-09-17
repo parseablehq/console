@@ -27,7 +27,8 @@ import { signOutHandler } from '@/utils';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
 
-const { setUserRoles, setUserSpecificStreams, setUserAccessMap, changeStream, setStreamSpecificUserAccess } = appStoreReducers;
+const { setUserRoles, setUserSpecificStreams, setUserAccessMap, changeStream, setStreamSpecificUserAccess } =
+	appStoreReducers;
 
 const navItems = [
 	{
@@ -132,11 +133,10 @@ const Navbar: FC = () => {
 				setAppStore((store) => setUserSpecificStreams(store, null));
 			}
 		}
-		const streamSpecificAccess = getStreamsSepcificAccess(getUserRolesData?.data);
-
+		const streamSpecificAccess = getStreamsSepcificAccess(getUserRolesData?.data, streamName);
 		setAppStore((store) => setStreamSpecificUserAccess(store, streamSpecificAccess));
 		setAppStore((store) => setUserAccessMap(store, streamSpecificAccess));
-	}, [getUserRolesData?.data, getLogStreamListData?.data, currentStream]);
+	}, [getUserRolesData?.data, getLogStreamListData?.data, streamName]);
 
 	useEffect(() => {
 		getUserRolesMutation({ userName: username ? username : '' });

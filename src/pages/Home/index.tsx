@@ -11,6 +11,8 @@ import cardStyles from './styles/Card.module.css';
 import homeStyles from './styles/Home.module.css';
 import CreateStreamModal from './CreateStreamModal';
 import { useAppStore, appStoreReducers } from '@/layouts/MainLayout/providers/AppProvider';
+import { getStreamsSepcificAccess } from '@/components/Navbar/rolesHandler';
+import _ from 'lodash';
 
 const { changeStream, toggleCreateStreamModal } = appStoreReducers;
 
@@ -40,6 +42,7 @@ const Home: FC = () => {
 	const navigate = useNavigate();
 	const { getStreamMetadata, metaData } = useGetStreamMetadata();
 	const [userSpecificStreams, setAppStore] = useAppStore((store) => store.userSpecificStreams);
+	const [userRoles] = useAppStore((store) => store.userRoles);
 	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
 
 	useEffect(() => {
@@ -89,7 +92,16 @@ const Home: FC = () => {
 					) : (
 						<Group style={{ marginRight: '1rem', marginLeft: '1rem', gap: '1rem' }}>
 							{Object.entries(metaData || {}).map(([stream, data]) => {
-								return <StreamInfo key={stream} stream={stream} data={data} navigateToStream={navigateToStream} />;
+								const hasSettingsAccess = _.includes(getStreamsSepcificAccess(userRoles, stream), 'StreamSettings');
+								return (
+									<StreamInfo
+										key={stream}
+										stream={stream}
+										data={data}
+										navigateToStream={navigateToStream}
+										hasSettingsAccess={hasSettingsAccess}
+									/>
+								);
 							})}
 						</Group>
 					)}
@@ -131,6 +143,7 @@ type StreamInfoProps = {
 		retention: LogStreamRetention | [];
 	};
 	navigateToStream: (stream: string) => void;
+	hasSettingsAccess: boolean;
 };
 
 const StreamInfo: FC<StreamInfoProps> = (props) => {
@@ -163,7 +176,7 @@ const StreamInfo: FC<StreamInfoProps> = (props) => {
 			<BigNumber label={'Ingestion'} value={sanitizeBytes(ingestionSize)} />
 			<BigNumber label={'Storage'} value={sanitizeBytes(storageSize)} />
 			<BigNumber label={'Compression'} value={calcCompressionRate(storageSize, ingestionSize)} />
-			<BigNumber label={'Retention'} value={streamRetention} />
+			{props.hasSettingsAccess && <BigNumber label={'Retention'} value={streamRetention} />}
 			<Stack style={{ justifyContent: 'flex-end', flex: 1, alignItems: 'flex-end' }}>
 				<Box style={{ width: '15%' }}>
 					<ActionIcon variant="transparent" color="black" size={50}>
