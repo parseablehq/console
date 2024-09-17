@@ -5,10 +5,13 @@ import { isAxiosError, AxiosError } from 'axios';
 import { IconCheck } from '@tabler/icons-react';
 import { useMutation, useQuery } from 'react-query';
 import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
+import { useFilterStore, filterStoreReducers } from '@/pages/Stream/providers/FilterProvider';
 import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { notifyError } from '@/utils/notification';
 import { QueryEngineType } from '@/@types/parseable/api/about';
+
+const { parseQuery } = filterStoreReducers;
 
 type QueryData = {
 	queryEngine: QueryEngineType;
@@ -58,20 +61,21 @@ export const useFetchCount = () => {
 	const [custQuerySearchState] = useLogsStore((store) => store.custQuerySearchState);
 	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
 	const { isQuerySearchActive, custSearchQuery, activeMode } = custQuerySearchState;
+	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
 
 	const defaultQuery = `select count(*) as count from \"${currentStream}\"`;
 	const query = (() => {
 		if (isQuerySearchActive) {
 			const finalQuery = custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM');
 			if (activeMode === 'filters') {
-				return finalQuery
-					.replace(/LIMIT\s*\d+\s*(OFFSET\s*\d+)?\s*;?/i, '') // Removes LIMIT and optional OFFSET
-					.replace(/OFFSET\s*\d+\s*;?/i, '');
+				const { where } = parseQuery('Parseable', appliedQuery, '');
+				const finalQuery = [defaultQuery, 'where', where].reduce((acc, curr) => acc + ' ' + curr);
+				return finalQuery;
 			} else {
-				return finalQuery
-					.replace(/ORDER\s+BY\s+[\w\s,.]+(?:ASC|DESC)?\s*(LIMIT\s*\d+)?\s*(OFFSET\s*\d+)?\s*;?/i, '') // Removes ORDER BY, LIMIT, and OFFSET
-					.replace(/LIMIT\s*\d+\s*(OFFSET\s*\d+)?\s*;?/i, '') // Removes LIMIT and optional OFFSET
-					.replace(/OFFSET\s*\d+\s*;?/i, '');
+				return finalQuery.replace(
+					/(ORDER\s+BY\s+[\w\s,.]+(?:\s+ASC|\s+DESC)?\s*)?(LIMIT\s*\d+\s*)?(OFFSET\s*\d+\s*)?;?/gi,
+					'',
+				);
 			}
 		} else {
 			return defaultQuery;
