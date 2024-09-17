@@ -5,14 +5,14 @@ import { AxiosError, isAxiosError } from 'axios';
 import { useStreamStore, streamStoreReducers } from '@/pages/Stream/providers/StreamProvider';
 const { setAlertsConfig } = streamStoreReducers;
 
-const useAlertsQuery = (streamName: string) => {
+const useAlertsQuery = (streamName: string, hasAlertsAccess: boolean) => {
 	const [, setStreamStore] = useStreamStore((_store) => null);
 	const { data, isError, isSuccess, isLoading, refetch } = useQuery(
-		['fetch-log-stream-alert', streamName],
+		['fetch-log-stream-alert', streamName, hasAlertsAccess],
 		() => getLogStreamAlerts(streamName),
 		{
 			retry: false,
-			enabled: streamName !== '',
+			enabled: streamName !== '' && hasAlertsAccess,
 			refetchOnWindowFocus: false,
 			onSuccess: (data) => {
 				setStreamStore((store) => setAlertsConfig(store, data));

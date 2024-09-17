@@ -39,7 +39,7 @@ type AppStoreReducers = {
 	setUserRoles: (store: AppStore, roles: UserRoles | null) => ReducerOutput;
 	setUserSpecificStreams: (store: AppStore, userSpecficStreams: LogStreamData | null) => ReducerOutput;
 	setUserAccessMap: (store: AppStore, accessRoles: string[] | null) => ReducerOutput;
-	setStreamSpecificUserAccess: (store: AppStore, streamSpecificUserAccess: string[]) => ReducerOutput;
+	setStreamSpecificUserAccess: (store: AppStore, streamSpecificUserAccess: string[] | null) => ReducerOutput;
 	setInstanceConfig: (store: AppStore, instanceConfig: AboutData) => ReducerOutput;
 	toggleCreateStreamModal: (store: AppStore, val?: boolean) => ReducerOutput;
 	setSavedFilters: (store: AppStore, savedFilters: AxiosResponse<SavedFilterType[]>) => ReducerOutput;
@@ -64,13 +64,13 @@ const { Provider: AppProvider, useStore: useAppStore } = initContext(initialStat
 
 // helpers
 const accessKeyMap: { [key: string]: string } = {
-	hasUserAccess: 'ListUser',
+	hasUserAccess: 'Users',
 	hasDeleteAccess: 'DeleteStream',
-	hasUpdateAlertAccess: 'PutAlert',
-	hasGetAlertAccess: 'GetAlert',
 	hasCreateStreamAccess: 'CreateStream',
 	hasDeleteStreamAccess: 'DeleteStream',
 	hasClusterAccess: 'Cluster',
+	hasAlertsAccess: 'Alerts',
+	hasSettingsAccess: 'StreamSettings'
 };
 
 const generateUserAcccessMap = (accessRoles: string[] | null) => {
@@ -114,7 +114,7 @@ const setUserAccessMap = (_store: AppStore, accessRoles: string[] | null) => {
 	return { userAccessMap: generateUserAcccessMap(accessRoles) };
 };
 
-const setStreamSpecificUserAccess = (_store: AppStore, streamSpecificUserAccess: string[]) => {
+const setStreamSpecificUserAccess = (_store: AppStore, streamSpecificUserAccess: string[] | null) => {
 	return { streamSpecificUserAccess };
 };
 

@@ -19,6 +19,7 @@ import { IconEdit, IconInfoCircleFilled, IconPlus, IconTrash } from '@tabler/ico
 import { UseFormReturnType, useForm } from '@mantine/form';
 import { useStreamStore, streamStoreReducers } from '../../providers/StreamProvider';
 import ErrorView from './ErrorView';
+import RestrictedView from '@/components/Misc/RestrictedView';
 
 const defaultColumnTypeConfig = { column: '', operator: '=', value: '', repeats: 1, ignoreCase: false };
 const defaultColumnTypeRule = { type: 'column' as 'column', config: defaultColumnTypeConfig };
@@ -573,16 +574,15 @@ const AlertsModal = (props: {
 	);
 };
 
-const Header = (props: { selectAlert: selectAlert; isLoading: boolean }) => {
+const Header = (props: { selectAlert: selectAlert; isLoading: boolean, showCreateBtn: boolean }) => {
 	return (
 		<Stack className={classes.headerContainer} style={{ minHeight: '3rem', maxHeight: '3rem' }}>
 			<Text className={classes.title}>Alerts</Text>
-			{!props.isLoading && (
+			{!props.isLoading && props.showCreateBtn && (
 				<Box>
 					<Button
 						variant="outline"
 						onClick={() => props.selectAlert('')}
-						// h={'2rem'}
 						leftSection={<IconPlus stroke={2} size={'1rem'} />}>
 						New Alert
 					</Button>
@@ -659,6 +659,7 @@ const Alerts = (props: {
 	isLoading: boolean;
 	schemaLoading: boolean;
 	isError: boolean;
+	hasAlertsAccess: boolean;
 	updateAlerts: ({ config, onSuccess }: { config: any; onSuccess?: () => void }) => void;
 }) => {
 	const [alertName, setAlertName] = useState<string>('');
@@ -676,9 +677,11 @@ const Alerts = (props: {
 	return (
 		<Stack className={classes.sectionContainer} gap={0} style={{ flex: 1 }}>
 			<AlertsModal open={alertModalOpen} alertName={alertName} onClose={closeModal} updateAlerts={props.updateAlerts} />
-			<Header selectAlert={selectAlert} isLoading={props.isLoading} />
+			<Header selectAlert={selectAlert} isLoading={props.isLoading} showCreateBtn={props.hasAlertsAccess}/>
 			{props.isError ? (
 				<ErrorView />
+			) : !props.hasAlertsAccess ? (
+				<RestrictedView />
 			) : (
 				<AlertList
 					selectAlert={selectAlert}

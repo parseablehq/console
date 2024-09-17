@@ -10,6 +10,7 @@ import { IconCheck, IconTrash, IconX } from '@tabler/icons-react';
 import { sanitizeBytes, convertGibToBytes } from '@/utils/formatBytes';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import ErrorView from './ErrorView';
+import RestrictedView from '@/components/Misc/RestrictedView';
 
 const { formatDateWithTimezone } = timeRangeUtils;
 
@@ -313,6 +314,7 @@ const Settings = (props: {
 	isDeleting: boolean;
 	isUpdating: boolean;
 	isRetentionError: boolean;
+	hasSettingsAccess: boolean;
 }) => {
 	const [isStandAloneMode] = useAppStore((store) => store.isStandAloneMode);
 	return (
@@ -327,23 +329,29 @@ const Settings = (props: {
 					</Stack>
 				) : (
 					<>
-						{!isStandAloneMode && (
-							<HotTierConfig
-								updateHotTierInfo={props.updateHotTierInfo}
-								deleteHotTierInfo={props.deleteHotTierInfo}
-								isDeleting={props.isDeleting}
-								isUpdating={props.isUpdating}
-							/>
+						{!props.hasSettingsAccess ? (
+							<RestrictedView />
+						) : (
+							<>
+								{!isStandAloneMode && (
+									<HotTierConfig
+										updateHotTierInfo={props.updateHotTierInfo}
+										deleteHotTierInfo={props.deleteHotTierInfo}
+										isDeleting={props.isDeleting}
+										isUpdating={props.isUpdating}
+									/>
+								)}
+								<Divider />
+								<Stack className={classes.fieldsContainer} style={{ border: 'none', flex: 1, gap: 4 }}>
+									<Text className={classes.fieldTitle}>Retention</Text>
+									{!props.isRetentionError ? (
+										<RetentionForm updateRetentionConfig={props.updateRetentionConfig} />
+									) : (
+										<ErrorView />
+									)}
+								</Stack>
+							</>
 						)}
-						<Divider />
-						<Stack className={classes.fieldsContainer} style={{ border: 'none', flex: 1, gap: 4 }}>
-							<Text className={classes.fieldTitle}>Retention</Text>
-							{!props.isRetentionError ? (
-								<RetentionForm updateRetentionConfig={props.updateRetentionConfig} />
-							) : (
-								<ErrorView />
-							)}
-						</Stack>
 					</>
 				)}
 			</Stack>

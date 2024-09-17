@@ -14,12 +14,16 @@ const AccessSpecificRoute: FC<AccessSpecificRouteProps> = (props) => {
 
 	useEffect(() => {
 		if (
-			!_.isEmpty(streamSpecificUserAccess) &&
+			streamSpecificUserAccess !== null &&
 			!streamSpecificUserAccess?.some((access: string) => accessRequired.includes(access))
 		) {
 			navigate('/');
 		}
 	}, [streamSpecificUserAccess]);
+
+	if (streamSpecificUserAccess === null) {
+		return null;
+	}
 
 	return <Outlet />;
 };

@@ -136,7 +136,7 @@ const Navbar: FC = () => {
 
 		setAppStore((store) => setStreamSpecificUserAccess(store, streamSpecificAccess));
 		setAppStore((store) => setUserAccessMap(store, streamSpecificAccess));
-	}, [getUserRolesData?.data, getLogStreamListData?.data]);
+	}, [getUserRolesData?.data, getLogStreamListData?.data, currentStream]);
 
 	useEffect(() => {
 		getUserRolesMutation({ userName: username ? username : '' });

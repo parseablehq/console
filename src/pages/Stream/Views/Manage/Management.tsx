@@ -14,7 +14,9 @@ import { useHotTier } from '@/hooks/useHotTier';
 const Management = (props: { schemaLoading: boolean }) => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
-	const getStreamAlertsConfig = useAlertsQuery(currentStream || '');
+	const [userAccessMap] = useAppStore(store => store.userAccessMap);
+	const {hasAlertsAccess, hasSettingsAccess} = userAccessMap;
+	const getStreamAlertsConfig = useAlertsQuery(currentStream || '', hasAlertsAccess);
 	const getStreamStats = useLogStreamStats(currentStream || '');
 	const getRetentionConfig = useRetentionQuery(currentStream || '');
 	const getStreamInfo = useGetStreamInfo(currentStream || '');
@@ -43,6 +45,7 @@ const Management = (props: { schemaLoading: boolean }) => {
 						isDeleting={hotTierFetch.isDeleting}
 						isUpdating={hotTierFetch.isUpdating}
 						isRetentionError={getRetentionConfig.getLogRetentionIsError}
+						hasSettingsAccess={hasSettingsAccess}
 					/>
 				</Stack>
 				<Alerts
@@ -50,6 +53,7 @@ const Management = (props: { schemaLoading: boolean }) => {
 					schemaLoading={props.schemaLoading}
 					updateAlerts={getStreamAlertsConfig.updateLogStreamAlerts}
 					isError={getStreamAlertsConfig.isError}
+					hasAlertsAccess={hasAlertsAccess}
 				/>
 			</Stack>
 		</Stack>

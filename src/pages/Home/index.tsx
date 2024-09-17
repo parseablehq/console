@@ -40,7 +40,10 @@ const Home: FC = () => {
 	const navigate = useNavigate();
 	const { getStreamMetadata, metaData } = useGetStreamMetadata();
 	const [userSpecificStreams, setAppStore] = useAppStore((store) => store.userSpecificStreams);
+	const [streamSpecificUserAccess] = useAppStore((store) => store.streamSpecificUserAccess);
 	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
+
+	console.log(streamSpecificUserAccess, "love 2");
 
 	useEffect(() => {
 		if (!Array.isArray(userSpecificStreams) || userSpecificStreams.length === 0) return;

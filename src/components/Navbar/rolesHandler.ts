@@ -21,6 +21,9 @@ const adminAccess = [
 	'GetRole',
 	'Cluster',
 	'Dashboard',
+	'Alerts',
+	'Users',
+	'StreamSettings', // retention & hot-tier
 ];
 const editorAccess = [
 	'Ingest',
@@ -35,6 +38,8 @@ const editorAccess = [
 	'PutAlert',
 	'GetAlert',
 	'Dashboard',
+	'Alerts',
+	'StreamSettings', // retention & hot-tier
 ];
 const writerAccess = [
 	'Ingest',
@@ -47,6 +52,8 @@ const writerAccess = [
 	'GetAlert',
 	'GetLiveTail',
 	'Dashboard',
+	'Alerts',
+	'StreamSettings', // retention & hot-tier
 ];
 const readerAccess = [
 	'Query',
@@ -60,7 +67,11 @@ const readerAccess = [
 ];
 const ingestorAccess = ['Ingest'];
 
-const getStreamsSepcificAccess = (rolesWithRoleName: UserRoles, stream?: string) => {
+const getStreamsSepcificAccess = (rolesWithRoleName: UserRoles, stream?: string): string[] | null => {
+	if (!rolesWithRoleName) {
+		return null;
+	}
+
 	let access: string[] = [];
 	let roles: any[] = [];
 	for (var prop in rolesWithRoleName) {
