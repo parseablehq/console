@@ -69,7 +69,7 @@ export const useFetchCount = () => {
 			const finalQuery = custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM');
 			if (activeMode === 'filters') {
 				const { where } = parseQuery('Parseable', appliedQuery, '');
-				const finalQuery = [defaultQuery, 'where', where].reduce((acc, curr) => acc + ' ' + curr);
+				const finalQuery = defaultQuery + ' ' + 'where' + ' ' + where;
 				return finalQuery;
 			} else {
 				return finalQuery.replace(
