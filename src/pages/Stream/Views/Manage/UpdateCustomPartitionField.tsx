@@ -37,7 +37,7 @@ export default function UpdateCustomPartitionField(props: { timePartition: strin
 	const [showEditField, setShowEditField] = useState<boolean>(false);
 	const [error, setError] = useState<string | null>(null);
 	const { updateLogStreamMutation } = useLogStream();
-	const { getStreamInfoRefetch } = useGetStreamInfo(props.currentStream);
+	const { getStreamInfoRefetch } = useGetStreamInfo(props.currentStream, props.currentStream !== null);
 
 	useEffect(() => {
 		const customPartition: string = _.get(info, 'custom_partition', 'EMPTY_VALUE');

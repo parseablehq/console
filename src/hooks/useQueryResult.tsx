@@ -8,8 +8,10 @@ import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsPr
 import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { notifyError } from '@/utils/notification';
+import { QueryEngineType } from '@/@types/parseable/api/about';
 
 type QueryData = {
+	queryEngine: QueryEngineType;
 	logsQuery: LogsQuery;
 	query: string;
 	onSuccess?: () => void;
@@ -18,7 +20,7 @@ type QueryData = {
 
 export const useQueryResult = () => {
 	const fetchQueryHandler = async (data: QueryData) => {
-		const response = await getQueryResultWithHeaders(data.logsQuery, data.query, data.useTrino);
+		const response = await getQueryResultWithHeaders(data.logsQuery, data.query);
 		if (response.status !== 200) {
 			throw new Error(response.statusText);
 		}
@@ -62,9 +64,14 @@ export const useFetchCount = () => {
 		if (isQuerySearchActive) {
 			const finalQuery = custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM');
 			if (activeMode === 'filters') {
-				return finalQuery;
+				return finalQuery
+					.replace(/LIMIT\s*\d+\s*(OFFSET\s*\d+)?\s*;?/i, '') // Removes LIMIT and optional OFFSET
+					.replace(/OFFSET\s*\d+\s*;?/i, '');
 			} else {
-				return finalQuery.replace(/ORDER\s+BY\s+[\w\s,.]+(?:ASC|DESC)?\s*(LIMIT\s+\d+)?\s*;?/i, '');
+				return finalQuery
+					.replace(/ORDER\s+BY\s+[\w\s,.]+(?:ASC|DESC)?\s*(LIMIT\s*\d+)?\s*(OFFSET\s*\d+)?\s*;?/i, '') // Removes ORDER BY, LIMIT, and OFFSET
+					.replace(/LIMIT\s*\d+\s*(OFFSET\s*\d+)?\s*;?/i, '') // Removes LIMIT and optional OFFSET
+					.replace(/OFFSET\s*\d+\s*;?/i, '');
 			}
 		} else {
 			return defaultQuery;
@@ -80,15 +87,21 @@ export const useFetchCount = () => {
 		isLoading: isCountLoading,
 		isRefetching: isCountRefetching,
 		refetch: refetchCount,
-	} = useQuery(['fetchCount', logsQuery], () => getQueryResult(logsQuery, query, false), {
-		onSuccess: (resp) => {
-			const count = _.first(resp.data)?.count;
+	} = useQuery(
+		['fetchCount', logsQuery],
+		async () => {
+			const data = await getQueryResult(logsQuery, query);
+			const count = _.first(data.data)?.count;
 			typeof count === 'number' && setLogsStore((store) => setTotalCount(store, count));
+			return data;
 		},
-		refetchOnWindowFocus: false,
-		retry: false,
-		enabled: false,
-	});
+		{
+			// query for count should always hit the endpoint for parseable query
+			refetchOnWindowFocus: false,
+			retry: false,
+			enabled: false,
+		},
+	);
 
 	return {
 		isCountLoading,

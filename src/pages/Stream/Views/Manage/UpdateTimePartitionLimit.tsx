@@ -35,7 +35,7 @@ function UpdateTimePartitionLimit(props: { timePartition: string; currentStream:
 	const [error, setError] = useState<string | null>(null);
 	const [showEditField, setShowEditField] = useState<boolean>(false);
 	const { updateLogStreamMutation } = useLogStream();
-	const { getStreamInfoRefetch } = useGetStreamInfo(props.currentStream);
+	const { getStreamInfoRefetch } = useGetStreamInfo(props.currentStream, props.currentStream !== null);
 
 	useEffect(() => {
 		setValue(timePartitonLimit);

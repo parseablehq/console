@@ -40,6 +40,7 @@ const SavedFilterItem = (props: {
 	onSqlSearchApply: (query: string, id: string, time_filter: null | { from: string; to: string }) => void;
 	onFilterBuilderQueryApply: (query: QueryType, id: string) => void;
 	currentStream: string;
+	queryEngine: 'Parseable' | 'Trino' | undefined;
 	savedFilterId: string | null;
 	isStoredAndCurrentTimeRangeAreSame: (from: string, to: string) => boolean;
 	hardRefresh: () => void;
@@ -140,8 +141,8 @@ const SavedFilterItem = (props: {
 							_.isString(query.filter_query)
 								? query.filter_query
 								: query.filter_builder
-									? parseQuery(query.filter_builder, stream_name).parsedQuery
-									: ''
+								? parseQuery(props.queryEngine, query.filter_builder, stream_name).parsedQuery
+								: ''
 						}
 						language="sql"
 						withCopyButton={false}
@@ -166,6 +167,7 @@ const SavedFiltersModal = () => {
 	const [savedFilters] = useAppStore((store) => store.savedFilters);
 	const [activeSavedFilters] = useAppStore((store) => store.activeSavedFilters);
 	const [currentStream] = useAppStore((store) => store.currentStream);
+	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
 	const { isLoading, refetch, isError } = useSavedFiltersQuery();
 	const onSqlSearchApply = useCallback(
 		(query: string, id: string, time_filter: null | { from: string; to: string }) => {
@@ -246,6 +248,7 @@ const SavedFiltersModal = () => {
 									onSqlSearchApply={onSqlSearchApply}
 									onFilterBuilderQueryApply={onFilterBuilderQueryApply}
 									currentStream={currentStream || ''}
+									queryEngine={queryEngine}
 									savedFilterId={savedFilterId}
 									isStoredAndCurrentTimeRangeAreSame={isStoredAndCurrentTimeRangeAreSame}
 									hardRefresh={hardRefresh}

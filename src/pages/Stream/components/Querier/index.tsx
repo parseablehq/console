@@ -73,6 +73,7 @@ const QuerierModal = (props: {
 	onFiltersApply: () => void;
 }) => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
+	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
 	const [{ showQueryBuilder, viewMode }, setLogsStore] = useLogsStore((store) => store.custQuerySearchState);
 	const [streamInfo] = useStreamStore((store) => store.info);
 	const [timeRange] = useLogsStore((store) => store.timeRange);
@@ -84,12 +85,13 @@ const QuerierModal = (props: {
 
 	useEffect(() => {
 		queryCodeEditorRef.current = defaultCustSQLQuery(
+			queryEngine,
 			currentStream,
 			timeRange.startTime,
 			timeRange.endTime,
 			timePartitionColumn,
 		);
-	}, [currentStream, timeRange.endTime, timeRange.startTime, timePartitionColumn]);
+	}, [queryEngine, currentStream, timeRange.endTime, timeRange.startTime, timePartitionColumn]);
 
 	return (
 		<Modal
@@ -122,6 +124,7 @@ const Querier = () => {
 	const [{ startTime, endTime }] = useLogsStore((store) => store.timeRange);
 	const { isQuerySearchActive, viewMode, showQueryBuilder, activeMode, savedFilterId } = custQuerySearchState;
 	const [currentStream] = useAppStore((store) => store.currentStream);
+	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
 	const [activeSavedFilters] = useAppStore((store) => store.activeSavedFilters);
 	const openBuilderModal = useCallback(() => {
 		setLogsStore((store) => toggleQueryBuilder(store));
@@ -154,7 +157,11 @@ const Querier = () => {
 			if (!currentStream) return;
 
 			const { isUncontrolled } = opts || {};
-			const { parsedQuery } = parseQuery(query, currentStream, { startTime, endTime, timePartitionColumn });
+			const { parsedQuery } = parseQuery(queryEngine, query, currentStream, {
+				startTime,
+				endTime,
+				timePartitionColumn,
+			});
 			setFilterStore((store) => storeAppliedQuery(store));
 			triggerRefetch(parsedQuery, 'filters', isUncontrolled && savedFilterId ? savedFilterId : undefined);
 		},
