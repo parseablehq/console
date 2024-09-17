@@ -5,11 +5,11 @@ import LogTable from './StaticLogTable';
 import useLogsFetcher from './useLogsFetcher';
 import LogsViewConfig from './LogsViewConfig';
 
-const LogsView = (props: { schemaLoading: boolean, infoLoading: boolean }) => {
+const LogsView = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
 	const { schemaLoading, infoLoading } = props;
 	const { errorMessage, hasNoData, showTable, isFetchingCount, logsLoading } = useLogsFetcher({
 		schemaLoading,
-		infoLoading
+		infoLoading,
 	});
 	const [viewMode] = useLogsStore((store) => store.viewMode);
 	const viewOpts = {
@@ -22,7 +22,9 @@ const LogsView = (props: { schemaLoading: boolean, infoLoading: boolean }) => {
 
 	return (
 		<Box style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-			{viewMode === 'table' && <LogsViewConfig schemaLoading={schemaLoading} logsLoading={logsLoading} infoLoading={infoLoading}/>}
+			{viewMode === 'table' && (
+				<LogsViewConfig schemaLoading={schemaLoading} logsLoading={logsLoading} infoLoading={infoLoading} />
+			)}
 			{viewMode === 'table' ? <LogTable {...viewOpts} /> : <JsonView {...viewOpts} />}
 		</Box>
 	);

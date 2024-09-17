@@ -19,7 +19,7 @@ const Management = (props: { schemaLoading: boolean }) => {
 	const getStreamAlertsConfig = useAlertsQuery(currentStream || '', hasAlertsAccess);
 	const getStreamStats = useLogStreamStats(currentStream || '');
 	const getRetentionConfig = useRetentionQuery(currentStream || '', hasSettingsAccess);
-	const getStreamInfo = useGetStreamInfo(currentStream || '');
+	const getStreamInfo = useGetStreamInfo(currentStream || '', currentStream !== null);
 	const hotTierFetch = useHotTier(currentStream || '', hasSettingsAccess);
 
 	// todo - handle loading and error states separately

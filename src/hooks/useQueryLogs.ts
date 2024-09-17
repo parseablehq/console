@@ -35,6 +35,7 @@ export const useQueryLogs = () => {
 			order: SortOrder.DESCENDING,
 		},
 	});
+	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
 	const [streamInfo] = useStreamStore((store) => store.info);
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
@@ -72,6 +73,7 @@ export const useQueryLogs = () => {
 
 	// refactor
 	const defaultQueryOpts = {
+		queryEngine,
 		streamName: currentStream || '',
 		startTime: timeRange.startTime,
 		endTime: timeRange.endTime,
@@ -87,7 +89,7 @@ export const useQueryLogs = () => {
 			const logsQueryRes = await (async () => {
 				if (isQuerySearchActive) {
 					if (activeMode === 'filters') {
-						const { parsedQuery } = parseQuery(appliedQuery, currentStream || '', {
+						const { parsedQuery } = parseQuery(queryEngine, appliedQuery, currentStream || '', {
 							startTime: timeRange.startTime,
 							endTime: timeRange.endTime,
 							timePartitionColumn,

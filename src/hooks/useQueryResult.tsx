@@ -5,11 +5,16 @@ import { isAxiosError, AxiosError } from 'axios';
 import { IconCheck } from '@tabler/icons-react';
 import { useMutation, useQuery } from 'react-query';
 import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
+import { useFilterStore, filterStoreReducers } from '@/pages/Stream/providers/FilterProvider';
 import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { notifyError } from '@/utils/notification';
+import { QueryEngineType } from '@/@types/parseable/api/about';
+
+const { parseQuery } = filterStoreReducers;
 
 type QueryData = {
+	queryEngine: QueryEngineType;
 	logsQuery: LogsQuery;
 	query: string;
 	onSuccess?: () => void;
@@ -18,7 +23,7 @@ type QueryData = {
 
 export const useQueryResult = () => {
 	const fetchQueryHandler = async (data: QueryData) => {
-		const response = await getQueryResultWithHeaders(data.logsQuery, data.query, data.useTrino);
+		const response = await getQueryResultWithHeaders(data.logsQuery, data.query);
 		if (response.status !== 200) {
 			throw new Error(response.statusText);
 		}
@@ -56,15 +61,21 @@ export const useFetchCount = () => {
 	const [custQuerySearchState] = useLogsStore((store) => store.custQuerySearchState);
 	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
 	const { isQuerySearchActive, custSearchQuery, activeMode } = custQuerySearchState;
+	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
 
 	const defaultQuery = `select count(*) as count from \"${currentStream}\"`;
 	const query = (() => {
 		if (isQuerySearchActive) {
 			const finalQuery = custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM');
 			if (activeMode === 'filters') {
+				const { where } = parseQuery('Parseable', appliedQuery, '');
+				const finalQuery = defaultQuery + ' ' + 'where' + ' ' + where;
 				return finalQuery;
 			} else {
-				return finalQuery.replace(/ORDER\s+BY\s+[\w\s,.]+(?:ASC|DESC)?\s*(LIMIT\s+\d+)?\s*;?/i, '');
+				return finalQuery.replace(
+					/(ORDER\s+BY\s+[\w\s,.]+(?:\s+ASC|\s+DESC)?\s*)?(LIMIT\s*\d+\s*)?(OFFSET\s*\d+\s*)?;?/gi,
+					'',
+				);
 			}
 		} else {
 			return defaultQuery;
@@ -80,15 +91,21 @@ export const useFetchCount = () => {
 		isLoading: isCountLoading,
 		isRefetching: isCountRefetching,
 		refetch: refetchCount,
-	} = useQuery(['fetchCount', logsQuery], () => getQueryResult(logsQuery, query, false), {
-		onSuccess: (resp) => {
-			const count = _.first(resp.data)?.count;
+	} = useQuery(
+		['fetchCount', logsQuery],
+		async () => {
+			const data = await getQueryResult(logsQuery, query);
+			const count = _.first(data.data)?.count;
 			typeof count === 'number' && setLogsStore((store) => setTotalCount(store, count));
+			return data;
 		},
-		refetchOnWindowFocus: false,
-		retry: false,
-		enabled: false,
-	});
+		{
+			// query for count should always hit the endpoint for parseable query
+			refetchOnWindowFocus: false,
+			retry: false,
+			enabled: false,
+		},
+	);
 
 	return {
 		isCountLoading,

@@ -41,15 +41,21 @@ const Stream: FC = () => {
 	const { view } = useParams();
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [maximized] = useAppStore((store) => store.maximized);
+	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
+	const queryEngine = instanceConfig?.queryEngine;
+	const getInfoFetchedOnMount = queryEngine === 'Parseable' ? false : currentStream !== null;
 	const [sideBarOpen, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
-	const {getStreamInfoRefetch, getStreamInfoLoading, getStreamInfoRetching} = useGetStreamInfo(currentStream || '');
+	const { getStreamInfoRefetch, getStreamInfoLoading, getStreamInfoRefetching } = useGetStreamInfo(
+		currentStream || '',
+		getInfoFetchedOnMount,
+	);
 
 	const {
 		refetch: refetchSchema,
 		isLoading: isSchemaLoading,
 		errorMessage: schemaFetchErrorMessage,
 		isError: isSchemaError,
-		isRefetching: isSchemaRefetching
+		isRefetching: isSchemaRefetching,
 	} = useGetStreamSchema({ streamName: currentStream || '' });
 
 	const fetchSchema = useCallback(() => {
@@ -59,7 +65,7 @@ const Stream: FC = () => {
 
 	useEffect(() => {
 		if (!_.isEmpty(currentStream)) {
-			if (view === 'explore') {
+			if (view === 'explore' && queryEngine && queryEngine !== 'Parseable') {
 				setStreamStore(streamChangeCleanup);
 				getStreamInfoRefetch();
 			} else {
@@ -74,7 +80,8 @@ const Stream: FC = () => {
 	if (!_.includes(STREAM_VIEWS, view)) return null;
 
 	const isSchemaFetching = isSchemaRefetching || isSchemaLoading;
-	const isInfoLoading = (getStreamInfoLoading || getStreamInfoRetching) && view === 'explore';
+	const isInfoLoading =
+		(getStreamInfoLoading || getStreamInfoRefetching || instanceConfig === null) && view === 'explore';
 	return (
 		<Box
 			style={{
