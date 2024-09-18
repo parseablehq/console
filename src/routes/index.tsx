@@ -33,7 +33,7 @@ const AppRouter: FC = () => {
 					<Route element={<MainLayoutElement />}>
 						<Route path={HOME_ROUTE} element={<HomeElement />} />
 						<Route path={DASHBOARDS_ROUTE} element={<DashboardsElement />} />
-						<Route element={<AccessSpecificRoute accessRequired={['ListUser']} />}>
+						<Route element={<AccessSpecificRoute accessRequired={['Users']} />}>
 							<Route path={USERS_MANAGEMENT_ROUTE} element={<UsersElement />} />
 						</Route>
 						<Route element={<AccessSpecificRoute accessRequired={['Query', 'GetSchema']} />}>

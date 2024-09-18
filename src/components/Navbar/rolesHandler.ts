@@ -4,6 +4,7 @@ const adminAccess = [
 	'Ingest',
 	'Query',
 	'CreateStream',
+	'DeleteStream',
 	'ListStream',
 	'GetSchema',
 	'GetStats',
@@ -19,11 +20,16 @@ const adminAccess = [
 	'PutRoles',
 	'GetRole',
 	'Cluster',
+	'Dashboard',
+	'Alerts',
+	'Users',
+	'StreamSettings', // retention & hot-tier
 ];
 const editorAccess = [
 	'Ingest',
 	'Query',
 	'CreateStream',
+	'DeleteStream',
 	'ListStream',
 	'GetSchema',
 	'GetStats',
@@ -31,6 +37,9 @@ const editorAccess = [
 	'PutRetention',
 	'PutAlert',
 	'GetAlert',
+	'Dashboard',
+	'Alerts',
+	'StreamSettings', // retention & hot-tier
 ];
 const writerAccess = [
 	'Ingest',
@@ -42,11 +51,27 @@ const writerAccess = [
 	'PutAlert',
 	'GetAlert',
 	'GetLiveTail',
+	'Dashboard',
+	'Alerts',
+	'StreamSettings', // retention & hot-tier
 ];
-const readerAccess = ['Query', 'ListStream', 'GetSchema', 'GetStats', 'GetRetention', 'GetAlert', 'GetLiveTail'];
+const readerAccess = [
+	'Query',
+	'ListStream',
+	'GetSchema',
+	'GetStats',
+	'GetRetention',
+	'GetAlert',
+	'GetLiveTail',
+	'Dashboard',
+];
 const ingestorAccess = ['Ingest'];
 
-const getStreamsSepcificAccess = (rolesWithRoleName: UserRoles, stream?: string) => {
+const getStreamsSepcificAccess = (rolesWithRoleName: UserRoles | null, stream?: string): string[] | null => {
+	if (!rolesWithRoleName) {
+		return null;
+	}
+
 	let access: string[] = [];
 	let roles: any[] = [];
 	for (var prop in rolesWithRoleName) {

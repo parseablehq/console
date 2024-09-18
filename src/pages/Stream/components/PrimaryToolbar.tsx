@@ -89,6 +89,7 @@ const ViewToggle = () => {
 
 const PrimaryToolbar = () => {
 	const [maximized] = useAppStore((store) => store.maximized);
+	const [hasDeleteStreamAccess] = useAppStore(store => store.userAccessMap.hasDeleteStreamAccess)
 	const { view } = useParams();
 
 	useEffect(() => {
@@ -129,7 +130,7 @@ const PrimaryToolbar = () => {
 			) : view === 'manage' ? (
 				<Stack style={{ flexDirection: 'row', height: STREAM_PRIMARY_TOOLBAR_HEIGHT }} w="100%">
 					<StreamDropdown />
-					<DeleteStreamButton />
+					{hasDeleteStreamAccess && <DeleteStreamButton />}
 				</Stack>
 			) : null}
 		</Stack>
