@@ -10,6 +10,8 @@ import { useId } from '@mantine/hooks';
 import { useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { getQueryParam } from '@/utils';
+import { isAxiosError } from 'axios';
+import _ from 'lodash';
 
 export const useLoginForm = () => {
 	const notificationId = useId();
@@ -78,7 +80,22 @@ export const useLoginForm = () => {
 					}
 				}
 			} catch (err) {
-				notifyError({ message: 'Something went wrong' });
+				if (isAxiosError(err)) {
+					const errStatus = err.response?.status;
+					if (errStatus === 401) {
+						setError('Unauthorized User');
+						notifyError({ message: 'The request failed with a status code of 401' });
+					} else {
+						const errMsg = _.isString(err.response?.data)
+							? err.response?.data || 'Something went wrong'
+							: 'Something went wrong';
+						setError(errMsg);
+						notifyError({ message: errMsg });
+					}
+				} else {
+					setError('Request Failed!');
+					notifyError({ message: 'Something went wrong' });
+				}
 			} finally {
 				setLoading(false);
 			}

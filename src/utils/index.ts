@@ -64,12 +64,18 @@ export const generateQueryParam = (obj: object) => {
 };
 
 export const signOutHandler = async () => {
+	const loginPage = `${window.location.origin}/login`;
+	const currentPage = window.location.href;
 	try {
 		await logOut();
 		Cookies.remove('session');
 		Cookies.remove('username');
-		window.location.href = `${window.location.origin}/login`;
+		if (currentPage !== loginPage) {
+			window.location.href = loginPage;
+		}
 	} catch (e) {
+		Cookies.remove('session');
+		Cookies.remove('username');
 		console.log(e);
 	}
 };
