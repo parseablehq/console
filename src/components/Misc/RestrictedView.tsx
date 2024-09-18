@@ -11,7 +11,7 @@ const RestrictedView = () => {
 				justifyContent: 'center',
 			}}>
 			<Stack>
-				<Text ta="center" c='gray.6'>You dont have access to this. Please contact your admin.</Text>
+				<Text ta="center" c='gray.6'>Access restricted, Please contact your administrator.</Text>
 			</Stack>
 		</Stack>
 	);
