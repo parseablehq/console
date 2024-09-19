@@ -1,6 +1,13 @@
 import { Stack, Text } from '@mantine/core';
 
-const RestrictedView = () => {
+const defaultMsg = 'Access restricted, Please contact your administrator.';
+
+type RestrictedViewOpts = {
+	msg?: string;
+};
+
+const RestrictedView = (opts: RestrictedViewOpts) => {
+	const msg = opts.msg || defaultMsg;
 	return (
 		<Stack
 			style={{
@@ -11,7 +18,9 @@ const RestrictedView = () => {
 				justifyContent: 'center',
 			}}>
 			<Stack>
-				<Text ta="center" c='gray.6'>Access restricted, Please contact your administrator.</Text>
+				<Text ta="center" c="gray.6">
+					{msg}
+				</Text>
 			</Stack>
 		</Stack>
 	);
