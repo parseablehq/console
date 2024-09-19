@@ -1,6 +1,6 @@
 import TimeRange from '@/components/Header/TimeRange';
 import { Box, Button, Modal, px, Stack, Text, TextInput } from '@mantine/core';
-import { IconCheck, IconPencil, IconPlus, IconTrash } from '@tabler/icons-react';
+import { IconCheck, IconPencil, IconPlus, IconShare, IconTrash } from '@tabler/icons-react';
 import classes from './styles/toolbar.module.css';
 import { useDashboardsStore, dashboardsStoreReducers, sortTilesByOrder } from './providers/DashboardsProvider';
 import { ChangeEvent, useCallback, useState } from 'react';
@@ -8,6 +8,9 @@ import IconButton from '@/components/Button/IconButton';
 import { useDashboardsQuery } from '@/hooks/useDashboards';
 import _ from 'lodash';
 import ReactGridLayout, { Layout } from 'react-grid-layout';
+import { Dashboard } from '@/@types/parseable/api/dashboards';
+import { copyTextToClipboard } from '@/utils';
+import { notifySuccess } from '@/utils/notification';
 
 const { toggleEditDashboardModal, toggleAllowDrag, toggleCreateTileModal, toggleDeleteDashboardModal } =
 	dashboardsStoreReducers;
@@ -145,11 +148,26 @@ const DeleteDashboardModal = () => {
 };
 
 const renderDeleteIcon = () => <IconTrash size={px('1rem')} stroke={1.5} />;
+const renderShareIcon = () => <IconShare size={px('1rem')} stroke={1.5} />;
 
 const DeleteDashboardButton = () => {
 	const [_store, setDashbaordsStore] = useDashboardsStore((_store) => null);
 	const onClick = useCallback(() => setDashbaordsStore((store) => toggleDeleteDashboardModal(store, true)), []);
 	return <IconButton renderIcon={renderDeleteIcon} size={36} onClick={onClick} tooltipLabel="Delete Dashboard" />;
+};
+
+const ShareDashbboardButton = (props: { dashboard: Dashboard }) => {
+	const { dashboard } = props;
+	const onClick = useCallback(async () => {
+		const sanitizedConfig = _.omit(dashboard, ['dashboard_id', 'user_id', 'version']);
+		const { tiles } = dashboard;
+		const sanitizedTiles = _.map(tiles, (tile) => {
+			return _.omit(tile, 'tile_id');
+		});
+		await copyTextToClipboard({ ...sanitizedConfig, tiles: sanitizedTiles });
+		notifySuccess({ message: 'Dashboard config copied to clipboard' });
+	}, [dashboard]);
+	return <IconButton renderIcon={renderShareIcon} size={36} onClick={onClick} tooltipLabel="Share Dashboard" />;
 };
 
 const Toolbar = (props: { layoutRef: React.MutableRefObject<ReactGridLayout.Layout[]> }) => {
@@ -185,6 +203,7 @@ const Toolbar = (props: { layoutRef: React.MutableRefObject<ReactGridLayout.Layo
 				<TimeRange />
 				<AddTileButton />
 				<EditLayoutButton layoutRef={props.layoutRef} />
+				<ShareDashbboardButton dashboard={activeDashboard} />
 				<DeleteDashboardButton />
 			</Stack>
 		</Stack>
