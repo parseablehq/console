@@ -18,7 +18,7 @@ const onCloneCallback = (document: Document, element: HTMLElement) => {
 		headerDiv.style.height = 'auto';
 		headerDiv.style.alignItems = 'flex-start';
 	}
-	// rm border
+
 	if (containerDiv) {
 		containerDiv.style.border = 'none';
 	}

@@ -131,7 +131,7 @@ const DeleteDashboardModal = () => {
 				</Stack>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
 					<Box>
-						<Button variant="outline">Cancel</Button>
+						<Button variant="outline" onClick={closeModal}>Cancel</Button>
 					</Box>
 					<Box>
 						<Button
