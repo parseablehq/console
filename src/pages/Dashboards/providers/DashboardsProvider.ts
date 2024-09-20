@@ -83,6 +83,8 @@ type DashboardsStore = {
 	layout: Layout[];
 	deleteTileModalOpen: boolean;
 	deleteTileId: string | null;
+	importTileModalOpen: boolean;
+	importDashboardModalOpen: boolean;
 };
 
 const initialState: DashboardsStore = {
@@ -99,6 +101,8 @@ const initialState: DashboardsStore = {
 	layout: [],
 	deleteTileModalOpen: false,
 	deleteTileId: null,
+	importTileModalOpen: false,
+	importDashboardModalOpen: false
 };
 
 type ReducerOutput = Partial<DashboardsStore>;
@@ -115,6 +119,8 @@ type DashboardsStoreReducers = {
 	setTileData: (store: DashboardsStore, tileId: string, data: TileQueryResponse) => ReducerOutput;
 	toggleDeleteTileModal: (store: DashboardsStore, val: boolean, tileId: string | null) => ReducerOutput;
 	resetTilesData: (store: DashboardsStore) => ReducerOutput;
+	toggleImportTileModal: (store: DashboardsStore, val: boolean) => ReducerOutput;
+	toggleImportDashboardModal: (store: DashboardsStore, val: boolean) => ReducerOutput;
 };
 
 const toggleCreateDashboardModal = (_store: DashboardsStore, val: boolean) => {
@@ -145,6 +151,18 @@ const toggleVizEditorModal = (_store: DashboardsStore, val: boolean) => {
 const toggleDeleteDashboardModal = (_store: DashboardsStore, val: boolean) => {
 	return {
 		deleteDashboardModalOpen: val,
+	};
+};
+
+const toggleImportTileModal = (_store: DashboardsStore, val: boolean) => {
+	return {
+		importTileModalOpen: val,
+	};
+};
+
+const toggleImportDashboardModal = (_store: DashboardsStore, val: boolean) => {
+	return {
+		importDashboardModalOpen: val,
 	};
 };
 
@@ -205,6 +223,8 @@ const toggleDeleteTileModal = (_store: DashboardsStore, val: boolean, tileId: st
 	};
 };
 
+
+
 const resetTilesData = (_store: DashboardsStore) => {
 	return {
 		tilesData: {},
@@ -225,6 +245,8 @@ const dashboardsStoreReducers: DashboardsStoreReducers = {
 	setTileData,
 	toggleDeleteTileModal,
 	resetTilesData,
+	toggleImportTileModal,
+	toggleImportDashboardModal
 };
 
 export { DashbaordsProvider, useDashboardsStore, dashboardsStoreReducers };

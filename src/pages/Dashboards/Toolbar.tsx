@@ -1,6 +1,6 @@
 import TimeRange from '@/components/Header/TimeRange';
-import { Box, Button, Modal, px, Stack, Text, TextInput } from '@mantine/core';
-import { IconCheck, IconPencil, IconPlus, IconShare, IconTrash } from '@tabler/icons-react';
+import { Box, Button, FileInput, Modal, px, Stack, Text, TextInput } from '@mantine/core';
+import { IconCheck, IconFileDownload, IconPencil, IconPlus, IconShare, IconTrash } from '@tabler/icons-react';
 import classes from './styles/toolbar.module.css';
 import { useDashboardsStore, dashboardsStoreReducers, sortTilesByOrder } from './providers/DashboardsProvider';
 import { ChangeEvent, useCallback, useState } from 'react';
@@ -9,11 +9,15 @@ import { useDashboardsQuery } from '@/hooks/useDashboards';
 import _ from 'lodash';
 import ReactGridLayout, { Layout } from 'react-grid-layout';
 import { Dashboard } from '@/@types/parseable/api/dashboards';
-import { copyTextToClipboard } from '@/utils';
-import { notifySuccess } from '@/utils/notification';
+import { exportJson } from '@/utils/exportHelpers';
 
-const { toggleEditDashboardModal, toggleAllowDrag, toggleCreateTileModal, toggleDeleteDashboardModal } =
-	dashboardsStoreReducers;
+const {
+	toggleEditDashboardModal,
+	toggleAllowDrag,
+	toggleCreateTileModal,
+	toggleDeleteDashboardModal,
+	toggleImportTileModal,
+} = dashboardsStoreReducers;
 
 const tileIdsbyOrder = (layout: Layout[]) => {
 	return layout
@@ -75,6 +79,26 @@ const AddTileButton = () => {
 				className={classes.addTileBtn}
 				leftSection={<IconPlus stroke={1.4} size="1rem" />}>
 				Add Tile
+			</Button>
+		</Stack>
+	);
+};
+
+const ImportTileButton = () => {
+	const [, setDashbaordsStore] = useDashboardsStore((_store) => null);
+
+	const onClick = useCallback(() => {
+		setDashbaordsStore((store) => toggleImportTileModal(store, true));
+	}, []);
+
+	return (
+		<Stack>
+			<Button
+				onClick={onClick}
+				variant="outline"
+				className={classes.addTileBtn}
+				leftSection={<IconFileDownload stroke={1.4} size="1rem" />}>
+				Import Tile
 			</Button>
 		</Stack>
 	);
@@ -164,10 +188,83 @@ const ShareDashbboardButton = (props: { dashboard: Dashboard }) => {
 		const sanitizedTiles = _.map(tiles, (tile) => {
 			return _.omit(tile, 'tile_id');
 		});
-		await copyTextToClipboard({ ...sanitizedConfig, tiles: sanitizedTiles });
-		notifySuccess({ message: 'Dashboard config copied to clipboard' });
+		return exportJson(JSON.stringify({ ...sanitizedConfig, tiles: sanitizedTiles }, null, 2), dashboard.name);
 	}, [dashboard]);
 	return <IconButton renderIcon={renderShareIcon} size={36} onClick={onClick} tooltipLabel="Share Dashboard" />;
+};
+
+const ImportTileModal = () => {
+	const [importTileModalOpen, setDashboardStore] = useDashboardsStore((store) => store.importTileModalOpen);
+	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
+	const [file, setFile] = useState<File | null>(null);
+	const closeModal = useCallback(() => {
+		setDashboardStore((store) => toggleImportTileModal(store, false));
+	}, []);
+	const { updateDashboard, isUpdatingDashboard } = useDashboardsQuery({});
+	const onImport = useCallback(() => {
+		if (activeDashboard === null || file === null) return;
+
+		const existingTiles = activeDashboard.tiles;
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = (e: ProgressEvent<FileReader>) => {
+				try {
+					const target = e.target;
+					if (target === null || typeof target.result !== 'string') return;
+
+					const newTile = JSON.parse(target.result);
+					if (_.isEmpty(newTile)) return;
+
+					return updateDashboard({
+						dashboard: { ...activeDashboard, tiles: [...existingTiles, newTile] },
+						onSuccess: () => {
+							closeModal();
+							setFile(null);
+						},
+					});
+				} catch (error) {}
+			};
+			reader.readAsText(file);
+		} else {
+			console.error('No file selected.');
+		}
+	}, [activeDashboard, file]);
+
+	return (
+		<Modal
+			opened={importTileModalOpen}
+			onClose={closeModal}
+			size="auto"
+			centered
+			styles={{
+				body: { padding: '0 1rem 1rem 1rem', width: 400 },
+				header: { padding: '1rem', paddingBottom: '0.4rem' },
+			}}
+			title={<Text style={{ fontSize: '0.9rem', fontWeight: 600 }}>Import Tile</Text>}>
+			<Stack gap={24}>
+				<FileInput
+					style={{ marginTop: '0.25rem' }}
+					label=""
+					placeholder="Import Parseable tile config json"
+					fileInputProps={{ accept: '.json' }}
+					value={file}
+					onChange={setFile}
+				/>
+				<Stack style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+					<Box>
+						<Button onClick={closeModal} variant="outline">
+							Cancel
+						</Button>
+					</Box>
+					<Box>
+						<Button disabled={file === null} onClick={onImport} loading={isUpdatingDashboard}>
+							Import
+						</Button>
+					</Box>
+				</Stack>
+			</Stack>
+		</Modal>
+	);
 };
 
 const Toolbar = (props: { layoutRef: React.MutableRefObject<ReactGridLayout.Layout[]> }) => {
@@ -186,6 +283,7 @@ const Toolbar = (props: { layoutRef: React.MutableRefObject<ReactGridLayout.Layo
 			style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', height: '3.2rem' }}
 			w="100%">
 			<DeleteDashboardModal />
+			<ImportTileModal />
 			<Stack gap={0}>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={0}>
 					<Text className={classes.dashboardTitle} lineClamp={1}>
@@ -202,6 +300,7 @@ const Toolbar = (props: { layoutRef: React.MutableRefObject<ReactGridLayout.Layo
 			<Stack style={{ flexDirection: 'row' }}>
 				<TimeRange />
 				<AddTileButton />
+				<ImportTileButton/>
 				<EditLayoutButton layoutRef={props.layoutRef} />
 				<ShareDashbboardButton dashboard={activeDashboard} />
 				<DeleteDashboardButton />

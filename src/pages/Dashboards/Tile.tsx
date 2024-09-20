@@ -26,11 +26,9 @@ import { useCallback, useEffect } from 'react';
 import { Tile as TileType, TileQueryResponse } from '@/@types/parseable/api/dashboards';
 import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 import Table from './Table';
-import { downloadDataAsCSV, downloadDataAsJson } from '@/utils/exportHelpers';
+import { downloadDataAsCSV, downloadDataAsJson, exportJson } from '@/utils/exportHelpers';
 import { makeExportData, useLogsStore } from '../Stream/providers/LogsProvider';
 import { getRandomUnitTypeForChart, getUnitTypeByKey } from './utils';
-import { copyTextToClipboard } from '@/utils';
-import { notifySuccess } from '@/utils/notification';
 
 const ParseableLogo = () => (
 	<div className="png-export-parseable-logo" style={{ display: 'none', height: '100%' }}>
@@ -162,7 +160,7 @@ function TileControls(props: { tile: TileType; data: TileQueryResponse }) {
 		downloadDataAsCSV(makeExportData(records, fields, 'CSV'), name);
 	}, [props.data]);
 
-	const exportJson = useCallback(() => {
+	const exportDataAsJson = useCallback(() => {
 		downloadDataAsJson(makeExportData(records, fields, 'JSON'), name);
 	}, [props.data]);
 
@@ -174,11 +172,10 @@ function TileControls(props: { tile: TileType; data: TileQueryResponse }) {
 		setDashboardsStore((store) => toggleDeleteTileModal(store, true, tile_id));
 	}, []);
 
-	const copyTileConfig = useCallback(async () => {
+	const exportTileConfig = useCallback(async () => {
 		const santizedConfig = _.omit(props.tile, 'tile_id');
-		await copyTextToClipboard(santizedConfig);
-		notifySuccess({ message: 'Tile config copied to clipboard' });
-	}, []);
+		return exportJson(JSON.stringify(santizedConfig, null, 2), name)
+	}, [name]);
 
 	if (allowDrag)
 		return <IconGripVertical className={classes.tileControlIcon + ' ' + classes.dragIcon} stroke={2} size="1rem" />;
@@ -199,7 +196,7 @@ function TileControls(props: { tile: TileType; data: TileQueryResponse }) {
 					</Menu.Item>
 					<Menu.Item
 						className={classes.tileCtrlItem}
-						onClick={copyTileConfig}
+						onClick={exportTileConfig}
 						leftSection={<IconShare className={classes.tileCtrlItemIcon} size="1rem" stroke={1.2} />}>
 						<Text className={classes.tileCtrlItemText}>Share</Text>
 					</Menu.Item>
@@ -224,7 +221,7 @@ function TileControls(props: { tile: TileType; data: TileQueryResponse }) {
 						<Text className={classes.tileCtrlItemText}>CSV</Text>
 					</Menu.Item>
 					<Menu.Item
-						onClick={exportJson}
+						onClick={exportDataAsJson}
 						className={classes.tileCtrlItem}
 						leftSection={<IconBraces className={classes.tileCtrlItemIcon} size="1rem" stroke={1.2} />}>
 						<Text className={classes.tileCtrlItemText}>JSON</Text>
