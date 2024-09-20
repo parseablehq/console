@@ -6,14 +6,14 @@ export const makeExportClassName = (name: string) => {
 	return `png-capture-${sanitizedName}`;
 };
 
-const onCloneCallback = (document: Document, element: HTMLElement) => {
+const onCloneCallback = (element: HTMLElement) => {
 	const containerDiv = element.querySelector('.png-export-tile-container') as HTMLElement;
 	const menuIcon = element.querySelector('.png-export-menu-icon') as HTMLElement;
 	const tileTitleDiv = element.querySelector('.png-export-tile-title') as HTMLElement;
 	const headerDiv = element.querySelector('.png-export-tile-header') as HTMLElement;
 	const tileDescriptionDiv = element.querySelector('.png-export-tile-description') as HTMLElement;
-	const timeRangeText = document.querySelector('.png-export-tile-timerange') as HTMLElement;
-	const logoImage = document.querySelector('.png-export-parseable-logo') as HTMLElement;
+	const timeRangeText = element.querySelector('.png-export-tile-timerange') as HTMLElement;
+	const logoImage = element.querySelector('.png-export-parseable-logo') as HTMLElement;
 	if (headerDiv) {
 		headerDiv.style.height = 'auto';
 		headerDiv.style.alignItems = 'flex-start';
@@ -58,8 +58,8 @@ const handleCapture = (opts: { className: string; fileName: string }) => {
 			html2canvas(element, {
 				scale: 3,
 				backgroundColor: null,
-				onclone(document, element) {
-					onCloneCallback(document, element);
+				onclone(_document, element) {
+					onCloneCallback(element);
 				},
 			}).then((canvas) => {
 				const imgData = canvas.toDataURL('image/png');
