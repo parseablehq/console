@@ -150,6 +150,7 @@ const DataPreview = (props: { form: TileFormType }) => {
 	} = props;
 	const containerRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
 	const [containerSize, setContainerSize] = useState({ height: 0, width: 0 });
+	const errorMsg = getErrorMsg(props.form, 'data');
 	useEffect(() => {
 		if (containerRef.current) {
 			setContainerSize({
@@ -157,18 +158,17 @@ const DataPreview = (props: { form: TileFormType }) => {
 				width: containerRef.current?.offsetWidth || 0,
 			});
 		}
-	}, []);
-	const errorMsg = getErrorMsg(props.form, 'data');
+	}, [errorMsg]);
 
 	return (
 		<Stack className={classes.sectionContainer} gap={0}>
 			<SectionHeader title="Data Preview" />
-			<ScrollArea style={{flex: 1}}>
-				<Stack ref={containerRef} style={{ flex: 1 }}>
-					<Stack style={{ width: containerSize.width, height: containerSize.height }}>
-						{errorMsg ? (
-							<WarningView msg={errorMsg} />
-						) : (
+			{errorMsg ? (
+				<WarningView msg={errorMsg} />
+			) : (
+				<ScrollArea style={{ flex: 1 }}>
+					<Stack ref={containerRef} style={{ flex: 1 }}>
+						<Stack style={{ width: containerSize.width, height: containerSize.height }}>
 							<CodeHighlight
 								code={JSON.stringify(data?.records || [], null, 2)}
 								style={{ background: 'white' }}
@@ -176,10 +176,10 @@ const DataPreview = (props: { form: TileFormType }) => {
 								styles={{ copy: { marginLeft: '550px' } }}
 								copyLabel="Copy Records"
 							/>
-						)}
+						</Stack>
 					</Stack>
-				</Stack>
-			</ScrollArea>
+				</ScrollArea>
+			)}
 		</Stack>
 	);
 };

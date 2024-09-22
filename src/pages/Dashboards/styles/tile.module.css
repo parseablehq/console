@@ -23,7 +23,7 @@
 
 .tileDescription {
     color: var(--mantine-color-gray-6);
-    font-size: 0.65rem;
+    font-size: 0.75rem;
 }
 
 .tileContainer {
@@ -65,4 +65,11 @@
 
 .dragIcon {
     color: var(--mantine-color-brandPrimary-3);
+}
+
+.tileTimeRangeText {
+    font-size: 0.65rem;
+    font-weight: 400;
+    color: var(--mantine-color-gray-6);
+    display: none;
 }

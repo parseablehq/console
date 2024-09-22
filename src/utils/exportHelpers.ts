@@ -3,10 +3,7 @@ import _ from 'lodash';
 
 type Data = Log[] | null;
 
-export const downloadDataAsJson = (data: Data, filename: string) => {
-	if (data === null || data.length === 0) return;
-
-	const jsonString = JSON.stringify(data, null, 2);
+export const exportJson = (jsonString: string, filename: string) => {
 	const blob = new Blob([jsonString], { type: 'application/json' });
 	const downloadLink = document.createElement('a');
 	downloadLink.href = URL.createObjectURL(blob);
@@ -14,6 +11,13 @@ export const downloadDataAsJson = (data: Data, filename: string) => {
 	document.body.appendChild(downloadLink);
 	downloadLink.click();
 	document.body.removeChild(downloadLink);
+};
+
+export const downloadDataAsJson = (data: Data, filename: string) => {
+	if (data === null || data.length === 0) return;
+
+	const jsonString = JSON.stringify(data, null, 2);
+	return exportJson(jsonString, filename);
 };
 
 export const downloadDataAsCSV = (data: Data, filename: string) => {

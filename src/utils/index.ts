@@ -97,3 +97,11 @@ export const addOrRemoveElement = (array: any[], element: any) => {
 		return dup;
 	}
 };
+
+export const copyTextToClipboard = async (value: any) => {
+	if (_.isString(value)) {
+		return await navigator.clipboard.writeText(value);
+	} else {
+		return await navigator.clipboard.writeText(JSON.stringify(value, null, 2));
+	}
+};
