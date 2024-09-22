@@ -15,15 +15,16 @@ const Management = (props: { schemaLoading: boolean }) => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
 	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
+	const [isStandAloneMode] = useAppStore((store) => store.isStandAloneMode);
 	const { hasAlertsAccess, hasSettingsAccess } = userAccessMap;
-	const getStreamAlertsConfig = useAlertsQuery(currentStream || '', hasAlertsAccess);
+	const getStreamAlertsConfig = useAlertsQuery(currentStream || '', hasAlertsAccess, isStandAloneMode);
 	const getStreamStats = useLogStreamStats(currentStream || '');
 	const getRetentionConfig = useRetentionQuery(currentStream || '', hasSettingsAccess);
 	const getStreamInfo = useGetStreamInfo(currentStream || '', currentStream !== null);
 	const hotTierFetch = useHotTier(currentStream || '', hasSettingsAccess);
 
 	// todo - handle loading and error states separately
-	const isAlertsLoading = getStreamAlertsConfig.isError || getStreamAlertsConfig.isLoading;
+	const isAlertsLoading = getStreamAlertsConfig.isError || getStreamAlertsConfig.isLoading || isStandAloneMode === null;
 	const isRetentionLoading = getRetentionConfig.getLogRetentionIsLoading || instanceConfig === null;
 	const isHotTierLoading = hotTierFetch.getHotTierInfoLoading;
 
@@ -56,6 +57,7 @@ const Management = (props: { schemaLoading: boolean }) => {
 					updateAlerts={getStreamAlertsConfig.updateLogStreamAlerts}
 					isError={getStreamAlertsConfig.isError}
 					hasAlertsAccess={hasAlertsAccess}
+					isStandAloneMode={isStandAloneMode}
 				/>
 			</Stack>
 		</Stack>

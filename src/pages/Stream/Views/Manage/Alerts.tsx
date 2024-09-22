@@ -661,6 +661,7 @@ const Alerts = (props: {
 	isError: boolean;
 	hasAlertsAccess: boolean;
 	updateAlerts: ({ config, onSuccess }: { config: any; onSuccess?: () => void }) => void;
+	isStandAloneMode: boolean | null;
 }) => {
 	const [alertName, setAlertName] = useState<string>('');
 	const [alertModalOpen, setAlertModalOpen] = useState<boolean>(false);
@@ -674,14 +675,16 @@ const Alerts = (props: {
 		setAlertModalOpen(false);
 	}, []);
 
+	const hideAlerts = !props.hasAlertsAccess || props.isStandAloneMode === false;
+
 	return (
 		<Stack className={classes.sectionContainer} gap={0} style={{ flex: 1 }}>
 			<AlertsModal open={alertModalOpen} alertName={alertName} onClose={closeModal} updateAlerts={props.updateAlerts} />
-			<Header selectAlert={selectAlert} isLoading={props.isLoading} showCreateBtn={props.hasAlertsAccess}/>
+			<Header selectAlert={selectAlert} isLoading={props.isLoading} showCreateBtn={!hideAlerts} />
 			{props.isError ? (
 				<ErrorView />
-			) : !props.hasAlertsAccess ? (
-				<RestrictedView />
+			) : hideAlerts ? (
+				<RestrictedView msg={!props.isStandAloneMode ? 'Alerts is unavailable on distributed mode.' : ''} />
 			) : (
 				<AlertList
 					selectAlert={selectAlert}
