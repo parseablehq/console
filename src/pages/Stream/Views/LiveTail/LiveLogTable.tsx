@@ -1,8 +1,9 @@
 import { FC, useEffect, useState } from 'react';
 import { ScrollArea, Table, Box } from '@mantine/core';
-import { Tbody, Thead } from '@/components/Table';
+import { Tbody, 
+	Thead
+ } from '@/components/Table';
 import LogRow from './LiveLogRow';
-import Column from '../../components/Column';
 import { useDoGetLiveTail } from '@/hooks/useDoGetLiveTail';
 import EmptyBox from '@/components/Empty';
 import styles from '../../styles/Logs.module.css';
@@ -54,11 +55,23 @@ const LiveLogTable: FC = () => {
 		}
 	}, [loading]);
 
-	const headerRows = schema?.map((element) => <Column key={element.name} columnName={element.name} />);
+	const headerRows = schema?.map((element) => (
+		<th
+			style={{
+				textAlign: 'left',
+				padding: '0.5rem 1rem',
+				fontSize: '0.6rem',
+				fontWeight: 600,
+			}}>
+			<span key={element.name}>{element.name}</span>
+		</th>
+	));
 
 	const classes = styles;
 
-	const { container, tableStyle, liveTheadStyle, tableContainer, innerContainer } = classes;
+	const { container, tableStyle, 
+		liveTheadStyle, 
+		tableContainer, innerContainer } = classes;
 
 	return (
 		<Box className={container}>
