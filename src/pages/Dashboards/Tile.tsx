@@ -174,7 +174,7 @@ function TileControls(props: { tile: TileType; data: TileQueryResponse }) {
 
 	const exportTileConfig = useCallback(async () => {
 		const santizedConfig = _.omit(props.tile, 'tile_id');
-		return exportJson(JSON.stringify(santizedConfig, null, 2), name)
+		return exportJson(JSON.stringify(santizedConfig, null, 2), name);
 	}, [name]);
 
 	if (allowDrag)
@@ -258,9 +258,10 @@ const Tile = (props: { id: string }) => {
 	const vizType = _.get(tile, 'visualization.visualization_type', null);
 	const tick_config = _.get(tile, 'visualization.tick_config', []);
 	const Viz = getViz(vizType);
+	const vizTypeExportClassName = `png-export-${vizType || ''}`;
 
 	return (
-		<Stack h="100%" gap={0} className={`png-export-tile-container ${classes.container}`}>
+		<Stack h="100%" gap={0} className={`png-export-tile-container ${classes.container} ${vizTypeExportClassName}`}>
 			<Stack className={`png-export-tile-header ${classes.tileHeader}`} gap={0}>
 				<Stack gap={0}>
 					<Text title={tile.name} lineClamp={1} className={`png-export-tile-title ${classes.tileTitle}`}>

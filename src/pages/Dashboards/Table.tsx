@@ -59,7 +59,7 @@ const TableViz = (props: { data: TileQueryResponse; tick_config: TickConfig[] })
 
 	return (
 		<Stack ref={containerRef} style={{ flex: 1, width: '100%' }}>
-			<Stack style={{ height: initialHeight }}>
+			<Stack style={{ height: initialHeight }} className='png-export-table-container'>
 				{hasNoData ? (
 					<NoDataView />
 				) : (
