@@ -6,7 +6,7 @@ export const makeExportClassName = (name: string) => {
 	return `png-capture-${sanitizedName}`;
 };
 
-const onCloneCallback = (element: HTMLElement) => {
+export const onCloneCallback = (element: HTMLElement) => {
 	const containerDiv = element.querySelector('.png-export-tile-container') as HTMLElement;
 	const menuIcon = element.querySelector('.png-export-menu-icon') as HTMLElement;
 	const tileTitleDiv = element.querySelector('.png-export-tile-title') as HTMLElement;
@@ -14,6 +14,7 @@ const onCloneCallback = (element: HTMLElement) => {
 	const tileDescriptionDiv = element.querySelector('.png-export-tile-description') as HTMLElement;
 	const timeRangeText = element.querySelector('.png-export-tile-timerange') as HTMLElement;
 	const logoImage = element.querySelector('.png-export-parseable-logo') as HTMLElement;
+
 	if (headerDiv) {
 		headerDiv.style.height = 'auto';
 		headerDiv.style.alignItems = 'flex-start';
@@ -47,6 +48,32 @@ const onCloneCallback = (element: HTMLElement) => {
 		logoImage.style.display = 'block';
 		logoImage.style.marginTop = '4px';
 		logoImage.style.marginLeft = '4px';
+	}
+
+	// checking if its a table
+	// add modular logic if we need customization specific to chart typea
+	if (element.querySelector(':scope > .png-export-table')) {
+		const layoutRow = element.closest('.react-grid-layout') as HTMLElement;
+		const tableContainer = element.querySelector('.png-export-table-container') as HTMLElement;
+
+		if (element) {
+			element.style.width = 'auto';
+		}
+
+		if (layoutRow) {
+			layoutRow.style.height = '100000px';
+		}
+
+		if (tableContainer) {
+			tableContainer.style.height = 'auto';
+		}
+
+		const tbodyCells = element.querySelectorAll('tbody td') as NodeListOf<HTMLElement>;
+
+		tbodyCells.forEach((cell) => {
+			cell.style.maxWidth = 'none';
+			cell.style.whiteSpace = 'normal';
+		});
 	}
 };
 
