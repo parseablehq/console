@@ -3,7 +3,7 @@ import classes from './styles/VizEditor.module.css';
 import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
 import { useCallback, useEffect } from 'react';
 import _ from 'lodash';
-import { isCircularChart, renderCircularChart, renderGraph } from './Charts';
+import { isCircularChart, isLineChart, renderCircularChart, renderGraph } from './Charts';
 import { tickUnits, TileFormType, tileSizes, visualizations } from '@/@types/parseable/api/dashboards';
 import { IconAlertTriangle, IconPlus } from '@tabler/icons-react';
 import TableViz from './Table';
@@ -12,6 +12,17 @@ const { toggleVizEditorModal } = dashboardsStoreReducers;
 
 const inValidVizType = 'Select a visualization type';
 const defaultTickUnit = 'default';
+const orientationTypes = [
+	{ label: 'Horizontal', value: 'horizontal' },
+	{ label: 'Vertical', value: 'vertical' },
+];
+const defaultOrientationType = 'horizontal';
+const defaultGraphType = 'default';
+const graphTypes = [
+	{ label: 'Default', value: 'default' },
+	{ label: 'Stacked', value: 'stacked' },
+	{ label: 'Percent', value: 'percent' },
+];
 
 const WarningView = (props: { msg: string | null }) => {
 	return (
@@ -47,10 +58,12 @@ const Graph = (props: { form: TileFormType }) => {
 	const y_keys = _.get(graph_config, 'y_keys', []);
 	const yUnit = getUnitTypeByKey(_.head(y_keys) || '', tick_config);
 	const xUnit = getUnitTypeByKey(x_key, tick_config);
+	const orientation = _.get(graph_config, 'orientation', 'horizontal');
+	const graphType = _.get(graph_config, 'graph_type', 'default');
 
 	return (
 		<Stack style={{ flex: 1, width: '100%' }}>
-			{renderGraph({ queryResponse: data, x_key, y_keys, chart: visualization_type, xUnit, yUnit })}
+			{renderGraph({ queryResponse: data, x_key, y_keys, chart: visualization_type, xUnit, yUnit, orientation, graphBasicType: graphType })}
 		</Stack>
 	);
 };
@@ -208,7 +221,7 @@ const XAxisConfig = (props: { form: TileFormType }) => {
 	);
 
 	return (
-		<Stack style={{ flexDirection: 'row' }}>
+		<Stack style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
 			<Select
 				data={_.map(fields, (field) => ({ label: field, value: field }))}
 				classNames={{ label: classes.fieldTitle }}
@@ -227,6 +240,9 @@ const XAxisConfig = (props: { form: TileFormType }) => {
 				style={{ width: '50%' }}
 				onChange={onChangeUnit}
 			/>
+			<ActionIcon disabled={true} variant="light" style={{marginBottom: '0.3rem'}}>
+				<CloseIcon />
+			</ActionIcon>
 		</Stack>
 	);
 };
@@ -237,8 +253,11 @@ const AddYAxesBtn = (props: { onClick: () => void }) => {
 			<Button
 				variant="outline"
 				onClick={props.onClick}
+				h='2rem'
 				color="gray.6"
-				leftSection={<IconPlus stroke={1.2} size="1rem" />}>
+				leftSection={<IconPlus stroke={1.2} size="1rem" />}
+				styles={{label: {fontSize: '0.6rem'}}}
+				>
 				Add Axes
 			</Button>
 		</Box>
@@ -295,11 +314,12 @@ const YAxisConfig = (props: { form: TileFormType; y_key: string; index: number; 
 	}, [yKeysPath, index, disableRemoveBtn, onChangeUnit]);
 
 	return (
-		<Stack style={{ flexDirection: 'row', alignItems: 'center' }}>
+		<Stack style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
 			<Select
 				data={_.map(fields, (field) => ({ label: field, value: field }))}
 				classNames={{ label: classes.fieldTitle }}
 				placeholder="Y Axis"
+				label={index !== 0 ? null : 'Y Axis'}
 				key={currentKeyPath}
 				{...props.form.getInputProps(currentKeyPath)}
 				style={{ width: '50%' }}
@@ -308,22 +328,81 @@ const YAxisConfig = (props: { form: TileFormType; y_key: string; index: number; 
 				data={_.map([defaultTickUnit, ...tickUnits], (unit) => ({ label: unit, value: unit }))}
 				classNames={{ label: classes.fieldTitle }}
 				placeholder="Unit"
+				label={index !== 0 ? null : 'Unit'}
 				value={unit}
 				style={{ width: '50%' }}
 				onChange={onChangeUnit}
 			/>
-			<ActionIcon onClick={onRemoveKey} disabled={disableRemoveBtn} variant="light">
+			<ActionIcon onClick={onRemoveKey} disabled={disableRemoveBtn} variant="light" style={{marginBottom: '0.3rem'}}>
 				<CloseIcon />
 			</ActionIcon>
 		</Stack>
 	);
 };
 
-const GraphConfig = (props: { form: TileFormType }) => {
+const orientationPath = 'visualization.graph_config.orientation'
+
+const OrientationConfig = (props: { form: TileFormType }) => {
 	const {
 		form: {
 			values: {
 				visualization: { graph_config },
+			},
+		},
+	} = props;
+	const orientation = _.get(graph_config, 'orientation', defaultOrientationType);
+	const onChange = useCallback((value: string | null) => {
+		if (value !== null) {
+			props.form.setFieldValue(orientationPath, value);
+		}
+	}, []);
+	return (
+		<Select
+			data={orientationTypes}
+			classNames={{ label: classes.fieldTitle }}
+			placeholder="Unit"
+			label="Orientation Config"
+			value={orientation}
+			style={{ width: '50%' }}
+			onChange={onChange}
+		/>
+	);
+}
+
+const graphTypePath = 'visualization.graph_config.graph_type'
+
+const GraphTypeConfig = (props: { form: TileFormType }) => {
+	const {
+		form: {
+			values: {
+				visualization: { graph_config },
+			},
+		},
+	} = props;
+	const graphType = _.get(graph_config, 'graph_type', defaultGraphType);
+	const onChange = useCallback((value: string | null) => {
+		if (value !== null) {
+			props.form.setFieldValue(graphTypePath, value);
+		}
+	}, []);
+	return (
+		<Select
+			data={graphTypes}
+			classNames={{ label: classes.fieldTitle }}
+			placeholder="Unit"
+			label="Type"
+			value={graphType}
+			style={{ width: '50%' }}
+			onChange={onChange}
+		/>
+	);
+}
+
+const GraphConfig = (props: { form: TileFormType }) => {
+	const {
+		form: {
+			values: {
+				visualization: { graph_config, visualization_type },
 				data: { fields },
 			},
 		},
@@ -350,11 +429,10 @@ const GraphConfig = (props: { form: TileFormType }) => {
 	return (
 		<Stack>
 			<Stack>
+				{!isLineChart(visualization_type) && <GraphTypeConfig form={props.form} />}
+				<OrientationConfig form={props.form} />
 				<XAxisConfig form={props.form} />
 				<Stack gap={2}>
-					<Text className={classes.fieldTitle} style={{ fontSize: '0.8rem', fontWeight: 500 }}>
-						Y axis
-					</Text>
 					<Stack>
 						{_.map(y_keys, (y_key, index) => {
 							return (

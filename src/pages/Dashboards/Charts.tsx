@@ -91,6 +91,7 @@ export type CircularChartData = {
 
 export const isCircularChart = (viz: string) => _.includes(circularChartTypes, viz);
 export const isGraph = (viz: string) => _.includes(graphTypes, viz);
+export const isLineChart = (viz: string) => viz === 'line-chart'
 
 const invalidConfigMsg = 'Invalid chart config';
 const noDataMsg = 'No data available';
@@ -156,8 +157,8 @@ export const renderGraph = (opts: {
 	chart: string;
 	xUnit: UnitType;
 	yUnit: UnitType;
-	orientation?: CommonGraphOrientationType;
-	graphBasicType?: CommonGraphBasicType;
+	orientation: CommonGraphOrientationType;
+	graphBasicType: CommonGraphBasicType;
 }) => {
 	const { queryResponse, x_key, y_keys, chart, xUnit, yUnit } = opts;
 	const VizComponent = getGraphVizComponent(chart);
@@ -354,7 +355,6 @@ const Bar = (props: CommonGraphVizProps) => {
 			w="100%"
 			type={opts.type}
 			withLegend
-			barProps={{ radius: 2 }}
 			data={opts.data}
 			orientation={opts.orientation}
 			dataKey={opts.dataKey}
