@@ -116,10 +116,11 @@ const Graph = (props: { tile: TileType; data: TileQueryResponse }) => {
 	const yUnit = getUnitTypeByKey(_.head(y_keys) || '', tick_config);
 	const orientation =  _.get(graph_config, 'orientation', 'horizontal');
 	const graphBasicType = _.get(graph_config, 'graph_type', 'default')
+	const color_config = _.get(props.tile.visualization, 'color_config', [])
 
 	return (
 		<Stack style={{ flex: 1, width: '100%' }}>
-			{renderGraph({ queryResponse: data, x_key, y_keys, chart: visualization_type, yUnit, xUnit, orientation, graphBasicType })}
+			{renderGraph({ queryResponse: data, x_key, y_keys, chart: visualization_type, yUnit, xUnit, orientation, graphBasicType, color_config })}
 		</Stack>
 	);
 };

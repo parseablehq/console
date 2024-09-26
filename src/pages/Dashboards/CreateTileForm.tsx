@@ -13,6 +13,7 @@ import { SchemaList } from '../Stream/components/Querier/QueryCodeEditor';
 import { IconAlertTriangle, IconArrowLeft, IconChartPie } from '@tabler/icons-react';
 import { useDashboardsQuery, useTileQuery } from '@/hooks/useDashboards';
 import {
+	ColorConfig,
 	Dashboard,
 	EditTileType,
 	FormOpts,
@@ -25,7 +26,7 @@ import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 import { useLogsStore } from '../Stream/providers/LogsProvider';
 import dayjs from 'dayjs';
 import TimeRange from '@/components/Header/TimeRange';
-import { isCircularChart, isGraph } from './Charts';
+import { colors, isCircularChart, isGraph, normalizeGraphColorConfig } from './Charts';
 import { usePostLLM } from '@/hooks/usePostLLM';
 import { notify } from '@/utils/notification';
 
@@ -224,6 +225,8 @@ const useTileForm = (opts: {
 					},
 				},
 				graph_config: {
+					// these validations only prevent form submission
+					// validated individually on respective components
 					x_key: (_value, values, _path) => {
 						const {
 							visualization: { visualization_type, graph_config },
@@ -233,15 +236,22 @@ const useTileForm = (opts: {
 							return _.isEmpty(x_key) ? 'Cannot be empty' : null;
 						}
 					},
-					y_keys: (_value, values, _path) => {
+					y_keys: (y_keys, values, _path) => {
 						const {
-							visualization: { visualization_type, graph_config },
+							visualization: { visualization_type },
 						} = values;
 						if (isGraph(visualization_type)) {
-							const y_keys = _.get(graph_config, 'y_keys', null);
-							return _.isEmpty(y_keys) ? 'Cannot be empty' : null;
+							if (_.some(y_keys, (yKey) => yKey === '' || yKey === null)) {
+								return 'Some keys are empty';
+							} else {
+								return null;
+							}
 						}
 					},
+				},
+				color_config: {
+					field_name: (value) => (_.isString(value) ? null : 'Needs to be a string'),
+					color_palette: (value) => (_.includes([...colors, 'gray'], value) ? null : 'Invalid color code'),
 				},
 			},
 		},
@@ -249,23 +259,11 @@ const useTileForm = (opts: {
 		validateInputOnBlur: true,
 	});
 
-	const colors = form.values.visualization?.color_config;
-
 	const onChangeValue = useCallback((key: string, value: any) => {
 		form.setFieldValue(key, value);
 	}, []);
 
-	const updateColors = useCallback(
-		(key: string, value: string) => {
-			form.setFieldValue('colors', {
-				...(colors ? { ...colors } : {}),
-				[key]: value,
-			});
-		},
-		[colors],
-	);
-
-	return { form, onChangeValue, updateColors };
+	return { form, onChangeValue };
 };
 
 const fetchStreamFields = async (stream: string, setFields: (fields: Field[]) => void) => {
@@ -410,9 +408,9 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 					)}
 				</Box>
 				<Stack ref={containerRef} style={{ flex: 1 }}>
-						<Stack style={{ maxHeight: `${initialHeight * 0.5}px` }}>
-							<SchemaList currentStream={localStream} fields={fields} />
-						</Stack>
+					<Stack style={{ maxHeight: `${initialHeight * 0.5}px` }}>
+						<SchemaList currentStream={localStream} fields={fields} />
+					</Stack>
 					<Stack style={{ maxHeight: `${initialHeight * 0.4}px`, flex: 1 }}>
 						<Editor
 							defaultLanguage="sql"
@@ -528,7 +526,7 @@ const defaultVizOpts = {
 	circular_chart_config: {},
 	graph_config: { x_key: '', y_keys: [] },
 	orientation: 'horizontal' as 'horizontal',
-	graph_type: 'default' as 'default'
+	graph_type: 'default' as 'default',
 };
 
 const defaultFormOpts = {
@@ -542,30 +540,40 @@ const defaultFormOpts = {
 	visualization: defaultVizOpts,
 };
 
+const sanitizeColorConfig = (config: Record<string, string>) => {
+	return _.reduce(
+		config,
+		(acc: ColorConfig[], color_palette: string, field_name: string) => {
+			return [...acc, { field_name, color_palette }];
+		},
+		[],
+	);
+};
+
+export const genColorConfig = (y_keys: string[], existingColorConfig: ColorConfig[]) => {
+	const normalizedColorConfig = normalizeGraphColorConfig(y_keys, existingColorConfig);
+	return _.isEmpty(normalizedColorConfig) ? [] : sanitizeColorConfig(normalizedColorConfig);
+};
+
 const genTileFormOpts = (opts: {
 	activeDashboard: Dashboard | null;
 	editTileId: string | null;
 	tileData: TileQueryResponse;
 }) => {
 	const { activeDashboard, editTileId } = opts;
-	if (!editTileId)
+	const currentTile = _.find(activeDashboard?.tiles, (tile) => tile.tile_id === editTileId);
+	if (!editTileId || !currentTile)
 		return {
 			...defaultFormOpts,
 			dashboardId: activeDashboard?.dashboard_id || null,
 			order: _.size(activeDashboard?.tiles) + 1,
 		};
 
-	const currentTile = _.find(activeDashboard?.tiles, (tile) => tile.tile_id === editTileId);
-	if (!currentTile)
-		return {
-			...defaultFormOpts,
-			dashboardId: activeDashboard?.dashboard_id || null,
-			order: _.size(activeDashboard?.tiles) + 1,
-		};
 	const {
-		visualization: { circular_chart_config, graph_config },
+		visualization: { circular_chart_config, graph_config, color_config },
 	} = currentTile;
 
+	const y_keys = _.get(graph_config, 'y_keys');
 	return {
 		...currentTile,
 		isQueryValidated: true,
@@ -576,6 +584,7 @@ const genTileFormOpts = (opts: {
 			...currentTile.visualization,
 			circular_chart_config: _.isEmpty(circular_chart_config) ? {} : circular_chart_config,
 			graph_config: _.isEmpty(graph_config) ? {} : graph_config,
+			color_config: _.isEmpty(graph_config) ? [] : genColorConfig(y_keys || [], color_config),
 		},
 		dashboardId: activeDashboard ? activeDashboard.dashboard_id : null,
 	};

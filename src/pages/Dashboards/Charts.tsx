@@ -17,6 +17,7 @@ import {
 	areaChartOrientationTypes,
 	defaultAreaChartBasicType,
 	defaultAreaChartOrientationType,
+	ColorConfig,
 } from '@/@types/parseable/api/dashboards';
 import { AreaChart, BarChart, DonutChart, LineChart, PieChart, getFilteredChartTooltipPayload } from '@mantine/charts';
 import { Paper, Stack, Text } from '@mantine/core';
@@ -59,6 +60,7 @@ export const colors = [
 	'red',
 	'green',
 ];
+
 export const nullColor = 'gray';
 
 export const getGraphVizComponent = (viz: string) => {
@@ -91,7 +93,7 @@ export type CircularChartData = {
 
 export const isCircularChart = (viz: string) => _.includes(circularChartTypes, viz);
 export const isGraph = (viz: string) => _.includes(graphTypes, viz);
-export const isLineChart = (viz: string) => viz === 'line-chart'
+export const isLineChart = (viz: string) => viz === 'line-chart';
 
 const invalidConfigMsg = 'Invalid chart config';
 const noDataMsg = 'No data available';
@@ -159,11 +161,11 @@ export const renderGraph = (opts: {
 	yUnit: UnitType;
 	orientation: CommonGraphOrientationType;
 	graphBasicType: CommonGraphBasicType;
+	color_config: ColorConfig[];
 }) => {
-	const { queryResponse, x_key, y_keys, chart, xUnit, yUnit } = opts;
+	const { queryResponse, x_key, y_keys, chart, xUnit, yUnit, color_config } = opts;
 	const VizComponent = getGraphVizComponent(chart);
-	const seriesData = makeSeriesData(queryResponse?.records || [], y_keys);
-
+	const seriesData = makeSeriesData(queryResponse?.records || [], y_keys, color_config);
 	const data = queryResponse?.records || [];
 	const isInvalidKey = _.isEmpty(x_key) || _.isEmpty(y_keys);
 	const hasNoData = _.isEmpty(seriesData) || _.isEmpty(data);
@@ -227,17 +229,40 @@ export const makeCircularChartData = (data: Log[], name_key: string, value_key: 
 	return [...topNArcs, ...(restArcValue !== 0 ? [{ name: 'Others', value: restArcValue, color: 'gray.4' }] : [])];
 };
 
-const makeSeriesData = (data: Log[], y_key: string[]) => {
+export const normalizeGraphColorConfig = (y_keys: string[], colorConfig: ColorConfig[]): Record<string, string> => {
+	const saniitizedKeys = _.compact(y_keys);
+	const fieldColorMap = _.reduce(
+		colorConfig,
+		(acc, conf) => {
+			return { ...acc, [conf.field_name]: conf.color_palette };
+		},
+		{},
+	);
+	const allPickedColors = _.chain(colorConfig).map('color_palette').uniq().value();
+	const remainingColors = _.difference(colors, allPickedColors);
+	const reorderedColorsToAssign = [...remainingColors, ...allPickedColors];
+	return _.reduce(
+		saniitizedKeys,
+		(acc, y_key: string, index: number) => {
+			const colorFromConfig: string = _.get(fieldColorMap, y_key);
+			const palette = colorFromConfig ? colorFromConfig : reorderedColorsToAssign[index] || nullColor;
+			return { ...acc, [y_key]: palette || 'gray' };
+		},
+		{},
+	);
+};
+
+const makeSeriesData = (data: Log[], y_keys: string[], color_config: ColorConfig[]) => {
 	if (!_.isArray(data)) return [];
 
-	let usedColors: string[] = [];
-
+	const normalizedColorConfig = normalizeGraphColorConfig(y_keys, color_config);
 	return _.reduce<string, { color: string; name: string }[]>(
-		y_key,
-		(acc, key: string, index: number) => {
-			const colorKey = _.difference(colors, usedColors)[index] || nullColor;
-			const color = colorKey in chartColorsMap ? chartColorsMap[colorKey as keyof typeof chartColorsMap] : nullColor;
-			return [...acc, { color: color || 'gray.4', name: key }];
+		y_keys,
+		(acc, key: string) => {
+			const palette = normalizedColorConfig[key] || 'gray';
+			const colorCode = palette in chartColorsMap ? chartColorsMap[palette as keyof typeof chartColorsMap] : nullColor;
+
+			return [...acc, { color: colorCode || 'gray.4', name: key }];
 		},
 		[],
 	);
