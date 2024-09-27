@@ -1,13 +1,15 @@
 import { DASHBOARDS_SIDEBAR_WIDTH } from '@/constants/theme';
-import { Box, Button, FileInput, Modal, px, ScrollArea, Stack, Text } from '@mantine/core';
+import { Box, Button, Divider, FileInput, Modal, px, ScrollArea, Stack, Text } from '@mantine/core';
 import classes from './styles/sidebar.module.css';
 import { IconFileDownload, IconPlus } from '@tabler/icons-react';
 import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
 import { useCallback, useState } from 'react';
 import _ from 'lodash';
-import { Dashboard } from '@/@types/parseable/api/dashboards';
+import { Dashboard, ImportDashboardType } from '@/@types/parseable/api/dashboards';
 import IconButton from '@/components/Button/IconButton';
 import { useDashboardsQuery } from '@/hooks/useDashboards';
+import { templates } from './assets/templates';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const { selectDashboard, toggleCreateDashboardModal, toggleImportDashboardModal } =
 	dashboardsStoreReducers;
@@ -67,14 +69,50 @@ const DashboardList = (props: { updateTimeRange: (dashboard: Dashboard) => void 
 	);
 };
 
+const DashboardTemplates = (props: {onImport: (template: ImportDashboardType) => void; isImportingDashboard: boolean}) => {
+	return (
+		<Stack gap={0} mt={6}>
+			{_.map(templates, (template) => {
+				return (
+					<Stack style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+						<Text style={{ fontSize: '0.76rem' }} c="gray.7">
+							{template.name}
+						</Text>
+						<Box>
+							<Button
+								disabled={props.isImportingDashboard}
+								loading={props.isImportingDashboard}
+								onClick={() => props.onImport(template)}
+								variant="outline">
+								Select
+							</Button>
+						</Box>
+					</Stack>
+				);
+			})}
+		</Stack>
+	);
+}
+
 const ImportDashboardModal = () => {
 	const [importDashboardModalOpen, setDashboardStore] = useDashboardsStore((store) => store.importDashboardModalOpen);
 	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
+	const [isStandAloneMode] = useAppStore(store => store.isStandAloneMode)
 	const [file, setFile] = useState<File | null>(null);
 	const closeModal = useCallback(() => {
 		setDashboardStore((store) => toggleImportDashboardModal(store, false));
 	}, []);
-	const { createDashboard, isCreatingDashboard } = useDashboardsQuery({});
+	const { importDashboard, isImportingDashboard } = useDashboardsQuery({});
+	const makePostCall = useCallback((dashboard: ImportDashboardType) => {
+		return importDashboard({
+			dashboard,
+			onSuccess: () => {
+				closeModal();
+				setFile(null);
+			},
+		});
+	}, []);
+
 	const onImport = useCallback(() => {
 		if (activeDashboard === null || file === null) return;
 
@@ -85,16 +123,10 @@ const ImportDashboardModal = () => {
 					const target = e.target;
 					if (target === null || typeof target.result !== 'string') return;
 
-					const newDashboard = JSON.parse(target.result);
+					const newDashboard: ImportDashboardType = JSON.parse(target.result);
 					if (_.isEmpty(newDashboard)) return;
 
-					return createDashboard({
-						dashboard: newDashboard,
-						onSuccess: () => {
-							closeModal();
-							setFile(null);
-						},
-					});
+					return makePostCall(newDashboard)
 				} catch (error) {}
 			};
 			reader.readAsText(file);
@@ -115,10 +147,16 @@ const ImportDashboardModal = () => {
 			}}
 			title={<Text style={{ fontSize: '0.9rem', fontWeight: 600 }}>Import Dashboard</Text>}>
 			<Stack gap={24}>
+				{!isStandAloneMode && (
+					<>
+						<DashboardTemplates onImport={makePostCall} isImportingDashboard={isImportingDashboard} />
+						<Divider label="OR" />
+					</>
+				)}
 				<FileInput
 					style={{ marginTop: '0.25rem' }}
 					label=""
-					placeholder="Import Parseable dashboard config json"
+					placeholder="Import dashboard config downloaded from Parseable"
 					fileInputProps={{ accept: '.json' }}
 					value={file}
 					onChange={setFile}
@@ -130,7 +168,7 @@ const ImportDashboardModal = () => {
 						</Button>
 					</Box>
 					<Box>
-						<Button disabled={file === null} onClick={onImport} loading={isCreatingDashboard}>
+						<Button disabled={file === null || isImportingDashboard} onClick={onImport} loading={isImportingDashboard}>
 							Import
 						</Button>
 					</Box>

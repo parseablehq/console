@@ -8,6 +8,7 @@ import { useCallback, useState } from 'react';
 import {
 	CreateDashboardType,
 	Dashboard,
+	ImportDashboardType,
 	TileQuery,
 	TileQueryResponse,
 	UpdateDashboardType,
@@ -41,6 +42,29 @@ export const useDashboardsQuery = (opts: { updateTimeRange?: (dashboard: Dashboa
 
 	const { mutate: createDashboard, isLoading: isCreatingDashboard } = useMutation(
 		(data: { dashboard: CreateDashboardType; onSuccess?: () => void }) => postDashboard(data.dashboard),
+		{
+			onSuccess: (response, variables) => {
+				const { dashboard_id } = response.data;
+				if (_.isString(dashboard_id) && !_.isEmpty(dashboard_id)) {
+					setDashboardsStore((store) => selectDashboard(store, null, response.data));
+				}
+				fetchDashboards();
+				variables.onSuccess && variables.onSuccess();
+				notifySuccess({ message: 'Created Successfully' });
+			},
+			onError: (data: AxiosError) => {
+				if (isAxiosError(data) && data.response) {
+					const error = data.response?.data as string;
+					typeof error === 'string' && notifyError({ message: error });
+				} else if (data.message && typeof data.message === 'string') {
+					notifyError({ message: data.message });
+				}
+			},
+		},
+	);
+
+	const { mutate: importDashboard, isLoading: isImportingDashboard } = useMutation(
+		(data: { dashboard: ImportDashboardType; onSuccess?: () => void }) => postDashboard(data.dashboard),
 		{
 			onSuccess: (response, variables) => {
 				const { dashboard_id } = response.data;
@@ -113,6 +137,8 @@ export const useDashboardsQuery = (opts: { updateTimeRange?: (dashboard: Dashboa
 		isCreatingDashboard,
 		updateDashboard,
 		isUpdatingDashboard,
+		importDashboard,
+		isImportingDashboard,
 
 		deleteDashboard,
 		isDeleting,

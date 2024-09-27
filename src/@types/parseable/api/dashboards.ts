@@ -52,6 +52,10 @@ export type UpdateDashboardType = Omit<Dashboard, 'tiles'> & {
 	tiles: EditTileType[];
 };
 
+export type ImportDashboardType = Omit<Dashboard, 'tiles' | 'dashboard_id'> & {
+	tiles: EditTileType[];
+};
+
 export type TileQuery = { query: string; startTime: Date; endTime: Date };
 
 export type TileData = Log[];

@@ -11,6 +11,7 @@ import _ from 'lodash';
 import {
 	CreateDashboardType,
 	Dashboard,
+	ImportDashboardType,
 	TileQuery,
 	TileQueryResponse,
 	UpdateDashboardType,
@@ -26,7 +27,7 @@ export const putDashboard = (dashboardId: string, dashboard: UpdateDashboardType
 	return Axios().put(UPDATE_DASHBOARDS_URL(dashboardId), dashboard);
 };
 
-export const postDashboard = (dashboard: CreateDashboardType) => {
+export const postDashboard = (dashboard: CreateDashboardType | ImportDashboardType) => {
 	return Axios().post(CREATE_DASHBOARDS_URL, { ...dashboard});
 };
 
