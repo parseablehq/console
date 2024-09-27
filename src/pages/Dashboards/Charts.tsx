@@ -28,6 +28,7 @@ import classes from './styles/Charts.module.css';
 import { CodeHighlight } from '@mantine/code-highlight';
 import { Log } from '@/@types/parseable/api/query';
 import { tickFormatter } from './utils';
+import { useCallback } from 'react';
 
 export const chartColorsMap = {
 	black: 'dark.5',
@@ -333,6 +334,8 @@ const sanitizeLineChartProps = (opts: CommonGraphVizProps): LineChartProps => {
 
 const Line = (props: CommonGraphVizProps) => {
 	const opts = sanitizeLineChartProps(props);
+	const xTicksFormatter = useCallback((value: any) => tickFormatter(value, opts.xUnit), [opts.xUnit]);
+	const yTicksFormatter = useCallback((value: any) => tickFormatter(value, opts.yUnit), [opts.yUnit]);
 	return (
 		<LineChart
 			h="100%"
@@ -344,10 +347,10 @@ const Line = (props: CommonGraphVizProps) => {
 			curveType="linear"
 			series={opts.series}
 			yAxisProps={{
-				tickFormatter: (value) => tickFormatter(value, opts.yUnit),
+				tickFormatter: opts.orientation === 'horizontal' ? yTicksFormatter : xTicksFormatter,
 			}}
 			xAxisProps={{
-				tickFormatter: (value) => tickFormatter(value, opts.xUnit),
+				tickFormatter: opts.orientation === 'horizontal' ? xTicksFormatter : yTicksFormatter,
 			}}
 			tooltipProps={{
 				content: ({ label, payload }) => (
@@ -374,6 +377,8 @@ const sanitizeBarChartProps = (opts: CommonGraphVizProps): BarChartProps => {
 
 const Bar = (props: CommonGraphVizProps) => {
 	const opts: BarChartProps = sanitizeBarChartProps(props);
+	const xTicksFormatter = useCallback((value: any) => tickFormatter(value, opts.xUnit), [opts.xUnit]);
+	const yTicksFormatter = useCallback((value: any) => tickFormatter(value, opts.yUnit), [opts.yUnit]);
 	return (
 		<BarChart
 			h="100%"
@@ -385,10 +390,10 @@ const Bar = (props: CommonGraphVizProps) => {
 			dataKey={opts.dataKey}
 			series={opts.series}
 			yAxisProps={{
-				tickFormatter: (value) => tickFormatter(value, opts.yUnit),
+				tickFormatter: opts.orientation === 'horizontal' ? yTicksFormatter : xTicksFormatter,
 			}}
 			xAxisProps={{
-				tickFormatter: (value) => tickFormatter(value, opts.xUnit),
+				tickFormatter: opts.orientation === 'horizontal' ? xTicksFormatter : yTicksFormatter,
 			}}
 			tooltipProps={{
 				content: ({ label, payload }) => (
@@ -415,6 +420,8 @@ const sanitizeAreaChartProps = (opts: CommonGraphVizProps): AreaChartProps => {
 
 const Area = (props: CommonGraphVizProps) => {
 	const opts: AreaChartProps = sanitizeAreaChartProps(props);
+	const xTicksFormatter = useCallback((value: any) => tickFormatter(value, opts.xUnit), [opts.xUnit]);
+	const yTicksFormatter = useCallback((value: any) => tickFormatter(value, opts.yUnit), [opts.yUnit]);
 	return (
 		<AreaChart
 			h="100%"
@@ -426,10 +433,10 @@ const Area = (props: CommonGraphVizProps) => {
 			dataKey={opts.dataKey}
 			series={opts.series}
 			yAxisProps={{
-				tickFormatter: (value) => tickFormatter(value, opts.yUnit),
+				tickFormatter: opts.orientation === 'horizontal' ? yTicksFormatter : xTicksFormatter,
 			}}
 			xAxisProps={{
-				tickFormatter: (value) => tickFormatter(value, opts.xUnit),
+				tickFormatter: opts.orientation === 'horizontal' ? xTicksFormatter : yTicksFormatter,
 			}}
 			tooltipProps={{
 				content: ({ label, payload }) => (
