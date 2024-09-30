@@ -30,6 +30,7 @@ type AppStore = {
 	isStandAloneMode: boolean | null;
 	savedFilters: SavedFilterType[] | null; // null to verify whether filters have been fetched or not
 	activeSavedFilters: SavedFilterType[]; // stream specific
+	isSecureHTTPContext: boolean;
 };
 
 type AppStoreReducers = {
@@ -43,6 +44,7 @@ type AppStoreReducers = {
 	setInstanceConfig: (store: AppStore, instanceConfig: AboutData) => ReducerOutput;
 	toggleCreateStreamModal: (store: AppStore, val?: boolean) => ReducerOutput;
 	setSavedFilters: (store: AppStore, savedFilters: AxiosResponse<SavedFilterType[]>) => ReducerOutput;
+	setIsSecureHTTPContext: (store: AppStore, val: boolean) => ReducerOutput;
 };
 
 const initialState: AppStore = {
@@ -58,6 +60,7 @@ const initialState: AppStore = {
 	isStandAloneMode: null,
 	savedFilters: null,
 	activeSavedFilters: [],
+	isSecureHTTPContext: false,
 };
 
 const { Provider: AppProvider, useStore: useAppStore } = initContext(initialState);
@@ -87,6 +90,10 @@ const generateUserAcccessMap = (accessRoles: string[] | null) => {
 
 const toggleMaximize = (store: AppStore) => {
 	return { maximized: !store.maximized };
+};
+
+const setIsSecureHTTPContext = (store: AppStore, val: boolean) => {
+	return { isSecureHTTPContext: _.isBoolean(val) ? val : !store.isSecureHTTPContext };
 };
 
 const toggleHelpModal = (store: AppStore, val?: boolean) => {
@@ -141,6 +148,7 @@ const appStoreReducers: AppStoreReducers = {
 	setInstanceConfig,
 	toggleCreateStreamModal,
 	setSavedFilters,
+	setIsSecureHTTPContext,
 };
 
 export { AppProvider, useAppStore, appStoreReducers };

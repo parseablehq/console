@@ -32,7 +32,7 @@ const CopyButton = (props: { fieldValue: any }) => {
 	const handleCopyBtnClick = useCallback(
 		async (e: MouseEvent) => {
 			e.stopPropagation();
-			await copyTextToClipboard(props.fieldValue.replace('"', ''));
+			await copyTextToClipboard(props.fieldValue);
 			setCopied(true);
 		},
 		[copyTextToClipboard],
