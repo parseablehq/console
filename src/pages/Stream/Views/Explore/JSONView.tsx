@@ -15,6 +15,7 @@ import { Log } from '@/@types/parseable/api/query';
 import _ from 'lodash';
 import jqSearch from '@/utils/jqSearch';
 import { IconCheck, IconCopy, IconSearch } from '@tabler/icons-react';
+import { copyTextToClipboard } from '@/utils';
 
 const { setInstantSearchValue, applyInstantSearch, applyJqSearch } = logsStoreReducers;
 
@@ -39,7 +40,7 @@ export const CopyIcon = (props: { value: Log | string }) => {
 			copyIconRef.current.style.display = 'none';
 			copiedIconRef.current.style.display = 'flex';
 		}
-		await navigator.clipboard.writeText(JSON.stringify(props.value, null, 2));
+		await copyTextToClipboard(JSON.stringify(props.value, null, 2));
 		setTimeout(() => {
 			if (copyIconRef.current && copiedIconRef.current) {
 				copiedIconRef.current.style.display = 'none';
@@ -50,12 +51,20 @@ export const CopyIcon = (props: { value: Log | string }) => {
 
 	return (
 		<Stack style={{ alignItems: 'center', justifyContent: 'center', marginLeft: 2 }} className={classes.toggleIcon}>
-			<Box ref={copyIconRef} style={{ display: 'flex', height: 'auto' }} onClick={onCopy} className={classes.copyIcon}>
-				<IconCopy stroke={1.2} size={'0.8rem'} />
-			</Box>
-			<Box ref={copiedIconRef} style={{ display: 'none', color: 'green' }}>
-				<IconCheck stroke={1.2} size={'0.8rem'} />
-			</Box>
+			{navigator.clipboard && window.isSecureContext ? (
+				<>
+					<Box
+						ref={copyIconRef}
+						style={{ display: 'flex', height: 'auto' }}
+						onClick={onCopy}
+						className={classes.copyIcon}>
+						<IconCopy stroke={1.2} size={'0.8rem'} />
+					</Box>
+					<Box ref={copiedIconRef} style={{ display: 'none', color: 'green' }}>
+						<IconCheck stroke={1.2} size={'0.8rem'} />
+					</Box>
+				</>
+			) : null}
 		</Stack>
 	);
 };

@@ -42,7 +42,7 @@ const makeHeaderOpts = (headers: string[]) => {
 							<div className={tableStyles.customCellContainer} style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
 								{value}
 								<div className={tableStyles.copyIconContainer}>
-									<CopyIcon value={value} />
+									{value.toString().length < 1 ? null : <CopyIcon value={value} />}
 								</div>
 							</div>
 						);
