@@ -6,27 +6,64 @@ import './styles/ReactGridLayout.css';
 import GridLayout from 'react-grid-layout';
 import { DASHBOARDS_SIDEBAR_WIDTH, NAVBAR_WIDTH } from '@/constants/theme';
 import classes from './styles/DashboardView.module.css';
-import { useDashboardsStore, dashboardsStoreReducers, assignOrderToTiles } from './providers/DashboardsProvider';
+import {
+	useDashboardsStore,
+	dashboardsStoreReducers,
+	assignOrderToTiles,
+	TILES_PER_PAGE,
+} from './providers/DashboardsProvider';
 import _ from 'lodash';
 import { IconLayoutDashboard } from '@tabler/icons-react';
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { makeExportClassName } from '@/utils/exportImage';
 import { useDashboardsQuery } from '@/hooks/useDashboards';
 import Tile from './Tile';
 import { Layout } from 'react-grid-layout';
 
-const { toggleCreateDashboardModal, toggleCreateTileModal, toggleDeleteTileModal } = dashboardsStoreReducers;
+const { toggleCreateDashboardModal, toggleCreateTileModal, toggleDeleteTileModal, handlePaging } =
+	dashboardsStoreReducers;
 
 const TilesView = (props: { onLayoutChange: (layout: Layout[]) => void }) => {
-	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
+	const [activeDashboard, setDashbaordsStore] = useDashboardsStore((store) => store.activeDashboard);
 	const [allowDrag] = useDashboardsStore((store) => store.allowDrag);
 	const [layout] = useDashboardsStore((store) => store.layout);
-	const hasNoTiles = _.size(activeDashboard?.tiles) < 1;
+	const [currentPage] = useDashboardsStore((store) => store.currentPage);
+	const scrollRef = useRef(null);
+	const tilesCount = _.size(activeDashboard?.tiles);
+	const hasNoTiles = tilesCount < 1;
 	const showNoTilesView = hasNoTiles || !activeDashboard;
+	const shouldAppendTileRef = useRef<boolean>(false);
+
+	const handleScroll = useCallback(
+		_.throttle(() => {
+			const element = scrollRef.current as HTMLElement | null;
+			if (element && element.scrollHeight - element.scrollTop === element.clientHeight) {
+				if (shouldAppendTileRef.current) {
+					return setDashbaordsStore(handlePaging);
+				}
+			}
+		}, 500),
+		[],
+	);
+
+	useEffect(() => {
+		const element = scrollRef.current as HTMLElement | null;
+		if (element) {
+			element.addEventListener('scroll', handleScroll);
+			return () => {
+				element.removeEventListener('scroll', handleScroll);
+			};
+		}
+	}, []);
+
+	useEffect(() => {
+		shouldAppendTileRef.current = tilesCount > TILES_PER_PAGE * currentPage;
+	}, [currentPage, tilesCount]);
+
 	if (showNoTilesView) return <NoTilesView />;
 
 	return (
-		<Stack className={classes.tilesViewConatiner} style={{ overflowY: 'scroll' }}>
+		<Stack ref={scrollRef} className={classes.tilesViewConatiner} style={{ overflowY: 'scroll' }}>
 			<GridLayout
 				className="layout"
 				layout={layout}
