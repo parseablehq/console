@@ -5,11 +5,13 @@ import dayjs from 'dayjs';
 import viewLogStyles from '../styles/ViewLogs.module.css';
 import { CodeHighlight } from '@mantine/code-highlight';
 import { useLogsStore, logsStoreReducers } from '../providers/LogsProvider';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const { setSelectedLog } = logsStoreReducers;
 
 const ViewLog: FC = () => {
 	const [selectedLog, setLogsStore] = useLogsStore((store) => store.selectedLog);
+	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
 	const onClose = useCallback(() => {
 		setLogsStore((store) => setSelectedLog(store, null));
 	}, []);
@@ -50,6 +52,7 @@ const ViewLog: FC = () => {
 					<CodeHighlight
 						code={JSON.stringify(selectedLog, null, 2)}
 						language="json"
+						withCopyButton={isSecureHTTPContext}
 						styles={{ copy: { marginLeft: '550px' } }}
 						copyLabel="Copy Log"
 					/>

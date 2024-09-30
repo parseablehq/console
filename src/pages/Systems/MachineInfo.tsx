@@ -70,6 +70,7 @@ const InfoItem = (props: {
 	loading?: boolean;
 	showCopyBtn?: boolean;
 }) => {
+	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
 	return (
 		<Stack w={props.width ? props.width : '25%'} gap={4}>
 			<Group gap={0}>
@@ -78,7 +79,7 @@ const InfoItem = (props: {
 					style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
 					{props.title}
 				</Text>
-				{props.showCopyBtn && (
+				{props.showCopyBtn && isSecureHTTPContext && (
 					<CopyButton value={props.value} timeout={2000}>
 						{({ copied, copy }) => (
 							<Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="right">
