@@ -26,7 +26,7 @@ const TableContainer = (props: { children: ReactNode }) => {
 	return <Box className={tableStyles.container}>{props.children}</Box>;
 };
 
-const makeHeaderOpts = (headers: string[], isSecure: boolean) => {
+const makeHeaderOpts = (headers: string[], isSecureHTTPContext: boolean) => {
 	return _.reduce(
 		headers,
 		(acc: { accessorKey: string; header: string; grow: boolean }[], header) => {
@@ -42,7 +42,7 @@ const makeHeaderOpts = (headers: string[], isSecure: boolean) => {
 							<div className={tableStyles.customCellContainer} style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
 								{value}
 								<div className={tableStyles.copyIconContainer}>
-									<CopyIcon value={value} isSecure={isSecure} />
+									{isSecureHTTPContext ? value && <CopyIcon value={value} /> : null}
 								</div>
 							</div>
 						);
@@ -58,11 +58,12 @@ const makeColumnVisiblityOpts = (columns: string[]) => {
 	return _.reduce(columns, (acc, column) => ({ ...acc, [column]: false }), {});
 };
 
-const Table = (props: { primaryHeaderHeight: number; isSecure: boolean }) => {
+const Table = (props: { primaryHeaderHeight: number }) => {
 	const [{ orderedHeaders, disabledColumns, pinnedColumns, pageData, enableWordWrap }, setLogsStore] = useLogsStore(
 		(store) => store.tableOpts,
 	);
-	const columns = useMemo(() => makeHeaderOpts(orderedHeaders, props.isSecure), [orderedHeaders]);
+	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
+	const columns = useMemo(() => makeHeaderOpts(orderedHeaders, isSecureHTTPContext), [orderedHeaders]);
 	const columnVisibility = useMemo(() => makeColumnVisiblityOpts(disabledColumns), [disabledColumns, orderedHeaders]);
 	const selectLog = useCallback((log: Log) => {
 		const selectedText = window.getSelection()?.toString();
@@ -152,7 +153,6 @@ const LogTable = (props: {
 }) => {
 	const { errorMessage, hasNoData, showTable, isFetchingCount, logsLoading } = props;
 	const [maximized] = useAppStore((store) => store.maximized);
-	const [isSecureContext] = useAppStore((store) => store.isSecureHTTPContext);
 	const primaryHeaderHeight = !maximized
 		? PRIMARY_HEADER_HEIGHT + STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT + STREAM_SECONDARY_TOOLBAR_HRIGHT
 		: 0;
@@ -186,7 +186,7 @@ const LogTable = (props: {
 							{hasNoData ? (
 								<EmptyBox message="No Matching Rows" />
 							) : (
-								<Table primaryHeaderHeight={primaryHeaderHeight} isSecure={isSecureContext} />
+								<Table primaryHeaderHeight={primaryHeaderHeight} />
 							)}
 						</Box>
 					</Box>

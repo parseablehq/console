@@ -8,7 +8,7 @@ import { heights } from '@/components/Mantine/sizing';
 import { useAppStore, appStoreReducers } from './providers/AppProvider';
 import _ from 'lodash';
 
-const { toggleMaximize, setIsSecureHTTPContext } = appStoreReducers;
+const { toggleMaximize } = appStoreReducers;
 
 const MainLayout: FC = () => {
 	const [maximized, setAppStore] = useAppStore((store) => store.maximized);
@@ -25,10 +25,6 @@ const MainLayout: FC = () => {
 		},
 		[maximized],
 	);
-
-	useEffect(() => {
-		setAppStore((store) => setIsSecureHTTPContext(store, window.isSecureContext));
-	}, [setIsSecureHTTPContext]);
 
 	useEffect(() => {
 		window.addEventListener('keydown', handleEscKeyPress);

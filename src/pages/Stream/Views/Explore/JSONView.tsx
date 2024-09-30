@@ -30,13 +30,7 @@ const Item = (props: { header: string | null; value: string; highlight: boolean 
 	);
 };
 
-export const CopyIcon = (props: { value: Log | string; isSecure: boolean }) => {
-	//Exit condition if not using HTTPS
-	if (!props.isSecure) return null;
-
-	// Exit condition if the value is empty
-	if (!props.value) return null;
-
+export const CopyIcon = (props: { value: Log | string }) => {
 	const copyIconRef = useRef<HTMLDivElement>(null);
 	const copiedIconRef = useRef<HTMLDivElement>(null);
 
@@ -71,9 +65,9 @@ const Row = (props: {
 	log: Log;
 	searchValue: string;
 	disableHighlight: boolean;
-	isSecure: boolean;
 	shouldHighlight: (val: number | string | Date | null) => boolean;
 }) => {
+	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
 	const { log, disableHighlight, shouldHighlight } = props;
 
 	return (
@@ -101,12 +95,12 @@ const Row = (props: {
 					/>
 				)}
 			</span>
-			<CopyIcon value={log} isSecure={props.isSecure} />
+			{isSecureHTTPContext ? <CopyIcon value={log} /> : null}
 		</Stack>
 	);
 };
 
-const JsonRows = (props: { isSearching: boolean; isSecure: boolean }) => {
+const JsonRows = (props: { isSearching: boolean }) => {
 	const [{ pageData, instantSearchValue }] = useLogsStore((store) => store.tableOpts);
 	const disableHighlight = props.isSearching || _.isEmpty(instantSearchValue) || isJqSearch(instantSearchValue);
 	const regExp = disableHighlight ? null : new RegExp(instantSearchValue, 'i');
@@ -125,7 +119,6 @@ const JsonRows = (props: { isSearching: boolean; isSecure: boolean }) => {
 					log={d}
 					key={index}
 					searchValue={instantSearchValue}
-					isSecure={props.isSecure}
 					disableHighlight={disableHighlight}
 					shouldHighlight={shouldHighlight}
 				/>
@@ -193,7 +186,6 @@ const JsonView = (props: {
 	isFetchingCount: boolean;
 }) => {
 	const [maximized] = useAppStore((store) => store.maximized);
-	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
 
 	const { errorMessage, hasNoData, showTable, isFetchingCount } = props;
 	const [isSearching, setSearching] = useState(false);
@@ -212,7 +204,7 @@ const JsonView = (props: {
 							style={{ display: 'flex', flexDirection: 'row', maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
 							<Stack gap={0}>
 								<Stack style={{ overflowY: 'scroll' }}>
-									<JsonRows isSearching={isSearching} isSecure={isSecureHTTPContext} />
+									<JsonRows isSearching={isSearching} />
 								</Stack>
 							</Stack>
 						</Box>
