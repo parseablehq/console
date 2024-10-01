@@ -1,94 +1,118 @@
 .container {
-    border: 1px solid var(--mantine-color-gray-2);
-    border-top: none;
-    border-left: none;
+	border: 1px solid var(--mantine-color-gray-2);
+	border-top: none;
+	border-left: none;
 }
 
 .headerContainer {
-    border-top: none;
-    flex-direction: row;
-    padding: 0.5rem;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    border-bottom: 1px solid var(--mantine-color-gray-2);
+	border-top: none;
+	flex-direction: row;
+	padding: 0.5rem;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	border-bottom: 1px solid var(--mantine-color-gray-2);
 }
 
 .headerItem {
-    padding: 0.5rem;
-    width: 50%;
-    align-items: center;
-    cursor: pointer;
-    border-bottom: 1px solid var(--mantine-color-gray-2);
+	padding: 0.5rem;
+	width: 50%;
+	align-items: center;
+	cursor: pointer;
+	border-bottom: 1px solid var(--mantine-color-gray-2);
 
-    &.activeHeader {
-        border-bottom: 2px solid var(--mantine-color-brandPrimary-3);
-    }
+	&.activeHeader {
+		border-bottom: 2px solid var(--mantine-color-brandPrimary-3);
+	}
 }
 
 .headerItemText {
-    font-size: 0.7rem;
-    font-weight: 600;
+	font-size: 0.7rem;
+	font-weight: 600;
 }
 
 .fieldNameText {
-    width: 6rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    overflow-wrap: break-word;
-    max-width: 100%;
-    font-size: 0.65rem;
+	width: 6rem;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	overflow-wrap: break-word;
+	max-width: 100%;
+	font-size: 0.65rem;
 }
 
 .fieldDataType {
-    width: 40%;
-    text-align: end;
-    color: var(--mantine-color-gray-6);
+	width: 40%;
+	text-align: end;
+	color: var(--mantine-color-gray-6);
 
-    .fieldDataTypeText {
-        font-size: 0.65rem;
-    }
+	.fieldDataTypeText {
+		font-size: 0.65rem;
+	}
 }
 
 .schemaItemContainer {
-    flex-direction: row;
-    padding: 0.4rem 0.5rem;
-    margin: 0 0.5rem;
-    border-radius: 0.2rem;
+	flex-direction: row;
+	padding: 0.4rem 0.5rem;
+	margin: 0 0.5rem;
+	border-radius: 0.2rem;
 
-
-
-    &:hover {
-        background-color: var(--mantine-color-gray-1);
-    }
+	&:hover {
+		background-color: var(--mantine-color-gray-1);
+	}
 }
 
 .searchBarContainer {
-    padding: 0 0.5rem;
+	padding: 0 0.5rem;
 }
 
 .columnItemContainer {
-    align-items: center;
-    flex-direction: row;
-    padding: 0.5rem 0.5rem;
-    margin: 0 0.5rem;
-    border-radius: 0.2rem;
+	align-items: center;
+	flex-direction: row;
+	padding: 0.5rem 0.5rem;
+	margin: 0 0.5rem;
+	border-radius: 0.2rem;
 
-    .columnItemText {
-        font-size: 0.65rem;
-    }
+	.columnItemText {
+		font-size: 0.65rem;
+	}
 
-    .columnDragIcon {
-        color: var(--mantine-color-gray-7);
-        cursor: grab;
-    }
+	.columnDragIcon {
+		color: var(--mantine-color-gray-7);
+		cursor: grab;
+	}
 
-    .columnPinIcon {
-        color: var(--mantine-color-gray-7);
-    }
+	.columnPinIcon {
+		color: var(--mantine-color-gray-7);
+	}
 
-    &:hover {
-        background-color: var(--mantine-color-gray-1);
-    }
+	.onlyBtn {
+		color: var(--mantine-color-brandPrimary-7);
+		display: none;
+		position: relative;
+		cursor: pointer;
+		right: 0%;
+	}
+
+	.fieldNameText {
+		width: 6rem;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		overflow-wrap: break-word;
+		max-width: 100%;
+		font-size: 0.65rem;
+	}
+
+	&:hover {
+		background-color: var(--mantine-color-gray-1);
+
+		.fieldNameText {
+			width: 5rem;
+		}
+
+		.onlyBtn {
+			display: block;
+		}
+	}
 }

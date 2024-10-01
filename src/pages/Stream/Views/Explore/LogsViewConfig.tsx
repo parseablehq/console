@@ -1,5 +1,5 @@
 import { LOGS_CONFIG_SIDEBAR_WIDTH } from '@/constants/theme';
-import { Checkbox, ScrollArea, Select, Skeleton, Stack, Text, TextInput, Tooltip } from '@mantine/core';
+import { Button, Checkbox, Group, ScrollArea, Select, Skeleton, Stack, Text, TextInput, Tooltip } from '@mantine/core';
 import classes from '../../styles/LogsViewConfig.module.css';
 import { useStreamStore } from '../../providers/StreamProvider';
 import _ from 'lodash';
@@ -9,7 +9,7 @@ import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { IconGripVertical, IconPin, IconPinFilled } from '@tabler/icons-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
-const { toggleConfigViewType, toggleDisabledColumns, setOrderedHeaders, togglePinnedColumns } =
+const { toggleConfigViewType, toggleDisabledColumns, setOrderedHeaders, togglePinnedColumns, setDisabledColumns } =
 	logsStoreReducers;
 
 const Header = () => {
@@ -116,6 +116,7 @@ const ColumnItem = (props: {
 	onToggleColumn: (column: string) => void;
 	pinned: boolean;
 	onPinColumn: (column: string) => void;
+	onOnlyClick: (column: string) => void;
 }) => {
 	const onToggle = useCallback(() => {
 		props.onToggleColumn(props.column);
@@ -123,6 +124,10 @@ const ColumnItem = (props: {
 
 	const onPin = useCallback(() => {
 		props.onPinColumn(props.column);
+	}, []);
+
+	const handleOnlyClick = useCallback(() => {
+		props.onOnlyClick(props.column);
 	}, []);
 
 	return (
@@ -141,12 +146,13 @@ const ColumnItem = (props: {
 				<Checkbox value={props.column} checked={props.visible} readOnly onChange={onToggle} />
 			</Stack>
 			<Stack>
-				<Tooltip label={props.column}>
-					<Text className={classes.fieldNameText} style={{ whiteSpace: 'normal' }} lineClamp={1}>
-						{props.column}
-					</Text>
-				</Tooltip>
+				<Text className={classes.fieldNameText} style={{ whiteSpace: 'normal' }} lineClamp={1}>
+					{props.column}
+				</Text>
 			</Stack>
+			<Text className={classes.onlyBtn}>
+				<Text onClick={handleOnlyClick}>only</Text>
+			</Text>
 		</Stack>
 	);
 };
@@ -196,6 +202,22 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 	// 	setLogsStore((store) => toggleWordWrap(store));
 	// }, []);
 
+	const handleSelectAllClick = useCallback(() => {
+		setLogsStore((store) => setDisabledColumns(store, []));
+	}, []);
+
+	const handleClearAllClick = useCallback(() => {
+		setLogsStore((store) => setDisabledColumns(store, headers));
+	}, [headers]);
+
+	const handleOnlyClick = useCallback(
+		(column: string) => {
+			const filteredHeaders = headers.filter((el) => el !== column);
+			setLogsStore((store) => setDisabledColumns(store, filteredHeaders));
+		},
+		[headers],
+	);
+
 	const onPinColumn = useCallback((column: string) => {
 		setLogsStore((store) => togglePinnedColumns(store, column));
 	}, []);
@@ -234,6 +256,16 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 				onChangeHandler={onSearchHandler}
 				disabled={_.isEmpty(headers)}
 			/>
+			{/* <Checkbox value="selectAll" checked={headers !== disabledColumns} /> */}
+			<Group>
+				<Button variant="transparent" onClick={handleSelectAllClick}>
+					Select All
+				</Button>
+				|
+				<Button variant="transparent" onClick={handleClearAllClick}>
+					Clear All
+				</Button>
+			</Group>
 			<ScrollArea scrollbars="y">
 				<DragDropContext onDragEnd={onDropEnd}>
 					<Droppable droppableId="columns">
@@ -249,6 +281,7 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 													visible={!_.includes(disabledColumns, column)}
 													pinned={_.includes(pinnedColumns, column)}
 													onPinColumn={onPinColumn}
+													onOnlyClick={handleOnlyClick}
 												/>
 											</div>
 										)}
@@ -264,7 +297,7 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 	);
 };
 
-const LogsViewConfig = (props: { schemaLoading: boolean; logsLoading: boolean, infoLoading: boolean }) => {
+const LogsViewConfig = (props: { schemaLoading: boolean; logsLoading: boolean; infoLoading: boolean }) => {
 	const [configViewType] = useLogsStore((store) => store.tableOpts.configViewType);
 	return (
 		<Stack style={{ width: LOGS_CONFIG_SIDEBAR_WIDTH }} className={classes.container}>
