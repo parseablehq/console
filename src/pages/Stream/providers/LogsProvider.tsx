@@ -286,7 +286,6 @@ type LogsStoreReducers = {
 	setDisabledColumns: (store: LogsStore, columns: string[]) => ReducerOutput;
 	setOrderedHeaders: (store: LogsStore, columns: string[]) => ReducerOutput;
 	toggleWordWrap: (store: LogsStore) => ReducerOutput;
-	toggleSelectAllColumms: (store: LogsStore) => ReducerOutput;
 };
 
 const defaultSortKey = 'p_timestamp';
@@ -484,25 +483,6 @@ const toggleDisabledColumns = (store: LogsStore, columnName: string) => {
 		tableOpts: {
 			...tableOpts,
 			disabledColumns: addOrRemoveElement(tableOpts.disabledColumns, columnName),
-		},
-	};
-};
-
-const toggleSelectAllColumms = (store: LogsStore) => {
-	const { tableOpts } = store;
-	console.log(tableOpts.disabledColumns);
-	if (tableOpts.disabledColumns.length <= 0)
-		return {
-			tableOpts: {
-				...tableOpts,
-				disabledColumns: addOrRemoveElement(tableOpts.disabledColumns, tableOpts.headers),
-			},
-		};
-
-	return {
-		tableOpts: {
-			...tableOpts,
-			disabledColumns: [],
 		},
 	};
 };
@@ -1001,7 +981,6 @@ const logsStoreReducers: LogsStoreReducers = {
 	setDisabledColumns,
 	setOrderedHeaders,
 	toggleWordWrap,
-	toggleSelectAllColumms,
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };
