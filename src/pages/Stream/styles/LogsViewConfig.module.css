@@ -92,6 +92,7 @@
 		position: relative;
 		cursor: pointer;
 		right: 0%;
+		font-size: 0.65rem;
 	}
 
 	.fieldNameText {
@@ -108,11 +109,11 @@
 		background-color: var(--mantine-color-gray-1);
 
 		.fieldNameText {
-			width: 5rem;
+			width: 4.5rem;
 		}
 
 		.onlyBtn {
-			display: block;
+			display: flex;
 		}
 	}
 }

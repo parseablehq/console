@@ -9,8 +9,14 @@ import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { IconGripVertical, IconPin, IconPinFilled } from '@tabler/icons-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
-const { toggleConfigViewType, toggleDisabledColumns, setOrderedHeaders, togglePinnedColumns, setDisabledColumns } =
-	logsStoreReducers;
+const {
+	toggleConfigViewType,
+	toggleDisabledColumns,
+	setOrderedHeaders,
+	togglePinnedColumns,
+	toggleSelectAllColumms,
+	setDisabledColumns,
+} = logsStoreReducers;
 
 const Header = () => {
 	const [configViewType, setLogsStore] = useLogsStore((store) => store.tableOpts.configViewType);
@@ -146,12 +152,14 @@ const ColumnItem = (props: {
 				<Checkbox value={props.column} checked={props.visible} readOnly onChange={onToggle} />
 			</Stack>
 			<Stack>
-				<Text className={classes.fieldNameText} style={{ whiteSpace: 'normal' }} lineClamp={1}>
-					{props.column}
-				</Text>
+				<Tooltip label={props.column}>
+					<Text className={classes.fieldNameText} style={{ whiteSpace: 'normal' }} lineClamp={1}>
+						{props.column}
+					</Text>
+				</Tooltip>
 			</Stack>
-			<Text className={classes.onlyBtn}>
-				<Text onClick={handleOnlyClick}>only</Text>
+			<Text className={classes.onlyBtn} onClick={handleOnlyClick}>
+				only
 			</Text>
 		</Stack>
 	);
@@ -198,24 +206,24 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 		setLogsStore((store) => toggleDisabledColumns(store, column));
 	}, []);
 
+	const onToggleSelectAll = useCallback(() => {
+		if (_.isEmpty(disabledColumns)) {
+			setLogsStore((store) => setDisabledColumns(store, orderedHeaders));
+		} else {
+			setLogsStore((store) => setDisabledColumns(store, []));
+		}
+	}, [disabledColumns, orderedHeaders]);
+
 	// const onToggleWordWrap = useCallback(() => {
 	// 	setLogsStore((store) => toggleWordWrap(store));
 	// }, []);
 
-	const handleSelectAllClick = useCallback(() => {
-		setLogsStore((store) => setDisabledColumns(store, []));
-	}, []);
-
-	const handleClearAllClick = useCallback(() => {
-		setLogsStore((store) => setDisabledColumns(store, headers));
-	}, [headers]);
-
 	const handleOnlyClick = useCallback(
 		(column: string) => {
-			const filteredHeaders = headers.filter((el) => el !== column);
+			const filteredHeaders = orderedHeaders.filter((el) => el !== column);
 			setLogsStore((store) => setDisabledColumns(store, filteredHeaders));
 		},
-		[headers],
+		[orderedHeaders],
 	);
 
 	const onPinColumn = useCallback((column: string) => {
@@ -256,15 +264,9 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 				onChangeHandler={onSearchHandler}
 				disabled={_.isEmpty(headers)}
 			/>
-			{/* <Checkbox value="selectAll" checked={headers !== disabledColumns} /> */}
-			<Group>
-				<Button variant="transparent" onClick={handleSelectAllClick}>
-					Select All
-				</Button>
-				|
-				<Button variant="transparent" onClick={handleClearAllClick}>
-					Clear All
-				</Button>
+			<Group gap={8} style={{ paddingLeft: '1rem' }}>
+				<Checkbox value="SelectAll" checked={_.isEmpty(disabledColumns)} onChange={onToggleSelectAll} />
+				<Text className={classes.fieldNameText}>Select All</Text>
 			</Group>
 			<ScrollArea scrollbars="y">
 				<DragDropContext onDragEnd={onDropEnd}>
