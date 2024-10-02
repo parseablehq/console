@@ -262,14 +262,14 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 				<Text
 					className={classes.fieldActionBtn}
 					onClick={handleSelectAllClick}
-					style={!_.isEmpty(disabledColumns) ? { color: 'blue' } : {}}>
+					style={!_.isEmpty(disabledColumns) ? { color: '#131fcd' } : {}}>
 					Select All
 				</Text>
 				|
 				<Text
 					className={classes.fieldActionBtn}
 					onClick={handleClearAllClick}
-					style={!(orderedHeaders.length === disabledColumns.length) ? { color: 'blue' } : {}}>
+					style={!(orderedHeaders.length === disabledColumns.length) ? { color: '#131fcd' } : {}}>
 					Clear All
 				</Text>
 			</Group>
