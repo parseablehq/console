@@ -200,13 +200,13 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 		setLogsStore((store) => toggleDisabledColumns(store, column));
 	}, []);
 
-	const onToggleSelectAll = useCallback(() => {
-		if (_.isEmpty(disabledColumns)) {
-			setLogsStore((store) => setDisabledColumns(store, orderedHeaders));
-		} else {
-			setLogsStore((store) => setDisabledColumns(store, []));
-		}
-	}, [disabledColumns, orderedHeaders]);
+	const handleClearAllClick = useCallback(() => {
+		setLogsStore((store) => setDisabledColumns(store, orderedHeaders));
+	}, [orderedHeaders]);
+
+	const handleSelectAllClick = useCallback(() => {
+		setLogsStore((store) => setDisabledColumns(store, []));
+	}, [orderedHeaders]);
 
 	// const onToggleWordWrap = useCallback(() => {
 	// 	setLogsStore((store) => toggleWordWrap(store));
@@ -258,9 +258,20 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 				onChangeHandler={onSearchHandler}
 				disabled={_.isEmpty(headers)}
 			/>
-			<Group gap={8} style={{ paddingLeft: '3.3rem' }}>
-				<Checkbox value="SelectAll" checked={_.isEmpty(disabledColumns)} onChange={onToggleSelectAll} />
-				<Text className={classes.fieldNameText}>Select All</Text>
+			<Group gap={8} style={{ display: 'flex', justifyContent: 'flex-start', paddingLeft: '1.3rem' }}>
+				<Text
+					className={classes.fieldActionBtn}
+					onClick={handleSelectAllClick}
+					style={!_.isEmpty(disabledColumns) ? { color: 'blue' } : {}}>
+					Select All
+				</Text>
+				|
+				<Text
+					className={classes.fieldActionBtn}
+					onClick={handleClearAllClick}
+					style={!(orderedHeaders.length === disabledColumns.length) ? { color: 'blue' } : {}}>
+					Clear All
+				</Text>
 			</Group>
 			<ScrollArea scrollbars="y">
 				<DragDropContext onDragEnd={onDropEnd}>

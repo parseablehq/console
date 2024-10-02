@@ -117,3 +117,13 @@
 		}
 	}
 }
+
+.fieldActionBtn {
+	font-size: 0.65rem;
+	font-weight: 700;
+	color: var(--mantine-color-gray-6);
+	cursor: pointer;
+	&:hover {
+		color: var(--mantine-color-brandPrimary-2);
+	}
+}
