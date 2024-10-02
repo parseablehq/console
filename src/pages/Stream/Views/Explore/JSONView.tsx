@@ -15,6 +15,7 @@ import { Log } from '@/@types/parseable/api/query';
 import _ from 'lodash';
 import jqSearch from '@/utils/jqSearch';
 import { IconCheck, IconCopy, IconSearch } from '@tabler/icons-react';
+import { copyTextToClipboard } from '@/utils';
 
 const { setInstantSearchValue, applyInstantSearch, applyJqSearch } = logsStoreReducers;
 
@@ -39,7 +40,7 @@ export const CopyIcon = (props: { value: Log | string }) => {
 			copyIconRef.current.style.display = 'none';
 			copiedIconRef.current.style.display = 'flex';
 		}
-		await navigator.clipboard.writeText(JSON.stringify(props.value, null, 2));
+		await copyTextToClipboard(props.value);
 		setTimeout(() => {
 			if (copyIconRef.current && copiedIconRef.current) {
 				copiedIconRef.current.style.display = 'none';
@@ -66,6 +67,7 @@ const Row = (props: {
 	disableHighlight: boolean;
 	shouldHighlight: (val: number | string | Date | null) => boolean;
 }) => {
+	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
 	const { log, disableHighlight, shouldHighlight } = props;
 
 	return (
@@ -93,7 +95,7 @@ const Row = (props: {
 					/>
 				)}
 			</span>
-			<CopyIcon value={log} />
+			{isSecureHTTPContext ? <CopyIcon value={log} /> : null}
 		</Stack>
 	);
 };

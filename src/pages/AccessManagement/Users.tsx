@@ -10,6 +10,7 @@ import { heights } from '@/components/Mantine/sizing';
 import { HEADER_HEIGHT } from '@/constants/theme';
 import { CodeHighlight } from '@mantine/code-highlight';
 import IconButton from '@/components/Button/IconButton';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const navigateToDocs = () => {
 	return window.open('https://www.parseable.io/docs/rbac', '_blank');
@@ -23,6 +24,7 @@ const Users: FC = () => {
 	const [createUserInput, setCreateUserInput] = useState<string>('');
 	const [selectedRole, setSelectedRole] = useState<string>('');
 	const [roleSearchValue, setRoleSearchValue] = useState<string>('');
+	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
 
 	const {
 		createUserMutation,
@@ -180,6 +182,7 @@ const Users: FC = () => {
 							<CodeHighlight
 								className={classes.passwordPrims}
 								language="text"
+								withCopyButton={isSecureHTTPContext}
 								copyLabel="Copy password to clipboard"
 								code={createUserData?.data}
 								copiedLabel="Password copied to clipboard"

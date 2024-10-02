@@ -161,6 +161,9 @@ const StreamInfo: FC<StreamInfoProps> = (props) => {
 		<Stack
 			className={classes.streamBox}
 			onClick={() => {
+				const selectedText = window.getSelection()?.toString();
+				if (selectedText !== undefined && selectedText?.length > 0) return;
+
 				navigateToStream(stream);
 			}}>
 			<Box style={{ width: 200 }}>
