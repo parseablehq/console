@@ -1,4 +1,24 @@
-import { TileData, TileQueryResponse, UnitType } from '@/@types/parseable/api/dashboards';
+import {
+	BarChartProps,
+	barChartBasicTypes,
+	CommonGraphVizProps,
+	TileQueryResponse,
+	UnitType,
+	CommonGraphOrientationType,
+	CommonGraphBasicType,
+	defaultBarChartBasicType,
+	barChartOrientationTypes,
+	defaultBarChartOrientationType,
+	LineChartProps,
+	lineChartOrientationTypes,
+	defaultLineChartOrientation,
+	AreaChartProps,
+	areaChartBasicTypes,
+	areaChartOrientationTypes,
+	defaultAreaChartBasicType,
+	defaultAreaChartOrientationType,
+	ColorConfig,
+} from '@/@types/parseable/api/dashboards';
 import { AreaChart, BarChart, DonutChart, LineChart, PieChart, getFilteredChartTooltipPayload } from '@mantine/charts';
 import { Paper, Stack, Text } from '@mantine/core';
 import _ from 'lodash';
@@ -8,6 +28,7 @@ import classes from './styles/Charts.module.css';
 import { CodeHighlight } from '@mantine/code-highlight';
 import { Log } from '@/@types/parseable/api/query';
 import { tickFormatter } from './utils';
+import { useCallback } from 'react';
 
 export const chartColorsMap = {
 	black: 'dark.5',
@@ -40,6 +61,7 @@ export const colors = [
 	'red',
 	'green',
 ];
+
 export const nullColor = 'gray';
 
 export const getGraphVizComponent = (viz: string) => {
@@ -70,13 +92,9 @@ export type CircularChartData = {
 	color: string;
 }[];
 
-export type SeriesType = {
-	name: string;
-	color: string;
-}[];
-
 export const isCircularChart = (viz: string) => _.includes(circularChartTypes, viz);
 export const isGraph = (viz: string) => _.includes(graphTypes, viz);
+export const isLineChart = (viz: string) => viz === 'line-chart';
 
 const invalidConfigMsg = 'Invalid chart config';
 const noDataMsg = 'No data available';
@@ -142,23 +160,31 @@ export const renderGraph = (opts: {
 	chart: string;
 	xUnit: UnitType;
 	yUnit: UnitType;
+	orientation: CommonGraphOrientationType;
+	graphBasicType: CommonGraphBasicType;
+	color_config: ColorConfig[];
 }) => {
-	const { queryResponse, x_key, y_keys, chart, xUnit, yUnit } = opts;
+	const { queryResponse, x_key, y_keys, chart, xUnit, yUnit, color_config } = opts;
 	const VizComponent = getGraphVizComponent(chart);
-	const seriesData = makeSeriesData(queryResponse?.records || [], y_keys);
-
+	const seriesData = makeSeriesData(queryResponse?.records || [], y_keys, color_config);
 	const data = queryResponse?.records || [];
 	const isInvalidKey = _.isEmpty(x_key) || _.isEmpty(y_keys);
 	const hasNoData = _.isEmpty(seriesData) || _.isEmpty(data);
 	const warningMsg = isInvalidKey ? invalidConfigMsg : hasNoData ? noDataMsg : null;
 
+	const vizOpts = {
+		data,
+		dataKey: x_key,
+		series: seriesData,
+		xUnit,
+		yUnit,
+		graphBasicType: opts.graphBasicType,
+		orientation: opts.orientation,
+	};
+
 	return (
 		<Stack style={{ flex: 1, height: '100%', padding: '1rem' }}>
-			{warningMsg ? (
-				<WarningView msg={warningMsg} />
-			) : VizComponent ? (
-				<VizComponent data={data} dataKey={x_key} series={seriesData} xUnit={xUnit} yUnit={yUnit} />
-			) : null}
+			{warningMsg ? <WarningView msg={warningMsg} /> : VizComponent ? <VizComponent {...vizOpts} /> : null}
 		</Stack>
 	);
 };
@@ -204,17 +230,40 @@ export const makeCircularChartData = (data: Log[], name_key: string, value_key: 
 	return [...topNArcs, ...(restArcValue !== 0 ? [{ name: 'Others', value: restArcValue, color: 'gray.4' }] : [])];
 };
 
-const makeSeriesData = (data: Log[], y_key: string[]) => {
+export const normalizeGraphColorConfig = (y_keys: string[], colorConfig: ColorConfig[]): Record<string, string> => {
+	const saniitizedKeys = _.compact(y_keys);
+	const fieldColorMap = _.reduce(
+		colorConfig,
+		(acc, conf) => {
+			return { ...acc, [conf.field_name]: conf.color_palette };
+		},
+		{},
+	);
+	const allPickedColors = _.chain(colorConfig).map('color_palette').uniq().value();
+	const remainingColors = _.difference(colors, allPickedColors);
+	const reorderedColorsToAssign = [...remainingColors, ...allPickedColors];
+	return _.reduce(
+		saniitizedKeys,
+		(acc, y_key: string, index: number) => {
+			const colorFromConfig: string = _.get(fieldColorMap, y_key);
+			const palette = colorFromConfig ? colorFromConfig : reorderedColorsToAssign[index] || nullColor;
+			return { ...acc, [y_key]: palette || 'gray' };
+		},
+		{},
+	);
+};
+
+const makeSeriesData = (data: Log[], y_keys: string[], color_config: ColorConfig[]) => {
 	if (!_.isArray(data)) return [];
 
-	let usedColors: string[] = [];
-
+	const normalizedColorConfig = normalizeGraphColorConfig(y_keys, color_config);
 	return _.reduce<string, { color: string; name: string }[]>(
-		y_key,
-		(acc, key: string, index: number) => {
-			const colorKey = _.difference(colors, usedColors)[index] || nullColor;
-			const color = colorKey in chartColorsMap ? chartColorsMap[colorKey as keyof typeof chartColorsMap] : nullColor;
-			return [...acc, { color: color || 'gray.4', name: key }];
+		y_keys,
+		(acc, key: string) => {
+			const palette = normalizedColorConfig[key] || 'gray';
+			const colorCode = palette in chartColorsMap ? chartColorsMap[palette as keyof typeof chartColorsMap] : nullColor;
+
+			return [...acc, { color: colorCode || 'gray.4', name: key }];
 		},
 		[],
 	);
@@ -270,74 +319,128 @@ function ChartTooltip({ label, payload, xUnit, yUnit, chartType }: ChartTooltipP
 	);
 }
 
-const Line = (props: { data: TileData; dataKey: string; series: SeriesType; xUnit: UnitType; yUnit: UnitType }) => {
+const sanitizeLineChartProps = (opts: CommonGraphVizProps): LineChartProps => {
+	const { data, dataKey, series, xUnit, yUnit, orientation } = opts;
+	return {
+		data,
+		dataKey,
+		series,
+		xUnit,
+		yUnit,
+		orientation:
+			orientation && _.includes(lineChartOrientationTypes, orientation) ? orientation : defaultLineChartOrientation,
+	};
+};
+
+const Line = (props: CommonGraphVizProps) => {
+	const opts = sanitizeLineChartProps(props);
+	const xTicksFormatter = useCallback((value: any) => tickFormatter(value, opts.xUnit), [opts.xUnit]);
+	const yTicksFormatter = useCallback((value: any) => tickFormatter(value, opts.yUnit), [opts.yUnit]);
 	return (
 		<LineChart
 			h="100%"
 			w="100%"
 			withLegend
-			data={props.data}
-			dataKey={props.dataKey}
+			data={opts.data}
+			orientation={opts.orientation}
+			dataKey={opts.dataKey}
 			curveType="linear"
-			series={props.series}
+			series={opts.series}
 			yAxisProps={{
-				tickFormatter: (value) => tickFormatter(value, props.yUnit),
+				tickFormatter: opts.orientation === 'horizontal' ? yTicksFormatter : xTicksFormatter,
 			}}
 			xAxisProps={{
-				tickFormatter: (value) => tickFormatter(value, props.xUnit),
+				tickFormatter: opts.orientation === 'horizontal' ? xTicksFormatter : yTicksFormatter,
 			}}
 			tooltipProps={{
 				content: ({ label, payload }) => (
-					<ChartTooltip label={label} payload={payload} xUnit={props.xUnit} yUnit={props.yUnit} chartType="line" />
+					<ChartTooltip label={label} payload={payload} xUnit={opts.xUnit} yUnit={props.yUnit} chartType="line" />
 				),
 			}}
 		/>
 	);
 };
 
-const Bar = (props: { data: TileData; dataKey: string; series: SeriesType; xUnit: UnitType; yUnit: UnitType }) => {
+const sanitizeBarChartProps = (opts: CommonGraphVizProps): BarChartProps => {
+	const { data, dataKey, series, xUnit, yUnit, graphBasicType: type, orientation } = opts;
+	return {
+		data,
+		dataKey,
+		series,
+		xUnit,
+		yUnit,
+		type: type && _.includes(barChartBasicTypes, type) ? type : defaultBarChartBasicType,
+		orientation:
+			orientation && _.includes(barChartOrientationTypes, orientation) ? orientation : defaultBarChartOrientationType,
+	};
+};
+
+const Bar = (props: CommonGraphVizProps) => {
+	const opts: BarChartProps = sanitizeBarChartProps(props);
+	const xTicksFormatter = useCallback((value: any) => tickFormatter(value, opts.xUnit), [opts.xUnit]);
+	const yTicksFormatter = useCallback((value: any) => tickFormatter(value, opts.yUnit), [opts.yUnit]);
 	return (
 		<BarChart
 			h="100%"
 			w="100%"
-			type="stacked"
+			type={opts.type}
 			withLegend
-			data={props.data}
-			dataKey={props.dataKey}
-			series={props.series}
+			data={opts.data}
+			orientation={opts.orientation}
+			dataKey={opts.dataKey}
+			series={opts.series}
 			yAxisProps={{
-				tickFormatter: (value) => tickFormatter(value, props.yUnit),
+				tickFormatter: opts.orientation === 'horizontal' ? yTicksFormatter : xTicksFormatter,
 			}}
 			xAxisProps={{
-				tickFormatter: (value) => tickFormatter(value, props.xUnit),
+				tickFormatter: opts.orientation === 'horizontal' ? xTicksFormatter : yTicksFormatter,
 			}}
 			tooltipProps={{
 				content: ({ label, payload }) => (
-					<ChartTooltip label={label} payload={payload} xUnit={props.xUnit} yUnit={props.yUnit} chartType="bar" />
+					<ChartTooltip label={label} payload={payload} xUnit={opts.xUnit} yUnit={opts.yUnit} chartType="bar" />
 				),
 			}}
 		/>
 	);
 };
 
-const Area = (props: { data: TileData; dataKey: string; series: SeriesType; xUnit: UnitType; yUnit: UnitType }) => {
+const sanitizeAreaChartProps = (opts: CommonGraphVizProps): AreaChartProps => {
+	const { data, dataKey, series, xUnit, yUnit, graphBasicType: type, orientation } = opts;
+	return {
+		data,
+		dataKey,
+		series,
+		xUnit,
+		yUnit,
+		type: type && _.includes(areaChartBasicTypes, type) ? type : defaultAreaChartBasicType,
+		orientation:
+			orientation && _.includes(areaChartOrientationTypes, orientation) ? orientation : defaultAreaChartOrientationType,
+	};
+};
+
+const Area = (props: CommonGraphVizProps) => {
+	const opts: AreaChartProps = sanitizeAreaChartProps(props);
+	const xTicksFormatter = useCallback((value: any) => tickFormatter(value, opts.xUnit), [opts.xUnit]);
+	const yTicksFormatter = useCallback((value: any) => tickFormatter(value, opts.yUnit), [opts.yUnit]);
 	return (
 		<AreaChart
 			h="100%"
 			w="100%"
 			withLegend
-			data={props.data}
-			dataKey={props.dataKey}
-			series={props.series}
+			type={opts.type}
+			orientation={opts.orientation}
+			data={opts.data}
+			dataKey={opts.dataKey}
+			series={opts.series}
 			yAxisProps={{
-				tickFormatter: (value) => tickFormatter(value, props.yUnit),
+				tickFormatter: opts.orientation === 'horizontal' ? yTicksFormatter : xTicksFormatter,
 			}}
 			xAxisProps={{
-				tickFormatter: (value) => tickFormatter(value, props.xUnit),
+				tickFormatter: opts.orientation === 'horizontal' ? xTicksFormatter : yTicksFormatter,
 			}}
 			tooltipProps={{
 				content: ({ label, payload }) => (
-					<ChartTooltip label={label} payload={payload} xUnit={props.xUnit} yUnit={props.yUnit} chartType="area" />
+					<ChartTooltip label={label} payload={payload} xUnit={opts.xUnit} yUnit={props.yUnit} chartType="area" />
 				),
 			}}
 		/>

@@ -1,17 +1,56 @@
-import { ActionIcon, Box, Button, CloseIcon, Modal, ScrollArea, Select, Stack, Text } from '@mantine/core';
+import {
+	ActionIcon,
+	Box,
+	Button,
+	CloseIcon,
+	ColorInput,
+	Modal,
+	ScrollArea,
+	Select,
+	Stack,
+	Text,
+	DEFAULT_THEME,
+} from '@mantine/core';
 import classes from './styles/VizEditor.module.css';
 import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import _ from 'lodash';
-import { isCircularChart, renderCircularChart, renderGraph } from './Charts';
+import { colors, isCircularChart, isLineChart, nullColor, renderCircularChart, renderGraph } from './Charts';
 import { tickUnits, TileFormType, tileSizes, visualizations } from '@/@types/parseable/api/dashboards';
 import { IconAlertTriangle, IconPlus } from '@tabler/icons-react';
 import TableViz from './Table';
 import { getRandomUnitTypeForChart, getUnitTypeByKey } from './utils';
+import { genColorConfig } from './CreateTileForm';
 const { toggleVizEditorModal } = dashboardsStoreReducers;
 
 const inValidVizType = 'Select a visualization type';
 const defaultTickUnit = 'default';
+const orientationTypes = [
+	{ label: 'Horizontal', value: 'horizontal' },
+	{ label: 'Vertical', value: 'vertical' },
+];
+const defaultOrientationType = 'horizontal';
+const defaultGraphType = 'default';
+const graphTypes = [
+	{ label: 'Default', value: 'default' },
+	{ label: 'Stacked', value: 'stacked' },
+	{ label: 'Percent', value: 'percent' },
+];
+const getSwatches = (): Record<string, string> => {
+	const colorsConfig = DEFAULT_THEME.colors;
+
+	return _.reduce(
+		colors,
+		(acc, color) => {
+			const shades = _.get(colorsConfig, color, []);
+			const colorCode = shades[6] || nullColor;
+			return { ...acc, [color]: colorCode };
+		},
+		{},
+	);
+};
+const swatchesMap = getSwatches();
+const swatches = _.values(swatchesMap);
 
 const WarningView = (props: { msg: string | null }) => {
 	return (
@@ -47,10 +86,23 @@ const Graph = (props: { form: TileFormType }) => {
 	const y_keys = _.get(graph_config, 'y_keys', []);
 	const yUnit = getUnitTypeByKey(_.head(y_keys) || '', tick_config);
 	const xUnit = getUnitTypeByKey(x_key, tick_config);
+	const orientation = _.get(graph_config, 'orientation', 'horizontal');
+	const graphType = _.get(graph_config, 'graph_type', 'default');
+	const color_config = _.get(props.form.values.visualization, 'color_config', []);
 
 	return (
 		<Stack style={{ flex: 1, width: '100%' }}>
-			{renderGraph({ queryResponse: data, x_key, y_keys, chart: visualization_type, xUnit, yUnit })}
+			{renderGraph({
+				queryResponse: data,
+				x_key,
+				y_keys,
+				chart: visualization_type,
+				xUnit,
+				yUnit,
+				orientation,
+				graphBasicType: graphType,
+				color_config,
+			})}
 		</Stack>
 	);
 };
@@ -186,6 +238,7 @@ const XAxisConfig = (props: { form: TileFormType }) => {
 	const tickConfigIndex = x_key === '' ? -1 : _.findIndex(tick_config, (e) => e.key === x_key);
 	const unit = tickConfigIndex !== -1 ? tick_config[tickConfigIndex].unit : defaultTickUnit;
 	const tickConfigPath = 'visualization.tick_config';
+	const isInvalidKey = x_key === '' || x_key === null;
 
 	const onChangeUnit = useCallback(
 		(unit: string | null) => {
@@ -208,7 +261,7 @@ const XAxisConfig = (props: { form: TileFormType }) => {
 	);
 
 	return (
-		<Stack style={{ flexDirection: 'row' }}>
+		<Stack style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
 			<Select
 				data={_.map(fields, (field) => ({ label: field, value: field }))}
 				classNames={{ label: classes.fieldTitle }}
@@ -217,6 +270,8 @@ const XAxisConfig = (props: { form: TileFormType }) => {
 				key="visualization.graph_config.x_key"
 				{...props.form.getInputProps('visualization.graph_config.x_key')}
 				style={{ width: '50%' }}
+				styles={{ input: isInvalidKey ? { border: '1px solid red' } : {} }}
+				error={null} // the validation on useTileForm prevents submission
 			/>
 			<Select
 				data={_.map([defaultTickUnit, ...tickUnits], (unit) => ({ label: unit, value: unit }))}
@@ -227,6 +282,26 @@ const XAxisConfig = (props: { form: TileFormType }) => {
 				style={{ width: '50%' }}
 				onChange={onChangeUnit}
 			/>
+			<Stack style={{ cursor: 'not-allowed' }}>
+				<ColorInput
+					disabled
+					disallowInput
+					withPicker={false}
+					withEyeDropper={false}
+					swatches={swatches}
+					styles={{
+						input: {
+							fontSize: '0rem',
+							paddingInlineEnd: '0rem',
+						},
+					}}
+					// value={colorInputValue}
+					// onChange={onChangeColor}
+				/>
+			</Stack>
+			<ActionIcon disabled={true} variant="light" style={{ marginBottom: '0.3rem' }}>
+				<CloseIcon />
+			</ActionIcon>
 		</Stack>
 	);
 };
@@ -237,8 +312,10 @@ const AddYAxesBtn = (props: { onClick: () => void }) => {
 			<Button
 				variant="outline"
 				onClick={props.onClick}
+				h="2rem"
 				color="gray.6"
-				leftSection={<IconPlus stroke={1.2} size="1rem" />}>
+				leftSection={<IconPlus stroke={1.2} size="1rem" />}
+				styles={{ label: { fontSize: '0.6rem' } }}>
 				Add Axes
 			</Button>
 		</Box>
@@ -246,26 +323,36 @@ const AddYAxesBtn = (props: { onClick: () => void }) => {
 };
 
 const yKeysPath = 'visualization.graph_config.y_keys';
+const colorConfigPath = 'visualization.color_config';
 
-const YAxisConfig = (props: { form: TileFormType; y_key: string; index: number; totalKeys: number }) => {
+const YAxisConfig = (props: {
+	form: TileFormType;
+	y_key: string;
+	index: number;
+	totalKeys: number;
+	y_keys: string[];
+}) => {
 	const {
 		form: {
 			values: {
 				data: { fields = [] },
-				visualization: { tick_config },
+				visualization: { tick_config, color_config },
 			},
 		},
 		y_key,
 		index,
 		totalKeys,
+		y_keys,
 	} = props;
-
+	const colorInputRef = useRef<HTMLInputElement>(null);
 	const tickConfigIndex = y_key === '' ? -1 : _.findIndex(tick_config, (e) => e.key === y_key);
 	const unit = tickConfigIndex !== -1 ? tick_config[tickConfigIndex].unit : defaultTickUnit;
 	const tickConfigPath = 'visualization.tick_config';
-
+	const color = _.find(color_config, (obj) => obj.field_name === y_key)?.color_palette || 'gray';
+	const colorInputValue = _.get(swatchesMap, color, undefined);
 	const currentKeyPath = yKeysPath + '.' + index;
 	const disableRemoveBtn = totalKeys === 1;
+	const isInvalidKey = _.isEmpty(y_key) || y_key === null;
 
 	const onChangeUnit = useCallback(
 		(unit: string | null) => {
@@ -294,28 +381,137 @@ const YAxisConfig = (props: { form: TileFormType; y_key: string; index: number; 
 		props.form.removeListItem(yKeysPath, index);
 	}, [yKeysPath, index, disableRemoveBtn, onChangeUnit]);
 
+	const onChangeAxis = useCallback(
+		(value: string | null) => {
+			props.form.setFieldValue(currentKeyPath, value);
+			const updatedColorConfig = genColorConfig(_.compact([...y_keys, value]), color_config);
+			props.form.setFieldValue(colorConfigPath, updatedColorConfig);
+		},
+		[currentKeyPath],
+	);
+
+	const onChangeColor = useCallback(
+		(color: string) => {
+			const tempColorConfig = [...color_config];
+			const currentKeyConfigIndex = _.findIndex(color_config, (obj) => obj.field_name === y_key);
+			const colorPalette = _.findKey(swatchesMap, (swatchMap) => swatchMap === color);
+			const updatedConfig = { field_name: y_key, color_palette: colorPalette || 'gray' };
+			if (currentKeyConfigIndex === -1) {
+				[...tempColorConfig, updatedConfig];
+			} else {
+				tempColorConfig[currentKeyConfigIndex] = updatedConfig;
+			}
+			return props.form.setFieldValue(colorConfigPath, tempColorConfig);
+		},
+		[color_config, y_key],
+	);
+
 	return (
-		<Stack style={{ flexDirection: 'row', alignItems: 'center' }}>
+		<Stack style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
 			<Select
 				data={_.map(fields, (field) => ({ label: field, value: field }))}
 				classNames={{ label: classes.fieldTitle }}
 				placeholder="Y Axis"
+				label={index !== 0 ? null : 'Y Axis'}
 				key={currentKeyPath}
 				{...props.form.getInputProps(currentKeyPath)}
 				style={{ width: '50%' }}
+				styles={{ input: isInvalidKey ? { border: '1px solid red' } : {} }}
+				error={null} // the validation on useTileForm prevents submission
+				onChange={onChangeAxis}
 			/>
 			<Select
 				data={_.map([defaultTickUnit, ...tickUnits], (unit) => ({ label: unit, value: unit }))}
 				classNames={{ label: classes.fieldTitle }}
 				placeholder="Unit"
+				label={index !== 0 ? null : 'Unit'}
 				value={unit}
 				style={{ width: '50%' }}
 				onChange={onChangeUnit}
+				disabled={isInvalidKey}
 			/>
-			<ActionIcon onClick={onRemoveKey} disabled={disableRemoveBtn} variant="light">
+			<Stack
+				onClick={() => colorInputRef?.current?.focus()}
+				style={{ cursor: !isInvalidKey ? 'default' : 'not-allowed' }}>
+				<ColorInput
+					ref={colorInputRef}
+					disabled={isInvalidKey}
+					disallowInput
+					withPicker={false}
+					withEyeDropper={false}
+					swatches={swatches}
+					styles={{
+						input: {
+							fontSize: '0rem',
+							paddingInlineEnd: '0rem',
+						},
+					}}
+					value={colorInputValue}
+					onChange={onChangeColor}
+				/>
+			</Stack>
+			<ActionIcon onClick={onRemoveKey} disabled={disableRemoveBtn} variant="light" style={{ marginBottom: '0.3rem' }}>
 				<CloseIcon />
 			</ActionIcon>
 		</Stack>
+	);
+};
+
+const orientationPath = 'visualization.graph_config.orientation';
+
+const OrientationConfig = (props: { form: TileFormType }) => {
+	const {
+		form: {
+			values: {
+				visualization: { graph_config },
+			},
+		},
+	} = props;
+	const orientation = _.get(graph_config, 'orientation', defaultOrientationType);
+	const onChange = useCallback((value: string | null) => {
+		if (value !== null) {
+			props.form.setFieldValue(orientationPath, value);
+		}
+	}, []);
+	return (
+		<Select
+			data={orientationTypes}
+			classNames={{ label: classes.fieldTitle }}
+			placeholder="Unit"
+			label="Orientation Config"
+			value={orientation}
+			style={{ width: '50%' }}
+			onChange={onChange}
+		/>
+	);
+};
+
+const graphTypePath = 'visualization.graph_config.graph_type';
+
+const GraphTypeConfig = (props: { form: TileFormType }) => {
+	const {
+		form: {
+			values: {
+				visualization: { graph_config },
+			},
+		},
+	} = props;
+	const graphType = _.get(graph_config, 'graph_type', defaultGraphType);
+	const onChange = useCallback((value: string | null) => {
+		if (value !== null) {
+			props.form.setFieldValue(graphTypePath, value);
+		}
+	}, []);
+	return (
+		<Select
+			data={graphTypes}
+			classNames={{ label: classes.fieldTitle }}
+			placeholder="Unit"
+			label="Type"
+			value={graphType}
+			style={{ width: '50%' }}
+			onChange={onChange}
+		/>
 	);
 };
 
@@ -323,7 +519,7 @@ const GraphConfig = (props: { form: TileFormType }) => {
 	const {
 		form: {
 			values: {
-				visualization: { graph_config },
+				visualization: { graph_config, visualization_type },
 				data: { fields },
 			},
 		},
@@ -333,32 +529,35 @@ const GraphConfig = (props: { form: TileFormType }) => {
 	const addAxes = useCallback(() => {
 		if (!_.head(fields)) return;
 
-		if (_.isEmpty(y_keys)) {
-			props.form.setFieldValue(yKeysPath, [_.head(fields)]);
-		} else {
-			props.form.insertListItem(yKeysPath, _.head(fields));
-		}
-	}, [fields, props.form, y_keys]);
+		props.form.insertListItem(yKeysPath, null);
+	}, [fields]);
 
 	useEffect(() => {
-		if (_.isEmpty(y_keys)) {
+		if (_.isEmpty(y_keys) || !_.isArray(y_keys)) {
 			addAxes();
 		}
-		props.form.setFieldError(yKeysPath, null);
 	}, [y_keys]);
 
 	return (
 		<Stack>
 			<Stack>
+				<Stack style={{ flexDirection: 'row' }}>
+					{!isLineChart(visualization_type) && <GraphTypeConfig form={props.form} />}
+					<OrientationConfig form={props.form} />
+				</Stack>
 				<XAxisConfig form={props.form} />
 				<Stack gap={2}>
-					<Text className={classes.fieldTitle} style={{ fontSize: '0.8rem', fontWeight: 500 }}>
-						Y axis
-					</Text>
 					<Stack>
 						{_.map(y_keys, (y_key, index) => {
 							return (
-								<YAxisConfig form={props.form} y_key={y_key} index={index} key={index} totalKeys={_.size(y_keys)} />
+								<YAxisConfig
+									form={props.form}
+									y_key={y_key}
+									index={index}
+									key={index}
+									totalKeys={_.size(y_keys)}
+									y_keys={y_keys}
+								/>
 							);
 						})}
 					</Stack>
