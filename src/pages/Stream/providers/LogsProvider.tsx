@@ -205,7 +205,7 @@ type LogsStore = {
 		perPage: number;
 		currentOffset: number;
 		headers: string[];
-		orderedHeaders: string[]; 
+		orderedHeaders: string[];
 		sortKey: string;
 		sortOrder: 'asc' | 'desc';
 		filters: Record<string, string[]>;
@@ -324,7 +324,7 @@ const initialState: LogsStore = {
 		filters: {},
 		instantSearchValue: '',
 		configViewType: 'columns',
-		enableWordWrap: true
+		enableWordWrap: true,
 	},
 
 	// data
@@ -450,7 +450,7 @@ const resetCustQuerySearchState = (store: LogsStore) => {
 	return {
 		custQuerySearchState: { ...defaultCustQuerySearchState, viewMode: custQuerySearchState.viewMode },
 		...getCleanStoreForRefetch(store),
-		timeRange
+		timeRange,
 	};
 };
 
@@ -491,10 +491,10 @@ const setDisabledColumns = (store: LogsStore, columns: string[]) => {
 	return {
 		tableOpts: {
 			...store.tableOpts,
-			disabledColumns: columns
-		}
-	}
-}
+			disabledColumns: columns,
+		},
+	};
+};
 
 const togglePinnedColumns = (store: LogsStore, columnName: string) => {
 	const { tableOpts } = store;
@@ -563,7 +563,10 @@ const setLogData = (store: LogsStore, data: Log[], headers: string[], jqFiltered
 			: filterAndSortData(tableOpts, data);
 	const newPageSlice = filteredData && getPageSlice(currentPage, tableOpts.perPage, filteredData);
 	const unknownHeaders = _.difference(headers, orderedHeaders);
-	const updatedOrderedHeaders = _.chain([...orderedHeaders, ...unknownHeaders]).uniq().without(...columnsToSkip).value();
+	const updatedOrderedHeaders = _.chain([...orderedHeaders, ...unknownHeaders])
+		.uniq()
+		.without(...columnsToSkip)
+		.value();
 	return {
 		tableOpts: {
 			...store.tableOpts,
@@ -657,7 +660,7 @@ const getCleanStoreForRefetch = (store: LogsStore) => {
 			currentPage: 0,
 			currentOffset: 0,
 			totalPages: 0,
-			orderedHeaders: []
+			orderedHeaders: [],
 		},
 		data: {
 			...data,
@@ -895,7 +898,7 @@ const onToggleView = (store: LogsStore, viewMode: 'json' | 'table') => {
 			instantSearchValue: '',
 			currentPage,
 			totalPages: getTotalPages(filteredData, tableOpts.perPage),
-			configViewType: 'schema' as 'schema'
+			configViewType: 'schema' as 'schema',
 		},
 		viewMode,
 	};
@@ -917,10 +920,10 @@ const setOrderedHeaders = (store: LogsStore, headers: string[]) => {
 	return {
 		tableOpts: {
 			...store.tableOpts,
-			orderedHeaders: headers
-		}
-	}
-}
+			orderedHeaders: headers,
+		},
+	};
+};
 
 const toggleWordWrap = (store: LogsStore) => {
 	return {
@@ -977,7 +980,7 @@ const logsStoreReducers: LogsStoreReducers = {
 	toggleConfigViewType,
 	setDisabledColumns,
 	setOrderedHeaders,
-	toggleWordWrap
+	toggleWordWrap,
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };
