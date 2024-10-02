@@ -8,6 +8,8 @@ import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from '
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { IconGripVertical, IconPin, IconPinFilled } from '@tabler/icons-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { ResizableBox } from 'react-resizable';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const { toggleConfigViewType, toggleDisabledColumns, setOrderedHeaders, togglePinnedColumns } =
 	logsStoreReducers;
@@ -47,9 +49,9 @@ const SchemaItem = (props: { schemaField: Field }) => {
 	const sanitizedDataType = _.isObject(data_type) ? _.toString(_.keys(data_type)[0]) : _.toString(data_type);
 	return (
 		<Stack className={classes.schemaItemContainer} gap={0}>
-			<Stack className={classes.fieldName}>
+			<Stack style={{ width: '100%', position: 'relative' }}>
 				<Tooltip label={name}>
-					<Text className={classes.fieldNameText} style={{ width: LOGS_CONFIG_SIDEBAR_WIDTH * 0.5 }}>
+					<Text className={classes.fieldNameText} style={{ position: 'absolute' }}>
 						{name}
 					</Text>
 				</Tooltip>
@@ -140,9 +142,9 @@ const ColumnItem = (props: {
 				</Stack>
 				<Checkbox value={props.column} checked={props.visible} readOnly onChange={onToggle} />
 			</Stack>
-			<Stack>
+			<Stack style={{ width: '100%', position: 'relative', height: '1rem'}}>
 				<Tooltip label={props.column}>
-					<Text className={classes.fieldNameText} style={{ whiteSpace: 'normal' }} lineClamp={1}>
+					<Text className={classes.fieldNameText} style={{ whiteSpace: 'normal', position: 'absolute'}} lineClamp={1}>
 						{props.column}
 					</Text>
 				</Tooltip>
@@ -266,14 +268,32 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 
 const LogsViewConfig = (props: { schemaLoading: boolean; logsLoading: boolean, infoLoading: boolean }) => {
 	const [configViewType] = useLogsStore((store) => store.tableOpts.configViewType);
+	const [maximized] = useAppStore(store => store.maximized)
+	const divRef = useRef<HTMLDivElement | null>(null);
+	const [height, setHeight] = useState(0);
+
+	useEffect(() => {
+		if (divRef.current) {
+			setHeight(divRef.current.offsetHeight);
+		}
+	}, [maximized]);
 	return (
-		<Stack style={{ width: LOGS_CONFIG_SIDEBAR_WIDTH }} className={classes.container}>
-			<Header />
-			{configViewType === 'schema' ? (
-				<SchemaList isLoading={props.schemaLoading || props.infoLoading} />
-			) : (
-				<ColumnsList isLoading={props.logsLoading || props.infoLoading} />
-			)}
+		<Stack ref={divRef}>
+			<ResizableBox
+				width={LOGS_CONFIG_SIDEBAR_WIDTH}
+				height={height}
+				axis="x"
+				maxConstraints={[500, height]}
+				minConstraints={[200, height]}>
+				<Stack style={{ width: '100%', height: '100%' }} className={classes.container}>
+					<Header />
+					{configViewType === 'schema' ? (
+						<SchemaList isLoading={props.schemaLoading || props.infoLoading} />
+					) : (
+						<ColumnsList isLoading={props.logsLoading || props.infoLoading} />
+					)}
+				</Stack>
+			</ResizableBox>
 		</Stack>
 	);
 };
