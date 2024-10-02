@@ -258,7 +258,7 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 				onChangeHandler={onSearchHandler}
 				disabled={_.isEmpty(headers)}
 			/>
-			<Group gap={8} style={{ paddingLeft: '1rem' }}>
+			<Group gap={8} style={{ paddingLeft: '3.3rem' }}>
 				<Checkbox value="SelectAll" checked={_.isEmpty(disabledColumns)} onChange={onToggleSelectAll} />
 				<Text className={classes.fieldNameText}>Select All</Text>
 			</Group>
