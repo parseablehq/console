@@ -30,6 +30,7 @@ type AppStore = {
 	isStandAloneMode: boolean | null;
 	savedFilters: SavedFilterType[] | null; // null to verify whether filters have been fetched or not
 	activeSavedFilters: SavedFilterType[]; // stream specific
+	isSecureHTTPContext: boolean;
 };
 
 type AppStoreReducers = {
@@ -58,6 +59,7 @@ const initialState: AppStore = {
 	isStandAloneMode: null,
 	savedFilters: null,
 	activeSavedFilters: [],
+	isSecureHTTPContext: getHTTPContext(),
 };
 
 const { Provider: AppProvider, useStore: useAppStore } = initContext(initialState);
@@ -83,6 +85,9 @@ const generateUserAcccessMap = (accessRoles: string[] | null) => {
 	}, {});
 };
 
+function getHTTPContext() {
+	return window.isSecureContext;
+}
 // reducers
 
 const toggleMaximize = (store: AppStore) => {

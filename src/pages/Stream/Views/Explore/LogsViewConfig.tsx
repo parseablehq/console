@@ -1,5 +1,5 @@
 import { LOGS_CONFIG_SIDEBAR_WIDTH } from '@/constants/theme';
-import { Checkbox, ScrollArea, Select, Skeleton, Stack, Text, TextInput, Tooltip } from '@mantine/core';
+import { Checkbox, Group, ScrollArea, Select, Skeleton, Stack, Text, TextInput, Tooltip } from '@mantine/core';
 import classes from '../../styles/LogsViewConfig.module.css';
 import { useStreamStore } from '../../providers/StreamProvider';
 import _ from 'lodash';
@@ -11,7 +11,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautif
 import { ResizableBox } from 'react-resizable';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
-const { toggleConfigViewType, toggleDisabledColumns, setOrderedHeaders, togglePinnedColumns } =
+const { toggleConfigViewType, toggleDisabledColumns, setOrderedHeaders, togglePinnedColumns, setDisabledColumns } =
 	logsStoreReducers;
 
 const Header = () => {
@@ -118,6 +118,7 @@ const ColumnItem = (props: {
 	onToggleColumn: (column: string) => void;
 	pinned: boolean;
 	onPinColumn: (column: string) => void;
+	onOnlyClick: (column: string) => void;
 }) => {
 	const onToggle = useCallback(() => {
 		props.onToggleColumn(props.column);
@@ -125,6 +126,10 @@ const ColumnItem = (props: {
 
 	const onPin = useCallback(() => {
 		props.onPinColumn(props.column);
+	}, []);
+
+	const handleOnlyClick = useCallback(() => {
+		props.onOnlyClick(props.column);
 	}, []);
 
 	return (
@@ -149,6 +154,9 @@ const ColumnItem = (props: {
 					</Text>
 				</Tooltip>
 			</Stack>
+			<Text className={classes.onlyBtn} onClick={handleOnlyClick}>
+				only
+			</Text>
 		</Stack>
 	);
 };
@@ -194,9 +202,25 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 		setLogsStore((store) => toggleDisabledColumns(store, column));
 	}, []);
 
+	const handleClearAllClick = useCallback(() => {
+		setLogsStore((store) => setDisabledColumns(store, orderedHeaders));
+	}, [orderedHeaders]);
+
+	const handleSelectAllClick = useCallback(() => {
+		setLogsStore((store) => setDisabledColumns(store, []));
+	}, [orderedHeaders]);
+
 	// const onToggleWordWrap = useCallback(() => {
 	// 	setLogsStore((store) => toggleWordWrap(store));
 	// }, []);
+
+	const handleOnlyClick = useCallback(
+		(column: string) => {
+			const filteredHeaders = orderedHeaders.filter((el) => el !== column);
+			setLogsStore((store) => setDisabledColumns(store, filteredHeaders));
+		},
+		[orderedHeaders],
+	);
 
 	const onPinColumn = useCallback((column: string) => {
 		setLogsStore((store) => togglePinnedColumns(store, column));
@@ -236,6 +260,21 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 				onChangeHandler={onSearchHandler}
 				disabled={_.isEmpty(headers)}
 			/>
+			<Group gap={8} style={{ display: 'flex', justifyContent: 'flex-start', paddingLeft: '1.3rem' }}>
+				<Text
+					className={classes.fieldActionBtn}
+					onClick={handleSelectAllClick}
+					style={!_.isEmpty(disabledColumns) ? { color: '#131fcd' } : {}}>
+					Select All
+				</Text>
+				|
+				<Text
+					className={classes.fieldActionBtn}
+					onClick={handleClearAllClick}
+					style={!(orderedHeaders.length === disabledColumns.length) ? { color: '#131fcd' } : {}}>
+					Clear All
+				</Text>
+			</Group>
 			<ScrollArea scrollbars="y">
 				<DragDropContext onDragEnd={onDropEnd}>
 					<Droppable droppableId="columns">
@@ -251,6 +290,7 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 													visible={!_.includes(disabledColumns, column)}
 													pinned={_.includes(pinnedColumns, column)}
 													onPinColumn={onPinColumn}
+													onOnlyClick={handleOnlyClick}
 												/>
 											</div>
 										)}
@@ -266,7 +306,7 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 	);
 };
 
-const LogsViewConfig = (props: { schemaLoading: boolean; logsLoading: boolean, infoLoading: boolean }) => {
+const LogsViewConfig = (props: { schemaLoading: boolean; logsLoading: boolean; infoLoading: boolean }) => {
 	const [configViewType] = useLogsStore((store) => store.tableOpts.configViewType);
 	const [maximized] = useAppStore(store => store.maximized)
 	const divRef = useRef<HTMLDivElement | null>(null);

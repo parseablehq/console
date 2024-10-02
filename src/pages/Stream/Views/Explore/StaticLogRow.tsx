@@ -6,6 +6,7 @@ import { Log } from '@/@types/parseable/api/query';
 import tableStyles from '../../styles/Logs.module.css';
 import { useLogsStore, logsStoreReducers, columnsToSkip } from '../../providers/LogsProvider';
 import { IconCopy, IconCheck } from '@tabler/icons-react';
+import { copyTextToClipboard } from '@/utils';
 import _ from 'lodash';
 
 const { setSelectedLog } = logsStoreReducers;
@@ -28,17 +29,13 @@ const CopyButton = (props: { fieldValue: any }) => {
 		}
 	}, [copied]);
 
-	const copy = useCallback(async () => {
-		await navigator.clipboard.writeText(props.fieldValue);
-	}, [props.fieldValue]);
-
 	const handleCopyBtnClick = useCallback(
 		async (e: MouseEvent) => {
 			e.stopPropagation();
-			await copy();
+			await copyTextToClipboard(props.fieldValue);
 			setCopied(true);
 		},
-		[copy],
+		[copyTextToClipboard],
 	);
 
 	return (
@@ -120,9 +117,7 @@ const ViewLogArrow: FC = () => {
 	const { tdArrow, tdArrowContainer } = classes;
 
 	return (
-		<td className={tdArrow} 
-		style={{paddingTop: '0', paddingBottom: '0'}}
-		>
+		<td className={tdArrow} style={{ paddingTop: '0', paddingBottom: '0' }}>
 			<Box className={tdArrowContainer}>
 				<IconArrowNarrowRight size={'1rem'} stroke={1} />
 			</Box>

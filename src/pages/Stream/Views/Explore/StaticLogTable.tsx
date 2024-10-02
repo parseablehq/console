@@ -26,7 +26,7 @@ const TableContainer = (props: { children: ReactNode }) => {
 	return <Box className={tableStyles.container}>{props.children}</Box>;
 };
 
-const makeHeaderOpts = (headers: string[]) => {
+const makeHeaderOpts = (headers: string[], isSecureHTTPContext: boolean) => {
 	return _.reduce(
 		headers,
 		(acc: { accessorKey: string; header: string; grow: boolean }[], header) => {
@@ -42,7 +42,7 @@ const makeHeaderOpts = (headers: string[]) => {
 							<div className={tableStyles.customCellContainer} style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
 								{value}
 								<div className={tableStyles.copyIconContainer}>
-									<CopyIcon value={value} />
+									{isSecureHTTPContext ? value && <CopyIcon value={value} /> : null}
 								</div>
 							</div>
 						);
@@ -62,9 +62,13 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 	const [{ orderedHeaders, disabledColumns, pinnedColumns, pageData, enableWordWrap }, setLogsStore] = useLogsStore(
 		(store) => store.tableOpts,
 	);
-	const columns = useMemo(() => makeHeaderOpts(orderedHeaders), [orderedHeaders]);
+	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
+	const columns = useMemo(() => makeHeaderOpts(orderedHeaders, isSecureHTTPContext), [orderedHeaders]);
 	const columnVisibility = useMemo(() => makeColumnVisiblityOpts(disabledColumns), [disabledColumns, orderedHeaders]);
 	const selectLog = useCallback((log: Log) => {
+		const selectedText = window.getSelection()?.toString();
+		if (selectedText !== undefined && selectedText?.length > 0) return;
+
 		setLogsStore((store) => setSelectedLog(store, log));
 	}, []);
 	return (
