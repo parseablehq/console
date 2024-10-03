@@ -1,5 +1,5 @@
 import { LOGS_CONFIG_SIDEBAR_WIDTH } from '@/constants/theme';
-import { Checkbox, Group, ScrollArea, Select, Skeleton, Stack, Text, TextInput, Tooltip } from '@mantine/core';
+import { Checkbox, Divider, Group, ScrollArea, Select, Skeleton, Stack, Text, TextInput, Tooltip } from '@mantine/core';
 import classes from '../../styles/LogsViewConfig.module.css';
 import { useStreamStore } from '../../providers/StreamProvider';
 import _ from 'lodash';
@@ -8,6 +8,8 @@ import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from '
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { IconGripVertical, IconPin, IconPinFilled } from '@tabler/icons-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { ResizableBox } from 'react-resizable';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const { toggleConfigViewType, toggleDisabledColumns, setOrderedHeaders, togglePinnedColumns, setDisabledColumns } =
 	logsStoreReducers;
@@ -47,9 +49,9 @@ const SchemaItem = (props: { schemaField: Field }) => {
 	const sanitizedDataType = _.isObject(data_type) ? _.toString(_.keys(data_type)[0]) : _.toString(data_type);
 	return (
 		<Stack className={classes.schemaItemContainer} gap={0}>
-			<Stack className={classes.fieldName}>
+			<Stack style={{ width: '100%', position: 'relative' }}>
 				<Tooltip label={name}>
-					<Text className={classes.fieldNameText} style={{ width: LOGS_CONFIG_SIDEBAR_WIDTH * 0.5 }}>
+					<Text className={classes.fieldNameText} style={{ position: 'absolute' }}>
 						{name}
 					</Text>
 				</Tooltip>
@@ -145,9 +147,9 @@ const ColumnItem = (props: {
 				</Stack>
 				<Checkbox value={props.column} checked={props.visible} readOnly onChange={onToggle} />
 			</Stack>
-			<Stack>
+			<Stack style={{ width: '100%', position: 'relative', height: '1rem' }}>
 				<Tooltip label={props.column}>
-					<Text className={classes.fieldNameText} style={{ whiteSpace: 'normal' }} lineClamp={1}>
+					<Text className={classes.fieldNameText} style={{ whiteSpace: 'normal', position: 'absolute' }} lineClamp={1}>
 						{props.column}
 					</Text>
 				</Tooltip>
@@ -258,62 +260,84 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 				onChangeHandler={onSearchHandler}
 				disabled={_.isEmpty(headers)}
 			/>
-			<Group gap={8} style={{ display: 'flex', justifyContent: 'flex-start', paddingLeft: '1.3rem' }}>
-				<Text
-					className={classes.fieldActionBtn}
-					onClick={handleSelectAllClick}
-					style={!_.isEmpty(disabledColumns) ? { color: '#131fcd' } : {}}>
-					Select All
-				</Text>
-				|
-				<Text
-					className={classes.fieldActionBtn}
-					onClick={handleClearAllClick}
-					style={!(orderedHeaders.length === disabledColumns.length) ? { color: '#131fcd' } : {}}>
-					Clear All
-				</Text>
-			</Group>
-			<ScrollArea scrollbars="y">
-				<DragDropContext onDragEnd={onDropEnd}>
-					<Droppable droppableId="columns">
-						{(provided) => (
-							<div {...provided.droppableProps} ref={provided.innerRef}>
-								{_.map(columnsToShowRef.current, (column, index) => (
-									<Draggable key={column} draggableId={column} index={index}>
-										{(provided) => (
-											<div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-												<ColumnItem
-													onToggleColumn={onToggleColumn}
-													column={column}
-													visible={!_.includes(disabledColumns, column)}
-													pinned={_.includes(pinnedColumns, column)}
-													onPinColumn={onPinColumn}
-													onOnlyClick={handleOnlyClick}
-												/>
-											</div>
-										)}
-									</Draggable>
-								))}
-								{provided.placeholder}
-							</div>
-						)}
-					</Droppable>
-				</DragDropContext>
-			</ScrollArea>
+			<Stack style={{ height: '100%' }} gap={0}>
+				<Group
+					gap={8}
+					style={{ display: 'flex', justifyContent: 'flex-start', padding: '0 1rem', marginBottom: '0.3rem' }}>
+					<Text
+						className={classes.fieldActionBtn}
+						onClick={handleSelectAllClick}
+						style={!_.isEmpty(disabledColumns) ? {} : { color: 'gray', cursor: 'default' }}>
+						Select All
+					</Text>
+					<Divider orientation="vertical" style={{ borderWidth: '0.1rem' }} />
+					<Text
+						className={classes.fieldActionBtn}
+						onClick={handleClearAllClick}
+						style={!(orderedHeaders.length === disabledColumns.length) ? {} : { color: 'gray', cursor: 'default' }}>
+						Clear All
+					</Text>
+				</Group>
+				<ScrollArea scrollbars="y">
+					<DragDropContext onDragEnd={onDropEnd}>
+						<Droppable droppableId="columns">
+							{(provided) => (
+								<div {...provided.droppableProps} ref={provided.innerRef}>
+									{_.map(columnsToShowRef.current, (column, index) => (
+										<Draggable key={column} draggableId={column} index={index}>
+											{(provided) => (
+												<div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+													<ColumnItem
+														onToggleColumn={onToggleColumn}
+														column={column}
+														visible={!_.includes(disabledColumns, column)}
+														pinned={_.includes(pinnedColumns, column)}
+														onPinColumn={onPinColumn}
+														onOnlyClick={handleOnlyClick}
+													/>
+												</div>
+											)}
+										</Draggable>
+									))}
+									{provided.placeholder}
+								</div>
+							)}
+						</Droppable>
+					</DragDropContext>
+				</ScrollArea>
+			</Stack>
 		</>
 	);
 };
 
 const LogsViewConfig = (props: { schemaLoading: boolean; logsLoading: boolean; infoLoading: boolean }) => {
 	const [configViewType] = useLogsStore((store) => store.tableOpts.configViewType);
+	const [maximized] = useAppStore((store) => store.maximized);
+	const divRef = useRef<HTMLDivElement | null>(null);
+	const [height, setHeight] = useState(0);
+
+	useEffect(() => {
+		if (divRef.current) {
+			setHeight(divRef.current.offsetHeight);
+		}
+	}, [maximized]);
 	return (
-		<Stack style={{ width: LOGS_CONFIG_SIDEBAR_WIDTH }} className={classes.container}>
-			<Header />
-			{configViewType === 'schema' ? (
-				<SchemaList isLoading={props.schemaLoading || props.infoLoading} />
-			) : (
-				<ColumnsList isLoading={props.logsLoading || props.infoLoading} />
-			)}
+		<Stack ref={divRef}>
+			<ResizableBox
+				width={LOGS_CONFIG_SIDEBAR_WIDTH}
+				height={height}
+				axis="x"
+				maxConstraints={[500, height]}
+				minConstraints={[200, height]}>
+				<Stack style={{ width: '100%', height: '100%' }} className={classes.container}>
+					<Header />
+					{configViewType === 'schema' ? (
+						<SchemaList isLoading={props.schemaLoading || props.infoLoading} />
+					) : (
+						<ColumnsList isLoading={props.logsLoading || props.infoLoading} />
+					)}
+				</Stack>
+			</ResizableBox>
 		</Stack>
 	);
 };
