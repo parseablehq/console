@@ -3,6 +3,8 @@ import initContext from '@/utils/initContext';
 import _ from 'lodash';
 import { Layout } from 'react-grid-layout';
 
+export const TILES_PER_PAGE = 5;
+
 export const sortTilesByOrder = (tiles: Tile[], idsByOrder: string[]): Tile[] => {
 	return _.chain(idsByOrder)
 		.map((tile_id, index) => {
@@ -19,9 +21,10 @@ export const assignOrderToTiles = (tiles: Tile[]) => {
 	});
 };
 
-export const genLayout = (tiles: Tile[]): Layout[] => {
+export const genLayout = (tiles: Tile[], currentPage: number): Layout[] => {
+	const tilesToShow = _.take(tiles, TILES_PER_PAGE * currentPage);
 	return _.reduce(
-		tiles,
+		tilesToShow,
 		(acc: Layout[], tile) => {
 			const {
 				visualization: { size },
@@ -85,6 +88,7 @@ type DashboardsStore = {
 	deleteTileId: string | null;
 	importTileModalOpen: boolean;
 	importDashboardModalOpen: boolean;
+	currentPage: number;
 };
 
 const initialState: DashboardsStore = {
@@ -102,7 +106,8 @@ const initialState: DashboardsStore = {
 	deleteTileModalOpen: false,
 	deleteTileId: null,
 	importTileModalOpen: false,
-	importDashboardModalOpen: false
+	importDashboardModalOpen: false,
+	currentPage: 1,
 };
 
 type ReducerOutput = Partial<DashboardsStore>;
@@ -121,6 +126,7 @@ type DashboardsStoreReducers = {
 	resetTilesData: (store: DashboardsStore) => ReducerOutput;
 	toggleImportTileModal: (store: DashboardsStore, val: boolean) => ReducerOutput;
 	toggleImportDashboardModal: (store: DashboardsStore, val: boolean) => ReducerOutput;
+	handlePaging: (store: DashboardsStore) => ReducerOutput;
 };
 
 const toggleCreateDashboardModal = (_store: DashboardsStore, val: boolean) => {
@@ -173,7 +179,7 @@ const toggleAllowDrag = (store: DashboardsStore) => {
 };
 
 const setDashboards = (store: DashboardsStore, dashboards: Dashboard[]) => {
-	const { activeDashboard: activeDashboardFromStore } = store;
+	const { activeDashboard: activeDashboardFromStore, currentPage } = store;
 	const defaultActiveDashboard = _.isArray(dashboards) && !_.isEmpty(dashboards) ? dashboards[0] : null;
 	const activeDashboard = (() => {
 		if (activeDashboardFromStore) {
@@ -185,10 +191,23 @@ const setDashboards = (store: DashboardsStore, dashboards: Dashboard[]) => {
 		}
 	})();
 
+	const activeDashboardTilesCount = _.size(activeDashboard?.tiles);
+	const updatedCurrentPage = (() => {
+		if (!activeDashboard) {
+			return 1;
+		} else if (activeDashboardTilesCount === TILES_PER_PAGE * currentPage + 1) {
+			// to handle import tile
+			return currentPage + 1;
+		} else {
+			return currentPage;
+		}
+	})();
+
 	return {
 		dashboards,
 		activeDashboard,
-		layout: activeDashboard ? genLayout(activeDashboard.tiles) : [],
+		layout: activeDashboard ? genLayout(activeDashboard.tiles, updatedCurrentPage) : [],
+		currentPage: updatedCurrentPage,
 	};
 };
 
@@ -203,7 +222,7 @@ const selectDashboard = (store: DashboardsStore, dashboardId?: string | null, da
 		...initialState,
 		dashboards: store.dashboards,
 		activeDashboard: activeDashboard || null,
-		layout: activeDashboard ? genLayout(activeDashboard.tiles) : [],
+		layout: activeDashboard ? genLayout(activeDashboard.tiles, initialState.currentPage) : [],
 	};
 };
 
@@ -223,11 +242,19 @@ const toggleDeleteTileModal = (_store: DashboardsStore, val: boolean, tileId: st
 	};
 };
 
-
-
 const resetTilesData = (_store: DashboardsStore) => {
 	return {
 		tilesData: {},
+	};
+};
+
+const handlePaging = (store: DashboardsStore) => {
+	const { currentPage, activeDashboard } = store;
+	const newCurrentPage = currentPage + 1;
+	const layout = genLayout(activeDashboard?.tiles || [], newCurrentPage);
+	return {
+		currentPage: newCurrentPage,
+		layout,
 	};
 };
 
@@ -246,7 +273,8 @@ const dashboardsStoreReducers: DashboardsStoreReducers = {
 	toggleDeleteTileModal,
 	resetTilesData,
 	toggleImportTileModal,
-	toggleImportDashboardModal
+	toggleImportDashboardModal,
+	handlePaging,
 };
 
 export { DashbaordsProvider, useDashboardsStore, dashboardsStoreReducers };

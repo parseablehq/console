@@ -245,7 +245,7 @@ const ImportTileModal = () => {
 				<FileInput
 					style={{ marginTop: '0.25rem' }}
 					label=""
-					placeholder="Import Parseable tile config json"
+					placeholder="Import tile config json downloaded from Parseable"
 					fileInputProps={{ accept: '.json' }}
 					value={file}
 					onChange={setFile}
