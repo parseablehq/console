@@ -1,5 +1,5 @@
 import { Log } from '@/@types/parseable/api/query';
-import { Box, Checkbox, Menu, ScrollArea, Stack, TextInput, Tooltip, px } from '@mantine/core';
+import { Checkbox, Menu, ScrollArea, Stack, Switch, TextInput, Tooltip, px } from '@mantine/core';
 import { type ChangeEvent, type FC, Fragment, useRef, useCallback, useState, useEffect } from 'react';
 import { IconFilter, IconSearch } from '@tabler/icons-react';
 import EmptyBox from '@/components/Empty';
@@ -9,7 +9,7 @@ import { Text } from '@mantine/core';
 import { useLogsStore, logsStoreReducers } from '../providers/LogsProvider';
 import _ from 'lodash';
 
-const { getUniqueValues, setAndFilterData } = logsStoreReducers;
+const { getUniqueValues, setAndFilterData, toggleWrapDisabledColumns } = logsStoreReducers;
 
 type Column = {
 	columnName: string;
@@ -21,6 +21,7 @@ const Column: FC<Column> = (props) => {
 	const [filteredValues, setFilteredValues] = useState<string[]>([]);
 	const [selectedValues, setSelectedValues] = useState<string[]>([]);
 	const [rawData, setLogsStore] = useLogsStore((store) => store.data.rawData);
+	const [wrapDisabledColumns] = useLogsStore((store) => store.tableOpts.wrapDisabledColumns);
 	const inputValueRef = useRef('');
 
 	useEffect(() => {
@@ -53,38 +54,55 @@ const Column: FC<Column> = (props) => {
 
 	const checkboxList =
 		filteredValues.length === 0 ? (inputValueRef.current.length === 0 ? uniqueValues : []) : filteredValues;
+
+	const onToggleWrap = () => {
+		setLogsStore((store) => toggleWrapDisabledColumns(store, columnName));
+	};
+	const wordWrapEnabled = !_.includes(wrapDisabledColumns, columnName);
 	return (
 		<div>
-			<Box style={{ width: '20rem', padding: '0.25rem 0.5rem 0.25rem 0.5rem' }}>
-				<Stack gap={8} my={16} style={{ flexDirection: 'row' }}>
-					<IconFilter stroke={1} size="1rem" />
-					<Text>Filter by values:</Text>
+			<Stack style={{ width: '20rem', padding: '0.8rem 1rem' }} gap={16}>
+				<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+					<Text style={{ fontSize: '0.7rem', fontWeight: 600 }}>Word Wrap</Text>
+					<Switch
+						styles={{ label: { fontSize: '0.7rem' } }}
+						labelPosition="left"
+						label={wordWrapEnabled ? 'Enabled' : 'Disabled'}
+						checked={wordWrapEnabled}
+						onChange={onToggleWrap}
+					/>
 				</Stack>
-				<TextInput
-					className={searchInputStyle}
-					placeholder="Search"
-					leftSection={<IconSearch size={px('1rem')} />}
-					onChange={onSearch}
-					mt={8}
-				/>
-				{checkboxList.length ? (
-					<Fragment>
-						<CheckboxVirtualList
-							columnName={columnName}
-							list={checkboxList}
-							selectedFilters={selectedValues}
-							onSelect={onSelect}
-						/>
-						<Menu.Item>
-							<Button className={applyBtn} onClick={onApply} disabled={selectedValues.length === 0}>
-								Apply
-							</Button>
-						</Menu.Item>
-					</Fragment>
-				) : (
-					<EmptyBox mb="lg" />
-				)}
-			</Box>
+				<Stack gap={4}>
+					<Stack gap={4} style={{ flexDirection: 'row', alignItems: 'center' }}>
+						<IconFilter stroke={1.4} size="0.8rem" />
+						<Text style={{ fontSize: '0.7rem', fontWeight: 600 }}>Filter by values:</Text>
+					</Stack>
+					<TextInput
+						className={searchInputStyle}
+						placeholder="Search"
+						leftSection={<IconSearch size={px('1rem')} />}
+						onChange={onSearch}
+						mt={8}
+					/>
+					{checkboxList.length ? (
+						<Fragment>
+							<CheckboxVirtualList
+								columnName={columnName}
+								list={checkboxList}
+								selectedFilters={selectedValues}
+								onSelect={onSelect}
+							/>
+							<Menu.Item>
+								<Button className={applyBtn} onClick={onApply} disabled={selectedValues.length === 0}>
+									Apply
+								</Button>
+							</Menu.Item>
+						</Fragment>
+					) : (
+						<EmptyBox mb="lg" />
+					)}
+				</Stack>
+			</Stack>
 		</div>
 	);
 };

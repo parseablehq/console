@@ -210,10 +210,6 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 		setLogsStore((store) => setDisabledColumns(store, []));
 	}, [orderedHeaders]);
 
-	// const onToggleWordWrap = useCallback(() => {
-	// 	setLogsStore((store) => toggleWordWrap(store));
-	// }, []);
-
 	const handleOnlyClick = useCallback(
 		(column: string) => {
 			const filteredHeaders = orderedHeaders.filter((el) => el !== column);
@@ -245,15 +241,6 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 
 	return (
 		<>
-			{/* <Stack style={{ alignItems: 'flex-end', padding: '0 0.5rem' }}>
-				<Switch
-					styles={{ label: { fontSize: '0.7rem' } }}
-					labelPosition="left"
-					label="Wrap Words"
-					checked={enableWordWrap}
-					onChange={onToggleWordWrap}
-				/>
-			</Stack> */}
 			<SearchBar
 				placeholder="Search Headers"
 				value={searchValue}

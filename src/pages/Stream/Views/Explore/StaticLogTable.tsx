@@ -59,7 +59,7 @@ const makeColumnVisiblityOpts = (columns: string[]) => {
 };
 
 const Table = (props: { primaryHeaderHeight: number }) => {
-	const [{ orderedHeaders, disabledColumns, pinnedColumns, pageData, enableWordWrap }, setLogsStore] = useLogsStore(
+	const [{ orderedHeaders, disabledColumns, pinnedColumns, pageData, wrapDisabledColumns }, setLogsStore] = useLogsStore(
 		(store) => store.tableOpts,
 	);
 	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
@@ -71,12 +71,10 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 
 		setLogsStore((store) => setSelectedLog(store, log));
 	}, []);
-	return (
-		<MantineReactTable
-			enableBottomToolbar={false}
-			enableTopToolbar={false}
-			enableColumnResizing={true}
-			mantineTableBodyCellProps={{
+
+	const makeCellCustomStyles = useCallback(
+		(columnName: string) => {
+			return {
 				className: tableStyles.customCell,
 				style: {
 					padding: '0.5rem 1rem',
@@ -84,9 +82,19 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 					overflow: 'hidden',
 					textOverflow: 'ellipsis',
 					display: 'table-cell',
-					...(enableWordWrap ? { whiteSpace: 'nowrap' } : {}),
+					...(!_.includes(wrapDisabledColumns, columnName) ? { whiteSpace: 'nowrap' as 'nowrap' } : {}),
 				},
-			}}
+			};
+		},
+		[wrapDisabledColumns],
+	);
+
+	return (
+		<MantineReactTable
+			enableBottomToolbar={false}
+			enableTopToolbar={false}
+			enableColumnResizing={true}
+			mantineTableBodyCellProps={({ column: { id } }) => makeCellCustomStyles(id)}
 			mantineTableHeadRowProps={{ style: { border: 'none' } }}
 			mantineTableHeadCellProps={{
 				style: {

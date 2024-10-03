@@ -196,6 +196,7 @@ type LogsStore = {
 
 	tableOpts: {
 		disabledColumns: string[];
+		wrapDisabledColumns: string[];
 		pinnedColumns: string[];
 		pageData: Log[];
 		totalPages: number;
@@ -252,6 +253,7 @@ type LogsStoreReducers = {
 
 	// table opts reducers
 	toggleDisabledColumns: (store: LogsStore, columnName: string) => ReducerOutput;
+	toggleWrapDisabledColumns: (store: LogsStore, columnName: string) => ReducerOutput;
 	togglePinnedColumns: (store: LogsStore, columnName: string) => ReducerOutput;
 	setCurrentOffset: (store: LogsStore, offset: number) => ReducerOutput;
 	setPerPage: (store: LogsStore, perPage: number) => ReducerOutput;
@@ -309,6 +311,7 @@ const initialState: LogsStore = {
 
 	tableOpts: {
 		disabledColumns: [],
+		wrapDisabledColumns: [],
 		pinnedColumns: [],
 		pageData: [],
 		perPage: 50,
@@ -483,6 +486,16 @@ const toggleDisabledColumns = (store: LogsStore, columnName: string) => {
 		tableOpts: {
 			...tableOpts,
 			disabledColumns: addOrRemoveElement(tableOpts.disabledColumns, columnName),
+		},
+	};
+};
+
+const toggleWrapDisabledColumns = (store: LogsStore, columnName: string) => {
+	const { tableOpts } = store;
+	return {
+		tableOpts: {
+			...tableOpts,
+			wrapDisabledColumns: addOrRemoveElement(tableOpts.wrapDisabledColumns, columnName),
 		},
 	};
 };
@@ -688,6 +701,7 @@ const setCleanStoreForStreamChange = (store: LogsStore) => {
 			totalPages: 0,
 			orderedHeaders: [],
 			disabledColumns: [],
+			wrapDisabledColumns: [],
 			pinnedColumns: [],
 			filters: {},
 		},
@@ -981,6 +995,7 @@ const logsStoreReducers: LogsStoreReducers = {
 	setDisabledColumns,
 	setOrderedHeaders,
 	toggleWordWrap,
+	toggleWrapDisabledColumns
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };
