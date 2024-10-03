@@ -3,6 +3,7 @@ import classes from './styles/tile.module.css';
 import {
 	IconAlertTriangle,
 	IconBraces,
+	IconCopyPlus,
 	IconDotsVertical,
 	IconGripVertical,
 	IconPencil,
@@ -71,7 +72,7 @@ const ParseableLogo = () => (
 	</div>
 );
 
-const { toggleCreateTileModal, toggleDeleteTileModal } = dashboardsStoreReducers;
+const { toggleCreateTileModal, toggleDeleteTileModal, toggleDuplicateTileModal } = dashboardsStoreReducers;
 
 const NoDataView = () => {
 	return (
@@ -171,6 +172,10 @@ function TileControls(props: { tile: TileType; data: TileQueryResponse }) {
 		setDashboardsStore((store) => toggleCreateTileModal(store, true, tile_id));
 	}, []);
 
+	const openDuplicateTileModal = useCallback(() => {
+		setDashboardsStore((store) => toggleDuplicateTileModal(store, true, tile_id));
+	}, []);
+
 	const openDeleteModal = useCallback(() => {
 		setDashboardsStore((store) => toggleDeleteTileModal(store, true, tile_id));
 	}, []);
@@ -196,6 +201,12 @@ function TileControls(props: { tile: TileType; data: TileQueryResponse }) {
 						onClick={openEditTile}
 						leftSection={<IconPencil className={classes.tileCtrlItemIcon} size="1rem" stroke={1.2} />}>
 						<Text className={classes.tileCtrlItemText}>Edit</Text>
+					</Menu.Item>
+					<Menu.Item
+						className={classes.tileCtrlItem}
+						onClick={openDuplicateTileModal}
+						leftSection={<IconCopyPlus className={classes.tileCtrlItemIcon} size="1rem" stroke={1.2} />}>
+						<Text className={classes.tileCtrlItemText}>Duplicate</Text>
 					</Menu.Item>
 					<Menu.Item
 						className={classes.tileCtrlItem}
