@@ -58,7 +58,7 @@ const Column: FC<Column> = (props) => {
 	const onToggleWrap = () => {
 		setLogsStore((store) => toggleWrapDisabledColumns(store, columnName));
 	};
-	const wordWrapEnabled = !_.includes(wrapDisabledColumns, columnName);
+	const wordWrapEnabled = _.includes(wrapDisabledColumns, columnName);
 	return (
 		<div>
 			<Stack style={{ width: '20rem', padding: '0.8rem 1rem' }} gap={16}>
