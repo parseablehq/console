@@ -76,10 +76,10 @@ const Roles: FC = () => {
 		);
 
 	useEffect(() => {
-		if (updateDefaultRoleData?.data) {
-			setDefaultRole(updateDefaultRoleData?.data);
+		if (updateDefaultRoleData?.status === 200) {
+			getDefaultRoleMutation();
 		}
-	}, [updateDefaultRoleData?.data]);
+	}, [updateDefaultRoleData?.status]);
 
 	useEffect(() => {
 		if (getDefaultRoleData?.data) {
