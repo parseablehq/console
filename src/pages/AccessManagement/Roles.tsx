@@ -160,7 +160,7 @@ const Roles: FC = () => {
 	};
 
 	const handleSetDefaultRole = () => {
-		updateDefaultRoleMutation({ roleName: inputDefaultRole, onSucces: getDefaultRoleMutation });
+		updateDefaultRoleMutation({ roleName: inputDefaultRole, onSuccess: getDefaultRoleMutation });
 		handleDefaultRoleModalClose();
 	};
 
