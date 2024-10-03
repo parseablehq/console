@@ -1,9 +1,9 @@
-import { Dashboard, Tile, TileQueryResponse, tileSizeWidthMap } from '@/@types/parseable/api/dashboards';
+import { Dashboard, EditTileType, Tile, TileQueryResponse, tileSizeWidthMap } from '@/@types/parseable/api/dashboards';
 import initContext from '@/utils/initContext';
 import _ from 'lodash';
 import { Layout } from 'react-grid-layout';
 
-export const TILES_PER_PAGE = 5;
+export const TILES_PER_PAGE = 10;
 
 export const sortTilesByOrder = (tiles: Tile[], idsByOrder: string[]): Tile[] => {
 	return _.chain(idsByOrder)
@@ -15,7 +15,7 @@ export const sortTilesByOrder = (tiles: Tile[], idsByOrder: string[]): Tile[] =>
 		.value();
 };
 
-export const assignOrderToTiles = (tiles: Tile[]) => {
+export const assignOrderToTiles = (tiles: Tile[] | EditTileType[]) => {
 	return _.map(tiles, (tile, index) => {
 		return { ...tile, order: index + 1 };
 	});
@@ -77,6 +77,7 @@ type DashboardsStore = {
 	editDashboardModalOpen: boolean;
 	deleteDashboardModalOpen: boolean;
 	createTileFormOpen: boolean;
+	duplicateTileModalOpen: boolean;
 	vizEditorModalOpen: boolean;
 	allowDrag: boolean;
 	editTileId: string | null;
@@ -99,6 +100,7 @@ const initialState: DashboardsStore = {
 	deleteDashboardModalOpen: false,
 	createTileFormOpen: false,
 	vizEditorModalOpen: false,
+	duplicateTileModalOpen: false,
 	allowDrag: false,
 	editTileId: null,
 	tilesData: {},
@@ -118,6 +120,7 @@ type DashboardsStoreReducers = {
 	toggleEditDashboardModal: (store: DashboardsStore, val: boolean) => ReducerOutput;
 	selectDashboard: (store: DashboardsStore, dashboardId?: string | null, dashboard?: Dashboard) => ReducerOutput;
 	toggleCreateTileModal: (store: DashboardsStore, val: boolean, tileId?: string | null) => ReducerOutput;
+	toggleDuplicateTileModal: (store: DashboardsStore, val: boolean, tileId?: string | null) => ReducerOutput;
 	toggleVizEditorModal: (store: DashboardsStore, val: boolean) => ReducerOutput;
 	toggleAllowDrag: (store: DashboardsStore) => ReducerOutput;
 	toggleDeleteDashboardModal: (store: DashboardsStore, val: boolean) => ReducerOutput;
@@ -144,6 +147,13 @@ const toggleEditDashboardModal = (_store: DashboardsStore, val: boolean) => {
 const toggleCreateTileModal = (_store: DashboardsStore, val: boolean, tileId: string | null = null) => {
 	return {
 		createTileFormOpen: val,
+		editTileId: tileId,
+	};
+};
+
+const toggleDuplicateTileModal = (_store: DashboardsStore, val: boolean, tileId: string | null = null) => {
+	return {
+		duplicateTileModalOpen: val,
 		editTileId: tileId,
 	};
 };
@@ -275,6 +285,7 @@ const dashboardsStoreReducers: DashboardsStoreReducers = {
 	toggleImportTileModal,
 	toggleImportDashboardModal,
 	handlePaging,
+	toggleDuplicateTileModal
 };
 
 export { DashbaordsProvider, useDashboardsStore, dashboardsStoreReducers };

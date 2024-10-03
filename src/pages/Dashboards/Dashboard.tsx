@@ -1,4 +1,4 @@
-import { Box, Button, Divider, FileInput, Modal, Stack, Text } from '@mantine/core';
+import { Box, Button, Divider, FileInput, Modal, Stack, Text, TextInput } from '@mantine/core';
 import Toolbar from './Toolbar';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
@@ -20,10 +20,10 @@ import { useDashboardsQuery } from '@/hooks/useDashboards';
 import Tile from './Tile';
 import { Layout } from 'react-grid-layout';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { ImportDashboardType } from '@/@types/parseable/api/dashboards';
+import { EditTileType, ImportDashboardType, Tile as TileType } from '@/@types/parseable/api/dashboards';
 import { templates } from './assets/templates';
 
-const { toggleCreateDashboardModal, toggleCreateTileModal, toggleDeleteTileModal, handlePaging, toggleImportDashboardModal } =
+const { toggleCreateDashboardModal, toggleCreateTileModal, toggleDuplicateTileModal, toggleDeleteTileModal, handlePaging, toggleImportDashboardModal } =
 	dashboardsStoreReducers;
 
 const TilesView = (props: { onLayoutChange: (layout: Layout[]) => void }) => {
@@ -319,6 +319,78 @@ const NoTilesView = () => {
 	);
 };
 
+const findTileByTileId = (tiles: TileType[], tileId: string | null) => {
+	return _.find(tiles, tile => tile.tile_id === tileId)
+}
+
+const DuplicateTileModal = () => {
+	const [duplicateTileModalOpen, setDashboardsStore] = useDashboardsStore(store => store.duplicateTileModalOpen)
+	const [editTileId] = useDashboardsStore(store => store.editTileId);
+	const [activeDashboard] = useDashboardsStore(store => store.activeDashboard)
+	const [inputValue, setInputValue] = useState<string>('');
+	const onClose = useCallback(() => {
+		setDashboardsStore((store) => toggleDuplicateTileModal(store, false, null));
+	}, []);
+
+	const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+		setInputValue(e.target.value);
+	}, []);
+	const { updateDashboard, isUpdatingDashboard } = useDashboardsQuery({});
+
+	const handleSubmit = useCallback(() => {
+		const currentTile = findTileByTileId(activeDashboard?.tiles || [], editTileId);
+		if (currentTile && activeDashboard) {
+			const currentOrder = currentTile.order;
+			const tempTiles = [...activeDashboard.tiles] as EditTileType[];
+			const duplicatedTile = _.omit({ ...currentTile, name: inputValue }, 'tile_id');
+			tempTiles.splice(currentOrder, 0, duplicatedTile);
+			const updatedTilesWithOrder = assignOrderToTiles(tempTiles);
+			return updateDashboard({
+				dashboard: { ...activeDashboard, tiles: updatedTilesWithOrder },
+				onSuccess: () => {
+					onClose();
+				},
+			});
+		}
+	}, [inputValue, editTileId, activeDashboard]);
+
+	useEffect(() => {
+		const currentTile = findTileByTileId(activeDashboard?.tiles || [], editTileId);
+		if (currentTile) {
+			setInputValue(currentTile?.name);
+		}
+	}, [editTileId]);
+
+	return (
+		<Modal
+			opened={duplicateTileModalOpen}
+			onClose={onClose}
+			size="auto"
+			centered
+			styles={{
+				body: { padding: '0 1rem 1rem 1rem', width: 400 },
+				header: { padding: '1rem', paddingBottom: '0.4rem' },
+			}}
+			title={<Text style={{ fontSize: '0.9rem', fontWeight: 600 }}>Duplicate Tile</Text>}>
+			<Stack>
+				<Stack gap={12}>
+					<TextInput value={inputValue} onChange={handleInputChange} />
+				</Stack>
+				<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+					<Box>
+						<Button onClick={onClose} variant="outline">
+							Cancel
+						</Button>
+					</Box>
+					<Box>
+						<Button onClick={handleSubmit} loading={isUpdatingDashboard} disabled={_.isEmpty(inputValue)}>Done</Button>
+					</Box>
+				</Stack>
+			</Stack>
+		</Modal>
+	);
+};
+
 const Dashboard = () => {
 	const [dashboards] = useDashboardsStore((store) => store.dashboards);
 	const layoutRef = useRef<Layout[]>([]);
@@ -333,6 +405,7 @@ const Dashboard = () => {
 	return (
 		<Stack style={{ flex: 1 }} gap={0}>
 			<DeleteTileModal />
+			<DuplicateTileModal/>
 			<Toolbar layoutRef={layoutRef} />
 			<ImportDashboardModal/>
 			<TilesView onLayoutChange={onLayoutChange} />
