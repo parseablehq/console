@@ -73,7 +73,6 @@ export const useRole = () => {
 		retry: false,
 		onSuccess: (_data, variable) => {
 			variable.onSucces && variable.onSucces();
-			// getDefaultRoleMutation();
 		},
 		onError: (data: AxiosError) => {
 			if (isAxiosError(data) && data.response) {
