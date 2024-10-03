@@ -95,22 +95,8 @@
 		font-size: 0.65rem;
 	}
 
-	.fieldNameText {
-		width: 6rem;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		overflow-wrap: break-word;
-		max-width: 100%;
-		font-size: 0.65rem;
-	}
-
 	&:hover {
 		background-color: var(--mantine-color-gray-1);
-
-		.fieldNameText {
-			width: 4.5rem;
-		}
 
 		.onlyBtn {
 			display: flex;
@@ -120,10 +106,7 @@
 
 .fieldActionBtn {
 	font-size: 0.65rem;
-	font-weight: 700;
-	color: var(--mantine-color-gray-6);
+	font-weight: 500;
+	color: var(--mantine-color-brandPrimary-4);
 	cursor: pointer;
-	&:hover {
-		color: var(--mantine-color-brandPrimary-2);
-	}
 }
