@@ -69,8 +69,11 @@ export const useRole = () => {
 		isSuccess: updateDefaultRoleIsSuccess,
 		isLoading: updateDefaultRoleIsLoading,
 		mutate: updateDefaultRoleMutation,
-	} = useMutation((data: { roleName: string }) => putDeafultRole(data?.roleName), {
+	} = useMutation((data: { roleName: string; onSuccess?: () => void }) => putDeafultRole(data?.roleName), {
 		retry: false,
+		onSuccess: (_data, variables) => {
+			variables.onSuccess && variables.onSuccess();
+		},
 		onError: (data: AxiosError) => {
 			if (isAxiosError(data) && data.response) {
 				const error = data.response?.data as string;
