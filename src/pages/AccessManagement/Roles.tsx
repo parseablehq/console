@@ -35,7 +35,6 @@ const Roles: FC = () => {
 		getDefaultRoleData,
 		getDefaultRoleMutation,
 		updateDefaultRoleMutation,
-		updateDefaultRoleData,
 		updateRoleMutation,
 		getRolesData,
 		getRolesIsLoading,
@@ -74,12 +73,6 @@ const Roles: FC = () => {
 				<td>error</td>
 			</tr>
 		);
-
-	useEffect(() => {
-		if (updateDefaultRoleData?.status === 200) {
-			getDefaultRoleMutation();
-		}
-	}, [updateDefaultRoleData?.status]);
 
 	useEffect(() => {
 		if (getDefaultRoleData?.data) {
@@ -167,7 +160,7 @@ const Roles: FC = () => {
 	};
 
 	const handleSetDefaultRole = () => {
-		updateDefaultRoleMutation({ roleName: inputDefaultRole });
+		updateDefaultRoleMutation({ roleName: inputDefaultRole, onSucces: getDefaultRoleMutation });
 		handleDefaultRoleModalClose();
 	};
 
