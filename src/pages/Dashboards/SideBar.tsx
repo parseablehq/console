@@ -3,10 +3,12 @@ import { Button, px, ScrollArea, Stack, Text } from '@mantine/core';
 import classes from './styles/sidebar.module.css';
 import { IconFileDownload, IconPlus } from '@tabler/icons-react';
 import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import _ from 'lodash';
 import { Dashboard } from '@/@types/parseable/api/dashboards';
 import IconButton from '@/components/Button/IconButton';
+import { useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 const { selectDashboard, toggleCreateDashboardModal, toggleImportDashboardModal } = dashboardsStoreReducers;
 interface DashboardItemProps extends Dashboard {
@@ -33,8 +35,16 @@ const DashboardListItem = (props: DashboardItemProps) => {
 };
 
 const DashboardList = (props: { updateTimeRange: (dashboard: Dashboard) => void }) => {
+	const navigate = useNavigate();
+	const [searchParams] = useSearchParams();
+	const id = searchParams.get('id');
 	const [dashboards, setDashbaordsStore] = useDashboardsStore((store) => store.dashboards);
 	const [activeDashboardId] = useDashboardsStore((store) => store.activeDashboard?.dashboard_id);
+
+	useEffect(() => {
+		if (!id) return;
+		setDashbaordsStore((store) => selectDashboard(store, id));
+	}, [id]);
 
 	const onSelectDashboardId = useCallback(
 		(dashboardId: string) => {
@@ -42,7 +52,8 @@ const DashboardList = (props: { updateTimeRange: (dashboard: Dashboard) => void 
 
 			const dashboard = _.find(dashboards, (dashboard) => dashboard.dashboard_id === dashboardId);
 			dashboard && props.updateTimeRange(dashboard);
-			setDashbaordsStore((store) => selectDashboard(store, dashboardId));
+			navigate(`/dashboards?id=${dashboardId}`);
+			// setDashbaordsStore((store) => selectDashboard(store, dashboardId));
 		},
 		[activeDashboardId, dashboards],
 	);
