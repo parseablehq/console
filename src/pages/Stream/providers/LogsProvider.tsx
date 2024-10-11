@@ -688,7 +688,13 @@ const setCleanStoreForStreamChange = (store: LogsStore) => {
 	const { tableOpts, timeRange, alerts } = store;
 	const { interval, type } = timeRange;
 	const duration = _.find(FIXED_DURATIONS, (duration) => duration.milliseconds === timeRange.interval);
-	const updatedTimeRange = interval && type === 'fixed' ? { timeRange: getDefaultTimeRange(duration) } : { timeRange };
+	let updatedTimeRange = {};
+	if (interval && type === 'fixed') {
+		const newTimeRange = getDefaultTimeRange(duration);
+		if (!_.isEqual(newTimeRange, timeRange)) {
+			updatedTimeRange = { timeRange: newTimeRange };
+		}
+	}
 	return {
 		...initialState,
 		tableOpts: {

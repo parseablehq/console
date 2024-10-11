@@ -18,6 +18,7 @@ import { RetryBtn } from '@/components/Button/Retry';
 import LogsView from './Views/Explore/LogsView';
 import { useGetStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useGetStreamInfo } from '@/hooks/useGetStreamInfo';
+import { useLogsStore, logsStoreReducers } from './providers/LogsProvider';
 
 const { streamChangeCleanup } = streamStoreReducers;
 
@@ -62,6 +63,12 @@ const Stream: FC = () => {
 		setStreamStore(streamChangeCleanup);
 		refetchSchema();
 	}, [currentStream]);
+
+	const [, setLogsStore] = useLogsStore((store) => store);
+	const { setCleanStoreForStreamChange } = logsStoreReducers;
+	useEffect(() => {
+		setLogsStore(setCleanStoreForStreamChange);
+	}, []);
 
 	useEffect(() => {
 		if (!_.isEmpty(currentStream)) {
