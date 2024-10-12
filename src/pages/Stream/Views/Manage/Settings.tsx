@@ -316,7 +316,6 @@ const Settings = (props: {
 	isRetentionError: boolean;
 	hasSettingsAccess: boolean;
 }) => {
-	const [isStandAloneMode] = useAppStore((store) => store.isStandAloneMode);
 	return (
 		<Stack className={classes.sectionContainer} gap={0} w="100%">
 			<Header />
@@ -333,14 +332,12 @@ const Settings = (props: {
 							<RestrictedView />
 						) : (
 							<>
-								{!isStandAloneMode && (
-									<HotTierConfig
-										updateHotTierInfo={props.updateHotTierInfo}
-										deleteHotTierInfo={props.deleteHotTierInfo}
-										isDeleting={props.isDeleting}
-										isUpdating={props.isUpdating}
-									/>
-								)}
+								<HotTierConfig
+									updateHotTierInfo={props.updateHotTierInfo}
+									deleteHotTierInfo={props.deleteHotTierInfo}
+									isDeleting={props.isDeleting}
+									isUpdating={props.isUpdating}
+								/>
 								<Divider />
 								<Stack className={classes.fieldsContainer} style={{ border: 'none', flex: 1, gap: 4 }}>
 									<Text className={classes.fieldTitle}>Retention</Text>
