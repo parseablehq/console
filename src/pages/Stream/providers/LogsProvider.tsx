@@ -278,7 +278,7 @@ type LogsStoreReducers = {
 	makeExportData: (data: Log[], headers: string[], type: string) => Log[];
 	setRetention: (store: LogsStore, retention: { description: string; duration: string }) => ReducerOutput;
 
-	setCleanStoreForStreamChange: (store: LogsStore, skipTimeRangeUpdate: boolean) => ReducerOutput;
+	setCleanStoreForStreamChange: (store: LogsStore) => ReducerOutput;
 	updateSavedFilterId: (store: LogsStore, savedFilterId: string | null) => ReducerOutput;
 	setInstantSearchValue: (store: LogsStore, value: string) => ReducerOutput;
 	applyInstantSearch: (store: LogsStore) => ReducerOutput;
@@ -684,7 +684,7 @@ const getCleanStoreForRefetch = (store: LogsStore) => {
 	};
 };
 
-const setCleanStoreForStreamChange = (store: LogsStore, skipTimeRangeUpdate: boolean = false) => {
+const setCleanStoreForStreamChange = (store: LogsStore) => {
 	const { tableOpts, timeRange, alerts } = store;
 	const { interval, type } = timeRange;
 	const duration = _.find(FIXED_DURATIONS, (duration) => duration.milliseconds === timeRange.interval);
@@ -705,7 +705,7 @@ const setCleanStoreForStreamChange = (store: LogsStore, skipTimeRangeUpdate: boo
 			pinnedColumns: [],
 			filters: {},
 		},
-		...(skipTimeRangeUpdate ? {timeRange} : updatedTimeRange),
+		...(timeRange.startTime !== getDefaultTimeRange().startTime ? { timeRange } : updatedTimeRange),
 		alerts,
 	};
 };
