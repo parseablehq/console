@@ -1,6 +1,6 @@
 import { Box, Stack, rem } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
-import { FC, useCallback, useEffect } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import LiveLogTable from './Views/LiveTail/LiveLogTable';
 import ViewLog from './components/ViewLog';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
@@ -18,7 +18,8 @@ import { RetryBtn } from '@/components/Button/Retry';
 import LogsView from './Views/Explore/LogsView';
 import { useGetStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useGetStreamInfo } from '@/hooks/useGetStreamInfo';
-import { useLogsStore, logsStoreReducers } from './providers/LogsProvider';
+import { useLogsStore, logsStoreReducers, getDefaultTimeRange } from './providers/LogsProvider';
+import dayjs from 'dayjs';
 
 const { streamChangeCleanup } = streamStoreReducers;
 
@@ -43,9 +44,12 @@ const Stream: FC = () => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [maximized] = useAppStore((store) => store.maximized);
 	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
+	const [timeRangeInitialised, setTimeRangeInitialised] = useState(false)
 	const queryEngine = instanceConfig?.queryEngine;
 	const getInfoFetchedOnMount = queryEngine === 'Parseable' ? false : currentStream !== null;
 	const [sideBarOpen, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
+	const { setTimeRange } = logsStoreReducers;
+	const [, setLogsStore] = useLogsStore((store) => store);
 	const { getStreamInfoRefetch, getStreamInfoLoading, getStreamInfoRefetching } = useGetStreamInfo(
 		currentStream || '',
 		getInfoFetchedOnMount,
@@ -59,16 +63,23 @@ const Stream: FC = () => {
 		isRefetching: isSchemaRefetching,
 	} = useGetStreamSchema({ streamName: currentStream || '' });
 
+	useEffect(() => {
+		const updatedTimeRange = getDefaultTimeRange();
+		setLogsStore((store) => {
+			const newStore = setTimeRange(store, {
+				...updatedTimeRange,
+				startTime: dayjs(updatedTimeRange.startTime),
+				endTime: dayjs(updatedTimeRange.endTime)
+			});
+			setTimeRangeInitialised(true);
+			return newStore;
+		});
+	}, []);
+
 	const fetchSchema = useCallback(() => {
 		setStreamStore(streamChangeCleanup);
 		refetchSchema();
 	}, [currentStream]);
-
-	const [, setLogsStore] = useLogsStore((store) => store);
-	const { setCleanStoreForStreamChange } = logsStoreReducers;
-	useEffect(() => {
-		setLogsStore(setCleanStoreForStreamChange);
-	}, []);
 
 	useEffect(() => {
 		if (!_.isEmpty(currentStream)) {
@@ -80,11 +91,11 @@ const Stream: FC = () => {
 			}
 		}
 	}, [currentStream]);
+	if (!currentStream || !_.includes(STREAM_VIEWS, view) || !timeRangeInitialised) {
+		return null
+	}
 
 	const sideBarWidth = sideBarOpen ? rem(180) : SECONDARY_SIDEBAR_WIDTH;
-
-	if (!currentStream) return null;
-	if (!_.includes(STREAM_VIEWS, view)) return null;
 
 	const isSchemaFetching = isSchemaRefetching || isSchemaLoading;
 	const isInfoLoading =

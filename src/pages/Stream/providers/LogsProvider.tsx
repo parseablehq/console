@@ -113,7 +113,7 @@ type LiveTailConfig = {
 	showLiveTail: boolean;
 };
 
-const getDefaultTimeRange = (duration: FixedDuration = DEFAULT_FIXED_DURATIONS) => {
+export const getDefaultTimeRange = (duration: FixedDuration = DEFAULT_FIXED_DURATIONS) => {
 	const now = dayjs().startOf('minute');
 	const { milliseconds } = duration;
 
@@ -278,7 +278,7 @@ type LogsStoreReducers = {
 	makeExportData: (data: Log[], headers: string[], type: string) => Log[];
 	setRetention: (store: LogsStore, retention: { description: string; duration: string }) => ReducerOutput;
 
-	setCleanStoreForStreamChange: (store: LogsStore) => ReducerOutput;
+	setCleanStoreForStreamChange: (store: LogsStore, skipTimeRangeUpdate: boolean) => ReducerOutput;
 	updateSavedFilterId: (store: LogsStore, savedFilterId: string | null) => ReducerOutput;
 	setInstantSearchValue: (store: LogsStore, value: string) => ReducerOutput;
 	applyInstantSearch: (store: LogsStore) => ReducerOutput;
@@ -527,13 +527,13 @@ const filterAndSortData = (
 	const filteredData = _.isEmpty(filters)
 		? data
 		: (_.reduce(
-				data,
-				(acc: Log[], d: Log) => {
-					const doesMatch = _.some(filters, (value, key) => _.includes(value, _.toString(d[key])));
-					return doesMatch ? [...acc, d] : acc;
-				},
-				[],
-		  ) as Log[]);
+			data,
+			(acc: Log[], d: Log) => {
+				const doesMatch = _.some(filters, (value, key) => _.includes(value, _.toString(d[key])));
+				return doesMatch ? [...acc, d] : acc;
+			},
+			[],
+		) as Log[]);
 	const sortedData = _.orderBy(filteredData, [sortKey], [sortOrder]);
 	return sortedData;
 };
@@ -544,17 +544,17 @@ const searchAndSortData = (opts: { searchValue: string }, data: Log[]) => {
 	const filteredData = _.isEmpty(searchValue)
 		? data
 		: (_.reduce(
-				data,
-				(acc: Log[], d: Log) => {
-					const allValues = _.chain(d)
-						.values()
-						.map((e) => _.toString(e))
-						.value();
-					const doesMatch = _.some(allValues, (str) => regExp.test(str));
-					return doesMatch ? [...acc, d] : acc;
-				},
-				[],
-		  ) as Log[]);
+			data,
+			(acc: Log[], d: Log) => {
+				const allValues = _.chain(d)
+					.values()
+					.map((e) => _.toString(e))
+					.value();
+				const doesMatch = _.some(allValues, (str) => regExp.test(str));
+				return doesMatch ? [...acc, d] : acc;
+			},
+			[],
+		) as Log[]);
 	const sortedData = _.orderBy(filteredData, [defaultSortKey], [defaultSortOrder]);
 	return sortedData;
 };
@@ -684,17 +684,11 @@ const getCleanStoreForRefetch = (store: LogsStore) => {
 	};
 };
 
-const setCleanStoreForStreamChange = (store: LogsStore) => {
+const setCleanStoreForStreamChange = (store: LogsStore, skipTimeRangeUpdate: boolean = false) => {
 	const { tableOpts, timeRange, alerts } = store;
 	const { interval, type } = timeRange;
 	const duration = _.find(FIXED_DURATIONS, (duration) => duration.milliseconds === timeRange.interval);
-	let updatedTimeRange = {};
-	if (interval && type === 'fixed') {
-		const newTimeRange = getDefaultTimeRange(duration);
-		if (!_.isEqual(newTimeRange, timeRange)) {
-			updatedTimeRange = { timeRange: newTimeRange };
-		}
-	}
+	const updatedTimeRange = interval && type === 'fixed' ? { timeRange: getDefaultTimeRange(duration) } : { timeRange };
 	return {
 		...initialState,
 		tableOpts: {
@@ -711,7 +705,7 @@ const setCleanStoreForStreamChange = (store: LogsStore) => {
 			pinnedColumns: [],
 			filters: {},
 		},
-		...updatedTimeRange,
+		...(skipTimeRangeUpdate ? {timeRange} : updatedTimeRange),
 		alerts,
 	};
 };
