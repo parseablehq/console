@@ -53,7 +53,6 @@ const DashboardList = (props: { updateTimeRange: (dashboard: Dashboard) => void 
 			const dashboard = _.find(dashboards, (dashboard) => dashboard.dashboard_id === dashboardId);
 			dashboard && props.updateTimeRange(dashboard);
 			navigate(`/dashboards?id=${dashboardId}`);
-			// setDashbaordsStore((store) => selectDashboard(store, dashboardId));
 		},
 		[activeDashboardId, dashboards],
 	);
