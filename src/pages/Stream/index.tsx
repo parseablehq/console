@@ -117,7 +117,11 @@ const Stream: FC = () => {
 					isSchemaError ? (
 						<ErrorView error={schemaFetchErrorMessage} onRetry={fetchSchema} />
 					) : (
-						<LogsView schemaLoading={isSchemaFetching} infoLoading={isInfoLoading} />
+						<LogsView
+							schemaLoading={isSchemaFetching}
+							infoLoading={isInfoLoading}
+							intialTimeRangeSet={isInitialTimeRangeSet}
+						/>
 					)
 				) : view === 'live-tail' ? (
 					<LiveLogTable />

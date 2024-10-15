@@ -689,8 +689,7 @@ const setCleanStoreForStreamChange = (store: LogsStore) => {
 	const { tableOpts, timeRange, alerts } = store;
 	const { interval, type } = timeRange;
 	const duration = _.find(FIXED_DURATIONS, (duration) => duration.milliseconds === timeRange.interval);
-	const updatedTimeRange = interval && type === 'fixed' ? { ...getDefaultTimeRange(duration) } : { ...timeRange };
-	const isTimeRangeSet = _.isEqual(timeRange, updatedTimeRange);
+	const updatedTimeRange = interval && type === 'fixed' ? { timeRange: getDefaultTimeRange(duration) } : { timeRange };
 	return {
 		...initialState,
 		tableOpts: {
@@ -707,7 +706,7 @@ const setCleanStoreForStreamChange = (store: LogsStore) => {
 			pinnedColumns: [],
 			filters: {},
 		},
-		timeRange: isTimeRangeSet ? timeRange : updatedTimeRange,
+		...updatedTimeRange,
 		alerts,
 	};
 };
