@@ -19,9 +19,10 @@ import { MantineReactTable } from 'mantine-react-table';
 import Column from '../../components/Column';
 import { Log } from '@/@types/parseable/api/query';
 import { CopyIcon } from './JSONView';
+import timeRangeUtils from '@/utils/timeRangeUtils';
 
 const { setSelectedLog } = logsStoreReducers;
-
+const { formatDateWithTimezone } = timeRangeUtils;
 const TableContainer = (props: { children: ReactNode }) => {
 	return <Box className={tableStyles.container}>{props.children}</Box>;
 };
@@ -38,9 +39,10 @@ const makeHeaderOpts = (headers: string[], isSecureHTTPContext: boolean) => {
 					grow: true,
 					Cell: ({ cell }: { cell: any }) => {
 						const value = _.isFunction(cell.getValue) ? cell.getValue() : '';
+						const isTimestamp = cell?.column?.id === 'p_timestamp';
 						return (
 							<div className={tableStyles.customCellContainer} style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-								{value}
+								{isTimestamp ? formatDateWithTimezone(`${value}Z`, 'hh:mm:ss.SSS A DD MMM YY z') : value}
 								<div className={tableStyles.copyIconContainer}>
 									{isSecureHTTPContext ? value && <CopyIcon value={value} /> : null}
 								</div>

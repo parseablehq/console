@@ -10,9 +10,11 @@ import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useFilterStore, filterStoreReducers } from '../providers/FilterProvider';
 import { LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 import _ from 'lodash';
-const { setTimeRange } = logsStoreReducers;
+import timeRangeUtils from '@/utils/timeRangeUtils';
 
+const { setTimeRange } = logsStoreReducers;
 const { parseQuery } = filterStoreReducers;
+const { makeTimeRangeLabel } = timeRangeUtils;
 
 type CompactInterval = 'minute' | 'day' | 'hour' | 'quarter-hour' | 'half-hour' | 'month';
 
@@ -233,10 +235,12 @@ function ChartTooltip({ payload }: ChartTooltipProps) {
 
 	const { aboveAvgPercent, events, startTime, endTime } = payload[0]?.payload as GraphTickItem;
 	const isAboveAvg = aboveAvgPercent > 0;
+	const label = makeTimeRangeLabel(startTime.toDate(), endTime.toDate());
+
 	return (
 		<Paper px="md" py="sm" withBorder shadow="md" radius="md">
 			<Text fw={600} mb={5}>
-				{`${startTime.format('DD MMM YY hh:mm A')} - ${endTime.format('DD MMM YY hh:mm A')}`}
+				{label}
 			</Text>
 			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 				<Text>Events</Text>
