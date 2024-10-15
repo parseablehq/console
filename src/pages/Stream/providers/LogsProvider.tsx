@@ -242,6 +242,7 @@ type LogsStoreReducers = {
 	resetQuickFilters: (store: LogsStore) => ReducerOutput;
 	streamChangeCleanup: (store: LogsStore) => ReducerOutput;
 	toggleQueryBuilder: (store: LogsStore, val?: boolean) => ReducerOutput;
+	setInitialTimeRange: (store: LogsStore) => ReducerOutput;
 	resetCustQuerySearchState: (store: LogsStore) => ReducerOutput;
 	toggleCustQuerySearchViewMode: (store: LogsStore, targetMode: 'sql' | 'filters') => ReducerOutput;
 	toggleDeleteModal: (store: LogsStore, val?: boolean) => ReducerOutput;
@@ -811,16 +812,11 @@ const setAndFilterData = (store: LogsStore, filterKey: string, filterValues: str
 	};
 };
 
-export const updateTimeRange = (store: LogsStore) => {
+const setInitialTimeRange = (_store: LogsStore) => {
 	const updatedTimeRange = getDefaultTimeRange();
-	const startTime = dayjs(updatedTimeRange.startTime);
-	const endTime = dayjs(updatedTimeRange.endTime);
-
-	return setTimeRange(store, {
-		...updatedTimeRange,
-		startTime,
-		endTime,
-	});
+	return {
+		timeRange: { ...updatedTimeRange, startTime: updatedTimeRange.startTime, endTime: updatedTimeRange.endTime },
+	};
 };
 
 const applyInstantSearch = (store: LogsStore) => {
@@ -974,6 +970,7 @@ const logsStoreReducers: LogsStoreReducers = {
 	resetQuickFilters,
 	streamChangeCleanup,
 	toggleQueryBuilder,
+	setInitialTimeRange,
 	resetCustQuerySearchState,
 	toggleCustQuerySearchViewMode,
 	toggleAlertsModal,

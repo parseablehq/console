@@ -18,9 +18,10 @@ import { RetryBtn } from '@/components/Button/Retry';
 import LogsView from './Views/Explore/LogsView';
 import { useGetStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useGetStreamInfo } from '@/hooks/useGetStreamInfo';
-import { useLogsStore, updateTimeRange } from './providers/LogsProvider';
+import { logsStoreReducers, useLogsStore } from './providers/LogsProvider';
 
 const { streamChangeCleanup } = streamStoreReducers;
+const { setInitialTimeRange } = logsStoreReducers;
 
 const ErrorView = (props: { error: string | null; onRetry: () => void }) => {
 	return (
@@ -43,7 +44,7 @@ const Stream: FC = () => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [maximized] = useAppStore((store) => store.maximized);
 	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
-	const [timeRangeInitialised, setTimeRangeInitialised] = useState(false);
+	const [isInitialTimeRangeSet, setInitialTimeRangeSet] = useState(false);
 	const queryEngine = instanceConfig?.queryEngine;
 	const getInfoFetchedOnMount = queryEngine === 'Parseable' ? false : currentStream !== null;
 	const [sideBarOpen, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
@@ -62,13 +63,8 @@ const Stream: FC = () => {
 	} = useGetStreamSchema({ streamName: currentStream || '' });
 
 	useEffect(() => {
-		setLogsStore((store) => {
-			if (!timeRangeInitialised) {
-				setTimeRangeInitialised(true);
-				return updateTimeRange(store);
-			}
-			return store;
-		});
+		setLogsStore((store) => setInitialTimeRange(store));
+		setInitialTimeRangeSet(true);
 	}, []);
 
 	const fetchSchema = useCallback(() => {
@@ -86,7 +82,7 @@ const Stream: FC = () => {
 			}
 		}
 	}, [currentStream]);
-	if (!currentStream || !_.includes(STREAM_VIEWS, view) || !timeRangeInitialised) {
+	if (!currentStream || !_.includes(STREAM_VIEWS, view) || !isInitialTimeRangeSet) {
 		return null;
 	}
 
