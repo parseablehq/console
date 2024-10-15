@@ -113,7 +113,7 @@ type LiveTailConfig = {
 	showLiveTail: boolean;
 };
 
-export const getDefaultTimeRange = (duration: FixedDuration = DEFAULT_FIXED_DURATIONS) => {
+const getDefaultTimeRange = (duration: FixedDuration = DEFAULT_FIXED_DURATIONS) => {
 	const now = dayjs().startOf('minute');
 	const { milliseconds } = duration;
 
@@ -808,6 +808,18 @@ const setAndFilterData = (store: LogsStore, filterKey: string, filterValues: str
 			totalPages: getTotalPages(filteredData, tableOpts.perPage),
 		},
 	};
+};
+
+export const updateTimeRange = (store: any) => {
+	const updatedTimeRange = getDefaultTimeRange();
+	const startTime = dayjs(updatedTimeRange.startTime);
+	const endTime = dayjs(updatedTimeRange.endTime);
+
+	return setTimeRange(store, {
+		...updatedTimeRange,
+		startTime,
+		endTime,
+	});
 };
 
 const applyInstantSearch = (store: LogsStore) => {

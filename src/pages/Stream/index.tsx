@@ -18,8 +18,7 @@ import { RetryBtn } from '@/components/Button/Retry';
 import LogsView from './Views/Explore/LogsView';
 import { useGetStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useGetStreamInfo } from '@/hooks/useGetStreamInfo';
-import { useLogsStore, logsStoreReducers, getDefaultTimeRange } from './providers/LogsProvider';
-import dayjs from 'dayjs';
+import { useLogsStore, updateTimeRange } from './providers/LogsProvider';
 
 const { streamChangeCleanup } = streamStoreReducers;
 
@@ -48,7 +47,6 @@ const Stream: FC = () => {
 	const queryEngine = instanceConfig?.queryEngine;
 	const getInfoFetchedOnMount = queryEngine === 'Parseable' ? false : currentStream !== null;
 	const [sideBarOpen, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
-	const { setTimeRange } = logsStoreReducers;
 	const [, setLogsStore] = useLogsStore((store) => store);
 	const { getStreamInfoRefetch, getStreamInfoLoading, getStreamInfoRefetching } = useGetStreamInfo(
 		currentStream || '',
@@ -64,15 +62,12 @@ const Stream: FC = () => {
 	} = useGetStreamSchema({ streamName: currentStream || '' });
 
 	useEffect(() => {
-		const updatedTimeRange = getDefaultTimeRange();
 		setLogsStore((store) => {
-			const newStore = setTimeRange(store, {
-				...updatedTimeRange,
-				startTime: dayjs(updatedTimeRange.startTime),
-				endTime: dayjs(updatedTimeRange.endTime)
-			});
-			setTimeRangeInitialised(true);
-			return newStore;
+			if (!timeRangeInitialised) {
+				setTimeRangeInitialised(true);
+				return updateTimeRange(store);
+			}
+			return store;
 		});
 	}, []);
 
