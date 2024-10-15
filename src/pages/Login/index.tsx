@@ -52,11 +52,12 @@ const Login: FC = () => {
 							</Text>
 
 							{error && (
-								<Text mt="xs" className={errorStyle}>
+								<Text mt="xs" id="login-error-message" className={errorStyle}>
 									{error}
 								</Text>
 							)}
 							<TextInput
+								id="username-field"
 								mt="sm"
 								className={formInput}
 								placeholder="J.Doe"
@@ -66,13 +67,14 @@ const Login: FC = () => {
 							/>
 							<PasswordInput
 								mt="lg"
+								id="password-field"
 								className={formInput}
 								placeholder="**********"
 								label="Password"
 								withAsterisk
 								{...getInputProps('password')}
 							/>
-							<Button type="submit" my="xl" className={loginBtnStyle} disabled={!isValid()}>
+							<Button id="login-submit" type="submit" my="xl" className={loginBtnStyle} disabled={!isValid()}>
 								Login
 							</Button>
 
