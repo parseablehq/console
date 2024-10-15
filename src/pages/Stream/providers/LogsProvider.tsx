@@ -527,13 +527,13 @@ const filterAndSortData = (
 	const filteredData = _.isEmpty(filters)
 		? data
 		: (_.reduce(
-			data,
-			(acc: Log[], d: Log) => {
-				const doesMatch = _.some(filters, (value, key) => _.includes(value, _.toString(d[key])));
-				return doesMatch ? [...acc, d] : acc;
-			},
-			[],
-		) as Log[]);
+				data,
+				(acc: Log[], d: Log) => {
+					const doesMatch = _.some(filters, (value, key) => _.includes(value, _.toString(d[key])));
+					return doesMatch ? [...acc, d] : acc;
+				},
+				[],
+		  ) as Log[]);
 	const sortedData = _.orderBy(filteredData, [sortKey], [sortOrder]);
 	return sortedData;
 };
@@ -544,17 +544,17 @@ const searchAndSortData = (opts: { searchValue: string }, data: Log[]) => {
 	const filteredData = _.isEmpty(searchValue)
 		? data
 		: (_.reduce(
-			data,
-			(acc: Log[], d: Log) => {
-				const allValues = _.chain(d)
-					.values()
-					.map((e) => _.toString(e))
-					.value();
-				const doesMatch = _.some(allValues, (str) => regExp.test(str));
-				return doesMatch ? [...acc, d] : acc;
-			},
-			[],
-		) as Log[]);
+				data,
+				(acc: Log[], d: Log) => {
+					const allValues = _.chain(d)
+						.values()
+						.map((e) => _.toString(e))
+						.value();
+					const doesMatch = _.some(allValues, (str) => regExp.test(str));
+					return doesMatch ? [...acc, d] : acc;
+				},
+				[],
+		  ) as Log[]);
 	const sortedData = _.orderBy(filteredData, [defaultSortKey], [defaultSortOrder]);
 	return sortedData;
 };
@@ -688,9 +688,7 @@ const setCleanStoreForStreamChange = (store: LogsStore) => {
 	const { tableOpts, timeRange, alerts } = store;
 	const { interval, type } = timeRange;
 	const duration = _.find(FIXED_DURATIONS, (duration) => duration.milliseconds === timeRange.interval);
-	const updatedTimeRange = interval && type === 'fixed'
-		? { ...getDefaultTimeRange(duration) }
-		: { ...timeRange };
+	const updatedTimeRange = interval && type === 'fixed' ? { ...getDefaultTimeRange(duration) } : { ...timeRange };
 	const isTimeRangeSet = _.isEqual(timeRange, updatedTimeRange);
 	return {
 		...initialState,
@@ -1010,7 +1008,7 @@ const logsStoreReducers: LogsStoreReducers = {
 	setDisabledColumns,
 	setOrderedHeaders,
 	toggleWordWrap,
-	toggleWrapDisabledColumns
+	toggleWrapDisabledColumns,
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };

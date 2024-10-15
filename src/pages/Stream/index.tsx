@@ -43,7 +43,7 @@ const Stream: FC = () => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [maximized] = useAppStore((store) => store.maximized);
 	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
-	const [timeRangeInitialised, setTimeRangeInitialised] = useState(false)
+	const [timeRangeInitialised, setTimeRangeInitialised] = useState(false);
 	const queryEngine = instanceConfig?.queryEngine;
 	const getInfoFetchedOnMount = queryEngine === 'Parseable' ? false : currentStream !== null;
 	const [sideBarOpen, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
@@ -87,7 +87,7 @@ const Stream: FC = () => {
 		}
 	}, [currentStream]);
 	if (!currentStream || !_.includes(STREAM_VIEWS, view) || !timeRangeInitialised) {
-		return null
+		return null;
 	}
 
 	const sideBarWidth = sideBarOpen ? rem(180) : SECONDARY_SIDEBAR_WIDTH;
