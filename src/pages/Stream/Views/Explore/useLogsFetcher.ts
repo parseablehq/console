@@ -1,5 +1,5 @@
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { useQueryLogs } from '@/hooks/useQueryLogs';
 import { useFetchCount } from '@/hooks/useQueryResult';
@@ -10,7 +10,7 @@ const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean })
 	const { schemaLoading, infoLoading } = props;
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [{ tableOpts, timeRange }, setLogsStore] = useLogsStore((store) => store);
-	const isTimeRangeSetRef = useRef(true);
+	const [isInitialTimeRangeSet, setInitialTimeRangeSet] = useState(true);
 	const { currentOffset, currentPage, pageData } = tableOpts;
 	const { getQueryData, loading: logsLoading, error: errorMessage } = useQueryLogs();
 	const { refetchCount, isCountLoading, isCountRefetching } = useFetchCount();
@@ -19,10 +19,10 @@ const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean })
 	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
 
 	useEffect(() => {
-		if (isTimeRangeSetRef.current) {
-			isTimeRangeSetRef.current = false;
-		} else {
+		if (!isInitialTimeRangeSet) {
 			setLogsStore(setCleanStoreForStreamChange);
+		} else {
+			setInitialTimeRangeSet(false);
 		}
 	}, [currentStream]);
 
