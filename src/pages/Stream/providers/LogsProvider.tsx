@@ -814,7 +814,7 @@ const setAndFilterData = (store: LogsStore, filterKey: string, filterValues: str
 const setInitialTimeRange = (_store: LogsStore) => {
 	const updatedTimeRange = getDefaultTimeRange();
 	return {
-		timeRange: { ...updatedTimeRange, startTime: updatedTimeRange.startTime, endTime: updatedTimeRange.endTime },
+		timeRange: updatedTimeRange,
 	};
 };
 

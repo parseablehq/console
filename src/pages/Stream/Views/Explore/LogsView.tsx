@@ -5,12 +5,11 @@ import LogTable from './StaticLogTable';
 import useLogsFetcher from './useLogsFetcher';
 import LogsViewConfig from './LogsViewConfig';
 
-const LogsView = (props: { schemaLoading: boolean; infoLoading: boolean; intialTimeRangeSet: boolean }) => {
-	const { schemaLoading, infoLoading, intialTimeRangeSet } = props;
+const LogsView = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
+	const { schemaLoading, infoLoading } = props;
 	const { errorMessage, hasNoData, showTable, isFetchingCount, logsLoading } = useLogsFetcher({
 		schemaLoading,
 		infoLoading,
-		intialTimeRangeSet,
 	});
 	const [viewMode] = useLogsStore((store) => store.viewMode);
 	const viewOpts = {
