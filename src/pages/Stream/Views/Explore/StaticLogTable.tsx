@@ -42,7 +42,7 @@ const makeHeaderOpts = (headers: string[], isSecureHTTPContext: boolean) => {
 						const isTimestamp = cell?.column?.id === 'p_timestamp';
 						return (
 							<div className={tableStyles.customCellContainer} style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-								{isTimestamp ? formatDateWithTimezone(`${value}Z`, 'hh:mm:ss.SSS A DD MMM YY z') : value}
+								{isTimestamp ? formatDateWithTimezone(`${value}Z`, 'hh:mm:ss.SSS A DD MMM YY z') : `${value}`}
 								<div className={tableStyles.copyIconContainer}>
 									{isSecureHTTPContext ? value && <CopyIcon value={value} /> : null}
 								</div>

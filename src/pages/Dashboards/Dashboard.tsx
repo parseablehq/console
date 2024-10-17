@@ -196,7 +196,7 @@ const ImportDashboardModal = () => {
 	}, []);
 
 	const onImport = useCallback(() => {
-		if (activeDashboard === null || file === null) return;
+		if (file === null) return;
 
 		if (file) {
 			const reader = new FileReader();
@@ -209,7 +209,9 @@ const ImportDashboardModal = () => {
 					if (_.isEmpty(newDashboard)) return;
 
 					return makePostCall(newDashboard)
-				} catch (error) {}
+				} catch (error) {
+					console.log("error", error)
+				}
 			};
 			reader.readAsText(file);
 		} else {
