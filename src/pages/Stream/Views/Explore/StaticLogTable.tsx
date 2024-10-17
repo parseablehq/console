@@ -36,12 +36,13 @@ const makeHeaderOpts = (headers: string[], isSecureHTTPContext: boolean) => {
 					header,
 					grow: true,
 					Cell: ({ cell }: { cell: any }) => {
-						const value = _.isFunction(cell.getValue) ? `${cell.getValue()}` : '';
+						const value = _.isFunction(cell.getValue) ? cell.getValue() : '';
+						const sanitizedValue = _.isBoolean(value) || value ? _.toString(value) : '';
 						return (
 							<div className={tableStyles.customCellContainer} style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-								{value}
+								{sanitizedValue}
 								<div className={tableStyles.copyIconContainer}>
-									{isSecureHTTPContext ? value && <CopyIcon value={value} /> : null}
+									{isSecureHTTPContext ? sanitizedValue && <CopyIcon value={sanitizedValue} /> : null}
 								</div>
 							</div>
 						);
