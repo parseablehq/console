@@ -1,6 +1,6 @@
 import { Box, Stack, rem } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
-import { FC, useCallback, useEffect } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import LiveLogTable from './Views/LiveTail/LiveLogTable';
 import ViewLog from './components/ViewLog';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
@@ -18,8 +18,10 @@ import { RetryBtn } from '@/components/Button/Retry';
 import LogsView from './Views/Explore/LogsView';
 import { useGetStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useGetStreamInfo } from '@/hooks/useGetStreamInfo';
+import { logsStoreReducers, useLogsStore } from './providers/LogsProvider';
 
 const { streamChangeCleanup } = streamStoreReducers;
+const { setInitialTimeRange } = logsStoreReducers;
 
 const ErrorView = (props: { error: string | null; onRetry: () => void }) => {
 	return (
@@ -42,9 +44,11 @@ const Stream: FC = () => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [maximized] = useAppStore((store) => store.maximized);
 	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
+	const [isInitialTimeRangeSet, setInitialTimeRangeSet] = useState(false);
 	const queryEngine = instanceConfig?.queryEngine;
 	const getInfoFetchedOnMount = queryEngine === 'Parseable' ? false : currentStream !== null;
 	const [sideBarOpen, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
+	const [, setLogsStore] = useLogsStore((store) => store);
 	const { getStreamInfoRefetch, getStreamInfoLoading, getStreamInfoRefetching } = useGetStreamInfo(
 		currentStream || '',
 		getInfoFetchedOnMount,
@@ -57,6 +61,11 @@ const Stream: FC = () => {
 		isError: isSchemaError,
 		isRefetching: isSchemaRefetching,
 	} = useGetStreamSchema({ streamName: currentStream || '' });
+
+	useEffect(() => {
+		setLogsStore((store) => setInitialTimeRange(store));
+		setInitialTimeRangeSet(true);
+	}, []);
 
 	const fetchSchema = useCallback(() => {
 		setStreamStore(streamChangeCleanup);
@@ -73,11 +82,11 @@ const Stream: FC = () => {
 			}
 		}
 	}, [currentStream]);
+	if (!currentStream || !_.includes(STREAM_VIEWS, view) || !isInitialTimeRangeSet) {
+		return null;
+	}
 
 	const sideBarWidth = sideBarOpen ? rem(180) : SECONDARY_SIDEBAR_WIDTH;
-
-	if (!currentStream) return null;
-	if (!_.includes(STREAM_VIEWS, view)) return null;
 
 	const isSchemaFetching = isSchemaRefetching || isSchemaLoading;
 	const isInfoLoading =

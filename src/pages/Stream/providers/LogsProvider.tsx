@@ -242,6 +242,7 @@ type LogsStoreReducers = {
 	resetQuickFilters: (store: LogsStore) => ReducerOutput;
 	streamChangeCleanup: (store: LogsStore) => ReducerOutput;
 	toggleQueryBuilder: (store: LogsStore, val?: boolean) => ReducerOutput;
+	setInitialTimeRange: (store: LogsStore) => ReducerOutput;
 	resetCustQuerySearchState: (store: LogsStore) => ReducerOutput;
 	toggleCustQuerySearchViewMode: (store: LogsStore, targetMode: 'sql' | 'filters') => ReducerOutput;
 	toggleDeleteModal: (store: LogsStore, val?: boolean) => ReducerOutput;
@@ -810,6 +811,13 @@ const setAndFilterData = (store: LogsStore, filterKey: string, filterValues: str
 	};
 };
 
+const setInitialTimeRange = (_store: LogsStore) => {
+	const updatedTimeRange = getDefaultTimeRange();
+	return {
+		timeRange: updatedTimeRange,
+	};
+};
+
 const applyInstantSearch = (store: LogsStore) => {
 	const { data, tableOpts } = store;
 	const { instantSearchValue: searchValue } = tableOpts;
@@ -961,6 +969,7 @@ const logsStoreReducers: LogsStoreReducers = {
 	resetQuickFilters,
 	streamChangeCleanup,
 	toggleQueryBuilder,
+	setInitialTimeRange,
 	resetCustQuerySearchState,
 	toggleCustQuerySearchViewMode,
 	toggleAlertsModal,
@@ -995,7 +1004,7 @@ const logsStoreReducers: LogsStoreReducers = {
 	setDisabledColumns,
 	setOrderedHeaders,
 	toggleWordWrap,
-	toggleWrapDisabledColumns
+	toggleWrapDisabledColumns,
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };
