@@ -50,6 +50,7 @@ const TimeRange: FC = () => {
 		const shouldIgnoreClick = classNames.some((className) => {
 			return (
 				className.startsWith('mantine-DateTimePicker') ||
+				className.startsWith('mantine-DatePicker') ||
 				className.startsWith('mantine-TimeInput') ||
 				className === 'mantine-Popover-dropdown'
 			);
