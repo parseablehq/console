@@ -40,16 +40,19 @@ const makeTimeRangeOptions = ({
 	];
 };
 
-const formatTime = (date: Date | string) => {
-	return dayjs(date).format('hh:mm A DD MMM YY');
+const formatTime = (date: Date | string): string => {
+	return formatDateWithTimezone(date, 'hh:mm A DD MMM YY z');
 };
 
-const formatDay = (date: Date | string) => {
-	return dayjs(date).format('DD MMMYY');
+const formatDay = (date: Date | string): string => {
+	return formatDateWithTimezone(date, 'DD MMMYY z');
 };
 
 const makeTimeRangeLabel = (startTime: Date | string, endTime: Date | string) => {
-	return `${formatTime(startTime)} to ${formatTime(endTime)}`;
+	const startTimeWithTz = formatDateWithTimezone(startTime, 'hh:mm A DD MMM YY z');
+	const endTimeWithTz = formatDateWithTimezone(endTime, 'hh:mm A DD MMM YY z');
+
+	return `${startTimeWithTz} to ${endTimeWithTz}`;
 };
 
 // to optimize performace, it has been decided to round off the time at the given level
@@ -65,9 +68,9 @@ const getDefaultTimeRangeOption = (
 	return selectedTimeRange ? selectedTimeRange : defaultTimeRangeOption;
 };
 
-//accepts a date-time string and outputs a human readable string with timezone
-//output format 31/12/1990 11:59 pm IST as default
-const formatDateWithTimezone = (dateTime: string, format: string = 'DD/MM/YYYY h:mm a z'): string => {
+// accepts a date-time string and outputs a human readable string with timezone
+// output format 31/12/1990 11:59 pm IST
+const formatDateWithTimezone = (dateTime: string | Date, format: string = 'DD/MM/YYYY h:mm a z'): string => {
 	const localTimeZone = moment.tz.guess();
 	const convertedDate = moment.tz(dateTime, localTimeZone);
 	return convertedDate.format(format);
