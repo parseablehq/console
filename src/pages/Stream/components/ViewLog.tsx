@@ -79,7 +79,7 @@ const Header: FC<HeaderProps> = (props) => {
 		<Box className={headerContainer}>
 			{tsWithTimezone !== 'Invalid date' ? (
 				<Box>
-					<Text className={headerTimeStampTitle}>Timestamp</Text>
+					<Text className={headerTimeStampTitle}>Ingested at:</Text>
 					<Text className={headerTimeStamp}>{tsWithTimezone}</Text>
 				</Box>
 			) : (
