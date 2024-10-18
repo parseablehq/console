@@ -1,27 +1,41 @@
 import useMountedState from '@/hooks/useMountedState';
-import { Box, Button, Divider, Menu, NumberInput, Stack, Text, Tooltip, UnstyledButton, px } from '@mantine/core';
-import { DateTimePicker } from '@mantine/dates';
-import { IconChevronLeft, IconChevronRight, IconClock } from '@tabler/icons-react';
+import { Box, Button, Divider, Menu, NumberInput, Stack, Text, Tooltip, px } from '@mantine/core';
+import { DatePicker, TimeInput } from '@mantine/dates';
+import { IconCalendarEvent, IconCheck, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import type { FC } from 'react';
-import { Fragment, useCallback, useMemo } from 'react';
-import { FIXED_DURATIONS, FIXED_DURATIONS_LABEL } from '@/constants/timeConstants';
+import { Fragment, useCallback, useMemo, useRef, useState } from 'react';
+import { FIXED_DURATIONS } from '@/constants/timeConstants';
 import classes from './styles/LogQuery.module.css';
 import { useOuterClick } from '@/hooks/useOuterClick';
 import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
+import _ from 'lodash';
 
 const { setTimeRange, setshiftInterval } = logsStoreReducers;
 type FixedDurations = (typeof FIXED_DURATIONS)[number];
 
-const {
-	timeRangeBTn,
-	timeRangeContainer,
-	fixedRangeContainer,
-	fixedRangeBtn,
-	fixedRangeBtnSelected,
-	customRangeContainer,
-	shiftIntervalContainer,
-} = classes;
+const { timeRangeContainer, fixedRangeBtn, fixedRangeBtnSelected, customRangeContainer, shiftIntervalContainer } =
+	classes;
+
+const RelativeTimeIntervals = (props: {
+	interval: number;
+	onDurationSelect: (fixedDuration: FixedDurations) => void;
+}) => {
+	const { interval, onDurationSelect } = props;
+	return (
+		<Stack style={{ flexDirection: 'row' }} gap={0}>
+			{_.map(FIXED_DURATIONS, (duration) => {
+				return (
+					<Stack onClick={() => onDurationSelect(duration)} key={duration.name}>
+						<Text className={`${fixedRangeBtn} ${duration.milliseconds === interval ? fixedRangeBtnSelected : ''}`}>
+							{duration.label}
+						</Text>
+					</Stack>
+				);
+			})}
+		</Stack>
+	);
+};
 
 const TimeRange: FC = () => {
 	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
@@ -36,6 +50,7 @@ const TimeRange: FC = () => {
 		const shouldIgnoreClick = classNames.some((className) => {
 			return (
 				className.startsWith('mantine-DateTimePicker') ||
+				className.startsWith('mantine-DatePicker') ||
 				className.startsWith('mantine-TimeInput') ||
 				className === 'mantine-Popover-dropdown'
 			);
@@ -45,6 +60,8 @@ const TimeRange: FC = () => {
 
 	const innerRef = useOuterClick(handleOuterClick);
 	const [opened, setOpened] = useMountedState(false);
+	const [showTick, setShowTick] = useState(false);
+	const shiftIntervalRef = useRef<HTMLInputElement>(null);
 
 	const toggleMenu = useCallback(() => {
 		setOpened((prev) => !prev);
@@ -58,9 +75,27 @@ const TimeRange: FC = () => {
 		setOpened(false);
 	};
 
+	const resetToRelative = useCallback(() => {
+		const now = dayjs().startOf('minute');
+		const startTime = now.subtract(FIXED_DURATIONS[0].milliseconds, 'milliseconds');
+		const endTime = now;
+		setLogsStore((store) => setTimeRange(store, { startTime, endTime, type: 'fixed' }));
+		setOpened(false);
+	}, []);
+
+	const debouncedShowTick = useCallback(
+		_.debounce(() => {
+			setShowTick(true);
+			shiftIntervalRef.current?.blur(); // Remove focus after showing tick
+		}, 1000), // 1000ms = 1 second delay
+		[],
+	);
+
 	const onSetShiftInterval = useCallback((val: number | string) => {
 		if (typeof val === 'number') {
 			setLogsStore((store) => setshiftInterval(store, val));
+			setShowTick(false); // Hide the tick when editing starts again
+			debouncedShowTick(); // Show the tick after the user stops typing
 		}
 	}, []);
 
@@ -92,15 +127,18 @@ const TimeRange: FC = () => {
 							<IconChevronLeft stroke={2} size="1rem" style={{ cursor: 'pointer' }} />
 						</Stack>
 					</Tooltip>
-					<Tooltip label="In Local Browser Time">
-						<Button
-							className={timeRangeBTn}
-							leftSection={<IconClock size={px('1rem')} stroke={1.5} />}
-							onClick={toggleMenu}
-							styles={{ label: { fontSize: '0.65rem', fontWeight: 600 } }}>
-							{FIXED_DURATIONS_LABEL[label] || label}
-						</Button>
-					</Tooltip>
+					<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={0}>
+						{type === 'fixed' ? (
+							<RelativeTimeIntervals interval={interval} onDurationSelect={onDurationSelect} />
+						) : (
+							<Text onClick={toggleMenu} style={{ fontSize: '0.65rem', fontWeight: 500, whiteSpace: 'nowrap' }}>
+								{label}
+							</Text>
+						)}
+						<Stack onClick={toggleMenu} px={10} className="calenderIcon">
+							<IconCalendarEvent size={px('1rem')} stroke={1.5} style={{ cursor: 'pointer' }} />
+						</Stack>
+					</Stack>
 					<Tooltip label={`${shiftLabelPrefix} Forward`}>
 						<Stack className={classes.timeRangeCtrlIcon} onClick={() => shiftTimeRange('right')}>
 							<IconChevronRight stroke={2} size="1rem" style={{ cursor: 'pointer' }} />
@@ -111,33 +149,24 @@ const TimeRange: FC = () => {
 			<Menu.Dropdown>
 				<div ref={innerRef}>
 					<Box className={timeRangeContainer}>
-						<Box className={fixedRangeContainer}>
-							{FIXED_DURATIONS.map((duration) => {
-								return (
-									<UnstyledButton
-										disabled={interval === duration.milliseconds && type === 'fixed'}
-										className={[
-											fixedRangeBtn,
-											interval === duration.milliseconds && type === 'fixed' && fixedRangeBtnSelected,
-										]
-											.filter(Boolean)
-											.join(' ')}
-										key={duration.name}
-										onClick={() => onDurationSelect(duration)}>
-										{duration.name}
-									</UnstyledButton>
-								);
-							})}
-						</Box>
 						<Stack className={customRangeContainer}>
 							<Stack className={shiftIntervalContainer}>
 								<Text className={classes.shiftIntervalLabel} ta="center">
 									Shift Interval (In Mins)
 								</Text>
-								<NumberInput w={100} min={1} value={shiftInterval} onChange={onSetShiftInterval} />
+								<Stack gap={12} style={{ flexDirection: 'row', alignItems: 'center' }}>
+									<NumberInput
+										ref={shiftIntervalRef}
+										w={100}
+										min={1}
+										value={shiftInterval}
+										onChange={onSetShiftInterval}
+									/>
+									<IconCheck color={showTick ? 'green' : 'white'} stroke={1.8} size="1rem" />
+								</Stack>
 							</Stack>
 							<Divider mt={3} />
-							<CustomTimeRange setOpened={setOpened} />
+							<CustomTimeRange setOpened={setOpened} resetToRelative={resetToRelative} />
 						</Stack>
 					</Box>
 				</div>
@@ -148,17 +177,52 @@ const TimeRange: FC = () => {
 
 type CustomTimeRangeProps = {
 	setOpened: (opened: boolean) => void;
+	resetToRelative: () => void;
 };
-const CustomTimeRange: FC<CustomTimeRangeProps> = ({ setOpened }) => {
-	const [{ startTime, endTime }, setLogsStore] = useLogsStore((store) => store.timeRange);
 
-	const [localSelectedRange, setLocalSelectedRange] = useMountedState({
-		startTime,
-		endTime,
+function normalizeDate(date: Date) {
+	return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function isDateInRange(startDate: Date, endDate: Date, currentDate: Date) {
+	const normalizedStart = normalizeDate(startDate);
+	const normalizedEnd = normalizeDate(endDate);
+	const normalizedTest = normalizeDate(currentDate);
+
+	return (
+		(normalizedTest >= normalizedStart && normalizedTest <= normalizedEnd) ||
+		normalizedTest.getTime() === normalizedStart.getTime() ||
+		normalizedTest.getTime() === normalizedEnd.getTime()
+	);
+}
+
+const CustomTimeRange: FC<CustomTimeRangeProps> = ({ setOpened, resetToRelative }) => {
+	const [{ startTime: startTimeFromStore, endTime: endTimeFromStore, type }, setLogsStore] = useLogsStore(
+		(store) => store.timeRange,
+	);
+
+	const [localSelectedRange, setLocalSelectedRange] = useState({
+		startTime: _.clone(startTimeFromStore),
+		endTime: _.clone(endTimeFromStore),
 	});
 
 	const onRangeSelect = (key: keyof typeof localSelectedRange, date: Date) => {
 		setLocalSelectedRange((state) => {
+			const year = date.getFullYear();
+			const month = date.getMonth();
+			const day = date.getDate();
+			const newDate = state[key];
+			newDate.setFullYear(year, month, day);
+			state[key] = newDate;
+			return { ...state };
+		});
+	};
+
+	const onTimeSelect = (key: keyof typeof localSelectedRange, time: string) => {
+		setLocalSelectedRange((state) => {
+			const [hours, minutes] = time.split(':').map(Number);
+			const date = state[key];
+			date.setHours(hours, minutes, 0, 0);
 			state[key] = date;
 			return { ...state };
 		});
@@ -179,52 +243,88 @@ const CustomTimeRange: FC<CustomTimeRangeProps> = ({ setOpened }) => {
 
 	const isApplicable = useMemo(() => {
 		return (
-			dayjs(localSelectedRange.startTime).isSame(startTime, 'seconds') &&
-			dayjs(localSelectedRange.endTime).isSame(endTime, 'seconds')
+			dayjs(localSelectedRange.startTime).isSame(startTimeFromStore, 'seconds') &&
+			dayjs(localSelectedRange.endTime).isSame(endTimeFromStore, 'seconds')
 		);
 	}, [localSelectedRange]);
 
 	const isStartTimeMoreThenEndTime = useMemo(() => {
 		return dayjs(localSelectedRange.startTime).isAfter(localSelectedRange.endTime, 'seconds');
 	}, [localSelectedRange]);
+	const startingTime = (() => {
+		const hours = localSelectedRange.startTime.getHours().toString().padStart(2, '0');
+		const minutes = localSelectedRange.startTime.getMinutes().toString().padStart(2, '0');
+		return `${hours}:${minutes}`;
+	})();
+	const endingTime = (() => {
+		const hours = localSelectedRange.endTime.getHours().toString().padStart(2, '0');
+		const minutes = localSelectedRange.endTime.getMinutes().toString().padStart(2, '0');
+		return `${hours}:${minutes}`;
+	})();
+
+	const highlightDate = useCallback(
+		(date: Date, key: keyof typeof localSelectedRange) => {
+			const day = date.getDate();
+			const selectedDate = localSelectedRange[key];
+			const isNotSelectedDate = selectedDate.toLocaleDateString() !== date.toLocaleDateString();
+
+			const shouldHighlight =
+				!isStartTimeMoreThenEndTime &&
+				isNotSelectedDate &&
+				isDateInRange(localSelectedRange.startTime, localSelectedRange.endTime, date);
+			return (
+				<div className={`${classes.calendarDate} ${shouldHighlight ? classes.highlightDate : ''}`}>
+					<div>{day}</div>
+				</div>
+			);
+		},
+		[localSelectedRange, isStartTimeMoreThenEndTime],
+	);
 
 	return (
 		<Fragment>
-			<Text style={{ fontSize: '0.7rem', fontWeight: 500 }}>Custom Range</Text>
-			<DateTimePicker
-				error={isStartTimeMoreThenEndTime ? 'Start time cannot be greater than the end time' : ''}
-				maxDate={new Date()}
-				value={localSelectedRange.startTime}
-				onChange={(date) => {
-					if (date) {
-						onRangeSelect('startTime', date);
-					}
-				}}
-				valueFormat="DD-MM-YY HH:mm"
-				label="From"
-				placeholder="Pick date and time"
-			/>
-			<DateTimePicker
-				error={isStartTimeMoreThenEndTime}
-				maxDate={new Date()}
-				value={localSelectedRange.endTime}
-				onChange={(date) => {
-					if (date) {
-						onRangeSelect('endTime', date);
-					}
-				}}
-				valueFormat="DD-MM-YY HH:mm"
-				label="To"
-				placeholder="Pick date and time"
-			/>
-			<Box className={customTimeRangeFooter}>
-				<Button
-					className={customTimeRangeApplyBtn}
-					disabled={isApplicable || isStartTimeMoreThenEndTime}
-					onClick={onApply}>
-					Apply
-				</Button>
-			</Box>
+			<Text style={{ fontSize: '0.7rem', fontWeight: 500 }}>Absolute Range</Text>
+			<Stack style={{ flexDirection: 'row', alignItems: 'flex-start' }} gap={30}>
+				<Stack className={classes.datePickerContainer}>
+					<DatePicker
+						value={localSelectedRange.startTime}
+						onChange={(date) => {
+							if (date) {
+								onRangeSelect('startTime', date);
+							}
+						}}
+						renderDay={(date) => highlightDate(date, 'startTime')}
+					/>
+					<TimeInput value={startingTime} onChange={(e) => onTimeSelect('startTime', e.currentTarget.value)} />
+				</Stack>
+				<Stack className={classes.datePickerContainer}>
+					<DatePicker
+						value={localSelectedRange.endTime}
+						onChange={(date) => {
+							if (date) {
+								onRangeSelect('endTime', date);
+							}
+						}}
+						renderDay={(date) => highlightDate(date, 'endTime')}
+					/>
+					<TimeInput value={endingTime} onChange={(e) => onTimeSelect('endTime', e.currentTarget.value)} />
+				</Stack>
+			</Stack>
+			<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+				<Box className={customTimeRangeFooter}>
+					<Button className={customTimeRangeApplyBtn} disabled={type === 'fixed'} onClick={resetToRelative}>
+						Clear
+					</Button>
+				</Box>
+				<Box className={customTimeRangeFooter}>
+					<Button
+						className={customTimeRangeApplyBtn}
+						disabled={isApplicable || isStartTimeMoreThenEndTime}
+						onClick={onApply}>
+						Apply
+					</Button>
+				</Box>
+			</Stack>
 		</Fragment>
 	);
 };

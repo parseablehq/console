@@ -6,8 +6,10 @@ import _ from 'lodash';
 import { useMemo } from 'react';
 import { useClusterStore } from './providers/ClusterProvider';
 import { calcCompressionRate, formatBytes } from '@/utils/formatBytes';
-import dayjs from 'dayjs';
 import { IconArrowDown } from '@tabler/icons-react';
+import timeRangeUtils from '@/utils/timeRangeUtils';
+
+const { formatDateWithTimezone } = timeRangeUtils;
 
 function ChartTooltip({ payload }: ChartTooltipProps) {
 	if (!payload || (Array.isArray(payload) && payload.length === 0)) return null;
@@ -53,7 +55,7 @@ const StorageSizeGraph = () => {
 		(acc, record) => {
 			const date = _.get(record, 'event_time', '');
 			const localDate = new Date(`${date}Z`);
-			const parsedDate = dayjs(localDate).format('HH:mm A');
+			const parsedDate = formatDateWithTimezone(localDate, 'HH:mm A z');
 			const size = _.get(record, 'parseable_storage_size_data', 0);
 			return [...acc, { date: parsedDate, size }];
 		},

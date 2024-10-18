@@ -4,61 +4,63 @@
 	align-items: center;
 	padding: 0 1rem;
 }
-  
-  .innerContainer {
+
+.innerContainer {
 	display: flex;
 	height: 100%;
 	align-items: center;
 	width: 100%;
-  }
-  
-  .refreshNowBtn {
+}
+
+.refreshNowBtn {
 	background: #fff;
 	padding: 0;
 	width: 36px;
 	color: #211F1F;
 	border: 1px #e9ecef solid;
-    border-radius: rem(8px);
+	border-radius: rem(8px);
+
 	&:hover {
 		color: black;
 	}
-  }
+}
 
-  .refreshNowBtn:hover {
-    background-color: #E0E0E0;
-  }
-  
-  .streamButton {
+.refreshNowBtn:hover {
+	background-color: #E0E0E0;
+}
+
+.streamButton {
 	background: #fff;
 	color: #211F1F;
 	border: 1px #e9ecef solid;
-    border-radius: rem(8px);
-  }
-  
-  .intervalbtn {
+	border-radius: rem(8px);
+}
+
+.intervalbtn {
 	background-color: white;
 	color: var(--mantine-color-gray-7);
 	border: 1px #e9ecef solid;
-    border-radius: rem(8px);
+	border-radius: rem(8px);
 	font-size: 0.65rem;
+
 	&:hover {
 		color: black;
 	}
-  }
-  
-  .intervalbtn:hover {
-    background-color: #E0E0E0;
-  }
-  
-  .homeIcon {
+}
+
+.intervalbtn:hover {
+	background-color: #E0E0E0;
+}
+
+.homeIcon {
 	size: 24px;
-  }
-  
-  .timeRangeContainer {
+}
+
+.timeRangeContainer {
 	display: flex;
-  }
-  
-  .fixedRangeContainer {
+}
+
+.fixedRangeContainer {
 	display: flex;
 	flex-direction: column;
 	background: #f8f9fa;
@@ -67,55 +69,59 @@
 	margin-top: 0.5rem;
 	margin-bottom: 0.5rem;
 	overflow: hidden;
-  }
-  
-  .fixedRangeBtn {
+}
+
+.fixedRangeBtn {
 	padding: 0.65rem;
 	font-size: 0.675rem;
 	background: #f8f9fa;
 	text-transform: capitalize;
+	cursor: pointer;
+	border-radius: 0.65rem;
+
 	&:hover {
-		color: black !important;
+		/* color: black !important; */
+
 		&:disabled {
 			color: white !important;
 		}
 	}
-  }
-  
-  .fixedRangeBtn:hover {
-	background: #ced4da;
-  }
+}
 
-  .fixedRangeBtn:disabled {
+.fixedRangeBtn:hover {
+	background: #ced4da;
+}
+
+.fixedRangeBtn:disabled {
 	cursor: not-allowed;
 	background: #424242;
 	font-weight: 600;
 	color: #fff;
 
-  }
-  
-  .customRangeContainer {
+}
+
+.customRangeContainer {
 	padding: 0.625rem 1rem;
 	min-width: 20rem;
 	flex: 1;
 	display: flex;
 	flex-direction: column;
 	justify-content: stretch;
-  }
-  
-  .customTimeRangeFooter {
+}
+
+.customTimeRangeFooter {
 	display: flex;
 	margin-top: auto;
 	justify-content: flex-end;
 	align-items: center;
-  }
-  
-  .searchContainer {
+}
+
+.searchContainer {
 	display: flex;
 	padding-right: 0.75rem;
-  }
-  
-  .searchTypeBtn {
+}
+
+.searchTypeBtn {
 	border: 1px #f1f3f5 solid;
 	border-top-right-radius: 0;
 	border-bottom-right-radius: 0;
@@ -124,43 +130,43 @@
 	border-right: none;
 	font-weight: 700;
 	padding-right: 0.75rem;
-  }
-  
-  .searchTypeActive {
+}
+
+.searchTypeActive {
 	background: #545beb;
 	font-weight: 500;
 	color: #fff;
-  }
-  
-  .searchTypeActive:hover {
+}
+
+.searchTypeActive:hover {
 	background: #fc466b;
-  }
-  
-  .searchInput {
+}
+
+.searchInput {
 	width: 100%;
 	flex: 1;
-  }
-  
-  .searchInput input {
+}
+
+.searchInput input {
 	background: #fff;
 	border: 1px #e9ecef solid;
-    border-radius: rem(8px);
+	border-radius: rem(8px);
 	font-weight: 500;
-  }
-  
-  .toggleBtn {
+}
+
+.toggleBtn {
 	background-color: white;
 	padding: 6px 12px;
 	margin-right: 0.625rem;
 	color: #211F1F;
 	border: 1px #e9ecef solid;
-  }
-  
-  .toggleBtn:hover {
+}
+
+.toggleBtn:hover {
 	background: #f1f3f5;
-  }
-  
-  .timeRangeBTn {
+}
+
+.timeRangeBTn {
 	background-color: white;
 	color: var(--mantine-color-gray-7);
 	padding: 0 0.5rem;
@@ -168,42 +174,45 @@
 	border-right: 1px solid var(--mantine-color-gray-2);
 	border-left: 1px solid var(--mantine-color-gray-2);
 	height: 100%;
-  }
-  
-  .timeRangeBTn:hover {
-    background-color: #E0E0E0;
+}
+
+.timeRangeBTn:hover {
+	background-color: #E0E0E0;
 	color: black;
-  }
-  
-  .dropdownBtn {
+}
+
+.dropdownBtn {
 	margin-right: 0.625rem;
 	border-radius: rem(8px);
-  }
+}
 
-  .dropdownOption {
+.dropdownOption {
 	color: #211F1F;
 	font-size: var(--mantine-font-size-md);
-  }
+}
 
-  .liveTailFilterContainer {
+.liveTailFilterContainer {
 	display: flex;
 	gap: 12px;
 	margin-right: 20px;
-  }
-  
-  .fixedRangeBtnSelected {
+}
+
+.fixedRangeBtnSelected {
 	background: #545beb !important;
 	font-weight: 500;
 	color: white;
-  }
-  
-  .fixedRangeBtnSelected:hover {
+}
+
+.fixedRangeBtnSelected:hover {
 	background: #f1f3f5;
-  }
-  
-  .customTimeRangeApplyBtn {
+	cursor: not-allowed;
+	color: white;
+}
+
+.customTimeRangeApplyBtn {
 	background: #545BEB;
 	color: white;
+
 	&:hover {
 		background: #FC466B;
 	}
@@ -224,22 +233,9 @@
 }
 
 .streamInput {
-	/* border: none; */
-	/* padding-left: 0; */
-	/* padding-right: 30px; */
-	/* height: 50px; */
-	/* font-size: 24px; */
-	/* font-weight: 600; */
-	/* margin-top: -10px; */
-	/* background-color: transparent; */
 	cursor: pointer;
 	border: 1px var(--mantine-color-gray-2) solid;
 	border-radius: rem(8px);
-	/* height: 50px; */
-	/* height: 100%; */
-	/* font-size: 1rem; */
-	/* width: 200px; */
-
 }
 
 .chevronDown {
@@ -247,15 +243,15 @@
 }
 
 .iconBtn {
-    cursor: pointer;
-    align-items: center;
+	cursor: pointer;
+	align-items: center;
 	/* padding: 0.25rem; */
 	border-radius: 0.25rem;
 	/* padding: 0.25rem 0; */
 }
 
 .iconBtnIcon {
-    color: var(--mantine-color-brandPrimary-6);
+	color: var(--mantine-color-brandPrimary-6);
 	/* color: white;
 	background-color: var(--mantine-color-brandPrimary-4); */
 	border-radius: 0.25rem;
@@ -263,7 +259,7 @@
 }
 
 .iconBtnLabel {
-    font-size: 0.8rem;
+	font-size: 0.8rem;
 	white-space: nowrap;
 }
 
@@ -304,16 +300,20 @@
 	border: 1px solid var(--mantine-color-gray-3);
 	overflow: hidden;
 	border-radius: rem(8px);
+	align-items: center;
+	height: 1.6rem
 }
 
 .timeRangeCtrlIcon {
 	height: 100%;
-	align-items: center; 
-	justify-content: center;	
+	align-items: center;
+	justify-content: center;
+
 	&:hover {
 		background-color: #E0E0E0;
 		color: black;
 	}
+
 	padding: 0 0.25rem;
 	color: var(--mantine-color-gray-7);
 	cursor: pointer;
@@ -330,4 +330,24 @@
 	font-size: 0.7rem;
 	font-weight: 500;
 	text-align: center;
+}
+
+.datePickerContainer {
+	border: 1px solid var(--mantine-color-gray-2);
+	border-radius: 0.2rem;
+	padding: 1rem;
+}
+
+.calendarDate {
+	width: 1.2rem;
+	height: 1.2rem;
+	align-items: center;
+	justify-content: center;
+	display: flex;
+}
+
+.highlightDate {
+	background-color: var(--mantine-color-gray-5);
+	color: white;
+	border-radius: 0.15rem;
 }

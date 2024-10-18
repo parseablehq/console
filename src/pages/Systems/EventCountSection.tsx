@@ -7,6 +7,9 @@ import { useMemo } from 'react';
 import { useClusterStore } from './providers/ClusterProvider';
 import { sanitizeEventsCount } from '@/utils/formatBytes';
 import dayjs from 'dayjs';
+import timeRangeUtils from '@/utils/timeRangeUtils';
+
+const { formatDateWithTimezone } = timeRangeUtils;
 
 function ChartTooltip({ payload }: ChartTooltipProps) {
 	if (!payload || (Array.isArray(payload) && payload.length === 0)) return null;
@@ -52,7 +55,8 @@ const EventsCountGraph = () => {
 		(acc, record) => {
 			const date = _.get(record, 'event_time', '');
 			const localDate = new Date(`${date}Z`);
-			const parsedDate = dayjs(localDate).format('HH:mm A');
+			const parsedDate = formatDateWithTimezone(localDate, 'HH:mm A z');
+			dayjs(localDate).format('HH:mm A');
 			const count = _.get(record, 'parseable_events_ingested', 0);
 			return [...acc, { date: parsedDate, count }];
 		},
