@@ -337,3 +337,17 @@
 	border-radius: 0.2rem;
 	padding: 1rem;
 }
+
+.calendarDate {
+	width: 1.2rem;
+	height: 1.2rem;
+	align-items: center;
+	justify-content: center;
+	display: flex;
+}
+
+.highlightDate {
+	background-color: var(--mantine-color-gray-5);
+	color: white;
+	border-radius: 0.15rem;
+}

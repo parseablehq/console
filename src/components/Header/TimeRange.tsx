@@ -26,7 +26,7 @@ const RelativeTimeIntervals = (props: {
 		<Stack style={{ flexDirection: 'row' }} gap={0}>
 			{_.map(FIXED_DURATIONS, (duration) => {
 				return (
-					<Stack onClick={() => onDurationSelect(duration)}>
+					<Stack onClick={() => onDurationSelect(duration)} key={duration.name}>
 						<Text className={`${fixedRangeBtn} ${duration.milliseconds === interval ? fixedRangeBtnSelected : ''}`}>
 							{duration.label}
 						</Text>
@@ -179,6 +179,23 @@ type CustomTimeRangeProps = {
 	setOpened: (opened: boolean) => void;
 	resetToRelative: () => void;
 };
+
+function normalizeDate(date: Date) {
+	return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function isDateInRange(startDate: Date, endDate: Date, currentDate: Date) {
+	const normalizedStart = normalizeDate(startDate);
+	const normalizedEnd = normalizeDate(endDate);
+	const normalizedTest = normalizeDate(currentDate);
+
+	return (
+		(normalizedTest >= normalizedStart && normalizedTest <= normalizedEnd) ||
+		normalizedTest.getTime() === normalizedStart.getTime() ||
+		normalizedTest.getTime() === normalizedEnd.getTime()
+	);
+}
+
 const CustomTimeRange: FC<CustomTimeRangeProps> = ({ setOpened, resetToRelative }) => {
 	const [{ startTime: startTimeFromStore, endTime: endTimeFromStore, type }, setLogsStore] = useLogsStore(
 		(store) => store.timeRange,
@@ -245,6 +262,25 @@ const CustomTimeRange: FC<CustomTimeRangeProps> = ({ setOpened, resetToRelative 
 		return `${hours}:${minutes}`;
 	})();
 
+	const highlightDate = useCallback(
+		(date: Date, key: keyof typeof localSelectedRange) => {
+			const day = date.getDate();
+			const selectedDate = localSelectedRange[key];
+			const isNotSelectedDate = selectedDate.toLocaleDateString() !== date.toLocaleDateString();
+
+			const shouldHighlight =
+				!isStartTimeMoreThenEndTime &&
+				isNotSelectedDate &&
+				isDateInRange(localSelectedRange.startTime, localSelectedRange.endTime, date);
+			return (
+				<div className={`${classes.calendarDate} ${shouldHighlight ? classes.highlightDate : ''}`}>
+					<div>{day}</div>
+				</div>
+			);
+		},
+		[localSelectedRange, isStartTimeMoreThenEndTime],
+	);
+
 	return (
 		<Fragment>
 			<Text style={{ fontSize: '0.7rem', fontWeight: 500 }}>Absolute Range</Text>
@@ -257,6 +293,7 @@ const CustomTimeRange: FC<CustomTimeRangeProps> = ({ setOpened, resetToRelative 
 								onRangeSelect('startTime', date);
 							}
 						}}
+						renderDay={(date) => highlightDate(date, 'startTime')}
 					/>
 					<TimeInput value={startingTime} onChange={(e) => onTimeSelect('startTime', e.currentTarget.value)} />
 				</Stack>
@@ -268,6 +305,7 @@ const CustomTimeRange: FC<CustomTimeRangeProps> = ({ setOpened, resetToRelative 
 								onRangeSelect('endTime', date);
 							}
 						}}
+						renderDay={(date) => highlightDate(date, 'endTime')}
 					/>
 					<TimeInput value={endingTime} onChange={(e) => onTimeSelect('endTime', e.currentTarget.value)} />
 				</Stack>
