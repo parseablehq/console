@@ -155,7 +155,9 @@ const DeleteDashboardModal = () => {
 				</Stack>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
 					<Box>
-						<Button variant="outline" onClick={closeModal}>Cancel</Button>
+						<Button variant="outline" onClick={closeModal}>
+							Cancel
+						</Button>
 					</Box>
 					<Box>
 						<Button
@@ -297,10 +299,10 @@ const Toolbar = (props: { layoutRef: React.MutableRefObject<ReactGridLayout.Layo
 					{description}
 				</Text>
 			</Stack>
-			<Stack style={{ flexDirection: 'row' }}>
+			<Stack style={{ flexDirection: 'row', height: '100%', alignItems: 'center' }}>
 				<TimeRange />
 				<AddTileButton />
-				<ImportTileButton/>
+				<ImportTileButton />
 				<EditLayoutButton layoutRef={props.layoutRef} />
 				<ShareDashbboardButton dashboard={activeDashboard} />
 				<DeleteDashboardButton />

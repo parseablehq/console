@@ -26,8 +26,10 @@ const formatTickValue = (value: any, unit: (typeof tickUnits)[number] | null) =>
 		} else if (unit === 'bytes' && _.isNumber(value)) {
 			return formatBytes(value);
 		} else if (unit === 'utc-timestamp') {
-			const date = new Date(value);
+			const sanitizedTs = _.includes(value, 'Z') ? value : `${value}Z`;
+			const date = new Date(sanitizedTs);
 			const isValidDate = !isNaN(date.getTime());
+
 			if (!isValidDate) return value;
 
 			if (date.getHours() === 0) {

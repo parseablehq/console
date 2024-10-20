@@ -7,6 +7,9 @@ import { addOrRemoveElement } from '@/utils';
 import { getPageSlice } from '../utils';
 import _ from 'lodash';
 import { sanitizeCSVData } from '@/utils/exportHelpers';
+import timeRangeUtils from '@/utils/timeRangeUtils';
+
+const { makeTimeRangeLabel } = timeRangeUtils;
 
 export const DEFAULT_FIXED_DURATIONS = FIXED_DURATIONS[0];
 export const LOG_QUERY_LIMITS = [50, 100, 150, 200];
@@ -119,21 +122,16 @@ const getDefaultTimeRange = (duration: FixedDuration = DEFAULT_FIXED_DURATIONS) 
 
 	const startTime = now.subtract(milliseconds, 'milliseconds');
 	const endTime = now;
-	const startTimeLabel = dayjs(startTime).format('hh:mm A DD MMM YY');
-	const endTimeLabel = dayjs(endTime).format('hh:mm A DD MMM YY');
+	const label = makeTimeRangeLabel(startTime.toDate(), endTime.toDate());
 
 	return {
 		startTime: startTime.toDate(),
 		endTime: now.toDate(),
 		type: 'fixed' as 'fixed',
-		label: `${startTimeLabel} to ${endTimeLabel}`,
+		label,
 		interval: milliseconds,
 		shiftInterval: 1,
 	};
-};
-
-export const makeTimeRangeLabel = (startTime: Date | string, endTime: Date | string) => {
-	return `${dayjs(startTime).format('hh:mm A DD MMM YY')} to ${dayjs(endTime).format('hh:mm A DD MMM YY')}`;
 };
 
 const defaultQuickFilters = {
@@ -365,7 +363,7 @@ const setTimeRange = (
 	payload: { startTime: dayjs.Dayjs; endTime: Dayjs; type: 'fixed' | 'custom' },
 ) => {
 	const { startTime, endTime, type } = payload;
-	const label = `${startTime.format('hh:mm A DD MMM YY')} to ${endTime.format('hh:mm A DD MMM YY')}`;
+	const label = makeTimeRangeLabel(startTime.toDate(), endTime.toDate());
 	const interval = endTime.diff(startTime, 'milliseconds');
 	const cleanStore = getCleanStoreForRefetch(store);
 	return {
@@ -725,7 +723,7 @@ const applyCustomQuery = (
 		} else {
 			const startTime = dayjs(timeRangePayload.from);
 			const endTime = dayjs(timeRangePayload.to);
-			const label = `${startTime.format('hh:mm A DD MMM YY')} to ${endTime.format('hh:mm A DD MMM YY')}`;
+			const label = makeTimeRangeLabel(startTime.toDate(), endTime.toDate());
 			const interval = endTime.diff(startTime, 'milliseconds');
 			return {
 				timeRange: {

@@ -1,13 +1,14 @@
 import { Box, Chip, CloseButton, Divider, Drawer, Text, px } from '@mantine/core';
 import type { FC } from 'react';
 import { Fragment, useMemo, useCallback } from 'react';
-import dayjs from 'dayjs';
 import viewLogStyles from '../styles/ViewLogs.module.css';
 import { CodeHighlight } from '@mantine/code-highlight';
 import { useLogsStore, logsStoreReducers } from '../providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import timeRangeUtils from '@/utils/timeRangeUtils';
 
 const { setSelectedLog } = logsStoreReducers;
+const { formatDateWithTimezone } = timeRangeUtils;
 
 const ViewLog: FC = () => {
 	const [selectedLog, setLogsStore] = useLogsStore((store) => store.selectedLog);
@@ -72,16 +73,14 @@ const Header: FC<HeaderProps> = (props) => {
 	const classes = viewLogStyles;
 
 	const { headerContainer, headerTimeStampTitle, headerTimeStamp, closeBtn } = classes;
+	const tsWithTimezone = formatDateWithTimezone(`${props.timeStamp}Z`);
 
-	const timeStamp = useMemo(() => dayjs(`${props.timeStamp}+00:00`).utc().format('DD/MM/YYYY (hh:mm:ss A) z'), []);
-
-	const isValidTimestamp = !isNaN(Date.parse(props.timeStamp));
 	return (
 		<Box className={headerContainer}>
-			{isValidTimestamp ? (
+			{tsWithTimezone !== 'Invalid date' ? (
 				<Box>
-					<Text className={headerTimeStampTitle}>Timestamp</Text>
-					<Text className={headerTimeStamp}>{timeStamp}</Text>
+					<Text className={headerTimeStampTitle}>Ingested at:</Text>
+					<Text className={headerTimeStamp}>{tsWithTimezone}</Text>
 				</Box>
 			) : (
 				<Box />
