@@ -10,12 +10,13 @@ import {
 	STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT,
 	STREAM_SECONDARY_TOOLBAR_HRIGHT,
 } from '@/constants/theme';
-import { useLogsStore, logsStoreReducers, isJqSearch } from '../../providers/LogsProvider';
+import { useLogsStore, logsStoreReducers, isJqSearch, formatLogTs } from '../../providers/LogsProvider';
 import { Log } from '@/@types/parseable/api/query';
 import _ from 'lodash';
 import jqSearch from '@/utils/jqSearch';
 import { IconCheck, IconCopy, IconSearch } from '@tabler/icons-react';
 import { copyTextToClipboard } from '@/utils';
+import { useStreamStore } from '../../providers/StreamProvider';
 
 const { setInstantSearchValue, applyInstantSearch, applyJqSearch } = logsStoreReducers;
 
@@ -68,6 +69,7 @@ const Row = (props: {
 	shouldHighlight: (val: number | string | Date | null) => boolean;
 }) => {
 	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
+	const [fieldTypeMap] = useStreamStore((store) => store.fieldTypeMap)
 	const { log, disableHighlight, shouldHighlight } = props;
 
 	return (
@@ -77,12 +79,13 @@ const Row = (props: {
 					_.map(log, (value, key) => {
 						//skiping fields with empty strings
 						if (!_.toString(value)) return;
-
+						const isTimestamp = _.get(fieldTypeMap, key, null) === 'timestamp';
+						const sanitizedValue = isTimestamp ? formatLogTs(_.toString(value)) : _.toString(value);
 						return (
 							<Item
 								header={key}
 								key={key}
-								value={_.toString(value)}
+								value={sanitizedValue}
 								highlight={disableHighlight ? false : shouldHighlight(value)}
 							/>
 						);
