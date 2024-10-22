@@ -20,21 +20,26 @@ import Column from '../../components/Column';
 import { Log } from '@/@types/parseable/api/query';
 import { CopyIcon } from './JSONView';
 import { FieldTypeMap, useStreamStore } from '../../providers/StreamProvider';
+import timeRangeUtils from '@/utils/timeRangeUtils';
 
 const { setSelectedLog } = logsStoreReducers;
 const TableContainer = (props: { children: ReactNode }) => {
 	return <Box className={tableStyles.container}>{props.children}</Box>;
 };
 
+const localTz = timeRangeUtils.getLocalTimezone();
+
 const makeHeaderOpts = (headers: string[], isSecureHTTPContext: boolean, fieldTypeMap: FieldTypeMap) => {
 	return _.reduce(
 		headers,
 		(acc: { accessorKey: string; header: string; grow: boolean }[], header) => {
+			const isTimestamp = _.get(fieldTypeMap, header, null) === 'timestamp';
+
 			return [
 				...acc,
 				{
 					accessorKey: header,
-					header,
+					header: isTimestamp ? `${header} (${localTz})` : header,
 					grow: true,
 					Cell: ({ cell }: { cell: any }) => {
 						const value = _.isFunction(cell.getValue) ? cell.getValue() : '';
@@ -71,11 +76,10 @@ const makeColumnVisiblityOpts = (columns: string[]) => {
 };
 
 const Table = (props: { primaryHeaderHeight: number }) => {
-	const [{ orderedHeaders, disabledColumns, pinnedColumns, pageData, wrapDisabledColumns }, setLogsStore] = useLogsStore(
-		(store) => store.tableOpts,
-	);
+	const [{ orderedHeaders, disabledColumns, pinnedColumns, pageData, wrapDisabledColumns }, setLogsStore] =
+		useLogsStore((store) => store.tableOpts);
 	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
-	const [fieldTypeMap] = useStreamStore((store) => store.fieldTypeMap)
+	const [fieldTypeMap] = useStreamStore((store) => store.fieldTypeMap);
 	const columns = useMemo(() => makeHeaderOpts(orderedHeaders, isSecureHTTPContext, fieldTypeMap), [orderedHeaders]);
 	const columnVisibility = useMemo(() => makeColumnVisiblityOpts(disabledColumns), [disabledColumns, orderedHeaders]);
 	const selectLog = useCallback((log: Log) => {
