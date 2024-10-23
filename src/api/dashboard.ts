@@ -37,7 +37,7 @@ export const removeDashboard = (dashboardId: string) => {
 
 // using just for the dashboard tile now
 // refactor once the fields are included in the /query in the response
-export const getQueryData = (opts?: TileQuery, signal?: AbortSignal) => {
+export const getQueryData = (opts?: TileQuery) => {
 	if (_.isEmpty(opts)) throw 'Invalid Arguments';
 
 	const { query, startTime, endTime } = opts;
@@ -48,6 +48,6 @@ export const getQueryData = (opts?: TileQuery, signal?: AbortSignal) => {
 			startTime,
 			endTime: optimizeEndTime(endTime),
 		},
-		{ signal },
+		{},
 	);
 };
