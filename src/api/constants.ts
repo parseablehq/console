@@ -35,6 +35,7 @@ export const LOG_STREAMS_RETRNTION_URL = (streamName: string) => `${LOG_STREAM_L
 export const LOG_STREAMS_STATS_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/stats`;
 export const LOG_STREAMS_INFO_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/info`;
 export const DELETE_STREAMS_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}`;
+export const DETECT_LOG_STREAM_SCHEMA_URL = `${LOG_STREAM_LIST_URL}/schema/detect`;
 export const CREATE_STREAM_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}`;
 export const LOG_STREAM_HOT_TIER = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/hottier`;
 

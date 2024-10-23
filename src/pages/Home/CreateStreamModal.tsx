@@ -3,6 +3,7 @@ import {
 	Box,
 	Button,
 	CloseIcon,
+	FileInput,
 	Loader,
 	Modal,
 	NumberInput,
@@ -22,7 +23,10 @@ import { IconInfoCircleFilled, IconPlus } from '@tabler/icons-react';
 import _ from 'lodash';
 import { CreatableSelect } from '@/components/Misc/CreatableSelect';
 import { useAppStore, appStoreReducers } from '@/layouts/MainLayout/providers/AppProvider';
-import { GetInputPropsReturnType } from 'node_modules/@mantine/form/lib/types';
+import { GetInputPropsReturnType, UseFormReturnType } from 'node_modules/@mantine/form/lib/types';
+import { IconCheck } from '@tabler/icons-react';
+import { notifyError } from '@/utils/notification';
+import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
 
 const { toggleCreateStreamModal } = appStoreReducers;
 
@@ -58,17 +62,56 @@ const isValidFieldName = (val: string, existingNames: string[]) => {
 
 const datatypes = [
 	{ value: 'int', label: 'Int' },
-	{ value: 'double', label: 'Double' },
 	{ value: 'float', label: 'Float' },
 	{ value: 'boolean', label: 'Boolean' },
 	{ value: 'string', label: 'String' },
 	{ value: 'datetime', label: 'Datetime' },
 	{ value: 'string_list', label: 'String list' },
 	{ value: 'int_list', label: 'Int list' },
-	{ value: 'double_list', label: 'Double list' },
 	{ value: 'float_list', label: 'Float list' },
 	{ value: 'boolean_list', label: 'Boolean list' },
 ];
+
+const formValuesDatatypeMap = {
+	Boolean: 'boolean',
+	Float64: 'float',
+	Int64: 'int',
+	Utf8: 'string',
+};
+
+const formValuesListDatatypeMap = {
+	Boolean: 'boolean_list',
+	Float64: 'float_list',
+	Int64: 'int_list',
+	Utf8: 'string_list',
+};
+
+const getDataTypeFormValuesFromSchema = (schema: LogStreamSchemaData) => {
+	const { fields } = schema;
+	return _.reduce(
+		fields,
+		(acc: { name: string; data_type: string }[], field) => {
+			const { data_type: detectedDataType, name } = field;
+			const data_type = (() => {
+				if (_.isString(detectedDataType)) {
+					return _.get(formValuesDatatypeMap, detectedDataType, null);
+				} else {
+					if (_.get(detectedDataType, 'List')) {
+						const listDatatype = _.get(detectedDataType, 'List', null);
+						// @ts-ignore
+						return listDatatype ? _.get(formValuesListDatatypeMap, listDatatype?.data_type, null) : null;
+					} else if (_.get(detectedDataType, 'Timestamp')) {
+						return 'datetime';
+					} else {
+						return acc;
+					}
+				}
+			})();
+			return data_type ? [...acc, { name, data_type }] : acc;
+		},
+		[],
+	);
+}
 
 const defaultPartitionField = 'p_timestamp (Default)';
 const staticType = 'Static';
@@ -170,7 +213,7 @@ const PartitionField = (props: {
 }) => {
 	const [data, setData] = useState<string[]>([]);
 	useEffect(() => {
-		setData((prev) => _.uniq([...prev, ...props.partitionFields]));
+		setData(_.uniq([...props.partitionFields]));
 	}, [props.partitionFields]);
 
 	const onFieldChange = useCallback((value: string) => {
@@ -267,8 +310,22 @@ const getStringFieldNames = (fields: FieldType[]) => {
 		.value();
 };
 
+type StreamFormType = UseFormReturnType<Stream, (values: Stream) => Stream>;
+
+type Stream = {
+    name: string;
+    fields: {
+        name: string;
+        data_type: string;
+    }[];
+    schemaType: string;
+    partitionField: string;
+    partitionLimit: number;
+    customPartitionFields: never[];
+}
+
 const useCreateStreamForm = () => {
-	const form = useForm({
+	const form: StreamFormType = useForm({
 		mode: 'controlled',
 		initialValues: {
 			name: '',
@@ -288,6 +345,12 @@ const useCreateStreamForm = () => {
 					const existingNames = _.map(fields, (v, _k) => v.name);
 					return isValidFieldName(val, existingNames);
 				},
+				data_type: (val, allValues) => {
+					if (allValues.schemaType === dynamicType) return null;
+
+					const allowedValues = _.map(datatypes, datatype => datatype.value)
+					return _.includes(allowedValues, val) ? null : "Invalid datatype"
+				}
 			},
 			partitionField: (val, allValues) => {
 				const { fields, schemaType } = allValues;
@@ -334,6 +397,81 @@ const useCreateStreamForm = () => {
 	return { form, onAddField, onRemoveField, onChangeValue };
 };
 
+const DetectSchemaSection = (props: {form: StreamFormType}) => {
+	const [file, setFile] = useState<File | null>(null);
+	const [isDetected, setDetected] = useState(false);
+	const { detectLogStreamSchemaMutation, detectLogStreamSchemaIsLoading: isDetecting } = useLogStream();
+
+	const updateFields = useCallback(
+		(schema: LogStreamSchemaData) => {
+			const updatedFormFields = getDataTypeFormValuesFromSchema(schema);
+			props.form.setFieldValue('fields', updatedFormFields);
+			setDetected(true);
+			props.form.validate()
+		},
+		[props.form],
+	);
+
+	const onImport = (file: File | null) => {
+		setFile(file)
+		if (file) {
+			setDetected(false);
+			const reader = new FileReader();
+			reader.onload = (e: ProgressEvent<FileReader>) => {
+				try {
+					const target = e.target;
+					if (target === null || typeof target.result !== 'string') return;
+
+					const logRecords = JSON.parse(target.result);
+					if (!_.isArray(logRecords)) {
+						return notifyError({ message: 'Invalid JSON' });
+					} else if (_.isEmpty(logRecords)) {
+						return notifyError({ message: 'No records found' });
+					} else if (_.size(logRecords) > 10) {
+						return notifyError({ message: 'More than 10 records found' });
+					} else {
+						detectLogStreamSchemaMutation({ sampleLogs: logRecords, onSuccess: updateFields });
+					}
+				} catch (error) {
+					console.log('error', error);
+					setDetected(false);
+				}
+			};
+			reader.readAsText(file);
+		}
+	}
+
+	return (
+		<Stack gap={2} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+			<Stack gap={1}>
+				<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={4}>
+					<Text className={styles.fieldTitle}>Auto Detect Fields and Schema</Text>
+					<Tooltip
+						multiline
+						w={220}
+						withArrow
+						transitionProps={{ duration: 200 }}
+						label="Upload a JSON file with array of records. We will auto detect the fields and datatype for each field">
+						<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={14} width={14} />
+					</Tooltip>
+				</Stack>
+				<Text className={styles.fieldDescription}>Upload a JSON with array of records</Text>
+			</Stack>
+			<FileInput
+				w={200}
+				placeholder="Import JSON"
+				value={file}
+				disabled={isDetecting}
+				onChange={onImport}
+				fileInputProps={{ accept: '.json' }}
+				rightSection={
+					isDetecting ? <Loader size="sm" /> : <IconCheck size="0.8rem" color={isDetected ? 'green' : 'white'} />
+				}
+			/>
+		</Stack>
+	);
+};
+
 const CreateStreamForm = (props: { toggleModal: () => void }) => {
 	const { form, onAddField, onRemoveField, onChangeValue } = useCreateStreamForm();
 	const stringFields = getStringFieldNames(form.values.fields);
@@ -343,6 +481,7 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 		? []
 		: _.chain(form.values.fields)
 				.map((field) => field.name)
+				.uniq()
 				.compact()
 				.value();
 	const { createLogStreamMutation, createLogStreamIsLoading } = useLogStream();
@@ -351,11 +490,6 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 		props.toggleModal();
 		getLogStreamListRefetch();
 	}, []);
-
-	const isStreamNameValid = useCallback(() => {
-		const { hasError } = form.validateField('name');
-		return !hasError;
-	}, [form]);
 
 	const onSubmit = useCallback(() => {
 		const { hasErrors } = form.validate();
@@ -392,16 +526,19 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 				{...form.getInputProps('name')}
 			/>
 			<SchemaTypeField inputProps={form.getInputProps('schemaType')} />
+			{isStaticSchema && <DetectSchemaSection form={form} />}
 			{isStaticSchema && (
-				<Stack className={styles.fieldsContainer}>
+				<Stack className={styles.fieldsSectionContainer}>
 					<Text className={styles.fieldTitle}>Fields</Text>
-					{_.map(form.values.fields, (_field, index) => {
-						const nameInputProps = form.getInputProps(`fields.${index}.name`);
-						const datatypeInputProps = form.getInputProps(`fields.${index}.data_type`);
-						const onRemove = _.size(form.values.fields) <= 1 ? null : () => onRemoveField(index);
-						return <FieldRow {...{ nameInputProps, datatypeInputProps, onRemove }} />;
-					})}
-					<AddFieldButton onClick={onAddField} />
+					<Stack className={styles.fieldsContainer}>
+						{_.map(form.values.fields, (_field, index) => {
+							const nameInputProps = form.getInputProps(`fields.${index}.name`);
+							const datatypeInputProps = form.getInputProps(`fields.${index}.data_type`);
+							const onRemove = _.size(form.values.fields) <= 1 ? null : () => onRemoveField(index);
+							return <FieldRow key={index} {...{ nameInputProps, datatypeInputProps, onRemove }} />;
+						})}
+						<AddFieldButton onClick={onAddField} />
+					</Stack>
 				</Stack>
 			)}
 			<PartitionField
@@ -424,7 +561,7 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 			<Stack style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
 				<Box>
 					{!createLogStreamIsLoading ? (
-						<Button w="6rem" onClick={onSubmit} disabled={!isStreamNameValid()}>
+						<Button w="6rem" onClick={onSubmit} disabled={!_.isEmpty(form.errors)}>
 							Create
 						</Button>
 					) : (
