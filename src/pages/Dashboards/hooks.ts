@@ -1,15 +1,15 @@
-import { useLogsStore, logsStoreReducers } from "../Stream/providers/LogsProvider"
-import { useCallback } from "react"
-import _ from "lodash"
-import dayjs from "dayjs"
-import { useDashboardsStore } from "./providers/DashboardsProvider"
-import { Dashboard } from "@/@types/parseable/api/dashboards"
+import { useLogsStore, logsStoreReducers } from '../Stream/providers/LogsProvider';
+import { useCallback } from 'react';
+import _ from 'lodash';
+import dayjs from 'dayjs';
+import { useDashboardsStore } from './providers/DashboardsProvider';
+import { Dashboard } from '@/@types/parseable/api/dashboards';
 
 const { setTimeRange } = logsStoreReducers;
 
 export const useSyncTimeRange = () => {
-	const [dashboards] = useDashboardsStore(store => store.dashboards);
-    const [, setLogsStore] = useLogsStore((_store) => null);
+	const [dashboards] = useDashboardsStore((store) => store.dashboards);
+	const [, setLogsStore] = useLogsStore((_store) => null);
 
 	const updateTimeRange = useCallback(
 		(dashboard: Dashboard) => {

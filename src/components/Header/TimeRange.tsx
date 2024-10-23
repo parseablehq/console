@@ -2,14 +2,15 @@ import useMountedState from '@/hooks/useMountedState';
 import { Box, Button, Divider, Menu, NumberInput, Stack, Text, Tooltip, px } from '@mantine/core';
 import { DatePicker, TimeInput } from '@mantine/dates';
 import { IconCalendarEvent, IconCheck, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import type { FC } from 'react';
-import { Fragment, useCallback, useMemo, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FIXED_DURATIONS } from '@/constants/timeConstants';
 import classes from './styles/LogQuery.module.css';
 import { useOuterClick } from '@/hooks/useOuterClick';
 import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
 import _ from 'lodash';
+import { getAllParams } from '@/url-sync/syncStore';
 
 const { setTimeRange, setshiftInterval } = logsStoreReducers;
 type FixedDurations = (typeof FIXED_DURATIONS)[number];
@@ -40,6 +41,20 @@ const RelativeTimeIntervals = (props: {
 const TimeRange: FC = () => {
 	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
 	const { label, shiftInterval, interval, startTime, endTime, type } = timeRange;
+
+	useEffect(() => {
+		if (!window.location.search) return;
+		const { from, to, interval } = getAllParams();
+		if (from && to) {
+			const startTime = dayjs(from);
+			const endTime = dayjs(to);
+			setLogsStore((store) => setTimeRange(store, { startTime, endTime, type: 'fixed' }));
+		}
+		if (interval) {
+			console.log(interval);
+		}
+	}, []);
+
 	const handleOuterClick = useCallback((event: any) => {
 		const targetClassNames: string[] = event.target?.classList || [];
 		const maybeSubmitBtnClassNames: string[] = event.target.closest('button')?.classList || [];

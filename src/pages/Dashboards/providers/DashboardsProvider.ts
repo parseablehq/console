@@ -70,7 +70,7 @@ export const genLayout = (tiles: Tile[], currentPage: number): Layout[] => {
 	);
 };
 
-type DashboardsStore = {
+export type DashboardsStore = {
 	dashboards: Dashboard[] | null;
 	activeDashboard: Dashboard | null;
 	createDashboardModalOpen: boolean;
@@ -285,7 +285,7 @@ const dashboardsStoreReducers: DashboardsStoreReducers = {
 	toggleImportTileModal,
 	toggleImportDashboardModal,
 	handlePaging,
-	toggleDuplicateTileModal
+	toggleDuplicateTileModal,
 };
 
 export { DashbaordsProvider, useDashboardsStore, dashboardsStoreReducers };
