@@ -2,7 +2,7 @@ import useMountedState from '@/hooks/useMountedState';
 import { Box, Button, Divider, Menu, NumberInput, Stack, Text, Tooltip, px } from '@mantine/core';
 import { DatePicker, TimeInput } from '@mantine/dates';
 import { IconCalendarEvent, IconCheck, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import type { FC } from 'react';
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FIXED_DURATIONS } from '@/constants/timeConstants';

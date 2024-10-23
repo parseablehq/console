@@ -1,6 +1,15 @@
 import TimeRange from '@/components/Header/TimeRange';
-import { Box, Button, FileInput, Modal, px, Stack, Text, TextInput } from '@mantine/core';
-import { IconCheck, IconFileDownload, IconPencil, IconPlus, IconShare, IconTrash } from '@tabler/icons-react';
+import { Box, Button, FileInput, Modal, px, Stack, Text, Menu, TextInput } from '@mantine/core';
+import {
+	IconCheck,
+	IconCopy,
+	IconDownload,
+	IconFileDownload,
+	IconPencil,
+	IconPlus,
+	IconShare,
+	IconTrash,
+} from '@tabler/icons-react';
 import classes from './styles/toolbar.module.css';
 import { useDashboardsStore, dashboardsStoreReducers, sortTilesByOrder } from './providers/DashboardsProvider';
 import { ChangeEvent, useCallback, useState } from 'react';
@@ -10,6 +19,7 @@ import _ from 'lodash';
 import ReactGridLayout, { Layout } from 'react-grid-layout';
 import { Dashboard } from '@/@types/parseable/api/dashboards';
 import { exportJson } from '@/utils/exportHelpers';
+import { copyTextToClipboard } from '@/utils';
 
 const {
 	toggleEditDashboardModal,
@@ -184,7 +194,7 @@ const DeleteDashboardButton = () => {
 
 const ShareDashbboardButton = (props: { dashboard: Dashboard }) => {
 	const { dashboard } = props;
-	const onClick = useCallback(async () => {
+	const downloadDashboard = useCallback(async () => {
 		const sanitizedConfig = _.omit(dashboard, ['dashboard_id', 'user_id', 'version']);
 		const { tiles } = dashboard;
 		const sanitizedTiles = _.map(tiles, (tile) => {
@@ -192,7 +202,28 @@ const ShareDashbboardButton = (props: { dashboard: Dashboard }) => {
 		});
 		return exportJson(JSON.stringify({ ...sanitizedConfig, tiles: sanitizedTiles }, null, 2), dashboard.name);
 	}, [dashboard]);
-	return <IconButton renderIcon={renderShareIcon} size={36} onClick={onClick} tooltipLabel="Share Dashboard" />;
+
+	const copyUrl = useCallback(() => {
+		copyTextToClipboard(window.location.href);
+	}, [window.location]);
+
+	return (
+		<Menu width={200} position="bottom" withArrow shadow="md">
+			<Menu.Target>
+				<Button style={{ padding: '0', background: 'transparent' }}>
+					<IconButton renderIcon={renderShareIcon} size={36} tooltipLabel="Share Dashboard" />
+				</Button>
+			</Menu.Target>
+			<Menu.Dropdown>
+				<Menu.Item leftSection={<IconDownload size={15} stroke={1.02} />} onClick={downloadDashboard}>
+					Download
+				</Menu.Item>
+				<Menu.Item leftSection={<IconCopy size={15} stroke={1.02} />} onClick={copyUrl}>
+					Copy URL
+				</Menu.Item>
+			</Menu.Dropdown>
+		</Menu>
+	);
 };
 
 const ImportTileModal = () => {
@@ -299,7 +330,7 @@ const Toolbar = (props: { layoutRef: React.MutableRefObject<ReactGridLayout.Layo
 					{description}
 				</Text>
 			</Stack>
-			<Stack style={{ flexDirection: 'row', height: '100%', alignItems: 'center' }}>
+			<Stack style={{ flexDirection: 'row' }}>
 				<TimeRange />
 				<AddTileButton />
 				<ImportTileButton />
