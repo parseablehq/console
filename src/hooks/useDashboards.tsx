@@ -177,7 +177,7 @@ export const useTileQuery = (opts?: { tileId?: string; onSuccess?: (data: TileQu
 				opts?.onSuccess && opts.onSuccess(tileData);
 				setFetchState({ isLoading: false, isError: false, isSuccess: true });
 			} catch (e: any) {
-				if (e.name == 'CanceledError') return;
+				if (e.name === 'CanceledError') return;
 				setFetchState({ isLoading: false, isError: true, isSuccess: false });
 				notifyError({ message: _.isString(e.response.data) ? e.response.data : 'Unable to fetch tile data' });
 			}
