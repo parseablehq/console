@@ -11,11 +11,10 @@ export const getAllParams = (url: string): Record<string, string> => {
 	return parsedParams;
 };
 
-export const syncURL = (path: string, params: Record<string, string>) => {
+export const syncURL = (params: Record<string, string>) => {
 	const paramsSlice = Object.entries(params);
-	const stage = paramsSlice.map((el) => el.join('='));
-	const finalParams = encodeURI(stage.join('&'));
-
-	const finalURL = `${path}?${finalParams}`;
+	const stage = paramsSlice.map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
+	const finalParams = stage.join('&');
+	const finalURL = `?${finalParams}`;
 	window.history.pushState({}, '', finalURL);
 };
