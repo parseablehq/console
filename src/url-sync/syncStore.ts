@@ -12,7 +12,7 @@ export const getAllParams = (): Record<string, string> => {
 	return parsedParams;
 };
 
-export const syncstoretoURL = (store: Record<string, string>) => {
+export const syncStoretoURL = (store: Record<string, string>) => {
 	const paramsSlice = Object.entries(store);
 	const stage = paramsSlice.map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
 	const finalParams = stage.join('&');
