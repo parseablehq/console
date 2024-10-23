@@ -28,7 +28,7 @@ export const putDashboard = (dashboardId: string, dashboard: UpdateDashboardType
 };
 
 export const postDashboard = (dashboard: CreateDashboardType | ImportDashboardType) => {
-	return Axios().post(CREATE_DASHBOARDS_URL, { ...dashboard});
+	return Axios().post(CREATE_DASHBOARDS_URL, { ...dashboard });
 };
 
 export const removeDashboard = (dashboardId: string) => {
@@ -37,7 +37,7 @@ export const removeDashboard = (dashboardId: string) => {
 
 // using just for the dashboard tile now
 // refactor once the fields are included in the /query in the response
-export const getQueryData = (opts?: TileQuery) => {
+export const getQueryData = (opts?: TileQuery, signal?: AbortSignal) => {
 	if (_.isEmpty(opts)) throw 'Invalid Arguments';
 
 	const { query, startTime, endTime } = opts;
@@ -48,6 +48,6 @@ export const getQueryData = (opts?: TileQuery) => {
 			startTime,
 			endTime: optimizeEndTime(endTime),
 		},
-		{},
+		{ signal },
 	);
 };

@@ -4,7 +4,7 @@ import { AxiosError, isAxiosError } from 'axios';
 import _ from 'lodash';
 import { useDashboardsStore, dashboardsStoreReducers } from '@/pages/Dashboards/providers/DashboardsProvider';
 import { getDashboards, getQueryData, postDashboard, putDashboard, removeDashboard } from '@/api/dashboard';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
 	CreateDashboardType,
 	Dashboard,
@@ -153,17 +153,31 @@ export const useTileQuery = (opts?: { tileId?: string; onSuccess?: (data: TileQu
 		isError: null | boolean;
 		isSuccess: null | boolean;
 	}>({ isLoading: false, isError: null, isSuccess: null });
+	const abortControllerRef = useRef(new AbortController());
+
+	useEffect(() => {
+		return () => {
+			if (abortControllerRef.current) {
+				abortControllerRef.current.abort();
+			}
+		};
+	}, []);
 
 	const fetchTileData = useCallback(
 		async (queryOpts: TileQuery) => {
+			if (abortControllerRef.current) {
+				abortControllerRef.current.abort();
+			}
+			abortControllerRef.current = new AbortController();
 			try {
 				setFetchState({ isLoading: true, isError: null, isSuccess: null });
-				const res = await getQueryData(queryOpts);
+				const res = await getQueryData(queryOpts, abortControllerRef.current.signal);
 				const tileData = _.isEmpty(res) ? { records: [], fields: [] } : res.data;
 				opts?.tileId && setDashboardsStore((store) => setTileData(store, opts.tileId || '', tileData));
 				opts?.onSuccess && opts.onSuccess(tileData);
 				setFetchState({ isLoading: false, isError: false, isSuccess: true });
 			} catch (e: any) {
+				if (e.name == 'CanceledError') return;
 				setFetchState({ isLoading: false, isError: true, isSuccess: false });
 				notifyError({ message: _.isString(e.response.data) ? e.response.data : 'Unable to fetch tile data' });
 			}
