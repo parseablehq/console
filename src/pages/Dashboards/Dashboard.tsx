@@ -23,8 +23,14 @@ import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { EditTileType, ImportDashboardType, Tile as TileType } from '@/@types/parseable/api/dashboards';
 import { templates } from './assets/templates';
 
-const { toggleCreateDashboardModal, toggleCreateTileModal, toggleDuplicateTileModal, toggleDeleteTileModal, handlePaging, toggleImportDashboardModal } =
-	dashboardsStoreReducers;
+const {
+	toggleCreateDashboardModal,
+	toggleCreateTileModal,
+	toggleDuplicateTileModal,
+	toggleDeleteTileModal,
+	handlePaging,
+	toggleImportDashboardModal,
+} = dashboardsStoreReducers;
 
 const TilesView = (props: { onLayoutChange: (layout: Layout[]) => void }) => {
 	const [activeDashboard, setDashbaordsStore] = useDashboardsStore((store) => store.activeDashboard);
@@ -151,7 +157,10 @@ const DeleteTileModal = () => {
 	);
 };
 
-const DashboardTemplates = (props: {onImport: (template: ImportDashboardType) => void; isImportingDashboard: boolean}) => {
+const DashboardTemplates = (props: {
+	onImport: (template: ImportDashboardType) => void;
+	isImportingDashboard: boolean;
+}) => {
 	return (
 		<Stack gap={0} mt={6}>
 			{_.map(templates, (template) => {
@@ -174,12 +183,12 @@ const DashboardTemplates = (props: {onImport: (template: ImportDashboardType) =>
 			})}
 		</Stack>
 	);
-}
+};
 
 const ImportDashboardModal = () => {
 	const [importDashboardModalOpen, setDashboardStore] = useDashboardsStore((store) => store.importDashboardModalOpen);
 	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
-	const [isStandAloneMode] = useAppStore(store => store.isStandAloneMode)
+	const [isStandAloneMode] = useAppStore((store) => store.isStandAloneMode);
 	const [file, setFile] = useState<File | null>(null);
 	const closeModal = useCallback(() => {
 		setDashboardStore((store) => toggleImportDashboardModal(store, false));
@@ -208,9 +217,9 @@ const ImportDashboardModal = () => {
 					const newDashboard: ImportDashboardType = JSON.parse(target.result);
 					if (_.isEmpty(newDashboard)) return;
 
-					return makePostCall(newDashboard)
+					return makePostCall(newDashboard);
 				} catch (error) {
-					console.log("error", error)
+					console.log('error', error);
 				}
 			};
 			reader.readAsText(file);
@@ -322,13 +331,13 @@ const NoTilesView = () => {
 };
 
 const findTileByTileId = (tiles: TileType[], tileId: string | null) => {
-	return _.find(tiles, tile => tile.tile_id === tileId)
-}
+	return _.find(tiles, (tile) => tile.tile_id === tileId);
+};
 
 const DuplicateTileModal = () => {
-	const [duplicateTileModalOpen, setDashboardsStore] = useDashboardsStore(store => store.duplicateTileModalOpen)
-	const [editTileId] = useDashboardsStore(store => store.editTileId);
-	const [activeDashboard] = useDashboardsStore(store => store.activeDashboard)
+	const [duplicateTileModalOpen, setDashboardsStore] = useDashboardsStore((store) => store.duplicateTileModalOpen);
+	const [editTileId] = useDashboardsStore((store) => store.editTileId);
+	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
 	const [inputValue, setInputValue] = useState<string>('');
 	const onClose = useCallback(() => {
 		setDashboardsStore((store) => toggleDuplicateTileModal(store, false, null));
@@ -385,7 +394,9 @@ const DuplicateTileModal = () => {
 						</Button>
 					</Box>
 					<Box>
-						<Button onClick={handleSubmit} loading={isUpdatingDashboard} disabled={_.isEmpty(inputValue)}>Done</Button>
+						<Button onClick={handleSubmit} loading={isUpdatingDashboard} disabled={_.isEmpty(inputValue)}>
+							Done
+						</Button>
 					</Box>
 				</Stack>
 			</Stack>
@@ -405,11 +416,11 @@ const Dashboard = () => {
 	if (_.isEmpty(dashboards)) return <NoDashboardsView />;
 
 	return (
-		<Stack style={{ flex: 1 }} gap={0}>
+		<Stack style={{ flex: 1, marginBottom: '1rem' }} gap={0}>
 			<DeleteTileModal />
-			<DuplicateTileModal/>
+			<DuplicateTileModal />
 			<Toolbar layoutRef={layoutRef} />
-			<ImportDashboardModal/>
+			<ImportDashboardModal />
 			<TilesView onLayoutChange={onLayoutChange} />
 		</Stack>
 	);

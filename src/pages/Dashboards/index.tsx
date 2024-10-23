@@ -21,6 +21,7 @@ const LoadingView = () => {
 const Dashboards = () => {
 	const [dashboards] = useDashboardsStore((store) => store.dashboards);
 	const [createTileFormOpen] = useDashboardsStore((store) => store.createTileFormOpen);
+
 	const { updateTimeRange } = useSyncTimeRange();
 	const { fetchDashboards } = useDashboardsQuery({ updateTimeRange });
 	useEffect(() => {
@@ -43,7 +44,7 @@ const Dashboards = () => {
 				<CreateTileForm />
 			) : (
 				<>
-					<SideBar updateTimeRange={updateTimeRange}/>
+					<SideBar updateTimeRange={updateTimeRange} />
 					<CreateDashboardModal />
 					<Dashboard />
 				</>
