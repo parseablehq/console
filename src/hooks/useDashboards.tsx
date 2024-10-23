@@ -155,7 +155,7 @@ export const useTileQuery = (opts: {
 	const [, setDashboardsStore] = useDashboardsStore((_store) => null);
 	const { onSuccess, query, startTime, endTime, tileId, enabled = true } = opts;
 
-	const fetchTileData = async (queryOpts: TileQuery, signal: AbortSignal | undefined) => {
+	const fetchTileData = async (queryOpts: TileQuery, signal?: AbortSignal) => {
 		const res = await getQueryData(queryOpts, signal);
 		const tileData = _.isEmpty(res) ? { records: [], fields: [] } : res.data;
 		if (tileId) {
@@ -169,9 +169,9 @@ export const useTileQuery = (opts: {
 		async ({ signal }) => {
 			const tileData = await fetchTileData(
 				{
-					query: query,
-					startTime: startTime,
-					endTime: endTime,
+					query,
+					startTime,
+					endTime,
 				},
 				signal,
 			);
