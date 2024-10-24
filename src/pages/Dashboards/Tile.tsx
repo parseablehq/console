@@ -300,7 +300,7 @@ const Tile = (props: { id: string }) => {
 					</Text>
 					<Text className={`png-export-tile-timerange ${classes.tileTimeRangeText}`}>{timeRange.label}</Text>
 				</Stack>
-				{tileData && <TileControls tile={tile} data={tileData} />}
+				<TileControls tile={tile} data={tileData} />
 				<ParseableLogo />
 			</Stack>
 			{isLoading && <LoadingView />}
