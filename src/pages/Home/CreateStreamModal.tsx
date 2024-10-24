@@ -3,15 +3,15 @@ import {
 	Box,
 	Button,
 	CloseIcon,
+	Divider,
 	FileInput,
-	Group,
 	JsonInput,
 	Loader,
 	Modal,
 	NumberInput,
-	Radio,
 	Select,
 	Stack,
+	Switch,
 	TagsInput,
 	Text,
 	TextInput,
@@ -402,8 +402,8 @@ const useCreateStreamForm = () => {
 const DetectSchemaSection = (props: { form: StreamFormType }) => {
 	const [file, setFile] = useState<File | null>(null);
 	const { detectLogStreamSchemaMutation, detectLogStreamSchemaIsLoading: isDetecting } = useLogStream();
-	const [detectSchemaInputType, setDetectSchemaInputType] = useState<string | null>(null);
 	const [jsonInputValue, setJsonInputValue] = useState('');
+	const [showAutoDetectInputs, setShowAutoDetectInputs] = useState(false);
 
 	const updateFields = useCallback(
 		(schema: LogStreamSchemaData) => {
@@ -457,67 +457,58 @@ const DetectSchemaSection = (props: { form: StreamFormType }) => {
 			<Stack gap={2} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
 				<Stack gap={1}>
 					<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={4}>
-						<Text className={styles.fieldTitle}>Auto Detect Fields and Schema</Text>
+						<Text className={styles.fieldTitle}>Auto Detect Fields and Datatype</Text>
 						<Tooltip
 							multiline
 							w={220}
 							withArrow
 							transitionProps={{ duration: 200 }}
-							label="Upload a JSON file with array of records. We will auto detect the fields and datatype for each field">
+							label="Upload a JSON with array of records. We will auto detect the fields and datatype for each field">
 							<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={14} width={14} />
 						</Tooltip>
 					</Stack>
-					<Text className={styles.fieldDescription}>Upload a JSON with array of records</Text>
+					<Text className={styles.fieldDescription}>Enable to generate schema based on log records</Text>
 				</Stack>
 				<Stack>
-					<Radio.Group
-						name="favoriteFramework"
-						withAsterisk
-						value={detectSchemaInputType}
-						onChange={setDetectSchemaInputType}>
-						<Group>
-							<Radio value="input" label="JSON Input" />
-							<Radio value="file" label="JSON File" />
-						</Group>
-					</Radio.Group>
+					<Switch
+						checked={showAutoDetectInputs}
+						onChange={(event) => setShowAutoDetectInputs(event.currentTarget.checked)}
+					/>
 				</Stack>
 			</Stack>
-			<Stack style={{ marginBottom: detectSchemaInputType ? '0.4rem' : 0 }}>
-				{detectSchemaInputType === 'file' && (
-					<FileInput
-						placeholder="Import JSON"
-						value={file}
-						disabled={isDetecting}
-						onChange={onImportFile}
-						fileInputProps={{ accept: '.json' }}
-					/>
-				)}
-				{detectSchemaInputType === 'input' && (
-					<JsonInput
-						placeholder="Array of Log Records as JSON"
-						validationError="Invalid JSON"
-						autosize
-						minRows={4}
-						disabled={isDetecting}
-						maxRows={6}
-						formatOnBlur
-						value={jsonInputValue}
-						onChange={setJsonInputValue}
-					/>
-				)}
-				{detectSchemaInputType && (
-					<Stack style={{ alignItems: 'flex-end' }}>
-						<Box>
-							<Button
-								disabled={(detectSchemaInputType === 'file' && file === null) || _.isEmpty(jsonInputValue)}
-								onClick={detectSchemaHandler}
-								loading={isDetecting}
-								variant="outline">
-								Submit
-							</Button>
-						</Box>
-					</Stack>
-				)}
+			<Stack
+				style={{ marginBottom: showAutoDetectInputs ? '0.4rem' : 0, display: showAutoDetectInputs ? 'flex' : 'none' }}>
+				<FileInput
+					placeholder="Import JSON"
+					value={file}
+					disabled={isDetecting}
+					onChange={onImportFile}
+					fileInputProps={{ accept: '.json' }}
+				/>
+				<Divider label="or" />
+				<JsonInput
+					placeholder="Array of Log Records as JSON"
+					validationError="Invalid JSON"
+					autosize
+					minRows={4}
+					disabled={isDetecting}
+					maxRows={6}
+					formatOnBlur
+					value={jsonInputValue}
+					onChange={setJsonInputValue}
+				/>
+
+				<Stack style={{ alignItems: 'flex-end' }}>
+					<Box>
+						<Button
+							disabled={_.isEmpty(jsonInputValue)}
+							onClick={detectSchemaHandler}
+							loading={isDetecting}
+							variant="outline">
+							Submit
+						</Button>
+					</Box>
+				</Stack>
 			</Stack>
 		</Stack>
 	);
