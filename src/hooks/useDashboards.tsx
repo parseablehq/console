@@ -153,7 +153,7 @@ export const useTileQuery = (opts: {
 }) => {
 	const [, setDashboardsStore] = useDashboardsStore((_store) => null);
 	const { query, startTime, endTime, tileId, enabled = true } = opts;
-	const { isLoading, isError, refetch } = useQuery(
+	const { isLoading, isFetching, isError, refetch } = useQuery(
 		[tileId, query, startTime, endTime],
 		() =>
 			getQueryData({
@@ -180,8 +180,10 @@ export const useTileQuery = (opts: {
 		},
 	);
 
+	const isLoadingState = isLoading || isFetching;
+
 	return {
-		isLoading,
+		isLoading: isLoadingState,
 		isError,
 		refetch,
 	};
