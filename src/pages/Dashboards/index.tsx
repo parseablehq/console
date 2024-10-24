@@ -5,12 +5,13 @@ import SideBar from './SideBar';
 import Dashboard from './Dashboard';
 import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
 import CreateDashboardModal from './CreateDashboardModal';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDashboardsQuery } from '@/hooks/useDashboards';
 import CreateTileForm from './CreateTileForm';
 import { syncDashboardStoretoURL, useSyncTimeRange } from './hooks';
 import { getAllParams } from '@/url-sync/syncStore';
 import { useLocation } from 'react-router-dom';
+import NotFound from '../Errors/NotFound';
 
 const { selectDashboard } = dashboardsStoreReducers;
 
@@ -23,6 +24,7 @@ const LoadingView = () => {
 };
 
 const Dashboards = () => {
+	const [isValidDashboardID, setIsValidDashboardID] = useState(true);
 	const [dashboards, setDashbaordsStore] = useDashboardsStore((store) => store.dashboards);
 	const [createTileFormOpen] = useDashboardsStore((store) => store.createTileFormOpen);
 	const { updateTimeRange } = useSyncTimeRange();
@@ -42,8 +44,17 @@ const Dashboards = () => {
 			return;
 		}
 		const { id } = getAllParams();
+		if (dashboards) {
+			const isValidID = dashboards.find((dashboard) => dashboard.dashboard_id === id);
+			if (isValidID === undefined) {
+				setIsValidDashboardID(false);
+				return;
+			}
+		}
 		setDashbaordsStore((store) => selectDashboard(store, id));
-	}, [location.search, activeDashboard]);
+	}, [location.search, dashboards]);
+
+	if (dashboards && !isValidDashboardID) return <NotFound />;
 
 	return (
 		<Box
