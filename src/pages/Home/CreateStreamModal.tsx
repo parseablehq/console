@@ -4,9 +4,12 @@ import {
 	Button,
 	CloseIcon,
 	FileInput,
+	Group,
+	JsonInput,
 	Loader,
 	Modal,
 	NumberInput,
+	Radio,
 	Select,
 	Stack,
 	TagsInput,
@@ -24,7 +27,6 @@ import _ from 'lodash';
 import { CreatableSelect } from '@/components/Misc/CreatableSelect';
 import { useAppStore, appStoreReducers } from '@/layouts/MainLayout/providers/AppProvider';
 import { GetInputPropsReturnType, UseFormReturnType } from 'node_modules/@mantine/form/lib/types';
-import { IconCheck } from '@tabler/icons-react';
 import { notifyError } from '@/utils/notification';
 import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
 
@@ -111,7 +113,7 @@ const getDataTypeFormValuesFromSchema = (schema: LogStreamSchemaData) => {
 		},
 		[],
 	);
-}
+};
 
 const defaultPartitionField = 'p_timestamp (Default)';
 const staticType = 'Static';
@@ -302,9 +304,9 @@ type FieldType = {
 	name: string;
 };
 
-const getStringFieldNames = (fields: FieldType[]) => {
+const getDateTimeFieldNames = (fields: FieldType[]) => {
 	return _.chain(fields)
-		.filter((field) => field.data_type === 'string' && field.name.length > 0)
+		.filter((field) => field.data_type === 'datetime' && field.name.length > 0)
 		.map((field) => field.name)
 		.uniq()
 		.value();
@@ -313,16 +315,16 @@ const getStringFieldNames = (fields: FieldType[]) => {
 type StreamFormType = UseFormReturnType<Stream, (values: Stream) => Stream>;
 
 type Stream = {
-    name: string;
-    fields: {
-        name: string;
-        data_type: string;
-    }[];
-    schemaType: string;
-    partitionField: string;
-    partitionLimit: number;
-    customPartitionFields: never[];
-}
+	name: string;
+	fields: {
+		name: string;
+		data_type: string;
+	}[];
+	schemaType: string;
+	partitionField: string;
+	partitionLimit: number;
+	customPartitionFields: never[];
+};
 
 const useCreateStreamForm = () => {
 	const form: StreamFormType = useForm({
@@ -348,16 +350,16 @@ const useCreateStreamForm = () => {
 				data_type: (val, allValues) => {
 					if (allValues.schemaType === dynamicType) return null;
 
-					const allowedValues = _.map(datatypes, datatype => datatype.value)
-					return _.includes(allowedValues, val) ? null : "Invalid datatype"
-				}
+					const allowedValues = _.map(datatypes, (datatype) => datatype.value);
+					return _.includes(allowedValues, val) ? null : 'Invalid datatype';
+				},
 			},
 			partitionField: (val, allValues) => {
 				const { fields, schemaType } = allValues;
-				const allStringFieldNames = getStringFieldNames(fields);
+				const allDateTimeFields = getDateTimeFieldNames(fields);
 				if (val === defaultPartitionField) return null;
 
-				return schemaType === staticType && !_.includes(allStringFieldNames, val) ? 'Unknown Field' : null;
+				return schemaType === staticType && !_.includes(allDateTimeFields, val) ? 'Unknown Field' : null;
 			},
 			schemaType: (val) => (_.includes([dynamicType, staticType], val) ? null : 'Choose either Dynamic or Static'),
 			customPartitionFields: (val, allValues) => {
@@ -397,84 +399,133 @@ const useCreateStreamForm = () => {
 	return { form, onAddField, onRemoveField, onChangeValue };
 };
 
-const DetectSchemaSection = (props: {form: StreamFormType}) => {
+const DetectSchemaSection = (props: { form: StreamFormType }) => {
 	const [file, setFile] = useState<File | null>(null);
-	const [isDetected, setDetected] = useState(false);
 	const { detectLogStreamSchemaMutation, detectLogStreamSchemaIsLoading: isDetecting } = useLogStream();
+	const [detectSchemaInputType, setDetectSchemaInputType] = useState<string | null>(null);
+	const [jsonInputValue, setJsonInputValue] = useState('');
 
 	const updateFields = useCallback(
 		(schema: LogStreamSchemaData) => {
 			const updatedFormFields = getDataTypeFormValuesFromSchema(schema);
 			props.form.setFieldValue('fields', updatedFormFields);
-			setDetected(true);
-			props.form.validate()
+			props.form.validate();
 		},
 		[props.form],
 	);
 
-	const onImport = (file: File | null) => {
-		setFile(file)
+	const onImportFile = (file: File | null) => {
 		if (file) {
-			setDetected(false);
+			setFile(file);
 			const reader = new FileReader();
 			reader.onload = (e: ProgressEvent<FileReader>) => {
 				try {
 					const target = e.target;
-					if (target === null || typeof target.result !== 'string') return;
-
-					const logRecords = JSON.parse(target.result);
-					if (!_.isArray(logRecords)) {
-						return notifyError({ message: 'Invalid JSON' });
-					} else if (_.isEmpty(logRecords)) {
-						return notifyError({ message: 'No records found' });
-					} else if (_.size(logRecords) > 10) {
-						return notifyError({ message: 'More than 10 records found' });
+					if (target === null || typeof target.result !== 'string') {
+						return notifyError({ message: 'Unable to parse the file!' });
 					} else {
-						detectLogStreamSchemaMutation({ sampleLogs: logRecords, onSuccess: updateFields });
+						return setJsonInputValue(target.result);
 					}
 				} catch (error) {
-					console.log('error', error);
-					setDetected(false);
+					return notifyError({ message: 'Unable to parse the file!' });
 				}
 			};
 			reader.readAsText(file);
 		}
-	}
+	};
+
+	const detectSchemaHandler = useCallback(() => {
+		let logRecords;
+		try {
+			logRecords = JSON.parse(jsonInputValue);
+		} catch (e) {
+			console.error('Error parsing json', e);
+		}
+		if (!_.isArray(logRecords)) {
+			return notifyError({ message: 'Invalid JSON' });
+		} else if (_.isEmpty(logRecords)) {
+			return notifyError({ message: 'No records found' });
+		} else if (_.size(logRecords) > 10) {
+			return notifyError({ message: 'More than 10 records found' });
+		} else {
+			detectLogStreamSchemaMutation({ sampleLogs: logRecords, onSuccess: updateFields });
+		}
+	}, [jsonInputValue]);
 
 	return (
-		<Stack gap={2} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-			<Stack gap={1}>
-				<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={4}>
-					<Text className={styles.fieldTitle}>Auto Detect Fields and Schema</Text>
-					<Tooltip
-						multiline
-						w={220}
-						withArrow
-						transitionProps={{ duration: 200 }}
-						label="Upload a JSON file with array of records. We will auto detect the fields and datatype for each field">
-						<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={14} width={14} />
-					</Tooltip>
+		<Stack gap={12}>
+			<Stack gap={2} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+				<Stack gap={1}>
+					<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={4}>
+						<Text className={styles.fieldTitle}>Auto Detect Fields and Schema</Text>
+						<Tooltip
+							multiline
+							w={220}
+							withArrow
+							transitionProps={{ duration: 200 }}
+							label="Upload a JSON file with array of records. We will auto detect the fields and datatype for each field">
+							<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={14} width={14} />
+						</Tooltip>
+					</Stack>
+					<Text className={styles.fieldDescription}>Upload a JSON with array of records</Text>
 				</Stack>
-				<Text className={styles.fieldDescription}>Upload a JSON with array of records</Text>
+				<Stack>
+					<Radio.Group
+						name="favoriteFramework"
+						withAsterisk
+						value={detectSchemaInputType}
+						onChange={setDetectSchemaInputType}>
+						<Group>
+							<Radio value="input" label="JSON Input" />
+							<Radio value="file" label="JSON File" />
+						</Group>
+					</Radio.Group>
+				</Stack>
 			</Stack>
-			<FileInput
-				w={200}
-				placeholder="Import JSON"
-				value={file}
-				disabled={isDetecting}
-				onChange={onImport}
-				fileInputProps={{ accept: '.json' }}
-				rightSection={
-					isDetecting ? <Loader size="sm" /> : <IconCheck size="0.8rem" color={isDetected ? 'green' : 'white'} />
-				}
-			/>
+			<Stack style={{ marginBottom: detectSchemaInputType ? '0.4rem' : 0 }}>
+				{detectSchemaInputType === 'file' && (
+					<FileInput
+						placeholder="Import JSON"
+						value={file}
+						disabled={isDetecting}
+						onChange={onImportFile}
+						fileInputProps={{ accept: '.json' }}
+					/>
+				)}
+				{detectSchemaInputType === 'input' && (
+					<JsonInput
+						placeholder="Array of Log Records as JSON"
+						validationError="Invalid JSON"
+						autosize
+						minRows={4}
+						disabled={isDetecting}
+						maxRows={6}
+						formatOnBlur
+						value={jsonInputValue}
+						onChange={setJsonInputValue}
+					/>
+				)}
+				{detectSchemaInputType && (
+					<Stack style={{ alignItems: 'flex-end' }}>
+						<Box>
+							<Button
+								disabled={(detectSchemaInputType === 'file' && file === null) || _.isEmpty(jsonInputValue)}
+								onClick={detectSchemaHandler}
+								loading={isDetecting}
+								variant="outline">
+								Submit
+							</Button>
+						</Box>
+					</Stack>
+				)}
+			</Stack>
 		</Stack>
 	);
 };
 
 const CreateStreamForm = (props: { toggleModal: () => void }) => {
 	const { form, onAddField, onRemoveField, onChangeValue } = useCreateStreamForm();
-	const stringFields = getStringFieldNames(form.values.fields);
+	const stringFields = getDateTimeFieldNames(form.values.fields);
 	const isStaticSchema = form.values.schemaType === staticType;
 	const partitionFields = [defaultPartitionField, ...(isStaticSchema ? stringFields : [])];
 	const customPartitionFields = !isStaticSchema
