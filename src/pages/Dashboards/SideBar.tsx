@@ -8,7 +8,6 @@ import _ from 'lodash';
 import { Dashboard } from '@/@types/parseable/api/dashboards';
 import IconButton from '@/components/Button/IconButton';
 import { syncDashboardStoretoURL } from './hooks';
-// import { useLogsStore } from '../Stream/providers/LogsProvider';
 import { getAllParams } from '@/url-sync/syncStore';
 
 const { selectDashboard, toggleCreateDashboardModal, toggleImportDashboardModal } = dashboardsStoreReducers;
@@ -38,7 +37,6 @@ const DashboardListItem = (props: DashboardItemProps) => {
 const DashboardList = (props: { updateTimeRange: (dashboard: Dashboard) => void }) => {
 	const [dashboards, setDashbaordsStore] = useDashboardsStore((store) => store.dashboards);
 	const [activeDashboardId] = useDashboardsStore((store) => store.activeDashboard?.dashboard_id);
-	// const [timeRange] = useLogsStore((store) => store.timeRange);
 	const { updateURL } = syncDashboardStoretoURL();
 
 	useEffect(() => {

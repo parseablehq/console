@@ -127,8 +127,8 @@ const getDefaultTimeRange = (duration: FixedDuration = DEFAULT_FIXED_DURATIONS) 
 
 	return {
 		startTime: startTime.toDate(),
-		endTime: now.toDate(),
-		type: 'fixed' as 'fixed',
+		endTime: endTime.toDate(),
+		type: from && to ? ('custom' as 'custom') : ('fixed' as 'fixed'),
 		label,
 		interval: milliseconds,
 		shiftInterval: 1,

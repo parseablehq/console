@@ -42,14 +42,14 @@ export const syncDashboardStoretoURL = () => {
 			if (timeRange.type === 'custom') {
 				const startTime = simplifyDate(timeRange.startTime).toString();
 				const endTime = simplifyDate(timeRange.endTime).toString();
-				console.log(timeRange.type);
 				syncStoretoURL({ id, from: startTime, to: endTime });
-				return;
 			}
-			const interval: FixedDurations | undefined = FIXED_DURATIONS.find(
-				(duration) => duration.milliseconds === timeRange.interval,
-			);
-			if (interval) syncStoretoURL({ id, interval: interval?.label });
+			if (timeRange.type === 'fixed') {
+				const interval: FixedDurations | undefined = FIXED_DURATIONS.find(
+					(duration) => duration.milliseconds === timeRange.interval,
+				);
+				if (interval) syncStoretoURL({ id, interval: interval?.label });
+			}
 		},
 		[timeRange],
 	);

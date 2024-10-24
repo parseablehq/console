@@ -60,9 +60,9 @@ const TimeRange: FC = () => {
 		if (from && to) {
 			const startTime = parseDate(from);
 			const endTime = parseDate(to);
-			setLogsStore((store) => setTimeRange(store, { startTime, endTime, type: 'fixed' }));
+			setLogsStore((store) => setTimeRange(store, { startTime, endTime, type: 'custom' }));
 		}
-	}, [location.search]);
+	}, [location.search, window.location.search]);
 
 	const handleOuterClick = useCallback((event: any) => {
 		const targetClassNames: string[] = event.target?.classList || [];
