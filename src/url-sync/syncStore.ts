@@ -29,5 +29,6 @@ export const simplifyDate = (dateTime: Date) => {
 };
 
 export const parseDate = (dateTime: string) => {
-	return dayjs(dateTime, 'DD-MMM-YYYY_HH:mm', true);
+	const fomatDateForParsing = dateTime.replace('_', ' ');
+	return dayjs(fomatDateForParsing, 'DD-MMM-YYYY_HH:mm', true);
 };

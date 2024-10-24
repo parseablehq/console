@@ -8,6 +8,7 @@ import { getPageSlice } from '../utils';
 import _ from 'lodash';
 import { sanitizeCSVData } from '@/utils/exportHelpers';
 import timeRangeUtils from '@/utils/timeRangeUtils';
+import { getAllParams, parseDate } from '@/url-sync/syncStore';
 
 const { makeTimeRangeLabel } = timeRangeUtils;
 
@@ -119,9 +120,9 @@ type LiveTailConfig = {
 const getDefaultTimeRange = (duration: FixedDuration = DEFAULT_FIXED_DURATIONS) => {
 	const now = dayjs().startOf('minute');
 	const { milliseconds } = duration;
-
-	const startTime = now.subtract(milliseconds, 'milliseconds');
-	const endTime = now;
+	const { from, to } = getAllParams();
+	const startTime = from ? parseDate(from) : now.subtract(milliseconds, 'milliseconds');
+	const endTime = to ? parseDate(to) : now;
 	const label = makeTimeRangeLabel(startTime.toDate(), endTime.toDate());
 
 	return {
@@ -993,7 +994,7 @@ const logsStoreReducers: LogsStoreReducers = {
 	setDisabledColumns,
 	setOrderedHeaders,
 	toggleWordWrap,
-	toggleWrapDisabledColumns
+	toggleWrapDisabledColumns,
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };

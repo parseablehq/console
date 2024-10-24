@@ -46,11 +46,21 @@ const TimeRange: FC = () => {
 
 	useEffect(() => {
 		if (!location.search) return;
-		const { from, to } = getAllParams();
+		const { from, to, interval } = getAllParams();
+		console.log({ from, to, interval });
+		if (interval) {
+			const duration = FIXED_DURATIONS.find((duration) => duration.label === interval);
+			if (!duration) return;
+			const now = dayjs().startOf('minute');
+			const startTime = now.subtract(duration.milliseconds, 'milliseconds');
+			const endTime = now;
+			setLogsStore((store) => setTimeRange(store, { startTime, endTime, type: 'fixed' }));
+			return;
+		}
 		if (from && to) {
 			const startTime = parseDate(from);
 			const endTime = parseDate(to);
-			setLogsStore((store) => setTimeRange(store, { startTime, endTime, type: 'custom' }));
+			setLogsStore((store) => setTimeRange(store, { startTime, endTime, type: 'fixed' }));
 		}
 	}, [location.search]);
 

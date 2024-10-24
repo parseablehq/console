@@ -5,8 +5,11 @@ import dayjs from 'dayjs';
 import { useDashboardsStore } from './providers/DashboardsProvider';
 import { Dashboard } from '@/@types/parseable/api/dashboards';
 import { syncStoretoURL, simplifyDate } from '@/url-sync/syncStore';
+import { FIXED_DURATIONS } from '@/constants/timeConstants';
 
 const { setTimeRange } = logsStoreReducers;
+
+type FixedDurations = (typeof FIXED_DURATIONS)[number];
 
 export const useSyncTimeRange = () => {
 	const [dashboards] = useDashboardsStore((store) => store.dashboards);
@@ -32,14 +35,29 @@ export const useSyncTimeRange = () => {
 export const syncDashboardStoretoURL = () => {
 	const [timeRange] = useLogsStore((store) => store.timeRange);
 
-	const from = simplifyDate(timeRange.startTime).toString();
-	const to = simplifyDate(timeRange.endTime).toString();
+	console.log(timeRange.type);
 
 	const updateURL = useCallback(
 		(id: string) => {
+			if (timeRange.type === 'custom') {
+				const startTime = simplifyDate(timeRange.startTime).toString();
+				const endTime = simplifyDate(timeRange.endTime).toString();
+				console.log(timeRange.type);
+				syncStoretoURL({ id, from: startTime, to: endTime });
+				return;
+			}
+			const interval: FixedDurations | undefined = FIXED_DURATIONS.find(
+				(duration) => duration.milliseconds === timeRange.interval,
+			);
+			if (interval) syncStoretoURL({ id, interval: interval?.label });
+		},
+		[timeRange],
+	);
+	const updateURLandDateTime = useCallback(
+		(id: string, from: string, to: string) => {
 			syncStoretoURL({ id, from, to });
 		},
 		[timeRange],
 	);
-	return { updateURL };
+	return { updateURL, updateURLandDateTime };
 };

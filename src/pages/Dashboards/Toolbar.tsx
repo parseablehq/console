@@ -3,7 +3,7 @@ import { Box, Button, FileInput, Modal, px, Stack, Text, Menu, TextInput } from 
 import {
 	IconCheck,
 	IconCopy,
-	IconDownload,
+	IconFileArrowRight,
 	IconFileDownload,
 	IconPencil,
 	IconPlus,
@@ -215,8 +215,8 @@ const ShareDashbboardButton = (props: { dashboard: Dashboard }) => {
 				</Button>
 			</Menu.Target>
 			<Menu.Dropdown>
-				<Menu.Item leftSection={<IconDownload size={15} stroke={1.02} />} onClick={downloadDashboard}>
-					Download
+				<Menu.Item leftSection={<IconFileArrowRight size={15} stroke={1.02} />} onClick={downloadDashboard}>
+					Export
 				</Menu.Item>
 				<Menu.Item leftSection={<IconCopy size={15} stroke={1.02} />} onClick={copyUrl}>
 					Copy URL
