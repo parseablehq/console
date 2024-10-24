@@ -8,7 +8,6 @@ import {
 	CreateDashboardType,
 	Dashboard,
 	ImportDashboardType,
-	TileQuery,
 	TileQueryResponse,
 	UpdateDashboardType,
 } from '@/@types/parseable/api/dashboards';
@@ -153,27 +152,22 @@ export const useTileQuery = (opts: {
 	enabled?: boolean;
 }) => {
 	const [, setDashboardsStore] = useDashboardsStore((_store) => null);
-	const { onSuccess, query, startTime, endTime, tileId, enabled = true } = opts;
-
-	const fetchTileData = async (queryOpts: TileQuery) => {
-		const res = await getQueryData(queryOpts);
-		const tileData = _.isEmpty(res) ? { records: [], fields: [] } : res.data;
-		if (tileId) {
-			setDashboardsStore((store) => setTileData(store, tileId, tileData));
-		}
-		return tileData;
-	};
-
-	const { data, isLoading, isError, refetch } = useQuery(
+	const { query, startTime, endTime, tileId, enabled = true } = opts;
+	const { isLoading, isError, refetch } = useQuery(
 		[tileId, query, startTime, endTime],
 		() =>
-			fetchTileData({
+			getQueryData({
 				query,
 				startTime,
 				endTime,
 			}),
 		{
-			onSuccess,
+			onSuccess: (res) => {
+				const tileData = _.isEmpty(res) ? { records: [], fields: [] } : res.data;
+				if (tileId) {
+					setDashboardsStore((store) => setTileData(store, tileId, tileData));
+				}
+			},
 			onError: (error: AxiosError) => {
 				if (isAxiosError(error) && error.response) {
 					notifyError({
@@ -187,7 +181,6 @@ export const useTileQuery = (opts: {
 	);
 
 	return {
-		data,
 		isLoading,
 		isError,
 		refetch,

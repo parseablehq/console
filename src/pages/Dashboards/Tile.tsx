@@ -258,6 +258,8 @@ function TileControls(props: { tile: TileType; data: TileQueryResponse }) {
 
 const Tile = (props: { id: string }) => {
 	const [timeRange] = useLogsStore((store) => store.timeRange);
+	const [tilesData] = useDashboardsStore((store) => store.tilesData);
+	const tileData = _.get(tilesData, props.id, { records: [], fields: [] });
 	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
 	const tile = _.chain(activeDashboard)
 		.get('tiles', [])
@@ -267,7 +269,7 @@ const Tile = (props: { id: string }) => {
 	const shouldNotify = false;
 	const santizedQuery = sanitiseSqlString(tile.query, shouldNotify, 100);
 
-	const { data: tileData, isLoading } = useTileQuery({
+	const { isLoading } = useTileQuery({
 		tileId: props.id,
 		query: santizedQuery,
 		startTime: timeRange.startTime,
