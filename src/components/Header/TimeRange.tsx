@@ -10,7 +10,8 @@ import classes from './styles/LogQuery.module.css';
 import { useOuterClick } from '@/hooks/useOuterClick';
 import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
 import _ from 'lodash';
-import { getAllParams } from '@/url-sync/syncStore';
+import { getAllParams, parseDate } from '@/url-sync/syncStore';
+import { useLocation } from 'react-router-dom';
 
 const { setTimeRange, setshiftInterval } = logsStoreReducers;
 type FixedDurations = (typeof FIXED_DURATIONS)[number];
@@ -39,21 +40,19 @@ const RelativeTimeIntervals = (props: {
 };
 
 const TimeRange: FC = () => {
+	const location = useLocation();
 	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
 	const { label, shiftInterval, interval, startTime, endTime, type } = timeRange;
 
 	useEffect(() => {
-		if (!window.location.search) return;
-		const { from, to, interval } = getAllParams();
+		if (!location.search) return;
+		const { from, to } = getAllParams();
 		if (from && to) {
-			const startTime = dayjs(from);
-			const endTime = dayjs(to);
-			setLogsStore((store) => setTimeRange(store, { startTime, endTime, type: 'fixed' }));
+			const startTime = parseDate(from);
+			const endTime = parseDate(to);
+			setLogsStore((store) => setTimeRange(store, { startTime, endTime, type: 'custom' }));
 		}
-		if (interval) {
-			console.log(interval);
-		}
-	}, []);
+	}, [location.search]);
 
 	const handleOuterClick = useCallback((event: any) => {
 		const targetClassNames: string[] = event.target?.classList || [];

@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 export const getAllParams = (): Record<string, string> => {
 	const searchParams = window.location.search;
 	const paramsString = searchParams.slice(1);
@@ -12,10 +13,21 @@ export const getAllParams = (): Record<string, string> => {
 	return parsedParams;
 };
 
-export const syncStoretoURL = (store: Record<string, string>) => {
-	const paramsSlice = Object.entries(store);
-	const stage = paramsSlice.map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
+export const syncStoretoURL = (searchParams: Record<string, string | Date | number>) => {
+	const paramsSlice = Object.entries(searchParams);
+	const stage = paramsSlice.map(([key, value]) => `${encodeURI(key)}=${encodeURI(value.toString())}`);
 	const finalParams = stage.join('&');
 	const finalURL = `?${finalParams}`;
 	window.history.pushState({}, '', finalURL);
+};
+
+export const simplifyDate = (dateTime: Date) => {
+	const dateInstance = dayjs(dateTime);
+	const formattedDate = `${dateInstance.format('DD-MMM-YYYY_HH:mm')}`;
+
+	return formattedDate;
+};
+
+export const parseDate = (dateTime: string) => {
+	return dayjs(dateTime, 'DD-MMM-YYYY_HH:mm', true);
 };

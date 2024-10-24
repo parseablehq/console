@@ -5,15 +5,12 @@ import SideBar from './SideBar';
 import Dashboard from './Dashboard';
 import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
 import CreateDashboardModal from './CreateDashboardModal';
-import {
-	useEffect,
-	// useState
-} from 'react';
+import { useEffect } from 'react';
 import { useDashboardsQuery } from '@/hooks/useDashboards';
 import CreateTileForm from './CreateTileForm';
-import { useSyncTimeRange } from './hooks';
-import { getAllParams, syncStoretoURL } from '@/url-sync/syncStore';
-// import { useListenToStore } from '@/url-sync/useListentoStore';
+import { syncDashboardStoretoURL, useSyncTimeRange } from './hooks';
+import { getAllParams } from '@/url-sync/syncStore';
+import { useLocation } from 'react-router-dom';
 
 const { selectDashboard } = dashboardsStoreReducers;
 
@@ -26,27 +23,27 @@ const LoadingView = () => {
 };
 
 const Dashboards = () => {
-	// const [isStoreSynced, setIsStoreSynced] = useState<boolean>(false);
 	const [dashboards, setDashbaordsStore] = useDashboardsStore((store) => store.dashboards);
 	const [createTileFormOpen] = useDashboardsStore((store) => store.createTileFormOpen);
-	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
 	const { updateTimeRange } = useSyncTimeRange();
+	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
 	const { fetchDashboards } = useDashboardsQuery({ updateTimeRange });
+	const { updateURL } = syncDashboardStoretoURL();
+
+	const location = useLocation();
 
 	useEffect(() => {
 		fetchDashboards();
 	}, []);
 
 	useEffect(() => {
-		if (!dashboards && !window.location.search) return;
+		if (!location.search) {
+			if (activeDashboard) updateURL(activeDashboard?.dashboard_id);
+			return;
+		}
 		const { id } = getAllParams();
 		setDashbaordsStore((store) => selectDashboard(store, id));
-	}, [dashboards]);
-
-	useEffect(() => {
-		if (!activeDashboard) return;
-		syncStoretoURL({ id: activeDashboard?.dashboard_id });
-	}, [activeDashboard]);
+	}, [location.search, activeDashboard]);
 
 	return (
 		<Box

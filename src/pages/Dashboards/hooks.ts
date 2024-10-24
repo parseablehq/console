@@ -4,6 +4,7 @@ import _ from 'lodash';
 import dayjs from 'dayjs';
 import { useDashboardsStore } from './providers/DashboardsProvider';
 import { Dashboard } from '@/@types/parseable/api/dashboards';
+import { syncStoretoURL, simplifyDate } from '@/url-sync/syncStore';
 
 const { setTimeRange } = logsStoreReducers;
 
@@ -26,4 +27,19 @@ export const useSyncTimeRange = () => {
 	);
 
 	return { updateTimeRange };
+};
+
+export const syncDashboardStoretoURL = () => {
+	const [timeRange] = useLogsStore((store) => store.timeRange);
+
+	const from = simplifyDate(timeRange.startTime).toString();
+	const to = simplifyDate(timeRange.endTime).toString();
+
+	const updateURL = useCallback(
+		(id: string) => {
+			syncStoretoURL({ id, from, to });
+		},
+		[timeRange],
+	);
+	return { updateURL };
 };
