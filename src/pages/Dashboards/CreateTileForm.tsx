@@ -326,7 +326,13 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 		props.form.validate();
 	}, []);
 
-	const { fetchTileData, isLoading } = useTileQuery({ onSuccess: onFetchTileSuccess });
+	const { refetch, isLoading } = useTileQuery({
+		onSuccess: onFetchTileSuccess,
+		query: '', // Initial query (will be updated in refetch)
+		startTime: timeRange.startTime,
+		endTime: timeRange.endTime,
+		enabled: false,
+	});
 
 	const validateQuery = useCallback(() => {
 		if (_.isEmpty(dashboardId)) return;
@@ -337,7 +343,9 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 		const santizedQuery = sanitiseSqlString(query, true, 100);
 		onChangeValue('query', santizedQuery);
 		const { from, to } = selectedDashboard.time_filter || { from: timeRange.startTime, to: timeRange.endTime };
-		fetchTileData({ query: santizedQuery, startTime: dayjs(from).toDate(), endTime: dayjs(to).toDate() });
+		refetch({
+			queryKey: [santizedQuery, dayjs(from).toDate(), dayjs(to).toDate()],
+		});
 	}, [query, dashboardId, dashboards, timeRange]);
 
 	const onStreamSelect = useCallback((val: string | null) => {

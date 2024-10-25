@@ -4,12 +4,10 @@ import { AxiosError, isAxiosError } from 'axios';
 import _ from 'lodash';
 import { useDashboardsStore, dashboardsStoreReducers } from '@/pages/Dashboards/providers/DashboardsProvider';
 import { getDashboards, getQueryData, postDashboard, putDashboard, removeDashboard } from '@/api/dashboard';
-import { useCallback, useState } from 'react';
 import {
 	CreateDashboardType,
 	Dashboard,
 	ImportDashboardType,
-	TileQuery,
 	TileQueryResponse,
 	UpdateDashboardType,
 } from '@/@types/parseable/api/dashboards';
@@ -145,34 +143,48 @@ export const useDashboardsQuery = (opts: { updateTimeRange?: (dashboard: Dashboa
 	};
 };
 
-export const useTileQuery = (opts?: { tileId?: string; onSuccess?: (data: TileQueryResponse) => void }) => {
+export const useTileQuery = (opts: {
+	tileId?: string;
+	query: string;
+	startTime: Date;
+	endTime: Date;
+	onSuccess?: (data: TileQueryResponse) => void;
+	enabled?: boolean;
+}) => {
 	const [, setDashboardsStore] = useDashboardsStore((_store) => null);
-	const { onSuccess } = opts || {};
-	const [fetchState, setFetchState] = useState<{
-		isLoading: boolean;
-		isError: null | boolean;
-		isSuccess: null | boolean;
-	}>({ isLoading: false, isError: null, isSuccess: null });
-
-	const fetchTileData = useCallback(
-		async (queryOpts: TileQuery) => {
-			try {
-				setFetchState({ isLoading: true, isError: null, isSuccess: null });
-				const res = await getQueryData(queryOpts);
+	const { query, startTime, endTime, tileId, enabled = true } = opts;
+	const { isLoading, isFetching, isError, refetch } = useQuery(
+		[tileId, query, startTime, endTime],
+		() =>
+			getQueryData({
+				query,
+				startTime,
+				endTime,
+			}),
+		{
+			onSuccess: (res) => {
 				const tileData = _.isEmpty(res) ? { records: [], fields: [] } : res.data;
-				opts?.tileId && setDashboardsStore((store) => setTileData(store, opts.tileId || '', tileData));
-				opts?.onSuccess && opts.onSuccess(tileData);
-				setFetchState({ isLoading: false, isError: false, isSuccess: true });
-			} catch (e: any) {
-				setFetchState({ isLoading: false, isError: true, isSuccess: false });
-				notifyError({ message: _.isString(e.response.data) ? e.response.data : 'Unable to fetch tile data' });
-			}
+				if (tileId) {
+					setDashboardsStore((store) => setTileData(store, tileId, tileData));
+				}
+			},
+			onError: (error: AxiosError) => {
+				if (isAxiosError(error) && error.response) {
+					notifyError({
+						message: _.isString(error.response.data) ? error.response.data : 'Unable to fetch tile data',
+					});
+				}
+			},
+			refetchOnWindowFocus: false,
+			enabled,
 		},
-		[onSuccess],
 	);
 
+	const isLoadingState = isLoading || isFetching;
+
 	return {
-		...fetchState,
-		fetchTileData,
+		isLoading: isLoadingState,
+		isError,
+		refetch,
 	};
 };

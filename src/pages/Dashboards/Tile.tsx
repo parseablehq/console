@@ -23,7 +23,7 @@ import handleCapture, { makeExportClassName } from '@/utils/exportImage';
 import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
 import _ from 'lodash';
 import { useTileQuery } from '@/hooks/useDashboards';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { Tile as TileType, TileQueryResponse } from '@/@types/parseable/api/dashboards';
 import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 import Table from './Table';
@@ -115,13 +115,23 @@ const Graph = (props: { tile: TileType; data: TileQueryResponse }) => {
 	const y_keys = _.get(graph_config, 'y_keys', []);
 	const xUnit = getUnitTypeByKey(x_key, tick_config);
 	const yUnit = getUnitTypeByKey(_.head(y_keys) || '', tick_config);
-	const orientation =  _.get(graph_config, 'orientation', 'horizontal');
-	const graphBasicType = _.get(graph_config, 'graph_type', 'default')
-	const color_config = _.get(props.tile.visualization, 'color_config', [])
+	const orientation = _.get(graph_config, 'orientation', 'horizontal');
+	const graphBasicType = _.get(graph_config, 'graph_type', 'default');
+	const color_config = _.get(props.tile.visualization, 'color_config', []);
 
 	return (
 		<Stack style={{ flex: 1, width: '100%' }}>
-			{renderGraph({ queryResponse: data, x_key, y_keys, chart: visualization_type, yUnit, xUnit, orientation, graphBasicType, color_config })}
+			{renderGraph({
+				queryResponse: data,
+				x_key,
+				y_keys,
+				chart: visualization_type,
+				yUnit,
+				xUnit,
+				orientation,
+				graphBasicType,
+				color_config,
+			})}
 		</Stack>
 	);
 };
@@ -247,23 +257,24 @@ function TileControls(props: { tile: TileType; data: TileQueryResponse }) {
 }
 
 const Tile = (props: { id: string }) => {
-	// const [showJson, setShowJson] = useState<boolean>(false);
 	const [timeRange] = useLogsStore((store) => store.timeRange);
-	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
 	const [tilesData] = useDashboardsStore((store) => store.tilesData);
 	const tileData = _.get(tilesData, props.id, { records: [], fields: [] });
+	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
 	const tile = _.chain(activeDashboard)
 		.get('tiles', [])
 		.find((tile) => tile.tile_id === props.id)
 		.value();
 
-	const { fetchTileData, isLoading } = useTileQuery({ tileId: props.id });
+	const shouldNotify = false;
+	const santizedQuery = sanitiseSqlString(tile.query, shouldNotify, 100);
 
-	useEffect(() => {
-		const shouldNotify = false;
-		const santizedQuery = sanitiseSqlString(tile.query, shouldNotify, 100);
-		fetchTileData({ query: santizedQuery, startTime: timeRange.startTime, endTime: timeRange.endTime });
-	}, [timeRange.startTime, timeRange.endTime]);
+	const { isLoading } = useTileQuery({
+		tileId: props.id,
+		query: santizedQuery,
+		startTime: timeRange.startTime,
+		endTime: timeRange.endTime,
+	});
 
 	// const toggleJsonView = useCallback(() => {
 	// 	return setShowJson((prev) => !prev);

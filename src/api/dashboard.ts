@@ -28,7 +28,7 @@ export const putDashboard = (dashboardId: string, dashboard: UpdateDashboardType
 };
 
 export const postDashboard = (dashboard: CreateDashboardType | ImportDashboardType) => {
-	return Axios().post(CREATE_DASHBOARDS_URL, { ...dashboard});
+	return Axios().post(CREATE_DASHBOARDS_URL, { ...dashboard });
 };
 
 export const removeDashboard = (dashboardId: string) => {
