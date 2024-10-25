@@ -20,6 +20,7 @@ import ReactGridLayout, { Layout } from 'react-grid-layout';
 import { Dashboard } from '@/@types/parseable/api/dashboards';
 import { exportJson } from '@/utils/exportHelpers';
 import { copyTextToClipboard } from '@/utils';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const {
 	toggleEditDashboardModal,
@@ -193,6 +194,7 @@ const DeleteDashboardButton = () => {
 };
 
 const ShareDashbboardButton = (props: { dashboard: Dashboard }) => {
+	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
 	const { dashboard } = props;
 	const downloadDashboard = useCallback(async () => {
 		const sanitizedConfig = _.omit(dashboard, ['dashboard_id', 'user_id', 'version']);
@@ -218,9 +220,11 @@ const ShareDashbboardButton = (props: { dashboard: Dashboard }) => {
 				<Menu.Item leftSection={<IconFileArrowRight size={15} stroke={1.02} />} onClick={downloadDashboard}>
 					Export
 				</Menu.Item>
-				<Menu.Item leftSection={<IconCopy size={15} stroke={1.02} />} onClick={copyUrl}>
-					Copy URL
-				</Menu.Item>
+				{isSecureHTTPContext && (
+					<Menu.Item leftSection={<IconCopy size={15} stroke={1.02} />} onClick={copyUrl}>
+						Copy URL
+					</Menu.Item>
+				)}
 			</Menu.Dropdown>
 		</Menu>
 	);

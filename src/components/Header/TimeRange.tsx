@@ -47,7 +47,6 @@ const TimeRange: FC = () => {
 	useEffect(() => {
 		if (!location.search) return;
 		const { from, to, interval } = getAllParams();
-		console.log({ from, to, interval });
 		if (interval) {
 			const duration = FIXED_DURATIONS.find((duration) => duration.label === interval);
 			if (!duration) return;

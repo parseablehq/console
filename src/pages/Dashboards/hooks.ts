@@ -35,8 +35,6 @@ export const useSyncTimeRange = () => {
 export const syncDashboardStoretoURL = () => {
 	const [timeRange] = useLogsStore((store) => store.timeRange);
 
-	console.log(timeRange.type);
-
 	const updateURL = useCallback(
 		(id: string) => {
 			if (timeRange.type === 'custom') {

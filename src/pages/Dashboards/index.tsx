@@ -52,7 +52,7 @@ const Dashboards = () => {
 			}
 		}
 		setDashbaordsStore((store) => selectDashboard(store, id));
-	}, [location.search, dashboards]);
+	}, [location.search, dashboards, updateURL]);
 
 	if (dashboards && !isValidDashboardID) return <NotFound />;
 

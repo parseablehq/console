@@ -119,8 +119,9 @@ type LiveTailConfig = {
 
 const getDefaultTimeRange = (duration: FixedDuration = DEFAULT_FIXED_DURATIONS) => {
 	const now = dayjs().startOf('minute');
-	const { milliseconds } = duration;
 	const { from, to, interval } = getAllParams();
+	const durationFromUrl = FIXED_DURATIONS.find((duration) => duration.label === interval);
+	const { milliseconds } = durationFromUrl ? durationFromUrl : duration;
 	const startTime = from ? parseDate(from) : now.subtract(milliseconds, 'milliseconds');
 	const endTime = to ? parseDate(to) : now;
 	const label = interval ? interval : makeTimeRangeLabel(startTime.toDate(), endTime.toDate());
