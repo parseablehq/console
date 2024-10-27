@@ -1,7 +1,7 @@
 import { EmptySimple } from '@/components/Empty';
-import { Text, Button, Center, Box, Group, ActionIcon, Stack, Tooltip, ScrollArea } from '@mantine/core';
+import { Text, Button, Center, Box, Group, ActionIcon, Stack, Tooltip, ScrollArea, Loader, Flex } from '@mantine/core';
 import { IconChevronRight, IconExternalLink, IconPlus } from '@tabler/icons-react';
-import { useEffect, type FC, useCallback } from 'react';
+import { useEffect, type FC, useCallback, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDocumentTitle } from '@mantine/hooks';
 import { useGetStreamMetadata } from '@/hooks/useGetStreamMetadata';
@@ -16,21 +16,43 @@ import _ from 'lodash';
 
 const { changeStream, toggleCreateStreamModal } = appStoreReducers;
 
-const EmptyStreamsView: FC = () => {
+type NoStreamsViewProps = {
+	hasCreateStreamAccess: boolean;
+	openCreateStreamModal: () => void;
+};
+
+const NoStreamsView: FC<NoStreamsViewProps> = ({
+	hasCreateStreamAccess,
+	openCreateStreamModal,
+}: {
+	hasCreateStreamAccess: boolean;
+	openCreateStreamModal: () => void;
+}) => {
 	const classes = homeStyles;
-	const { messageStyle, btnStyle, noDataViewContainer } = classes;
+	const { messageStyle, btnStyle, noDataViewContainer, createStreamButton } = classes;
 	return (
 		<Center className={noDataViewContainer}>
 			<EmptySimple height={70} width={100} />
 			<Text className={messageStyle}>No Stream found on this account</Text>
-			<Button
-				target="_blank"
-				component="a"
-				href="https://www.parseable.io/docs/category/log-ingestion"
-				className={btnStyle}
-				leftSection={<IconExternalLink size="0.9rem" />}>
-				Documentation
-			</Button>
+			<Flex gap="md">
+				<Button
+					target="_blank"
+					component="a"
+					href="https://www.parseable.io/docs/category/log-ingestion"
+					className={btnStyle}
+					leftSection={<IconExternalLink size="0.9rem" />}>
+					Documentation
+				</Button>
+				{hasCreateStreamAccess && (
+					<Button
+						style={{ marginTop: '1rem' }}
+						className={createStreamButton}
+						onClick={openCreateStreamModal}
+						leftSection={<IconPlus stroke={2} size={'1rem'} />}>
+						Create Stream
+					</Button>
+				)}
+			</Flex>
 		</Center>
 	);
 };
@@ -38,9 +60,9 @@ const EmptyStreamsView: FC = () => {
 const Home: FC = () => {
 	useDocumentTitle('Parseable | Streams');
 	const classes = homeStyles;
-	const { container, createStreamButton } = classes;
+	const { container, createStreamButton, noDataViewContainer } = classes;
 	const navigate = useNavigate();
-	const { getStreamMetadata, metaData } = useGetStreamMetadata();
+	const { getStreamMetadata, metaData, isLoading, error } = useGetStreamMetadata();
 	const [userSpecificStreams, setAppStore] = useAppStore((store) => store.userSpecificStreams);
 	const [userRoles] = useAppStore((store) => store.userRoles);
 	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
@@ -60,50 +82,69 @@ const Home: FC = () => {
 		setAppStore((store) => toggleCreateStreamModal(store));
 	}, []);
 
+	const [isScrolled, setIsScrolled] = useState(false);
+	const handleScroll = ({ y }: { y: number }) => {
+		setIsScrolled(y > 0);
+	};
+
+	const hasCreateStreamAccess = useMemo(() => userAccessMap?.hasCreateStreamAccess, [userAccessMap]);
+
 	return (
 		<>
-			<Stack
-				style={{
-					margin: '1rem',
-					alignItems: 'center',
-					justifyContent: 'space-between',
-					flexDirection: 'row',
-				}}>
-				<Text style={{ fontSize: '0.8rem' }} fw={500}>
-					All Streams
-				</Text>
-				<Box>
-					{userAccessMap.hasCreateStreamAccess && (
-						<Button
-							variant="outline"
-							className={createStreamButton}
-							onClick={openCreateStreamModal}
-							leftSection={<IconPlus stroke={2} size={'1rem'} />}>
-							Create Stream
-						</Button>
-					)}
-				</Box>
-			</Stack>
-			<ScrollArea>
+			{!displayEmptyPlaceholder && !isLoading && !error && (
+				<Stack
+					style={{
+						padding: '1rem',
+						alignItems: 'center',
+						justifyContent: 'space-between',
+						flexDirection: 'row',
+						boxShadow: isScrolled ? '0px 4px 10px rgba(0, 0, 0, 0.1)' : 'none',
+						transition: 'box-shadow 0.2s ease',
+					}}>
+					<Text style={{ fontSize: '0.8rem' }} fw={500}>
+						All Streams ({metaData && Object.keys(metaData).length})
+					</Text>
+					<Box>
+						{hasCreateStreamAccess && (
+							<Button
+								variant="outline"
+								className={createStreamButton}
+								onClick={openCreateStreamModal}
+								leftSection={<IconPlus stroke={2} size={'1rem'} />}>
+								Create Stream
+							</Button>
+						)}
+					</Box>
+				</Stack>
+			)}
+			<ScrollArea onScrollPositionChange={handleScroll}>
 				<Box className={container} style={{ display: 'flex', flex: 1, paddingBottom: '3rem' }}>
 					<CreateStreamModal />
-					{displayEmptyPlaceholder ? (
-						<EmptyStreamsView />
+					{isLoading ? (
+						<Center className={noDataViewContainer}>
+							<Loader />
+						</Center>
 					) : (
-						<Group style={{ marginRight: '1rem', marginLeft: '1rem', gap: '1rem' }}>
-							{Object.entries(metaData || {}).map(([stream, data]) => {
-								const hasSettingsAccess = _.includes(getStreamsSepcificAccess(userRoles, stream), 'StreamSettings');
-								return (
-									<StreamInfo
-										key={stream}
-										stream={stream}
-										data={data}
-										navigateToStream={navigateToStream}
-										hasSettingsAccess={hasSettingsAccess}
-									/>
-								);
-							})}
-						</Group>
+						<>
+							{displayEmptyPlaceholder || error ? (
+								<NoStreamsView
+									hasCreateStreamAccess={hasCreateStreamAccess}
+									openCreateStreamModal={openCreateStreamModal}
+								/>
+							) : (
+								<Group style={{ margin: '0 1rem', gap: '1rem' }}>
+									{Object.entries(metaData || {}).map(([stream, data]) => (
+										<StreamInfo
+											key={stream}
+											stream={stream}
+											data={data}
+											navigateToStream={navigateToStream}
+											hasSettingsAccess={_.includes(getStreamsSepcificAccess(userRoles, stream), 'StreamSettings')}
+										/>
+									))}
+								</Group>
+							)}
+						</>
 					)}
 				</Box>
 			</ScrollArea>
