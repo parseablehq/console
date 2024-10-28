@@ -20,7 +20,7 @@ import Cookies from 'js-cookie';
 import { useUser } from '@/hooks/useUser';
 import { useLogStream } from '@/hooks/useLogStream';
 import styles from './styles/Navbar.module.css';
-import useCurrentRoute from '@/hooks/useCurrentRoute';
+import getCurrentRoute from '@/utils/getCurrentRoute';
 import { NAVBAR_WIDTH, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 import UserModal from './UserModal';
 import { signOutHandler } from '@/utils';
@@ -88,7 +88,7 @@ const Navbar: FC = () => {
 	const navigate = useNavigate();
 	const { streamName, view } = useParams();
 	const location = useLocation();
-	const currentRoute = useCurrentRoute();
+	const currentRoute = getCurrentRoute();
 	const username = Cookies.get('username');
 	const [maximized, setAppStore] = useAppStore((store) => store.maximized);
 	const [currentStream] = useAppStore((store) => store.currentStream);

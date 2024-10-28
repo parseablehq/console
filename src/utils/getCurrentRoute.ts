@@ -6,9 +6,9 @@ const routes = Object.keys(PATHS).map((key: string) => {
 	return { path: value };
 });
 
-const useCurrentRoute = () => {
-	const location = useLocation();
-	const match = matchRoutes(routes, location);
+const getCurrentRoute = () => {
+	const location = window.location;
+	const match = matchRoutes(routes, { pathname: location.pathname });
 
 	if (!match) {
 		return '';
@@ -17,4 +17,4 @@ const useCurrentRoute = () => {
 	}
 };
 
-export default useCurrentRoute;
+export default getCurrentRoute;
