@@ -1,11 +1,6 @@
-.container {
-    height: 100%;
-    width: 100%;
-}
-
 .aboutTitle {
-	font-size: 0.8rem;
-	font-weight: 500;
+    font-size: 0.8rem;
+    font-weight: 500;
 }
 
 .fieldTitle {
@@ -18,10 +13,17 @@
     color: var(--mantine-color-gray-6);
 }
 
-.fieldsContainer {
+.fieldsSectionContainer {
     border: 1px solid var(--mantine-color-gray-4);
     padding: var(--mantine-spacing-md);
+    padding-bottom: 0;
     border-radius: 0.2rem;
+}
+
+.fieldsContainer {
+    max-height: 10rem;
+    overflow: scroll;
+    padding-bottom: var(--mantine-spacing-md);
 }
 
 .infoTooltipIcon {

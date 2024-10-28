@@ -116,6 +116,14 @@ type LiveTailConfig = {
 	showLiveTail: boolean;
 };
 
+export const formatLogTs = (timestamp: string) => {
+	if (!_.endsWith(timestamp, 'Z')) {
+		return timeRangeUtils.formatDateWithTimezone(`${timestamp}Z`, 'yyyy-MM-DDTHH:mm:ss.SSSZ');
+	} else {
+		return timeRangeUtils.formatDateWithTimezone(timestamp, 'yyyy-MM-DDTHH:mm:ss.SSSZ');
+	}
+}
+
 const getDefaultTimeRange = (duration: FixedDuration = DEFAULT_FIXED_DURATIONS) => {
 	const now = dayjs().startOf('minute');
 	const { milliseconds } = duration;

@@ -10,7 +10,7 @@ import {
 	STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT,
 	STREAM_SECONDARY_TOOLBAR_HRIGHT,
 } from '@/constants/theme';
-import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
+import { useLogsStore, logsStoreReducers, formatLogTs } from '../../providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
 import Footer from './Footer';
@@ -19,25 +19,42 @@ import { MantineReactTable } from 'mantine-react-table';
 import Column from '../../components/Column';
 import { Log } from '@/@types/parseable/api/query';
 import { CopyIcon } from './JSONView';
+import { FieldTypeMap, useStreamStore } from '../../providers/StreamProvider';
+import timeRangeUtils from '@/utils/timeRangeUtils';
 
 const { setSelectedLog } = logsStoreReducers;
 const TableContainer = (props: { children: ReactNode }) => {
 	return <Box className={tableStyles.container}>{props.children}</Box>;
 };
 
-const makeHeaderOpts = (headers: string[], isSecureHTTPContext: boolean) => {
+const localTz = timeRangeUtils.getLocalTimezone();
+
+const makeHeaderOpts = (headers: string[], isSecureHTTPContext: boolean, fieldTypeMap: FieldTypeMap) => {
 	return _.reduce(
 		headers,
 		(acc: { accessorKey: string; header: string; grow: boolean }[], header) => {
+			const isTimestamp = _.get(fieldTypeMap, header, null) === 'timestamp';
+
 			return [
 				...acc,
 				{
 					accessorKey: header,
-					header,
+					header: isTimestamp ? `${header} (${localTz})` : header,
 					grow: true,
 					Cell: ({ cell }: { cell: any }) => {
 						const value = _.isFunction(cell.getValue) ? cell.getValue() : '';
-						const sanitizedValue = _.isBoolean(value) || value ? _.toString(value) : '';
+						const isTimestamp = _.chain(cell)
+							.get('column.id', null)
+							.thru((val) => {
+								const datatype = _.get(fieldTypeMap, val, null);
+								return datatype === 'timestamp';
+							})
+							.value();
+						const sanitizedValue = isTimestamp
+							? formatLogTs(value)
+							: _.isBoolean(value) || value
+							? _.toString(value)
+							: '';
 						return (
 							<div className={tableStyles.customCellContainer} style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
 								{sanitizedValue}
@@ -59,11 +76,11 @@ const makeColumnVisiblityOpts = (columns: string[]) => {
 };
 
 const Table = (props: { primaryHeaderHeight: number }) => {
-	const [{ orderedHeaders, disabledColumns, pinnedColumns, pageData, wrapDisabledColumns }, setLogsStore] = useLogsStore(
-		(store) => store.tableOpts,
-	);
+	const [{ orderedHeaders, disabledColumns, pinnedColumns, pageData, wrapDisabledColumns }, setLogsStore] =
+		useLogsStore((store) => store.tableOpts);
 	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
-	const columns = useMemo(() => makeHeaderOpts(orderedHeaders, isSecureHTTPContext), [orderedHeaders]);
+	const [fieldTypeMap] = useStreamStore((store) => store.fieldTypeMap);
+	const columns = useMemo(() => makeHeaderOpts(orderedHeaders, isSecureHTTPContext, fieldTypeMap), [orderedHeaders]);
 	const columnVisibility = useMemo(() => makeColumnVisiblityOpts(disabledColumns), [disabledColumns, orderedHeaders]);
 	const selectLog = useCallback((log: Log) => {
 		const selectedText = window.getSelection()?.toString();

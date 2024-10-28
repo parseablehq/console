@@ -14,6 +14,7 @@ import {
 	DELETE_SAVED_FILTERS_URL,
 	CREATE_SAVED_FILTERS_URL,
 	LOG_STREAM_HOT_TIER,
+	DETECT_LOG_STREAM_SCHEMA_URL,
 } from './constants';
 import { HotTierConfig, LogStreamData, LogStreamSchemaData } from '@/@types/parseable/api/stream';
 
@@ -63,6 +64,10 @@ export const getLogStreamStats = (streamName: string) => {
 
 export const deleteLogStream = (streamName: string) => {
 	return Axios().delete(DELETE_STREAMS_URL(streamName));
+};
+
+export const detectLogStreamSchema = (data: any) => {
+	return Axios().post(DETECT_LOG_STREAM_SCHEMA_URL, data);
 };
 
 export const createLogStream = (streamName: string, data: any, headers: any) => {

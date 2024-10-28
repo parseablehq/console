@@ -3,15 +3,18 @@ import type { FC } from 'react';
 import { Fragment, useMemo, useCallback } from 'react';
 import viewLogStyles from '../styles/ViewLogs.module.css';
 import { CodeHighlight } from '@mantine/code-highlight';
-import { useLogsStore, logsStoreReducers } from '../providers/LogsProvider';
+import { useLogsStore, logsStoreReducers, formatLogTs } from '../providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import timeRangeUtils from '@/utils/timeRangeUtils';
+import { useStreamStore } from '../providers/StreamProvider';
+import _ from 'lodash';
 
 const { setSelectedLog } = logsStoreReducers;
 const { formatDateWithTimezone } = timeRangeUtils;
 
 const ViewLog: FC = () => {
 	const [selectedLog, setLogsStore] = useLogsStore((store) => store.selectedLog);
+	const [fieldTypeMap] = useStreamStore((store) => store.fieldTypeMap);
 	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
 	const onClose = useCallback(() => {
 		setLogsStore((store) => setSelectedLog(store, null));
@@ -35,6 +38,20 @@ const ViewLog: FC = () => {
 		return [];
 	}, [selectedLog]);
 
+	const sanitizedLog = useMemo(
+		() =>
+			_.reduce(
+				selectedLog,
+				(acc, v, k) => {
+					const isTimestamp = _.get(fieldTypeMap, k, null) === 'timestamp';
+					const sanitizedValue = isTimestamp ? formatLogTs(_.toString(v)) : v;
+					return { ...acc, [k]: sanitizedValue };
+				},
+				{},
+			),
+		[selectedLog, fieldTypeMap],
+	);
+
 	return (
 		<Drawer
 			opened={Boolean(selectedLog)}
@@ -51,7 +68,7 @@ const ViewLog: FC = () => {
 					<DataChip title="Tags" dataList={p_tags} />
 					<Divider label={'Logger Message'} variant="dashed" labelPosition="center" my="lg" color="gray.6" />
 					<CodeHighlight
-						code={JSON.stringify(selectedLog, null, 2)}
+						code={JSON.stringify(sanitizedLog, null, 2)}
 						language="json"
 						withCopyButton={isSecureHTTPContext}
 						styles={{ copy: { marginLeft: '550px' } }}

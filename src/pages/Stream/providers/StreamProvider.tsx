@@ -16,8 +16,8 @@ export type ConfigType = {
 export type RuleType = 'column' | 'composite';
 export type RuleConfig = { type: 'column'; config: ConfigType } | { type: 'composite'; config: string };
 
-type FieldTypeMap = {
-	[key: string]: 'text' | 'number';
+export type FieldTypeMap = {
+	[key: string]: 'text' | 'number' | 'timestamp';
 };
 
 export interface Target {
@@ -142,10 +142,12 @@ const setCacheEnabled = (_store: StreamStore, enabled: boolean) => {
 	};
 };
 
-const parseType = (type: any): 'text' | 'number' => {
+const parseType = (type: any): 'text' | 'number' | 'timestamp' => {
 	if (typeof type === 'object') {
+		if (_.get(type, 'Timestamp', null)) {
+			return 'timestamp';
+		} else return 'text';
 		// console.error('Error finding type for an object', type);
-		return 'text';
 	}
 	const lowercaseType = type.toLowerCase();
 	if (lowercaseType.startsWith('int') || lowercaseType.startsWith('float') || lowercaseType.startsWith('double')) {

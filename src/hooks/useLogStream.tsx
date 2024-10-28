@@ -1,7 +1,14 @@
 import { useMutation, useQuery } from 'react-query';
-import { deleteLogStream, getLogStreamList, createLogStream, updateLogStream } from '@/api/logStream';
+import {
+	deleteLogStream,
+	getLogStreamList,
+	createLogStream,
+	updateLogStream,
+	detectLogStreamSchema,
+} from '@/api/logStream';
 import { AxiosError, isAxiosError } from 'axios';
 import { notifyError, notifySuccess } from '@/utils/notification';
+import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
 
 type CreateStreamOpts = {
 	streamName: string;
@@ -23,6 +30,27 @@ export const useLogStream = () => {
 			notifySuccess({ message: `Stream ${variables.deleteStream} deleted successfully` });
 		},
 	});
+
+	const {
+		mutate: detectLogStreamSchemaMutation,
+		isSuccess: detectLogStreamSchemaIsSuccess,
+		isError: detectLogStreamSchemaIsError,
+		isLoading: detectLogStreamSchemaIsLoading,
+	} = useMutation(
+		(data: { sampleLogs: any[]; onSuccess: (data: LogStreamSchemaData) => void }) =>
+			detectLogStreamSchema(data.sampleLogs),
+		{
+			onSuccess: (data, variables) => {
+				variables.onSuccess && variables.onSuccess(data.data);
+				notifySuccess({ message: `Detected schema successfully` });
+			},
+			onError: (data: AxiosError) => {
+				if (isAxiosError(data) && typeof data.message === 'string') {
+					notifyError({ message: data.message });
+				}
+			},
+		},
+	);
 
 	const {
 		mutate: createLogStreamMutation,
@@ -109,5 +137,9 @@ export const useLogStream = () => {
 		updateLogStreamIsSuccess,
 		updateLogStreamIsError,
 		updateLogStreamIsLoading,
+		detectLogStreamSchemaMutation,
+		detectLogStreamSchemaIsSuccess,
+		detectLogStreamSchemaIsError,
+		detectLogStreamSchemaIsLoading,
 	};
 };
