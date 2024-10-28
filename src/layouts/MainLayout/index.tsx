@@ -57,6 +57,7 @@ const MainLayout: FC = () => {
 						display: 'flex',
 						flexDirection: 'column',
 						transition: 'width 0.4s ease-in-out',
+						justifyContent: 'center',
 					}}>
 					<Outlet />
 				</Box>
