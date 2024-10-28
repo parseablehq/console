@@ -2,7 +2,7 @@ import { Dashboard, EditTileType, Tile, TileQueryResponse, tileSizeWidthMap } fr
 import initContext from '@/utils/initContext';
 import _ from 'lodash';
 import { Layout } from 'react-grid-layout';
-
+import queryParamSync from '@/utils/queryParamSync';
 export const TILES_PER_PAGE = 10;
 
 export const sortTilesByOrder = (tiles: Tile[], idsByOrder: string[]): Tile[] => {
@@ -70,7 +70,7 @@ export const genLayout = (tiles: Tile[], currentPage: number): Layout[] => {
 	);
 };
 
-type DashboardsStore = {
+export type DashboardsStore = {
 	dashboards: Dashboard[] | null;
 	activeDashboard: Dashboard | null;
 	createDashboardModalOpen: boolean;
@@ -268,7 +268,7 @@ const handlePaging = (store: DashboardsStore) => {
 	};
 };
 
-const { Provider: DashbaordsProvider, useStore: useDashboardsStore } = initContext(initialState);
+const { Provider: DashbaordsProvider, useStore: useDashboardsStore } = initContext(initialState, queryParamSync.deriveDashboardParams);
 
 const dashboardsStoreReducers: DashboardsStoreReducers = {
 	setDashboards,

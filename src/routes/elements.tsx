@@ -4,12 +4,12 @@ import { lazy } from 'react';
 import SuspensePage from './SuspensePage';
 import MainLayout from '@/layouts/MainLayout';
 import { AppProvider } from '@/layouts/MainLayout/providers/AppProvider';
-import { LogsProvider } from '@/pages/Stream/providers/LogsProvider';
 import { FilterProvider } from '@/pages/Stream/providers/FilterProvider';
 import { StreamProvider } from '@/pages/Stream/providers/StreamProvider';
 import { ClusterProvider } from '@/pages/Systems/providers/ClusterProvider';
 import { DashbaordsProvider } from '@/pages/Dashboards/providers/DashboardsProvider';
 import Dashboards from '@/pages/Dashboards';
+import { LogsProvider } from '@/pages/Stream/providers/LogsProvider';
 
 export const HomeElement: FC = () => {
 	return (

@@ -1,6 +1,7 @@
+import _ from 'lodash';
 import React, { useRef, createContext, useContext, useCallback, useSyncExternalStore } from 'react';
 
-export default function initContext<Store>(initialState: Store) {
+export default function initContext<Store>(initialState: Store, queryParamSync?: (store: Store) => void) {
 	function useStoreData(): {
 		get: () => Store;
 		set: (value: Partial<Store>) => void;
@@ -52,8 +53,10 @@ export default function initContext<Store>(initialState: Store) {
 		);
 
 		const setStore = useCallback(
-			(updateFn: (store: Store) => Partial<Store>) => {
+			(updateFn: (store: Store) => Partial<Store>, callback?: (store: Store) => void) => {
 				store.set(updateFn(store.get()));
+				_.isFunction(callback) && callback(store.get());
+				_.isFunction(queryParamSync) && queryParamSync(store.get());
 			},
 			[store],
 		);

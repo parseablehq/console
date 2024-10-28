@@ -8,6 +8,7 @@ import { getPageSlice } from '../utils';
 import _ from 'lodash';
 import { sanitizeCSVData } from '@/utils/exportHelpers';
 import timeRangeUtils from '@/utils/timeRangeUtils';
+import queryParamSync from '@/utils/queryParamSync';
 
 const { makeTimeRangeLabel } = timeRangeUtils;
 
@@ -83,7 +84,7 @@ export type TransformedAlerts = {
 	alerts: TransformedAlert[];
 };
 
-type TimeRange = {
+export type TimeRange = {
 	startTime: Date;
 	endTime: Date;
 	type: 'fixed' | 'custom';
@@ -175,7 +176,7 @@ type CustQuerySearchState = {
 	savedFilterId: string | null;
 };
 
-type LogsStore = {
+export type LogsStore = {
 	timeRange: TimeRange;
 	quickFilters: QuickFilters;
 	liveTailConfig: LiveTailConfig;
@@ -347,7 +348,7 @@ const initialState: LogsStore = {
 	// if adding new fields, verify streamChangeCleanup
 };
 
-const { Provider: LogsProvider, useStore: useLogsStore } = initContext(initialState);
+const { Provider: LogsProvider, useStore: useLogsStore } = initContext(initialState, queryParamSync.syncLogsStore);
 
 const getTotalPages = (data: Log[], perPage: number) => {
 	return _.isEmpty(data) ? 0 : _.size(data) / perPage;
