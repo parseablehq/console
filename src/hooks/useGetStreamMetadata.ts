@@ -2,6 +2,7 @@ import { LogStreamRetention, LogStreamStat } from '@/@types/parseable/api/stream
 import { getLogStreamRetention, getLogStreamStats } from '@/api/logStream';
 import { getStreamsSepcificAccess } from '@/components/Navbar/rolesHandler';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { notifyError } from '@/utils/notification';
 import _ from 'lodash';
 import { useCallback, useState } from 'react';
 
@@ -14,7 +15,7 @@ type MetaData = {
 
 // until dedicated endpoint been provided - fetch one by one
 export const useGetStreamMetadata = () => {
-	const [isLoading, setLoading] = useState<Boolean>(false);
+	const [isLoading, setLoading] = useState<Boolean>(true);
 	const [error, setError] = useState<Boolean>(false);
 	const [metaData, setMetadata] = useState<MetaData | null>(null);
 	const [userRoles] = useAppStore((store) => store.userRoles);
@@ -43,6 +44,9 @@ export const useGetStreamMetadata = () => {
 		} catch {
 			setError(true);
 			setMetadata(null);
+			notifyError({
+				message: 'Unable to fetch stream data',
+			});
 		} finally {
 			setLoading(false);
 		}

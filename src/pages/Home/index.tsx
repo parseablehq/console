@@ -1,7 +1,7 @@
 import { EmptySimple } from '@/components/Empty';
-import { Text, Button, Center, Box, Group, ActionIcon, Stack, Tooltip, ScrollArea } from '@mantine/core';
+import { Text, Button, Center, Box, Group, ActionIcon, Stack, Tooltip, ScrollArea, Loader, Flex } from '@mantine/core';
 import { IconChevronRight, IconExternalLink, IconPlus } from '@tabler/icons-react';
-import { useEffect, type FC, useCallback } from 'react';
+import { useEffect, type FC, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDocumentTitle } from '@mantine/hooks';
 import { useGetStreamMetadata } from '@/hooks/useGetStreamMetadata';
@@ -13,24 +13,48 @@ import CreateStreamModal from './CreateStreamModal';
 import { useAppStore, appStoreReducers } from '@/layouts/MainLayout/providers/AppProvider';
 import { getStreamsSepcificAccess } from '@/components/Navbar/rolesHandler';
 import _ from 'lodash';
+import { heights } from '@/components/Mantine/sizing';
+import { PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 
 const { changeStream, toggleCreateStreamModal } = appStoreReducers;
 
-const EmptyStreamsView: FC = () => {
+type NoStreamsViewProps = {
+	hasCreateStreamAccess: boolean;
+	openCreateStreamModal: () => void;
+};
+
+const NoStreamsView: FC<NoStreamsViewProps> = ({
+	hasCreateStreamAccess,
+	openCreateStreamModal,
+}: {
+	hasCreateStreamAccess: boolean;
+	openCreateStreamModal: () => void;
+}) => {
 	const classes = homeStyles;
-	const { messageStyle, btnStyle, noDataViewContainer } = classes;
+	const { messageStyle, btnStyle, noDataViewContainer, createStreamButton } = classes;
 	return (
 		<Center className={noDataViewContainer}>
 			<EmptySimple height={70} width={100} />
 			<Text className={messageStyle}>No Stream found on this account</Text>
-			<Button
-				target="_blank"
-				component="a"
-				href="https://www.parseable.io/docs/category/log-ingestion"
-				className={btnStyle}
-				leftSection={<IconExternalLink size="0.9rem" />}>
-				Documentation
-			</Button>
+			<Flex gap="md">
+				<Button
+					target="_blank"
+					component="a"
+					href="https://www.parseable.io/docs/category/log-ingestion"
+					className={btnStyle}
+					leftSection={<IconExternalLink size="0.9rem" />}>
+					Documentation
+				</Button>
+				{hasCreateStreamAccess && (
+					<Button
+						style={{ marginTop: '1rem' }}
+						className={createStreamButton}
+						onClick={openCreateStreamModal}
+						leftSection={<IconPlus stroke={2} size={'1rem'} />}>
+						Create Stream
+					</Button>
+				)}
+			</Flex>
 		</Center>
 	);
 };
@@ -38,9 +62,9 @@ const EmptyStreamsView: FC = () => {
 const Home: FC = () => {
 	useDocumentTitle('Parseable | Streams');
 	const classes = homeStyles;
-	const { container, createStreamButton } = classes;
+	const { container, createStreamButton, noDataViewContainer } = classes;
 	const navigate = useNavigate();
-	const { getStreamMetadata, metaData } = useGetStreamMetadata();
+	const { getStreamMetadata, metaData, isLoading, error } = useGetStreamMetadata();
 	const [userSpecificStreams, setAppStore] = useAppStore((store) => store.userSpecificStreams);
 	const [userRoles] = useAppStore((store) => store.userRoles);
 	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
@@ -60,50 +84,72 @@ const Home: FC = () => {
 		setAppStore((store) => toggleCreateStreamModal(store));
 	}, []);
 
+	const hasCreateStreamAccess = useMemo(() => userAccessMap?.hasCreateStreamAccess, [userAccessMap]);
+
+	const shouldDisplayEmptyPlaceholder = displayEmptyPlaceholder || isLoading || error;
+
 	return (
 		<>
-			<Stack
-				style={{
-					margin: '1rem',
-					alignItems: 'center',
-					justifyContent: 'space-between',
-					flexDirection: 'row',
-				}}>
-				<Text style={{ fontSize: '0.8rem' }} fw={500}>
-					All Streams
-				</Text>
-				<Box>
-					{userAccessMap.hasCreateStreamAccess && (
-						<Button
-							variant="outline"
-							className={createStreamButton}
-							onClick={openCreateStreamModal}
-							leftSection={<IconPlus stroke={2} size={'1rem'} />}>
-							Create Stream
-						</Button>
-					)}
-				</Box>
-			</Stack>
-			<ScrollArea>
-				<Box className={container} style={{ display: 'flex', flex: 1, paddingBottom: '3rem' }}>
+			{!shouldDisplayEmptyPlaceholder && (
+				<Stack
+					style={{
+						padding: '1rem',
+						alignItems: 'center',
+						justifyContent: 'space-between',
+						flexDirection: 'row',
+						borderBottom: '1px solid var(--mantine-color-gray-3)',
+					}}>
+					<Text style={{ fontSize: '0.8rem' }} fw={500}>
+						All Streams ({metaData && Object.keys(metaData).length})
+					</Text>
+					<Box>
+						{hasCreateStreamAccess && (
+							<Button
+								variant="outline"
+								className={createStreamButton}
+								onClick={openCreateStreamModal}
+								leftSection={<IconPlus stroke={2} size={'1rem'} />}>
+								Create Stream
+							</Button>
+						)}
+					</Box>
+				</Stack>
+			)}
+			<ScrollArea style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+				<Box
+					className={container}
+					style={{
+						display: 'flex',
+						paddingTop: shouldDisplayEmptyPlaceholder ? '0rem' : '1rem',
+						paddingBottom: shouldDisplayEmptyPlaceholder ? '0rem' : '3rem',
+						height: shouldDisplayEmptyPlaceholder ? `calc(${heights.screen} - ${PRIMARY_HEADER_HEIGHT}px)` : 'auto',
+					}}>
 					<CreateStreamModal />
-					{displayEmptyPlaceholder ? (
-						<EmptyStreamsView />
+					{isLoading ? (
+						<Center className={noDataViewContainer}>
+							<Loader type="parseable" />
+						</Center>
 					) : (
-						<Group style={{ marginRight: '1rem', marginLeft: '1rem', gap: '1rem' }}>
-							{Object.entries(metaData || {}).map(([stream, data]) => {
-								const hasSettingsAccess = _.includes(getStreamsSepcificAccess(userRoles, stream), 'StreamSettings');
-								return (
-									<StreamInfo
-										key={stream}
-										stream={stream}
-										data={data}
-										navigateToStream={navigateToStream}
-										hasSettingsAccess={hasSettingsAccess}
-									/>
-								);
-							})}
-						</Group>
+						<>
+							{displayEmptyPlaceholder || error ? (
+								<NoStreamsView
+									hasCreateStreamAccess={hasCreateStreamAccess}
+									openCreateStreamModal={openCreateStreamModal}
+								/>
+							) : (
+								<Group style={{ margin: '0 1rem', gap: '1rem' }}>
+									{Object.entries(metaData || {}).map(([stream, data]) => (
+										<StreamInfo
+											key={stream}
+											stream={stream}
+											data={data}
+											navigateToStream={navigateToStream}
+											hasSettingsAccess={_.includes(getStreamsSepcificAccess(userRoles, stream), 'StreamSettings')}
+										/>
+									))}
+								</Group>
+							)}
+						</>
 					)}
 				</Box>
 			</ScrollArea>
