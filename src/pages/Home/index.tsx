@@ -86,9 +86,11 @@ const Home: FC = () => {
 
 	const hasCreateStreamAccess = useMemo(() => userAccessMap?.hasCreateStreamAccess, [userAccessMap]);
 
+	const shouldDisplayEmptyPlaceholder = displayEmptyPlaceholder || isLoading || error;
+
 	return (
 		<>
-			{!displayEmptyPlaceholder && !isLoading && !error && (
+			{!shouldDisplayEmptyPlaceholder && (
 				<Stack
 					style={{
 						padding: '1rem',
@@ -118,9 +120,9 @@ const Home: FC = () => {
 					className={container}
 					style={{
 						display: 'flex',
-						paddingTop: displayEmptyPlaceholder || error ? '0rem' : '1rem',
-						paddingBottom: displayEmptyPlaceholder || error ? '0rem' : '3rem',
-						height: `calc(${heights.screen} - ${PRIMARY_HEADER_HEIGHT}px)`,
+						paddingTop: shouldDisplayEmptyPlaceholder ? '0rem' : '1rem',
+						paddingBottom: shouldDisplayEmptyPlaceholder ? '0rem' : '3rem',
+						height: shouldDisplayEmptyPlaceholder ? `calc(${heights.screen} - ${PRIMARY_HEADER_HEIGHT}px)` : 'auto',
 					}}>
 					<CreateStreamModal />
 					{isLoading ? (
