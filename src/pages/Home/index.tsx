@@ -13,6 +13,8 @@ import CreateStreamModal from './CreateStreamModal';
 import { useAppStore, appStoreReducers } from '@/layouts/MainLayout/providers/AppProvider';
 import { getStreamsSepcificAccess } from '@/components/Navbar/rolesHandler';
 import _ from 'lodash';
+import { heights } from '@/components/Mantine/sizing';
+import { PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 
 const { changeStream, toggleCreateStreamModal } = appStoreReducers;
 
@@ -111,8 +113,15 @@ const Home: FC = () => {
 					</Box>
 				</Stack>
 			)}
-			<ScrollArea>
-				<Box className={container} style={{ display: 'flex', flex: 1, paddingBottom: '3rem', paddingTop: '1rem' }}>
+			<ScrollArea style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+				<Box
+					className={container}
+					style={{
+						display: 'flex',
+						paddingTop: displayEmptyPlaceholder || error ? '0rem' : '1rem',
+						paddingBottom: displayEmptyPlaceholder || error ? '0rem' : '3rem',
+						height: `calc(${heights.screen} - ${PRIMARY_HEADER_HEIGHT}px)`,
+					}}>
 					<CreateStreamModal />
 					{isLoading ? (
 						<Center className={noDataViewContainer}>

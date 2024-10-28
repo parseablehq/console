@@ -6,8 +6,7 @@
 }
 
 .noDataViewContainer {
-    height: 100%;
-    padding-top: 2rem; 
+    height: 100%; 
     flex-direction: column;
     justify-content: center;
     align-items: center;
