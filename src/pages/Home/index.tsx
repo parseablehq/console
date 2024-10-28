@@ -1,7 +1,7 @@
 import { EmptySimple } from '@/components/Empty';
 import { Text, Button, Center, Box, Group, ActionIcon, Stack, Tooltip, ScrollArea, Loader, Flex } from '@mantine/core';
 import { IconChevronRight, IconExternalLink, IconPlus } from '@tabler/icons-react';
-import { useEffect, type FC, useCallback, useState, useMemo } from 'react';
+import { useEffect, type FC, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDocumentTitle } from '@mantine/hooks';
 import { useGetStreamMetadata } from '@/hooks/useGetStreamMetadata';
@@ -82,11 +82,6 @@ const Home: FC = () => {
 		setAppStore((store) => toggleCreateStreamModal(store));
 	}, []);
 
-	const [isScrolled, setIsScrolled] = useState(false);
-	const handleScroll = ({ y }: { y: number }) => {
-		setIsScrolled(y > 0);
-	};
-
 	const hasCreateStreamAccess = useMemo(() => userAccessMap?.hasCreateStreamAccess, [userAccessMap]);
 
 	return (
@@ -98,8 +93,7 @@ const Home: FC = () => {
 						alignItems: 'center',
 						justifyContent: 'space-between',
 						flexDirection: 'row',
-						boxShadow: isScrolled ? '0px 4px 10px rgba(0, 0, 0, 0.1)' : 'none',
-						transition: 'box-shadow 0.2s ease',
+						borderBottom: '1px solid var(--mantine-color-gray-3)',
 					}}>
 					<Text style={{ fontSize: '0.8rem' }} fw={500}>
 						All Streams ({metaData && Object.keys(metaData).length})
@@ -117,12 +111,12 @@ const Home: FC = () => {
 					</Box>
 				</Stack>
 			)}
-			<ScrollArea onScrollPositionChange={handleScroll}>
-				<Box className={container} style={{ display: 'flex', flex: 1, paddingBottom: '3rem' }}>
+			<ScrollArea>
+				<Box className={container} style={{ display: 'flex', flex: 1, paddingBottom: '3rem', paddingTop: '1rem' }}>
 					<CreateStreamModal />
 					{isLoading ? (
 						<Center className={noDataViewContainer}>
-							<Loader />
+							<Loader type="parseable" />
 						</Center>
 					) : (
 						<>
