@@ -171,8 +171,8 @@ type ColumnRuleProps = {
 	form: AlertsFormType;
 };
 
-const getInputComponent = (type: 'text' | 'number') => {
-	return type === 'text' ? TextInput : NumberInput;
+const getInputComponent = (type: 'text' | 'number' | 'timestamp') => {
+	return type === 'text' || 'timestamp' ? TextInput : NumberInput;
 };
 
 const ColumnRule = (props: ColumnRuleProps) => {
