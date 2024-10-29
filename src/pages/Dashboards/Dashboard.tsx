@@ -321,6 +321,20 @@ const NoTilesView = () => {
 	);
 };
 
+const InvalidDashboardView = () => {
+	return (
+		<Stack className={classes.noDashboardsContainer} gap={4}>
+			<Stack className={classes.dashboardIconContainer}>
+				<IconLayoutDashboard className={classes.dashboardIcon} stroke={1.2} />
+			</Stack>
+			<Text className={classes.noDashboardsViewTitle}>Oops! Dashboard Not Found</Text>
+			<Text className={classes.noDashboardsViewDescription}>
+				It looks like the dashboard you’re looking for doesn’t exist. Please check the link or try a different one!
+			</Text>
+		</Stack>
+	);
+};
+
 const findTileByTileId = (tiles: TileType[], tileId: string | null) => {
 	return _.find(tiles, tile => tile.tile_id === tileId)
 }
@@ -395,6 +409,7 @@ const DuplicateTileModal = () => {
 
 const Dashboard = () => {
 	const [dashboards] = useDashboardsStore((store) => store.dashboards);
+	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
 	const layoutRef = useRef<Layout[]>([]);
 	const onLayoutChange = useCallback(
 		(layout: Layout[]) => {
@@ -410,7 +425,7 @@ const Dashboard = () => {
 			<DuplicateTileModal/>
 			<Toolbar layoutRef={layoutRef} />
 			<ImportDashboardModal/>
-			<TilesView onLayoutChange={onLayoutChange} />
+			{activeDashboard ? <TilesView onLayoutChange={onLayoutChange} /> : <InvalidDashboardView />}
 		</Stack>
 	);
 };

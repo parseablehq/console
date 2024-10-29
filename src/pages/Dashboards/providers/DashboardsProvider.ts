@@ -115,7 +115,7 @@ const initialState: DashboardsStore = {
 type ReducerOutput = Partial<DashboardsStore>;
 
 type DashboardsStoreReducers = {
-	setDashboards: (store: DashboardsStore, dashboards: Dashboard[]) => ReducerOutput;
+	setDashboards: (store: DashboardsStore, dashboards: Dashboard[], dashboardId?: string) => ReducerOutput;
 	toggleCreateDashboardModal: (store: DashboardsStore, val: boolean) => ReducerOutput;
 	toggleEditDashboardModal: (store: DashboardsStore, val: boolean) => ReducerOutput;
 	selectDashboard: (store: DashboardsStore, dashboardId?: string | null, dashboard?: Dashboard) => ReducerOutput;
@@ -188,11 +188,14 @@ const toggleAllowDrag = (store: DashboardsStore) => {
 	};
 };
 
-const setDashboards = (store: DashboardsStore, dashboards: Dashboard[]) => {
+const setDashboards = (store: DashboardsStore, dashboards: Dashboard[], dashboardId?: string) => {
 	const { activeDashboard: activeDashboardFromStore, currentPage } = store;
 	const defaultActiveDashboard = _.isArray(dashboards) && !_.isEmpty(dashboards) ? dashboards[0] : null;
 	const activeDashboard = (() => {
-		if (activeDashboardFromStore) {
+		if (_.isString(dashboardId) && !_.isEmpty(dashboardId)) {
+			return _.find(dashboards, (dashboard) => dashboard.dashboard_id === dashboardId);
+		}	
+		else if (activeDashboardFromStore) {
 			const id = activeDashboardFromStore.dashboard_id;
 			const dashboard = _.find(dashboards, (dashboard) => dashboard.dashboard_id === id);
 			return dashboard || defaultActiveDashboard;

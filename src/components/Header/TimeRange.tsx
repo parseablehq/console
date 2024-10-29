@@ -10,16 +10,18 @@ import classes from './styles/LogQuery.module.css';
 import { useOuterClick } from '@/hooks/useOuterClick';
 import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
 import _ from 'lodash';
+import timeRangeUtils from '@/utils/timeRangeUtils';
 
+const {getRelativeStartAndEndDate} = timeRangeUtils
 const { setTimeRange, setshiftInterval } = logsStoreReducers;
-type FixedDurations = (typeof FIXED_DURATIONS)[number];
+export type FixedDuration = (typeof FIXED_DURATIONS)[number];
 
 const { timeRangeContainer, fixedRangeBtn, fixedRangeBtnSelected, customRangeContainer, shiftIntervalContainer } =
 	classes;
 
 const RelativeTimeIntervals = (props: {
 	interval: number;
-	onDurationSelect: (fixedDuration: FixedDurations) => void;
+	onDurationSelect: (fixedDuration: FixedDuration) => void;
 }) => {
 	const { interval, onDurationSelect } = props;
 	return (
@@ -67,10 +69,8 @@ const TimeRange: FC = () => {
 		setOpened((prev) => !prev);
 	}, []);
 
-	const onDurationSelect = (duration: FixedDurations) => {
-		const now = dayjs().startOf('minute');
-		const startTime = now.subtract(duration.milliseconds, 'milliseconds');
-		const endTime = now;
+	const onDurationSelect = (duration: FixedDuration) => {
+		const {startTime, endTime} = getRelativeStartAndEndDate(duration);
 		setLogsStore((store) => setTimeRange(store, { startTime, endTime, type: 'fixed' }));
 		setOpened(false);
 	};
