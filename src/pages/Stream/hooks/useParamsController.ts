@@ -6,12 +6,12 @@ import { FIXED_DURATIONS } from '@/constants/timeConstants';
 import dayjs from 'dayjs';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import moment from 'moment-timezone';
-// import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const { getRelativeStartAndEndDate, formatDateWithTimezone, getLocalTimezone } = timeRangeUtils;
-const { setTimeRange, onToggleView, setPerPage } = logsStoreReducers;
+const { setTimeRange, onToggleView, setPerPage, setCurrentOffset, setPageAndPageData } = logsStoreReducers;
 const timeRangeFormat = 'DD-MMM-YYYY_HH-mmz';
 const keys = ['view', 'rows', 'offset', 'page', 'interval', 'from', 'to'];
+const FIXED_ROWS = ['50', '100', '150', '200'];
 
 const dateToParamString = (date: Date) => {
 	return formatDateWithTimezone(date, timeRangeFormat);
@@ -81,7 +81,6 @@ const useParamsController = () => {
 	const [tableOpts] = useLogsStore((store) => store.tableOpts);
 	const [viewMode] = useLogsStore((store) => store.viewMode);
 	const { currentOffset, currentPage, perPage } = tableOpts;
-	// const [currentStream] = useAppStore((store) => store.currentStream);
 	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
 	const [searchParams, setSearchParams] = useSearchParams();
 
@@ -94,18 +93,21 @@ const useParamsController = () => {
 			rows: `${perPage}`,
 		});
 		const presentParams = paramsStringToParamsObj(searchParams);
-		if (storeAsParams.view !== presentParams.view) {
-			setLogsStore((store) => onToggleView(store, presentParams.view as 'json' | 'table'));
+		if (presentParams.view && presentParams.view !== storeAsParams.view) {
+			setLogsStore((store) => onToggleView(store, presentParams.view as 'table' | 'json'));
 		}
-		if (storeAsParams.rows !== presentParams.rows && ['50', '100', '150', '200'].includes(presentParams.rows)) {
+		if (storeAsParams.rows !== presentParams.rows && FIXED_ROWS.includes(presentParams.rows)) {
 			setLogsStore((store) => setPerPage(store, _.toNumber(presentParams.rows)));
+		}
+		if (presentParams.page && storeAsParams.page !== presentParams.page) {
+			setLogsStore((store) => setPageAndPageData(store, _.toNumber(presentParams.page)));
 		}
 		syncTimeRangeToStore(storeAsParams, presentParams);
 		setStoreSynced(true);
 	}, []);
 
 	useEffect(() => {
-		if (isStoreSynced) {
+		if (isStoreSynced && currentPage !== 0) {
 			const storeAsParams = storeToParamsObj({
 				timeRange,
 				offset: `${currentOffset}`,
@@ -115,13 +117,12 @@ const useParamsController = () => {
 			});
 			const presentParams = paramsStringToParamsObj(searchParams);
 			if (_.isEqual(storeAsParams, presentParams)) return;
-
 			setSearchParams(storeAsParams);
 		}
-	}, [tableOpts, viewMode]);
+	}, [tableOpts, viewMode, timeRange.startTime.toISOString(), timeRange.endTime.toISOString()]);
 
 	useEffect(() => {
-		if (!isStoreSynced) return;
+		if (!isStoreSynced || currentPage === 0) return;
 
 		const storeAsParams = storeToParamsObj({
 			timeRange,
@@ -135,7 +136,15 @@ const useParamsController = () => {
 		if (_.isEqual(storeAsParams, presentParams)) return;
 
 		//set the params to the store
-
+		if (presentParams.view && presentParams.view !== storeAsParams.view) {
+			setLogsStore((store) => onToggleView(store, presentParams.view as 'table' | 'json'));
+		}
+		if (storeAsParams.rows !== presentParams.rows && FIXED_ROWS.includes(presentParams.rows)) {
+			setLogsStore((store) => setPerPage(store, _.toNumber(presentParams.rows)));
+		}
+		if (storeAsParams.page !== presentParams.page) {
+			setLogsStore((store) => setPageAndPageData(store, _.toNumber(presentParams.page)));
+		}
 		syncTimeRangeToStore(storeAsParams, presentParams);
 	}, [searchParams]);
 
