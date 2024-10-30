@@ -122,7 +122,7 @@ export const formatLogTs = (timestamp: string) => {
 	} else {
 		return timeRangeUtils.formatDateWithTimezone(timestamp, 'yyyy-MM-DDTHH:mm:ss.SSSZ');
 	}
-}
+};
 
 const getDefaultTimeRange = (duration: FixedDuration = DEFAULT_FIXED_DURATIONS) => {
 	const now = dayjs().startOf('minute');
@@ -1001,7 +1001,7 @@ const logsStoreReducers: LogsStoreReducers = {
 	setDisabledColumns,
 	setOrderedHeaders,
 	toggleWordWrap,
-	toggleWrapDisabledColumns
+	toggleWrapDisabledColumns,
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };

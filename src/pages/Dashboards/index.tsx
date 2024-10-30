@@ -23,14 +23,14 @@ const LoadingView = () => {
 const Dashboards = () => {
 	const [dashboards] = useDashboardsStore((store) => store.dashboards);
 	const [createTileFormOpen] = useDashboardsStore((store) => store.createTileFormOpen);
-	const { isStoreSyncd } = useParamsController();
+	const { isStoreSynced } = useParamsController();
 	const { updateTimeRange } = useSyncTimeRange();
 	const { fetchDashboards } = useDashboardsQuery({ updateTimeRange });
 	useEffect(() => {
-		if (isStoreSyncd) {
+		if (isStoreSynced) {
 			fetchDashboards();
 		}
-	}, [isStoreSyncd]);
+	}, [isStoreSynced]);
 
 	return (
 		<Box
@@ -42,7 +42,7 @@ const Dashboards = () => {
 				width: '100%',
 				overflow: 'hidden',
 			}}>
-			{dashboards === null || !isStoreSyncd ? (
+			{dashboards === null || !isStoreSynced ? (
 				<LoadingView />
 			) : createTileFormOpen ? (
 				<CreateTileForm />

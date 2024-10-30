@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useDashboardsStore, dashboardsStoreReducers } from '../providers/DashboardsProvider';
 import { TimeRange, useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsProvider';
 import { useSearchParams } from 'react-router-dom';
 import _ from 'lodash';
@@ -7,12 +6,12 @@ import { FIXED_DURATIONS } from '@/constants/timeConstants';
 import dayjs from 'dayjs';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import moment from 'moment-timezone';
+// import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const { getRelativeStartAndEndDate, formatDateWithTimezone, getLocalTimezone } = timeRangeUtils;
-const { selectDashboard } = dashboardsStoreReducers;
-const { setTimeRange } = logsStoreReducers;
+const { setTimeRange, onToggleView, setPerPage } = logsStoreReducers;
 const timeRangeFormat = 'DD-MMM-YYYY_HH-mmz';
-const keys = ['id', 'interval', 'from', 'to'];
+const keys = ['view', 'rows', 'offset', 'page', 'interval', 'from', 'to'];
 
 const dateToParamString = (date: Date) => {
 	return formatDateWithTimezone(date, timeRangeFormat);
@@ -48,11 +47,20 @@ const deriveTimeRangeParams = (timerange: TimeRange): { interval: string } | { f
 	}
 };
 
-const storeToParamsObj = (opts: { dashboardId: string; timeRange: TimeRange }): Record<string, string> => {
-	const { dashboardId, timeRange } = opts;
+const storeToParamsObj = (opts: {
+	timeRange: TimeRange;
+	view: string;
+	offset: string;
+	page: string;
+	rows: string;
+}): Record<string, string> => {
+	const { timeRange, offset, page, view, rows } = opts;
 	const params: Record<string, string> = {
-		id: dashboardId,
 		...deriveTimeRangeParams(timeRange),
+		view,
+		offset,
+		rows,
+		page,
 	};
 	return _.pickBy(params, (val, key) => !_.isEmpty(val) && _.includes(keys, key));
 };
@@ -70,38 +78,63 @@ const paramsStringToParamsObj = (searchParams: URLSearchParams): Record<string, 
 
 const useParamsController = () => {
 	const [isStoreSynced, setStoreSynced] = useState(false);
-	const [activeDashboard, setDashboardsStore] = useDashboardsStore((store) => store.activeDashboard);
+	const [tableOpts] = useLogsStore((store) => store.tableOpts);
+	const [viewMode] = useLogsStore((store) => store.viewMode);
+	const { currentOffset, currentPage, perPage } = tableOpts;
+	// const [currentStream] = useAppStore((store) => store.currentStream);
 	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
 	const [searchParams, setSearchParams] = useSearchParams();
-	const dashboardId = activeDashboard?.dashboard_id || '';
 
 	useEffect(() => {
-		const storeAsParams = storeToParamsObj({ dashboardId, timeRange });
+		const storeAsParams = storeToParamsObj({
+			timeRange,
+			offset: `${currentOffset}`,
+			page: `${currentPage}`,
+			view: viewMode,
+			rows: `${perPage}`,
+		});
 		const presentParams = paramsStringToParamsObj(searchParams);
+		if (storeAsParams.view !== presentParams.view) {
+			setLogsStore((store) => onToggleView(store, presentParams.view as 'json' | 'table'));
+		}
+		if (storeAsParams.rows !== presentParams.rows && ['50', '100', '150', '200'].includes(presentParams.rows)) {
+			setLogsStore((store) => setPerPage(store, _.toNumber(presentParams.rows)));
+		}
 		syncTimeRangeToStore(storeAsParams, presentParams);
 		setStoreSynced(true);
 	}, []);
 
 	useEffect(() => {
 		if (isStoreSynced) {
-			const storeAsParams = storeToParamsObj({ dashboardId, timeRange });
+			const storeAsParams = storeToParamsObj({
+				timeRange,
+				offset: `${currentOffset}`,
+				page: `${currentPage}`,
+				view: viewMode,
+				rows: `${perPage}`,
+			});
 			const presentParams = paramsStringToParamsObj(searchParams);
 			if (_.isEqual(storeAsParams, presentParams)) return;
 
 			setSearchParams(storeAsParams);
 		}
-	}, [dashboardId, timeRange.startTime.toISOString(), timeRange.endTime.toISOString()]);
+	}, [tableOpts, viewMode]);
 
 	useEffect(() => {
 		if (!isStoreSynced) return;
 
-		const storeAsParams = storeToParamsObj({ dashboardId, timeRange });
+		const storeAsParams = storeToParamsObj({
+			timeRange,
+			offset: `${currentOffset}`,
+			page: `${currentPage}`,
+			view: viewMode,
+			rows: `${perPage}`,
+		});
 		const presentParams = paramsStringToParamsObj(searchParams);
+
 		if (_.isEqual(storeAsParams, presentParams)) return;
 
-		if (storeAsParams.id !== presentParams.id) {
-			setDashboardsStore((store) => selectDashboard(store, presentParams.id));
-		}
+		//set the params to the store
 
 		syncTimeRangeToStore(storeAsParams, presentParams);
 	}, [searchParams]);

@@ -13,6 +13,7 @@ import { notifications } from '@mantine/notifications';
 import { useParams } from 'react-router-dom';
 import _ from 'lodash';
 import StreamingButton from '@/components/Header/StreamingButton';
+import ShareButton from '@/components/Header/ShareButton';
 import { useLogsStore, logsStoreReducers } from '../providers/LogsProvider';
 import { filterStoreReducers, useFilterStore } from '../providers/FilterProvider';
 import classes from './styles/PrimaryToolbar.module.css';
@@ -89,7 +90,7 @@ const ViewToggle = () => {
 
 const PrimaryToolbar = () => {
 	const [maximized] = useAppStore((store) => store.maximized);
-	const [hasDeleteStreamAccess] = useAppStore(store => store.userAccessMap.hasDeleteStreamAccess)
+	const [hasDeleteStreamAccess] = useAppStore((store) => store.userAccessMap.hasDeleteStreamAccess);
 	const { view } = useParams();
 
 	useEffect(() => {
@@ -119,6 +120,7 @@ const PrimaryToolbar = () => {
 					<RefreshInterval />
 					<RefreshNow />
 					<ViewToggle />
+					<ShareButton />
 					<MaximizeButton />
 				</Stack>
 			) : view === 'live-tail' ? (
