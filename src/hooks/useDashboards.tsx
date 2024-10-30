@@ -11,11 +11,13 @@ import {
 	TileQueryResponse,
 	UpdateDashboardType,
 } from '@/@types/parseable/api/dashboards';
+import { useSearchParams } from 'react-router-dom';
 
 const { setDashboards, setTileData, selectDashboard } = dashboardsStoreReducers;
 
 export const useDashboardsQuery = (opts: { updateTimeRange?: (dashboard: Dashboard) => void }) => {
 	const [activeDashboard, setDashboardsStore] = useDashboardsStore((store) => store.activeDashboard);
+	const [searchParams] = useSearchParams()
 
 	const {
 		isError: fetchDashaboardsError,
@@ -31,7 +33,7 @@ export const useDashboardsQuery = (opts: { updateTimeRange?: (dashboard: Dashboa
 			if (!activeDashboard && firstDashboard && opts.updateTimeRange) {
 				opts.updateTimeRange(firstDashboard);
 			}
-			setDashboardsStore((store) => setDashboards(store, data.data || []));
+			setDashboardsStore((store) => setDashboards(store, data.data || [], searchParams.get('id') || ''));
 		},
 		onError: () => {
 			setDashboardsStore((store) => setDashboards(store, []));

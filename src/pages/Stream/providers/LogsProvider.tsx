@@ -83,7 +83,7 @@ export type TransformedAlerts = {
 	alerts: TransformedAlert[];
 };
 
-type TimeRange = {
+export type TimeRange = {
 	startTime: Date;
 	endTime: Date;
 	type: 'fixed' | 'custom';
