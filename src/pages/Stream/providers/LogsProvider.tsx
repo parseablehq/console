@@ -918,7 +918,6 @@ const onToggleView = (store: LogsStore, viewMode: 'json' | 'table') => {
 			instantSearchValue: '',
 			currentPage,
 			totalPages: getTotalPages(filteredData, tableOpts.perPage),
-			configViewType: 'schema' as 'schema',
 		},
 		viewMode,
 	};
