@@ -17,7 +17,7 @@ const { parseQuery } = filterStoreReducers;
 
 const appendOffsetToQuery = (query: string, offset: number) => {
 	const hasOffset = query.toLowerCase().includes('offset');
-	return hasOffset ? query.replace(/offset\s+\d+/i, `OFFSET ${offset}`) : `${query} OFFSET ${offset}`;
+	return !hasOffset ? query.replace(/offset\s+\d+/i, `OFFSET ${offset}`) : `${query}`;
 };
 
 export const useQueryLogs = () => {

@@ -8,10 +8,25 @@ import timeRangeUtils from '@/utils/timeRangeUtils';
 import moment from 'moment-timezone';
 
 const { getRelativeStartAndEndDate, formatDateWithTimezone, getLocalTimezone } = timeRangeUtils;
-const { setTimeRange, onToggleView, setPerPage, setCurrentOffset, setPageAndPageData, setCustQuerySearchState } =
-	logsStoreReducers;
+const {
+	setTimeRange,
+	onToggleView,
+	setPerPage,
+	setCustQuerySearchState,
+	// setCurrentOffset,
+	// setPageAndPageData,
+	// setDisabledColumns,
+} = logsStoreReducers;
 const timeRangeFormat = 'DD-MMM-YYYY_HH-mmz';
-const keys = ['view', 'rows', 'offset', 'page', 'interval', 'from', 'to', 'query'];
+const keys = [
+	'view',
+	'rows',
+	'interval',
+	'from',
+	'to',
+	'query',
+	// 'fields', 'offset', 'page'
+];
 const FIXED_ROWS = ['50', '100', '150', '200'];
 
 const dateToParamString = (date: Date) => {
@@ -63,6 +78,7 @@ const storeToParamsObj = (opts: {
 		offset,
 		rows,
 		page,
+		fields: 'datetime,host',
 		query,
 	};
 	return _.pickBy(params, (val, key) => !_.isEmpty(val) && _.includes(keys, key));
@@ -84,10 +100,9 @@ const useParamsController = () => {
 	const [tableOpts] = useLogsStore((store) => store.tableOpts);
 	const [viewMode] = useLogsStore((store) => store.viewMode);
 	const [custQuerySearchState] = useLogsStore((store) => store.custQuerySearchState);
-	console.log(custQuerySearchState);
-	const { currentOffset, currentPage, perPage } = tableOpts;
-
 	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
+
+	const { currentOffset, currentPage, perPage, headers, disabledColumns } = tableOpts;
 
 	const [searchParams, setSearchParams] = useSearchParams();
 
@@ -107,6 +122,12 @@ const useParamsController = () => {
 		if (storeAsParams.rows !== presentParams.rows && FIXED_ROWS.includes(presentParams.rows)) {
 			setLogsStore((store) => setPerPage(store, _.toNumber(presentParams.rows)));
 		}
+
+		// if (storeAsParams.fields !== presentParams.fields) {
+		// 	console.log(headers);
+		// 	setLogsStore((store) => setDisabledColumns(store, _.difference(headers, presentParams.fields.split(','))));
+		// }
+
 		// if (presentParams.offset !== storeAsParams.offset) {
 		// 	setLogsStore((store) => setCurrentOffset(store, _.toNumber(presentParams.offset)));
 		// }
@@ -135,7 +156,14 @@ const useParamsController = () => {
 			if (_.isEqual(storeAsParams, presentParams)) return;
 			setSearchParams(storeAsParams);
 		}
-	}, [tableOpts, viewMode, timeRange.startTime.toISOString(), timeRange.endTime.toISOString(), custQuerySearchState]);
+	}, [
+		tableOpts,
+		viewMode,
+		timeRange.startTime.toISOString(),
+		timeRange.endTime.toISOString(),
+		custQuerySearchState,
+		disabledColumns,
+	]);
 
 	useEffect(() => {
 		if (!isStoreSynced || currentPage === 0) return;
@@ -159,6 +187,11 @@ const useParamsController = () => {
 		if (storeAsParams.rows !== presentParams.rows && FIXED_ROWS.includes(presentParams.rows)) {
 			setLogsStore((store) => setPerPage(store, _.toNumber(presentParams.rows)));
 		}
+
+		// if (presentParams.fields) {
+		// 	console.log(_.difference(headers, presentParams.fields.split(',')));
+		// 	setLogsStore((store) => setDisabledColumns(store, _.difference(headers, presentParams.fields.split(','))));
+		// }
 		// if (storeAsParams.page !== presentParams.page) {
 		// 	setLogsStore((store) => setPageAndPageData(store, _.toNumber(presentParams.page)));
 		// }
