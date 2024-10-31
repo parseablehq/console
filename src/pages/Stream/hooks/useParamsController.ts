@@ -102,7 +102,12 @@ const useParamsController = () => {
 	const [custQuerySearchState] = useLogsStore((store) => store.custQuerySearchState);
 	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
 
-	const { currentOffset, currentPage, perPage, headers, disabledColumns } = tableOpts;
+	const {
+		currentOffset,
+		currentPage,
+		perPage,
+		// headers, disabledColumns
+	} = tableOpts;
 
 	const [searchParams, setSearchParams] = useSearchParams();
 
@@ -156,14 +161,7 @@ const useParamsController = () => {
 			if (_.isEqual(storeAsParams, presentParams)) return;
 			setSearchParams(storeAsParams);
 		}
-	}, [
-		tableOpts,
-		viewMode,
-		timeRange.startTime.toISOString(),
-		timeRange.endTime.toISOString(),
-		custQuerySearchState,
-		disabledColumns,
-	]);
+	}, [tableOpts, viewMode, timeRange.startTime.toISOString(), timeRange.endTime.toISOString(), custQuerySearchState]);
 
 	useEffect(() => {
 		if (!isStoreSynced || currentPage === 0) return;
