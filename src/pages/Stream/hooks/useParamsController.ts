@@ -8,9 +8,10 @@ import timeRangeUtils from '@/utils/timeRangeUtils';
 import moment from 'moment-timezone';
 
 const { getRelativeStartAndEndDate, formatDateWithTimezone, getLocalTimezone } = timeRangeUtils;
-const { setTimeRange, onToggleView, setPerPage, setCurrentOffset, setPageAndPageData } = logsStoreReducers;
+const { setTimeRange, onToggleView, setPerPage, setCurrentOffset, setPageAndPageData, setCustQuerySearchState } =
+	logsStoreReducers;
 const timeRangeFormat = 'DD-MMM-YYYY_HH-mmz';
-const keys = ['view', 'rows', 'offset', 'page', 'interval', 'from', 'to'];
+const keys = ['view', 'rows', 'offset', 'page', 'interval', 'from', 'to', 'query'];
 const FIXED_ROWS = ['50', '100', '150', '200'];
 
 const dateToParamString = (date: Date) => {
@@ -53,14 +54,16 @@ const storeToParamsObj = (opts: {
 	offset: string;
 	page: string;
 	rows: string;
+	query: string;
 }): Record<string, string> => {
-	const { timeRange, offset, page, view, rows } = opts;
+	const { timeRange, offset, page, view, rows, query } = opts;
 	const params: Record<string, string> = {
 		...deriveTimeRangeParams(timeRange),
 		view,
 		offset,
 		rows,
 		page,
+		query,
 	};
 	return _.pickBy(params, (val, key) => !_.isEmpty(val) && _.includes(keys, key));
 };
@@ -80,8 +83,12 @@ const useParamsController = () => {
 	const [isStoreSynced, setStoreSynced] = useState(false);
 	const [tableOpts] = useLogsStore((store) => store.tableOpts);
 	const [viewMode] = useLogsStore((store) => store.viewMode);
+	const [custQuerySearchState] = useLogsStore((store) => store.custQuerySearchState);
+	console.log(custQuerySearchState);
 	const { currentOffset, currentPage, perPage } = tableOpts;
+
 	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
+
 	const [searchParams, setSearchParams] = useSearchParams();
 
 	useEffect(() => {
@@ -91,6 +98,7 @@ const useParamsController = () => {
 			page: `${currentPage}`,
 			view: viewMode,
 			rows: `${perPage}`,
+			query: custQuerySearchState.custSearchQuery,
 		});
 		const presentParams = paramsStringToParamsObj(searchParams);
 		if (presentParams.view && presentParams.view !== storeAsParams.view) {
@@ -99,8 +107,15 @@ const useParamsController = () => {
 		if (storeAsParams.rows !== presentParams.rows && FIXED_ROWS.includes(presentParams.rows)) {
 			setLogsStore((store) => setPerPage(store, _.toNumber(presentParams.rows)));
 		}
-		if (presentParams.page && storeAsParams.page !== presentParams.page) {
-			setLogsStore((store) => setPageAndPageData(store, _.toNumber(presentParams.page)));
+		// if (presentParams.offset !== storeAsParams.offset) {
+		// 	setLogsStore((store) => setCurrentOffset(store, _.toNumber(presentParams.offset)));
+		// }
+		// if (presentParams.page && storeAsParams.page !== presentParams.page) {
+		// 	setLogsStore((store) => setPageAndPageData(store, _.toNumber(presentParams.page)));
+		// }
+
+		if (storeAsParams.query !== presentParams.query) {
+			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query));
 		}
 		syncTimeRangeToStore(storeAsParams, presentParams);
 		setStoreSynced(true);
@@ -114,12 +129,13 @@ const useParamsController = () => {
 				page: `${currentPage}`,
 				view: viewMode,
 				rows: `${perPage}`,
+				query: custQuerySearchState.custSearchQuery,
 			});
 			const presentParams = paramsStringToParamsObj(searchParams);
 			if (_.isEqual(storeAsParams, presentParams)) return;
 			setSearchParams(storeAsParams);
 		}
-	}, [tableOpts, viewMode, timeRange.startTime.toISOString(), timeRange.endTime.toISOString()]);
+	}, [tableOpts, viewMode, timeRange.startTime.toISOString(), timeRange.endTime.toISOString(), custQuerySearchState]);
 
 	useEffect(() => {
 		if (!isStoreSynced || currentPage === 0) return;
@@ -130,6 +146,7 @@ const useParamsController = () => {
 			page: `${currentPage}`,
 			view: viewMode,
 			rows: `${perPage}`,
+			query: custQuerySearchState.custSearchQuery,
 		});
 		const presentParams = paramsStringToParamsObj(searchParams);
 
@@ -142,8 +159,11 @@ const useParamsController = () => {
 		if (storeAsParams.rows !== presentParams.rows && FIXED_ROWS.includes(presentParams.rows)) {
 			setLogsStore((store) => setPerPage(store, _.toNumber(presentParams.rows)));
 		}
-		if (storeAsParams.page !== presentParams.page) {
-			setLogsStore((store) => setPageAndPageData(store, _.toNumber(presentParams.page)));
+		// if (storeAsParams.page !== presentParams.page) {
+		// 	setLogsStore((store) => setPageAndPageData(store, _.toNumber(presentParams.page)));
+		// }
+		if (storeAsParams.query !== presentParams.query) {
+			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query));
 		}
 		syncTimeRangeToStore(storeAsParams, presentParams);
 	}, [searchParams]);

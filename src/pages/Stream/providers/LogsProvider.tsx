@@ -248,6 +248,7 @@ type LogsStoreReducers = {
 	resetQuickFilters: (store: LogsStore) => ReducerOutput;
 	streamChangeCleanup: (store: LogsStore) => ReducerOutput;
 	toggleQueryBuilder: (store: LogsStore, val?: boolean) => ReducerOutput;
+	setCustQuerySearchState: (store: LogsStore, query: string) => ReducerOutput;
 	resetCustQuerySearchState: (store: LogsStore) => ReducerOutput;
 	toggleCustQuerySearchViewMode: (store: LogsStore, targetMode: 'sql' | 'filters') => ReducerOutput;
 	toggleDeleteModal: (store: LogsStore, val?: boolean) => ReducerOutput;
@@ -451,6 +452,22 @@ const toggleQueryBuilder = (store: LogsStore, val?: boolean) => {
 			...custQuerySearchState,
 			showQueryBuilder: _.isBoolean(val) ? val : !custQuerySearchState.showQueryBuilder,
 		},
+	};
+};
+
+const setCustQuerySearchState = (store: LogsStore, query: string) => {
+	const { timeRange } = store;
+	return {
+		custQuerySearchState: {
+			showQueryBuilder: false,
+			savedFilterId: null,
+			isQuerySearchActive: true,
+			custSearchQuery: query,
+			viewMode: 'sql',
+			activeMode: 'sql' as 'sql',
+		},
+		...getCleanStoreForRefetch(store),
+		timeRange,
 	};
 };
 
@@ -1002,6 +1019,7 @@ const logsStoreReducers: LogsStoreReducers = {
 	setOrderedHeaders,
 	toggleWordWrap,
 	toggleWrapDisabledColumns,
+	setCustQuerySearchState,
 };
 
 export { LogsProvider, useLogsStore, logsStoreReducers };
