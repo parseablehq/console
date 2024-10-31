@@ -121,7 +121,7 @@ const useParamsController = () => {
 			query: custQuerySearchState.custSearchQuery,
 		});
 		const presentParams = paramsStringToParamsObj(searchParams);
-		if (presentParams.view && presentParams.view !== storeAsParams.view) {
+		if (['table', 'json'].includes(presentParams.view) && presentParams.view !== storeAsParams.view) {
 			setLogsStore((store) => onToggleView(store, presentParams.view as 'table' | 'json'));
 		}
 		if (storeAsParams.rows !== presentParams.rows && FIXED_ROWS.includes(presentParams.rows)) {
