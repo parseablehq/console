@@ -136,7 +136,7 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: b
 	);
 
 	return (
-		<Stack className={classes.footerContainer} gap={0} style={{height: LOGS_FOOTER_HEIGHT}}>
+		<Stack className={classes.footerContainer} gap={0} style={{ height: LOGS_FOOTER_HEIGHT }}>
 			<Stack w="100%" justify="center" align="flex-start">
 				<TotalLogsCount
 					hasTableLoaded={props.loaded}
@@ -173,7 +173,7 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: b
 											onClick={() => {
 												pagination.setPage(page);
 											}}>
-											{(perPage ? page + currentOffset / perPage : page) ?? 1}
+											{(perPage ? Math.ceil(page + currentOffset / perPage) : page) ?? 1}
 										</Pagination.Control>
 									);
 								}
