@@ -18,6 +18,7 @@ import { RetryBtn } from '@/components/Button/Retry';
 import LogsView from './Views/Explore/LogsView';
 import { useGetStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useGetStreamInfo } from '@/hooks/useGetStreamInfo';
+import useParamsController from './hooks/useParamsController';
 
 const { streamChangeCleanup } = streamStoreReducers;
 
@@ -40,6 +41,7 @@ const Stream: FC = () => {
 	useDocumentTitle('Parseable | Stream');
 	const { view } = useParams();
 	const [currentStream] = useAppStore((store) => store.currentStream);
+	const { isStoreSynced } = useParamsController();
 	const [maximized] = useAppStore((store) => store.maximized);
 	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
 	const queryEngine = instanceConfig?.queryEngine;
@@ -64,15 +66,17 @@ const Stream: FC = () => {
 	}, [currentStream]);
 
 	useEffect(() => {
-		if (!_.isEmpty(currentStream)) {
-			if (view === 'explore' && queryEngine && queryEngine !== 'Parseable') {
-				setStreamStore(streamChangeCleanup);
-				getStreamInfoRefetch();
-			} else {
-				fetchSchema();
+		if (isStoreSynced) {
+			if (!_.isEmpty(currentStream)) {
+				if (view === 'explore' && queryEngine && queryEngine !== 'Parseable') {
+					setStreamStore(streamChangeCleanup);
+					getStreamInfoRefetch();
+				} else {
+					fetchSchema();
+				}
 			}
 		}
-	}, [currentStream]);
+	}, [isStoreSynced, currentStream]);
 
 	const sideBarWidth = sideBarOpen ? rem(180) : SECONDARY_SIDEBAR_WIDTH;
 
@@ -81,7 +85,8 @@ const Stream: FC = () => {
 
 	const isSchemaFetching = isSchemaRefetching || isSchemaLoading;
 	const isInfoLoading =
-		(getStreamInfoLoading || getStreamInfoRefetching || instanceConfig === null) && view === 'explore';
+		(!isStoreSynced || getStreamInfoLoading || getStreamInfoRefetching || instanceConfig === null) &&
+		view === 'explore';
 	return (
 		<Box
 			style={{

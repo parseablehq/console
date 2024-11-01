@@ -1,19 +1,16 @@
 import { FC, useCallback } from 'react';
 import { useLogsStore, logsStoreReducers, LOAD_LIMIT, LOG_QUERY_LIMITS } from '../../providers/LogsProvider';
-import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { usePagination } from '@mantine/hooks';
-import { downloadDataAsCSV, downloadDataAsJson } from '@/utils/exportHelpers';
-import { Box, Center, Group, Loader, Menu, Pagination, px, Stack, Tooltip } from '@mantine/core';
+import { Box, Center, Group, Loader, Menu, Pagination, Stack, Tooltip } from '@mantine/core';
 import _ from 'lodash';
 import { Text } from '@mantine/core';
 import { HumanizeNumber } from '@/utils/formatBytes';
-import IconButton from '@/components/Button/IconButton';
-import { IconDownload, IconSelector } from '@tabler/icons-react';
+import { IconSelector } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
 import classes from '../../styles/Footer.module.css';
 import { LOGS_FOOTER_HEIGHT } from '@/constants/theme';
 
-const { setPageAndPageData, setCurrentPage, setCurrentOffset, makeExportData } = logsStoreReducers;
+const { setPageAndPageData, setCurrentPage, setCurrentOffset } = logsStoreReducers;
 
 const TotalCount = (props: { totalCount: number }) => {
 	return (
@@ -22,8 +19,6 @@ const TotalCount = (props: { totalCount: number }) => {
 		</Tooltip>
 	);
 };
-
-const renderExportIcon = () => <IconDownload size={px('0.8rem')} stroke={1.8} />;
 
 const TotalLogsCount = (props: { hasTableLoaded: boolean; isFetchingCount: boolean; isTableEmpty: boolean }) => {
 	const [{ totalCount, perPage, pageData }] = useLogsStore((store) => store.tableOpts);
@@ -94,10 +89,8 @@ const LimitControl: FC = () => {
 };
 
 const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: boolean }) => {
-	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
-	const [filteredData] = useLogsStore((store) => store.data.filteredData);
-	const { totalPages, currentOffset, currentPage, perPage, headers, totalCount } = tableOpts;
+	const { totalPages, currentOffset, currentPage, perPage, totalCount } = tableOpts;
 
 	const onPageChange = useCallback((page: number) => {
 		setLogsStore((store) => setPageAndPageData(store, page));
@@ -123,20 +116,8 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: b
 		[currentOffset],
 	);
 
-	const exportHandler = useCallback(
-		(fileType: string | null) => {
-			const filename = `${currentStream}-logs`;
-			if (fileType === 'CSV') {
-				downloadDataAsCSV(makeExportData(filteredData, headers, 'CSV'), filename);
-			} else if (fileType === 'JSON') {
-				downloadDataAsJson(makeExportData(filteredData, headers, 'JSON'), filename);
-			}
-		},
-		[currentStream, filteredData, headers],
-	);
-
 	return (
-		<Stack className={classes.footerContainer} gap={0} style={{height: LOGS_FOOTER_HEIGHT}}>
+		<Stack className={classes.footerContainer} gap={0} style={{ height: LOGS_FOOTER_HEIGHT }}>
 			<Stack w="100%" justify="center" align="flex-start">
 				<TotalLogsCount
 					hasTableLoaded={props.loaded}
@@ -190,7 +171,7 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: b
 				) : null}
 			</Stack>
 			<Stack w="100%" align="flex-end" style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-				{props.loaded && (
+				{/* {props.loaded && (
 					<Menu position="top">
 						<Menu.Target>
 							<div>
@@ -206,7 +187,7 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: b
 							</Menu.Item>
 						</Menu.Dropdown>
 					</Menu>
-				)}
+				)} */}
 				<LimitControl />
 			</Stack>
 		</Stack>
