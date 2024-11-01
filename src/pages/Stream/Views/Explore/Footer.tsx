@@ -154,7 +154,7 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: b
 											onClick={() => {
 												pagination.setPage(page);
 											}}>
-											{(perPage ? page + currentOffset / perPage : page) ?? 1}
+											{(perPage ? Math.ceil(page + currentOffset / perPage) : page) ?? 1}
 										</Pagination.Control>
 									);
 								}

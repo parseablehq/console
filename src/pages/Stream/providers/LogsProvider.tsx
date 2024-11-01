@@ -359,7 +359,7 @@ const initialState: LogsStore = {
 const { Provider: LogsProvider, useStore: useLogsStore } = initContext(initialState);
 
 const getTotalPages = (data: Log[], perPage: number) => {
-	return _.isEmpty(data) ? 0 : _.size(data) / perPage;
+	return _.isEmpty(data) ? 0 : Math.ceil(_.size(data) / perPage);
 };
 
 const setSelectedLog = (_store: LogsStore, log: Log | null) => {
