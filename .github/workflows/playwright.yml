@@ -21,6 +21,7 @@ jobs:
         run: pnpm run dev &
         env:
           PORT: 3001
+          VITE_PARSEABLE_URL: 'https://demo.parseable.com'
       - name: Run Playwright tests
         run: pnpm exec playwright test
       - uses: actions/upload-artifact@v4
