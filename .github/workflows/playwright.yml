@@ -21,8 +21,6 @@ jobs:
         run: pnpm run dev &
         env:
           PORT: 3001
-      - name: Wait for the server to start
-        run: npx wait-on http://localhost:3001
       - name: Run Playwright tests
         run: pnpm exec playwright test
       - uses: actions/upload-artifact@v4
