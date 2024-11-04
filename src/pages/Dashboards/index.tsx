@@ -11,6 +11,7 @@ import CreateTileForm from './CreateTileForm';
 import { useSyncTimeRange } from './hooks';
 import _ from 'lodash';
 import useParamsController from './hooks/useParamsController';
+import { useDocumentTitle } from '@mantine/hooks';
 
 const LoadingView = () => {
 	return (
@@ -21,6 +22,7 @@ const LoadingView = () => {
 };
 
 const Dashboards = () => {
+	useDocumentTitle('Parseable | Dashboards');
 	const [dashboards] = useDashboardsStore((store) => store.dashboards);
 	const [createTileFormOpen] = useDashboardsStore((store) => store.createTileFormOpen);
 	const { isStoreSynced } = useParamsController();
