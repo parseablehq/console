@@ -22,7 +22,6 @@ export type CreateSavedFilterType = {
 	query: {
 		filter_type: 'sql' | 'builder';
 		filter_query: string;
-		filter_builder?: QueryType;
 	};
 	time_filter: null | {
 		from: string;

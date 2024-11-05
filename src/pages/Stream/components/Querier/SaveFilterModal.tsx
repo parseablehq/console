@@ -35,7 +35,6 @@ const sanitizeFilterItem = (formObject: FormObjectType): SavedFilterType => {
 
 const SaveFilterModal = () => {
 	const [isSaveFiltersModalOpen, setFilterStore] = useFilterStore((store) => store.isSaveFiltersModalOpen);
-	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
 	const [activeSavedFilters] = useAppStore((store) => store.activeSavedFilters);
 	const [formObject, setFormObject] = useState<FormObjectType | null>(null);
 	const [currentStream] = useAppStore((store) => store.currentStream);
@@ -70,7 +69,6 @@ const SaveFilterModal = () => {
 				query: {
 					filter_type: isSqlMode ? 'sql' : 'builder',
 					filter_query: custSearchQuery,
-					...(!isSqlMode && { filter_builder: appliedQuery }),
 				},
 				time_filter: {
 					from: timeRange.startTime.toISOString(),

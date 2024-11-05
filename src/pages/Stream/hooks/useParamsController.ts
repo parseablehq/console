@@ -165,12 +165,12 @@ const useParamsController = () => {
 			setLogsStore((store) => setPerPage(store, _.toNumber(presentParams.rows)));
 		}
 
-		if (storeAsParams.query !== presentParams.query) {
-			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
+		if (storeAsParams.query !== presentParams.query && !_.isEmpty(presentParams.query)) {
 			if (presentParams.filterType === 'filters')
 				setFilterStore((store) =>
 					applySavedFilters(store, generateQueryBuilderASTFromSQL(presentParams.query) as QueryType),
 				);
+			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
 		}
 		syncTimeRangeToStore(storeAsParams, presentParams);
 	}, [searchParams]);
