@@ -7,8 +7,7 @@ import dayjs from 'dayjs';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import moment from 'moment-timezone';
 import { filterStoreReducers, QueryType, useFilterStore } from '../providers/FilterProvider';
-import { parseSQLWithIDs } from '../utils';
-
+import { generateQueryBuilderASTFromSQL } from '../utils';
 
 const { getRelativeStartAndEndDate, formatDateWithTimezone, getLocalTimezone } = timeRangeUtils;
 const { setTimeRange, onToggleView, setPerPage, setCustQuerySearchState } = logsStoreReducers;
@@ -68,7 +67,7 @@ const storeToParamsObj = (opts: {
 		rows,
 		page,
 		query,
-		filterType,
+		filterType: query ? filterType : '',
 	};
 	return _.pickBy(params, (val, key) => !_.isEmpty(val) && _.includes(keys, key));
 };
@@ -117,7 +116,9 @@ const useParamsController = () => {
 		if (storeAsParams.query !== presentParams.query) {
 			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
 			if (presentParams.filterType === 'filters')
-				setFilterStore((store) => applySavedFilters(store, parseSQLWithIDs(presentParams.query) as QueryType));
+				setFilterStore((store) =>
+					applySavedFilters(store, generateQueryBuilderASTFromSQL(presentParams.query) as QueryType),
+				);
 		}
 		syncTimeRangeToStore(storeAsParams, presentParams);
 		setStoreSynced(true);
@@ -167,7 +168,9 @@ const useParamsController = () => {
 		if (storeAsParams.query !== presentParams.query) {
 			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
 			if (presentParams.filterType === 'filters')
-				setFilterStore((store) => applySavedFilters(store, parseSQLWithIDs(presentParams.query) as QueryType));
+				setFilterStore((store) =>
+					applySavedFilters(store, generateQueryBuilderASTFromSQL(presentParams.query) as QueryType),
+				);
 		}
 		syncTimeRangeToStore(storeAsParams, presentParams);
 	}, [searchParams]);

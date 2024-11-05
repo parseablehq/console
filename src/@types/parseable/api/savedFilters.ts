@@ -7,7 +7,7 @@ export type SavedFilterType = {
 	filter_id: string;
 	query: {
 		filter_type: 'sql' | 'builder';
-		filter_query: string;
+		filter_query?: string;
 		filter_builder?: QueryType;
 	};
 	time_filter: null | {

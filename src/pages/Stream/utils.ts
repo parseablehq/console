@@ -10,7 +10,7 @@ export const getPageSlice = (page = 1, perPage: number, data: Log[]) => {
 	return data ? data.slice(firstPageIndex, lastPageIndex) : [];
 };
 
-export const parseSQLWithIDs = (sqlString: string) => {
+export const generateQueryBuilderASTFromSQL = (sqlString: string) => {
 	const parsedQuery = parseSQL(sqlString) as QueryType;
 
 	function isRuleGroup(rule: RuleTypeOverride | RuleGroupTypeOverride): rule is RuleGroupTypeOverride {
@@ -20,7 +20,7 @@ export const parseSQLWithIDs = (sqlString: string) => {
 	function addIds(query: QueryType | RuleGroupTypeOverride) {
 		if (Array.isArray(query.rules)) {
 			query.rules.forEach((rule) => {
-				rule.id = 'rule-' + Math.random();
+				rule.id = `rule-${Math.random()}`;
 
 				if (isRuleGroup(rule)) {
 					addIds(rule);
@@ -35,8 +35,8 @@ export const parseSQLWithIDs = (sqlString: string) => {
 
 export const makeHeadersFromSchema = (schema: LogStreamSchemaData | null): string[] => {
 	if (schema) {
-	const { fields } = schema;
-	return fields.map((field) => field.name);
+		const { fields } = schema;
+		return fields.map((field) => field.name);
 	} else {
 		return [];
 	}
