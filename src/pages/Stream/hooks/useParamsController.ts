@@ -6,11 +6,15 @@ import { FIXED_DURATIONS } from '@/constants/timeConstants';
 import dayjs from 'dayjs';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import moment from 'moment-timezone';
+import { filterStoreReducers, QueryType, useFilterStore } from '../providers/FilterProvider';
+import { parseSQLWithIDs } from '../utils';
+
 
 const { getRelativeStartAndEndDate, formatDateWithTimezone, getLocalTimezone } = timeRangeUtils;
 const { setTimeRange, onToggleView, setPerPage, setCustQuerySearchState } = logsStoreReducers;
+const { applySavedFilters } = filterStoreReducers;
 const timeRangeFormat = 'DD-MMM-YYYY_HH-mmz';
-const keys = ['view', 'rows', 'interval', 'from', 'to', 'query'];
+const keys = ['view', 'rows', 'interval', 'from', 'to', 'query', 'filterType'];
 const FIXED_ROWS = ['50', '100', '150', '200'];
 
 const dateToParamString = (date: Date) => {
@@ -54,8 +58,9 @@ const storeToParamsObj = (opts: {
 	page: string;
 	rows: string;
 	query: string;
+	filterType: string;
 }): Record<string, string> => {
-	const { timeRange, offset, page, view, rows, query } = opts;
+	const { timeRange, offset, page, view, rows, query, filterType } = opts;
 	const params: Record<string, string> = {
 		...deriveTimeRangeParams(timeRange),
 		view,
@@ -63,6 +68,7 @@ const storeToParamsObj = (opts: {
 		rows,
 		page,
 		query,
+		filterType,
 	};
 	return _.pickBy(params, (val, key) => !_.isEmpty(val) && _.includes(keys, key));
 };
@@ -84,6 +90,7 @@ const useParamsController = () => {
 	const [viewMode] = useLogsStore((store) => store.viewMode);
 	const [custQuerySearchState] = useLogsStore((store) => store.custQuerySearchState);
 	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
+	const [, setFilterStore] = useFilterStore((store) => store);
 
 	const { currentOffset, currentPage, perPage } = tableOpts;
 
@@ -97,6 +104,7 @@ const useParamsController = () => {
 			view: viewMode,
 			rows: `${perPage}`,
 			query: custQuerySearchState.custSearchQuery,
+			filterType: custQuerySearchState.viewMode,
 		});
 		const presentParams = paramsStringToParamsObj(searchParams);
 		if (['table', 'json'].includes(presentParams.view) && presentParams.view !== storeAsParams.view) {
@@ -107,7 +115,9 @@ const useParamsController = () => {
 		}
 
 		if (storeAsParams.query !== presentParams.query) {
-			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query));
+			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
+			if (presentParams.filterType === 'filters')
+				setFilterStore((store) => applySavedFilters(store, parseSQLWithIDs(presentParams.query) as QueryType));
 		}
 		syncTimeRangeToStore(storeAsParams, presentParams);
 		setStoreSynced(true);
@@ -122,6 +132,7 @@ const useParamsController = () => {
 				view: viewMode,
 				rows: `${perPage}`,
 				query: custQuerySearchState.custSearchQuery,
+				filterType: custQuerySearchState.viewMode,
 			});
 			const presentParams = paramsStringToParamsObj(searchParams);
 			if (_.isEqual(storeAsParams, presentParams)) return;
@@ -139,6 +150,7 @@ const useParamsController = () => {
 			view: viewMode,
 			rows: `${perPage}`,
 			query: custQuerySearchState.custSearchQuery,
+			filterType: custQuerySearchState.viewMode,
 		});
 		const presentParams = paramsStringToParamsObj(searchParams);
 
@@ -153,7 +165,9 @@ const useParamsController = () => {
 		}
 
 		if (storeAsParams.query !== presentParams.query) {
-			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query));
+			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
+			if (presentParams.filterType === 'filters')
+				setFilterStore((store) => applySavedFilters(store, parseSQLWithIDs(presentParams.query) as QueryType));
 		}
 		syncTimeRangeToStore(storeAsParams, presentParams);
 	}, [searchParams]);
