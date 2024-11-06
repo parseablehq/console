@@ -29,6 +29,24 @@ const TableContainer = (props: { children: ReactNode }) => {
 
 const localTz = timeRangeUtils.getLocalTimezone();
 
+type CellType = string | number | boolean | null | undefined;
+
+const getSanitizedValue = (value: CellType, isTimestamp: boolean) => {
+	if (isTimestamp) {
+		return formatLogTs(String(value));
+	}
+
+	if (value === null || value === undefined) {
+		return '';
+	}
+
+	if (typeof value === 'boolean') {
+		return value.toString();
+	}
+
+	return String(value);
+};
+
 const makeHeaderOpts = (headers: string[], isSecureHTTPContext: boolean, fieldTypeMap: FieldTypeMap) => {
 	return _.reduce(
 		headers,
@@ -42,7 +60,7 @@ const makeHeaderOpts = (headers: string[], isSecureHTTPContext: boolean, fieldTy
 					header: isTimestamp ? `${header} (${localTz})` : header,
 					grow: true,
 					Cell: ({ cell }: { cell: any }) => {
-						const value = _.isFunction(cell.getValue) ? cell.getValue() : '';
+						const value = _.get(cell.row.original, header, '');
 						const isTimestamp = _.chain(cell)
 							.get('column.id', null)
 							.thru((val) => {
@@ -50,11 +68,7 @@ const makeHeaderOpts = (headers: string[], isSecureHTTPContext: boolean, fieldTy
 								return datatype === 'timestamp';
 							})
 							.value();
-						const sanitizedValue = isTimestamp
-							? formatLogTs(value)
-							: _.isBoolean(value) || value
-							? _.toString(value)
-							: '';
+						const sanitizedValue = getSanitizedValue(value, isTimestamp);
 						return (
 							<div className={tableStyles.customCellContainer} style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
 								{sanitizedValue}
