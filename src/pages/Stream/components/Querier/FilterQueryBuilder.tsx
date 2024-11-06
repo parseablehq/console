@@ -118,15 +118,15 @@ const CombinatorToggle = (props: CombinatorToggleType) => {
 		<Box className={classes.toggleBtnContainer}>
 			<Text
 				style={{ fontSize: '0.6rem' }}
-				className={!isOrSelected ? activeBtnClass : inActiveBtnClass}
-				onClick={() => onCombinatorChange('and')}>
-				AND
-			</Text>
-			<Text
-				style={{ fontSize: '0.6rem' }}
 				className={isOrSelected ? activeBtnClass : inActiveBtnClass}
 				onClick={() => onCombinatorChange('or')}>
 				OR
+			</Text>
+			<Text
+				style={{ fontSize: '0.6rem' }}
+				className={!isOrSelected ? activeBtnClass : inActiveBtnClass}
+				onClick={() => onCombinatorChange('and')}>
+				AND
 			</Text>
 		</Box>
 	);

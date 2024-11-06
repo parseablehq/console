@@ -27,7 +27,9 @@ const useSavedFiltersQuery = () => {
 
 	const { mutate: updateSavedFilters, isLoading: isUpdating } = useMutation(
 		(data: { filter: SavedFilterType; onSuccess?: () => void }) => {
-			data.filter.query = _.omit(data.filter.query, 'filter_builder');
+			if (_.has(data.filter.query, 'filter_builder')) {
+				data.filter.query = _.omit(data.filter.query, 'filter_builder');
+			}
 			return putSavedFilters(data.filter.filter_id, data.filter);
 		},
 		{
