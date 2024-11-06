@@ -12,7 +12,6 @@ import {
 	Loader,
 	Flex,
 	TextInput,
-	rem,
 } from '@mantine/core';
 import { IconChevronRight, IconExternalLink, IconPlus, IconSearch } from '@tabler/icons-react';
 import { useEffect, type FC, useCallback, useMemo, useState } from 'react';
@@ -84,19 +83,7 @@ const Home: FC = () => {
 	const [userRoles] = useAppStore((store) => store.userRoles);
 	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
 	const [searchTerm, setSearchTerm] = useState('');
-	const [filteredMetaData, setFilteredMetaData] = useState<Record<string, any>>(metaData || {});
-
-	const filterStreams = useCallback(
-		debounce((term: string) => {
-			if (metaData) {
-				const filteredData = Object.entries(metaData).filter(([stream]) =>
-					stream.toLowerCase().includes(term.toLowerCase()),
-				);
-				setFilteredMetaData(Object.fromEntries(filteredData));
-			}
-		}, 300),
-		[metaData],
-	);
+	const [filteredMetaData, setFilteredMetaData] = useState<Record<string, any>>(() => metaData || {});
 
 	useEffect(() => {
 		if (metaData) {
@@ -109,9 +96,25 @@ const Home: FC = () => {
 		getStreamMetadata(userSpecificStreams.map((stream) => stream.name));
 	}, [userSpecificStreams]);
 
+	const filterStreams = useCallback(
+		debounce((term: string) => {
+			if (term === '') {
+				setFilteredMetaData(metaData || {});
+			} else if (metaData) {
+				const filteredData = Object.entries(metaData).filter(([stream]) =>
+					stream.toLowerCase().includes(term.toLowerCase()),
+				);
+				setFilteredMetaData(Object.fromEntries(filteredData));
+			}
+		}, 300),
+		[metaData],
+	);
+
 	const navigateToStream = useCallback((stream: string) => {
 		setAppStore((store) => changeStream(store, stream));
 		navigate(`/${stream}/explore`);
+		setSearchTerm('');
+		setFilteredMetaData({});
 	}, []);
 
 	const displayEmptyPlaceholder = Array.isArray(userSpecificStreams) && userSpecificStreams.length === 0;
@@ -122,8 +125,9 @@ const Home: FC = () => {
 	const hasCreateStreamAccess = useMemo(() => userAccessMap?.hasCreateStreamAccess, [userAccessMap]);
 
 	const shouldDisplayEmptyPlaceholder = displayEmptyPlaceholder || isLoading || error;
+	const hasEmptyStreamData = Object.keys(filteredMetaData).length === 0;
 
-	const searchIcon = <IconSearch style={{ width: rem(16), height: rem(16) }} />;
+	const searchIcon = <IconSearch size="1rem" />;
 
 	return (
 		<>
@@ -167,9 +171,12 @@ const Home: FC = () => {
 					className={container}
 					style={{
 						display: 'flex',
-						paddingTop: shouldDisplayEmptyPlaceholder ? '0rem' : '1rem',
-						paddingBottom: shouldDisplayEmptyPlaceholder ? '0rem' : '3rem',
-						height: shouldDisplayEmptyPlaceholder ? `calc(${heights.screen} - ${PRIMARY_HEADER_HEIGHT}px)` : 'auto',
+						paddingTop: shouldDisplayEmptyPlaceholder || hasEmptyStreamData ? '0rem' : '1rem',
+						paddingBottom: shouldDisplayEmptyPlaceholder || hasEmptyStreamData ? '0rem' : '3rem',
+						height:
+							shouldDisplayEmptyPlaceholder || hasEmptyStreamData
+								? `calc(${heights.screen} - ${PRIMARY_HEADER_HEIGHT}px)`
+								: 'auto',
 					}}>
 					<CreateStreamModal />
 					{isLoading ? (
@@ -178,7 +185,7 @@ const Home: FC = () => {
 						</Center>
 					) : (
 						<>
-							{displayEmptyPlaceholder || error || Object.keys(filteredMetaData).length === 0 ? (
+							{displayEmptyPlaceholder || error || hasEmptyStreamData ? (
 								<NoStreamsView
 									hasCreateStreamAccess={hasCreateStreamAccess}
 									openCreateStreamModal={openCreateStreamModal}
