@@ -3,15 +3,15 @@ import { TimeRange, useLogsStore, logsStoreReducers } from '@/pages/Stream/provi
 import { useSearchParams } from 'react-router-dom';
 import _ from 'lodash';
 import { FIXED_DURATIONS } from '@/constants/timeConstants';
+import { LOAD_LIMIT, LOG_QUERY_LIMITS } from '@/pages/Stream/providers/LogsProvider';
 import dayjs from 'dayjs';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import moment from 'moment-timezone';
 
 const { getRelativeStartAndEndDate, formatDateWithTimezone, getLocalTimezone } = timeRangeUtils;
-const { setTimeRange, onToggleView, setPerPage, setCustQuerySearchState } = logsStoreReducers;
+const { setTimeRange, onToggleView, setPerPage, setCustQuerySearchState, setCurrentOffset } = logsStoreReducers;
 const timeRangeFormat = 'DD-MMM-YYYY_HH-mmz';
-const keys = ['view', 'rows', 'interval', 'from', 'to', 'query'];
-const FIXED_ROWS = ['50', '100', '150', '200'];
+const keys = ['view', 'rows', 'interval', 'from', 'to', 'query', 'offset', 'page', 'fields'];
 
 const dateToParamString = (date: Date) => {
 	return formatDateWithTimezone(date, timeRangeFormat);
@@ -54,8 +54,9 @@ const storeToParamsObj = (opts: {
 	page: string;
 	rows: string;
 	query: string;
+	fields: string;
 }): Record<string, string> => {
-	const { timeRange, offset, page, view, rows, query } = opts;
+	const { timeRange, offset, page, view, rows, query, fields } = opts;
 	const params: Record<string, string> = {
 		...deriveTimeRangeParams(timeRange),
 		view,
@@ -63,6 +64,7 @@ const storeToParamsObj = (opts: {
 		rows,
 		page,
 		query,
+		fields,
 	};
 	return _.pickBy(params, (val, key) => !_.isEmpty(val) && _.includes(keys, key));
 };
@@ -85,7 +87,7 @@ const useParamsController = () => {
 	const [custQuerySearchState] = useLogsStore((store) => store.custQuerySearchState);
 	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
 
-	const { currentOffset, currentPage, perPage } = tableOpts;
+	const { currentOffset, currentPage, perPage, pageData, headers } = tableOpts;
 
 	const [searchParams, setSearchParams] = useSearchParams();
 
@@ -97,13 +99,23 @@ const useParamsController = () => {
 			view: viewMode,
 			rows: `${perPage}`,
 			query: custQuerySearchState.custSearchQuery,
+			fields: `${headers}`,
 		});
 		const presentParams = paramsStringToParamsObj(searchParams);
 		if (['table', 'json'].includes(presentParams.view) && presentParams.view !== storeAsParams.view) {
 			setLogsStore((store) => onToggleView(store, presentParams.view as 'table' | 'json'));
 		}
-		if (storeAsParams.rows !== presentParams.rows && FIXED_ROWS.includes(presentParams.rows)) {
+		if (storeAsParams.rows !== presentParams.rows && LOG_QUERY_LIMITS.includes(_.toNumber(presentParams.rows))) {
 			setLogsStore((store) => setPerPage(store, _.toNumber(presentParams.rows)));
+		}
+
+		if (storeAsParams.offset !== presentParams.offset && _.toNumber(presentParams.offset) % LOAD_LIMIT === 0) {
+			setLogsStore((store) => setCurrentOffset(store, _.toNumber(presentParams.offset)));
+		}
+
+		if (!_.isEmpty(pageData) && storeAsParams.page !== presentParams.page) {
+			console.log(presentParams.page);
+			// setLogsStore((store) => setCurrentPage(store, _.toNumber(presentParams.page)));
 		}
 
 		if (storeAsParams.query !== presentParams.query) {
@@ -122,6 +134,7 @@ const useParamsController = () => {
 				view: viewMode,
 				rows: `${perPage}`,
 				query: custQuerySearchState.custSearchQuery,
+				fields: `${headers}`,
 			});
 			const presentParams = paramsStringToParamsObj(searchParams);
 			if (_.isEqual(storeAsParams, presentParams)) return;
@@ -139,6 +152,7 @@ const useParamsController = () => {
 			view: viewMode,
 			rows: `${perPage}`,
 			query: custQuerySearchState.custSearchQuery,
+			fields: `${headers}`,
 		});
 		const presentParams = paramsStringToParamsObj(searchParams);
 
@@ -148,7 +162,7 @@ const useParamsController = () => {
 		if (presentParams.view && presentParams.view !== storeAsParams.view) {
 			setLogsStore((store) => onToggleView(store, presentParams.view as 'table' | 'json'));
 		}
-		if (storeAsParams.rows !== presentParams.rows && FIXED_ROWS.includes(presentParams.rows)) {
+		if (storeAsParams.rows !== presentParams.rows && LOG_QUERY_LIMITS.includes(_.toNumber(presentParams.rows))) {
 			setLogsStore((store) => setPerPage(store, _.toNumber(presentParams.rows)));
 		}
 
