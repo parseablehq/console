@@ -33,7 +33,14 @@ type CellType = string | number | boolean | null | undefined;
 
 const getSanitizedValue = (value: CellType, isTimestamp: boolean) => {
 	if (isTimestamp) {
-		return formatLogTs(String(value));
+		const timestamp = String(value).trim();
+		const isValidTimestamp = !isNaN(Date.parse(timestamp));
+
+		if (timestamp && isValidTimestamp) {
+			return formatLogTs(timestamp);
+		} else {
+			return '';
+		}
 	}
 
 	if (value === null || value === undefined) {
