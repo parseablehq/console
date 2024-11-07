@@ -65,6 +65,7 @@ type UpdateRuleType = {
 type FilterStore = {
 	fields: Field[];
 	query: QueryType;
+	appliedFilterQuery: string;
 	fieldTypeMap: FieldTypeMap;
 	fieldNames: string[];
 	isSumbitDisabled: boolean;
@@ -88,6 +89,7 @@ const defaultQuery = {
 const initialState: FilterStore = {
 	fields: [],
 	query: defaultQuery,
+	appliedFilterQuery: '',
 	fieldTypeMap: {},
 	fieldNames: [],
 	isSumbitDisabled: true,
@@ -139,6 +141,7 @@ type FilterStoreReducers = {
 	toggleSaveFiltersModal: (_store: FilterStore, val: boolean) => ReducerOutput;
 	toggleSavedFiltersModal: (_store: FilterStore, val: boolean) => ReducerOutput;
 	applySavedFilters: (store: FilterStore, query: QueryType) => ReducerOutput;
+	setAppliedFilterQuery: (store: FilterStore, query: string | undefined) => ReducerOutput;
 };
 
 const { Provider: FilterProvider, useStore: useFilterStore } = initContext(initialState);
@@ -232,6 +235,12 @@ const updateRule = (store: FilterStore, groupId: string, ruleId: string, updateO
 const updateParentCombinator = (store: FilterStore, combinator: Combinator) => {
 	const { query } = store;
 	return { query: { ...query, combinator: combinator } };
+};
+
+const setAppliedFilterQuery = (_store: FilterStore, query: string | undefined) => {
+	return {
+		appliedFilterQuery: query,
+	};
 };
 
 export const noValueOperators = ['null', 'notNull'];
@@ -354,6 +363,7 @@ const filterStoreReducers: FilterStoreReducers = {
 	toggleSaveFiltersModal,
 	toggleSavedFiltersModal,
 	applySavedFilters,
+	setAppliedFilterQuery,
 };
 
 export { FilterProvider, useFilterStore, filterStoreReducers };
