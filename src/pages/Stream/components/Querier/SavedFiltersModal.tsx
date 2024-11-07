@@ -12,6 +12,7 @@ import classes from './styles/SavedFiltersModalStyles.module.css';
 import { EmptySimple } from '@/components/Empty';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import useSavedFiltersQuery from '@/hooks/useSavedFilters';
+import { generateQueryBuilderASTFromSQL } from '../../utils';
 
 const { toggleSavedFiltersModal, resetFilters, parseQuery, applySavedFilters } = filterStoreReducers;
 const { applyCustomQuery, updateSavedFilterId, getCleanStoreForRefetch, setTimeRange } = logsStoreReducers;
@@ -68,21 +69,30 @@ const SavedFilterItem = (props: {
 		deleteSavedFilterMutation({ filter_id });
 	}, [showDeletePropmt]);
 
+	const handleTimeFilter = useCallback(() => {
+		if (time_filter === null || (time_filter && isStoredAndCurrentTimeRangeAreSame(time_filter.from, time_filter.to))) {
+			hardRefresh();
+		} else {
+			changeTimerange(time_filter.from, time_filter.to);
+		}
+	}, [time_filter, isStoredAndCurrentTimeRangeAreSame, hardRefresh, changeTimerange]);
+
 	const onApplyFilters = useCallback(() => {
-		if (_.isString(query.filter_query)) {
-			props.onSqlSearchApply(query.filter_query, filter_id, time_filter);
+		if (query.filter_query) {
+			if (query.filter_type === 'sql') {
+				props.onSqlSearchApply(query.filter_query, filter_id, time_filter);
+			} else {
+				if (filter_id !== savedFilterId) {
+					props.onFilterBuilderQueryApply(generateQueryBuilderASTFromSQL(query.filter_query), filter_id);
+				} else {
+					handleTimeFilter();
+				}
+			}
 		} else if (query.filter_builder) {
 			if (filter_id !== savedFilterId) {
 				props.onFilterBuilderQueryApply(query.filter_builder, filter_id);
 			} else {
-				if (
-					time_filter === null ||
-					(time_filter && isStoredAndCurrentTimeRangeAreSame(time_filter.from, time_filter.to))
-				) {
-					hardRefresh();
-				} else {
-					changeTimerange(time_filter.from, time_filter.to);
-				}
+				handleTimeFilter();
 			}
 		}
 	}, [savedFilterId, isStoredAndCurrentTimeRangeAreSame, hardRefresh, changeTimerange]);

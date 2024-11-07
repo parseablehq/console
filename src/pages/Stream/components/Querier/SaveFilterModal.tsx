@@ -22,14 +22,7 @@ interface FormObjectType extends Omit<SavedFilterType, 'filter_id' | 'version'> 
 }
 
 const sanitizeFilterItem = (formObject: FormObjectType): SavedFilterType => {
-	const {
-		stream_name,
-		filter_name,
-		filter_id = '',
-		query,
-		selectedTimeRangeOption,
-		version = '',
-	} = formObject;
+	const { stream_name, filter_name, filter_id = '', query, selectedTimeRangeOption, version = '' } = formObject;
 	return {
 		filter_id,
 		version,
@@ -42,7 +35,6 @@ const sanitizeFilterItem = (formObject: FormObjectType): SavedFilterType => {
 
 const SaveFilterModal = () => {
 	const [isSaveFiltersModalOpen, setFilterStore] = useFilterStore((store) => store.isSaveFiltersModalOpen);
-	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
 	const [activeSavedFilters] = useAppStore((store) => store.activeSavedFilters);
 	const [formObject, setFormObject] = useState<FormObjectType | null>(null);
 	const [currentStream] = useAppStore((store) => store.currentStream);
@@ -76,7 +68,7 @@ const SaveFilterModal = () => {
 				filter_name: '',
 				query: {
 					filter_type: isSqlMode ? 'sql' : 'builder',
-					...(isSqlMode ? { filter_query: custSearchQuery } : { filter_builder: appliedQuery }),
+					filter_query: custSearchQuery,
 				},
 				time_filter: {
 					from: timeRange.startTime.toISOString(),

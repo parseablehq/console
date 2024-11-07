@@ -26,7 +26,13 @@ const useSavedFiltersQuery = () => {
 	);
 
 	const { mutate: updateSavedFilters, isLoading: isUpdating } = useMutation(
-		(data: { filter: SavedFilterType; onSuccess?: () => void }) => putSavedFilters(data.filter.filter_id, data.filter),
+		(data: { filter: SavedFilterType; onSuccess?: () => void }) => {
+			// filter_builder will be deleted only for new filters.
+			if (_.has(data.filter.query, 'filter_builder')) {
+				data.filter.query = _.omit(data.filter.query, 'filter_builder');
+			}
+			return putSavedFilters(data.filter.filter_id, data.filter);
+		},
 		{
 			onSuccess: (_data, variables) => {
 				variables.onSuccess && variables.onSuccess();

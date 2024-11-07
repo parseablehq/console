@@ -1,11 +1,36 @@
 import { Log } from '@/@types/parseable/api/query';
 import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
 import { columnsToSkip } from './providers/LogsProvider';
+import { parseSQL } from 'react-querybuilder';
+import { QueryType, RuleGroupTypeOverride, RuleTypeOverride } from './providers/FilterProvider';
 
 export const getPageSlice = (page = 1, perPage: number, data: Log[]) => {
 	const firstPageIndex = (page - 1) * perPage;
 	const lastPageIndex = firstPageIndex + perPage;
 	return data ? data.slice(firstPageIndex, lastPageIndex) : [];
+};
+
+export const generateQueryBuilderASTFromSQL = (sqlString: string) => {
+	const parsedQuery = parseSQL(sqlString) as QueryType;
+
+	function isRuleGroup(rule: RuleTypeOverride | RuleGroupTypeOverride): rule is RuleGroupTypeOverride {
+		return 'combinator' in rule && 'rules' in rule;
+	}
+
+	function addIds(query: QueryType | RuleGroupTypeOverride) {
+		if (Array.isArray(query.rules)) {
+			query.rules.forEach((rule) => {
+				rule.id = `rule-${Math.random()}`;
+
+				if (isRuleGroup(rule)) {
+					addIds(rule);
+				}
+			});
+		}
+	}
+
+	addIds(parsedQuery);
+	return parsedQuery;
 };
 
 export const makeHeadersFromSchema = (schema: LogStreamSchemaData | null): string[] => {
