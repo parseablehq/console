@@ -19,7 +19,7 @@ import { IconChevronRight, IconExternalLink, IconPlus, IconSearch } from '@table
 import { useEffect, type FC, useCallback, useMemo, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDocumentTitle, useHotkeys } from '@mantine/hooks';
-import { MetaData, useGetStreamMetadata } from '@/hooks/useGetStreamMetadata';
+import { useGetStreamMetadata } from '@/hooks/useGetStreamMetadata';
 import { calcCompressionRate, formatBytes, sanitizeEventsCount } from '@/utils/formatBytes';
 import { LogStreamRetention, LogStreamStat } from '@/@types/parseable/api/stream';
 import cardStyles from './styles/Card.module.css';
@@ -27,7 +27,7 @@ import homeStyles from './styles/Home.module.css';
 import CreateStreamModal from './CreateStreamModal';
 import { useAppStore, appStoreReducers } from '@/layouts/MainLayout/providers/AppProvider';
 import { getStreamsSepcificAccess } from '@/components/Navbar/rolesHandler';
-import _, { debounce } from 'lodash';
+import _ from 'lodash';
 import { heights } from '@/components/Mantine/sizing';
 import { PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 
@@ -86,32 +86,18 @@ const Home: FC = () => {
 	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
 	const searchInputRef = useRef<HTMLInputElement>(null);
 	const [searchTerm, setSearchTerm] = useState('');
-	const [filteredMetaData, setFilteredMetaData] = useState<MetaData>(() => metaData || {});
-
-	useEffect(() => {
-		if (metaData) {
-			setFilteredMetaData(metaData);
-		}
-	}, [metaData]);
 
 	useEffect(() => {
 		if (!Array.isArray(userSpecificStreams) || userSpecificStreams.length === 0) return;
 		getStreamMetadata(userSpecificStreams.map((stream) => stream.name));
 	}, [userSpecificStreams]);
 
-	const filterStreams = useCallback(
-		debounce((term: string) => {
-			if (term === '') {
-				setFilteredMetaData(metaData || {});
-			} else if (metaData) {
-				const filteredData = Object.entries(metaData).filter(([stream]) =>
-					stream.toLowerCase().includes(term.toLowerCase()),
-				);
-				setFilteredMetaData(Object.fromEntries(filteredData));
-			}
-		}, 300),
-		[metaData],
-	);
+	const filteredMetaData = useMemo(() => {
+		if (!searchTerm || !metaData) return metaData || {};
+		return Object.fromEntries(
+			Object.entries(metaData).filter(([stream]) => stream.toLowerCase().includes(searchTerm.toLowerCase())),
+		);
+	}, [searchTerm, metaData]);
 
 	useHotkeys([['mod+K', () => searchInputRef.current?.focus()]]);
 
@@ -119,7 +105,6 @@ const Home: FC = () => {
 		setAppStore((store) => changeStream(store, stream));
 		navigate(`/${stream}/explore`);
 		setSearchTerm('');
-		setFilteredMetaData({});
 	}, []);
 
 	const displayEmptyPlaceholder = Array.isArray(userSpecificStreams) && userSpecificStreams.length === 0;
@@ -164,7 +149,6 @@ const Home: FC = () => {
 						rightSectionWidth={80}
 						onChange={(event) => {
 							setSearchTerm(event.target.value);
-							filterStreams(event.target.value);
 						}}
 					/>
 					<Box>
