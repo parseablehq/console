@@ -3,15 +3,15 @@ import { TimeRange, useLogsStore, logsStoreReducers } from '@/pages/Stream/provi
 import { useSearchParams } from 'react-router-dom';
 import _ from 'lodash';
 import { FIXED_DURATIONS } from '@/constants/timeConstants';
-import { LOAD_LIMIT, LOG_QUERY_LIMITS } from '@/pages/Stream/providers/LogsProvider';
+import { LOG_QUERY_LIMITS } from '@/pages/Stream/providers/LogsProvider';
 import dayjs from 'dayjs';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import moment from 'moment-timezone';
 
 const { getRelativeStartAndEndDate, formatDateWithTimezone, getLocalTimezone } = timeRangeUtils;
-const { setTimeRange, onToggleView, setPerPage, setCustQuerySearchState, setCurrentOffset } = logsStoreReducers;
+const { setTimeRange, onToggleView, setPerPage, setCustQuerySearchState } = logsStoreReducers;
 const timeRangeFormat = 'DD-MMM-YYYY_HH-mmz';
-const keys = ['view', 'rows', 'interval', 'from', 'to', 'query', 'offset', 'page', 'fields'];
+const keys = ['view', 'rows', 'interval', 'from', 'to', 'query'];
 
 const dateToParamString = (date: Date) => {
 	return formatDateWithTimezone(date, timeRangeFormat);
@@ -87,7 +87,7 @@ const useParamsController = () => {
 	const [custQuerySearchState] = useLogsStore((store) => store.custQuerySearchState);
 	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
 
-	const { currentOffset, currentPage, perPage, pageData, headers } = tableOpts;
+	const { currentOffset, currentPage, perPage, headers } = tableOpts;
 
 	const [searchParams, setSearchParams] = useSearchParams();
 
@@ -107,15 +107,6 @@ const useParamsController = () => {
 		}
 		if (storeAsParams.rows !== presentParams.rows && LOG_QUERY_LIMITS.includes(_.toNumber(presentParams.rows))) {
 			setLogsStore((store) => setPerPage(store, _.toNumber(presentParams.rows)));
-		}
-
-		if (storeAsParams.offset !== presentParams.offset && _.toNumber(presentParams.offset) % LOAD_LIMIT === 0) {
-			setLogsStore((store) => setCurrentOffset(store, _.toNumber(presentParams.offset)));
-		}
-
-		if (!_.isEmpty(pageData) && storeAsParams.page !== presentParams.page) {
-			console.log(presentParams.page);
-			// setLogsStore((store) => setCurrentPage(store, _.toNumber(presentParams.page)));
 		}
 
 		if (storeAsParams.query !== presentParams.query) {
