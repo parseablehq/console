@@ -17,7 +17,7 @@ const { setDashboards, setTileData, selectDashboard } = dashboardsStoreReducers;
 
 export const useDashboardsQuery = (opts: { updateTimeRange?: (dashboard: Dashboard) => void }) => {
 	const [activeDashboard, setDashboardsStore] = useDashboardsStore((store) => store.activeDashboard);
-	const [searchParams] = useSearchParams()
+	const [searchParams] = useSearchParams();
 
 	const {
 		isError: fetchDashaboardsError,
@@ -168,6 +168,9 @@ export const useTileQuery = (opts: {
 				const tileData = _.isEmpty(res) ? { records: [], fields: [] } : res.data;
 				if (tileId) {
 					setDashboardsStore((store) => setTileData(store, tileId, tileData));
+				}
+				if (opts.onSuccess) {
+					opts.onSuccess(tileData);
 				}
 			},
 			onError: (error: AxiosError) => {
