@@ -38,7 +38,7 @@ const noDataWarning = 'No data available for the query';
 const invalidVizConfig = 'Invalid visualization config';
 
 const { toggleVizEditorModal, toggleCreateTileModal } = dashboardsStoreReducers;
-const { toggleSavedFiltersModal } = filterStoreReducers;
+const { toggleSavedFiltersModal, setAppliedFilterQuery } = filterStoreReducers;
 const { changeStream } = appStoreReducers;
 
 const getErrorMsg = (form: TileFormType, configType: 'basic' | 'data' | 'viz'): string | null => {
@@ -358,7 +358,10 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 	}, [query, dashboardId, dashboards, timeRange]);
 
 	const onStreamSelect = useCallback((stream: string | null) => {
-		if (stream) setAppStore((store) => changeStream(store, stream));
+		if (stream) {
+			setAppStore((store) => changeStream(store, stream));
+			setLogsStore((store) => setAppliedFilterQuery(store, ''));
+		}
 		setLocalStream(stream || '');
 	}, []);
 
