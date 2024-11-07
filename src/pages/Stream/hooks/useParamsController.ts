@@ -7,11 +7,14 @@ import { LOG_QUERY_LIMITS } from '@/pages/Stream/providers/LogsProvider';
 import dayjs from 'dayjs';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import moment from 'moment-timezone';
+import { filterStoreReducers, QueryType, useFilterStore } from '../providers/FilterProvider';
+import { generateQueryBuilderASTFromSQL } from '../utils';
 
 const { getRelativeStartAndEndDate, formatDateWithTimezone, getLocalTimezone } = timeRangeUtils;
 const { setTimeRange, onToggleView, setPerPage, setCustQuerySearchState } = logsStoreReducers;
+const { applySavedFilters } = filterStoreReducers;
 const timeRangeFormat = 'DD-MMM-YYYY_HH-mmz';
-const keys = ['view', 'rows', 'interval', 'from', 'to', 'query'];
+const keys = ['view', 'rows', 'interval', 'from', 'to', 'query', 'filterType'];
 
 const dateToParamString = (date: Date) => {
 	return formatDateWithTimezone(date, timeRangeFormat);
@@ -54,9 +57,9 @@ const storeToParamsObj = (opts: {
 	page: string;
 	rows: string;
 	query: string;
-	fields: string;
+	filterType: string;
 }): Record<string, string> => {
-	const { timeRange, offset, page, view, rows, query, fields } = opts;
+	const { timeRange, offset, page, view, rows, query, filterType } = opts;
 	const params: Record<string, string> = {
 		...deriveTimeRangeParams(timeRange),
 		view,
@@ -64,7 +67,7 @@ const storeToParamsObj = (opts: {
 		rows,
 		page,
 		query,
-		fields,
+		filterType: query ? filterType : '',
 	};
 	return _.pickBy(params, (val, key) => !_.isEmpty(val) && _.includes(keys, key));
 };
@@ -86,8 +89,9 @@ const useParamsController = () => {
 	const [viewMode] = useLogsStore((store) => store.viewMode);
 	const [custQuerySearchState] = useLogsStore((store) => store.custQuerySearchState);
 	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
+	const [, setFilterStore] = useFilterStore((store) => store);
 
-	const { currentOffset, currentPage, perPage, headers } = tableOpts;
+	const { currentOffset, currentPage, perPage } = tableOpts;
 
 	const [searchParams, setSearchParams] = useSearchParams();
 
@@ -99,7 +103,7 @@ const useParamsController = () => {
 			view: viewMode,
 			rows: `${perPage}`,
 			query: custQuerySearchState.custSearchQuery,
-			fields: `${headers}`,
+			filterType: custQuerySearchState.viewMode,
 		});
 		const presentParams = paramsStringToParamsObj(searchParams);
 		if (['table', 'json'].includes(presentParams.view) && presentParams.view !== storeAsParams.view) {
@@ -110,7 +114,11 @@ const useParamsController = () => {
 		}
 
 		if (storeAsParams.query !== presentParams.query) {
-			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query));
+			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
+			if (presentParams.filterType === 'filters')
+				setFilterStore((store) =>
+					applySavedFilters(store, generateQueryBuilderASTFromSQL(presentParams.query) as QueryType),
+				);
 		}
 		syncTimeRangeToStore(storeAsParams, presentParams);
 		setStoreSynced(true);
@@ -125,7 +133,7 @@ const useParamsController = () => {
 				view: viewMode,
 				rows: `${perPage}`,
 				query: custQuerySearchState.custSearchQuery,
-				fields: `${headers}`,
+				filterType: custQuerySearchState.viewMode,
 			});
 			const presentParams = paramsStringToParamsObj(searchParams);
 			if (_.isEqual(storeAsParams, presentParams)) return;
@@ -143,7 +151,7 @@ const useParamsController = () => {
 			view: viewMode,
 			rows: `${perPage}`,
 			query: custQuerySearchState.custSearchQuery,
-			fields: `${headers}`,
+			filterType: custQuerySearchState.viewMode,
 		});
 		const presentParams = paramsStringToParamsObj(searchParams);
 
@@ -157,8 +165,12 @@ const useParamsController = () => {
 			setLogsStore((store) => setPerPage(store, _.toNumber(presentParams.rows)));
 		}
 
-		if (storeAsParams.query !== presentParams.query) {
-			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query));
+		if (storeAsParams.query !== presentParams.query && !_.isEmpty(presentParams.query)) {
+			if (presentParams.filterType === 'filters')
+				setFilterStore((store) =>
+					applySavedFilters(store, generateQueryBuilderASTFromSQL(presentParams.query) as QueryType),
+				);
+			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
 		}
 		syncTimeRangeToStore(storeAsParams, presentParams);
 	}, [searchParams]);
