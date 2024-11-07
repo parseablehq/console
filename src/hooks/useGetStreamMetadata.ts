@@ -6,7 +6,7 @@ import { notifyError } from '@/utils/notification';
 import _ from 'lodash';
 import { useCallback, useState } from 'react';
 
-type MetaData = {
+export type MetaData = {
 	[key: string]: {
 		stats: LogStreamStat | {};
 		retention: LogStreamRetention | [];

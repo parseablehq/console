@@ -12,12 +12,14 @@ import {
 	Loader,
 	Flex,
 	TextInput,
+	Kbd,
+	px,
 } from '@mantine/core';
 import { IconChevronRight, IconExternalLink, IconPlus, IconSearch } from '@tabler/icons-react';
-import { useEffect, type FC, useCallback, useMemo, useState } from 'react';
+import { useEffect, type FC, useCallback, useMemo, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDocumentTitle } from '@mantine/hooks';
-import { useGetStreamMetadata } from '@/hooks/useGetStreamMetadata';
+import { useDocumentTitle, useHotkeys } from '@mantine/hooks';
+import { MetaData, useGetStreamMetadata } from '@/hooks/useGetStreamMetadata';
 import { calcCompressionRate, formatBytes, sanitizeEventsCount } from '@/utils/formatBytes';
 import { LogStreamRetention, LogStreamStat } from '@/@types/parseable/api/stream';
 import cardStyles from './styles/Card.module.css';
@@ -82,8 +84,9 @@ const Home: FC = () => {
 	const [userSpecificStreams, setAppStore] = useAppStore((store) => store.userSpecificStreams);
 	const [userRoles] = useAppStore((store) => store.userRoles);
 	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
+	const searchInputRef = useRef<HTMLInputElement>(null);
 	const [searchTerm, setSearchTerm] = useState('');
-	const [filteredMetaData, setFilteredMetaData] = useState<Record<string, any>>(() => metaData || {});
+	const [filteredMetaData, setFilteredMetaData] = useState<MetaData>(() => metaData || {});
 
 	useEffect(() => {
 		if (metaData) {
@@ -110,6 +113,8 @@ const Home: FC = () => {
 		[metaData],
 	);
 
+	useHotkeys([['mod+K', () => searchInputRef.current?.focus()]]);
+
 	const navigateToStream = useCallback((stream: string) => {
 		setAppStore((store) => changeStream(store, stream));
 		navigate(`/${stream}/explore`);
@@ -127,7 +132,12 @@ const Home: FC = () => {
 	const shouldDisplayEmptyPlaceholder = displayEmptyPlaceholder || isLoading || error;
 	const hasEmptyStreamData = Object.keys(filteredMetaData).length === 0;
 
-	const searchIcon = <IconSearch size="1rem" />;
+	const searchIcon = <IconSearch size={px('0.8rem')} />;
+	const shortcutKeyElement = (
+		<span style={{ marginBottom: '3px' }}>
+			<Kbd style={{ borderBottom: '1px solid #dee2e6' }}>Ctrl + K</Kbd>
+		</span>
+	);
 
 	return (
 		<>
@@ -144,10 +154,14 @@ const Home: FC = () => {
 						All Streams ({filteredMetaData && Object.keys(filteredMetaData).length})
 					</Text>
 					<TextInput
+						style={{ width: '30%' }}
 						placeholder="Search Stream"
 						leftSection={searchIcon}
+						ref={searchInputRef}
 						key="search-stream"
 						value={searchTerm}
+						rightSection={shortcutKeyElement}
+						rightSectionWidth={80}
 						onChange={(event) => {
 							setSearchTerm(event.target.value);
 							filterStreams(event.target.value);
