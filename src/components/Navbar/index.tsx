@@ -8,12 +8,20 @@ import {
 	IconHomeStats,
 	IconListDetails,
 	IconLayoutDashboard,
+	IconHierarchy2,
 } from '@tabler/icons-react';
 import { FC, useCallback, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
-import { HOME_ROUTE, CLUSTER_ROUTE, USERS_MANAGEMENT_ROUTE, STREAM_ROUTE, DASHBOARDS_ROUTE } from '@/constants/routes';
+import {
+	HOME_ROUTE,
+	CLUSTER_ROUTE,
+	USERS_MANAGEMENT_ROUTE,
+	STREAM_ROUTE,
+	DASHBOARDS_ROUTE,
+	CORRELATION_ROUTE,
+} from '@/constants/routes';
 import InfoModal from './infoModal';
 import { getStreamsSepcificAccess, getUserSepcificStreams } from './rolesHandler';
 import Cookies from 'js-cookie';
@@ -48,6 +56,12 @@ const navItems = [
 		label: 'Stream',
 		path: '/explore',
 		route: STREAM_ROUTE,
+	},
+	{
+		icon: IconHierarchy2,
+		label: 'Correlation',
+		path: '/correlation',
+		route: CORRELATION_ROUTE,
 	},
 ];
 

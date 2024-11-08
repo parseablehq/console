@@ -1,6 +1,6 @@
 import { Button, SegmentedControl, Stack, Tooltip, px, rem } from '@mantine/core';
 import IconButton from '@/components/Button/IconButton';
-import { IconBraces, IconFilterHeart, IconMaximize, IconTable, IconTrash } from '@tabler/icons-react';
+import { IconBraces, IconFilterHeart, IconMaximize, IconPlus, IconTable, IconTrash } from '@tabler/icons-react';
 import { STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT, STREAM_PRIMARY_TOOLBAR_HEIGHT } from '@/constants/theme';
 import TimeRange from '@/components/Header/TimeRange';
 import RefreshInterval from '@/components/Header/RefreshInterval';
@@ -10,7 +10,7 @@ import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/Ap
 import { useCallback, useEffect } from 'react';
 import StreamDropdown from '@/components/Header/StreamDropdown';
 import { notifications } from '@mantine/notifications';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import _ from 'lodash';
 import StreamingButton from '@/components/Header/StreamingButton';
 import ShareButton from '@/components/Header/ShareButton';
@@ -39,6 +39,20 @@ const SavedFiltersButton = () => {
 			leftSection={<IconFilterHeart size={px('1rem')} stroke={1.5} />}
 			onClick={onClick}>
 			Saved Filters
+		</Button>
+	);
+};
+
+const AddCorrelationButton = () => {
+	const navigate = useNavigate();
+
+	return (
+		<Button
+			className={classes.savedFiltersBtn}
+			h="100%"
+			onClick={() => navigate('/correlation')}
+			leftSection={<IconPlus size={px('1rem')} stroke={1.5} />}>
+			Add correlation
 		</Button>
 	);
 };
@@ -115,6 +129,7 @@ const PrimaryToolbar = () => {
 				<Stack style={{ flexDirection: 'row', height: STREAM_PRIMARY_TOOLBAR_HEIGHT }} w="100%">
 					<StreamDropdown />
 					<Querier />
+					<AddCorrelationButton />
 					<SavedFiltersButton />
 					<TimeRange />
 					<RefreshInterval />

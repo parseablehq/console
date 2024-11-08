@@ -10,6 +10,7 @@ import { StreamProvider } from '@/pages/Stream/providers/StreamProvider';
 import { ClusterProvider } from '@/pages/Systems/providers/ClusterProvider';
 import { DashbaordsProvider } from '@/pages/Dashboards/providers/DashboardsProvider';
 import Dashboards from '@/pages/Dashboards';
+import Correlation from '@/pages/Correlation';
 
 export const HomeElement: FC = () => {
 	return (
@@ -27,6 +28,20 @@ export const DashboardsElement: FC = () => {
 					<Dashboards />
 				</DashbaordsProvider>
 			</LogsProvider>
+		</SuspensePage>
+	);
+};
+
+export const CorrelationElement: FC = () => {
+	return (
+		<SuspensePage>
+			<StreamProvider>
+				<LogsProvider>
+					<FilterProvider>
+						<Correlation />
+					</FilterProvider>
+				</LogsProvider>
+			</StreamProvider>
 		</SuspensePage>
 	);
 };
