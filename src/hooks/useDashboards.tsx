@@ -12,6 +12,7 @@ import {
 	UpdateDashboardType,
 } from '@/@types/parseable/api/dashboards';
 import { useSearchParams } from 'react-router-dom';
+import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 
 const { setDashboards, setTileData, selectDashboard } = dashboardsStoreReducers;
 
@@ -156,10 +157,10 @@ export const useTileQuery = (opts: {
 	const [, setDashboardsStore] = useDashboardsStore((_store) => null);
 	const { query, startTime, endTime, tileId, enabled = true } = opts;
 	const { isLoading, isFetching, isError, refetch } = useQuery(
-		[tileId, query, startTime, endTime],
+		[tileId, startTime, endTime],
 		() =>
 			getQueryData({
-				query,
+				query: sanitiseSqlString(query, false, 100),
 				startTime,
 				endTime,
 			}),
