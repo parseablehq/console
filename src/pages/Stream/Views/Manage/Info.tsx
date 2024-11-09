@@ -3,10 +3,9 @@ import classes from '../../styles/Management.module.css';
 import { useStreamStore } from '../../providers/StreamProvider';
 import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import UpdateTimePartitionLimit from './UpdateTimePartitionLimit';
-import UpdateCustomPartitionField from './UpdateCustomPartitionField';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import ErrorView from './ErrorView';
+import PartitionLimit from './PartitionLimit';
 
 const { formatDateWithTimezone } = timeRangeUtils;
 
@@ -76,16 +75,10 @@ const InfoData = (props: { isLoading: boolean }) => {
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Schema Type" value={staticSchemaFlag} />
 						<InfoItem title="Time Partition Field" value={timePartition} />
-						<UpdateTimePartitionLimit
-							timePartition={timePartition}
-							currentStream={currentStream ? currentStream : ''}
-						/>
+						<PartitionLimit currentStream={currentStream ? currentStream : ''} timePartition={timePartition} />
 					</Stack>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-						<UpdateCustomPartitionField
-							currentStream={currentStream ? currentStream : ''}
-							timePartition={timePartition}
-						/>
+						<PartitionLimit currentStream={currentStream ? currentStream : ''} timePartition={timePartition} />
 					</Stack>
 				</Stack>
 			)}
