@@ -12,12 +12,13 @@ import {
 	UpdateDashboardType,
 } from '@/@types/parseable/api/dashboards';
 import { useSearchParams } from 'react-router-dom';
+import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 
 const { setDashboards, setTileData, selectDashboard } = dashboardsStoreReducers;
 
 export const useDashboardsQuery = (opts: { updateTimeRange?: (dashboard: Dashboard) => void }) => {
 	const [activeDashboard, setDashboardsStore] = useDashboardsStore((store) => store.activeDashboard);
-	const [searchParams] = useSearchParams()
+	const [searchParams] = useSearchParams();
 
 	const {
 		isError: fetchDashaboardsError,
@@ -156,10 +157,10 @@ export const useTileQuery = (opts: {
 	const [, setDashboardsStore] = useDashboardsStore((_store) => null);
 	const { query, startTime, endTime, tileId, enabled = true } = opts;
 	const { isLoading, isFetching, isError, refetch } = useQuery(
-		[tileId, query, startTime, endTime],
+		[tileId, startTime, endTime],
 		() =>
 			getQueryData({
-				query,
+				query: sanitiseSqlString(query, false, 100),
 				startTime,
 				endTime,
 			}),
@@ -168,6 +169,9 @@ export const useTileQuery = (opts: {
 				const tileData = _.isEmpty(res) ? { records: [], fields: [] } : res.data;
 				if (tileId) {
 					setDashboardsStore((store) => setTileData(store, tileId, tileData));
+				}
+				if (opts.onSuccess) {
+					opts.onSuccess(tileData);
 				}
 			},
 			onError: (error: AxiosError) => {

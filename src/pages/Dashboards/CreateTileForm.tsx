@@ -328,7 +328,7 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 
 	const { refetch, isLoading } = useTileQuery({
 		onSuccess: onFetchTileSuccess,
-		query: '', // Initial query (will be updated in refetch)
+		query,
 		startTime: timeRange.startTime,
 		endTime: timeRange.endTime,
 		enabled: false,
