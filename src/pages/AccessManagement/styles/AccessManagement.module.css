@@ -134,6 +134,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	height: auto;
 	background-color: white;
 	color: #211F1F;
 	border: 1px #e9ecef solid;

@@ -1,9 +1,24 @@
 import { EmptySimple } from '@/components/Empty';
-import { Text, Button, Center, Box, Group, ActionIcon, Stack, Tooltip, ScrollArea, Loader, Flex } from '@mantine/core';
-import { IconChevronRight, IconExternalLink, IconPlus } from '@tabler/icons-react';
-import { useEffect, type FC, useCallback, useMemo } from 'react';
+import {
+	Text,
+	Button,
+	Center,
+	Box,
+	Group,
+	ActionIcon,
+	Stack,
+	Tooltip,
+	ScrollArea,
+	Loader,
+	Flex,
+	TextInput,
+	Kbd,
+	px,
+} from '@mantine/core';
+import { IconChevronRight, IconExternalLink, IconPlus, IconSearch } from '@tabler/icons-react';
+import { useEffect, type FC, useCallback, useMemo, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDocumentTitle } from '@mantine/hooks';
+import { useDocumentTitle, useHotkeys } from '@mantine/hooks';
 import { useGetStreamMetadata } from '@/hooks/useGetStreamMetadata';
 import { calcCompressionRate, formatBytes, sanitizeEventsCount } from '@/utils/formatBytes';
 import { LogStreamRetention, LogStreamStat } from '@/@types/parseable/api/stream';
@@ -20,41 +35,42 @@ const { changeStream, toggleCreateStreamModal } = appStoreReducers;
 
 type NoStreamsViewProps = {
 	hasCreateStreamAccess: boolean;
+	shouldHideFooter?: boolean;
 	openCreateStreamModal: () => void;
 };
 
 const NoStreamsView: FC<NoStreamsViewProps> = ({
 	hasCreateStreamAccess,
+	shouldHideFooter = false,
 	openCreateStreamModal,
-}: {
-	hasCreateStreamAccess: boolean;
-	openCreateStreamModal: () => void;
-}) => {
+}: NoStreamsViewProps) => {
 	const classes = homeStyles;
 	const { messageStyle, btnStyle, noDataViewContainer, createStreamButton } = classes;
 	return (
 		<Center className={noDataViewContainer}>
 			<EmptySimple height={70} width={100} />
 			<Text className={messageStyle}>No Stream found on this account</Text>
-			<Flex gap="md">
-				<Button
-					target="_blank"
-					component="a"
-					href="https://www.parseable.io/docs/category/log-ingestion"
-					className={btnStyle}
-					leftSection={<IconExternalLink size="0.9rem" />}>
-					Documentation
-				</Button>
-				{hasCreateStreamAccess && (
+			{!shouldHideFooter && (
+				<Flex gap="md">
 					<Button
-						style={{ marginTop: '1rem' }}
-						className={createStreamButton}
-						onClick={openCreateStreamModal}
-						leftSection={<IconPlus stroke={2} size={'1rem'} />}>
-						Create Stream
+						target="_blank"
+						component="a"
+						href="https://www.parseable.io/docs/category/log-ingestion"
+						className={btnStyle}
+						leftSection={<IconExternalLink size="0.9rem" />}>
+						Documentation
 					</Button>
-				)}
-			</Flex>
+					{hasCreateStreamAccess && (
+						<Button
+							style={{ marginTop: '1rem' }}
+							className={createStreamButton}
+							onClick={openCreateStreamModal}
+							leftSection={<IconPlus stroke={2} size={'1rem'} />}>
+							Create Stream
+						</Button>
+					)}
+				</Flex>
+			)}
 		</Center>
 	);
 };
@@ -68,15 +84,27 @@ const Home: FC = () => {
 	const [userSpecificStreams, setAppStore] = useAppStore((store) => store.userSpecificStreams);
 	const [userRoles] = useAppStore((store) => store.userRoles);
 	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
+	const searchInputRef = useRef<HTMLInputElement>(null);
+	const [searchTerm, setSearchTerm] = useState('');
 
 	useEffect(() => {
 		if (!Array.isArray(userSpecificStreams) || userSpecificStreams.length === 0) return;
 		getStreamMetadata(userSpecificStreams.map((stream) => stream.name));
 	}, [userSpecificStreams]);
 
+	const filteredMetaData = useMemo(() => {
+		if (!searchTerm || !metaData) return metaData || {};
+		return Object.fromEntries(
+			Object.entries(metaData).filter(([stream]) => stream.toLowerCase().includes(searchTerm.toLowerCase())),
+		);
+	}, [searchTerm, metaData]);
+
+	useHotkeys([['mod+K', () => searchInputRef.current?.focus()]]);
+
 	const navigateToStream = useCallback((stream: string) => {
 		setAppStore((store) => changeStream(store, stream));
 		navigate(`/${stream}/explore`);
+		setSearchTerm('');
 	}, []);
 
 	const displayEmptyPlaceholder = Array.isArray(userSpecificStreams) && userSpecificStreams.length === 0;
@@ -87,6 +115,14 @@ const Home: FC = () => {
 	const hasCreateStreamAccess = useMemo(() => userAccessMap?.hasCreateStreamAccess, [userAccessMap]);
 
 	const shouldDisplayEmptyPlaceholder = displayEmptyPlaceholder || isLoading || error;
+	const hasEmptyStreamData = Object.keys(filteredMetaData).length === 0;
+
+	const searchIcon = <IconSearch size={px('0.8rem')} />;
+	const shortcutKeyElement = (
+		<span style={{ marginBottom: '3px' }}>
+			<Kbd style={{ borderBottom: '1px solid #dee2e6' }}>Ctrl + K</Kbd>
+		</span>
+	);
 
 	return (
 		<>
@@ -100,8 +136,21 @@ const Home: FC = () => {
 						borderBottom: '1px solid var(--mantine-color-gray-3)',
 					}}>
 					<Text style={{ fontSize: '0.8rem' }} fw={500}>
-						All Streams ({metaData && Object.keys(metaData).length})
+						All Streams ({filteredMetaData && Object.keys(filteredMetaData).length})
 					</Text>
+					<TextInput
+						style={{ width: '30%' }}
+						placeholder="Search Stream"
+						leftSection={searchIcon}
+						ref={searchInputRef}
+						key="search-stream"
+						value={searchTerm}
+						rightSection={shortcutKeyElement}
+						rightSectionWidth={80}
+						onChange={(event) => {
+							setSearchTerm(event.target.value);
+						}}
+					/>
 					<Box>
 						{hasCreateStreamAccess && (
 							<Button
@@ -120,9 +169,12 @@ const Home: FC = () => {
 					className={container}
 					style={{
 						display: 'flex',
-						paddingTop: shouldDisplayEmptyPlaceholder ? '0rem' : '1rem',
-						paddingBottom: shouldDisplayEmptyPlaceholder ? '0rem' : '3rem',
-						height: shouldDisplayEmptyPlaceholder ? `calc(${heights.screen} - ${PRIMARY_HEADER_HEIGHT}px)` : 'auto',
+						paddingTop: shouldDisplayEmptyPlaceholder || hasEmptyStreamData ? '0rem' : '1rem',
+						paddingBottom: shouldDisplayEmptyPlaceholder || hasEmptyStreamData ? '0rem' : '3rem',
+						height:
+							shouldDisplayEmptyPlaceholder || hasEmptyStreamData
+								? `calc(${heights.screen} - ${PRIMARY_HEADER_HEIGHT}px)`
+								: 'auto',
 					}}>
 					<CreateStreamModal />
 					{isLoading ? (
@@ -131,14 +183,15 @@ const Home: FC = () => {
 						</Center>
 					) : (
 						<>
-							{displayEmptyPlaceholder || error ? (
+							{displayEmptyPlaceholder || error || hasEmptyStreamData ? (
 								<NoStreamsView
 									hasCreateStreamAccess={hasCreateStreamAccess}
 									openCreateStreamModal={openCreateStreamModal}
+									shouldHideFooter
 								/>
 							) : (
 								<Group style={{ margin: '0 1rem', gap: '1rem' }}>
-									{Object.entries(metaData || {}).map(([stream, data]) => (
+									{Object.entries(filteredMetaData || {}).map(([stream, data]) => (
 										<StreamInfo
 											key={stream}
 											stream={stream}

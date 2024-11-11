@@ -9,6 +9,7 @@ import {
 import { AxiosError, isAxiosError } from 'axios';
 import { notifyError, notifySuccess } from '@/utils/notification';
 import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 type CreateStreamOpts = {
 	streamName: string;
@@ -16,16 +17,18 @@ type CreateStreamOpts = {
 	headers: Record<string, string | boolean>;
 	onSuccess: () => void;
 };
+const { setUserSpecificStreams } = appStoreReducers;
 
 export const useLogStream = () => {
+	const [, setAppStore] = useAppStore((store) => store.userSpecificStreams);
 	const {
 		mutate: deleteLogStreamMutation,
 		isSuccess: deleteLogStreamIsSuccess,
 		isError: deleteLogStreamIsError,
 		isLoading: deleteLogStreamIsLoading,
 	} = useMutation((data: { deleteStream: string; onSuccess: () => void }) => deleteLogStream(data.deleteStream), {
-		onSuccess: (_data, variables) => {
-			getLogStreamListRefetch();
+		onSuccess: async (_data, variables) => {
+			await getLogStreamListRefetch();
 			variables.onSuccess && variables.onSuccess();
 			notifySuccess({ message: `Stream ${variables.deleteStream} deleted successfully` });
 		},
@@ -82,6 +85,9 @@ export const useLogStream = () => {
 			retry: false,
 			refetchOnWindowFocus: false,
 			refetchOnMount: false,
+			onSuccess: (data) => {
+				setAppStore((store) => setUserSpecificStreams(store, data.data));
+			},
 		},
 	);
 
