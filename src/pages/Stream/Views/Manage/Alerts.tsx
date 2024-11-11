@@ -172,7 +172,7 @@ type ColumnRuleProps = {
 };
 
 const getInputComponent = (type: 'text' | 'number' | 'timestamp') => {
-	return type === 'text' || 'timestamp' ? TextInput : NumberInput;
+	return type === 'text' || type === 'timestamp' ? TextInput : NumberInput;
 };
 
 const ColumnRule = (props: ColumnRuleProps) => {
