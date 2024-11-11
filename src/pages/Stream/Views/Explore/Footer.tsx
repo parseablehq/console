@@ -94,7 +94,7 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: b
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const { totalPages, currentOffset, currentPage, perPage, totalCount } = tableOpts;
 	const pageNumberFromURL = _.toNumber(searchParams.get('page'));
-	console.log(pageNumberFromURL, currentOffset, perPage);
+	// console.log(pageNumberFromURL - currentOffset / perPage < 0 ? 1 : pageNumberFromURL - currentOffset / perPage);
 
 	const onPageChange = useCallback((page: number) => {
 		setLogsStore((store) => setPageAndPageData(store, page));
@@ -103,8 +103,11 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: b
 	const pagination = usePagination({
 		total: totalPages ?? 1,
 		initialPage: pageNumberFromURL && pageNumberFromURL > 0 ? pageNumberFromURL : 1,
+		// initialPage: pageNumberFromURL - currentOffset / perPage < 0 ? 1 : pageNumberFromURL - currentOffset / perPage,
 		onChange: onPageChange,
 	});
+
+	// console.log(totalPages);
 	const onChangeOffset = useCallback(
 		(key: 'prev' | 'next') => {
 			if (key === 'prev') {

@@ -30,13 +30,12 @@ const LogsView = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
 	};
 
 	useEffect(() => {
-		console.log(showTable);
 		if (!showTable) return;
 		if (targetPage) {
 			const offset = getOffset(targetPage, perPage);
 			if (offset > 0) {
 				setLogsStore((store) => setCurrentOffset(store, offset));
-				console.log(targetPage - offset / perPage);
+				// console.log(targetPage - offset / perPage);
 				setLogsStore((store) => setTargetPage(store, targetPage - offset / perPage));
 			}
 			setLogsStore((store) => setPageAndPageData(store, targetPage));

@@ -109,12 +109,14 @@ const useParamsController = () => {
 
 	const activeHeaders = visibleHeaders.filter((el) => !disabledColumns.includes(el));
 	const [searchParams, setSearchParams] = useSearchParams();
+	const pageOffset = currentOffset >= 1000 ? currentOffset / perPage : currentOffset / perPage;
+	console.log(pageOffset);
 
 	useEffect(() => {
 		const storeAsParams = storeToParamsObj({
 			timeRange,
 			offset: `${currentOffset}`,
-			page: `${targetPage ? targetPage : currentPage}`,
+			page: `${targetPage ? targetPage : currentPage + pageOffset}`,
 			view: viewMode,
 			rows: `${perPage}`,
 			query: custQuerySearchState.custSearchQuery,
@@ -153,7 +155,7 @@ const useParamsController = () => {
 			const storeAsParams = storeToParamsObj({
 				timeRange,
 				offset: `${currentOffset}`,
-				page: `${targetPage ? targetPage : currentPage}`,
+				page: `${targetPage ? targetPage : currentPage + pageOffset}`,
 				view: viewMode,
 				rows: `${perPage}`,
 				query: custQuerySearchState.custSearchQuery,
@@ -172,7 +174,7 @@ const useParamsController = () => {
 		const storeAsParams = storeToParamsObj({
 			timeRange,
 			offset: `${currentOffset}`,
-			page: `${targetPage ? targetPage : currentPage}`,
+			page: `${targetPage ? targetPage : currentPage + pageOffset}`,
 			view: viewMode,
 			rows: `${perPage}`,
 			query: custQuerySearchState.custSearchQuery,
