@@ -107,7 +107,6 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: b
 		onChange: onPageChange,
 	});
 
-	// console.log(totalPages);
 	const onChangeOffset = useCallback(
 		(key: 'prev' | 'next') => {
 			if (key === 'prev') {

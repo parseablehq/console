@@ -109,8 +109,7 @@ const useParamsController = () => {
 
 	const activeHeaders = visibleHeaders.filter((el) => !disabledColumns.includes(el));
 	const [searchParams, setSearchParams] = useSearchParams();
-	const pageOffset = currentOffset >= 1000 ? currentOffset / perPage : currentOffset / perPage;
-	console.log(pageOffset);
+	const pageOffset = currentOffset / perPage;
 
 	useEffect(() => {
 		const storeAsParams = storeToParamsObj({
