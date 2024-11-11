@@ -159,8 +159,8 @@ const DeleteDashboardModal = () => {
 						Are you sure want to delete this dashboard and its contents ?
 					</Text>
 					<Text className={classes.deleteConfirmationText}>
-						Please type <span className={classes.deleteConfirmationTextHighlight}>{activeDashboard.name}</span> to
-						confirm deletion.
+						Please type <span className={classes.deleteConfirmationTextHighlight}>{`"${activeDashboard.name}"`}</span>{' '}
+						to confirm deletion.
 					</Text>
 
 					<TextInput
