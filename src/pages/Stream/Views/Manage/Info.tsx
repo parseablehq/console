@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import ErrorView from './ErrorView';
-import PartitionLimit from './PartitionLimit';
+import UpdateStreamInfo from './UpdateStreamInfo';
 
 const { formatDateWithTimezone } = timeRangeUtils;
 
@@ -75,10 +75,10 @@ const InfoData = (props: { isLoading: boolean }) => {
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
 						<InfoItem title="Schema Type" value={staticSchemaFlag} />
 						<InfoItem title="Time Partition Field" value={timePartition} />
-						<PartitionLimit currentStream={currentStream ? currentStream : ''} timePartition={timePartition} />
+						<UpdateStreamInfo currentStream={currentStream ? currentStream : ''} timePartition={timePartition} />
 					</Stack>
 					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-						<PartitionLimit currentStream={currentStream ? currentStream : ''} timePartition={timePartition} />
+						<UpdateStreamInfo currentStream={currentStream ? currentStream : ''} timePartition={timePartition} />
 					</Stack>
 				</Stack>
 			)}
