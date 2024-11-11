@@ -11,10 +11,10 @@ import { filterStoreReducers, QueryType, useFilterStore } from '../providers/Fil
 import { generateQueryBuilderASTFromSQL } from '../utils';
 
 const { getRelativeStartAndEndDate, formatDateWithTimezone, getLocalTimezone } = timeRangeUtils;
-const { setTimeRange, onToggleView, setPerPage, setCustQuerySearchState } = logsStoreReducers;
+const { setTimeRange, onToggleView, setPerPage, setCustQuerySearchState, setTargetPage } = logsStoreReducers;
 const { applySavedFilters } = filterStoreReducers;
 const timeRangeFormat = 'DD-MMM-YYYY_HH-mmz';
-const keys = ['view', 'rows', 'interval', 'from', 'to', 'query', 'filterType'];
+const keys = ['view', 'rows', 'page', 'interval', 'from', 'to', 'query', 'filterType'];
 
 const dateToParamString = (date: Date) => {
 	return formatDateWithTimezone(date, timeRangeFormat);
@@ -91,7 +91,7 @@ const useParamsController = () => {
 	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
 	const [, setFilterStore] = useFilterStore((store) => store);
 
-	const { currentOffset, currentPage, perPage } = tableOpts;
+	const { currentOffset, currentPage, targetPage, perPage } = tableOpts;
 
 	const [searchParams, setSearchParams] = useSearchParams();
 
@@ -99,7 +99,7 @@ const useParamsController = () => {
 		const storeAsParams = storeToParamsObj({
 			timeRange,
 			offset: `${currentOffset}`,
-			page: `${currentPage}`,
+			page: `${targetPage ? targetPage : currentPage}`,
 			view: viewMode,
 			rows: `${perPage}`,
 			query: custQuerySearchState.custSearchQuery,
@@ -113,6 +113,10 @@ const useParamsController = () => {
 			setLogsStore((store) => setPerPage(store, _.toNumber(presentParams.rows)));
 		}
 
+		if (storeAsParams.page !== presentParams.page) {
+			setLogsStore((store) => setTargetPage(store, _.toNumber(presentParams.page)));
+		}
+
 		if (storeAsParams.query !== presentParams.query) {
 			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
 			if (presentParams.filterType === 'filters')
@@ -120,6 +124,8 @@ const useParamsController = () => {
 					applySavedFilters(store, generateQueryBuilderASTFromSQL(presentParams.query) as QueryType),
 				);
 		}
+
+		// setLogsStore((store) => setCurrentOffset(store, 1000));
 		syncTimeRangeToStore(storeAsParams, presentParams);
 		setStoreSynced(true);
 	}, []);
@@ -129,7 +135,7 @@ const useParamsController = () => {
 			const storeAsParams = storeToParamsObj({
 				timeRange,
 				offset: `${currentOffset}`,
-				page: `${currentPage}`,
+				page: `${targetPage ? targetPage : currentPage}`,
 				view: viewMode,
 				rows: `${perPage}`,
 				query: custQuerySearchState.custSearchQuery,
@@ -147,7 +153,7 @@ const useParamsController = () => {
 		const storeAsParams = storeToParamsObj({
 			timeRange,
 			offset: `${currentOffset}`,
-			page: `${currentPage}`,
+			page: `${targetPage ? targetPage : currentPage}`,
 			view: viewMode,
 			rows: `${perPage}`,
 			query: custQuerySearchState.custSearchQuery,

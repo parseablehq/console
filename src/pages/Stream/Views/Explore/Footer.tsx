@@ -9,6 +9,7 @@ import { IconSelector } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
 import classes from '../../styles/Footer.module.css';
 import { LOGS_FOOTER_HEIGHT } from '@/constants/theme';
+import { useSearchParams } from 'react-router-dom';
 
 const { setPageAndPageData, setCurrentPage, setCurrentOffset } = logsStoreReducers;
 
@@ -89,6 +90,7 @@ const LimitControl: FC = () => {
 };
 
 const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: boolean }) => {
+	const [searchParams] = useSearchParams();
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const { totalPages, currentOffset, currentPage, perPage, totalCount } = tableOpts;
 
@@ -96,7 +98,16 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: b
 		setLogsStore((store) => setPageAndPageData(store, page));
 	}, []);
 
-	const pagination = usePagination({ total: totalPages ?? 1, initialPage: 1, onChange: onPageChange });
+	console.log(_.toNumber(searchParams.get('page')));
+
+	const pagination = usePagination({
+		total: totalPages ?? 1,
+		initialPage:
+			(_.toNumber(searchParams.get('page')) && _.toNumber(searchParams.get('page'))) > 0
+				? _.toNumber(searchParams.get('page'))
+				: 1,
+		onChange: onPageChange,
+	});
 	const onChangeOffset = useCallback(
 		(key: 'prev' | 'next') => {
 			if (key === 'prev') {
@@ -171,23 +182,6 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: b
 				) : null}
 			</Stack>
 			<Stack w="100%" align="flex-end" style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-				{/* {props.loaded && (
-					<Menu position="top">
-						<Menu.Target>
-							<div>
-								<IconButton renderIcon={renderExportIcon} />
-							</div>
-						</Menu.Target>
-						<Menu.Dropdown>
-							<Menu.Item onClick={() => exportHandler('CSV')} style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
-								CSV
-							</Menu.Item>
-							<Menu.Item onClick={() => exportHandler('JSON')} style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
-								JSON
-							</Menu.Item>
-						</Menu.Dropdown>
-					</Menu>
-				)} */}
 				<LimitControl />
 			</Stack>
 		</Stack>

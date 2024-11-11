@@ -209,6 +209,7 @@ type LogsStore = {
 		totalCount: number;
 		displayedCount: number;
 		currentPage: number;
+		targetPage: number | undefined;
 		perPage: number;
 		currentOffset: number;
 		headers: string[];
@@ -265,6 +266,7 @@ type LogsStoreReducers = {
 	setCurrentOffset: (store: LogsStore, offset: number) => ReducerOutput;
 	setPerPage: (store: LogsStore, perPage: number) => ReducerOutput;
 	setCurrentPage: (store: LogsStore, page: number) => ReducerOutput;
+	setTargetPage: (store: LogsStore, target: number | undefined) => ReducerOutput;
 	setTotalCount: (store: LogsStore, totalCount: number) => ReducerOutput;
 	setPageAndPageData: (store: LogsStore, pageNo: number, perPage?: number) => ReducerOutput;
 	setAndSortData: (store: LogsStore, sortKey: string, sortOrder: 'asc' | 'desc') => ReducerOutput;
@@ -326,6 +328,7 @@ const initialState: LogsStore = {
 		displayedCount: 0,
 		totalPages: 0,
 		currentPage: 0,
+		targetPage: undefined,
 		currentOffset: 0,
 		headers: [],
 		orderedHeaders: [],
@@ -630,6 +633,15 @@ const setPerPage = (store: LogsStore, perPage: number) => {
 		tableOpts: {
 			...store.tableOpts,
 			perPage,
+		},
+	};
+};
+
+const setTargetPage = (store: LogsStore, target: number | undefined) => {
+	return {
+		tableOpts: {
+			...store.tableOpts,
+			targetPage: target,
 		},
 	};
 };
@@ -994,6 +1006,7 @@ const logsStoreReducers: LogsStoreReducers = {
 	setStreamSchema,
 	setPerPage,
 	setCurrentPage,
+	setTargetPage,
 	setCurrentOffset,
 	setTotalCount,
 	setPageAndPageData,
