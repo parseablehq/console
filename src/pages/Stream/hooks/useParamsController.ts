@@ -3,6 +3,7 @@ import { TimeRange, useLogsStore, logsStoreReducers } from '@/pages/Stream/provi
 import { useSearchParams } from 'react-router-dom';
 import _ from 'lodash';
 import { FIXED_DURATIONS } from '@/constants/timeConstants';
+import { LOG_QUERY_LIMITS } from '@/pages/Stream/providers/LogsProvider';
 import dayjs from 'dayjs';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import moment from 'moment-timezone';
@@ -14,7 +15,6 @@ const { setTimeRange, onToggleView, setPerPage, setCustQuerySearchState } = logs
 const { applySavedFilters } = filterStoreReducers;
 const timeRangeFormat = 'DD-MMM-YYYY_HH-mmz';
 const keys = ['view', 'rows', 'interval', 'from', 'to', 'query', 'filterType'];
-const FIXED_ROWS = ['50', '100', '150', '200'];
 
 const dateToParamString = (date: Date) => {
 	return formatDateWithTimezone(date, timeRangeFormat);
@@ -109,7 +109,7 @@ const useParamsController = () => {
 		if (['table', 'json'].includes(presentParams.view) && presentParams.view !== storeAsParams.view) {
 			setLogsStore((store) => onToggleView(store, presentParams.view as 'table' | 'json'));
 		}
-		if (storeAsParams.rows !== presentParams.rows && FIXED_ROWS.includes(presentParams.rows)) {
+		if (storeAsParams.rows !== presentParams.rows && LOG_QUERY_LIMITS.includes(_.toNumber(presentParams.rows))) {
 			setLogsStore((store) => setPerPage(store, _.toNumber(presentParams.rows)));
 		}
 
@@ -161,7 +161,7 @@ const useParamsController = () => {
 		if (presentParams.view && presentParams.view !== storeAsParams.view) {
 			setLogsStore((store) => onToggleView(store, presentParams.view as 'table' | 'json'));
 		}
-		if (storeAsParams.rows !== presentParams.rows && FIXED_ROWS.includes(presentParams.rows)) {
+		if (storeAsParams.rows !== presentParams.rows && LOG_QUERY_LIMITS.includes(_.toNumber(presentParams.rows))) {
 			setLogsStore((store) => setPerPage(store, _.toNumber(presentParams.rows)));
 		}
 
