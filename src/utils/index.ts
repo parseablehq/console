@@ -105,3 +105,8 @@ export const copyTextToClipboard = async (value: any) => {
 		return await navigator.clipboard.writeText(JSON.stringify(value, null, 2));
 	}
 };
+
+export const getOffset = (page: number, rowSize: number) => {
+	const product = page * rowSize;
+	return Math.floor(product / 1000) * 1000;
+};

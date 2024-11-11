@@ -5,10 +5,11 @@ import LogTable from './StaticLogTable';
 import useLogsFetcher from './useLogsFetcher';
 import LogsViewConfig from './LogsViewConfig';
 import _ from 'lodash';
+import { getOffset } from '@/utils';
 
 import { useEffect } from 'react';
 
-const { setPageAndPageData, setTargetPage, setTargetColumns, setDisabledColumns } = logsStoreReducers;
+const { setPageAndPageData, setTargetPage, setTargetColumns, setDisabledColumns, setCurrentOffset } = logsStoreReducers;
 
 const LogsView = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
 	const { schemaLoading, infoLoading } = props;
@@ -18,7 +19,7 @@ const LogsView = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
 	});
 
 	const [tableOpts] = useLogsStore((store) => store.tableOpts);
-	const { currentPage, targetPage, headers, targetColumns } = tableOpts;
+	const { currentPage, targetPage, headers, targetColumns, perPage } = tableOpts;
 	const [viewMode, setLogsStore] = useLogsStore((store) => store.viewMode);
 	const viewOpts = {
 		errorMessage,
@@ -29,12 +30,21 @@ const LogsView = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
 	};
 
 	useEffect(() => {
+		console.log(showTable);
 		if (!showTable) return;
 		if (targetPage) {
+			const offset = getOffset(targetPage, perPage);
+			if (offset > 0) {
+				setLogsStore((store) => setCurrentOffset(store, offset));
+				console.log(targetPage - offset / perPage);
+				setLogsStore((store) => setTargetPage(store, targetPage - offset / perPage));
+			}
 			setLogsStore((store) => setPageAndPageData(store, targetPage));
-			setLogsStore((store) => setTargetPage(store, undefined));
+			if (currentPage === targetPage) {
+				setLogsStore((store) => setTargetPage(store, undefined));
+			}
 		}
-	}, [currentPage]);
+	}, [showTable, currentPage]);
 
 	useEffect(() => {
 		if (!showTable) return;
