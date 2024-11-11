@@ -203,6 +203,7 @@ type LogsStore = {
 	tableOpts: {
 		disabledColumns: string[];
 		wrapDisabledColumns: string[];
+		targetColumns: string[];
 		pinnedColumns: string[];
 		pageData: Log[];
 		totalPages: number;
@@ -295,6 +296,7 @@ type LogsStoreReducers = {
 	onToggleView: (store: LogsStore, viewMode: 'json' | 'table') => ReducerOutput;
 	toggleConfigViewType: (store: LogsStore) => ReducerOutput;
 	setDisabledColumns: (store: LogsStore, columns: string[]) => ReducerOutput;
+	setTargetColumns: (store: LogsStore, columms: string[]) => ReducerOutput;
 	setOrderedHeaders: (store: LogsStore, columns: string[]) => ReducerOutput;
 	toggleWordWrap: (store: LogsStore) => ReducerOutput;
 };
@@ -319,6 +321,7 @@ const initialState: LogsStore = {
 	},
 
 	tableOpts: {
+		targetColumns: [],
 		disabledColumns: [],
 		wrapDisabledColumns: [],
 		pinnedColumns: [],
@@ -531,6 +534,15 @@ const setDisabledColumns = (store: LogsStore, columns: string[]) => {
 		tableOpts: {
 			...store.tableOpts,
 			disabledColumns: columns,
+		},
+	};
+};
+
+const setTargetColumns = (store: LogsStore, columns: string[]) => {
+	return {
+		tableOpts: {
+			...store.tableOpts,
+			targetColumns: columns,
 		},
 	};
 };
@@ -1028,6 +1040,7 @@ const logsStoreReducers: LogsStoreReducers = {
 	onToggleView,
 	toggleConfigViewType,
 	setDisabledColumns,
+	setTargetColumns,
 	setOrderedHeaders,
 	toggleWordWrap,
 	toggleWrapDisabledColumns,

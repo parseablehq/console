@@ -3,7 +3,7 @@ import { TimeRange, useLogsStore, logsStoreReducers } from '@/pages/Stream/provi
 import { useSearchParams } from 'react-router-dom';
 import _ from 'lodash';
 import { FIXED_DURATIONS } from '@/constants/timeConstants';
-import { LOG_QUERY_LIMITS } from '@/pages/Stream/providers/LogsProvider';
+import { LOG_QUERY_LIMITS, columnsToSkip } from '@/pages/Stream/providers/LogsProvider';
 import dayjs from 'dayjs';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import moment from 'moment-timezone';
@@ -11,10 +11,11 @@ import { filterStoreReducers, QueryType, useFilterStore } from '../providers/Fil
 import { generateQueryBuilderASTFromSQL } from '../utils';
 
 const { getRelativeStartAndEndDate, formatDateWithTimezone, getLocalTimezone } = timeRangeUtils;
-const { setTimeRange, onToggleView, setPerPage, setCustQuerySearchState, setTargetPage } = logsStoreReducers;
+const { setTimeRange, onToggleView, setPerPage, setCustQuerySearchState, setTargetPage, setTargetColumns } =
+	logsStoreReducers;
 const { applySavedFilters } = filterStoreReducers;
 const timeRangeFormat = 'DD-MMM-YYYY_HH-mmz';
-const keys = ['view', 'rows', 'page', 'interval', 'from', 'to', 'query', 'filterType'];
+const keys = ['view', 'rows', 'page', 'interval', 'from', 'to', 'query', 'filterType', 'fields'];
 
 const dateToParamString = (date: Date) => {
 	return formatDateWithTimezone(date, timeRangeFormat);
@@ -58,8 +59,9 @@ const storeToParamsObj = (opts: {
 	rows: string;
 	query: string;
 	filterType: string;
+	fields: string;
 }): Record<string, string> => {
-	const { timeRange, offset, page, view, rows, query, filterType } = opts;
+	const { timeRange, offset, page, view, rows, query, filterType, fields } = opts;
 	const params: Record<string, string> = {
 		...deriveTimeRangeParams(timeRange),
 		view,
@@ -68,6 +70,7 @@ const storeToParamsObj = (opts: {
 		page,
 		query,
 		filterType: query ? filterType : '',
+		fields,
 	};
 	return _.pickBy(params, (val, key) => !_.isEmpty(val) && _.includes(keys, key));
 };
@@ -83,6 +86,15 @@ const paramsStringToParamsObj = (searchParams: URLSearchParams): Record<string, 
 	);
 };
 
+const joinOrSplit = (value: string[] | string): string | string[] => {
+	const joinOperator = '~';
+	if (Array.isArray(value)) {
+		return value.join(joinOperator);
+	} else {
+		return value.split(joinOperator);
+	}
+};
+
 const useParamsController = () => {
 	const [isStoreSynced, setStoreSynced] = useState(false);
 	const [tableOpts] = useLogsStore((store) => store.tableOpts);
@@ -91,8 +103,11 @@ const useParamsController = () => {
 	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
 	const [, setFilterStore] = useFilterStore((store) => store);
 
-	const { currentOffset, currentPage, targetPage, perPage } = tableOpts;
+	const { currentOffset, currentPage, targetPage, perPage, headers, disabledColumns, targetColumns } = tableOpts;
 
+	const visibleHeaders = headers.filter((el) => !columnsToSkip.includes(el));
+
+	const activeHeaders = visibleHeaders.filter((el) => !disabledColumns.includes(el));
 	const [searchParams, setSearchParams] = useSearchParams();
 
 	useEffect(() => {
@@ -104,6 +119,7 @@ const useParamsController = () => {
 			rows: `${perPage}`,
 			query: custQuerySearchState.custSearchQuery,
 			filterType: custQuerySearchState.viewMode,
+			fields: `${joinOrSplit(!_.isEmpty(targetColumns) ? targetColumns : activeHeaders)}`,
 		});
 		const presentParams = paramsStringToParamsObj(searchParams);
 		if (['table', 'json'].includes(presentParams.view) && presentParams.view !== storeAsParams.view) {
@@ -125,7 +141,9 @@ const useParamsController = () => {
 				);
 		}
 
-		// setLogsStore((store) => setCurrentOffset(store, 1000));
+		if (storeAsParams.fields !== presentParams.fields) {
+			setLogsStore((store) => setTargetColumns(store, joinOrSplit(presentParams.fields) as string[]));
+		}
 		syncTimeRangeToStore(storeAsParams, presentParams);
 		setStoreSynced(true);
 	}, []);
@@ -140,6 +158,7 @@ const useParamsController = () => {
 				rows: `${perPage}`,
 				query: custQuerySearchState.custSearchQuery,
 				filterType: custQuerySearchState.viewMode,
+				fields: `${joinOrSplit(!_.isEmpty(targetColumns) ? targetColumns : activeHeaders)}`,
 			});
 			const presentParams = paramsStringToParamsObj(searchParams);
 			if (_.isEqual(storeAsParams, presentParams)) return;
@@ -158,6 +177,7 @@ const useParamsController = () => {
 			rows: `${perPage}`,
 			query: custQuerySearchState.custSearchQuery,
 			filterType: custQuerySearchState.viewMode,
+			fields: `${joinOrSplit(!_.isEmpty(targetColumns) ? targetColumns : activeHeaders)}`,
 		});
 		const presentParams = paramsStringToParamsObj(searchParams);
 

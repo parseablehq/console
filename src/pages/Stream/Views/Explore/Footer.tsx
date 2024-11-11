@@ -98,8 +98,6 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: b
 		setLogsStore((store) => setPageAndPageData(store, page));
 	}, []);
 
-	console.log(_.toNumber(searchParams.get('page')));
-
 	const pagination = usePagination({
 		total: totalPages ?? 1,
 		initialPage:

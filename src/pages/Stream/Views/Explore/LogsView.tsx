@@ -8,7 +8,7 @@ import _ from 'lodash';
 
 import { useEffect } from 'react';
 
-const { setPageAndPageData, setTargetPage } = logsStoreReducers;
+const { setPageAndPageData, setTargetPage, setTargetColumns, setDisabledColumns } = logsStoreReducers;
 
 const LogsView = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
 	const { schemaLoading, infoLoading } = props;
@@ -18,7 +18,7 @@ const LogsView = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
 	});
 
 	const [tableOpts] = useLogsStore((store) => store.tableOpts);
-	const { currentPage, targetPage } = tableOpts;
+	const { currentPage, targetPage, headers, targetColumns } = tableOpts;
 	const [viewMode, setLogsStore] = useLogsStore((store) => store.viewMode);
 	const viewOpts = {
 		errorMessage,
@@ -31,11 +31,23 @@ const LogsView = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
 	useEffect(() => {
 		if (!showTable) return;
 		if (targetPage) {
-			console.log('hello');
 			setLogsStore((store) => setPageAndPageData(store, targetPage));
 			setLogsStore((store) => setTargetPage(store, undefined));
 		}
 	}, [currentPage]);
+
+	useEffect(() => {
+		if (!showTable) return;
+		if (!_.isEmpty(targetColumns)) {
+			setLogsStore((store) =>
+				setDisabledColumns(
+					store,
+					headers.filter((el) => !targetColumns.includes(el)),
+				),
+			);
+			setLogsStore((store) => setTargetColumns(store, []));
+		}
+	}, [headers]);
 
 	return (
 		<Box style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
