@@ -62,6 +62,7 @@ const storeToParamsObj = (opts: {
 	fields: string;
 }): Record<string, string> => {
 	const { timeRange, offset, page, view, rows, query, filterType, fields } = opts;
+
 	const params: Record<string, string> = {
 		...deriveTimeRangeParams(timeRange),
 		view,
@@ -87,7 +88,7 @@ const paramsStringToParamsObj = (searchParams: URLSearchParams): Record<string, 
 };
 
 const joinOrSplit = (value: string[] | string): string | string[] => {
-	const joinOperator = '~';
+	const joinOperator = ',';
 	if (Array.isArray(value)) {
 		return value.join(joinOperator);
 	} else {
@@ -109,13 +110,13 @@ const useParamsController = () => {
 
 	const activeHeaders = visibleHeaders.filter((el) => !disabledColumns.includes(el));
 	const [searchParams, setSearchParams] = useSearchParams();
-	const pageOffset = currentOffset / perPage;
+	const pageOffset = Math.ceil(currentOffset / perPage);
 
 	useEffect(() => {
 		const storeAsParams = storeToParamsObj({
 			timeRange,
 			offset: `${currentOffset}`,
-			page: `${targetPage ? targetPage : currentPage + pageOffset}`,
+			page: `${targetPage ? targetPage : Math.ceil(currentPage + pageOffset)}`,
 			view: viewMode,
 			rows: `${perPage}`,
 			query: custQuerySearchState.custSearchQuery,
@@ -154,7 +155,7 @@ const useParamsController = () => {
 			const storeAsParams = storeToParamsObj({
 				timeRange,
 				offset: `${currentOffset}`,
-				page: `${targetPage ? targetPage : currentPage + pageOffset}`,
+				page: `${targetPage ? targetPage : Math.ceil(currentPage + pageOffset)}`,
 				view: viewMode,
 				rows: `${perPage}`,
 				query: custQuerySearchState.custSearchQuery,
@@ -173,7 +174,7 @@ const useParamsController = () => {
 		const storeAsParams = storeToParamsObj({
 			timeRange,
 			offset: `${currentOffset}`,
-			page: `${targetPage ? targetPage : currentPage + pageOffset}`,
+			page: `${targetPage ? targetPage : Math.ceil(currentPage + pageOffset)}`,
 			view: viewMode,
 			rows: `${perPage}`,
 			query: custQuerySearchState.custSearchQuery,

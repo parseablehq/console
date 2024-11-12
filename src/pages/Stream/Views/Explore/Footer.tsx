@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useEffect } from 'react';
 import { useLogsStore, logsStoreReducers, LOAD_LIMIT, LOG_QUERY_LIMITS } from '../../providers/LogsProvider';
 import { usePagination } from '@mantine/hooks';
 import { Box, Center, Group, Loader, Menu, Pagination, Stack, Tooltip } from '@mantine/core';
@@ -9,7 +9,6 @@ import { IconSelector } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
 import classes from '../../styles/Footer.module.css';
 import { LOGS_FOOTER_HEIGHT } from '@/constants/theme';
-import { useSearchParams } from 'react-router-dom';
 
 const { setPageAndPageData, setCurrentPage, setCurrentOffset } = logsStoreReducers;
 
@@ -90,20 +89,23 @@ const LimitControl: FC = () => {
 };
 
 const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: boolean }) => {
-	const [searchParams] = useSearchParams();
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const { totalPages, currentOffset, currentPage, perPage, totalCount } = tableOpts;
-	const pageNumberFromURL = _.toNumber(searchParams.get('page'));
-	// console.log(pageNumberFromURL - currentOffset / perPage < 0 ? 1 : pageNumberFromURL - currentOffset / perPage);
 
 	const onPageChange = useCallback((page: number) => {
 		setLogsStore((store) => setPageAndPageData(store, page));
 	}, []);
 
+	useEffect(() => {
+		const initialPageFromUrl = currentPage % Math.ceil(currentOffset / perPage);
+		if (!initialPageFromUrl) return;
+
+		pagination.setPage(currentPage % Math.ceil(currentOffset / perPage));
+	}, [currentOffset, perPage]);
+
 	const pagination = usePagination({
 		total: totalPages ?? 1,
-		initialPage: pageNumberFromURL && pageNumberFromURL > 0 ? pageNumberFromURL : 1,
-		// initialPage: pageNumberFromURL - currentOffset / perPage < 0 ? 1 : pageNumberFromURL - currentOffset / perPage,
+		initialPage: 1,
 		onChange: onPageChange,
 	});
 
@@ -141,7 +143,7 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: b
 						total={totalPages}
 						value={currentPage}
 						onChange={(page) => {
-							pagination.setPage(page);
+							pagination && pagination.setPage(page);
 						}}
 						size="sm">
 						<Group gap={5} justify="center">

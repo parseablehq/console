@@ -35,7 +35,7 @@ const LogsView = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
 			const offset = getOffset(targetPage, perPage);
 			if (offset > 0) {
 				setLogsStore((store) => setCurrentOffset(store, offset));
-				setLogsStore((store) => setTargetPage(store, targetPage - offset / perPage));
+				setLogsStore((store) => setTargetPage(store, targetPage - Math.ceil(offset / perPage)));
 			}
 			setLogsStore((store) => setPageAndPageData(store, targetPage));
 			if (currentPage === targetPage) {
