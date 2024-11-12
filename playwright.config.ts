@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
 	testDir: './tests',
 	/* Run tests in files in parallel */
-	fullyParallel: true,
+	fullyParallel: false, // Set this to false to ensure sequential execution of files
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
 	forbidOnly: !!process.env.CI,
 	/* Retry on CI only */
@@ -21,20 +21,36 @@ export default defineConfig({
 		trace: 'on-first-retry',
 	},
 
-	/* Configure projects for major browsers */
+	/* Run tests in sequence by specifying files directly */
 	projects: [
 		{
-			name: 'chromium',
+			name: 'login - Chromium',
+			testMatch: '**/login.spec.ts', // Ensure login runs first
 			use: { ...devices['Desktop Chrome'] },
 		},
-
 		{
-			name: 'firefox',
+			name: 'home - Chromium',
+			testMatch: '**/home.spec.ts', // Ensure home runs second
+			use: { ...devices['Desktop Chrome'] },
+		},
+		{
+			name: 'login - Firefox',
+			testMatch: '**/login.spec.ts', // Ensure login runs first on Firefox
 			use: { ...devices['Desktop Firefox'] },
 		},
-
 		{
-			name: 'webkit',
+			name: 'home - Firefox',
+			testMatch: '**/home.spec.ts', // Ensure home runs second on Firefox
+			use: { ...devices['Desktop Firefox'] },
+		},
+		{
+			name: 'login - Safari',
+			testMatch: '**/login.spec.ts', // Ensure login runs first on Safari
+			use: { ...devices['Desktop Safari'] },
+		},
+		{
+			name: 'home - Safari',
+			testMatch: '**/home.spec.ts', // Ensure home runs second on Safari
 			use: { ...devices['Desktop Safari'] },
 		},
 	],
