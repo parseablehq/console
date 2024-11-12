@@ -239,7 +239,8 @@ const updateParentCombinator = (store: FilterStore, combinator: Combinator) => {
 
 const setAppliedFilterQuery = (_store: FilterStore, query: string | undefined) => {
 	return {
-		appliedFilterQuery: query,
+		..._store,
+		appliedFilterQuery: query ?? '',
 	};
 };
 
