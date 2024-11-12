@@ -1,23 +1,36 @@
-import _ from 'lodash';
+import { Box, Group, Loader, Stack, TagsInput, Tooltip, Text, TextInput } from '@mantine/core';
+import classes from '../../styles/Management.module.css';
+import { IconCheck, IconX, IconEdit } from '@tabler/icons-react';
 import { useStreamStore } from '../../providers/StreamProvider';
-import { ChangeEvent, useCallback, useState, useEffect } from 'react';
+import _ from 'lodash';
+import { ChangeEvent, FC, useCallback, useEffect, useState } from 'react';
 import { useLogStream } from '@/hooks/useLogStream';
 import { useGetStreamInfo } from '@/hooks/useGetStreamInfo';
-import { Box, Loader, Stack, TextInput, Tooltip, Text, Group } from '@mantine/core';
-import { IconCheck, IconX, IconEdit } from '@tabler/icons-react';
-import classes from '../../styles/Management.module.css';
 
-const UpdateFieldButtons = (props: { onClose: () => void; onUpdateClick: () => void; isUpdating: boolean }) => {
+interface UpdateFieldButtonsProps {
+	onClose: () => void;
+	onUpdateClick: () => void;
+	isUpdating: boolean;
+}
+
+interface PartitionLimitProps {
+	timePartition: string;
+	currentStream: string;
+}
+
+type PartitionValue = string[] | number | undefined;
+
+const UpdateFieldButtons: FC<UpdateFieldButtonsProps> = ({ onClose, onUpdateClick, isUpdating }) => {
 	return (
 		<Box>
-			{!props.isUpdating ? (
+			{!isUpdating ? (
 				<Stack gap={4} style={{ display: 'flex', flexDirection: 'row' }}>
 					<Tooltip label="Update" withArrow position="top">
-						<IconCheck className={classes.infoEditBtn} onClick={() => props.onUpdateClick()} stroke={1.6} size={16} />
+						<IconCheck className={classes.infoEditBtn} onClick={() => onUpdateClick()} stroke={1.6} size={16} />
 					</Tooltip>
 
 					<Tooltip label="Close" withArrow position="top">
-						<IconX className={classes.infoEditBtn} stroke={1.6} size={16} onClick={() => props.onClose()} />
+						<IconX className={classes.infoEditBtn} stroke={1.6} size={16} onClick={() => onClose()} />
 					</Tooltip>
 				</Stack>
 			) : (
@@ -27,27 +40,55 @@ const UpdateFieldButtons = (props: { onClose: () => void; onUpdateClick: () => v
 	);
 };
 
-function UpdateStreamInfo(props: { timePartition: string; currentStream: string }) {
+const UpdateStreamInfo: FC<PartitionLimitProps> = ({ timePartition, currentStream }) => {
 	const [info] = useStreamStore((store) => store.info);
-	const timePartitonLimit = _.get(info, 'time_partition_limit');
-	const [value, setValue] = useState<number | undefined>(timePartitonLimit);
-	const [updating, setUpdating] = useState<boolean>(false);
+	const [partitionFields] = useStreamStore((store) => store.fieldNames);
+
+	const isStaticSchema = _.get(info, 'static_schema_flag', false);
+	const initialPartitionValue = isStaticSchema
+		? _.get(info, 'custom_partition', '-').split(',')
+		: _.get(info, 'time_partition_limit');
+
+	const [value, setValue] = useState<PartitionValue>(initialPartitionValue);
+	const [updating, setUpdating] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [showEditField, setShowEditField] = useState<boolean>(false);
+	const [showEditField, setShowEditField] = useState(false);
+
 	const { updateLogStreamMutation } = useLogStream();
-	const { getStreamInfoRefetch } = useGetStreamInfo(props.currentStream, props.currentStream !== null);
+	const { getStreamInfoRefetch } = useGetStreamInfo(currentStream, currentStream !== null);
 
 	useEffect(() => {
-		setValue(timePartitonLimit);
-	}, [props.currentStream, info]);
+		setValue(initialPartitionValue);
+	}, [currentStream, info, initialPartitionValue]);
 
-	const onChange = useCallback(
+	const handleCustomPartitionChange = useCallback(
+		(value: string[]) => {
+			setValue(value);
+
+			if (isStaticSchema) {
+				value?.forEach((el) => {
+					if (!partitionFields.includes(el)) {
+						setError('Unknown Field Included');
+					} else {
+						setError(null);
+					}
+				});
+			}
+			if (Array.isArray(value) && value.length === 0) {
+				setError(null);
+			}
+		},
+		[setValue],
+	);
+
+	const handleTimePartitionChange = useCallback(
 		(e: ChangeEvent<HTMLInputElement>) => {
 			const inputTime = e.target.value;
 			const numberRegex = /^\d*$/;
 			if (numberRegex.test(inputTime)) {
-				if (parseInt(inputTime) > 0) {
-					setValue(parseInt(inputTime));
+				const parsedValue = parseInt(inputTime);
+				if (parsedValue > 0) {
+					setValue(parsedValue);
 					setError(null);
 				} else {
 					setValue(0);
@@ -66,35 +107,52 @@ function UpdateStreamInfo(props: { timePartition: string; currentStream: string 
 	}, [getStreamInfoRefetch]);
 
 	const updateLogStream = useCallback(
-		(updatedValue: number) => {
+		(updatedValue: string | number) => {
 			updateLogStreamMutation({
-				streamName: props.currentStream,
-				header: { 'x-p-time-partition-limit': `${updatedValue}d` },
+				streamName: currentStream,
+				header: isStaticSchema
+					? { 'x-p-custom-partition': String(updatedValue) }
+					: { 'x-p-time-partition-limit': `${updatedValue}d` },
 				onSuccess: updateLogStreamSuccess,
 				onError: () => setUpdating(false),
 			});
 		},
-		[updateLogStreamMutation, props.currentStream],
+		[updateLogStreamMutation, currentStream, isStaticSchema],
 	);
 
-	const updateTimePartitionLimit = useCallback(() => {
-		if (value === undefined) return;
-		if (error !== null) return;
-
-		setUpdating(true);
-		updateLogStream(value);
+	const updatePartitionLimit = useCallback(() => {
+		if (error) return;
+		if (isStaticSchema) {
+			if (!Array.isArray(value) || value.length === 0) return;
+			setUpdating(true);
+			updateLogStream(value.join(','));
+		} else {
+			if (typeof value !== 'number') return;
+			setUpdating(true);
+			updateLogStream(value);
+		}
 	}, [value, updateLogStream]);
 
 	return (
-		<Stack style={{ height: '3.5rem', width: '33%' }} gap={6}>
+		<Stack style={{ height: '3.5rem', width: isStaticSchema ? '30rem' : '33%' }} gap={6}>
 			<Group>
 				<Text
 					className={classes.fieldDescription}
 					style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>
-					Max Historical Difference
+					{isStaticSchema ? 'Custom Partition Field' : 'Max Historical Difference'}
 				</Text>
 
-				{props.timePartition !== '-' && (
+				{timePartition !== '-' && !isStaticSchema && (
+					<Tooltip label="Edit" withArrow position="top">
+						<IconEdit
+							className={classes.infoEditBtn}
+							stroke={1.6}
+							size={12}
+							onClick={() => setShowEditField((prev) => !prev)}
+						/>
+					</Tooltip>
+				)}
+				{isStaticSchema && !showEditField && (
 					<Tooltip label="Edit" withArrow position="top">
 						<IconEdit
 							className={classes.infoEditBtn}
@@ -105,16 +163,30 @@ function UpdateStreamInfo(props: { timePartition: string; currentStream: string 
 					</Tooltip>
 				)}
 			</Group>
+
 			{showEditField ? (
 				<Group style={{ flexDirection: 'row', alignItems: 'baseline' }} gap={6}>
-					<TextInput
-						placeholder="Max Historical Difference"
-						value={value}
-						onChange={(e) => onChange(e)}
-						error={error}
-					/>
+					{isStaticSchema ? (
+						<TagsInput
+							w={'30rem'}
+							placeholder="Select column from the list"
+							data={partitionFields}
+							onChange={handleCustomPartitionChange}
+							maxTags={3}
+							value={Array.isArray(value) ? value : []}
+							error={error}
+						/>
+					) : (
+						<TextInput
+							placeholder="Max Historical Difference"
+							value={typeof value === 'number' ? value.toString() : ''}
+							onChange={handleTimePartitionChange}
+							error={error}
+						/>
+					)}
+
 					<UpdateFieldButtons
-						onUpdateClick={updateTimePartitionLimit}
+						onUpdateClick={updatePartitionLimit}
 						onClose={() => setShowEditField(false)}
 						isUpdating={updating}
 					/>
@@ -128,11 +200,17 @@ function UpdateStreamInfo(props: { timePartition: string; currentStream: string 
 						overflow: 'hidden',
 						fontWeight: 400,
 					}}>
-					{timePartitonLimit !== undefined ? `${timePartitonLimit} day(s)` : '-'}
+					{isStaticSchema
+						? Array.isArray(value)
+							? value.join(',')
+							: '-'
+						: typeof value === 'number'
+						? `${value} day(s)`
+						: '-'}
 				</Text>
 			)}
 		</Stack>
 	);
-}
+};
 
 export default UpdateStreamInfo;
