@@ -27,6 +27,11 @@ function extractWhereClause(sql: string) {
 	return '(1 = 1)';
 }
 
+function removeOffsetFromQuery(query: string): string {
+	const offsetRegex = /\sOFFSET\s+\d+/i;
+	return query.replace(offsetRegex, '');
+}
+
 const getCompactType = (interval: number): CompactInterval => {
 	const totalMinutes = interval / (1000 * 60);
 	if (totalMinutes <= 60) {
@@ -283,10 +288,11 @@ const EventTimeLineGraph = () => {
 				? extractWhereClause(custSearchQuery)
 				: parseQuery(queryEngine, appliedQuery, localStream).where;
 		const query = generateCountQuery(localStream, modifiedStartTime, modifiedEndTime, compactType, whereClause);
+		const graphQuery = removeOffsetFromQuery(query);
 		fetchQueryMutation.mutate({
 			queryEngine: 'Parseable', // query for graph should always hit the endpoint for parseable query
 			logsQuery,
-			query,
+			query: graphQuery,
 		});
 	}, [localStream, startTime.toISOString(), endTime.toISOString(), custSearchQuery]);
 
