@@ -4,6 +4,7 @@ import JsonView from './JSONView';
 import LogTable from './StaticLogTable';
 import useLogsFetcher from './useLogsFetcher';
 import LogsViewConfig from './LogsViewConfig';
+import _ from 'lodash';
 
 const LogsView = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
 	const { schemaLoading, infoLoading } = props;
@@ -11,6 +12,7 @@ const LogsView = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
 		schemaLoading,
 		infoLoading,
 	});
+
 	const [viewMode] = useLogsStore((store) => store.viewMode);
 	const viewOpts = {
 		errorMessage,
