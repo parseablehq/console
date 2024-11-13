@@ -189,7 +189,7 @@ const Roles: FC = () => {
 							Set Default OIDC Role{' '}
 						</Button>
 					)}
-					<IconButton renderIcon={renderDocsIcon} onClick={navigateToDocs} tooltipLabel="Docs" />
+					<IconButton renderIcon={renderDocsIcon} onClick={navigateToDocs} tooltipLabel="Docs" data_id="roles-docs" />
 				</Stack>
 			</Stack>
 			<ScrollArea className={classes.tableContainer} type="always">

@@ -10,7 +10,9 @@
 		"lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
 		"start": "vite preview --host --port 3002",
 		"tsCheck": "tsc --noEmit",
-		"pq": "pretty-quick"
+		"pq": "pretty-quick",
+		"test": "playwright test",
+		"test-ui": "playwright test --ui"
 	},
 	"dependencies": {
 		"@apache-arrow/ts": "^14.0.2",

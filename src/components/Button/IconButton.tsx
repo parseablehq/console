@@ -5,6 +5,7 @@ import classes from './Button.module.css';
 type IconButtonProps = {
 	onClick?: () => void;
 	renderIcon: () => ReactNode;
+	data_id?: string;
 	icon?: ReactNode;
 	active?: boolean;
 	tooltipLabel?: string;
@@ -17,6 +18,7 @@ const IconButton: FC<IconButtonProps> = (props) => {
 		return (
 			<Tooltip label={tooltipLabel}>
 				<ActionIcon
+					itemID={props.data_id}
 					size={props.size ? props.size : 'xl'}
 					className={`${classes.iconBtn} ${props.active && classes.iconBtnActive}`}
 					onClick={props.onClick && props.onClick}>
@@ -27,6 +29,7 @@ const IconButton: FC<IconButtonProps> = (props) => {
 	} else {
 		return (
 			<ActionIcon
+				itemID={props.data_id}
 				size={props.size ? props.size : 'xl'}
 				className={`${classes.iconBtn} ${props.active && classes.iconBtnActive}`}
 				onClick={props.onClick && props.onClick}>
