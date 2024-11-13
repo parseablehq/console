@@ -653,7 +653,7 @@ const setTargetPage = (store: LogsStore, target: number | undefined) => {
 	return {
 		tableOpts: {
 			...store.tableOpts,
-			targetPage: target,
+			targetPage: target ? target : undefined,
 		},
 	};
 };

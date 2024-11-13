@@ -9,6 +9,7 @@ import timeRangeUtils from '@/utils/timeRangeUtils';
 import moment from 'moment-timezone';
 import { filterStoreReducers, QueryType, useFilterStore } from '../providers/FilterProvider';
 import { generateQueryBuilderASTFromSQL } from '../utils';
+import { joinOrSplit } from '@/utils';
 
 const { getRelativeStartAndEndDate, formatDateWithTimezone, getLocalTimezone } = timeRangeUtils;
 const { setTimeRange, onToggleView, setPerPage, setCustQuerySearchState, setTargetPage, setTargetColumns } =
@@ -85,15 +86,6 @@ const paramsStringToParamsObj = (searchParams: URLSearchParams): Record<string, 
 		},
 		{},
 	);
-};
-
-const joinOrSplit = (value: string[] | string): string | string[] => {
-	const joinOperator = ',';
-	if (Array.isArray(value)) {
-		return value.join(joinOperator);
-	} else {
-		return value.split(joinOperator);
-	}
 };
 
 const useParamsController = () => {

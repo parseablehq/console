@@ -110,3 +110,12 @@ export const getOffset = (page: number, rowSize: number) => {
 	const product = page * rowSize;
 	return Math.floor(product / 1000) * 1000;
 };
+
+export const joinOrSplit = (value: string[] | string): string | string[] => {
+	const joinOperator = ',';
+	if (Array.isArray(value)) {
+		return value.join(joinOperator);
+	} else {
+		return value.split(joinOperator);
+	}
+};
