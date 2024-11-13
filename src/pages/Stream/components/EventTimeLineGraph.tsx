@@ -11,6 +11,7 @@ import { useFilterStore, filterStoreReducers } from '../providers/FilterProvider
 import { LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 import _ from 'lodash';
 import timeRangeUtils from '@/utils/timeRangeUtils';
+import { useStreamStore } from '../providers/StreamProvider';
 
 const { setTimeRange } = logsStoreReducers;
 const { parseQuery } = filterStoreReducers;
@@ -268,13 +269,15 @@ const EventTimeLineGraph = () => {
 	const [{ activeMode, custSearchQuery }] = useLogsStore((store) => store.custQuerySearchState);
 	const [{ interval, startTime, endTime }] = useLogsStore((store) => store.timeRange);
 	const [localStream, setLocalStream] = useState<string | null>('');
+	const [{ info }] = useStreamStore((store) => store);
+	const firstEventAt = 'first-event-at' in info ? info['first-event-at'] : undefined;
 
 	useEffect(() => {
 		setLocalStream(currentStream);
 	}, [currentStream]);
 
 	useEffect(() => {
-		if (!localStream || localStream.length === 0) return;
+		if (!localStream || localStream.length === 0 || !firstEventAt) return;
 		const { modifiedEndTime, modifiedStartTime, compactType } = getModifiedTimeRange(startTime, endTime, interval);
 
 		const logsQuery = {
@@ -294,14 +297,14 @@ const EventTimeLineGraph = () => {
 			logsQuery,
 			query: graphQuery,
 		});
-	}, [localStream, startTime.toISOString(), endTime.toISOString(), custSearchQuery]);
+	}, [localStream, startTime.toISOString(), endTime.toISOString(), custSearchQuery, firstEventAt]);
 
 	const isLoading = fetchQueryMutation.isLoading;
 	const avgEventCount = useMemo(() => calcAverage(fetchQueryMutation?.data), [fetchQueryMutation?.data]);
-	const graphData = useMemo(
-		() => parseGraphData(fetchQueryMutation?.data, avgEventCount, startTime, endTime, interval),
-		[fetchQueryMutation?.data, interval],
-	);
+	const graphData = useMemo(() => {
+		if (!firstEventAt) return null;
+		return parseGraphData(fetchQueryMutation?.data, avgEventCount, startTime, endTime, interval);
+	}, [fetchQueryMutation?.data, interval, firstEventAt]);
 	const hasData = Array.isArray(graphData) && graphData.length !== 0;
 	const [, setLogsStore] = useLogsStore((store) => store.timeRange);
 	const setTimeRangeFromGraph = useCallback((barValue: any) => {
