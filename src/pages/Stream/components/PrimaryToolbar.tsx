@@ -23,13 +23,13 @@ const { toggleSavedFiltersModal } = filterStoreReducers;
 const renderMaximizeIcon = () => <IconMaximize size={px('1rem')} stroke={1.5} />;
 const renderDeleteIcon = () => <IconTrash size={px('1rem')} stroke={1.5} />;
 
-const MaximizeButton = () => {
+export const MaximizeButton = () => {
 	const [_appStore, setAppStore] = useAppStore((_store) => null);
 	const onClick = useCallback(() => setAppStore(appStoreReducers.toggleMaximize), []);
 	return <IconButton renderIcon={renderMaximizeIcon} size={38} onClick={onClick} tooltipLabel="Full screen" />;
 };
 
-const SavedFiltersButton = () => {
+export const SavedFiltersButton = () => {
 	const [_store, setLogsStore] = useFilterStore((_store) => null);
 	const onClick = useCallback(() => setLogsStore((store) => toggleSavedFiltersModal(store, true)), []);
 	return (
