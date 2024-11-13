@@ -9,11 +9,18 @@ import timeRangeUtils from '@/utils/timeRangeUtils';
 import moment from 'moment-timezone';
 import { filterStoreReducers, QueryType, useFilterStore } from '../providers/FilterProvider';
 import { generateQueryBuilderASTFromSQL } from '../utils';
-import { joinOrSplit } from '@/utils';
+import { getOffset, joinOrSplit } from '@/utils';
 
 const { getRelativeStartAndEndDate, formatDateWithTimezone, getLocalTimezone } = timeRangeUtils;
-const { setTimeRange, onToggleView, setPerPage, setCustQuerySearchState, setTargetPage, setTargetColumns } =
-	logsStoreReducers;
+const {
+	setTimeRange,
+	onToggleView,
+	setPerPage,
+	setCustQuerySearchState,
+	setTargetPage,
+	setCurrentOffset,
+	setTargetColumns,
+} = logsStoreReducers;
 const { applySavedFilters } = filterStoreReducers;
 const timeRangeFormat = 'DD-MMM-YYYY_HH-mmz';
 const keys = ['view', 'rows', 'page', 'interval', 'from', 'to', 'query', 'filterType', 'fields'];
@@ -55,19 +62,17 @@ const deriveTimeRangeParams = (timerange: TimeRange): { interval: string } | { f
 const storeToParamsObj = (opts: {
 	timeRange: TimeRange;
 	view: string;
-	offset: string;
 	page: string;
 	rows: string;
 	query: string;
 	filterType: string;
 	fields: string;
 }): Record<string, string> => {
-	const { timeRange, offset, page, view, rows, query, filterType, fields } = opts;
+	const { timeRange, page, view, rows, query, filterType, fields } = opts;
 
 	const params: Record<string, string> = {
 		...deriveTimeRangeParams(timeRange),
 		view,
-		offset,
 		rows,
 		page,
 		query,
@@ -107,7 +112,6 @@ const useParamsController = () => {
 	useEffect(() => {
 		const storeAsParams = storeToParamsObj({
 			timeRange,
-			offset: `${currentOffset}`,
 			page: `${targetPage ? targetPage : Math.ceil(currentPage + pageOffset)}`,
 			view: viewMode,
 			rows: `${perPage}`,
@@ -125,6 +129,11 @@ const useParamsController = () => {
 
 		if (storeAsParams.page !== presentParams.page) {
 			setLogsStore((store) => setTargetPage(store, _.toNumber(presentParams.page)));
+			const offset = getOffset(_.toNumber(presentParams.page), perPage);
+			if (offset > 0) {
+				setLogsStore((store) => setCurrentOffset(store, offset));
+				setLogsStore((store) => setTargetPage(store, _.toNumber(presentParams.page) - Math.ceil(offset / perPage)));
+			}
 		}
 
 		if (storeAsParams.query !== presentParams.query) {
@@ -146,7 +155,6 @@ const useParamsController = () => {
 		if (isStoreSynced) {
 			const storeAsParams = storeToParamsObj({
 				timeRange,
-				offset: `${currentOffset}`,
 				page: `${targetPage ? targetPage : Math.ceil(currentPage + pageOffset)}`,
 				view: viewMode,
 				rows: `${perPage}`,
@@ -165,7 +173,6 @@ const useParamsController = () => {
 
 		const storeAsParams = storeToParamsObj({
 			timeRange,
-			offset: `${currentOffset}`,
 			page: `${targetPage ? targetPage : Math.ceil(currentPage + pageOffset)}`,
 			view: viewMode,
 			rows: `${perPage}`,
