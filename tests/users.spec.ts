@@ -53,6 +53,45 @@ test.describe('Users Page', () => {
         await expect(createRoleButton).toBeVisible();
     });
 
+    test("should open the Create Role Modal when the Create Role button is clicked", async ({ page }) => {
+        await page.goto(TEST_URL);
+
+        // Click on the Create Role button
+        const createRoleButton = page.getByRole('button', { name: 'Create Role' });
+        await createRoleButton.click();
+
+        // Check if the Create Role Modal is visible
+        await expect(page.locator('text=Enter the name of the Role')).toBeVisible();
+    });
+
+    test.describe('Create Role Modal', () => {
+        test.beforeEach(async ({ page }) => {
+            await page.goto(TEST_URL);
+
+            // Click on the Create Role button
+            const createRoleButton = page.getByRole('button', { name: 'Create Role' });
+            await createRoleButton.click();
+        });
+
+        test("should have a text input to enter the name of the Role", async ({ page }) => {
+            // Check if the text input is visible
+            const roleNameInput = page.locator('input[placeholder="Type the name of the Role to create"]');
+            await expect(roleNameInput).toBeVisible();
+        });
+
+        test("should have a button to create the Role", async ({ page }) => {
+            // Check if the Create button is visible
+            const createButton = page.getByRole('button', { name: 'Create' });
+            await expect(createButton).toBeVisible();
+        });
+
+        test("should have a button to cancel creating the Role", async ({ page }) => {
+            // Check if the Cancel button is visible
+            const cancelButton = page.getByRole('button', { name: 'Cancel' });
+            await expect(cancelButton).toBeVisible();
+        });
+    });
+
     test("should have a button to set the default OIDC Role", async ({ page }) => {
         await page.goto(TEST_URL);
 
