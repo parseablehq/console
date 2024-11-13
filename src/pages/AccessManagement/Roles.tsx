@@ -167,7 +167,9 @@ const Roles: FC = () => {
 	return (
 		<Box className={classes.container}>
 			<Stack className={classes.header} gap={0}>
-				<Text style={{ fontWeight: 600 }}>Roles</Text>
+				<Text component="h2" style={{ fontWeight: 600 }}>
+					Roles
+				</Text>
 				<Stack style={{ flexDirection: 'row' }} gap={0}>
 					<Button
 						className={classes.createUserBtn}
@@ -207,6 +209,7 @@ const Roles: FC = () => {
 				onClose={handleDefaultRoleModalClose}
 				title="Set default oidc role"
 				centered
+				styles={{ title: { fontWeight: 500 } }}
 				className={classes.modalStyle}>
 				<Stack>
 					<Select
