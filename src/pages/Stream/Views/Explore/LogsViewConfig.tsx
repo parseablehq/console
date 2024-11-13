@@ -1,15 +1,34 @@
 import { LOGS_CONFIG_SIDEBAR_WIDTH } from '@/constants/theme';
-import { Checkbox, Divider, Group, ScrollArea, Select, Skeleton, Stack, Text, TextInput, Tooltip } from '@mantine/core';
+import {
+	Box,
+	Checkbox,
+	Divider,
+	Group,
+	ScrollArea,
+	Select,
+	Skeleton,
+	Stack,
+	Text,
+	TextInput,
+	Tooltip,
+} from '@mantine/core';
 import classes from '../../styles/LogsViewConfig.module.css';
 import { useStreamStore } from '../../providers/StreamProvider';
 import _ from 'lodash';
 import { Field } from '@/@types/parseable/dataType';
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
-import { IconGripVertical, IconPin, IconPinFilled } from '@tabler/icons-react';
+import {
+	IconGripVertical,
+	IconPin,
+	IconPinFilled,
+	IconLayoutSidebarLeftCollapseFilled,
+	IconLayoutSidebarRightCollapseFilled,
+} from '@tabler/icons-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { ResizableBox } from 'react-resizable';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import IconButton from '@/components/Button/IconButton';
 
 const { toggleConfigViewType, toggleDisabledColumns, setOrderedHeaders, togglePinnedColumns, setDisabledColumns } =
 	logsStoreReducers;
@@ -302,20 +321,36 @@ const LogsViewConfig = (props: { schemaLoading: boolean; logsLoading: boolean; i
 	const [maximized] = useAppStore((store) => store.maximized);
 	const divRef = useRef<HTMLDivElement | null>(null);
 	const [height, setHeight] = useState(0);
+	const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (divRef.current) {
 			setHeight(divRef.current.offsetHeight);
 		}
 	}, [maximized]);
+
+	const toggleCollapse = () => {
+		setIsCollapsed((prev) => !prev);
+	};
+
+	const renderIcon = () => {
+		if (isCollapsed) {
+			return <IconLayoutSidebarLeftCollapseFilled className={classes.columnPinIcon} size="1rem" stroke={1.8} />;
+		} else {
+			return <IconLayoutSidebarRightCollapseFilled className={classes.columnPinIcon} size="1rem" stroke={1.8} />;
+		}
+	};
 	return (
 		<Stack ref={divRef}>
 			<ResizableBox
-				width={LOGS_CONFIG_SIDEBAR_WIDTH}
+				width={isCollapsed ? 0 : LOGS_CONFIG_SIDEBAR_WIDTH}
 				height={height}
 				axis="x"
 				maxConstraints={[500, height]}
-				minConstraints={[200, height]}>
+				minConstraints={[isCollapsed ? 0 : 200, height]}
+				style={{
+					transition: 'width 0.3s',
+				}}>
 				<Stack style={{ width: '100%', height: '100%' }} className={classes.container}>
 					<Header />
 					{configViewType === 'schema' ? (
@@ -325,6 +360,9 @@ const LogsViewConfig = (props: { schemaLoading: boolean; logsLoading: boolean; i
 					)}
 				</Stack>
 			</ResizableBox>
+			<Box style={{ right: 'absolute' }}>
+				<IconButton renderIcon={renderIcon} onClick={toggleCollapse} tooltipLabel="Collapse" />
+			</Box>
 		</Stack>
 	);
 };
