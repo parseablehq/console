@@ -38,7 +38,7 @@ jobs:
           echo "VITE_PASSWORD=$VITE_PASSWORD" >> $GITHUB_ENV
 
           # retrieve these GitHub ENV variables
-          echo "${{ env.VITE_USE_BASIC_AUTH }}, {{ env.VITE_USERNAME }} anf {{ env.VITE_PASSWORD }}"
+          echo "${{ env.VITE_USE_BASIC_AUTH }}, ${{ env.VITE_USERNAME }} and ${{ env.VITE_PASSWORD }}"
       - name: Run Playwright Home tests
         run: pnpm exec playwright test home.spec.ts
       - uses: actions/upload-artifact@v4
