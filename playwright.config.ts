@@ -24,37 +24,18 @@ export default defineConfig({
 	/* Configure projects for major browsers */
 	projects: [
 		{
-			name: 'login - Chromium',
-			testMatch: '**/login.spec.ts', // Ensure login runs first
+			name: 'chromium',
 			use: { ...devices['Desktop Chrome'] },
 		},
+
 		{
-			name: 'users - Chromium',
-			testMatch: '**/users.spec.ts', // Ensure users runs second
-			use: { ...devices['Desktop Chrome'] },
-			dependencies: ['login - Chromium'],
-		},
-		{
-			name: 'login - Firefox',
-			testMatch: '**/login.spec.ts', // Ensure login runs first on Firefox
+			name: 'firefox',
 			use: { ...devices['Desktop Firefox'] },
 		},
+
 		{
-			name: 'users - Firefox',
-			testMatch: '**/users.spec.ts', // Ensure users runs second on Firefox
-			use: { ...devices['Desktop Firefox'] },
-			dependencies: ['login - Firefox'],
-		},
-		{
-			name: 'login - Safari',
-			testMatch: '**/login.spec.ts', // Ensure login runs first on Safari
+			name: 'webkit',
 			use: { ...devices['Desktop Safari'] },
-		},
-		{
-			name: 'users - Safari',
-			testMatch: '**/users.spec.ts', // Ensure users runs second on Safari
-			use: { ...devices['Desktop Safari'] },
-			dependencies: ['login - Safari'],
 		},
 	],
 
