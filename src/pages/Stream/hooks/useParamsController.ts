@@ -138,7 +138,7 @@ const useParamsController = () => {
 				setLogsStore((store) =>
 					setTargetPage(
 						store,
-						Math.abs(_.toNumber(presentParams.page) - Math.round(offset / _.toNumber(presentParams.rows))),
+						Math.abs(_.toNumber(presentParams.page) - Math.ceil(offset / _.toNumber(presentParams.rows))),
 					),
 				);
 			}
@@ -170,6 +170,7 @@ const useParamsController = () => {
 				filterType: custQuerySearchState.viewMode,
 				fields: `${joinOrSplit(!_.isEmpty(targetColumns) ? targetColumns : activeHeaders)}`,
 			});
+
 			const presentParams = paramsStringToParamsObj(searchParams);
 			if (_.isEqual(storeAsParams, presentParams)) return;
 			setSearchParams(storeAsParams);
