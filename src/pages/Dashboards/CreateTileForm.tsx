@@ -527,14 +527,14 @@ const sanitizeFormValues = (form: TileFormType, type: 'create' | 'update'): Edit
 };
 
 const defaultVizOpts = {
-	visualization_type: 'donut-chart' as 'donut-chart',
+	visualization_type: 'donut-chart' as const,
 	size: 'sm',
 	color_config: [],
 	tick_config: [],
 	circular_chart_config: {},
 	graph_config: { x_key: '', y_keys: [] },
-	orientation: 'horizontal' as 'horizontal',
-	graph_type: 'default' as 'default',
+	orientation: 'horizontal' as const,
+	graph_type: 'default' as const,
 };
 
 const defaultFormOpts = {
