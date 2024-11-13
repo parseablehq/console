@@ -21,36 +21,18 @@ export default defineConfig({
 		trace: 'on-first-retry',
 	},
 
-	/* Run tests in sequence by specifying files directly */
+	/* Configure projects for major browsers */
 	projects: [
 		{
-			name: 'login - Chromium',
-			testMatch: '**/login.spec.ts', // Ensure login runs first
+			name: 'chromium',
 			use: { ...devices['Desktop Chrome'] },
 		},
 		{
-			name: 'home - Chromium',
-			testMatch: '**/home.spec.ts', // Ensure home runs second
-			use: { ...devices['Desktop Chrome'] },
-		},
-		{
-			name: 'login - Firefox',
-			testMatch: '**/login.spec.ts', // Ensure login runs first on Firefox
+			name: 'Firefox',
 			use: { ...devices['Desktop Firefox'] },
 		},
 		{
-			name: 'home - Firefox',
-			testMatch: '**/home.spec.ts', // Ensure home runs second on Firefox
-			use: { ...devices['Desktop Firefox'] },
-		},
-		{
-			name: 'login - Safari',
-			testMatch: '**/login.spec.ts', // Ensure login runs first on Safari
-			use: { ...devices['Desktop Safari'] },
-		},
-		{
-			name: 'home - Safari',
-			testMatch: '**/home.spec.ts', // Ensure home runs second on Safari
+			name: 'Safari',
 			use: { ...devices['Desktop Safari'] },
 		},
 	],

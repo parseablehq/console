@@ -22,8 +22,25 @@ jobs:
         env:
           PORT: 3001
           VITE_PARSEABLE_URL: 'https://demo.parseable.com'
-      - name: Run Playwright tests
-        run: pnpm exec playwright test
+      - name: Run Playwright Login tests
+        run: pnpm exec playwright test login.spec.ts
+      - name: Set Environment Variables
+        run: |
+
+          # define variables      
+          VITE_USE_BASIC_AUTH=true
+          VITE_USERNAME=admin
+          VITE_PASSWORD=admin
+
+          # set them as GitHub ENV variables
+          echo "VITE_USE_BASIC_AUTH=$VITE_USE_BASIC_AUTH" >> $GITHUB_ENV
+          echo "VITE_USERNAME=$VITE_USERNAME" >> $GITHUB_ENV
+          echo "VITE_PASSWORD=$VITE_PASSWORD" >> $GITHUB_ENV
+
+          # retrieve these GitHub ENV variables
+          echo "${{ env.VITE_USE_BASIC_AUTH }}, {{ env.VITE_USERNAME }} anf {{ env.VITE_PASSWORD }}"
+      - name: Run Playwright Home tests
+        run: pnpm exec playwright test home.spec.ts
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
