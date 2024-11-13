@@ -127,7 +127,7 @@ const useParamsController = () => {
 			setLogsStore((store) => setPerPage(store, _.toNumber(presentParams.rows)));
 		}
 
-		if (storeAsParams.page !== presentParams.page) {
+		if (storeAsParams.page !== presentParams.page && !_.isEmpty(presentParams.page)) {
 			setLogsStore((store) => setTargetPage(store, _.toNumber(presentParams.page)));
 
 			const offset = getOffset(_.toNumber(presentParams.page), _.toNumber(presentParams.rows));
