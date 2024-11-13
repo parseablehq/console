@@ -61,6 +61,7 @@ const Stream: FC = () => {
 
 	const fetchSchema = useCallback(() => {
 		setStreamStore(streamChangeCleanup);
+		getStreamInfoRefetch();
 		refetchSchema();
 	}, [currentStream]);
 
