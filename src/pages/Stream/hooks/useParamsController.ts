@@ -129,10 +129,18 @@ const useParamsController = () => {
 
 		if (storeAsParams.page !== presentParams.page) {
 			setLogsStore((store) => setTargetPage(store, _.toNumber(presentParams.page)));
-			const offset = getOffset(_.toNumber(presentParams.page), perPage);
+
+			const offset = getOffset(_.toNumber(presentParams.page), _.toNumber(presentParams.rows));
+
 			if (offset > 0) {
 				setLogsStore((store) => setCurrentOffset(store, offset));
-				setLogsStore((store) => setTargetPage(store, _.toNumber(presentParams.page) - Math.ceil(offset / perPage)));
+
+				setLogsStore((store) =>
+					setTargetPage(
+						store,
+						Math.abs(_.toNumber(presentParams.page) - Math.round(offset / _.toNumber(presentParams.rows))),
+					),
+				);
 			}
 		}
 
@@ -166,7 +174,14 @@ const useParamsController = () => {
 			if (_.isEqual(storeAsParams, presentParams)) return;
 			setSearchParams(storeAsParams);
 		}
-	}, [tableOpts, viewMode, timeRange.startTime.toISOString(), timeRange.endTime.toISOString(), custQuerySearchState]);
+	}, [
+		tableOpts,
+		targetPage,
+		viewMode,
+		timeRange.startTime.toISOString(),
+		timeRange.endTime.toISOString(),
+		custQuerySearchState,
+	]);
 
 	useEffect(() => {
 		if (!isStoreSynced) return;

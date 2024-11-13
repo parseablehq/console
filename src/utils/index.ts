@@ -108,6 +108,10 @@ export const copyTextToClipboard = async (value: any) => {
 
 export const getOffset = (page: number, rowSize: number) => {
 	const product = page * rowSize;
+	if (product % 1000 === 0) {
+		return Math.floor((product - 1) / 1000) * 1000;
+	}
+
 	return Math.floor(product / 1000) * 1000;
 };
 
