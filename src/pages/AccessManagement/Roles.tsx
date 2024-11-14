@@ -314,12 +314,18 @@ const Roles: FC = () => {
 					<Button
 						variant="filled"
 						color="gray"
+						itemID="create-role-modal-button"
 						className={classes.modalActionBtn}
 						disabled={createVaildtion()}
 						onClick={handleCreateRole}>
 						Create
 					</Button>
-					<Button onClick={handleClose} variant="outline" color="gray" className={classes.modalCancelBtn}>
+					<Button
+						onClick={handleClose}
+						variant="outline"
+						color="gray"
+						itemID="cancel-role-modal-button"
+						className={classes.modalCancelBtn}>
 						Cancel
 					</Button>
 				</Group>

@@ -75,19 +75,21 @@ test.describe('Users Page', () => {
 
         test("should have a text input to enter the name of the Role", async ({ page }) => {
             // Check if the text input is visible
-            const roleNameInput = page.locator('input[placeholder="Type the name of the Role to create"]');
-            await expect(roleNameInput).toBeVisible();
-        });
+            await expect(page.locator('input[placeholder="Type the name of the Role to create"]')).toBeVisible();
 
-        test("should have a button to create the Role", async ({ page }) => {
+            // Check if the dropdown is visible
+            const accessLevelDropdown = page.locator('input[placeholder="Select privilege"]');
+            await expect(accessLevelDropdown).toBeVisible();
+
             // Check if the Create button is visible
-            const createButton = page.locator('[itemid="create-role-button"]');
+            const createButton = page.locator('[itemid="create-role-modal-button"]');
             await expect(createButton).toBeVisible();
-        });
 
-        test("should have a button to cancel creating the Role", async ({ page }) => {
+            // Check if the Create button is disabled by default
+            await expect(createButton).toBeDisabled();
+
             // Check if the Cancel button is visible
-            const cancelButton = page.getByRole('button', { name: 'Cancel' });
+            const cancelButton = page.locator('[itemid="cancel-role-modal-button"]');
             await expect(cancelButton).toBeVisible();
         });
     });
