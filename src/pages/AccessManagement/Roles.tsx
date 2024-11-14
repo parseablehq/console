@@ -173,6 +173,7 @@ const Roles: FC = () => {
 				<Stack style={{ flexDirection: 'row' }} gap={0}>
 					<Button
 						className={classes.createUserBtn}
+						itemID="create-role-button"
 						rightSection={<IconUserPlus size={px('1rem')} stroke={1.5} />}
 						onClick={() => {
 							setModalOpen(true);

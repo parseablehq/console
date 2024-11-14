@@ -81,7 +81,7 @@ test.describe('Users Page', () => {
 
         test("should have a button to create the Role", async ({ page }) => {
             // Check if the Create button is visible
-            const createButton = page.getByRole('button', { name: 'Create' });
+            const createButton = page.locator('[itemid="create-role-button"]');
             await expect(createButton).toBeVisible();
         });
 
