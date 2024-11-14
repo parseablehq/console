@@ -2,15 +2,11 @@ import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import _ from 'lodash';
 import { useDocumentTitle } from '@mantine/hooks';
-import { Stack, Box, Pill } from '@mantine/core';
+import { Stack, Box, Pill, PillsInput, Badge } from '@mantine/core';
 import LogsView from '../Stream/Views/Explore/LogsView';
 import Querier from '../Stream/components/Querier';
 import SecondaryToolbar from '../Stream/components/SecondaryToolbar';
-import {
-	PRIMARY_HEADER_HEIGHT,
-	STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT,
-	STREAM_PRIMARY_TOOLBAR_HEIGHT,
-} from '@/constants/theme';
+import { PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 import { MaximizeButton } from '../Stream/components/PrimaryToolbar';
 import TimeRange from '@/components/Header/TimeRange';
 import RefreshInterval from '@/components/Header/RefreshInterval';
@@ -20,7 +16,6 @@ import ShareButton from '@/components/Header/ShareButton';
 const Correlation = () => {
 	useDocumentTitle('Parseable | Correlation');
 	// const [opened, { toggle }] = useDisclosure(false);
-	// const sideBarWidth = SECONDARY_SIDEBAR_WIDTH;
 	return (
 		<Box
 			style={{
@@ -29,6 +24,53 @@ const Correlation = () => {
 				position: 'relative',
 				width: '100%',
 			}}>
+			<div
+				style={{
+					width: '200px',
+					borderRight: '1px solid #DEE2E6',
+					padding: '5px',
+					display: 'flex',
+					flexDirection: 'column',
+					gap: '20px',
+				}}>
+				<div>Streams</div>
+				<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+					<div>Stream A</div>
+					<Badge color="grape" size="xl" style={{ width: '180px', display: 'flex', justifyContent: 'center' }}>
+						React
+					</Badge>
+					<Badge color="grape" size="xl" style={{ width: '180px', display: 'flex', justifyContent: 'center' }}>
+						React
+					</Badge>
+					<Badge color="grape" size="xl" style={{ width: '180px', display: 'flex', justifyContent: 'center' }}>
+						React
+					</Badge>
+				</div>
+				<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+					<div>Stream B</div>
+					<Badge color="teal" size="xl" style={{ width: '180px', display: 'flex', justifyContent: 'center' }}>
+						React
+					</Badge>
+					<Badge color="teal" size="xl" style={{ width: '180px', display: 'flex', justifyContent: 'center' }}>
+						React
+					</Badge>
+					<Badge color="teal" size="xl" style={{ width: '180px', display: 'flex', justifyContent: 'center' }}>
+						React
+					</Badge>
+				</div>
+				<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+					<div>Stream C</div>
+					<Badge size="xl" style={{ width: '180px', display: 'flex', justifyContent: 'center' }}>
+						React
+					</Badge>
+					<Badge size="xl" style={{ width: '180px', display: 'flex', justifyContent: 'center' }}>
+						React
+					</Badge>
+					<Badge size="xl" style={{ width: '180px', display: 'flex', justifyContent: 'center' }}>
+						React
+					</Badge>
+				</div>
+			</div>
 			<Stack
 				gap={0}
 				style={{
@@ -37,79 +79,51 @@ const Correlation = () => {
 					width: '100%',
 				}}>
 				<Stack
-					style={{ flexDirection: 'row', padding: '10px', alignItems: 'center', borderBottom: '1px solid #DEE2E6' }}
-					w="100%">
-					<div style={{ display: 'flex', flexDirection: 'row', gap: '5px', width: '20%', marginLeft: '10px' }}>
-						<Pill withRemoveButton>Stream 1</Pill>
-						<Pill withRemoveButton>Stream 2</Pill>
-						<Pill withRemoveButton>Stream 3</Pill>
-					</div>
-					<div style={{ width: '60%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-						Saved Correlations
-					</div>
-					<TimeRange />
-				</Stack>
-				<Stack style={{ flexDirection: 'row', borderBottom: '1px solid #DEE2E6' }} w="100%">
-					<div
-						style={{
-							width: '50%',
-							display: 'flex',
-							justifyContent: 'center',
-							borderRight: '1px solid #DEE2E6',
-							padding: '24px',
-							gap: '60px',
-						}}>
-						<div
-							style={{
-								border: '1px solid #D8B4FE',
-								borderRadius: '5px',
-								width: '113px',
-								height: '276px',
-								padding: '12px',
-								display: 'flex',
-								alignItems: 'center',
-								flexDirection: 'column',
-								gap: '24px',
-							}}>
-							<div>Stream A</div>
-							<div>
-								{new Array(5).fill(0).map((key, index) => {
-									return <div>Field {index} A</div>;
-								})}
-							</div>
-						</div>
-						<div
-							style={{
-								border: '1px solid #FECDD3',
-								borderRadius: '5px',
-								width: '113px',
-								height: '276px',
-								padding: '12px',
-							}}>
-							Stream B
-						</div>
-						<div
-							style={{
-								border: '1px solid #FDE047',
-								borderRadius: '5px',
-								width: '113px',
-								height: '276px',
-								padding: '12px',
-							}}>
-							Stream C
-						</div>
-					</div>
-					<div style={{ width: '50%' }}>Col 2</div>
-				</Stack>
-				<Stack
 					style={{
-						height: STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT,
-						alignItems: 'center',
 						justifyContent: 'center',
-						padding: '0 1.25rem',
+						borderBottom: '1px solid #DEE2E6',
+						padding: '10px',
 					}}>
-					<Stack style={{ flexDirection: 'row', height: STREAM_PRIMARY_TOOLBAR_HEIGHT }} w="100%">
+					<Stack>
+						<div style={{ display: 'flex', gap: '5px', alignItems: 'center', width: '100%' }}>
+							<div>Fields</div>
+							<PillsInput style={{ width: '100%' }} variant="filled" size="md" radius="md">
+								<Pill.Group>
+									<Pill size="xl" withRemoveButton>
+										Stream A.Status
+									</Pill>
+									<Pill size="xl" withRemoveButton>
+										Stream B.Status Code
+									</Pill>
+									<Pill size="xl" withRemoveButton>
+										Errors
+									</Pill>
+									{/* <PillsInput.Field placeholder="Enter tags" /> */}
+								</Pill.Group>
+							</PillsInput>
+						</div>
+						<div style={{ display: 'flex', gap: '5px', alignItems: 'center', width: '100%' }}>
+							<div>Joins</div>
+							<PillsInput style={{ width: '100%' }} variant="filled" size="md" radius="md">
+								<Pill.Group>
+									<Pill size="xl" withRemoveButton>
+										Stream A.Status = Stream B.Status Code
+									</Pill>
+
+									{/* <PillsInput.Field placeholder="Enter tags" /> */}
+								</Pill.Group>
+							</PillsInput>
+						</div>
+					</Stack>
+					<Stack
+						style={{
+							flexDirection: 'row',
+							padding: '5px',
+							height: '100%',
+						}}
+						w="100%">
 						<Querier />
+						<TimeRange />
 						<RefreshInterval />
 						<RefreshNow />
 						<ShareButton />
