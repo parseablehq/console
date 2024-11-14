@@ -1,5 +1,14 @@
 import { Page, expect } from '@playwright/test';
 
+/**
+ * Creates a new role in the application.
+ *
+ * @param page - The Playwright Page object representing the browser page.
+ * @param ROLE_NAME - The name of the role to be created.
+ * @param ACCESS - The access level to be assigned to the role.
+ *
+ * @returns A promise that resolves when the role creation process is complete.
+ */
 const createNewRole = async (page: Page, ROLE_NAME: string, ACCESS: string) => {
 	const createRoleButton = page.getByRole('button', { name: 'Create Role' });
 	await createRoleButton.click();
@@ -21,6 +30,17 @@ const createNewRole = async (page: Page, ROLE_NAME: string, ACCESS: string) => {
 	await createButton.click();
 };
 
+/**
+ * Deletes a role if it exists in the roles table on the given page.
+ *
+ * @param page - The Playwright Page object representing the browser page.
+ * @param ROLE_NAME - The name of the role to be deleted.
+ *
+ * @remarks
+ * This function locates the roles table on the page, checks if the specified role exists,
+ * and if it does, clicks the delete button, confirms the deletion, and verifies that the role
+ * is no longer visible in the table.
+ */
 const deleteIfRoleExists = async (page: Page, ROLE_NAME: string) => {
 	const rolesTable = page.locator('table').filter({
 		has: page
