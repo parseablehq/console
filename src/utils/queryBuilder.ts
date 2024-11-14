@@ -81,7 +81,7 @@ export class QueryBuilder {
 
 	parseableQuery(): string {
 		const offsetPart = typeof this.pageOffset === 'number' ? `OFFSET ${this.pageOffset}` : '';
-		return `SELECT * FROM \"${this.streamName}\" ${offsetPart} LIMIT ${this.limit}`;
+		return `SELECT * FROM \"${this.streamName}\" ORDER BY ${this.timePartitionColumn} desc ${offsetPart} LIMIT ${this.limit}`;
 	}
 
 	getQuery(): string {
