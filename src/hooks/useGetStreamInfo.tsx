@@ -20,7 +20,6 @@ export const useGetStreamInfo = (currentStream: string, initialFetch: boolean) =
 		refetchOnWindowFocus: false,
 		refetchOnMount: false,
 		enabled: initialFetch,
-		// currentStream !== '',
 		onSuccess: (data) => {
 			setStreamStore((store) => setStreamInfo(store, data));
 		},
