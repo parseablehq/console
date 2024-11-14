@@ -1,6 +1,7 @@
 import { test, expect, BrowserContext, Page } from '@playwright/test';
 
 const TEST_URL = 'http://localhost:3001/users';
+const ROLE_NAME = 'playwright-test-role';
 
 test.describe('Users Page', () => {
     let context: BrowserContext;
@@ -68,31 +69,141 @@ test.describe('Users Page', () => {
         test.beforeEach(async ({ page }) => {
             await page.goto(TEST_URL);
 
-            // Click on the Create Role button
-            const createRoleButton = page.getByRole('button', { name: 'Create Role' });
-            await createRoleButton.click();
+            // const createRoleButton = page.getByRole('button', { name: 'Create Role' });
+            // await createRoleButton.click();
         });
 
         test("create role modal should have the required elements", async ({ page }) => {
-            // Check if the text input is visible
             await expect(page.getByPlaceholder("Type the name of the Role to create")).toBeVisible();
+            await expect(page.getByPlaceholder("Select privilege")).toBeVisible();
+            await expect(page.getByTestId('create-role-modal-button')).toBeDisabled();
+            await expect(page.getByTestId("cancel-role-modal-button")).toBeVisible();
+            // close the modal
+            await page.getByTestId("cancel-role-modal-button").click();
+            await expect(page.locator('text=Enter the name of the Role')).not.toBeVisible();
+        });
 
-            // Check if the dropdown is visible
+        test('create a new Role', async ({ page }) => {
+            console.log("Starting 'create a new Role' test");
+
+            // Wait for one second
+            await page.waitForTimeout(1000);
+
+            // check if loading text is not visible on the roles section
+            await expect(page.locator('table').filter({ hasText: 'RoleAccessDeleteloading' }).locator('td')).not.toBeVisible();
+
+
+            // Inline the helper function here to check if it runs
+            const rolesTable = page.locator('table').filter({
+                has: page.locator('thead tr').filter({
+                    has: page.locator('th').nth(0).filter({ hasText: 'Role' })
+                }).filter({
+                    has: page.locator('th').nth(1).filter({ hasText: 'Access' })
+                })
+            });
+
+            const roleRow = rolesTable.locator('tbody tr').filter({ hasText: ROLE_NAME });
+            const roleRowCount = await roleRow.count();
+
+            console.log(`Found ${roleRowCount} rows with the role name "${ROLE_NAME}".`);
+            if (roleRowCount === 0) {
+                console.log(`Role "${ROLE_NAME}" does not exist. Skipping deletion.`);
+
+            } else {
+
+                console.log(`Role "${ROLE_NAME}" exists. Attempting to delete.`);
+                const deleteButton = roleRow.getByRole('button', { name: 'Delete Role' });
+                await deleteButton.click();
+
+                await page.waitForSelector('text=Are you sure you want to delete this role?');
+                const roleNameInput = page.getByPlaceholder('Please enter the Role');
+                await roleNameInput.fill(ROLE_NAME);
+
+                const confirmDeleteButton = page.getByRole('button', { name: 'Delete' });
+                await expect(confirmDeleteButton).toBeEnabled();
+                await confirmDeleteButton.click();
+
+                await expect(roleRow).not.toBeVisible();
+                console.log(`Successfully deleted role "${ROLE_NAME}".`);
+            }
+
+            console.log("Finished checking if role exists; now creating role.");
+
+            const createRoleButton = page.getByRole('button', { name: 'Create Role' });
+            await createRoleButton.click();
+            const roleNameInputCreate = page.getByPlaceholder("Type the name of the Role to create");
+            await roleNameInputCreate.fill(ROLE_NAME);
+
             const accessLevelDropdown = page.getByPlaceholder("Select privilege");
-            await expect(accessLevelDropdown).toBeVisible();
+            await accessLevelDropdown.click();
+            await page.locator('.mantine-Select-option').filter({ hasText: /^admin$/ }).click();
 
-            // Check if the Create button is visible
+            // Wait for one second
+            await page.waitForTimeout(1000);
+            // Check if the Create button is enabled
             const createButton = page.getByTestId('create-role-modal-button');
-            await expect(createButton).toBeVisible();
+            await expect(createButton).toBeEnabled();
+            await createButton.click();
 
-            // Check if the Create button is disabled by default
-            await expect(createButton).toBeDisabled();
+            // wait for the modal to close, and the new Role to be added to the table
+            await page.waitForSelector('text=Enter the name of the Role', { state: 'detached' });
+            const newRoleRow = page.locator('tbody tr').filter({ hasText: ROLE_NAME });
+            await expect(newRoleRow).toBeVisible();
+            const newRoleAccess = newRoleRow.locator('td').nth(1);
+            // check if new role has admin access
+            await expect(newRoleAccess).toHaveText('admin');
+        });
 
-            // Check if the Cancel button is visible
-            const cancelButton = page.getByTestId("cancel-role-modal-button");
-            await expect(cancelButton).toBeVisible();
+        test('delete the newly created Role', async ({ page }) => {
+            // Wait for one second
+            await page.waitForTimeout(1000);
+
+            // check if loading text is not visible on the roles section
+            await expect(page.locator('table').filter({ hasText: 'RoleAccessDeleteloading' }).locator('td')).not.toBeVisible();
+
+            // Inline the helper function here to check if it runs
+            const rolesTable = page.locator('table').filter({
+                has: page.locator('thead tr').filter({
+                    has: page.locator('th').nth(0).filter({ hasText: 'Role' })
+                }).filter({
+                    has: page.locator('th').nth(1).filter({ hasText: 'Access' })
+                })
+            });
+
+            const roleRow = rolesTable.locator('tbody tr').filter({ hasText: ROLE_NAME });
+            const roleRowCount = await roleRow.count();
+
+            console.log(`Found ${roleRowCount} rows with the role name "${ROLE_NAME}".`);
+            if (roleRowCount === 0) {
+                console.log(`Role "${ROLE_NAME}" does not exist. Skipping deletion.`);
+                return;
+            }
+
+            console.log(`Role "${ROLE_NAME}" exists. Attempting to delete.`);
+            const deleteButton = roleRow.getByRole('button', { name: 'Delete Role' });
+            await deleteButton.click();
+
+            await page.waitForSelector('text=Are you sure you want to delete this role?');
+            const roleNameInput = page.getByPlaceholder('Please enter the Role');
+            await roleNameInput.fill(ROLE_NAME);
+
+            const confirmDeleteButton = page.getByRole('button', { name: 'Delete' });
+            await expect(confirmDeleteButton).toBeEnabled();
+            await confirmDeleteButton.click();
+
+            // check if loading text is not visible on the roles section
+            await expect(page.locator('table').filter({ hasText: 'RoleAccessDeleteloading' }).locator('td')).not.toBeVisible();
+
+            await expect(roleRow).not.toBeVisible();
+            console.log(`Successfully deleted role "${ROLE_NAME}".`);
+
+            await expect(rolesTable).toBeVisible();
+
+            const deletedRoleRow = rolesTable.locator('tbody tr').filter({ hasText: ROLE_NAME });
+            await expect(deletedRoleRow).not.toBeVisible();
         });
     });
+
 
     test("should have a button to set the default OIDC Role", async ({ page }) => {
         await page.goto(TEST_URL);
