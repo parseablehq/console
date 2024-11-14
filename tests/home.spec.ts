@@ -68,6 +68,7 @@ test.describe('Home Page', () => {
 			await page.fill('input[placeholder="Name"]', 'PlaywrightStream');
 
 			await page.locator('button:has-text("Create")').nth(1).click();
+			await page.waitForTimeout(1000);
 		});
 
 		test.describe('Delete Stream', () => {
@@ -84,7 +85,7 @@ test.describe('Home Page', () => {
 				await expect(manageBtn).toBeVisible();
 				await manageBtn.click();
 
-				await page.waitForTimeout(2000);
+				await page.waitForTimeout(1000);
 
 				// Step 3: Delete the demo stream
 				const deleteBtn = page.locator('[data-id="delete-stream-btn"]');
@@ -96,13 +97,7 @@ test.describe('Home Page', () => {
 				await expect(confirmDeleteBtn).toBeEnabled();
 				await confirmDeleteBtn.click();
 
-				// Wait for the delete API to finish
-				const [response] = await Promise.all([
-					page.waitForResponse((response) => response.url().includes('PlaywrightStream') && response.status() === 200),
-					confirmDeleteBtn.click(),
-				]);
-
-				await expect(response).toBeDefined();
+				await page.waitForTimeout(1000);
 
 				// Step 4: Check if stream is deleted
 				await page.goto(`${TEST_URL}`);

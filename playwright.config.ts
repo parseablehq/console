@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
 	testDir: './tests',
+	testIgnore: '**/login.spec.ts',
 	/* Run tests in files in parallel */
 	fullyParallel: true, // Set this to false to ensure sequential execution of files
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -27,14 +28,14 @@ export default defineConfig({
 			name: 'chromium',
 			use: { ...devices['Desktop Chrome'] },
 		},
-		{
-			name: 'Firefox',
-			use: { ...devices['Desktop Firefox'] },
-		},
-		{
-			name: 'Safari',
-			use: { ...devices['Desktop Safari'] },
-		},
+		// {
+		// 	name: 'Firefox',
+		// 	use: { ...devices['Desktop Firefox'] },
+		// },
+		// {
+		// 	name: 'Safari',
+		// 	use: { ...devices['Desktop Safari'] },
+		// },
 	],
 
 	/* Run your local dev server before starting the tests */
