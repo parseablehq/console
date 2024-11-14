@@ -36,11 +36,7 @@ const deleteIfRoleExists = async (page: Page, ROLE_NAME: string) => {
 	const roleRow = rolesTable.locator('tbody tr').filter({ hasText: ROLE_NAME });
 	const roleRowCount = await roleRow.count();
 
-	console.log(`Found ${roleRowCount} rows with the role name "${ROLE_NAME}".`);
-	if (roleRowCount === 0) {
-		console.log(`Role "${ROLE_NAME}" does not exist. Skipping deletion.`);
-	} else {
-		console.log(`Role "${ROLE_NAME}" exists. Attempting to delete.`);
+	if (roleRowCount !== 0) {
 		const deleteButton = roleRow.getByRole('button', { name: 'Delete Role' });
 		await deleteButton.click();
 
@@ -53,7 +49,6 @@ const deleteIfRoleExists = async (page: Page, ROLE_NAME: string) => {
 		await confirmDeleteButton.click();
 
 		await expect(roleRow).not.toBeVisible();
-		console.log(`Successfully deleted role "${ROLE_NAME}".`);
 	}
 };
 
