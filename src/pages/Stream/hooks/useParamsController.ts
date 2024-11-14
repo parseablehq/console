@@ -128,6 +128,18 @@ const useParamsController = () => {
 			setLogsStore((store) => setPerPage(store, _.toNumber(presentParams.rows)));
 		}
 
+		if (storeAsParams.query !== presentParams.query) {
+			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
+			if (presentParams.filterType === 'filters')
+				setFilterStore((store) =>
+					applySavedFilters(store, generateQueryBuilderASTFromSQL(presentParams.query) as QueryType),
+				);
+		}
+
+		if (storeAsParams.fields !== presentParams.fields) {
+			setLogsStore((store) => setTargetColumns(store, joinOrSplit(presentParams.fields) as string[]));
+		}
+
 		if (storeAsParams.page !== presentParams.page && !_.isEmpty(presentParams.page)) {
 			setLogsStore((store) => setTargetPage(store, _.toNumber(presentParams.page)));
 
@@ -145,17 +157,6 @@ const useParamsController = () => {
 			}
 		}
 
-		if (storeAsParams.query !== presentParams.query) {
-			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
-			if (presentParams.filterType === 'filters')
-				setFilterStore((store) =>
-					applySavedFilters(store, generateQueryBuilderASTFromSQL(presentParams.query) as QueryType),
-				);
-		}
-
-		if (storeAsParams.fields !== presentParams.fields) {
-			setLogsStore((store) => setTargetColumns(store, joinOrSplit(presentParams.fields) as string[]));
-		}
 		setStoreSynced(true);
 	}, []);
 

@@ -9,7 +9,6 @@ import { IconSelector } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
 import classes from '../../styles/Footer.module.css';
 import { LOGS_FOOTER_HEIGHT } from '@/constants/theme';
-import { useSearchParams } from 'react-router-dom';
 
 const { setPageAndPageData, setCurrentPage, setCurrentOffset } = logsStoreReducers;
 
@@ -91,19 +90,15 @@ const LimitControl: FC = () => {
 
 const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: boolean }) => {
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
-	const { totalPages, currentOffset, currentPage, perPage, totalCount } = tableOpts;
-	const [searchParams] = useSearchParams();
-	const pageFromURL = _.toNumber(searchParams.get('page'));
+	const { totalPages, currentOffset, currentPage, perPage, totalCount, targetPage } = tableOpts;
 
 	const onPageChange = useCallback((page: number) => {
 		setLogsStore((store) => setPageAndPageData(store, page));
 	}, []);
 
 	useEffect(() => {
-		const initialPageFromUrl = pageFromURL % Math.ceil(currentOffset / perPage);
 		if (!props.loaded) return;
-
-		pagination.setPage(pageFromURL > totalPages ? initialPageFromUrl : pageFromURL);
+		pagination.setPage(targetPage ? targetPage : 1);
 	}, [props.loaded]);
 
 	const pagination = usePagination({
