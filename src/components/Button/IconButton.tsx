@@ -18,7 +18,7 @@ const IconButton: FC<IconButtonProps> = (props) => {
 		return (
 			<Tooltip label={tooltipLabel}>
 				<ActionIcon
-					itemID={props.data_id}
+					data-testId={props.data_id}
 					size={props.size ? props.size : 'xl'}
 					className={`${classes.iconBtn} ${props.active && classes.iconBtnActive}`}
 					onClick={props.onClick && props.onClick}>
@@ -29,7 +29,7 @@ const IconButton: FC<IconButtonProps> = (props) => {
 	} else {
 		return (
 			<ActionIcon
-				itemID={props.data_id}
+				data-testId={props.data_id}
 				size={props.size ? props.size : 'xl'}
 				className={`${classes.iconBtn} ${props.active && classes.iconBtnActive}`}
 				onClick={props.onClick && props.onClick}>

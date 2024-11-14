@@ -73,23 +73,23 @@ test.describe('Users Page', () => {
             await createRoleButton.click();
         });
 
-        test("should have a text input to enter the name of the Role", async ({ page }) => {
+        test("create role modal should have the required elements", async ({ page }) => {
             // Check if the text input is visible
-            await expect(page.locator('input[placeholder="Type the name of the Role to create"]')).toBeVisible();
+            await expect(page.getByPlaceholder("Type the name of the Role to create")).toBeVisible();
 
             // Check if the dropdown is visible
-            const accessLevelDropdown = page.locator('input[placeholder="Select privilege"]');
+            const accessLevelDropdown = page.getByPlaceholder("Select privilege");
             await expect(accessLevelDropdown).toBeVisible();
 
             // Check if the Create button is visible
-            const createButton = page.locator('[itemid="create-role-modal-button"]');
+            const createButton = page.getByTestId('create-role-modal-button');
             await expect(createButton).toBeVisible();
 
             // Check if the Create button is disabled by default
             await expect(createButton).toBeDisabled();
 
             // Check if the Cancel button is visible
-            const cancelButton = page.locator('[itemid="cancel-role-modal-button"]');
+            const cancelButton = page.getByTestId("cancel-role-modal-button");
             await expect(cancelButton).toBeVisible();
         });
     });
@@ -106,7 +106,7 @@ test.describe('Users Page', () => {
         await page.goto(TEST_URL);
 
         // Check if the Docs button is visible
-        const docsButton = page.locator('[itemid="roles-docs"]');
+        const docsButton = page.getByTestId("roles-docs");
         await expect(docsButton).toBeVisible();
     });
 
@@ -116,7 +116,7 @@ test.describe('Users Page', () => {
         // Click on the Docs button and wait for a new page to open
         const [newPage] = await Promise.all([
             page.waitForEvent('popup'), // Wait for a new tab (popup) to open
-            page.locator('[itemid="roles-docs"]').click()
+            page.getByTestId("roles-docs").click()
         ]);
 
         // Verify that the new page's URL matches the expected URL
