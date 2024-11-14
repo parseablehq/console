@@ -21,6 +21,7 @@ type FilterQueryBuilderType = {
 	whereClause: string;
 	queryEngine?: QueryEngine;
 	timeRangeCondition?: string;
+	timePartitionColumn: string;
 };
 
 //! RESOURCE PATH CONSTANTS
@@ -109,13 +110,22 @@ export class FilterQueryBuilder {
 	streamName: string;
 	limit: number;
 	timeRangeCondition?: string;
+	timePartitionColumn: string;
 
-	constructor({ streamName, limit, whereClause, queryEngine, timeRangeCondition = '(1=1)' }: FilterQueryBuilderType) {
+	constructor({
+		streamName,
+		limit,
+		whereClause,
+		queryEngine,
+		timeRangeCondition = '(1=1)',
+		timePartitionColumn,
+	}: FilterQueryBuilderType) {
 		this.queryEngine = queryEngine;
 		this.whereClause = whereClause;
 		this.streamName = streamName;
 		this.limit = limit;
 		this.timeRangeCondition = timeRangeCondition;
+		this.timePartitionColumn = timePartitionColumn;
 	}
 
 	getTrinoQuery(): string {
@@ -123,7 +133,7 @@ export class FilterQueryBuilder {
 	}
 
 	getParseableQuery(): string {
-		return `select * from \"${this.streamName}\" where ${this.whereClause} LIMIT ${this.limit}`;
+		return `select * from \"${this.streamName}\" where ${this.whereClause} ORDER BY ${this.timePartitionColumn} desc LIMIT ${this.limit}`;
 	}
 
 	getQuery(): string {
