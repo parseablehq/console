@@ -120,6 +120,7 @@ const useParamsController = () => {
 			fields: `${joinOrSplit(!_.isEmpty(targetColumns) ? targetColumns : activeHeaders)}`,
 		});
 		const presentParams = paramsStringToParamsObj(searchParams);
+		syncTimeRangeToStore(storeAsParams, presentParams);
 		if (['table', 'json'].includes(presentParams.view) && presentParams.view !== storeAsParams.view) {
 			setLogsStore((store) => onToggleView(store, presentParams.view as 'table' | 'json'));
 		}
@@ -155,7 +156,6 @@ const useParamsController = () => {
 		if (storeAsParams.fields !== presentParams.fields) {
 			setLogsStore((store) => setTargetColumns(store, joinOrSplit(presentParams.fields) as string[]));
 		}
-		syncTimeRangeToStore(storeAsParams, presentParams);
 		setStoreSynced(true);
 	}, []);
 
