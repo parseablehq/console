@@ -4,6 +4,7 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 const PrivateRoute: FC = () => {
+	debugger;
 	const auth = Cookies.get('session');
 	const { pathname } = useLocation();
 
