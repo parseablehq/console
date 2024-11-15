@@ -42,6 +42,14 @@ export default defineConfig({
 	webServer: {
 		command: 'pnpm run dev',
 		url: 'http://localhost:3001',
-		reuseExistingServer: !process.env.CI,
+		reuseExistingServer: false,
+		timeout: 120000, // Increase timeout for server startup
+		env: {
+			PORT: '3001',
+			VITE_PARSEABLE_URL: 'https://demo.parseable.com',
+			VITE_BASIC_AUTH: 'true',
+			VITE_USERNAME: 'admin',
+			VITE_PASSWORD: 'admin',
+		},
 	},
 });
