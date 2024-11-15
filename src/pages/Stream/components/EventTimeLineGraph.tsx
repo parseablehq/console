@@ -20,7 +20,7 @@ const { makeTimeRangeLabel } = timeRangeUtils;
 type CompactInterval = 'minute' | 'day' | 'hour' | 'quarter-hour' | 'half-hour' | 'month';
 
 function extractWhereClause(sql: string) {
-	const whereClauseRegex = /WHERE\s+(.*?)(?=\s*(ORDER\s+BY|GROUP\s+BY|LIMIT|$))/i;
+	const whereClauseRegex = /WHERE\s+(.*?)(?=\s*(ORDER\s+BY|GROUP\s+BY|OFFSET|LIMIT|$))/i;
 	const match = sql.match(whereClauseRegex);
 	if (match) {
 		return match[1].trim();
