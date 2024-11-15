@@ -24,20 +24,20 @@ jobs:
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
       - name: Start the development server
-        run: pnpm run dev &
+        run: |
+          pnpm run dev -- --host --port $PORT > vite.log 2>&1 &
+          echo $! > vite.pid
         env:
           PORT: 3001
           VITE_PARSEABLE_URL: https://demo.parseable.com
           VITE_BASIC_AUTH: true
           VITE_USERNAME: admin
           VITE_PASSWORD: admin
-      - name: Echo
+      - name: Wait for the server to be ready
         run: |
-          echo "PORT: $PORT"
-          echo "VITE_PARSEABLE_URL: $VITE_PARSEABLE_URL"
-          echo "VITE_BASIC_AUTH: $VITE_BASIC_AUTH"
-          echo "VITE_USERNAME: $VITE_USERNAME"
-          echo "VITE_PASSWORD: $VITE_PASSWORD"
+          timeout 30 bash -c 'until curl -sf http://localhost:$PORT; do sleep 1; done'
+      - name: Run Playwright tests
+        run: pnpm exec playwright test
       - name: Run Playwright tests
         run: pnpm exec playwright test
       - uses: actions/upload-artifact@v4
