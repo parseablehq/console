@@ -8,7 +8,6 @@ import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from '
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { IconChevronsLeft, IconGripVertical, IconPin, IconPinFilled } from '@tabler/icons-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
-import { ResizableBox } from 'react-resizable';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const { toggleConfigViewType, toggleDisabledColumns, setOrderedHeaders, togglePinnedColumns, setDisabledColumns } =
@@ -314,38 +313,33 @@ const LogsViewConfig = (props: { schemaLoading: boolean; logsLoading: boolean; i
 	}, [maximized]);
 
 	return (
-		<Stack ref={divRef}>
-			<ResizableBox
-				width={sideBarOpen ? 0 : LOGS_CONFIG_SIDEBAR_WIDTH}
-				height={height}
-				axis="x"
-				maxConstraints={[500, height]}
-				minConstraints={[sideBarOpen ? 0 : 200, height]}
-				style={{
-					transition: 'width 1s',
-				}}>
-				<Stack style={{ width: '100%', height: '100%' }} className={classes.container}>
-					<Header />
-					{configViewType === 'schema' ? (
-						<SchemaList isLoading={props.schemaLoading || props.infoLoading} />
-					) : (
-						<ColumnsList isLoading={props.logsLoading || props.infoLoading} />
-					)}
-				</Stack>
-				<Stack
-					onClick={() => setStreamStore((store) => toggleSideBar(store))}
-					style={{
-						position: 'absolute',
-						top: '50%',
-						right: '-5%',
-						transform: 'translateY(-50%)',
-						zIndex: 100,
-						backgroundColor: '#fff',
-						borderRadius: '50%',
-					}}>
-					{!sideBarOpen && <IconChevronsLeft />}
-				</Stack>
-			</ResizableBox>
+		<Stack
+			ref={divRef}
+			style={{
+				borderRight: '1px solid var(--mantine-color-gray-2)',
+				width: sideBarOpen ? 0 : LOGS_CONFIG_SIDEBAR_WIDTH,
+				transition: 'width 0.5s',
+			}}>
+			<Stack style={{ width: LOGS_CONFIG_SIDEBAR_WIDTH, height: height - 30 }} className={classes.container}>
+				<Header />
+				{configViewType === 'schema' ? (
+					<SchemaList isLoading={props.schemaLoading || props.infoLoading} />
+				) : (
+					<ColumnsList isLoading={props.logsLoading || props.infoLoading} />
+				)}
+			</Stack>
+			<Stack className={classes.collapseBtn}>
+				{!sideBarOpen && (
+					<Tooltip label="Collapse" position="left">
+						<IconChevronsLeft
+							className={classes.collapseIcon}
+							onClick={() => setStreamStore((store) => toggleSideBar(store))}
+							stroke={1.2}
+							size="1.2rem"
+						/>
+					</Tooltip>
+				)}
+			</Stack>
 		</Stack>
 	);
 };
