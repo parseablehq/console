@@ -6,11 +6,9 @@ const ROLE_NAME = 'playwright-test-role';
 
 test.describe('users_roles section', () => {
 	let context: BrowserContext;
-	let page: Page;
-
 	test.beforeEach(async ({ browser }) => {
 		context = await browser.newContext();
-		page = await context.newPage();
+		await context.newPage();
 	});
 
 	test.afterEach(async () => {
