@@ -39,9 +39,16 @@ export default defineConfig({
 	],
 
 	/* Run your local dev server before starting the tests */
-	// webServer: {
-	// 	command: 'pnpm run dev',
-	// 	url: 'http://localhost:3001',
-	// 	reuseExistingServer: !process.env.CI,
-	// },
+	webServer: {
+		command: 'pnpm run dev',
+		url: 'http://localhost:3001',
+		reuseExistingServer: false,
+		env: {
+			PORT: '3001',
+			VITE_PARSEABLE_URL: 'https://demo.parseable.com',
+			VITE_USE_BASIC_AUTH: 'true',
+			VITE_USERNAME: 'admin',
+			VITE_PASSWORD: 'admin',
+		},
+	},
 });

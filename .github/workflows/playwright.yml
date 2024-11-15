@@ -8,12 +8,6 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    env:
-      PORT: 3001
-      VITE_PARSEABLE_URL: 'https://demo.parseable.com'
-      VITE_USE_BASIC_AUTH: true
-      VITE_USERNAME: 'admin'
-      VITE_PASSWORD: 'admin'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -23,14 +17,6 @@ jobs:
         run: npm install -g pnpm && pnpm install
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
-      - name: Start the development server
-        run: pnpm run dev &
-        env:
-          PORT: 3001
-          VITE_PARSEABLE_URL: 'https://demo.parseable.com'
-          VITE_USE_BASIC_AUTH: true
-          VITE_USERNAME: 'admin'
-          VITE_PASSWORD: 'admin'
       - name: Run Playwright tests
         run: pnpm exec playwright test
       - uses: actions/upload-artifact@v4
