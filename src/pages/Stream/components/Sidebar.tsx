@@ -1,11 +1,21 @@
 import { Stack, Tooltip } from '@mantine/core';
 import classes from '../styles/SideBar.module.css';
-import { IconBolt, IconFilterSearch, IconSettings2 } from '@tabler/icons-react';
+import {
+	IconBolt,
+	IconChevronsRight,
+	IconFilterSearch,
+	IconLayoutSidebarLeftCollapse,
+	IconLayoutSidebarRightCollapse,
+	IconSettings2,
+} from '@tabler/icons-react';
 import { useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { STREAM_VIEWS } from '@/constants/routes';
 import _ from 'lodash';
+import { streamStoreReducers, useStreamStore } from '../providers/StreamProvider';
+
+const { toggleSideBar } = streamStoreReducers;
 
 type MenuItemProps = {
 	setCurrentView: (view: string) => void;
@@ -58,6 +68,26 @@ const ConfigButton = (props: MenuItemProps) => {
 	);
 };
 
+const ExpandCollapseButton = () => {
+	const [{ sideBarOpen }, setStreamStore] = useStreamStore((store) => store);
+	return (
+		<Stack
+			onClick={() => setStreamStore((store) => toggleSideBar(store))}
+			style={{ padding: '4px 0', alignItems: 'center', marginTop: 'auto' }}
+			className={classes.menuItemContainer}>
+			{/* <Tooltip label={sideBarOpen ? 'Collapse' : 'Expand'} position="right"> */}
+			<Stack style={{ padding: '4px 4px' }}>
+				{sideBarOpen ? (
+					<IconLayoutSidebarRightCollapse stroke={1.2} size="1.2rem" className={classes.icon} color="black" />
+				) : (
+					<IconLayoutSidebarLeftCollapse stroke={1.2} size="1.2rem" className={classes.icon} color="black" />
+				)}
+			</Stack>
+			{/* </Tooltip> */}
+		</Stack>
+	);
+};
+
 const LiveTailMenu = (props: MenuItemProps) => {
 	const viewName = 'live-tail';
 	const isActive = props.currentView === viewName;
@@ -84,6 +114,7 @@ const LiveTailMenu = (props: MenuItemProps) => {
 const SideBar = () => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [isStandAloneMode] = useAppStore((store) => store.isStandAloneMode);
+	const [{ sideBarOpen }, setStreamStore] = useStreamStore((store) => store);
 	const { view } = useParams();
 	const navigate = useNavigate();
 
@@ -102,6 +133,30 @@ const SideBar = () => {
 				<AllLogsButton setCurrentView={setCurrentView} currentView={view || ''} />
 				{isStandAloneMode && <LiveTailMenu setCurrentView={setCurrentView} currentView={view || ''} />}
 				<ConfigButton setCurrentView={setCurrentView} currentView={view || ''} />
+			</Stack>
+			<Stack style={{ marginTop: 'auto' }}>
+				<ExpandCollapseButton />
+			</Stack>
+			<Stack
+				onClick={() => setStreamStore((store) => toggleSideBar(store))}
+				style={{
+					position: 'absolute',
+					top: '57%',
+					left: '2.75%',
+					transform: 'translateY(-50%)',
+					zIndex: 100,
+					backgroundColor: '#fff',
+					borderRadius: '50%',
+				}}>
+				<div
+					className={`icon-wrapper ${sideBarOpen ? 'visible' : ''}`}
+					style={{
+						transition: 'opacity 0.3s ease, transform 0.3s ease',
+						opacity: sideBarOpen ? 1 : 0,
+						transform: sideBarOpen ? 'translateX(0)' : 'translateX(-10px)',
+					}}>
+					<IconChevronsRight />
+				</div>
 			</Stack>
 		</Stack>
 	);

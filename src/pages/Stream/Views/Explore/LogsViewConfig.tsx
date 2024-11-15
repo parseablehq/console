@@ -1,37 +1,20 @@
 import { LOGS_CONFIG_SIDEBAR_WIDTH } from '@/constants/theme';
-import {
-	Box,
-	Checkbox,
-	Divider,
-	Group,
-	ScrollArea,
-	Select,
-	Skeleton,
-	Stack,
-	Text,
-	TextInput,
-	Tooltip,
-} from '@mantine/core';
+import { Checkbox, Divider, Group, ScrollArea, Select, Skeleton, Stack, Text, TextInput, Tooltip } from '@mantine/core';
 import classes from '../../styles/LogsViewConfig.module.css';
-import { useStreamStore } from '../../providers/StreamProvider';
+import { streamStoreReducers, useStreamStore } from '../../providers/StreamProvider';
 import _ from 'lodash';
 import { Field } from '@/@types/parseable/dataType';
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
-import {
-	IconGripVertical,
-	IconPin,
-	IconPinFilled,
-	IconLayoutSidebarLeftCollapseFilled,
-	IconLayoutSidebarRightCollapseFilled,
-} from '@tabler/icons-react';
+import { IconChevronsLeft, IconGripVertical, IconPin, IconPinFilled } from '@tabler/icons-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { ResizableBox } from 'react-resizable';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import IconButton from '@/components/Button/IconButton';
 
 const { toggleConfigViewType, toggleDisabledColumns, setOrderedHeaders, togglePinnedColumns, setDisabledColumns } =
 	logsStoreReducers;
+
+const { toggleSideBar } = streamStoreReducers;
 
 const Header = () => {
 	const [configViewType, setLogsStore] = useLogsStore((store) => store.tableOpts.configViewType);
@@ -319,9 +302,10 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 const LogsViewConfig = (props: { schemaLoading: boolean; logsLoading: boolean; infoLoading: boolean }) => {
 	const [configViewType] = useLogsStore((store) => store.tableOpts.configViewType);
 	const [maximized] = useAppStore((store) => store.maximized);
+	const [{ sideBarOpen }, setStreamStore] = useStreamStore((store) => store);
+
 	const divRef = useRef<HTMLDivElement | null>(null);
 	const [height, setHeight] = useState(0);
-	const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (divRef.current) {
@@ -329,27 +313,16 @@ const LogsViewConfig = (props: { schemaLoading: boolean; logsLoading: boolean; i
 		}
 	}, [maximized]);
 
-	const toggleCollapse = () => {
-		setIsCollapsed((prev) => !prev);
-	};
-
-	const renderIcon = () => {
-		if (isCollapsed) {
-			return <IconLayoutSidebarLeftCollapseFilled className={classes.columnPinIcon} size="1rem" stroke={1.8} />;
-		} else {
-			return <IconLayoutSidebarRightCollapseFilled className={classes.columnPinIcon} size="1rem" stroke={1.8} />;
-		}
-	};
 	return (
 		<Stack ref={divRef}>
 			<ResizableBox
-				width={isCollapsed ? 0 : LOGS_CONFIG_SIDEBAR_WIDTH}
+				width={sideBarOpen ? 0 : LOGS_CONFIG_SIDEBAR_WIDTH}
 				height={height}
 				axis="x"
 				maxConstraints={[500, height]}
-				minConstraints={[isCollapsed ? 0 : 200, height]}
+				minConstraints={[sideBarOpen ? 0 : 200, height]}
 				style={{
-					transition: 'width 0.3s',
+					transition: 'width 1s',
 				}}>
 				<Stack style={{ width: '100%', height: '100%' }} className={classes.container}>
 					<Header />
@@ -359,10 +332,20 @@ const LogsViewConfig = (props: { schemaLoading: boolean; logsLoading: boolean; i
 						<ColumnsList isLoading={props.logsLoading || props.infoLoading} />
 					)}
 				</Stack>
+				<Stack
+					onClick={() => setStreamStore((store) => toggleSideBar(store))}
+					style={{
+						position: 'absolute',
+						top: '50%',
+						right: '-5%',
+						transform: 'translateY(-50%)',
+						zIndex: 100,
+						backgroundColor: '#fff',
+						borderRadius: '50%',
+					}}>
+					{!sideBarOpen && <IconChevronsLeft />}
+				</Stack>
 			</ResizableBox>
-			<Box style={{ right: 'absolute' }}>
-				<IconButton renderIcon={renderIcon} onClick={toggleCollapse} tooltipLabel="Collapse" />
-			</Box>
 		</Stack>
 	);
 };

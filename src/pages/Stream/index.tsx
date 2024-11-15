@@ -1,4 +1,4 @@
-import { Box, Stack, rem } from '@mantine/core';
+import { Box, Stack } from '@mantine/core';
 import { useDocumentTitle } from '@mantine/hooks';
 import { FC, useCallback, useEffect } from 'react';
 import LiveLogTable from './Views/LiveTail/LiveLogTable';
@@ -46,7 +46,7 @@ const Stream: FC = () => {
 	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
 	const queryEngine = instanceConfig?.queryEngine;
 	const getInfoFetchedOnMount = queryEngine === 'Parseable' ? false : currentStream !== null;
-	const [sideBarOpen, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
+	const [, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
 	const { getStreamInfoRefetch, getStreamInfoLoading, getStreamInfoRefetching } = useGetStreamInfo(
 		currentStream || '',
 		getInfoFetchedOnMount,
@@ -78,7 +78,7 @@ const Stream: FC = () => {
 		}
 	}, [isStoreSynced, currentStream]);
 
-	const sideBarWidth = sideBarOpen ? rem(180) : SECONDARY_SIDEBAR_WIDTH;
+	const sideBarWidth = SECONDARY_SIDEBAR_WIDTH;
 
 	if (!currentStream) return null;
 	if (!_.includes(STREAM_VIEWS, view)) return null;
