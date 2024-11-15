@@ -1,4 +1,4 @@
-import { test, expect, BrowserContext, Page } from '@playwright/test';
+import { test, expect, BrowserContext } from '@playwright/test';
 import { createNewRole, deleteIfRoleExists } from './helpers/users_roles';
 
 const TEST_URL = 'http://localhost:3001/users';
