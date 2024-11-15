@@ -8,6 +8,12 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    env:
+      PORT: 3001
+      VITE_PARSEABLE_URL: https://demo.parseable.com
+      VITE_BASIC_AUTH: true
+      VITE_USERNAME: admin
+      VITE_PASSWORD: admin
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -21,10 +27,17 @@ jobs:
         run: pnpm run dev &
         env:
           PORT: 3001
-          VITE_PARSEABLE_URL: 'https://demo.parseable.com'
+          VITE_PARSEABLE_URL: https://demo.parseable.com
           VITE_BASIC_AUTH: true
           VITE_USERNAME: admin
           VITE_PASSWORD: admin
+      - name: Echo
+        run: |
+          echo "PORT: $PORT"
+          echo "VITE_PARSEABLE_URL: $VITE_PARSEABLE_URL"
+          echo "VITE_BASIC_AUTH: $VITE_BASIC_AUTH"
+          echo "VITE_USERNAME: $VITE_USERNAME"
+          echo "VITE_PASSWORD: $VITE_PASSWORD"
       - name: Run Playwright tests
         run: pnpm exec playwright test
       - uses: actions/upload-artifact@v4
