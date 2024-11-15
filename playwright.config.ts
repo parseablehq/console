@@ -37,4 +37,11 @@ export default defineConfig({
 		// 	use: { ...devices['Desktop Safari'] },
 		// },
 	],
+
+	/* Run your local dev server before starting the tests */
+	webServer: {
+		command: 'pnpm run dev',
+		url: 'http://localhost:3001',
+		reuseExistingServer: !process.env.CI,
+	},
 });

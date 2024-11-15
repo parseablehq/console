@@ -6,7 +6,9 @@ test.describe('Home Page', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto(`${TEST_URL}`);
 	});
-
+	test('check welcome', async ({ page }) => {
+		await expect(page.locator('text=Welcome back')).toBeVisible();
+	});
 	test('should render the component correctly with default state', async ({ page }) => {
 		await expect(page.locator('text=All Streams')).toBeVisible();
 		await expect(page.locator('input[placeholder="Search Stream"]')).toBeVisible();
