@@ -25,6 +25,13 @@ jobs:
         run: pnpm exec playwright install --with-deps
       - name: Run Playwright tests
         run: pnpm exec playwright test
+        env:
+          CI: true
+          PORT: 3001
+          VITE_PARSEABLE_URL: https://demo.parseable.com
+          VITE_BASIC_AUTH: true
+          VITE_USERNAME: admin
+          VITE_PASSWORD: admin
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
