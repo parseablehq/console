@@ -22,9 +22,9 @@ const LogsView = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
 
 	return (
 		<Box style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-			{viewMode === 'table' && (
+			{/* {viewMode === 'table' && (
 				<LogsViewConfig schemaLoading={schemaLoading} logsLoading={logsLoading} infoLoading={infoLoading} />
-			)}
+			)} */}
 			{viewMode === 'table' ? <LogTable {...viewOpts} /> : <JsonView {...viewOpts} />}
 		</Box>
 	);
