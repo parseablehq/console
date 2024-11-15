@@ -45,11 +45,10 @@ const Stream: FC = () => {
 	const [maximized] = useAppStore((store) => store.maximized);
 	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
 	const queryEngine = instanceConfig?.queryEngine;
-	const getInfoFetchedOnMount = queryEngine === 'Parseable' ? false : currentStream !== null;
-	const [, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
+	const [sideBarOpen, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
 	const { getStreamInfoRefetch, getStreamInfoLoading, getStreamInfoRefetching } = useGetStreamInfo(
 		currentStream || '',
-		getInfoFetchedOnMount,
+		currentStream !== null,
 	);
 
 	const {
@@ -62,6 +61,7 @@ const Stream: FC = () => {
 
 	const fetchSchema = useCallback(() => {
 		setStreamStore(streamChangeCleanup);
+		getStreamInfoRefetch();
 		refetchSchema();
 	}, [currentStream]);
 
