@@ -274,7 +274,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 							<Button
 								variant="default"
 								className={classes.actionBtn}
-								aria-label="Delete user"
+								aria-label="Delete Role"
 								onClick={() => {
 									openDeleteRole();
 								}}>

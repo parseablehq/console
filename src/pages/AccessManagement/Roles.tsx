@@ -167,10 +167,13 @@ const Roles: FC = () => {
 	return (
 		<Box className={classes.container}>
 			<Stack className={classes.header} gap={0}>
-				<Text style={{ fontWeight: 600 }}>Roles</Text>
+				<Text component="h2" style={{ fontWeight: 600 }}>
+					Roles
+				</Text>
 				<Stack style={{ flexDirection: 'row' }} gap={0}>
 					<Button
 						className={classes.createUserBtn}
+						data-testId="create-role-button"
 						rightSection={<IconUserPlus size={px('1rem')} stroke={1.5} />}
 						onClick={() => {
 							setModalOpen(true);
@@ -187,7 +190,7 @@ const Roles: FC = () => {
 							Set Default OIDC Role{' '}
 						</Button>
 					)}
-					<IconButton renderIcon={renderDocsIcon} onClick={navigateToDocs} tooltipLabel="Docs" />
+					<IconButton renderIcon={renderDocsIcon} onClick={navigateToDocs} tooltipLabel="Docs" data_id="roles-docs" />
 				</Stack>
 			</Stack>
 			<ScrollArea className={classes.tableContainer} type="always">
@@ -207,6 +210,7 @@ const Roles: FC = () => {
 				onClose={handleDefaultRoleModalClose}
 				title="Set default oidc role"
 				centered
+				styles={{ title: { fontWeight: 500 } }}
 				className={classes.modalStyle}>
 				<Stack>
 					<Select
@@ -310,12 +314,18 @@ const Roles: FC = () => {
 					<Button
 						variant="filled"
 						color="gray"
+						data-testId="create-role-modal-button"
 						className={classes.modalActionBtn}
 						disabled={createVaildtion()}
 						onClick={handleCreateRole}>
 						Create
 					</Button>
-					<Button onClick={handleClose} variant="outline" color="gray" className={classes.modalCancelBtn}>
+					<Button
+						onClick={handleClose}
+						variant="outline"
+						color="gray"
+						data-testId="cancel-role-modal-button"
+						className={classes.modalCancelBtn}>
 						Cancel
 					</Button>
 				</Group>

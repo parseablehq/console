@@ -56,8 +56,8 @@ const List = () => {
 	const { getClusterInfoSuccess, getClusterInfoRefetch } = useClusterInfo();
 	const [clusterStore] = useClusterStore((store) => store);
 	const { ingestorMachines: ingestorsInStore, querierMachine } = clusterStore;
-	const querier = { ...querierMachine, type: 'querier' as 'querier' };
-	const ingestors = _.map(ingestorsInStore, (ingestors) => ({ ...ingestors, type: 'ingestor' as 'ingestor' }));
+	const querier = { ...querierMachine, type: 'querier' as const };
+	const ingestors = _.map(ingestorsInStore, (ingestors) => ({ ...ingestors, type: 'ingestor' as const }));
 
 	useEffect(() => {
 		getClusterInfoRefetch();
