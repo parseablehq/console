@@ -10,7 +10,7 @@ import IconButton from '@/components/Button/IconButton';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const navigateToDocs = () => {
-	return window.open('https://www.parseable.io/docs/rbac', '_blank');
+	return window.open('https://www.parseable.com/docs/server/api/rbac', '_blank');
 };
 
 const renderDocsIcon = () => <IconBook2 stroke={1.5} size="1rem" />;
