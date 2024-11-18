@@ -13,8 +13,10 @@ import { EmptySimple } from '@/components/Empty';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import useSavedFiltersQuery from '@/hooks/useSavedFilters';
 import { generateQueryBuilderASTFromSQL } from '../../utils';
+import { useLocation } from 'react-router-dom';
 
-const { toggleSavedFiltersModal, resetFilters, parseQuery, applySavedFilters } = filterStoreReducers;
+const { toggleSavedFiltersModal, resetFilters, parseQuery, applySavedFilters, setAppliedFilterQuery } =
+	filterStoreReducers;
 const { applyCustomQuery, updateSavedFilterId, getCleanStoreForRefetch, setTimeRange } = logsStoreReducers;
 
 const renderDeleteIcon = () => <IconTrash size={px('1rem')} stroke={1.5} />;
@@ -58,6 +60,9 @@ const SavedFilterItem = (props: {
 	const [showDeletePropmt, setShowDeletePrompt] = useState<boolean>(false);
 	const { deleteSavedFilterMutation, isDeleting, isRefetching } = useSavedFiltersQuery();
 
+	const location = useLocation();
+	const [, setFilterStore] = useFilterStore((_store) => null);
+
 	const toggleShowQuery = useCallback(() => {
 		return setShowQuery((prev) => !prev);
 	}, []);
@@ -78,21 +83,26 @@ const SavedFilterItem = (props: {
 	}, [time_filter, isStoredAndCurrentTimeRangeAreSame, hardRefresh, changeTimerange]);
 
 	const onApplyFilters = useCallback(() => {
-		if (query.filter_query) {
-			if (query.filter_type === 'sql') {
-				props.onSqlSearchApply(query.filter_query, filter_id, time_filter);
-			} else {
+		if (location.pathname.includes('dashboard')) {
+			setFilterStore((store) => setAppliedFilterQuery(store, query.filter_query));
+			setFilterStore((store) => toggleSavedFiltersModal(store, false));
+		} else {
+			if (query.filter_query) {
+				if (query.filter_type === 'sql') {
+					props.onSqlSearchApply(query.filter_query, filter_id, time_filter);
+				} else {
+					if (filter_id !== savedFilterId) {
+						props.onFilterBuilderQueryApply(generateQueryBuilderASTFromSQL(query.filter_query), filter_id);
+					} else {
+						handleTimeFilter();
+					}
+				}
+			} else if (query.filter_builder) {
 				if (filter_id !== savedFilterId) {
-					props.onFilterBuilderQueryApply(generateQueryBuilderASTFromSQL(query.filter_query), filter_id);
+					props.onFilterBuilderQueryApply(query.filter_builder, filter_id);
 				} else {
 					handleTimeFilter();
 				}
-			}
-		} else if (query.filter_builder) {
-			if (filter_id !== savedFilterId) {
-				props.onFilterBuilderQueryApply(query.filter_builder, filter_id);
-			} else {
-				handleTimeFilter();
 			}
 		}
 	}, [savedFilterId, isStoredAndCurrentTimeRangeAreSame, hardRefresh, changeTimerange]);

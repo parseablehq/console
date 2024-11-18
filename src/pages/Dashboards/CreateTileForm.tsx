@@ -3,7 +3,7 @@ import classes from './styles/Form.module.css';
 import { useForm } from '@mantine/form';
 import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
 import { MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
 import { getLogStreamSchema } from '@/api/logStream';
 import { Field } from '@/@types/parseable/dataType';
@@ -29,6 +29,7 @@ import TimeRange from '@/components/Header/TimeRange';
 import { colors, isCircularChart, isGraph, normalizeGraphColorConfig } from './Charts';
 import { usePostLLM } from '@/hooks/usePostLLM';
 import { notify } from '@/utils/notification';
+import { filterStoreReducers, useFilterStore } from '../Stream/providers/FilterProvider';
 
 const selectDashboardWarningText = 'Select a dashboard to continue';
 const validateQueryWarningText = 'Validate query to continue';
@@ -37,6 +38,8 @@ const noDataWarning = 'No data available for the query';
 const invalidVizConfig = 'Invalid visualization config';
 
 const { toggleVizEditorModal, toggleCreateTileModal } = dashboardsStoreReducers;
+const { toggleSavedFiltersModal, setAppliedFilterQuery } = filterStoreReducers;
+const { changeStream } = appStoreReducers;
 
 const getErrorMsg = (form: TileFormType, configType: 'basic' | 'data' | 'viz'): string | null => {
 	const { dashboardId, isQueryValidated, data, visualization } = form.values;
@@ -289,13 +292,19 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 	const [initialHeight, setInitialHeight] = useState(0);
 	const [dashboards] = useDashboardsStore((store) => store.dashboards);
 	const [timeRange] = useLogsStore((store) => store.timeRange);
+	const [appliedFilterQuery, setLogsStore] = useFilterStore((store) => store.appliedFilterQuery);
 	const [aiQuery, setAiQuery] = useState('');
 	const [userSpecificStreams] = useAppStore((store) => store.userSpecificStreams);
+	const [, setAppStore] = useAppStore((store) => store.maximized);
 	const allStreams = useMemo(
 		() => _.map(userSpecificStreams, (stream) => ({ label: stream.name, value: stream.name })),
 		[userSpecificStreams],
 	);
 	const { data: resAIQuery, postLLMQuery } = usePostLLM();
+
+	useEffect(() => {
+		onEditorChange(appliedFilterQuery);
+	}, [appliedFilterQuery]);
 
 	const onEditorChange = useCallback((query: string | undefined) => {
 		onChangeValue('query', query || '');
@@ -348,10 +357,15 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 		});
 	}, [query, dashboardId, dashboards, timeRange]);
 
-	const onStreamSelect = useCallback((val: string | null) => {
-		setLocalStream(val || '');
+	const onStreamSelect = useCallback((stream: string | null) => {
+		if (stream) {
+			setAppStore((store) => changeStream(store, stream));
+			setLogsStore((store) => setAppliedFilterQuery(store, ''));
+		}
+		setLocalStream(stream || '');
 	}, []);
 
+	const onClick = useCallback(() => setLogsStore((store) => toggleSavedFiltersModal(store, true)), []);
 	const isValidStream = !_.isEmpty(localStream);
 	const handleAIGenerate = useCallback(() => {
 		if (!aiQuery?.length) {
@@ -375,6 +389,9 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 						key="stream"
 						placeholder="Select Stream"
 					/>
+					<Button disabled={!localStream} className={classes.savedFiltersBtn} h="100%" onClick={onClick}>
+						Saved Filters
+					</Button>
 				</Stack>
 			</Stack>
 			{errorMsg && <Text className={classes.warningText}>{errorMsg}</Text>}
