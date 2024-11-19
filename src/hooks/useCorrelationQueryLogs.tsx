@@ -13,12 +13,12 @@ import {
 	useCorrelationStore,
 } from '@/pages/Correlation/providers/CorrelationProvider';
 import { notifyError } from '@/utils/notification';
+import { useQuery } from 'react-query';
 
 const { setStreamData } = correlationStoreReducers;
 
 export const useCorrelationQueryLogs = () => {
 	const [error, setError] = useMountedState<string | null>(null);
-	const [loading, setLoading] = useMountedState<boolean>(false);
 	const [, setCorrelationStore] = useCorrelationStore((store) => store.streamData);
 	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
 	const [streamInfo] = useStreamStore((store) => store.info);
@@ -42,37 +42,44 @@ export const useCorrelationQueryLogs = () => {
 		timePartitionColumn,
 	};
 
-	const getCorrelationData = async () => {
-		try {
-			setLoading(true);
-			setError(null);
-			refetchSchema(); // fetch schema parallelly every time we fetch logs
-			const logsQueryRes = await (async () => {
-				return await getQueryLogsWithHeaders(defaultQueryOpts);
-			})();
-			const logs = logsQueryRes.data;
-			const isInvalidResponse = _.isEmpty(logs) || _.isNil(logs) || logsQueryRes.status !== StatusCodes.OK;
-			if (isInvalidResponse) return setError('Failed to query log');
+	console.log(currentStream);
 
-			const { records, fields } = logs;
-			if (fields.length > 0) {
-				return setCorrelationStore((store) => setStreamData(store, currentStream || '', records, fields));
-			} else {
-				notifyError({ message: `${currentStream} doesn't have any fields` });
-			}
-		} catch (e) {
-			const axiosError = e as AxiosError;
-			const errorMessage = axiosError?.response?.data;
-			setError(_.isString(errorMessage) && !_.isEmpty(errorMessage) ? errorMessage : 'Failed to query log');
-			return setCorrelationStore((store) => setStreamData(store, currentStream || '', [], []));
-		} finally {
-			setLoading(false);
-		}
-	};
+	const {
+		isLoading: logsLoading,
+		isRefetching: logsRefetching,
+		refetch: getCorrelationData,
+	} = useQuery(
+		['fetch-logs', defaultQueryOpts],
+		() => {
+			refetchSchema();
+
+			return getQueryLogsWithHeaders(defaultQueryOpts);
+		},
+		{
+			enabled: false,
+			refetchOnWindowFocus: false,
+			onSuccess: async (data) => {
+				const logs = data.data;
+				const isInvalidResponse = _.isEmpty(logs) || _.isNil(logs) || data.status !== StatusCodes.OK;
+				if (isInvalidResponse) return setError('Failed to query logs');
+
+				const { records, fields } = logs;
+				if (fields.length > 0) {
+					return setCorrelationStore((store) => setStreamData(store, currentStream || '', records, fields));
+				} else {
+					notifyError({ message: `${currentStream} doesn't have any fields` });
+				}
+			},
+			onError: (data: AxiosError) => {
+				const errorMessage = data.response?.data as string;
+				setError(_.isString(errorMessage) && !_.isEmpty(errorMessage) ? errorMessage : 'Failed to query logs');
+			},
+		},
+	);
 
 	return {
 		error,
-		loading: loading,
+		loading: logsLoading || logsRefetching,
 		getCorrelationData,
 	};
 };
