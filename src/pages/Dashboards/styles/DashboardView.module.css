@@ -16,6 +16,10 @@
     align-self: center;
 }
 
+.tilesViewContainer {
+   margin-bottom: 1rem;
+}
+
 .dashboardIcon {
     color: var(--mantine-color-brandPrimary-4);
 }

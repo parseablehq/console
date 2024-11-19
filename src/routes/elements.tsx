@@ -25,7 +25,9 @@ export const DashboardsElement: FC = () => {
 		<SuspensePage>
 			<LogsProvider>
 				<DashbaordsProvider>
-					<Dashboards />
+					<FilterProvider>
+						<Dashboards />
+					</FilterProvider>
 				</DashbaordsProvider>
 			</LogsProvider>
 		</SuspensePage>

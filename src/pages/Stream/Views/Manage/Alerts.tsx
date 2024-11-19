@@ -22,7 +22,7 @@ import ErrorView from './ErrorView';
 import RestrictedView from '@/components/Misc/RestrictedView';
 
 const defaultColumnTypeConfig = { column: '', operator: '=', value: '', repeats: 1, ignoreCase: false };
-const defaultColumnTypeRule = { type: 'column' as 'column', config: defaultColumnTypeConfig };
+const defaultColumnTypeRule = { type: 'column' as const, config: defaultColumnTypeConfig };
 const { transformAlerts } = streamStoreReducers;
 
 const stringOperators = [
@@ -172,7 +172,7 @@ type ColumnRuleProps = {
 };
 
 const getInputComponent = (type: 'text' | 'number' | 'timestamp') => {
-	return type === 'text' || 'timestamp' ? TextInput : NumberInput;
+	return type === 'text' || type === 'timestamp' ? TextInput : NumberInput;
 };
 
 const ColumnRule = (props: ColumnRuleProps) => {
@@ -574,7 +574,7 @@ const AlertsModal = (props: {
 	);
 };
 
-const Header = (props: { selectAlert: selectAlert; isLoading: boolean, showCreateBtn: boolean }) => {
+const Header = (props: { selectAlert: selectAlert; isLoading: boolean; showCreateBtn: boolean }) => {
 	return (
 		<Stack className={classes.headerContainer} style={{ minHeight: '3rem', maxHeight: '3rem' }}>
 			<Text className={classes.title}>Alerts</Text>

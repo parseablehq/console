@@ -21,7 +21,7 @@ import classes from './styles/PrimaryToolbar.module.css';
 const { toggleDeleteModal, onToggleView } = logsStoreReducers;
 const { toggleSavedFiltersModal } = filterStoreReducers;
 const renderMaximizeIcon = () => <IconMaximize size={px('1rem')} stroke={1.5} />;
-const renderDeleteIcon = () => <IconTrash size={px('1rem')} stroke={1.5} />;
+const renderDeleteIcon = () => <IconTrash data-id="delete-stream-btn" size={px('1rem')} stroke={1.5} />;
 
 export const MaximizeButton = () => {
 	const [_appStore, setAppStore] = useAppStore((_store) => null);

@@ -15,8 +15,8 @@ export type MetaData = {
 
 // until dedicated endpoint been provided - fetch one by one
 export const useGetStreamMetadata = () => {
-	const [isLoading, setLoading] = useState<Boolean>(true);
-	const [error, setError] = useState<Boolean>(false);
+	const [isLoading, setLoading] = useState<boolean>(false);
+	const [error, setError] = useState<boolean>(false);
 	const [metaData, setMetadata] = useState<MetaData | null>(null);
 	const [userRoles] = useAppStore((store) => store.userRoles);
 

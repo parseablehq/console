@@ -2,6 +2,7 @@ import { SortOrder, type Log, type LogsData, type LogsSearch } from '@/@types/pa
 import { getQueryLogsWithHeaders, getQueryResultWithHeaders } from '@/api/query';
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
+import { useQuery } from 'react-query';
 import { useCallback, useRef } from 'react';
 import { useLogsStore, logsStoreReducers, LOAD_LIMIT, isJqSearch } from '@/pages/Stream/providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
@@ -25,7 +26,6 @@ export const useQueryLogs = () => {
 	// Only mutate it when data is fetched, otherwise read only
 	const _dataRef = useRef<Log[] | null>(null);
 	const [error, setError] = useMountedState<string | null>(null);
-	const [loading, setLoading] = useMountedState<boolean>(false);
 	const [pageLogData, setPageLogData] = useMountedState<LogsData | null>(null);
 	const [querySearch, setQuerySearch] = useMountedState<LogsSearch>({
 		search: '',
@@ -81,45 +81,50 @@ export const useQueryLogs = () => {
 		pageOffset: currentOffset,
 		timePartitionColumn,
 	};
-	const getQueryData = async () => {
-		try {
-			setLoading(true);
-			setError(null);
-			refetchSchema(); // fetch schema parallelly every time we fetch logs
-			const logsQueryRes = await (async () => {
-				if (isQuerySearchActive) {
-					if (activeMode === 'filters') {
-						const { parsedQuery } = parseQuery(queryEngine, appliedQuery, currentStream || '', {
-							startTime: timeRange.startTime,
-							endTime: timeRange.endTime,
-							timePartitionColumn,
-						});
-						const queryStrWithOffset = appendOffsetToQuery(parsedQuery, defaultQueryOpts.pageOffset);
-						return await getQueryResultWithHeaders({ ...defaultQueryOpts, access: [] }, queryStrWithOffset);
-					} else {
-						const queryStrWithOffset = appendOffsetToQuery(custSearchQuery, defaultQueryOpts.pageOffset);
-						return await getQueryResultWithHeaders({ ...defaultQueryOpts, access: [] }, queryStrWithOffset);
-					}
-				} else {
-					return await getQueryLogsWithHeaders(defaultQueryOpts);
-				}
-			})();
-			const logs = logsQueryRes.data;
-			const isInvalidResponse = _.isEmpty(logs) || _.isNil(logs) || logsQueryRes.status !== StatusCodes.OK;
-			if (isInvalidResponse) return setError('Failed to query log');
 
-			const { records, fields } = logs;
-			const jqFilteredData = isJqSearch(instantSearchValue) ? await jqSearch(records, instantSearchValue) : [];
-			return setLogsStore((store) => setLogData(store, records, fields, jqFilteredData));
-		} catch (e) {
-			const axiosError = e as AxiosError;
-			const errorMessage = axiosError?.response?.data;
-			setError(_.isString(errorMessage) && !_.isEmpty(errorMessage) ? errorMessage : 'Failed to query log');
-			return setLogsStore((store) => setLogData(store, [], []));
-		} finally {
-			setLoading(false);
-		}
-	};
+	const {
+		isLoading: logsLoading,
+		isRefetching: logsRefetching,
+		refetch: getQueryData,
+	} = useQuery(
+		['fetch-logs', defaultQueryOpts],
+		() => {
+			refetchSchema();
+			if (isQuerySearchActive) {
+				if (activeMode === 'filters') {
+					const { parsedQuery } = parseQuery(queryEngine, appliedQuery, currentStream || '', {
+						startTime: timeRange.startTime,
+						endTime: timeRange.endTime,
+						timePartitionColumn,
+					});
+					const queryStrWithOffset = appendOffsetToQuery(parsedQuery, defaultQueryOpts.pageOffset);
+					return getQueryResultWithHeaders({ ...defaultQueryOpts, access: [] }, queryStrWithOffset);
+				} else {
+					const queryStrWithOffset = appendOffsetToQuery(custSearchQuery, defaultQueryOpts.pageOffset);
+					return getQueryResultWithHeaders({ ...defaultQueryOpts, access: [] }, queryStrWithOffset);
+				}
+			} else {
+				return getQueryLogsWithHeaders(defaultQueryOpts);
+			}
+		},
+		{
+			enabled: false,
+			refetchOnWindowFocus: false,
+			onSuccess: async (data) => {
+				const logs = data.data;
+				const isInvalidResponse = _.isEmpty(logs) || _.isNil(logs) || data.status !== StatusCodes.OK;
+				if (isInvalidResponse) return setError('Failed to query logs');
+
+				const { records, fields } = logs;
+				const jqFilteredData = isJqSearch(instantSearchValue) ? await jqSearch(records, instantSearchValue) : [];
+				setLogsStore((store) => setLogData(store, records, fields, jqFilteredData));
+			},
+			onError: (data: AxiosError) => {
+				const errorMessage = data.response?.data as string;
+				setError(_.isString(errorMessage) && !_.isEmpty(errorMessage) ? errorMessage : 'Failed to query logs');
+			},
+		},
+	);
 
 	const resetData = () => {
 		_dataRef.current = null;
@@ -133,7 +138,7 @@ export const useQueryLogs = () => {
 		getColumnFilters,
 		sort: querySearch.sort,
 		error,
-		loading: loading,
+		loading: logsLoading || logsRefetching,
 		getQueryData,
 		resetData,
 	};
