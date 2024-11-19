@@ -1,14 +1,13 @@
-import { test, expect, BrowserContext, Page } from '@playwright/test';
+import { test, expect, BrowserContext } from '@playwright/test';
 
 const TEST_URL = 'http://localhost:3001';
 
 test.describe('Login Page', () => {
 	let context: BrowserContext;
-	let page: Page;
 
 	test.beforeEach(async ({ browser }) => {
 		context = await browser.newContext();
-		page = await context.newPage();
+		await context.newPage();
 	});
 
 	test.afterEach(async () => {
