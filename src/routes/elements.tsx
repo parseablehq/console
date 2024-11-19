@@ -8,9 +8,9 @@ import { LogsProvider } from '@/pages/Stream/providers/LogsProvider';
 import { FilterProvider } from '@/pages/Stream/providers/FilterProvider';
 import { StreamProvider } from '@/pages/Stream/providers/StreamProvider';
 import { ClusterProvider } from '@/pages/Systems/providers/ClusterProvider';
+import { CorrelationProvider } from '@/pages/Correlation/providers/CorrelationProvider';
 import { DashbaordsProvider } from '@/pages/Dashboards/providers/DashboardsProvider';
 import Dashboards from '@/pages/Dashboards';
-import Correlation from '@/pages/Correlation';
 
 export const HomeElement: FC = () => {
 	return (
@@ -32,13 +32,16 @@ export const DashboardsElement: FC = () => {
 	);
 };
 
+const Correlation = lazy(() => import('@/pages/Correlation'));
 export const CorrelationElement: FC = () => {
 	return (
 		<SuspensePage>
 			<StreamProvider>
 				<LogsProvider>
 					<FilterProvider>
-						<Correlation />
+						<CorrelationProvider>
+							<Correlation />
+						</CorrelationProvider>
 					</FilterProvider>
 				</LogsProvider>
 			</StreamProvider>

@@ -2,41 +2,73 @@ import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import _ from 'lodash';
 import { useDocumentTitle } from '@mantine/hooks';
-import { Stack, Box, Pill, PillsInput, Badge, TextInput, px, Select } from '@mantine/core';
-import LogsView from '../Stream/Views/Explore/LogsView';
-import Querier from '../Stream/components/Querier';
-import SecondaryToolbar from '../Stream/components/SecondaryToolbar';
-import { PRIMARY_HEADER_HEIGHT, STREAM_PRIMARY_TOOLBAR_HEIGHT } from '@/constants/theme';
-import { MaximizeButton } from '../Stream/components/PrimaryToolbar';
-import TimeRange from '@/components/Header/TimeRange';
-import RefreshInterval from '@/components/Header/RefreshInterval';
-import RefreshNow from '@/components/Header/RefreshNow';
-import ShareButton from '@/components/Header/ShareButton';
-import { useRef, useState } from 'react';
-import { IconSearch } from '@tabler/icons-react';
-import classes from '../../components/Header/styles/LogQuery.module.css';
+import { Stack, Box, Pill, PillsInput, TextInput, Autocomplete, Text, ActionIcon } from '@mantine/core';
+import {
+	PRIMARY_HEADER_HEIGHT,
+	STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT,
+	STREAM_SECONDARY_TOOLBAR_HRIGHT,
+} from '@/constants/theme';
+import { useEffect, useState } from 'react';
+import classes from './styles/Correlation.module.css';
+import { correlationStoreReducers, useCorrelationStore } from './providers/CorrelationProvider';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { useCorrelationQueryLogs } from '@/hooks/useCorrelationQueryLogs';
+import CorrelationTable from './Views/CorrelationTable';
+import { IconPlus, IconTrashX } from '@tabler/icons-react';
+
+const { changeStream } = appStoreReducers;
+const { deleteStreamData, setSelectedFields, deleteSelectedField } = correlationStoreReducers;
+
+const FieldItem = ({
+	headerColor,
+	fieldName,
+	backgroundColor,
+	onClick,
+}: {
+	headerColor: string;
+	fieldName: string;
+	backgroundColor: string;
+	onClick: () => void;
+}) => {
+	return (
+		<div
+			style={{ border: `1px solid ${headerColor}`, backgroundColor, color: headerColor }}
+			className={classes.fieldItem}
+			onClick={onClick}>
+			<Text tt="capitalize" size="sm">
+				{fieldName}
+			</Text>
+		</div>
+	);
+};
 
 const Correlation = () => {
 	useDocumentTitle('Parseable | Correlation');
-	// const [opened, { toggle }] = useDisclosure(false);
-	const [fields, setFileds] = useState<any>([]);
-	const searchIcon = <IconSearch size={px('0.8rem')} />;
-	const [selectedStreams, setSelectedStreams] = useState<any>([]);
-	const valueRef = useRef<string | null>();
+	const [userSpecificStreams] = useAppStore((store) => store.userSpecificStreams);
+	const [{ fields, selectedFields }, setCorrelationData] = useCorrelationStore((store) => store);
+	const { getCorrelationData } = useCorrelationQueryLogs();
+	const [currentStream, setAppStore] = useAppStore((store) => store.currentStream);
+	const [selectedStream, setSelectedStream] = useState<string>('');
+	const [maximized] = useAppStore((store) => store.maximized);
+	const primaryHeaderHeight = !maximized
+		? PRIMARY_HEADER_HEIGHT + STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT + STREAM_SECONDARY_TOOLBAR_HRIGHT
+		: 0;
+	const [showLogData, setShowLogData] = useState<boolean>(false);
 
-	const handleChange = (value: string | null) => {
-		if (value === null) return;
+	useEffect(() => {
+		getCorrelationData();
+	}, [currentStream]);
 
-		const selectedData = {
-			value,
-			fields: ['status', 'id', 'erros'],
-		};
+	console.log(fields);
 
-		setSelectedStreams((prev: any) => [...prev, selectedData]);
+	const addStream = () => {
+		setAppStore((store) => changeStream(store, selectedStream));
+		setShowLogData(true);
+		setSelectedStream('');
 	};
 
 	const removeStream = (streamName: string) => {
-		setSelectedStreams((prev: any) => prev.filter((stream: any) => stream.value !== streamName));
+		setCorrelationData((store) => deleteStreamData(store, streamName));
 	};
 
 	const handleColor = (streamName: string) => {
@@ -53,83 +85,94 @@ const Correlation = () => {
 	};
 
 	const addField = (field: string, streamName: string) => {
-		const selectedField = {
-			field,
-			streamName: `${streamName}-field`,
-		};
-		setFileds((prev: any) => [...prev, selectedField]);
+		setCorrelationData((store) => setSelectedFields(store, field, streamName));
 	};
 
-	const removeField = (field: string) => {
-		setFileds((prev: any) => prev.filter((fieldItr: any) => fieldItr.field !== field));
+	const removeField = (field: string, streamName: string) => {
+		setCorrelationData((store) => deleteSelectedField(store, field, streamName));
 	};
 
 	return (
-		<Box
-			style={{
-				flex: 1,
-				display: 'flex',
-				position: 'relative',
-				width: '100%',
-			}}>
-			<div
-				style={{
-					width: '200px',
-					borderRight: '1px solid #DEE2E6',
-					padding: '5px',
-					display: 'flex',
-					flexDirection: 'column',
-					gap: '20px',
-				}}>
-				<div>Streams</div>
+		<Box className={classes.correlationWrapper}>
+			<div className={classes.correlationSideBarWrapper}>
+				<Text>Streams</Text>
 				<TextInput
-					disabled={selectedStreams.length === 0}
-					style={{ width: '100%' }}
+					disabled={Object.keys(fields).length === 0}
+					w="100%"
 					placeholder="Search Fields"
-					leftSection={searchIcon}
 					key="search-fields"
 				/>
-				<Select
-					searchable
-					limit={20}
-					value={valueRef.current}
-					classNames={{ input: classes.streamInput, description: classes.streamSelectDescription }}
-					onChange={handleChange}
-					styles={{
-						input: {
-							height: STREAM_PRIMARY_TOOLBAR_HEIGHT,
-						},
-					}}
-					data={[
-						{ value: 'streamA', label: 'Stream A' },
-						{ value: 'streamB', label: 'Stream B' },
-						{ value: 'streamC', label: 'Stream C' },
-						{ value: 'streamD', label: 'Stream D' },
-					]}
-				/>
-				{selectedStreams.map((stream: any) => {
-					return (
-						<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-							<div style={{ display: 'flex', justifyContent: 'space-between' }}>
-								<div>{stream.value}</div>
-								<div style={{ cursor: 'pointer' }} onClick={() => removeStream(stream.value)}>
-									X
+				{Object.keys(fields).length < 4 && (
+					<div style={{ display: 'flex', gap: '5px' }}>
+						<Autocomplete
+							value={selectedStream}
+							onChange={(value: string) => setSelectedStream(value)}
+							placeholder="Select Stream"
+							data={userSpecificStreams?.map((stream: any) => stream.name) ?? []}
+						/>
+						<ActionIcon
+							size={38}
+							variant="filled"
+							color="#339AF0"
+							aria-label="Add Stream"
+							disabled={!userSpecificStreams?.some((stream) => stream.name === selectedStream)}
+							onClick={addStream}>
+							<IconPlus stroke={1.5} />
+						</ActionIcon>
+					</div>
+				)}
+				<div
+					style={{
+						display: 'flex',
+						flexDirection: 'column',
+						gap: '14px',
+						height: `calc(100vh - 220px)`,
+					}}>
+					{Object.entries(fields).map(([stream, fieldsIter]: [any, any]) => {
+						const typedFields = fieldsIter.headers as string[];
+						const totalStreams = Object.entries(fields).length;
+						const heightPercentage = totalStreams > 1 ? `${100 / totalStreams}%` : '100%';
+						return (
+							<div
+								key={stream}
+								className={classes.streamWrapper}
+								style={{
+									height: heightPercentage,
+									flexShrink: 0,
+									border: `1px solid ${fieldsIter.color}`,
+								}}>
+								<div className={classes.streamNameWrapper}>
+									<Text
+										tt="capitalize"
+										size="md"
+										style={{ color: fieldsIter.headerColor }}
+										className={classes.streamName}>
+										{stream}
+									</Text>
+									<IconTrashX
+										color={fieldsIter.headerColor}
+										cursor="pointer"
+										size={14}
+										onClick={() => removeStream(stream)}
+									/>
+								</div>
+								<div className={classes.fieldsWrapper}>
+									{typedFields.map((field: string) => {
+										return (
+											<FieldItem
+												key={`${stream}-${field}`}
+												headerColor={fieldsIter.headerColor}
+												backgroundColor={fieldsIter.backgroundColor}
+												fieldName={field}
+												onClick={() => addField(field, stream)}
+											/>
+										);
+									})}
 								</div>
 							</div>
-							{stream.fields.map((field: any) => {
-								return (
-									<Badge
-										color={handleColor(stream.value)}
-										size="xl"
-										onClick={() => addField(field, stream.value)}
-										style={{ width: '160px', display: 'flex', justifyContent: 'center' }}>
-										{field}
-									</Badge>
-								);
-							})}
-						</div>
-					);
-				})}
+						);
+					})}
+				</div>
 			</div>
 			<Stack
 				gap={0}
@@ -149,19 +192,19 @@ const Correlation = () => {
 							<div>Fields</div>
 							<PillsInput style={{ width: '100%' }} variant="filled" size="md" radius="md">
 								<div style={{ display: 'flex', gap: '5px' }}>
-									{fields.map((field: any, index: any) => {
-										return (
+									{Object.entries(selectedFields).map(([streamName, fields]: [any, any]) =>
+										fields.map((field: any, index: any) => (
 											<Pill
-												key={index}
-												color={handleColor(field.streamName)}
+												key={`${streamName}-${index}`}
+												color={handleColor(streamName)}
 												size="xl"
 												withRemoveButton
-												onRemove={() => removeField(field.field)}
-												style={{ backgroundColor: handleColor(field.streamName) }}>
-												{field.field}
+												onRemove={() => removeField(field, streamName)}
+												style={{ backgroundColor: handleColor(streamName) }}>
+												{field}
 											</Pill>
-										);
-									})}
+										)),
+									)}
 								</div>
 							</PillsInput>
 						</div>
@@ -182,17 +225,9 @@ const Correlation = () => {
 							padding: '5px',
 							height: '100%',
 						}}
-						w="100%">
-						<Querier />
-						<TimeRange />
-						<RefreshInterval />
-						<RefreshNow />
-						<ShareButton />
-						<MaximizeButton />
-					</Stack>
+						w="100%"></Stack>
 				</Stack>
-				<SecondaryToolbar />
-				<LogsView schemaLoading={false} infoLoading={false} />
+				{showLogData && <CorrelationTable primaryHeaderHeight={primaryHeaderHeight} />}
 			</Stack>
 		</Box>
 	);
