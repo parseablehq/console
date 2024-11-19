@@ -1,0 +1,55 @@
+.correlationWrapper {
+	flex: 1;
+	display: flex;
+	position: relative;
+	width: 100%;
+}
+
+.correlationSideBarWrapper {
+	width: 230px;
+	border-right: 1px solid #dee2e6;
+	padding: 14px;
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
+
+.streamWrapper {
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	padding: 12px;
+	border-radius: 8px;
+	gap: 12px;
+}
+
+.streamNameWrapper {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.streamName {
+	font-size: 14px;
+	font-weight: bold;
+	color: #9f1239;
+}
+
+.fieldsWrapper {
+	overflow-y: auto;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.fieldItem {
+	width: 100%;
+	border-radius: 4px;
+	padding: 6px;
+	height: 24px;
+	align-items: center;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	font-size: 12px;
+}
