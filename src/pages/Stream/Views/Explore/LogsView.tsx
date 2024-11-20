@@ -24,7 +24,6 @@ const LogsView = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
 
 	return (
 		<Box style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-			ƒ
 			{viewMode === 'table' && (
 				<LogsViewConfig schemaLoading={schemaLoading} logsLoading={logsLoading} infoLoading={infoLoading} />
 			)}

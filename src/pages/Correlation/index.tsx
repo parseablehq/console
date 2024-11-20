@@ -15,6 +15,7 @@ import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/Ap
 import { useCorrelationQueryLogs } from '@/hooks/useCorrelationQueryLogs';
 import CorrelationTable from './Views/CorrelationTable';
 import { IconPlus, IconTrashX } from '@tabler/icons-react';
+import Footer from '../Stream/Views/Explore/Footer';
 
 const { changeStream } = appStoreReducers;
 const { deleteStreamData, setSelectedFields, deleteSelectedField } = correlationStoreReducers;
@@ -23,11 +24,13 @@ const FieldItem = ({
 	headerColor,
 	fieldName,
 	backgroundColor,
+	dataType,
 	onClick,
 }: {
 	headerColor: string;
 	fieldName: string;
 	backgroundColor: string;
+	dataType: string;
 	onClick: () => void;
 }) => {
 	return (
@@ -38,6 +41,7 @@ const FieldItem = ({
 			<Text tt="capitalize" size="sm">
 				{fieldName}
 			</Text>
+			<Text size="xs">{dataType}</Text>
 		</div>
 	);
 };
@@ -129,7 +133,7 @@ const Correlation = () => {
 						height: `calc(100vh - 220px)`,
 					}}>
 					{Object.entries(fields).map(([stream, fieldsIter]: [any, any]) => {
-						const typedFields = fieldsIter.headers as string[];
+						const typedFields = Object.keys(fieldsIter.fieldTypeMap) as string[];
 						const totalStreams = Object.entries(fields).length;
 						const heightPercentage = totalStreams > 1 ? `${100 / totalStreams}%` : '100%';
 						return (
@@ -158,12 +162,14 @@ const Correlation = () => {
 								</div>
 								<div className={classes.fieldsWrapper}>
 									{typedFields.map((field: string) => {
+										const dataType = fieldsIter.fieldTypeMap[field];
 										return (
 											<FieldItem
 												key={`${stream}-${field}`}
 												headerColor={fieldsIter.headerColor}
 												backgroundColor={fieldsIter.backgroundColor}
 												fieldName={field}
+												dataType={dataType}
 												onClick={() => addField(field, stream)}
 											/>
 										);
@@ -227,7 +233,12 @@ const Correlation = () => {
 						}}
 						w="100%"></Stack>
 				</Stack>
-				{showLogData && <CorrelationTable primaryHeaderHeight={primaryHeaderHeight} />}
+				{showLogData && (
+					<>
+						<CorrelationTable primaryHeaderHeight={primaryHeaderHeight} />
+						<Footer loaded={true} hasNoData={true} isFetchingCount={true} />
+					</>
+				)}
 			</Stack>
 		</Box>
 	);

@@ -5,7 +5,7 @@ import { useLogsStore } from '@/pages/Stream/providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
 import { AxiosError } from 'axios';
-import { useGetStreamSchema } from '@/hooks/useGetLogStreamSchema';
+import { useGetStreamSchema } from '@/hooks/useGetCorrelationStreamSchema';
 import { useStreamStore } from '@/pages/Stream/providers/StreamProvider';
 import {
 	CORRELATION_LOAD_LIMIT,
@@ -42,8 +42,6 @@ export const useCorrelationQueryLogs = () => {
 		timePartitionColumn,
 	};
 
-	console.log(currentStream);
-
 	const {
 		isLoading: logsLoading,
 		isRefetching: logsRefetching,
@@ -65,7 +63,7 @@ export const useCorrelationQueryLogs = () => {
 
 				const { records, fields } = logs;
 				if (fields.length > 0) {
-					return setCorrelationStore((store) => setStreamData(store, currentStream || '', records, fields));
+					return setCorrelationStore((store) => setStreamData(store, currentStream || '', records));
 				} else {
 					notifyError({ message: `${currentStream} doesn't have any fields` });
 				}

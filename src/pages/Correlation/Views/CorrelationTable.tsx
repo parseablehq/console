@@ -91,8 +91,8 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 		setColumns(updatedColumns);
 	}, [selectedFields]);
 
-	console.log('Columns:::', columns);
-	console.log('Rows::', pageData);
+	// console.log('Columns:::', columns);
+	// console.log('Rows::', pageData);
 
 	const makeCellCustomStyles = useCallback(
 		(columnName: string) => {

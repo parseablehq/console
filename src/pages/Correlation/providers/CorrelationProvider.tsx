@@ -1,4 +1,5 @@
 import { Log } from '@/@types/parseable/api/query';
+import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
 import initContext from '@/utils/initContext';
 import _ from 'lodash';
 
@@ -42,10 +43,11 @@ type CorrelationStore = {
 };
 
 type CorrelationStoreReducers = {
-	setStreamData: (store: CorrelationStore, currentStream: string, data: Log[], headers: string[]) => ReducerOutput;
+	setStreamData: (store: CorrelationStore, currentStream: string, data: Log[]) => ReducerOutput;
 	deleteStreamData: (store: CorrelationStore, currentStream: string) => ReducerOutput;
 	setSelectedFields: (store: CorrelationStore, field: string, streamName: string) => ReducerOutput;
 	deleteSelectedField: (store: CorrelationStore, field: string, streamName: string) => ReducerOutput;
+	setStreamSchema: (store: CorrelationStore, schema: LogStreamSchemaData, streamName: string) => ReducerOutput;
 };
 
 const initialState: CorrelationStore = {
@@ -152,7 +154,7 @@ const deleteSelectedField = (store: CorrelationStore, field: string, streamName:
 	};
 };
 
-const setStreamData = (store: CorrelationStore, currentStream: string, data: Log[], headers: string[]) => {
+const setStreamData = (store: CorrelationStore, currentStream: string, data: Log[]) => {
 	if (!currentStream) {
 		return {
 			fields: store.fields,
@@ -165,23 +167,49 @@ const setStreamData = (store: CorrelationStore, currentStream: string, data: Log
 	// Enforce a limit of 4 streams
 	if (currentStreamCount >= 4 && !(currentStream in (store.streamData || {}))) {
 		console.warn('Stream limit reached. Cannot add more than 4 streams.');
-		return store; // Return the unchanged state
+		return store;
 	}
 
 	return {
-		fields: {
-			...store.fields,
-			[currentStream]: {
-				headers,
-				color: STREAM_COLORS[currentStreamCount],
-				headerColor: STREAM_HEADER_COLORS[currentStreamCount],
-				backgroundColor: FIELD_BACKGROUND_COLORS[currentStreamCount],
-			},
-		},
 		streamData: {
 			...store.streamData,
 			[currentStream]: {
 				logData: data,
+			},
+		},
+	};
+};
+
+const parseType = (type: any): 'text' | 'number' | 'timestamp' => {
+	if (typeof type === 'object') {
+		if (_.get(type, 'Timestamp', null)) {
+			return 'timestamp';
+		} else return 'text';
+		// console.error('Error finding type for an object', type);
+	}
+	const lowercaseType = type.toLowerCase();
+	if (lowercaseType.startsWith('int') || lowercaseType.startsWith('float') || lowercaseType.startsWith('double')) {
+		return 'number';
+	} else {
+		return 'text';
+	}
+};
+
+const setStreamSchema = (store: CorrelationStore, schema: LogStreamSchemaData, streamName: string) => {
+	const fieldTypeMap = schema.fields.reduce((acc, field) => {
+		return { ...acc, [field.name]: parseType(field.data_type) };
+	}, {});
+	const currentStreamCount = Object.keys(store.streamData || {}).length;
+	console.log('fieldTypeMap', fieldTypeMap);
+
+	return {
+		fields: {
+			...store.fields,
+			[streamName]: {
+				fieldTypeMap,
+				color: STREAM_COLORS[currentStreamCount],
+				headerColor: STREAM_HEADER_COLORS[currentStreamCount],
+				backgroundColor: FIELD_BACKGROUND_COLORS[currentStreamCount],
 			},
 		},
 	};
@@ -206,6 +234,7 @@ const correlationStoreReducers: CorrelationStoreReducers = {
 	deleteStreamData,
 	setSelectedFields,
 	deleteSelectedField,
+	setStreamSchema,
 };
 
 export { CorrelationProvider, useCorrelationStore, correlationStoreReducers };
