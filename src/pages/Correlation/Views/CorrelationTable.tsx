@@ -3,16 +3,12 @@ import { useCorrelationStore } from '../providers/CorrelationProvider';
 import { useCallback, useEffect, useState } from 'react';
 import tableStyles from '../styles/Logs.module.css';
 import { formatLogTs } from '@/pages/Stream/providers/LogsProvider';
-import timeRangeUtils from '@/utils/timeRangeUtils';
 import { CopyIcon } from '@/pages/Stream/Views/Explore/JSONView';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { LOGS_FOOTER_HEIGHT } from '@/constants/theme';
-import Column from '@/pages/Stream/components/Column';
 import { Log } from '@/@types/parseable/api/query';
 import { FieldTypeMap } from '@/pages/Stream/providers/StreamProvider';
 import _ from 'lodash';
-
-const localTz = timeRangeUtils.getLocalTimezone();
 
 type CellType = string | number | boolean | null | undefined;
 
@@ -90,9 +86,6 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 		});
 		setColumns(updatedColumns);
 	}, [selectedFields]);
-
-	// console.log('Columns:::', columns);
-	// console.log('Rows::', pageData);
 
 	const makeCellCustomStyles = useCallback(
 		(columnName: string) => {

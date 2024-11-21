@@ -51,7 +51,27 @@
 	cursor: pointer;
 	display: flex;
 	align-items: center;
+	gap: 10px;
 	font-size: 12px;
 	display: flex;
 	justify-content: space-between;
+}
+
+.noStreamsWrapper {
+	height: 50%;
+	border-radius: 8px;
+	border: 1px dashed grey;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 50px;
+}
+
+.addStreamPlaceholder {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	width: 100%;
+	font-size: 50px;
 }
