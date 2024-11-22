@@ -2,23 +2,33 @@ import { Box, Button, Modal, Stack, Text, TextInput } from '@mantine/core';
 import classes from './styles/deletemodal.module.css';
 import { ChangeEvent, useCallback, useState } from 'react';
 
-type DeleteOrResetModalProps = {
-	type: 'delete' | 'reset';
+type BaseProps = {
 	header: string;
 	specialContent?: React.ReactNode;
 	content: string;
 	isOpen: boolean;
 	onClose: () => void;
-	confirmationText: string;
 	processContent?: React.ReactNode;
 	isProcessing?: boolean;
 	onConfirm: () => void;
-	placeholder: string;
 };
+
+// Note: The `confirmationText` and `placeholder` props are required for 'delete' and 'reset' types, but not for 'simple' type.
+type DeleteOrResetModalProps =
+	| (BaseProps & {
+			type: 'simple';
+			confirmationText?: never; // Will throw an error if `confirmationText` is passed
+			placeholder?: never;
+	  })
+	| (BaseProps & {
+			type: 'delete' | 'reset';
+			confirmationText: string;
+			placeholder: string;
+	  });
 
 /**
  * Confirmation modal for deleting or resetting an item.
- * @param type - Type of the modal.
+ * @param type - Type of the modal, could be 'delete', 'reset' or 'simple'.
  * @param isOpen - Whether the modal is open.
  * @param onClose - Function to close the modal.
  * @param header - Header text for the modal.
@@ -29,7 +39,7 @@ type DeleteOrResetModalProps = {
  * @param isProcessing - Whether the action is processing.
  * @param onConfirm - Function to confirm the action.
  * @param placeholder - Placeholder text for the input field.
- * */
+ */
 const DeleteOrResetModal = ({
 	type,
 	header,
@@ -50,7 +60,7 @@ const DeleteOrResetModal = ({
 	}, []);
 
 	const tryConfirm = () => {
-		if (confirmationText === confirmText) {
+		if (type === 'simple' || confirmationText === confirmText) {
 			setConfirmText('');
 			onConfirm();
 		}
@@ -60,6 +70,7 @@ const DeleteOrResetModal = ({
 		setConfirmText('');
 		onClose();
 	};
+
 	return (
 		<Modal
 			withinPortal
@@ -76,14 +87,15 @@ const DeleteOrResetModal = ({
 				<Stack gap={8}>
 					{specialContent}
 					<Text className={classes.warningText}>{content}</Text>
-					<Text className={classes.confirmationText}>
-						Please type <span className={classes.confirmationTextHighlight}>{`"${confirmationText}"`}</span> to confirm{' '}
-						{type === 'delete' ? 'deletion' : 'reset'}.
-					</Text>
-
-					<TextInput value={confirmText} onChange={onChangeHandler} placeholder={placeholder} required />
-
-					{/* Content below text input ideally for some process */}
+					{type !== 'simple' && (
+						<>
+							<Text className={classes.confirmationText}>
+								Please type <span className={classes.confirmationTextHighlight}>{`"${confirmationText}"`}</span> to
+								confirm {type === 'delete' ? 'deletion' : 'reset'}.
+							</Text>
+							<TextInput value={confirmText} onChange={onChangeHandler} placeholder={placeholder} required />
+						</>
+					)}
 					{processContent}
 				</Stack>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
@@ -93,8 +105,11 @@ const DeleteOrResetModal = ({
 						</Button>
 					</Box>
 					<Box>
-						<Button disabled={confirmationText !== confirmText && isProcessing} onClick={tryConfirm}>
-							{type === 'delete' ? 'Delete' : 'Reset'}
+						<Button
+							disabled={type !== 'simple' && (confirmationText !== confirmText || isProcessing)}
+							onClick={tryConfirm}
+							loading={isProcessing}>
+							{type === 'reset' ? 'Reset' : 'Delete'}
 						</Button>
 					</Box>
 				</Stack>
