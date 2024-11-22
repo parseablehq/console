@@ -296,45 +296,56 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 				confirmationText={roleName}
 			/>
 			{getRoleData?.data?.[deletePrivilegeIndex] ? (
-				<Modal
-					withinPortal
-					size="md"
-					opened={isDeletedPrivilegeOpen}
-					onClose={handleClosePrivilegeDelete}
-					title={'Delete Privilege'}
-					centered
-					className={classes.modalStyle}>
-					<Stack>
-						<Text>{getBadge(getRoleData?.data[deletePrivilegeIndex], deletePrivilegeIndex, false)}</Text>
-						<TextInput
-							label="Are you sure you want to delete this role privilege?"
-							type="text"
-							onChange={(e) => {
-								setUserInput(e.target.value);
-							}}
-							placeholder={`Please enter the role to confirm, i.e. ${roleName}`}
-							required
-						/>
-					</Stack>
+				// <Modal
+				// 	withinPortal
+				// 	size="md"
+				// 	opened={isDeletedPrivilegeOpen}
+				// 	onClose={handleClosePrivilegeDelete}
+				// 	title={'Delete Privilege'}
+				// 	centered
+				// 	className={classes.modalStyle}>
+				// 	<Stack>
+				// 		<Text>{getBadge(getRoleData?.data[deletePrivilegeIndex], deletePrivilegeIndex, false)}</Text>
+				// 		<TextInput
+				// 			label="Are you sure you want to delete this role privilege?"
+				// 			type="text"
+				// 			onChange={(e) => {
+				// 				setUserInput(e.target.value);
+				// 			}}
+				// 			placeholder={`Please enter the role to confirm, i.e. ${roleName}`}
+				// 			required
+				// 		/>
+				// 	</Stack>
 
-					<Group justify="right" mt={10}>
-						<Button
-							variant="filled"
-							color="gray"
-							className={classes.modalActionBtn}
-							disabled={UserInput === roleName ? false : true}
-							onClick={handlePrivilegeDelete}>
-							Delete
-						</Button>
-						<Button
-							onClick={handleClosePrivilegeDelete}
-							variant="outline"
-							color="gray"
-							className={classes.modalCancelBtn}>
-							Cancel
-						</Button>
-					</Group>
-				</Modal>
+				// 	<Group justify="right" mt={10}>
+				// 		<Button
+				// 			variant="filled"
+				// 			color="gray"
+				// 			className={classes.modalActionBtn}
+				// 			disabled={UserInput === roleName ? false : true}
+				// 			onClick={handlePrivilegeDelete}>
+				// 			Delete
+				// 		</Button>
+				// 		<Button
+				// 			onClick={handleClosePrivilegeDelete}
+				// 			variant="outline"
+				// 			color="gray"
+				// 			className={classes.modalCancelBtn}>
+				// 			Cancel
+				// 		</Button>
+				// 	</Group>
+				// </Modal>
+				<DeleteOrResetModal
+					isOpen={isDeletedPrivilegeOpen}
+					onClose={handleClosePrivilegeDelete}
+					header={'Delete Privilege'}
+					specialContent={<Text>{getBadge(getRoleData?.data[deletePrivilegeIndex], deletePrivilegeIndex, false)}</Text>}
+					type="delete"
+					content={`Are you sure you want to delete this role privilege?`}
+					placeholder={`Type name of the role to confirm.`}
+					onConfirm={handlePrivilegeDelete}
+					confirmationText={roleName}
+				/>
 			) : (
 				''
 			)}
