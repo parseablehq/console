@@ -1,4 +1,4 @@
-import { Button, Group, Modal, TextInput } from '@mantine/core';
+import { Button, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
 import styles from '../styles/Logs.module.css';
 import { useCallback, useState } from 'react';
 import { useLogStream } from '@/hooks/useLogStream';
@@ -15,6 +15,7 @@ const DeleteStreamModal = () => {
 		setConfirmInputValue(e.target.value);
 	}, []);
 	const onCloseModal = useCallback(() => {
+		setConfirmInputValue('');
 		setLogsStore((store) => toggleDeleteModal(store, false));
 	}, []);
 	const { deleteLogStreamMutation } = useLogStream();
@@ -42,25 +43,33 @@ const DeleteStreamModal = () => {
 			centered
 			className={styles.modalStyle}
 			styles={{ title: { fontWeight: 700 } }}>
-			<TextInput
-				type="text"
-				label="Are you sure you want to delete this stream?"
-				onChange={handleInputChange}
-				placeholder={`Type the name of the stream to confirm. i.e. ${currentStream}`}
-				required
-				value={confirmInputValue}
-			/>
-			<Group mt={10} justify="right">
-				<Button onClick={onCloseModal} className={styles.modalCancelBtn}>
-					Cancel
-				</Button>
-				<Button
-					className={styles.modalActionBtn}
-					disabled={confirmInputValue === currentStream ? false : true}
-					onClick={handleDeleteStream}>
-					Delete
-				</Button>
-			</Group>
+			<Stack>
+				<Stack gap={8}>
+					<Text className={styles.warningText}>Are you sure you want to delete this stream?</Text>
+					<Text className={styles.confirmationText}>
+						Please type <span className={styles.confirmationTextHighlight}>{`"${currentStream}"`}</span> to confirm.
+					</Text>
+					<TextInput
+						type="text"
+						onChange={handleInputChange}
+						placeholder={`Type the name of the stream`}
+						required
+						value={confirmInputValue}
+					/>
+				</Stack>
+
+				<Group justify="right">
+					<Button onClick={onCloseModal} variant="outline" className={styles.modalCancelBtn}>
+						Cancel
+					</Button>
+					<Button
+						className={styles.modalActionBtn}
+						disabled={confirmInputValue !== currentStream}
+						onClick={handleDeleteStream}>
+						Delete
+					</Button>
+				</Group>
+			</Stack>
 		</Modal>
 	);
 };
