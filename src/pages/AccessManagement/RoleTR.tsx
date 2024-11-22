@@ -252,7 +252,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						</Text>
 					) : updateUserPasswordIsLoading ? (
 						<Text mt={4} className={classes.passwordText}>
-							loading
+							loading...
 						</Text>
 					) : udpateUserPasswordData?.data ? (
 						<Box mt={4}>
