@@ -105,8 +105,9 @@ const DeleteOrResetModal = ({
 						</Button>
 					</Box>
 					<Box>
+						{/* Disable the button if the confirmation text is not correct or the action is processing. */}
 						<Button
-							disabled={type !== 'simple' && (confirmationText !== confirmText || isProcessing)}
+							disabled={(type !== 'simple' && confirmationText !== confirmText) || isProcessing}
 							onClick={tryConfirm}>
 							{type === 'reset' ? 'Reset' : 'Delete'}
 						</Button>
