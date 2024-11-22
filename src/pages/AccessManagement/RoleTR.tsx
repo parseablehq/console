@@ -1,18 +1,4 @@
-import {
-	ActionIcon,
-	Badge,
-	Box,
-	Button,
-	Group,
-	Modal,
-	Select,
-	Stack,
-	Text,
-	TextInput,
-	Tooltip,
-	px,
-	rem,
-} from '@mantine/core';
+import { ActionIcon, Badge, Box, Button, Group, Modal, Select, Stack, Text, Tooltip, px, rem } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlus, IconTransform, IconTrash, IconX } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
@@ -252,33 +238,24 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				''
 			)}
 
-			<Modal
-				opened={opened}
+			<DeleteOrResetModal
+				isOpen={opened}
 				onClose={handleCloseResetPassword}
-				title="Change user password"
-				centered
-				className={classes.modalStyle}
-				styles={{ title: { fontWeight: 500 } }}>
-				<Stack>
-					<TextInput
-						label={"Are you sure you want to reset this user's password?"}
-						type="text"
-						placeholder={`Please enter the user to confirm, i.e. ${user.id}`}
-						onChange={(e) => {
-							setUserInput(e.target.value);
-						}}
-						required
-						mb={4}
-					/>
-
-					{updateUserPasswordIsError ? (
-						<Text className={classes.passwordText} color="red">
+				header="Change user password"
+				content="Are you sure you want to reset this user's password?"
+				type="reset"
+				onConfirm={handleResetPassword}
+				processContent={
+					updateUserPasswordIsError ? (
+						<Text className={classes.passwordText} mt={4} c="red">
 							{resetPasswordError}
 						</Text>
 					) : updateUserPasswordIsLoading ? (
-						<Text className={classes.passwordText}>loading</Text>
+						<Text mt={4} className={classes.passwordText}>
+							loading
+						</Text>
 					) : udpateUserPasswordData?.data ? (
-						<Box>
+						<Box mt={4}>
 							<Text className={classes.passwordText}>Password</Text>
 							<CodeHighlight
 								className={classes.passwordPrims}
@@ -287,32 +264,18 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 								code={udpateUserPasswordData?.data}
 								copiedLabel="Password copied to clipboard"
 							/>
-							<Text className={classes.passwordText} color="red">
+							<Text className={classes.passwordText} c="red">
 								Warning this is the only time you are able to see Password
 							</Text>
 						</Box>
 					) : (
 						''
-					)}
-				</Stack>
-				<Group justify="right" mt={10}>
-					{user.method === 'native' ? (
-						<Button
-							variant="filled"
-							color="gray"
-							className={classes.modalActionBtn}
-							onClick={handleResetPassword}
-							disabled={UserInput === user.id ? false : true}>
-							Reset Password
-						</Button>
-					) : (
-						<Text>Cannot reset password for this user</Text>
-					)}
-					<Button onClick={handleCloseResetPassword} variant="outline" color="gray" className={classes.modalCancelBtn}>
-						Cancel
-					</Button>
-				</Group>
-			</Modal>
+					)
+				}
+				placeholder={`Please enter the user to confirm, i.e. ${user.id}`}
+				confirmationText={user.id}
+				isProcessing={!updateUserPasswordIsLoading}
+			/>
 			<Modal
 				opened={openedEditModal}
 				onClose={handleCloseRoleEdit}
