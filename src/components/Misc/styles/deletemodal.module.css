@@ -1,0 +1,13 @@
+.warningText {
+    font-size: 0.7rem;
+    color: var(--mantine-color-gray-7);
+}
+
+.confirmationText {
+    font-size: 0.7rem;
+    color: var(--mantine-color-gray-6);
+}
+
+.confirmationTextHighlight {
+    font-weight: 500;
+}

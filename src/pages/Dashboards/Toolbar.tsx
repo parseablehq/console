@@ -1,5 +1,5 @@
 import TimeRange from '@/components/Header/TimeRange';
-import { Box, Button, FileInput, Modal, px, Stack, Text, Menu, TextInput } from '@mantine/core';
+import { Box, Button, FileInput, Modal, px, Stack, Text, Menu } from '@mantine/core';
 import {
 	IconCheck,
 	IconCopy,
@@ -21,6 +21,7 @@ import { Dashboard } from '@/@types/parseable/api/dashboards';
 import { exportJson } from '@/utils/exportHelpers';
 import { copyTextToClipboard } from '@/utils';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import DeleteOrResetModal from '@/components/Misc/DeleteOrResetModal';
 
 const {
 	toggleEditDashboardModal,
@@ -143,49 +144,18 @@ const DeleteDashboardModal = () => {
 	if (!activeDashboard?.dashboard_id) return null;
 
 	return (
-		<Modal
-			opened={deleteDashboardModalOpen}
+		<DeleteOrResetModal
+			type="delete"
+			header="Delete Dashboard"
+			content="Are you sure want to delete this dashboard and its contents ?"
+			isOpen={deleteDashboardModalOpen}
 			onClose={closeModal}
-			size="auto"
-			centered
-			styles={{
-				body: { padding: '0 1rem 1rem 1rem', width: 400 },
-				header: { padding: '1rem', paddingBottom: '0.4rem' },
-			}}
-			title={<Text style={{ fontSize: '0.9rem', fontWeight: 600 }}>Delete Dashboard</Text>}>
-			<Stack>
-				<Stack gap={8}>
-					<Text className={classes.deleteWarningText}>
-						Are you sure want to delete this dashboard and its contents ?
-					</Text>
-					<Text className={classes.deleteConfirmationText}>
-						Please type <span className={classes.deleteConfirmationTextHighlight}>{`"${activeDashboard.name}"`}</span>{' '}
-						to confirm deletion.
-					</Text>
-
-					<TextInput
-						value={confirmText}
-						onChange={onChangeHandler}
-						placeholder={'Type the dashboard name to confirm.'}
-					/>
-				</Stack>
-				<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-					<Box>
-						<Button variant="outline" onClick={closeModal}>
-							Cancel
-						</Button>
-					</Box>
-					<Box>
-						<Button
-							disabled={confirmText !== activeDashboard.name || isDeleting}
-							onClick={onDelete}
-							loading={isDeleting}>
-							Delete
-						</Button>
-					</Box>
-				</Stack>
-			</Stack>
-		</Modal>
+			inputValue={confirmText}
+			confirmationText={activeDashboard.name}
+			onInputChange={onChangeHandler}
+			isProcessing={isDeleting}
+			onConfirm={onDelete}
+		/>
 	);
 };
 
