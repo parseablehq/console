@@ -12,7 +12,7 @@ import {
 } from '@tabler/icons-react';
 import classes from './styles/toolbar.module.css';
 import { useDashboardsStore, dashboardsStoreReducers, sortTilesByOrder } from './providers/DashboardsProvider';
-import { ChangeEvent, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import IconButton from '@/components/Button/IconButton';
 import { useDashboardsQuery } from '@/hooks/useDashboards';
 import _ from 'lodash';
@@ -119,14 +119,10 @@ const ImportTileButton = () => {
 const DeleteDashboardModal = () => {
 	const [activeDashboard, setDashbaordsStore] = useDashboardsStore((store) => store.activeDashboard);
 	const [deleteDashboardModalOpen] = useDashboardsStore((store) => store.deleteDashboardModalOpen);
-	const [confirmText, setConfirmText] = useState<string>('');
+
 	const { isDeleting, deleteDashboard } = useDashboardsQuery({});
 	const closeModal = useCallback(() => {
 		setDashbaordsStore((store) => toggleDeleteDashboardModal(store, false));
-	}, []);
-
-	const onChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-		setConfirmText(e.target.value);
 	}, []);
 
 	const onDelete = useCallback(() => {
@@ -135,7 +131,6 @@ const DeleteDashboardModal = () => {
 				dashboardId: activeDashboard?.dashboard_id,
 				onSuccess: () => {
 					closeModal();
-					setConfirmText('');
 				},
 			});
 		}
@@ -148,11 +143,10 @@ const DeleteDashboardModal = () => {
 			type="delete"
 			header="Delete Dashboard"
 			content="Are you sure want to delete this dashboard and its contents ?"
+			placeholder="Type the dashboard name to confirm deletion"
 			isOpen={deleteDashboardModalOpen}
 			onClose={closeModal}
-			inputValue={confirmText}
 			confirmationText={activeDashboard.name}
-			onInputChange={onChangeHandler}
 			isProcessing={isDeleting}
 			onConfirm={onDelete}
 		/>
@@ -234,7 +228,9 @@ const ImportTileModal = () => {
 							setFile(null);
 						},
 					});
-				} catch (error) {}
+				} catch (error) {
+					console.error('Error importing tile:', error);
+				}
 			};
 			reader.readAsText(file);
 		} else {

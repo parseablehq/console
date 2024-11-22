@@ -141,7 +141,6 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 
 	const handleCloseDelete = () => {
 		closeDeleteRole();
-		setUserInput('');
 	};
 
 	const handleCloseUpdateRole = () => {
@@ -295,8 +294,6 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 				placeholder="Type the role name to confirm"
 				onConfirm={handleDelete}
 				confirmationText={roleName}
-				inputValue={UserInput}
-				onInputChange={(e) => setUserInput(e.target.value)}
 			/>
 			{getRoleData?.data?.[deletePrivilegeIndex] ? (
 				<Modal
