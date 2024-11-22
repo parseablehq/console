@@ -128,11 +128,11 @@ const DeleteTileModal = () => {
 
 	return (
 		<DeleteOrResetModal
+			type="simple"
 			isOpen={deleteTileModalOpen}
 			onClose={onClose}
 			header="Delete Tile"
 			content="Are you sure you want to delete this tile?"
-			type="simple"
 			onConfirm={onConfirm}
 			isProcessing={isUpdatingDashboard}
 		/>

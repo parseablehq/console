@@ -3,11 +3,11 @@ import classes from './styles/deletemodal.module.css';
 import { ChangeEvent, useCallback, useState } from 'react';
 
 type BaseProps = {
+	isOpen: boolean;
+	onClose: () => void;
 	header: string;
 	specialContent?: React.ReactNode;
 	content: string;
-	isOpen: boolean;
-	onClose: () => void;
 	processContent?: React.ReactNode;
 	isProcessing?: boolean;
 	onConfirm: () => void;
@@ -34,24 +34,24 @@ type DeleteOrResetModalProps =
  * @param header - Header text for the modal.
  * @param specialContent - Could be used to render additional text or components.
  * @param content - Content text for the modal.
+ * @param placeholder - Placeholder text for the input field.
  * @param confirmationText - Text to confirm the action.
  * @param processContent - Content below text input ideally for some process.
  * @param isProcessing - Whether the action is processing.
  * @param onConfirm - Function to confirm the action.
- * @param placeholder - Placeholder text for the input field.
  */
 const DeleteOrResetModal = ({
 	type,
+	isOpen,
+	onClose,
 	header,
 	specialContent,
 	content,
-	isOpen,
-	onClose,
+	placeholder,
 	confirmationText,
 	processContent,
 	isProcessing,
 	onConfirm,
-	placeholder,
 }: DeleteOrResetModalProps) => {
 	const [confirmText, setConfirmText] = useState<string>('');
 

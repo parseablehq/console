@@ -208,37 +208,39 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				</Box>
 			</td>
 			<DeleteOrResetModal
+				type="delete"
 				isOpen={openedDelete}
 				onClose={handleCloseDelete}
 				header="Delete user"
 				content="Are you sure you want to delete this user?"
-				type="delete"
-				onConfirm={handleDelete}
 				placeholder={`Type the name of the user`}
 				confirmationText={user.id}
+				onConfirm={handleDelete}
 			/>
 			{getUserRolesData?.data && deleteRole && getUserRolesData?.data[deleteRole] ? (
 				<DeleteOrResetModal
+					type="delete"
 					isOpen={openedDeleteRole}
 					onClose={handleCloseRoleDelete}
 					header="Delete user role"
 					specialContent={<Text>{getBadge(deleteRole, false)}</Text>}
 					content="Are you sure you want to delete this user role?"
-					type="delete"
-					onConfirm={handleRoleDelete}
 					placeholder={`Type the name of the user`}
 					confirmationText={user.id}
+					onConfirm={handleRoleDelete}
 				/>
 			) : (
 				''
 			)}
 
 			<DeleteOrResetModal
+				type="reset"
 				isOpen={opened}
 				onClose={handleCloseResetPassword}
 				header="Change user password"
 				content="Are you sure you want to reset this user's password?"
-				type="reset"
+				placeholder={`Type the name of the user`}
+				confirmationText={user.id}
 				onConfirm={() => handleResetPassword(user.id)}
 				processContent={
 					updateUserPasswordIsError ? (
@@ -267,8 +269,6 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						''
 					)
 				}
-				placeholder={`Type the name of the user`}
-				confirmationText={user.id}
 				isProcessing={updateUserPasswordIsLoading}
 			/>
 			<Modal
