@@ -43,7 +43,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 
 	const [deleteRole, setDeleteRole] = useState<string | null>(null);
 	const [opened, { open, close }] = useDisclosure(false);
-	const [SelectedRole, setSelectedRole] = useState<string>('');
+	const [selectedRole, setSelectedRole] = useState<string>('');
 	const [roleSearchValue, setRoleSearchValue] = useState<string>('');
 
 	const { getUserRolesData, getUserRolesMutation, updateUserMutation, updateUserIsSuccess } = useUser();
@@ -128,10 +128,10 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 
 	const handleEditUserRole = () => {
 		const userRoleArray: any = Object.keys(getUserRolesData?.data);
-		if (userRoleArray.includes(SelectedRole) || SelectedRole === '') {
+		if (userRoleArray.includes(selectedRole) || selectedRole === '') {
 			return;
 		}
-		userRoleArray.push(SelectedRole);
+		userRoleArray.push(selectedRole);
 
 		updateUserMutation({ userName: user.id, roles: userRoleArray });
 		handleCloseRoleEdit();
@@ -284,10 +284,10 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 							setSelectedRole(value ?? '');
 						}}
 						nothingFoundMessage="No roles found"
-						value={SelectedRole}
+						value={selectedRole}
 						searchValue={roleSearchValue}
 						onSearchChange={(value) => setRoleSearchValue(value)}
-						onDropdownClose={() => setRoleSearchValue(SelectedRole)}
+						onDropdownClose={() => setRoleSearchValue(selectedRole)}
 						onDropdownOpen={() => setRoleSearchValue('')}
 						data={getRolesData?.data}
 						searchable
@@ -305,7 +305,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						// if role is already assigned or no role is selected then disable the button
 						disabled={
 							getUserRolesData?.data &&
-							(Object.keys(getUserRolesData?.data).includes(SelectedRole) || SelectedRole === '')
+							(Object.keys(getUserRolesData?.data).includes(selectedRole) || selectedRole === '')
 								? true
 								: false
 						}>
