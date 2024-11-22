@@ -21,6 +21,7 @@ import { useUser } from '@/hooks/useUser';
 import { useRole } from '@/hooks/useRole';
 import styles from './styles/AccessManagement.module.css';
 import { CodeHighlight } from '@mantine/code-highlight';
+import DeleteOrResetModal from '@/components/Misc/DeleteOrResetModal';
 
 interface RoleTRProps {
 	user: {
@@ -225,75 +226,28 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 					</Tooltip>
 				</Box>
 			</td>
-			<Modal
-				withinPortal
-				size="md"
-				opened={openedDelete}
+			<DeleteOrResetModal
+				isOpen={openedDelete}
 				onClose={handleCloseDelete}
-				title={'Delete user'}
-				className={classes.modalStyle}
-				centered
-				styles={{ title: { fontWeight: 700 } }}>
-				<TextInput
-					label="Are you sure you want to delete this user?"
-					type="text"
-					onChange={(e) => {
-						setUserInput(e.target.value);
-					}}
-					placeholder={`Please enter the user to confirm, i.e. ${user.id}`}
-					required
-				/>
-
-				<Group justify="right" mt={10}>
-					<Button
-						variant="filled"
-						color="gray"
-						className={classes.modalActionBtn}
-						disabled={UserInput === user.id ? false : true}
-						onClick={handleDelete}>
-						Delete
-					</Button>
-					<Button onClick={handleCloseDelete} variant="outline" color="gray" className={classes.modalCancelBtn}>
-						Cancel
-					</Button>
-				</Group>
-			</Modal>
+				header="Delete user"
+				content="Are you sure you want to delete this user?"
+				type="delete"
+				onConfirm={handleDelete}
+				placeholder={`Please enter the user name to confirm.`}
+				confirmationText={user.id}
+			/>
 			{getUserRolesData?.data && deleteRole && getUserRolesData?.data[deleteRole] ? (
-				<Modal
-					withinPortal
-					size="md"
-					opened={openedDeleteRole}
+				<DeleteOrResetModal
+					isOpen={openedDeleteRole}
 					onClose={handleCloseRoleDelete}
-					title={'Delete user role'}
-					centered
-					className={classes.modalStyle}>
-					<Stack>
-						<Text>{getBadge(deleteRole, false)}</Text>
-						<TextInput
-							label="Are you sure you want to delete this user role?"
-							type="text"
-							onChange={(e) => {
-								setUserInput(e.target.value);
-							}}
-							placeholder={`Please enter the user to confirm, i.e. ${user.id}`}
-							required
-						/>
-					</Stack>
-
-					<Group justify="right" mt={10}>
-						<Button
-							variant="filled"
-							color="gray"
-							className={classes.modalActionBtn}
-							disabled={UserInput === user.id ? false : true}
-							onClick={handleRoleDelete}>
-							Delete
-						</Button>
-						<Button onClick={handleCloseRoleDelete} variant="outline" color="gray" className={classes.modalCancelBtn}>
-							Cancel
-						</Button>
-					</Group>
-				</Modal>
+					header="Delete user role"
+					specialContent={<Text>{getBadge(deleteRole, false)}</Text>}
+					content="Are you sure you want to delete this user role?"
+					type="delete"
+					onConfirm={handleRoleDelete}
+					placeholder={`Please enter the user name to confirm.`}
+					confirmationText={user.id}
+				/>
 			) : (
 				''
 			)}
