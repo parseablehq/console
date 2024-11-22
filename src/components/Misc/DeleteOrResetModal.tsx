@@ -10,6 +10,7 @@ type DeleteOrResetModalProps = {
 	isOpen: boolean;
 	onClose: () => void;
 	confirmationText: string;
+	processContent?: React.ReactNode;
 	isProcessing?: boolean;
 	onConfirm: () => void;
 	placeholder: string;
@@ -24,6 +25,7 @@ type DeleteOrResetModalProps = {
  * @param specialContent - Could be used to render additional text or components.
  * @param content - Content text for the modal.
  * @param confirmationText - Text to confirm the action.
+ * @param processContent - Content below text input ideally for some process.
  * @param isProcessing - Whether the action is processing.
  * @param onConfirm - Function to confirm the action.
  * @param placeholder - Placeholder text for the input field.
@@ -36,6 +38,7 @@ const DeleteOrResetModal = ({
 	isOpen,
 	onClose,
 	confirmationText,
+	processContent,
 	isProcessing,
 	onConfirm,
 	placeholder,
@@ -79,6 +82,9 @@ const DeleteOrResetModal = ({
 					</Text>
 
 					<TextInput value={confirmText} onChange={onChangeHandler} placeholder={placeholder} required />
+
+					{/* Content below text input ideally for some process */}
+					{processContent}
 				</Stack>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
 					<Box>
@@ -87,10 +93,7 @@ const DeleteOrResetModal = ({
 						</Button>
 					</Box>
 					<Box>
-						<Button
-							disabled={confirmationText !== confirmText || isProcessing}
-							onClick={tryConfirm}
-							loading={isProcessing}>
+						<Button disabled={confirmationText !== confirmText && isProcessing} onClick={tryConfirm}>
 							{type === 'delete' ? 'Delete' : 'Reset'}
 						</Button>
 					</Box>
