@@ -1,7 +1,7 @@
-import { Log } from '@/@types/parseable/api/query';
-import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
 import { getPageSlice } from '@/pages/Stream/utils';
 import initContext from '@/utils/initContext';
+import { Log } from '@/@types/parseable/api/query';
+import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
 import _ from 'lodash';
 
 export const CORRELATION_LOAD_LIMIT = 250;
@@ -14,14 +14,28 @@ export const DATA_TYPE_COLORS = ['#B68A96', '#AB92C0', '#97C2BE', '#B7A181'];
 const defaultSortKey = 'p_timestamp';
 const defaultSortOrder = 'desc' as 'desc';
 
-type ReducerOutput = Partial<CorrelationStore>;
+type ReducerOutput = {
+	streamData?: Record<string, any>;
+	fields?: Record<string, any>;
+	joins?: Record<string, any>;
+	tableOpts?: any;
+	selectedFields?: any;
+};
 
 type CorrelationStore = {
-	streamData: any;
-	fields: any;
-
-	selectedFields: any;
-
+	streamData: Record<string, { logData: Log[] } | null>;
+	fields: Record<
+		string,
+		{
+			fieldTypeMap: Record<string, 'text' | 'number' | 'timestamp'>;
+			color: string;
+			headerColor: string;
+			backgroundColor: string;
+			iconColor: string;
+		}
+	>;
+	selectedFields: Record<string, string[]>;
+	joins: Record<string, string[]>;
 	tableOpts: {
 		disabledColumns: string[];
 		wrapDisabledColumns: string[];
@@ -48,6 +62,7 @@ type CorrelationStoreReducers = {
 	setStreamData: (store: CorrelationStore, currentStream: string, data: Log[]) => ReducerOutput;
 	deleteStreamData: (store: CorrelationStore, currentStream: string) => ReducerOutput;
 	setSelectedFields: (store: CorrelationStore, field: string, streamName: string) => ReducerOutput;
+	setJoinFields: (store: CorrelationStore, field: string, streamName: string) => ReducerOutput;
 	deleteSelectedField: (store: CorrelationStore, field: string, streamName: string) => ReducerOutput;
 	setStreamSchema: (store: CorrelationStore, schema: LogStreamSchemaData, streamName: string) => ReducerOutput;
 	setCurrentOffset: (store: CorrelationStore, offset: number) => ReducerOutput;
@@ -56,9 +71,10 @@ type CorrelationStoreReducers = {
 };
 
 const initialState: CorrelationStore = {
-	streamData: null,
+	streamData: {},
 	fields: {},
-	selectedFields: [],
+	selectedFields: {},
+	joins: {},
 	tableOpts: {
 		disabledColumns: [],
 		wrapDisabledColumns: [],
@@ -81,9 +97,24 @@ const initialState: CorrelationStore = {
 	},
 };
 
-const setSelectedFields = (store: CorrelationStore, field: string, streamName: string) => {
+const setJoinFields = (store: CorrelationStore, field: string, streamName: string): ReducerOutput => {
+	const updatedJoinFields = {
+		...store.joins,
+		[streamName]: store.joins[streamName]
+			? store.joins[streamName].includes(field)
+				? store.joins[streamName]
+				: [...store.joins[streamName], field]
+			: [field],
+	};
+
+	return {
+		...store,
+		joins: updatedJoinFields,
+	};
+};
+
+const setSelectedFields = (store: CorrelationStore, field: string, streamName: string): ReducerOutput => {
 	const { tableOpts } = store;
-	// Update selectedFields
 	const updatedSelectedFields = {
 		...store.selectedFields,
 		[streamName]: store.selectedFields[streamName]
@@ -94,7 +125,7 @@ const setSelectedFields = (store: CorrelationStore, field: string, streamName: s
 	};
 
 	const currentPage = 1;
-	const filteredData = filterAndSortData(tableOpts, store.streamData[streamName].logData);
+	const filteredData = filterAndSortData(tableOpts, store.streamData[streamName]?.logData || []);
 	const newPageSlice = filteredData && getPageSlice(currentPage, tableOpts.perPage, filteredData);
 
 	// Compute updated pageData with slicing logic
@@ -233,18 +264,13 @@ const filterAndSortData = (
 	return sortedData;
 };
 
-const setStreamData = (store: CorrelationStore, currentStream: string, data: Log[]) => {
+const setStreamData = (store: CorrelationStore, currentStream: string, data: Log[]): ReducerOutput => {
 	if (!currentStream) {
-		return {
-			fields: store.fields,
-		};
+		return { fields: store.fields };
 	}
 
-	// Check the number of existing streams
 	const currentStreamCount = Object.keys(store.streamData || {}).length;
-
-	// Enforce a limit of 4 streams
-	if (currentStreamCount >= 4 && !(currentStream in (store.streamData || {}))) {
+	if (currentStreamCount >= 4 && !(currentStream in store.streamData)) {
 		console.warn('Stream limit reached. Cannot add more than 4 streams.');
 		return store;
 	}
@@ -283,12 +309,13 @@ const setCurrentPage = (store: CorrelationStore, currentPage: number) => {
 
 const parseType = (type: any): 'text' | 'number' | 'timestamp' => {
 	if (typeof type === 'object') {
-		if (_.get(type, 'Timestamp', null)) {
+		if (type && type.Timestamp) {
 			return 'timestamp';
-		} else return 'text';
-		// console.error('Error finding type for an object', type);
+		}
+		return 'text'; // Default to text for any other object types
 	}
-	const lowercaseType = type.toLowerCase();
+
+	const lowercaseType = (type || '').toLowerCase();
 	if (lowercaseType.startsWith('int') || lowercaseType.startsWith('float') || lowercaseType.startsWith('double')) {
 		return 'number';
 	} else {
@@ -296,7 +323,7 @@ const parseType = (type: any): 'text' | 'number' | 'timestamp' => {
 	}
 };
 
-const setStreamSchema = (store: CorrelationStore, schema: LogStreamSchemaData, streamName: string) => {
+const setStreamSchema = (store: CorrelationStore, schema: LogStreamSchemaData, streamName: string): ReducerOutput => {
 	const fieldTypeMap = schema.fields.reduce((acc, field) => {
 		return { ...acc, [field.name]: parseType(field.data_type) };
 	}, {});
@@ -343,6 +370,7 @@ const correlationStoreReducers: CorrelationStoreReducers = {
 	setCurrentOffset,
 	setCurrentPage,
 	setPageAndPageData,
+	setJoinFields,
 };
 
 export { CorrelationProvider, useCorrelationStore, correlationStoreReducers };

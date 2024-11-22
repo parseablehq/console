@@ -21,6 +21,8 @@ import {
 	IconX,
 } from '@tabler/icons-react';
 import CorrelationFooter from './Views/CorrelationFooter';
+import Querier from '../Stream/components/Querier';
+import TimeRange from '@/components/Header/TimeRange';
 
 const { changeStream } = appStoreReducers;
 const { deleteStreamData, setSelectedFields, deleteSelectedField } = correlationStoreReducers;
@@ -39,6 +41,7 @@ const FieldItem = ({
 	iconColor,
 	dataType,
 	onClick,
+	onDelete,
 }: {
 	headerColor: string;
 	fieldName: string;
@@ -46,6 +49,7 @@ const FieldItem = ({
 	iconColor: string;
 	dataType?: string;
 	onClick?: () => void;
+	onDelete?: () => void;
 }) => {
 	return (
 		<div
@@ -58,7 +62,7 @@ const FieldItem = ({
 			className={classes.fieldItem}
 			onClick={onClick}>
 			<Text size="sm">{fieldName}</Text>
-			{!dataType && <IconX color={iconColor} size={16} />}
+			{!dataType && <IconX color={iconColor} size={16} onClick={onDelete} />}
 			{dataType && dataTypeIcons(iconColor)[dataType]}
 		</div>
 	);
@@ -85,6 +89,8 @@ const Correlation = () => {
 
 		setAppStore((store) => changeStream(store, value));
 	};
+
+	console.log(fields);
 
 	const filterFields = (fieldsIter: any) => {
 		const typedFields = Object.keys(fieldsIter.fieldTypeMap) as string[];
@@ -116,18 +122,6 @@ const Correlation = () => {
 					value={searchText}
 					onChange={(e) => setSearchText(e.target.value)}
 				/>
-				{/* {Object.keys(fields).length < 4 && (
-					<div style={{ display: 'flex', gap: '5px' }}>
-						<Select
-							searchable
-							classNames={{ input: classes.streamInput, description: classes.streamSelectDescription }}
-							onChange={(value) => addStream(value)}
-							placeholder="Select Stream"
-							style={{ width: '100%' }}
-							data={userSpecificStreams?.map((stream: any) => ({ value: stream.name, label: stream.name })) ?? []}
-						/>
-					</div>
-				)} */}
 				<div
 					style={{
 						display: 'flex',
@@ -136,7 +130,7 @@ const Correlation = () => {
 						height: `calc(100vh - 220px)`,
 					}}>
 					{Object.entries(fields).map(([stream, fieldsIter]: [any, any]) => {
-						const filteredFields = filterFields(fieldsIter); // Get filtered fields
+						const filteredFields = filterFields(fieldsIter);
 						const totalStreams = Object.entries(fields).length;
 						const heightPercentage = totalStreams === 1 ? '50%' : `${100 / totalStreams}%`;
 
@@ -150,7 +144,11 @@ const Correlation = () => {
 									border: `1px solid ${fieldsIter.color}`,
 								}}>
 								<div className={classes.streamNameWrapper}>
-									<Text size="md" style={{ color: fieldsIter.headerColor }} className={classes.streamName}>
+									<Text
+										size="md"
+										tt="capitalize"
+										style={{ color: fieldsIter.headerColor }}
+										className={classes.streamName}>
 										{stream}
 									</Text>
 									<IconTrashX
@@ -186,7 +184,7 @@ const Correlation = () => {
 					{Object.keys(fields).length === 0 && (
 						<>
 							{/* First box */}
-							<div className={classes.noStreamsWrapper}>
+							<div className={classes.noStreamsWrapper} style={{ border: '1px dashed #9F1239' }}>
 								<Select
 									searchable
 									classNames={{
@@ -243,7 +241,7 @@ const Correlation = () => {
 						<>
 							{/* Render the single existing field */}
 							{Object.keys(fields).map((key) => (
-								<div key={key} className={classes.noStreamsWrapper}>
+								<div key={key} className={classes.noStreamsWrapper} style={{ border: '1px dashed #7E22CE' }}>
 									<Select
 										searchable
 										classNames={{
@@ -305,6 +303,7 @@ const Correlation = () => {
 											backgroundColor={fields[streamName]['backgroundColor']}
 											iconColor={fields[streamName]['iconColor']}
 											fieldName={field}
+											onDelete={() => removeField(field, streamName)}
 										/>
 									)),
 								)}
@@ -319,16 +318,37 @@ const Correlation = () => {
 									height: '36px',
 									borderRadius: '5px',
 									display: 'flex',
+									flexDirection: 'row',
 									gap: '10px',
-									padding: '5px 10px',
-								}}></div>
-							{/* <PillsInput style={{ width: '100%' }} variant="filled" size="md" radius="md"> 
-									<Pill.Group>
-										<Pill size="xl" withRemoveButton>
-											Stream A.Status = Stream B.Status Code
-										</Pill>
-									</Pill.Group> 
-							 	</PillsInput> */}
+									alignContent: 'center',
+									padding: '5px',
+								}}>
+								<div>
+									<Select
+										disabled={Object.keys(fields).length === 0}
+										placeholder={
+											Object.keys(fields)[0] ? `Select field from ${Object.keys(fields)[0]}` : 'Select Stream 1'
+										}
+										style={{ width: '300px' }}
+										data={
+											Object.keys(fields).length > 0 ? Object.keys(fields[Object.keys(fields)[0]].fieldTypeMap) : []
+										}
+									/>
+								</div>
+								<div> = </div>
+								<div>
+									<Select
+										disabled={Object.keys(fields).length < 2}
+										placeholder={
+											Object.keys(fields)[1] ? `Select field from ${Object.keys(fields)[1]}` : 'Select Stream 2'
+										}
+										style={{ width: '300px' }}
+										data={
+											Object.keys(fields).length > 1 ? Object.keys(fields[Object.keys(fields)[1]].fieldTypeMap) : []
+										}
+									/>
+								</div>
+							</div>
 						</div>
 					</Stack>
 					<Stack
@@ -337,7 +357,10 @@ const Correlation = () => {
 							padding: '5px',
 							height: '100%',
 						}}
-						w="100%"></Stack>
+						w="100%">
+						<Querier />
+						<TimeRange />
+					</Stack>
 				</Stack>
 				{Object.keys(selectedFields).length > 0 && (
 					<>
