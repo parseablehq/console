@@ -33,8 +33,6 @@ interface PrivilegeTRProps {
 const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 	const { roleName, defaultRole, deleteRoleMutation, getRoleIsLoading, getRoleIsError } = props;
 
-	const [UserInput, setUserInput] = useState<string>('');
-
 	// Delete Privilege Modal Constants  : Starts
 	const [deletePrivilegeIndex, setDeletePrivilegeIndex] = useState<number>(0);
 	const [isDeletedPrivilegeOpen, { open: openDeletePrivilege, close: closeDeletePrivilege }] = useDisclosure();
@@ -47,7 +45,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 	// Update Role Modal Constants  : Starts
 	const [isUpdatedRoleOpen, { open: openUpdateRole, close: closeUpdateRole }] = useDisclosure();
 	const [selectedPrivilege, setSelectedPrivilege] = useState<string>('');
-	const [SelectedStream, setSelectedStream] = useState<string>('');
+	const [selectedStream, setSelectedStream] = useState<string>('');
 	const [streamSearchValue, setStreamSearchValue] = useState<string>('');
 	const [tagInput, setTagInput] = useState<string>('');
 	const { getLogStreamListData } = useGetLogStreamList();
@@ -105,7 +103,6 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 
 	const handleClosePrivilegeDelete = () => {
 		closeDeletePrivilege();
-		setUserInput('');
 	};
 
 	const handlePrivilegeDelete = () => {
@@ -158,12 +155,12 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 			});
 		}
 		if (selectedPrivilege === 'reader' || selectedPrivilege === 'writer' || selectedPrivilege === 'ingestor') {
-			if (getLogStreamListData?.data?.find((stream) => stream.name === SelectedStream)) {
+			if (getLogStreamListData?.data?.find((stream) => stream.name === selectedStream)) {
 				if (tagInput !== '' && tagInput !== undefined && selectedPrivilege === 'reader') {
 					getRoleData?.data?.push({
 						privilege: selectedPrivilege,
 						resource: {
-							stream: SelectedStream,
+							stream: selectedStream,
 							tag: tagInput,
 						},
 					});
@@ -171,7 +168,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 					getRoleData?.data?.push({
 						privilege: selectedPrivilege,
 						resource: {
-							stream: SelectedStream,
+							stream: selectedStream,
 						},
 					});
 				}
@@ -193,7 +190,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 				getRoleData?.data?.find(
 					(role: any) =>
 						role.privilege === selectedPrivilege &&
-						role.resource?.stream === SelectedStream &&
+						role.resource?.stream === selectedStream &&
 						(tagInput
 							? role.resource?.tag === tagInput
 							: role.resource?.tag === null || role.resource?.tag === undefined),
@@ -202,9 +199,9 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 				return true;
 			}
 			if (
-				getLogStreamListData?.data?.find((stream) => stream.name === SelectedStream) &&
-				SelectedStream !== '' &&
-				SelectedStream !== undefined
+				getLogStreamListData?.data?.find((stream) => stream.name === selectedStream) &&
+				selectedStream !== '' &&
+				selectedStream !== undefined
 			) {
 				return false;
 			}
@@ -213,15 +210,15 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 		if (selectedPrivilege === 'writer' || selectedPrivilege === 'ingestor') {
 			if (
 				getRoleData?.data?.find(
-					(role: any) => role.privilege === selectedPrivilege && role.resource?.stream === SelectedStream,
+					(role: any) => role.privilege === selectedPrivilege && role.resource?.stream === selectedStream,
 				)
 			) {
 				return true;
 			}
 			if (
-				getLogStreamListData?.data?.find((stream) => stream.name === SelectedStream) &&
-				SelectedStream !== '' &&
-				SelectedStream !== undefined
+				getLogStreamListData?.data?.find((stream) => stream.name === selectedStream) &&
+				selectedStream !== '' &&
+				selectedStream !== undefined
 			) {
 				return false;
 			}
@@ -336,10 +333,10 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 									setSelectedStream(value ?? '');
 								}}
 								nothingFoundMessage="No options"
-								value={SelectedStream}
+								value={selectedStream}
 								searchValue={streamSearchValue}
 								onSearchChange={(value) => setStreamSearchValue(value)}
-								onDropdownClose={() => setStreamSearchValue(SelectedStream)}
+								onDropdownClose={() => setStreamSearchValue(selectedStream)}
 								onDropdownOpen={() => setStreamSearchValue('')}
 								data={getLogStreamListData?.data?.map((stream) => ({ value: stream.name, label: stream.name })) ?? []}
 								searchable
