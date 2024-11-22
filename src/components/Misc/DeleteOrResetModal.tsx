@@ -107,8 +107,7 @@ const DeleteOrResetModal = ({
 					<Box>
 						<Button
 							disabled={type !== 'simple' && (confirmationText !== confirmText || isProcessing)}
-							onClick={tryConfirm}
-							loading={isProcessing}>
+							onClick={tryConfirm}>
 							{type === 'reset' ? 'Reset' : 'Delete'}
 						</Button>
 					</Box>
