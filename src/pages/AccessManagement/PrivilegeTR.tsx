@@ -19,6 +19,7 @@ import { FC, useEffect, useState } from 'react';
 import { useGetLogStreamList } from '@/hooks/useGetLogStreamList';
 import { useRole } from '@/hooks/useRole';
 import styles from './styles/AccessManagement.module.css';
+import DeleteOrResetModal from '@/components/Misc/DeleteOrResetModal';
 
 interface PrivilegeTRProps {
 	roleName: string;
@@ -284,39 +285,19 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 					</Box>
 				</td>
 			</tr>
-			<Modal
-				withinPortal
-				size="md"
-				opened={isDeletedRoleOpen}
-				onClose={handleCloseDelete}
-				title={'Delete Role'}
-				className={classes.modalStyle}
-				centered>
-				<TextInput
-					label="Are you sure you want to delete this Role?"
-					type="text"
-					onChange={(e) => {
-						setUserInput(e.target.value);
-					}}
-					placeholder={`Please enter the Role to confirm, i.e. ${roleName}`}
-					required
-					mb={20}
-				/>
 
-				<Group justify="right" mt={10}>
-					<Button
-						variant="filled"
-						color="gray"
-						className={classes.modalActionBtn}
-						disabled={UserInput === roleName ? false : true}
-						onClick={handleDelete}>
-						Delete
-					</Button>
-					<Button onClick={handleCloseDelete} variant="outline" color="gray" className={classes.modalCancelBtn}>
-						Cancel
-					</Button>
-				</Group>
-			</Modal>
+			<DeleteOrResetModal
+				isOpen={isDeletedRoleOpen}
+				onClose={handleCloseDelete}
+				header={'Delete Role'}
+				type="delete"
+				content="Are you sure you want to delete this Role?"
+				placeholder="Type the role name to confirm"
+				onConfirm={handleDelete}
+				confirmationText={roleName}
+				inputValue={UserInput}
+				onInputChange={(e) => setUserInput(e.target.value)}
+			/>
 			{getRoleData?.data?.[deletePrivilegeIndex] ? (
 				<Modal
 					withinPortal

@@ -10,8 +10,9 @@ type DeleteOrResetModalProps = {
 	inputValue: string;
 	confirmationText: string;
 	onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-	isProcessing: boolean;
+	isProcessing?: boolean;
 	onConfirm: () => void;
+	placeholder: string;
 };
 
 const DeleteOrResetModal = ({
@@ -25,6 +26,7 @@ const DeleteOrResetModal = ({
 	onInputChange,
 	isProcessing,
 	onConfirm,
+	placeholder,
 }: DeleteOrResetModalProps) => {
 	return (
 		<Modal
@@ -46,7 +48,7 @@ const DeleteOrResetModal = ({
 						{type === 'delete' ? 'deletion' : 'reset'}.
 					</Text>
 
-					<TextInput value={inputValue} onChange={onInputChange} placeholder={'Type the dashboard name to confirm.'} />
+					<TextInput value={inputValue} onChange={onInputChange} placeholder={placeholder} required />
 				</Stack>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
 					<Box>
