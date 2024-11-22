@@ -5,6 +5,7 @@ import { ChangeEvent, useCallback, useState } from 'react';
 type DeleteOrResetModalProps = {
 	type: 'delete' | 'reset';
 	header: string;
+	specialContent?: React.ReactNode;
 	content: string;
 	isOpen: boolean;
 	onClose: () => void;
@@ -20,6 +21,7 @@ type DeleteOrResetModalProps = {
  * @param isOpen - Whether the modal is open.
  * @param onClose - Function to close the modal.
  * @param header - Header text for the modal.
+ * @param specialContent - Could be used to render additional text or components.
  * @param content - Content text for the modal.
  * @param confirmationText - Text to confirm the action.
  * @param isProcessing - Whether the action is processing.
@@ -29,6 +31,7 @@ type DeleteOrResetModalProps = {
 const DeleteOrResetModal = ({
 	type,
 	header,
+	specialContent,
 	content,
 	isOpen,
 	onClose,
@@ -68,6 +71,7 @@ const DeleteOrResetModal = ({
 			title={<Text style={{ fontSize: '0.9rem', fontWeight: 600 }}>{header}</Text>}>
 			<Stack>
 				<Stack gap={8}>
+					{specialContent}
 					<Text className={classes.warningText}>{content}</Text>
 					<Text className={classes.confirmationText}>
 						Please type <span className={classes.confirmationTextHighlight}>{`"${confirmationText}"`}</span> to confirm{' '}
