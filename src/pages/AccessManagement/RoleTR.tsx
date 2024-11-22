@@ -43,7 +43,6 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 
 	const [deleteRole, setDeleteRole] = useState<string | null>(null);
 	const [opened, { open, close }] = useDisclosure(false);
-	const [UserInput, setUserInput] = useState<string>('');
 	const [SelectedRole, setSelectedRole] = useState<string>('');
 	const [roleSearchValue, setRoleSearchValue] = useState<string>('');
 
@@ -101,18 +100,16 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 	// For Delete User
 	const handleCloseDelete = () => {
 		closeDelete();
-		setUserInput('');
 	};
 
 	const handleDelete = () => {
 		deleteUserMutation({ userName: user.id, onSuccess: props.getUserRefetch });
 		closeDelete();
-		setUserInput('');
 	};
 
 	// For Delete Role
 	const handleRoleDelete = () => {
-		let filtered = Object.keys(getUserRolesData?.data).filter((role) => role !== deleteRole);
+		const filtered = Object.keys(getUserRolesData?.data).filter((role) => role !== deleteRole);
 		updateUserMutation({ userName: user.id, roles: filtered });
 		closeDeleteRole();
 		setDeleteRole(null);
@@ -120,7 +117,6 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 	};
 	const handleCloseRoleDelete = () => {
 		closeDeleteRole();
-		setUserInput('');
 	};
 
 	// For Edit Role
@@ -131,7 +127,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 	};
 
 	const handleEditUserRole = () => {
-		let userRoleArray: any = Object.keys(getUserRolesData?.data);
+		const userRoleArray: any = Object.keys(getUserRolesData?.data);
 		if (userRoleArray.includes(SelectedRole) || SelectedRole === '') {
 			return;
 		}
@@ -144,11 +140,10 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 	// for reset password
 	const handleCloseResetPassword = () => {
 		close();
-		setUserInput('');
 	};
 
-	const handleResetPassword = () => {
-		updateUserPasswordMutation({ userName: UserInput });
+	const handleResetPassword = (userName: string) => {
+		updateUserPasswordMutation({ userName: userName });
 	};
 
 	const classes = styles;
@@ -219,7 +214,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				content="Are you sure you want to delete this user?"
 				type="delete"
 				onConfirm={handleDelete}
-				placeholder={`Please enter the user name to confirm.`}
+				placeholder={`Type the name of the user`}
 				confirmationText={user.id}
 			/>
 			{getUserRolesData?.data && deleteRole && getUserRolesData?.data[deleteRole] ? (
@@ -231,7 +226,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 					content="Are you sure you want to delete this user role?"
 					type="delete"
 					onConfirm={handleRoleDelete}
-					placeholder={`Please enter the user name to confirm.`}
+					placeholder={`Type the name of the user`}
 					confirmationText={user.id}
 				/>
 			) : (
@@ -244,7 +239,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				header="Change user password"
 				content="Are you sure you want to reset this user's password?"
 				type="reset"
-				onConfirm={handleResetPassword}
+				onConfirm={() => handleResetPassword(user.id)}
 				processContent={
 					updateUserPasswordIsError ? (
 						<Text className={classes.passwordText} mt={4} c="red">
@@ -272,9 +267,9 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						''
 					)
 				}
-				placeholder={`Please enter the user to confirm, i.e. ${user.id}`}
+				placeholder={`Type the name of the user`}
 				confirmationText={user.id}
-				isProcessing={!updateUserPasswordIsLoading}
+				isProcessing={updateUserPasswordIsLoading}
 			/>
 			<Modal
 				opened={openedEditModal}
