@@ -28,17 +28,17 @@ type DeleteOrResetModalProps =
 
 /**
  * Confirmation modal for deleting or resetting an item.
- * @param type - Type of the modal, could be 'delete', 'reset' or 'simple'.
- * @param isOpen - Whether the modal is open.
- * @param onClose - Function to close the modal.
- * @param header - Header text for the modal.
- * @param specialContent - Could be used to render additional text or components.
- * @param content - Content text for the modal.
- * @param placeholder - Placeholder text for the input field.
- * @param confirmationText - Expected text to confirm the action.
- * @param actionProcessingContent - Content below text input ideally to show processing status or related information.
- * @param isActionInProgress - Whether the action is processing, to disable the confirm button.
- * @param onConfirm - Function to confirm the action.
+ * @param type - Specifies the type of modal ('simple', 'delete', or 'reset').
+ * @param isOpen - Controls whether the modal is visible.
+ * @param onClose - Callback to close the modal and reset the state.
+ * @param header - Header text displayed in the modal title.
+ * @param specialContent - Optional content for additional context or customization.
+ * @param content - Main descriptive content of the modal.
+ * @param placeholder - Input placeholder for confirmation text (applicable to 'delete' and 'reset').
+ * @param confirmationText - Text required to confirm the action (applicable to 'delete' and 'reset').
+ * @param actionProcessingContent - Optional content below text input for showing progress status or related information.
+ * @param isActionInProgress - Disables the confirm button when action is in progress.
+ * @param onConfirm - Callback function to be executed when the confirm button is clicked.
  */
 const DeleteOrResetModal = ({
 	type,
@@ -55,10 +55,12 @@ const DeleteOrResetModal = ({
 }: DeleteOrResetModalProps) => {
 	const [confirmText, setConfirmText] = useState<string>('');
 
+	// Handler for the confirmation input field
 	const onChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
 		setConfirmText(e.target.value);
 	}, []);
 
+	// Function to validate and trigger confirmation logic
 	const tryConfirm = () => {
 		if (type === 'simple' || confirmationText === confirmText) {
 			setConfirmText('');
@@ -66,6 +68,7 @@ const DeleteOrResetModal = ({
 		}
 	};
 
+	// Function to close the modal and reset the confirmation text state.
 	const closeModal = () => {
 		setConfirmText('');
 		onClose();
@@ -87,6 +90,8 @@ const DeleteOrResetModal = ({
 				<Stack gap={8}>
 					{specialContent}
 					<Text className={classes.warningText}>{content}</Text>
+
+					{/* Render confirmation field for 'delete' or 'reset' types */}
 					{type !== 'simple' && (
 						<>
 							<Text className={classes.confirmationText}>
@@ -98,6 +103,8 @@ const DeleteOrResetModal = ({
 					)}
 					{actionProcessingContent}
 				</Stack>
+
+				{/* Action buttons */}
 				<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
 					<Box>
 						<Button variant="outline" onClick={closeModal}>
