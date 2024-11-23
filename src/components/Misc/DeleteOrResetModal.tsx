@@ -61,18 +61,18 @@ const DeleteOrResetModal = ({
 	}, []);
 
 	// Function to validate and trigger confirmation logic
-	const tryConfirm = () => {
+	const tryConfirm = useCallback(() => {
 		if (type === 'simple' || confirmationText === confirmText) {
 			setConfirmText('');
 			onConfirm();
 		}
-	};
+	}, [type, confirmationText, confirmText, onConfirm]);
 
 	// Function to close the modal and reset the confirmation text state.
-	const closeModal = () => {
+	const closeModal = useCallback(() => {
 		setConfirmText('');
 		onClose();
-	};
+	}, [onClose]);
 
 	return (
 		<Modal
