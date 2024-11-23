@@ -127,7 +127,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 	};
 
 	const handleEditUserRole = () => {
-		const userRoleArray: any = Object.keys(getUserRolesData?.data);
+		const userRoleArray = Object.keys(getUserRolesData?.data);
 		if (userRoleArray.includes(selectedRole) || selectedRole === '') {
 			return;
 		}
@@ -143,7 +143,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 	};
 
 	const handleResetPassword = (userName: string) => {
-		updateUserPasswordMutation({ userName: userName });
+		updateUserPasswordMutation({ userName });
 	};
 
 	const classes = styles;
