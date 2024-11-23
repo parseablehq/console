@@ -52,7 +52,7 @@ const DeleteStreamModal = () => {
 					<TextInput
 						type="text"
 						onChange={handleInputChange}
-						placeholder={`Type the name of the stream`}
+						placeholder="Type the name of the stream"
 						required
 						value={confirmInputValue}
 					/>
