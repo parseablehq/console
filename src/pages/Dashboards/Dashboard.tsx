@@ -134,7 +134,7 @@ const DeleteTileModal = () => {
 			header="Delete Tile"
 			content="Are you sure you want to delete this tile?"
 			onConfirm={onConfirm}
-			isProcessing={isUpdatingDashboard}
+			isActionInProgress={isUpdatingDashboard}
 		/>
 	);
 };

@@ -147,7 +147,7 @@ const DeleteDashboardModal = () => {
 			isOpen={deleteDashboardModalOpen}
 			onClose={closeModal}
 			confirmationText={activeDashboard.name}
-			isProcessing={isDeleting}
+			isActionInProgress={isDeleting}
 			onConfirm={onDelete}
 		/>
 	);

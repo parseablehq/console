@@ -1,5 +1,5 @@
 import { Box, Button, Modal, Stack, Text, TextInput } from '@mantine/core';
-import classes from './styles/deletemodal.module.css';
+import classes from './styles/DeleteOrResetModal.module.css';
 import { ChangeEvent, useCallback, useState } from 'react';
 
 type BaseProps = {
@@ -8,8 +8,8 @@ type BaseProps = {
 	header: string;
 	specialContent?: React.ReactNode;
 	content: string;
-	processContent?: React.ReactNode;
-	isProcessing?: boolean;
+	actionProcessingContent?: React.ReactNode;
+	isActionInProgress?: boolean;
 	onConfirm: () => void;
 };
 
@@ -35,9 +35,9 @@ type DeleteOrResetModalProps =
  * @param specialContent - Could be used to render additional text or components.
  * @param content - Content text for the modal.
  * @param placeholder - Placeholder text for the input field.
- * @param confirmationText - Text to confirm the action.
- * @param processContent - Content below text input ideally for some process.
- * @param isProcessing - Whether the action is processing.
+ * @param confirmationText - Expected text to confirm the action.
+ * @param actionProcessingContent - Content below text input ideally to show processing status or related information.
+ * @param isActionInProgress - Whether the action is processing, to disable the confirm button.
  * @param onConfirm - Function to confirm the action.
  */
 const DeleteOrResetModal = ({
@@ -49,8 +49,8 @@ const DeleteOrResetModal = ({
 	content,
 	placeholder,
 	confirmationText,
-	processContent,
-	isProcessing,
+	actionProcessingContent,
+	isActionInProgress,
 	onConfirm,
 }: DeleteOrResetModalProps) => {
 	const [confirmText, setConfirmText] = useState<string>('');
@@ -96,7 +96,7 @@ const DeleteOrResetModal = ({
 							<TextInput value={confirmText} onChange={onChangeHandler} placeholder={placeholder} required />
 						</>
 					)}
-					{processContent}
+					{actionProcessingContent}
 				</Stack>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
 					<Box>
@@ -107,7 +107,7 @@ const DeleteOrResetModal = ({
 					<Box>
 						{/* Disable the button if the confirmation text is not correct or the action is processing. */}
 						<Button
-							disabled={(type !== 'simple' && confirmationText !== confirmText) || isProcessing}
+							disabled={(type !== 'simple' && confirmationText !== confirmText) || isActionInProgress}
 							onClick={tryConfirm}>
 							{type === 'reset' ? 'Reset' : 'Delete'}
 						</Button>

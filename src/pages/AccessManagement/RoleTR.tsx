@@ -242,7 +242,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				placeholder={`Type the name of the user`}
 				confirmationText={user.id}
 				onConfirm={() => handleResetPassword(user.id)}
-				processContent={
+				actionProcessingContent={
 					updateUserPasswordIsError ? (
 						<Text className={classes.passwordText} mt={4} c="red">
 							{resetPasswordError}
@@ -269,7 +269,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						''
 					)
 				}
-				isProcessing={updateUserPasswordIsLoading}
+				isActionInProgress={updateUserPasswordIsLoading}
 			/>
 			<Modal
 				opened={openedEditModal}
