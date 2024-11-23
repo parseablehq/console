@@ -101,6 +101,8 @@ const DeleteOrResetModal = ({
 							<TextInput value={confirmText} onChange={onChangeHandler} placeholder={placeholder} required />
 						</>
 					)}
+
+					{/* Renders the action processing content if provided */}
 					{actionProcessingContent}
 				</Stack>
 
