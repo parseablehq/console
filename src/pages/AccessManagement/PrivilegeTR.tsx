@@ -300,7 +300,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 					header={'Delete Privilege'}
 					specialContent={<Text>{getBadge(getRoleData?.data[deletePrivilegeIndex], deletePrivilegeIndex, false)}</Text>}
 					content={`Are you sure you want to delete this role privilege?`}
-					placeholder={`Type name of the role to confirm.`}
+					placeholder="Type name of the role to confirm."
 					confirmationText={roleName}
 					onConfirm={handlePrivilegeDelete}
 				/>

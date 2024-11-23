@@ -213,7 +213,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				onClose={handleCloseDelete}
 				header="Delete user"
 				content="Are you sure you want to delete this user?"
-				placeholder={`Type the name of the user`}
+				placeholder="Type the name of the user"
 				confirmationText={user.id}
 				onConfirm={handleDelete}
 			/>
@@ -225,7 +225,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 					header="Delete user role"
 					specialContent={<Text>{getBadge(deleteRole, false)}</Text>}
 					content="Are you sure you want to delete this user role?"
-					placeholder={`Type the name of the user`}
+					placeholder="Type the name of the user"
 					confirmationText={user.id}
 					onConfirm={handleRoleDelete}
 				/>
@@ -239,7 +239,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				onClose={handleCloseResetPassword}
 				header="Change user password"
 				content="Are you sure you want to reset this user's password?"
-				placeholder={`Type the name of the user`}
+				placeholder="Type the name of the user"
 				confirmationText={user.id}
 				onConfirm={() => handleResetPassword(user.id)}
 				actionProcessingContent={
