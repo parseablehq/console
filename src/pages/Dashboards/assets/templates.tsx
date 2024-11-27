@@ -12,7 +12,7 @@ const pmetaConfig = {
 			query: 'select MAX(parseable_events_ingested), address from pmeta GROUP BY address LIMIT 100',
 			order: 1,
 			visualization: {
-				visualization_type: 'donut-chart' as 'donut-chart',
+				visualization_type: 'donut-chart' as const,
 				circular_chart_config: {
 					name_key: 'address',
 					value_key: 'MAX(pmeta.parseable_events_ingested)',
@@ -30,7 +30,7 @@ const pmetaConfig = {
 				"select a.time,SUM(a.current_events) as current_events, SUM(a.lifetime_events) as lifetime_events, SUM(a.deleted_events) as deleted_events from (select MAX(parseable_events_ingested) as current_events, MAX(parseable_lifetime_events_ingested) as lifetime_events, MAX(parseable_deleted_events_ingested) as deleted_events, DATE_BIN('10 minutes', p_timestamp, NOW()) AS time from pmeta where address='http://parseable-ing-8yvv-0.parseable-ingestor-headless.demo.svc.cluster.local:8000/' group by time order by time) a GROUP BY a.time ORDER BY a.time LIMIT 100",
 			order: 2,
 			visualization: {
-				visualization_type: 'bar-chart' as 'bar-chart',
+				visualization_type: 'bar-chart' as const,
 				circular_chart_config: null,
 				graph_config: {
 					x_key: 'time',
@@ -67,7 +67,7 @@ const pmetaConfig = {
 			query: 'SELECT MAX(process_resident_memory_bytes) as memory_usage, address FROM pmeta GROUP BY address LIMIT 100',
 			order: 3,
 			visualization: {
-				visualization_type: 'pie-chart' as 'pie-chart',
+				visualization_type: 'pie-chart' as const,
 				circular_chart_config: {
 					name_key: 'address',
 					value_key: 'memory_usage',
@@ -85,7 +85,7 @@ const pmetaConfig = {
 				"select a.time, SUM(a.current_events_size) as current_events_size, SUM(a.lifetime_events_size) as lifetime_events_size, SUM(a.deleted_events_size) as deleted_events_size from (select MAX(parseable_events_ingested_size) as current_events_size, MAX(parseable_lifetime_events_ingested_size) as lifetime_events_size, MAX(parseable_deleted_events_ingested_size) as deleted_events_size, DATE_BIN('10 minutes', p_timestamp, NOW()) AS time from pmeta where address='http://parseable-ing-8yvv-0.parseable-ingestor-headless.demo.svc.cluster.local:8000/' group by time order by time) a GROUP BY a.time ORDER BY a.time LIMIT 100",
 			order: 4,
 			visualization: {
-				visualization_type: 'bar-chart' as 'bar-chart',
+				visualization_type: 'bar-chart' as const,
 				circular_chart_config: null,
 				graph_config: {
 					x_key: 'time',
@@ -135,7 +135,7 @@ const pmetaConfig = {
 				"SELECT MAX(parseable_events_ingested_size) as current_events_size, MAX(parseable_storage_size_data) as current_data_size FROM pmeta where address='http://ec2-3-15-172-147.us-east-2.compute.amazonaws.com:443/' LIMIT 100",
 			order: 5,
 			visualization: {
-				visualization_type: 'table' as 'table',
+				visualization_type: 'table' as const,
 				circular_chart_config: null,
 				graph_config: null,
 				size: 'sm',
@@ -159,7 +159,7 @@ const pmetaConfig = {
 				"select DATE_BIN('10 minutes', p_timestamp, NOW()) AS time, MAX(process_resident_memory_bytes) as process_resident_memory_bytes from pmeta where address='http://parseable-ing-8yvv-0.parseable-ingestor-headless.demo.svc.cluster.local:8000/' group by time order by time LIMIT 100",
 			order: 6,
 			visualization: {
-				visualization_type: 'bar-chart' as 'bar-chart',
+				visualization_type: 'bar-chart' as const,
 				circular_chart_config: null,
 				graph_config: {
 					x_key: 'time',

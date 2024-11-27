@@ -135,7 +135,7 @@ const getDefaultTimeRange = (duration: FixedDuration = DEFAULT_FIXED_DURATIONS) 
 	return {
 		startTime: startTime.toDate(),
 		endTime: now.toDate(),
-		type: 'fixed' as 'fixed',
+		type: 'fixed' as const,
 		label,
 		interval: milliseconds,
 		shiftInterval: 1,
@@ -152,7 +152,7 @@ const defaultQuickFilters = {
 };
 
 const defaultLiveTailConfig = {
-	liveTailStatus: '' as '',
+	liveTailStatus: '' as const,
 	liveTailSchemaData: [],
 	liveTailSearchValue: '',
 	liveTailSearchField: '',
@@ -302,7 +302,7 @@ type LogsStoreReducers = {
 };
 
 const defaultSortKey = 'p_timestamp';
-const defaultSortOrder = 'desc' as 'desc';
+const defaultSortOrder = 'desc' as const;
 
 const initialState: LogsStore = {
 	timeRange: getDefaultTimeRange(),
@@ -470,7 +470,7 @@ const setCustQuerySearchState = (store: LogsStore, query: string, viewMode: stri
 			isQuerySearchActive: true,
 			custSearchQuery: query,
 			viewMode,
-			activeMode: viewMode === 'filters' ? ('filters' as 'filters') : ('sql' as 'sql'),
+			activeMode: viewMode === 'filters' ? ('filters' as const) : ('sql' as const),
 		},
 		...getCleanStoreForRefetch(store),
 		timeRange,
@@ -781,7 +781,7 @@ const applyCustomQuery = (
 					endTime: endTime.toDate(),
 					label,
 					interval,
-					type: 'custom' as 'custom', // always
+					type: 'custom' as const, // always
 				},
 			};
 		}
@@ -834,7 +834,7 @@ const setAndSortData = (store: LogsStore, sortKey: string, sortOrder: 'asc' | 'd
 	};
 };
 
-const setAndFilterData = (store: LogsStore, filterKey: string, filterValues: string[], remove: boolean = false) => {
+const setAndFilterData = (store: LogsStore, filterKey: string, filterValues: string[], remove = false) => {
 	const { data, tableOpts } = store;
 	const { sortKey, sortOrder, filters } = tableOpts;
 	const updatedFilters = remove ? _.omit(filters, filterKey) : { ...filters, [filterKey]: filterValues };
@@ -927,7 +927,7 @@ const setRetention = (_store: LogsStore, retention: { duration?: string; descrip
 		retention: {
 			duration: durationInNumber,
 			description: retention.description || '',
-			action: 'delete' as 'delete',
+			action: 'delete' as const,
 		},
 	};
 };
@@ -965,8 +965,7 @@ const onToggleView = (store: LogsStore, viewMode: 'json' | 'table') => {
 };
 
 const toggleConfigViewType = (store: LogsStore) => {
-	const configViewType =
-		store.tableOpts.configViewType === 'schema' ? ('columns' as 'columns') : ('schema' as 'schema');
+	const configViewType: 'columns' | 'schema' = store.tableOpts.configViewType === 'schema' ? 'columns' : 'schema';
 
 	return {
 		tableOpts: {
