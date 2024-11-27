@@ -88,9 +88,9 @@ const Home: FC = () => {
 	const [searchTerm, setSearchTerm] = useState('');
 
 	useEffect(() => {
-		if (!Array.isArray(userSpecificStreams) || userSpecificStreams.length === 0) return;
+		if (!Array.isArray(userSpecificStreams) || userSpecificStreams.length === 0 || !userRoles) return;
 		getStreamMetadata(userSpecificStreams.map((stream) => stream.name));
-	}, [userSpecificStreams]);
+	}, [userSpecificStreams, userRoles]);
 
 	const filteredMetaData = useMemo(() => {
 		if (!searchTerm || !metaData) return metaData || {};
