@@ -59,7 +59,8 @@ export const useFetchCount = () => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const { setTotalCount } = logsStoreReducers;
 	const [custQuerySearchState] = useLogsStore((store) => store.custQuerySearchState);
-	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
+	const [timeRange] = useAppStore((store) => store.timeRange);
+	const [, setLogsStore] = useLogsStore((_store) => null);
 	const { isQuerySearchActive, custSearchQuery, activeMode } = custQuerySearchState;
 	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
 

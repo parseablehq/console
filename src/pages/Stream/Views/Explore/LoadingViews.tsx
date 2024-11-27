@@ -3,13 +3,18 @@ import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { Center, Loader, Stack, Text } from '@mantine/core';
 import { RetryBtn } from '@/components/Button/Retry';
 import classes from '../../styles/Logs.module.css';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const { getCleanStoreForRefetch } = logsStoreReducers;
+const { setCleanStoreForAppChange } = appStoreReducers;
 
 export const ErrorView = (props: { message: string }) => {
 	const [, setLogsStore] = useLogsStore((_store) => null);
+	const [, setAppStore] = useAppStore((_store) => null);
+
 	const { message } = props;
 	const onRetry = useCallback(() => {
+		setAppStore((store) => setCleanStoreForAppChange(store));
 		setLogsStore((store) => getCleanStoreForRefetch(store));
 	}, []);
 	return (

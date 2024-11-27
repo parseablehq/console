@@ -28,8 +28,9 @@ import { Tile as TileType, TileQueryResponse } from '@/@types/parseable/api/dash
 import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
 import Table from './Table';
 import { downloadDataAsCSV, downloadDataAsJson, exportJson } from '@/utils/exportHelpers';
-import { makeExportData, useLogsStore } from '../Stream/providers/LogsProvider';
+import { makeExportData } from '../Stream/providers/LogsProvider';
 import { getRandomUnitTypeForChart, getUnitTypeByKey } from './utils';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const ParseableLogo = () => (
 	<div className="png-export-parseable-logo" style={{ display: 'none', height: '100%' }}>
@@ -257,7 +258,7 @@ function TileControls(props: { tile: TileType; data: TileQueryResponse }) {
 }
 
 const Tile = (props: { id: string }) => {
-	const [timeRange] = useLogsStore((store) => store.timeRange);
+	const [timeRange] = useAppStore((store) => store.timeRange);
 	const [tilesData] = useDashboardsStore((store) => store.tilesData);
 	const tileData = _.get(tilesData, props.id, { records: [], fields: [] });
 	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);

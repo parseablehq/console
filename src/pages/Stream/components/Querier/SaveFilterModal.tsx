@@ -38,7 +38,7 @@ const SaveFilterModal = () => {
 	const [activeSavedFilters] = useAppStore((store) => store.activeSavedFilters);
 	const [formObject, setFormObject] = useState<FormObjectType | null>(null);
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const [timeRange] = useLogsStore((store) => store.timeRange);
+	const [timeRange] = useAppStore((store) => store.timeRange);
 	const [{ custSearchQuery, savedFilterId, activeMode }] = useLogsStore((store) => store.custQuerySearchState);
 	const [isDirty, setDirty] = useState<boolean>(false);
 	const { updateSavedFilters, createSavedFilters, isCreating, isUpdating } = useSavedFiltersQuery();

@@ -4,6 +4,13 @@ import { AboutData } from '@/@types/parseable/api/about';
 import _ from 'lodash';
 import { AxiosResponse } from 'axios';
 import { SavedFilterType } from '@/@types/parseable/api/savedFilters';
+import { FIXED_DURATIONS, FixedDuration } from '@/constants/timeConstants';
+import dayjs, { Dayjs } from 'dayjs';
+import timeRangeUtils from '@/utils/timeRangeUtils';
+
+const { makeTimeRangeLabel } = timeRangeUtils;
+
+export const DEFAULT_FIXED_DURATIONS = FIXED_DURATIONS[0];
 
 export type UserRoles = {
 	[roleName: string]: {
@@ -17,7 +24,35 @@ export type UserRoles = {
 
 type ReducerOutput = Partial<AppStore>;
 
+export type TimeRange = {
+	startTime: Date;
+	endTime: Date;
+	type: 'fixed' | 'custom';
+	label: string;
+	interval: number;
+	shiftInterval: number;
+};
+
+const getDefaultTimeRange = (duration: FixedDuration = DEFAULT_FIXED_DURATIONS) => {
+	const now = dayjs().startOf('minute');
+	const { milliseconds } = duration;
+
+	const startTime = now.subtract(milliseconds, 'milliseconds');
+	const endTime = now;
+	const label = makeTimeRangeLabel(startTime.toDate(), endTime.toDate());
+
+	return {
+		startTime: startTime.toDate(),
+		endTime: now.toDate(),
+		type: 'fixed' as const,
+		label,
+		interval: milliseconds,
+		shiftInterval: 1,
+	};
+};
+
 type AppStore = {
+	timeRange: TimeRange;
 	maximized: boolean;
 	helpModalOpen: boolean;
 	createStreamModalOpen: boolean;
@@ -34,19 +69,27 @@ type AppStore = {
 };
 
 type AppStoreReducers = {
+	setTimeRange: (
+		store: AppStore,
+		payload: { startTime: dayjs.Dayjs; endTime: dayjs.Dayjs; type: 'fixed' | 'custom' },
+	) => ReducerOutput;
 	toggleMaximize: (store: AppStore) => ReducerOutput;
 	toggleHelpModal: (store: AppStore, val?: boolean) => ReducerOutput;
 	changeStream: (store: AppStore, stream: string) => ReducerOutput;
 	setUserRoles: (store: AppStore, roles: UserRoles | null) => ReducerOutput;
+	setshiftInterval: (store: AppStore, interval: number) => ReducerOutput;
+	setCleanStoreForAppChange: (store: AppStore) => ReducerOutput;
 	setUserSpecificStreams: (store: AppStore, userSpecficStreams: LogStreamData | null) => ReducerOutput;
 	setUserAccessMap: (store: AppStore, accessRoles: string[] | null) => ReducerOutput;
 	setStreamSpecificUserAccess: (store: AppStore, streamSpecificUserAccess: string[] | null) => ReducerOutput;
 	setInstanceConfig: (store: AppStore, instanceConfig: AboutData) => ReducerOutput;
 	toggleCreateStreamModal: (store: AppStore, val?: boolean) => ReducerOutput;
 	setSavedFilters: (store: AppStore, savedFilters: AxiosResponse<SavedFilterType[]>) => ReducerOutput;
+	applyCustomAppQuery: (store: AppStore, timeRangePayload: { from: string; to: string } | null) => ReducerOutput;
 };
 
 const initialState: AppStore = {
+	timeRange: getDefaultTimeRange(),
 	maximized: false,
 	helpModalOpen: false,
 	currentStream: null,
@@ -65,6 +108,67 @@ const initialState: AppStore = {
 const { Provider: AppProvider, useStore: useAppStore } = initContext(initialState);
 
 // helpers
+const setCleanStoreForAppChange = (store: AppStore) => {
+	const { timeRange } = store;
+	const { interval, type } = timeRange;
+	const duration = _.find(FIXED_DURATIONS, (duration) => duration.milliseconds === timeRange.interval);
+	const updatedTimeRange = interval && type === 'fixed' && { timeRange: getDefaultTimeRange(duration) };
+	return {
+		...updatedTimeRange,
+	};
+};
+
+const setTimeRange = (
+	store: AppStore,
+	payload: { startTime: dayjs.Dayjs; endTime: Dayjs; type: 'fixed' | 'custom' },
+) => {
+	const { startTime, endTime, type } = payload;
+	const label = makeTimeRangeLabel(startTime.toDate(), endTime.toDate());
+	const interval = endTime.diff(startTime, 'milliseconds');
+	return {
+		timeRange: { ...store.timeRange, startTime: startTime.toDate(), endTime: endTime.toDate(), label, interval, type },
+	};
+};
+
+const setshiftInterval = (store: AppStore, interval: number) => {
+	const { timeRange } = store;
+	return {
+		timeRange: {
+			...timeRange,
+			shiftInterval: interval,
+		},
+	};
+};
+
+const applyCustomAppQuery = (store: AppStore, timeRangePayload: { from: string; to: string } | null) => {
+	const { timeRange } = store;
+
+	const updatedTimeRange = (() => {
+		if (!timeRangePayload) {
+			return { timeRange };
+		} else {
+			const startTime = dayjs(timeRangePayload.from);
+			const endTime = dayjs(timeRangePayload.to);
+			const label = makeTimeRangeLabel(startTime.toDate(), endTime.toDate());
+			const interval = endTime.diff(startTime, 'milliseconds');
+			return {
+				timeRange: {
+					...store.timeRange,
+					startTime: startTime.toDate(),
+					endTime: endTime.toDate(),
+					label,
+					interval,
+					type: 'custom' as const, // always
+				},
+			};
+		}
+	})();
+
+	return {
+		...updatedTimeRange,
+	};
+};
+
 const accessKeyMap: { [key: string]: string } = {
 	hasUserAccess: 'Users',
 	hasDeleteAccess: 'DeleteStream',
@@ -146,6 +250,10 @@ const appStoreReducers: AppStoreReducers = {
 	setInstanceConfig,
 	toggleCreateStreamModal,
 	setSavedFilters,
+	setTimeRange,
+	setshiftInterval,
+	setCleanStoreForAppChange,
+	applyCustomAppQuery,
 };
 
 export { AppProvider, useAppStore, appStoreReducers };

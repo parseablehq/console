@@ -40,9 +40,9 @@ export const useQueryLogs = () => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
 	const { refetch: refetchSchema } = useGetStreamSchema({ streamName: currentStream || '' });
+	const [timeRange] = useAppStore((store) => store.timeRange);
 	const [
 		{
-			timeRange,
 			tableOpts: { currentOffset, instantSearchValue },
 			custQuerySearchState,
 		},

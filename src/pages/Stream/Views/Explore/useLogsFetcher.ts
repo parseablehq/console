@@ -1,4 +1,4 @@
-import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useEffect } from 'react';
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { useQueryLogs } from '@/hooks/useQueryLogs';
@@ -6,11 +6,13 @@ import { useFetchCount } from '@/hooks/useQueryResult';
 import { useStreamStore } from '../../providers/StreamProvider';
 
 const { setCleanStoreForStreamChange } = logsStoreReducers;
+const { setCleanStoreForAppChange } = appStoreReducers;
 
 const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
 	const { schemaLoading, infoLoading } = props;
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const [{ tableOpts, timeRange }, setLogsStore] = useLogsStore((store) => store);
+	const [{ timeRange }, setAppStore] = useAppStore((store) => store);
+	const [{ tableOpts }, setLogsStore] = useLogsStore((store) => store);
 	const { currentOffset, currentPage, pageData } = tableOpts;
 	const { getQueryData, loading: logsLoading, error: errorMessage } = useQueryLogs();
 	const [{ info }] = useStreamStore((store) => store);
@@ -22,6 +24,7 @@ const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean })
 	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
 
 	useEffect(() => {
+		setAppStore(setCleanStoreForAppChange);
 		setLogsStore(setCleanStoreForStreamChange);
 	}, [currentStream]);
 

@@ -10,14 +10,15 @@ import { IconClock, IconEye, IconEyeOff, IconTrash, IconX } from '@tabler/icons-
 import IconButton from '@/components/Button/IconButton';
 import classes from './styles/SavedFiltersModalStyles.module.css';
 import { EmptySimple } from '@/components/Empty';
-import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import useSavedFiltersQuery from '@/hooks/useSavedFilters';
 import { generateQueryBuilderASTFromSQL } from '../../utils';
 import { useLocation } from 'react-router-dom';
 
 const { toggleSavedFiltersModal, resetFilters, parseQuery, applySavedFilters, setAppliedFilterQuery } =
 	filterStoreReducers;
-const { applyCustomQuery, updateSavedFilterId, getCleanStoreForRefetch, setTimeRange } = logsStoreReducers;
+const { applyCustomQuery, updateSavedFilterId, getCleanStoreForRefetch } = logsStoreReducers;
+const { setCleanStoreForAppChange, setTimeRange, applyCustomAppQuery } = appStoreReducers;
 
 const renderDeleteIcon = () => <IconTrash size={px('1rem')} stroke={1.5} />;
 const renderCloseIcon = () => <IconX size={px('1rem')} stroke={1.5} />;
@@ -183,7 +184,7 @@ const SavedFilterItem = (props: {
 const SavedFiltersModal = () => {
 	const [isSavedFiltersModalOpen, setFilterStore] = useFilterStore((store) => store.isSavedFiltersModalOpen);
 	const [savedFilterId, setLogsStore] = useLogsStore((store) => store.custQuerySearchState.savedFilterId);
-	const [{ startTime, endTime }] = useLogsStore((store) => store.timeRange);
+	const [{ startTime, endTime }, setAppStore] = useAppStore((store) => store.timeRange);
 	const [savedFilters] = useAppStore((store) => store.savedFilters);
 	const [activeSavedFilters] = useAppStore((store) => store.activeSavedFilters);
 	const [currentStream] = useAppStore((store) => store.currentStream);
@@ -192,7 +193,8 @@ const SavedFiltersModal = () => {
 	const onSqlSearchApply = useCallback(
 		(query: string, id: string, time_filter: null | { from: string; to: string }) => {
 			setFilterStore((store) => resetFilters(store));
-			setLogsStore((store) => applyCustomQuery(store, query, 'sql', id, time_filter));
+			setAppStore((store) => applyCustomAppQuery(store, time_filter));
+			setLogsStore((store) => applyCustomQuery(store, query, 'sql', id));
 		},
 		[],
 	);
@@ -227,12 +229,14 @@ const SavedFiltersModal = () => {
 	);
 
 	const hardRefresh = useCallback(() => {
+		setAppStore((store) => setCleanStoreForAppChange(store));
 		setLogsStore((store) => getCleanStoreForRefetch(store));
 		closeModal();
 	}, []);
 
 	const changeTimerange = useCallback((from: string, end: string) => {
-		setLogsStore((store) => setTimeRange(store, { type: 'custom', startTime: dayjs(from), endTime: dayjs(end) }));
+		setLogsStore((store) => getCleanStoreForRefetch(store));
+		setAppStore((store) => setTimeRange(store, { type: 'custom', startTime: dayjs(from), endTime: dayjs(end) }));
 		closeModal();
 	}, []);
 
