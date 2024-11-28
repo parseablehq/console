@@ -81,11 +81,11 @@ const DeleteOrResetModal = ({
 			onClose={closeModal}
 			size="auto"
 			centered
-			styles={{
-				body: { padding: '0 1rem 1rem 1rem', width: 400 },
-				header: { padding: '1rem', paddingBottom: '0.4rem' },
+			classNames={{
+				body: classes.modalBody,
+				header: classes.modalHeader,
 			}}
-			title={<Text style={{ fontSize: '0.9rem', fontWeight: 600 }}>{header}</Text>}>
+			title={<Text className={classes.headerText}>{header}</Text>}>
 			<Stack>
 				<Stack gap={8}>
 					{specialContent}
@@ -107,7 +107,7 @@ const DeleteOrResetModal = ({
 				</Stack>
 
 				{/* Action buttons */}
-				<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+				<Stack className={classes.actionButtonsContainer}>
 					<Box>
 						<Button variant="outline" onClick={closeModal}>
 							Cancel
