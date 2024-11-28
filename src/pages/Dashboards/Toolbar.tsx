@@ -141,10 +141,10 @@ const DeleteDashboardModal = () => {
 	return (
 		<DeleteOrResetModal
 			type="delete"
-			header="Delete Dashboard"
-			content="Are you sure want to delete this dashboard and its contents ?"
+			modalHeader="Delete Dashboard"
+			modalContent="Are you sure want to delete this dashboard and its contents ?"
 			placeholder="Type the dashboard name to confirm deletion"
-			isOpen={deleteDashboardModalOpen}
+			isModalOpen={deleteDashboardModalOpen}
 			onClose={closeModal}
 			confirmationText={activeDashboard.name}
 			isActionInProgress={isDeleting}

@@ -284,10 +284,10 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 
 			<DeleteOrResetModal
 				type="delete"
-				isOpen={isDeletedRoleOpen}
+				isModalOpen={isDeletedRoleOpen}
 				onClose={handleCloseDelete}
-				header="Delete Role"
-				content="Are you sure you want to delete this Role?"
+				modalHeader="Delete Role"
+				modalContent="Are you sure you want to delete this Role?"
 				placeholder="Type the role name to confirm"
 				confirmationText={roleName}
 				onConfirm={handleDelete}
@@ -295,11 +295,11 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 			{getRoleData?.data?.[deletePrivilegeIndex] ? (
 				<DeleteOrResetModal
 					type="delete"
-					isOpen={isDeletedPrivilegeOpen}
+					isModalOpen={isDeletedPrivilegeOpen}
 					onClose={handleClosePrivilegeDelete}
-					header="Delete Privilege"
+					modalHeader="Delete Privilege"
 					specialContent={<Text>{getBadge(getRoleData?.data[deletePrivilegeIndex], deletePrivilegeIndex, false)}</Text>}
-					content="Are you sure you want to delete this role privilege?"
+					modalContent="Are you sure you want to delete this role privilege?"
 					placeholder="Type name of the role to confirm."
 					confirmationText={roleName}
 					onConfirm={handlePrivilegeDelete}

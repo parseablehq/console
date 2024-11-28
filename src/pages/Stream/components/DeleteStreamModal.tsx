@@ -31,10 +31,10 @@ const DeleteStreamModal = () => {
 
 	return (
 		<DeleteOrResetModal
-			isOpen={deleteModalOpen}
+			isModalOpen={deleteModalOpen}
 			onClose={onCloseModal}
-			header="Delete Stream"
-			content="Are you sure you want to delete this stream?"
+			modalHeader="Delete Stream"
+			modalContent="Are you sure you want to delete this stream?"
 			confirmationText={`${currentStream}`}
 			type="delete"
 			placeholder="Type the name of the stream"

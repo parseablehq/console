@@ -129,10 +129,10 @@ const DeleteTileModal = () => {
 	return (
 		<DeleteOrResetModal
 			type="simple"
-			isOpen={deleteTileModalOpen}
+			isModalOpen={deleteTileModalOpen}
 			onClose={onClose}
-			header="Delete Tile"
-			content="Are you sure you want to delete this tile?"
+			modalHeader="Delete Tile"
+			modalContent="Are you sure you want to delete this tile?"
 			onConfirm={onConfirm}
 			isActionInProgress={isUpdatingDashboard}
 		/>

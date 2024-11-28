@@ -3,11 +3,11 @@ import classes from './styles/DeleteOrResetModal.module.css';
 import { ChangeEvent, useCallback, useState } from 'react';
 
 type BaseProps = {
-	isOpen: boolean;
+	isModalOpen: boolean;
 	onClose: () => void;
-	header: string;
+	modalHeader: string;
 	specialContent?: React.ReactNode;
-	content: string;
+	modalContent: string;
 	actionProcessingContent?: React.ReactNode;
 	isActionInProgress?: boolean;
 	onConfirm: () => void;
@@ -29,11 +29,11 @@ type DeleteOrResetModalProps =
 /**
  * Confirmation modal for deleting or resetting an item.
  * @param type - Specifies the type of modal ('simple', 'delete', or 'reset').
- * @param isOpen - Controls whether the modal is visible.
+ * @param isModalOpen - Controls whether the modal is visible.
  * @param onClose - Callback to close the modal and reset the state.
- * @param header - Header text displayed in the modal title.
+ * @param modalHeader - Header text displayed in the modal title.
  * @param specialContent - Optional content for additional context or customization.
- * @param content - Main descriptive content of the modal.
+ * @param modalContent - Main descriptive content of the modal.
  * @param placeholder - Input placeholder for confirmation text (applicable to 'delete' and 'reset').
  * @param confirmationText - Text required to confirm the action (applicable to 'delete' and 'reset').
  * @param actionProcessingContent - Optional content below text input for showing progress status or related information.
@@ -42,11 +42,11 @@ type DeleteOrResetModalProps =
  */
 const DeleteOrResetModal = ({
 	type,
-	isOpen,
+	isModalOpen,
 	onClose,
-	header,
+	modalHeader,
 	specialContent,
-	content,
+	modalContent,
 	placeholder,
 	confirmationText,
 	actionProcessingContent,
@@ -77,7 +77,7 @@ const DeleteOrResetModal = ({
 	return (
 		<Modal
 			withinPortal
-			opened={isOpen}
+			opened={isModalOpen}
 			onClose={closeModal}
 			size="auto"
 			centered
@@ -85,11 +85,11 @@ const DeleteOrResetModal = ({
 				body: classes.modalBody,
 				header: classes.modalHeader,
 			}}
-			title={<Text className={classes.headerText}>{header}</Text>}>
+			title={<Text className={classes.headerText}>{modalHeader}</Text>}>
 			<Stack>
 				<Stack gap={8}>
 					{specialContent}
-					<Text className={classes.warningText}>{content}</Text>
+					<Text className={classes.warningText}>{modalContent}</Text>
 
 					{/* Render confirmation field for 'delete' or 'reset' types */}
 					{type !== 'simple' && (
