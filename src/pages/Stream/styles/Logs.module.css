@@ -250,9 +250,9 @@
 .copyIcon {
 	color: #211f1f;
 }
-.copyIcon:hover {background-color: #f1f3f5;
+.copyIcon:hover {
+	background-color: #f1f3f5;
 }
-
 
 .customCell {
 	position: relative;

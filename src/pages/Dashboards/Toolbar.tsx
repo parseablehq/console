@@ -1,5 +1,5 @@
 import TimeRange from '@/components/Header/TimeRange';
-import { Box, Button, FileInput, Modal, px, Stack, Text, Menu, TextInput } from '@mantine/core';
+import { Box, Button, FileInput, Modal, px, Stack, Text, Menu } from '@mantine/core';
 import {
 	IconCheck,
 	IconCopy,
@@ -12,7 +12,7 @@ import {
 } from '@tabler/icons-react';
 import classes from './styles/toolbar.module.css';
 import { useDashboardsStore, dashboardsStoreReducers, sortTilesByOrder } from './providers/DashboardsProvider';
-import { ChangeEvent, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import IconButton from '@/components/Button/IconButton';
 import { useDashboardsQuery } from '@/hooks/useDashboards';
 import _ from 'lodash';
@@ -21,6 +21,7 @@ import { Dashboard } from '@/@types/parseable/api/dashboards';
 import { exportJson } from '@/utils/exportHelpers';
 import { copyTextToClipboard } from '@/utils';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import DeleteOrResetModal from '@/components/Misc/DeleteOrResetModal';
 
 const {
 	toggleEditDashboardModal,
@@ -118,14 +119,10 @@ const ImportTileButton = () => {
 const DeleteDashboardModal = () => {
 	const [activeDashboard, setDashbaordsStore] = useDashboardsStore((store) => store.activeDashboard);
 	const [deleteDashboardModalOpen] = useDashboardsStore((store) => store.deleteDashboardModalOpen);
-	const [confirmText, setConfirmText] = useState<string>('');
+
 	const { isDeleting, deleteDashboard } = useDashboardsQuery({});
 	const closeModal = useCallback(() => {
 		setDashbaordsStore((store) => toggleDeleteDashboardModal(store, false));
-	}, []);
-
-	const onChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-		setConfirmText(e.target.value);
 	}, []);
 
 	const onDelete = useCallback(() => {
@@ -134,7 +131,6 @@ const DeleteDashboardModal = () => {
 				dashboardId: activeDashboard?.dashboard_id,
 				onSuccess: () => {
 					closeModal();
-					setConfirmText('');
 				},
 			});
 		}
@@ -143,49 +139,17 @@ const DeleteDashboardModal = () => {
 	if (!activeDashboard?.dashboard_id) return null;
 
 	return (
-		<Modal
-			opened={deleteDashboardModalOpen}
+		<DeleteOrResetModal
+			type="delete"
+			modalHeader="Delete Dashboard"
+			modalContent="Are you sure want to delete this dashboard and its contents ?"
+			placeholder="Type the dashboard name to confirm deletion"
+			isModalOpen={deleteDashboardModalOpen}
 			onClose={closeModal}
-			size="auto"
-			centered
-			styles={{
-				body: { padding: '0 1rem 1rem 1rem', width: 400 },
-				header: { padding: '1rem', paddingBottom: '0.4rem' },
-			}}
-			title={<Text style={{ fontSize: '0.9rem', fontWeight: 600 }}>Delete Dashboard</Text>}>
-			<Stack>
-				<Stack gap={8}>
-					<Text className={classes.deleteWarningText}>
-						Are you sure want to delete this dashboard and its contents ?
-					</Text>
-					<Text className={classes.deleteConfirmationText}>
-						Please type <span className={classes.deleteConfirmationTextHighlight}>{`"${activeDashboard.name}"`}</span>{' '}
-						to confirm deletion.
-					</Text>
-
-					<TextInput
-						value={confirmText}
-						onChange={onChangeHandler}
-						placeholder={'Type the dashboard name to confirm.'}
-					/>
-				</Stack>
-				<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-					<Box>
-						<Button variant="outline" onClick={closeModal}>
-							Cancel
-						</Button>
-					</Box>
-					<Box>
-						<Button
-							disabled={confirmText !== activeDashboard.name || isDeleting}
-							onClick={onDelete}
-							loading={isDeleting}>
-							Delete
-						</Button>
-					</Box>
-				</Stack>
-			</Stack>
-		</Modal>
+			confirmationText={activeDashboard.name}
+			isActionInProgress={isDeleting}
+			onConfirm={onDelete}
+		/>
 	);
 };
 
@@ -264,7 +228,9 @@ const ImportTileModal = () => {
 							setFile(null);
 						},
 					});
-				} catch (error) {}
+				} catch (error) {
+					console.error('Error importing tile:', error);
+				}
 			};
 			reader.readAsText(file);
 		} else {

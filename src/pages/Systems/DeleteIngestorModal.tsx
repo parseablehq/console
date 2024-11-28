@@ -59,15 +59,15 @@ export default function DeleteIngestorModal(props: { modalOpened: boolean; close
 						<Text style={{ fontSize: '0.8rem' }}>Do you want to delete {currentMachineAddress} ? </Text>
 					</Stack>
 					<Group justify="flex-end">
+						<Button onClick={props.closeModal} variant="default">
+							Cancel
+						</Button>
 						<Button
 							className={classes.deleteBtn}
 							loading={deleteIngestorIsLoading}
 							onClick={deleteIngestor}
 							variant="filled">
 							Delete
-						</Button>
-						<Button onClick={props.closeModal} variant="default">
-							Cancel
 						</Button>
 					</Group>
 				</Stack>
