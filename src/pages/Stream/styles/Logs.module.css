@@ -196,22 +196,6 @@
 	font-weight: 600;
 }
 
-.warningText {
-	margin-top: 0.4rem;
-	font-size: 0.7rem;
-	font-weight: 500;
-	color: var(--mantine-color-gray-8);
-}
-
-.confirmationText {
-	font-size: 0.7rem;
-	color: var(--mantine-color-gray-7);
-}
-
-.confirmationTextHighlight {
-	font-weight: 500;
-}
-
 .fieldTitle {
 	font-size: var(--mantine-font-size-sm);
 	font-weight: 500;
