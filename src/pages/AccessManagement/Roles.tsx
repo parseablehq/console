@@ -173,7 +173,7 @@ const Roles: FC = () => {
 				<Stack style={{ flexDirection: 'row' }} gap={0}>
 					<Button
 						className={classes.createUserBtn}
-						data-testId="create-role-button"
+						data-testid="create-role-button"
 						rightSection={<IconUserPlus size={px('1rem')} stroke={1.5} />}
 						onClick={() => {
 							setModalOpen(true);
@@ -314,7 +314,7 @@ const Roles: FC = () => {
 					<Button
 						variant="filled"
 						color="gray"
-						data-testId="create-role-modal-button"
+						data-testid="create-role-modal-button"
 						className={classes.modalActionBtn}
 						disabled={createVaildtion()}
 						onClick={handleCreateRole}>
@@ -324,7 +324,7 @@ const Roles: FC = () => {
 						onClick={handleClose}
 						variant="outline"
 						color="gray"
-						data-testId="cancel-role-modal-button"
+						data-testid="cancel-role-modal-button"
 						className={classes.modalCancelBtn}>
 						Cancel
 					</Button>

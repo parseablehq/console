@@ -61,7 +61,7 @@ const deleteIfRoleExists = async (page: Page, ROLE_NAME: string) => {
 		await deleteButton.click();
 
 		await page.waitForSelector('text=Are you sure you want to delete this role?');
-		const roleNameInput = page.getByPlaceholder('Please enter the Role');
+		const roleNameInput = page.getByPlaceholder('Type the role name');
 		await roleNameInput.fill(ROLE_NAME);
 
 		const confirmDeleteButton = page.getByRole('button', { name: 'Delete' });

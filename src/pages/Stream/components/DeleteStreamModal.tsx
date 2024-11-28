@@ -1,22 +1,19 @@
-import { Button, Group, Modal, TextInput } from '@mantine/core';
-import styles from '../styles/Logs.module.css';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { useLogStream } from '@/hooks/useLogStream';
 import { useLogsStore, logsStoreReducers } from '../providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useNavigate } from 'react-router-dom';
+import DeleteOrResetModal from '@/components/Misc/DeleteOrResetModal';
 
 const { toggleDeleteModal } = logsStoreReducers;
 
 const DeleteStreamModal = () => {
 	const [deleteModalOpen, setLogsStore] = useLogsStore((store) => store.modalOpts.deleteModalOpen);
-	const [confirmInputValue, setConfirmInputValue] = useState<string>('');
-	const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-		setConfirmInputValue(e.target.value);
-	}, []);
+
 	const onCloseModal = useCallback(() => {
 		setLogsStore((store) => toggleDeleteModal(store, false));
 	}, []);
+
 	const { deleteLogStreamMutation } = useLogStream();
 	const navigate = useNavigate();
 
@@ -33,35 +30,16 @@ const DeleteStreamModal = () => {
 	}, [currentStream]);
 
 	return (
-		<Modal
-			withinPortal
-			size="md"
-			opened={deleteModalOpen}
+		<DeleteOrResetModal
+			isModalOpen={deleteModalOpen}
 			onClose={onCloseModal}
-			title={'Delete Stream'}
-			centered
-			className={styles.modalStyle}
-			styles={{ title: { fontWeight: 700 } }}>
-			<TextInput
-				type="text"
-				label="Are you sure you want to delete this stream?"
-				onChange={handleInputChange}
-				placeholder={`Type the name of the stream to confirm. i.e. ${currentStream}`}
-				required
-				value={confirmInputValue}
-			/>
-			<Group mt={10} justify="right">
-				<Button onClick={onCloseModal} className={styles.modalCancelBtn}>
-					Cancel
-				</Button>
-				<Button
-					className={styles.modalActionBtn}
-					disabled={confirmInputValue === currentStream ? false : true}
-					onClick={handleDeleteStream}>
-					Delete
-				</Button>
-			</Group>
-		</Modal>
+			modalHeader="Delete Stream"
+			modalContent="Are you sure you want to delete this stream?"
+			confirmationText={`${currentStream}`}
+			type="delete"
+			placeholder="Type the name of the stream"
+			onConfirm={handleDeleteStream}
+		/>
 	);
 };
 
