@@ -286,7 +286,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 				type="delete"
 				isOpen={isDeletedRoleOpen}
 				onClose={handleCloseDelete}
-				header={'Delete Role'}
+				header="Delete Role"
 				content="Are you sure you want to delete this Role?"
 				placeholder="Type the role name to confirm"
 				confirmationText={roleName}
@@ -297,7 +297,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 					type="delete"
 					isOpen={isDeletedPrivilegeOpen}
 					onClose={handleClosePrivilegeDelete}
-					header={'Delete Privilege'}
+					header="Delete Privilege"
 					specialContent={<Text>{getBadge(getRoleData?.data[deletePrivilegeIndex], deletePrivilegeIndex, false)}</Text>}
 					content="Are you sure you want to delete this role privilege?"
 					placeholder="Type name of the role to confirm."
