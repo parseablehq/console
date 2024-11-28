@@ -203,12 +203,14 @@ type LogsStore = {
 	tableOpts: {
 		disabledColumns: string[];
 		wrapDisabledColumns: string[];
+		targetColumns: string[];
 		pinnedColumns: string[];
 		pageData: Log[];
 		totalPages: number;
 		totalCount: number;
 		displayedCount: number;
 		currentPage: number;
+		targetPage: number | undefined;
 		perPage: number;
 		currentOffset: number;
 		headers: string[];
@@ -265,6 +267,7 @@ type LogsStoreReducers = {
 	setCurrentOffset: (store: LogsStore, offset: number) => ReducerOutput;
 	setPerPage: (store: LogsStore, perPage: number) => ReducerOutput;
 	setCurrentPage: (store: LogsStore, page: number) => ReducerOutput;
+	setTargetPage: (store: LogsStore, target: number | undefined) => ReducerOutput;
 	setTotalCount: (store: LogsStore, totalCount: number) => ReducerOutput;
 	setPageAndPageData: (store: LogsStore, pageNo: number, perPage?: number) => ReducerOutput;
 	setAndSortData: (store: LogsStore, sortKey: string, sortOrder: 'asc' | 'desc') => ReducerOutput;
@@ -293,6 +296,7 @@ type LogsStoreReducers = {
 	onToggleView: (store: LogsStore, viewMode: 'json' | 'table') => ReducerOutput;
 	toggleConfigViewType: (store: LogsStore) => ReducerOutput;
 	setDisabledColumns: (store: LogsStore, columns: string[]) => ReducerOutput;
+	setTargetColumns: (store: LogsStore, columms: string[]) => ReducerOutput;
 	setOrderedHeaders: (store: LogsStore, columns: string[]) => ReducerOutput;
 	toggleWordWrap: (store: LogsStore) => ReducerOutput;
 };
@@ -317,6 +321,7 @@ const initialState: LogsStore = {
 	},
 
 	tableOpts: {
+		targetColumns: [],
 		disabledColumns: [],
 		wrapDisabledColumns: [],
 		pinnedColumns: [],
@@ -326,6 +331,7 @@ const initialState: LogsStore = {
 		displayedCount: 0,
 		totalPages: 0,
 		currentPage: 0,
+		targetPage: undefined,
 		currentOffset: 0,
 		headers: [],
 		orderedHeaders: [],
@@ -532,6 +538,15 @@ const setDisabledColumns = (store: LogsStore, columns: string[]) => {
 	};
 };
 
+const setTargetColumns = (store: LogsStore, columns: string[]) => {
+	return {
+		tableOpts: {
+			...store.tableOpts,
+			targetColumns: columns,
+		},
+	};
+};
+
 const togglePinnedColumns = (store: LogsStore, columnName: string) => {
 	const { tableOpts } = store;
 	return {
@@ -630,6 +645,15 @@ const setPerPage = (store: LogsStore, perPage: number) => {
 		tableOpts: {
 			...store.tableOpts,
 			perPage,
+		},
+	};
+};
+
+const setTargetPage = (store: LogsStore, target: number | undefined) => {
+	return {
+		tableOpts: {
+			...store.tableOpts,
+			targetPage: target ? target : undefined,
 		},
 	};
 };
@@ -993,6 +1017,7 @@ const logsStoreReducers: LogsStoreReducers = {
 	setStreamSchema,
 	setPerPage,
 	setCurrentPage,
+	setTargetPage,
 	setCurrentOffset,
 	setTotalCount,
 	setPageAndPageData,
@@ -1014,6 +1039,7 @@ const logsStoreReducers: LogsStoreReducers = {
 	onToggleView,
 	toggleConfigViewType,
 	setDisabledColumns,
+	setTargetColumns,
 	setOrderedHeaders,
 	toggleWordWrap,
 	toggleWrapDisabledColumns,
