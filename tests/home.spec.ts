@@ -91,7 +91,7 @@ test.describe('Home Page', () => {
 				await expect(deleteBtn).toBeVisible();
 				await deleteBtn.click();
 				await expect(page.locator('text=Delete Stream')).toBeVisible();
-				await page.fill('input[placeholder*="Type the name of the stream to confirm. i.e."]', 'PlaywrightStream');
+				await page.fill('input[placeholder*="Type the name of the stream"]', 'PlaywrightStream');
 				const confirmDeleteBtn = page.getByRole('button', { name: 'Delete' });
 				await expect(confirmDeleteBtn).toBeEnabled();
 				await confirmDeleteBtn.click();

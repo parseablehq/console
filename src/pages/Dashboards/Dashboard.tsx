@@ -22,6 +22,7 @@ import { Layout } from 'react-grid-layout';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { EditTileType, ImportDashboardType, Tile as TileType } from '@/@types/parseable/api/dashboards';
 import { templates } from './assets/templates';
+import DeleteOrResetModal from '@/components/Misc/DeleteOrResetModal';
 
 const {
 	toggleCreateDashboardModal,
@@ -126,34 +127,15 @@ const DeleteTileModal = () => {
 	if (!activeDashboard?.dashboard_id || !deleteTileId || !selectedTile) return null;
 
 	return (
-		<Modal
-			opened={deleteTileModalOpen}
+		<DeleteOrResetModal
+			type="simple"
+			isModalOpen={deleteTileModalOpen}
 			onClose={onClose}
-			size="auto"
-			centered
-			styles={{
-				body: { padding: '0 1rem 1rem 1rem', width: 400 },
-				header: { padding: '1rem', paddingBottom: '0.4rem' },
-			}}
-			title={<Text style={{ fontSize: '0.9rem', fontWeight: 600 }}>Delete Tile</Text>}>
-			<Stack>
-				<Stack gap={12}>
-					<Text className={classes.deleteWarningText}>Are you sure want to delete this tile ?</Text>
-				</Stack>
-				<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-					<Box>
-						<Button onClick={onClose} variant="outline">
-							Cancel
-						</Button>
-					</Box>
-					<Box>
-						<Button loading={isUpdatingDashboard} onClick={onConfirm}>
-							Delete
-						</Button>
-					</Box>
-				</Stack>
-			</Stack>
-		</Modal>
+			modalHeader="Delete Tile"
+			modalContent="Are you sure you want to delete this tile?"
+			onConfirm={onConfirm}
+			isActionInProgress={isUpdatingDashboard}
+		/>
 	);
 };
 
