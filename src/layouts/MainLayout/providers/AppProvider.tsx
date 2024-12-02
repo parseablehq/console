@@ -78,14 +78,14 @@ type AppStoreReducers = {
 	changeStream: (store: AppStore, stream: string) => ReducerOutput;
 	setUserRoles: (store: AppStore, roles: UserRoles | null) => ReducerOutput;
 	setshiftInterval: (store: AppStore, interval: number) => ReducerOutput;
-	setCleanStoreForAppChange: (store: AppStore) => ReducerOutput;
+	setCleanAppStore: (store: AppStore) => ReducerOutput;
 	setUserSpecificStreams: (store: AppStore, userSpecficStreams: LogStreamData | null) => ReducerOutput;
 	setUserAccessMap: (store: AppStore, accessRoles: string[] | null) => ReducerOutput;
 	setStreamSpecificUserAccess: (store: AppStore, streamSpecificUserAccess: string[] | null) => ReducerOutput;
 	setInstanceConfig: (store: AppStore, instanceConfig: AboutData) => ReducerOutput;
 	toggleCreateStreamModal: (store: AppStore, val?: boolean) => ReducerOutput;
 	setSavedFilters: (store: AppStore, savedFilters: AxiosResponse<SavedFilterType[]>) => ReducerOutput;
-	applyCustomAppQuery: (store: AppStore, timeRangePayload: { from: string; to: string } | null) => ReducerOutput;
+	applyQueryWithResetTime: (store: AppStore, timeRangePayload: { from: string; to: string } | null) => ReducerOutput;
 };
 
 const initialState: AppStore = {
@@ -108,7 +108,31 @@ const initialState: AppStore = {
 const { Provider: AppProvider, useStore: useAppStore } = initContext(initialState);
 
 // helpers
-const setCleanStoreForAppChange = (store: AppStore) => {
+const accessKeyMap: { [key: string]: string } = {
+	hasUserAccess: 'Users',
+	hasDeleteAccess: 'DeleteStream',
+	hasCreateStreamAccess: 'CreateStream',
+	hasDeleteStreamAccess: 'DeleteStream',
+	hasClusterAccess: 'Cluster',
+	hasAlertsAccess: 'Alerts',
+	hasSettingsAccess: 'StreamSettings',
+};
+
+const generateUserAcccessMap = (accessRoles: string[] | null) => {
+	return Object.keys(accessKeyMap).reduce((acc, accessKey: string) => {
+		return {
+			...acc,
+			[accessKey]:
+				accessRoles !== null && accessKeyMap.hasOwnProperty(accessKey) && accessRoles.includes(accessKeyMap[accessKey]),
+		};
+	}, {});
+};
+
+function getHTTPContext() {
+	return window.isSecureContext;
+}
+// reducers
+const setCleanAppStore = (store: AppStore) => {
 	const { timeRange } = store;
 	const { interval, type } = timeRange;
 	const duration = _.find(FIXED_DURATIONS, (duration) => duration.milliseconds === timeRange.interval);
@@ -140,7 +164,7 @@ const setshiftInterval = (store: AppStore, interval: number) => {
 	};
 };
 
-const applyCustomAppQuery = (store: AppStore, timeRangePayload: { from: string; to: string } | null) => {
+const applyQueryWithResetTime = (store: AppStore, timeRangePayload: { from: string; to: string } | null) => {
 	const { timeRange } = store;
 
 	const updatedTimeRange = (() => {
@@ -168,31 +192,6 @@ const applyCustomAppQuery = (store: AppStore, timeRangePayload: { from: string; 
 		...updatedTimeRange,
 	};
 };
-
-const accessKeyMap: { [key: string]: string } = {
-	hasUserAccess: 'Users',
-	hasDeleteAccess: 'DeleteStream',
-	hasCreateStreamAccess: 'CreateStream',
-	hasDeleteStreamAccess: 'DeleteStream',
-	hasClusterAccess: 'Cluster',
-	hasAlertsAccess: 'Alerts',
-	hasSettingsAccess: 'StreamSettings',
-};
-
-const generateUserAcccessMap = (accessRoles: string[] | null) => {
-	return Object.keys(accessKeyMap).reduce((acc, accessKey: string) => {
-		return {
-			...acc,
-			[accessKey]:
-				accessRoles !== null && accessKeyMap.hasOwnProperty(accessKey) && accessRoles.includes(accessKeyMap[accessKey]),
-		};
-	}, {});
-};
-
-function getHTTPContext() {
-	return window.isSecureContext;
-}
-// reducers
 
 const toggleMaximize = (store: AppStore) => {
 	return { maximized: !store.maximized };
@@ -252,8 +251,8 @@ const appStoreReducers: AppStoreReducers = {
 	setSavedFilters,
 	setTimeRange,
 	setshiftInterval,
-	setCleanStoreForAppChange,
-	applyCustomAppQuery,
+	setCleanAppStore,
+	applyQueryWithResetTime,
 };
 
 export { AppProvider, useAppStore, appStoreReducers };

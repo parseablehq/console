@@ -10,7 +10,7 @@ import _ from 'lodash';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const { setRefreshInterval, getCleanStoreForRefetch } = logsStoreReducers;
-const { setCleanStoreForAppChange } = appStoreReducers;
+const { setCleanAppStore } = appStoreReducers;
 const RefreshInterval: FC = () => {
 	const [, setAppStore] = useAppStore((_store) => null);
 	const [refreshInterval, setLogsStore] = useLogsStore((store) => store.refreshInterval);
@@ -37,7 +37,7 @@ const RefreshInterval: FC = () => {
 		clearIntervalInstance();
 		if (refreshInterval !== null) {
 			const intervalId = setInterval(() => {
-				setAppStore(setCleanStoreForAppChange);
+				setAppStore(setCleanAppStore);
 				setLogsStore(getCleanStoreForRefetch);
 			}, refreshInterval);
 			timerRef.current = intervalId;

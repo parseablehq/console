@@ -6,7 +6,7 @@ import IconButton from '../Button/IconButton';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const { getCleanStoreForRefetch } = logsStoreReducers;
-const { setCleanStoreForAppChange } = appStoreReducers;
+const { setCleanAppStore } = appStoreReducers;
 
 const renderRefreshIcon = () => <IconReload size={px('1rem')} stroke={1.5} />;
 
@@ -15,7 +15,7 @@ const RefreshNow: FC = () => {
 	const [, setAppStore] = useAppStore((_store) => null);
 
 	const onRefresh = useCallback(() => {
-		setAppStore((store) => setCleanStoreForAppChange(store));
+		setAppStore((store) => setCleanAppStore(store));
 		setLogsStore((store) => getCleanStoreForRefetch(store));
 	}, []);
 	return <IconButton size={38} renderIcon={renderRefreshIcon} onClick={onRefresh} tooltipLabel="Refresh now" />;

@@ -19,7 +19,7 @@ const { setFields, parseQuery, storeAppliedQuery, resetFilters, toggleSubmitBtn,
 const { toggleQueryBuilder, toggleCustQuerySearchViewMode, applyCustomQuery, resetCustQuerySearchState } =
 	logsStoreReducers;
 
-const { applyCustomAppQuery, setCleanStoreForAppChange } = appStoreReducers;
+const { applyQueryWithResetTime, setCleanAppStore } = appStoreReducers;
 
 const getLabel = (mode: string | null) => {
 	return mode === 'filters' ? 'Filters' : mode === 'sql' ? 'SQL' : '';
@@ -149,7 +149,7 @@ const Querier = () => {
 	const triggerRefetch = useCallback(
 		(query: string, mode: 'filters' | 'sql', id?: string) => {
 			const time_filter = id ? _.find(activeSavedFilters, (filter) => filter.filter_id === id)?.time_filter : null;
-			setAppStore((store) => applyCustomAppQuery(store, time_filter || null));
+			setAppStore((store) => applyQueryWithResetTime(store, time_filter || null));
 			setLogsStore((store) => applyCustomQuery(store, query, mode, id));
 		},
 		[activeSavedFilters],
@@ -183,7 +183,7 @@ const Querier = () => {
 
 	const onClear = useCallback(() => {
 		setFilterStore((store) => resetFilters(store));
-		setAppStore((store) => setCleanStoreForAppChange(store));
+		setAppStore((store) => setCleanAppStore(store));
 		setLogsStore((store) => resetCustQuerySearchState(store));
 	}, []);
 

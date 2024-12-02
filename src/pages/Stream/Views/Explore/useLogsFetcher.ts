@@ -6,7 +6,7 @@ import { useFetchCount } from '@/hooks/useQueryResult';
 import { useStreamStore } from '../../providers/StreamProvider';
 
 const { setCleanStoreForStreamChange } = logsStoreReducers;
-const { setCleanStoreForAppChange } = appStoreReducers;
+const { setCleanAppStore } = appStoreReducers;
 
 const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
 	const { schemaLoading, infoLoading } = props;
@@ -24,7 +24,7 @@ const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean })
 	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
 
 	useEffect(() => {
-		setAppStore(setCleanStoreForAppChange);
+		setAppStore(setCleanAppStore);
 		setLogsStore(setCleanStoreForStreamChange);
 	}, [currentStream]);
 
