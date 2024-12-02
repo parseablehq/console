@@ -17,8 +17,16 @@ const { setLogData } = logsStoreReducers;
 const { parseQuery } = filterStoreReducers;
 
 const appendOffsetToQuery = (query: string, offset: number) => {
-	const hasOffset = query.toLowerCase().includes('offset');
-	return !hasOffset ? query.replace(/offset\s+\d+/i, `OFFSET ${offset}`) : `${query}`;
+	const offsetRegex = /offset\s+\d+/i;
+	const limitRegex = /limit\s+\d+/i;
+
+	if (offsetRegex.test(query)) {
+		// Replace the existing OFFSET with the new one
+		return query.replace(offsetRegex, `OFFSET ${offset}`);
+	} else {
+		// Insert OFFSET before LIMIT if OFFSET is not present
+		return query.replace(limitRegex, `OFFSET ${offset} $&`);
+	}
 };
 
 export const useQueryLogs = () => {

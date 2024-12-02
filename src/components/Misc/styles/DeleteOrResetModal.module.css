@@ -1,0 +1,37 @@
+.modalBody {
+	padding: 0 1rem 1rem 1rem;
+	width: 400px;
+}
+
+.modalHeader {
+	padding: 1rem;
+	padding-bottom: 0.4rem;
+}
+
+.headerText {
+	font-size: 0.9rem;
+	font-weight: 600;
+}
+
+.warningText {
+	margin-top: 0.4rem;
+	font-size: 0.7rem;
+	font-weight: 500;
+	color: var(--mantine-color-gray-8);
+}
+
+.confirmationText {
+	font-size: 0.7rem;
+	color: var(--mantine-color-gray-7);
+}
+
+.confirmationTextHighlight {
+	font-weight: 500;
+}
+
+.actionButtonsContainer {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-end;
+}
