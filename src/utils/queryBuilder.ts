@@ -23,6 +23,16 @@ type FilterQueryBuilderType = {
 	timeRangeCondition?: string;
 };
 
+type CorrelationQueryBuilderType = {
+	streamNames: string[];
+	limit: number;
+	queryEngine?: QueryEngine;
+	correlationCondition?: string;
+	selectedFields?: string[];
+	startTime: Date;
+	endTime: Date;
+};
+
 //! RESOURCE PATH CONSTANTS
 const PARSEABLE_RESOURCE_PATH = 'query';
 const TRINO_RESOURCE_PATH = 'trinoquery';
@@ -130,6 +140,63 @@ export class FilterQueryBuilder {
 		switch (this.queryEngine) {
 			case 'Trino':
 				return this.getTrinoQuery();
+			default:
+				return this.getParseableQuery();
+		}
+	}
+}
+
+export class CorrelationQueryBuilder {
+	queryEngine?: QueryEngine;
+	streamNames: string[];
+	limit: number;
+	correlationCondition?: string;
+	selectedFields?: string[];
+	startTime: Date;
+	endTime: Date;
+
+	constructor({
+		streamNames,
+		limit,
+		queryEngine,
+		correlationCondition,
+		selectedFields,
+		startTime,
+		endTime,
+	}: CorrelationQueryBuilderType) {
+		this.queryEngine = queryEngine;
+		this.streamNames = streamNames;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.limit = limit;
+		this.correlationCondition = correlationCondition;
+		this.selectedFields = selectedFields;
+	}
+
+	getParseableQuery() {
+		const query =
+			this.correlationCondition && this.selectedFields
+				? `select ${[...this.selectedFields]} from \"${this.streamNames[0]}\" join \"${this.streamNames[1]}\" on ${
+						this.correlationCondition
+				  } offset 0 LIMIT ${this.limit}`
+				: `SELECT * FROM \"${this.streamNames[0]}\" LIMIT ${this.limit}`;
+		return {
+			startTime: this.startTime,
+			endTime: this.endTime,
+			query,
+		};
+	}
+	getResourcePath(): string {
+		switch (this.queryEngine) {
+			case 'Trino':
+				return TRINO_RESOURCE_PATH;
+			default:
+				return PARSEABLE_RESOURCE_PATH;
+		}
+	}
+
+	getQuery() {
+		switch (this.queryEngine) {
 			default:
 				return this.getParseableQuery();
 		}

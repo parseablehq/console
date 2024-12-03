@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { useDocumentTitle } from '@mantine/hooks';
-import { Stack, Box, TextInput, Text, Select } from '@mantine/core';
+import { Stack, Box, TextInput, Text, Select, Button } from '@mantine/core';
 import {
 	PRIMARY_HEADER_HEIGHT,
 	STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT,
@@ -23,9 +23,24 @@ import {
 import CorrelationFooter from './Views/CorrelationFooter';
 import Querier from '../Stream/components/Querier';
 import TimeRange from '@/components/Header/TimeRange';
+import RefreshInterval from '@/components/Header/RefreshInterval';
+import RefreshNow from '@/components/Header/RefreshNow';
+import ShareButton from '@/components/Header/ShareButton';
+import { MaximizeButton } from '../Stream/components/PrimaryToolbar';
+import SecondaryToolbar from '../Stream/components/SecondaryToolbar';
+import { useLogsStore } from '../Stream/providers/LogsProvider';
 
 const { changeStream } = appStoreReducers;
-const { deleteStreamData, setSelectedFields, deleteSelectedField } = correlationStoreReducers;
+const { deleteStreamData, setSelectedFields, deleteSelectedField, setCorrelationCondition } = correlationStoreReducers;
+
+type StreamSelectBoxProps = {
+	label: string;
+	placeholder: string;
+	disabled: boolean;
+	onChange: (value: string | null) => void;
+	data: { value: string; label: string }[];
+	isFirst: boolean;
+};
 
 const dataTypeIcons = (iconColor: string): Record<string, JSX.Element> => ({
 	text: <IconLetterASmall size={16} style={{ color: iconColor }} />,
@@ -68,67 +83,111 @@ const FieldItem = ({
 	);
 };
 
+const StreamSelectBox: React.FC<StreamSelectBoxProps> = ({ label, placeholder, disabled, onChange, data, isFirst }) => {
+	return (
+		<div className={classes.noStreamsWrapper} style={{ border: isFirst ? '1px dashed #9F1239' : '1px dashed #7E22CE' }}>
+			<Select
+				searchable
+				classNames={{
+					input: classes.streamInput,
+					description: classes.streamSelectDescription,
+				}}
+				onChange={onChange}
+				placeholder={placeholder}
+				style={{ width: '100%', padding: '10px' }}
+				data={data}
+				disabled={disabled}
+			/>
+			<div>
+				<Text fw={700} c={disabled ? '#CBCBCB' : '#000'}>
+					{disabled ? 'Select Stream 1 first' : label}
+				</Text>
+			</div>
+		</div>
+	);
+};
+
 const Correlation = () => {
 	useDocumentTitle('Parseable | Correlation');
+	// State Management Hooks
 	const [userSpecificStreams] = useAppStore((store) => store.userSpecificStreams);
-	const [{ fields, selectedFields }, setCorrelationData] = useCorrelationStore((store) => store);
-	const { getCorrelationData } = useCorrelationQueryLogs();
+	const [{ fields, selectedFields, tableOpts }, setCorrelationData] = useCorrelationStore((store) => store);
+	const { getCorrelationData, loading: logsLoading, error: errorMessage, schemaLoading } = useCorrelationQueryLogs();
+	const [timeRange] = useLogsStore((store) => store.timeRange);
 	const [currentStream, setAppStore] = useAppStore((store) => store.currentStream);
 	const [maximized] = useAppStore((store) => store.maximized);
-	const [searchText, setSearchText] = useState('');
-	const primaryHeaderHeight = !maximized
-		? PRIMARY_HEADER_HEIGHT + STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT + STREAM_SECONDARY_TOOLBAR_HRIGHT
-		: 0;
 
+	// Local State
+	const [searchText, setSearchText] = useState('');
+	const [select1Value, setSelect1Value] = useState<string | null>(null);
+	const [select2Value, setSelect2Value] = useState<string | null>(null);
+
+	// Derived Constants
+	const primaryHeaderHeight = maximized
+		? 0
+		: PRIMARY_HEADER_HEIGHT + STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT + STREAM_SECONDARY_TOOLBAR_HRIGHT;
+
+	const streamNames = Object.keys(fields);
+	const streamData =
+		userSpecificStreams?.map((stream: any) => ({
+			value: stream.name,
+			label: stream.name,
+		})) ?? [];
+
+	// Effects
 	useEffect(() => {
 		getCorrelationData();
-	}, [currentStream]);
+	}, [currentStream, timeRange]);
 
-	const addStream = (value: string | null) => {
-		if (!value) return;
-
-		setAppStore((store) => changeStream(store, value));
-	};
-
-	console.log(fields);
-
+	// Utility Functions
 	const filterFields = (fieldsIter: any) => {
 		const typedFields = Object.keys(fieldsIter.fieldTypeMap) as string[];
-		if (!searchText) return typedFields;
-		return typedFields.filter((field) => field.toLowerCase().includes(searchText.toLowerCase()));
+		return searchText
+			? typedFields.filter((field) => field.toLowerCase().includes(searchText.toLowerCase()))
+			: typedFields;
 	};
 
-	const removeStream = (streamName: string) => {
-		setCorrelationData((store) => deleteStreamData(store, streamName));
+	const updateCorrelationCondition = () => {
+		if (select1Value && select2Value) {
+			const condition = `${streamNames[0]}.${select1Value} = ${streamNames[1]}.${select2Value}`;
+			setCorrelationData((store) => setCorrelationCondition(store, condition));
+		}
 	};
 
-	const addField = (field: string, streamName: string) => {
-		setCorrelationData((store) => setSelectedFields(store, field, streamName));
+	// Event Handlers
+	const addStream = (value: string | null) => {
+		if (value) {
+			setAppStore((store) => changeStream(store, value));
+		}
 	};
 
-	const removeField = (field: string, streamName: string) => {
-		setCorrelationData((store) => deleteSelectedField(store, field, streamName));
+	const handleFieldChange = (fieldValue: string | null, isFirstField: boolean) => {
+		if (isFirstField) {
+			setSelect1Value(fieldValue);
+		} else {
+			setSelect2Value(fieldValue);
+		}
+		updateCorrelationCondition();
 	};
+
+	// View Flags
+	const hasContentLoaded = !schemaLoading && !logsLoading;
+	const hasNoData = hasContentLoaded && !errorMessage && tableOpts.pageData.length === 0;
+	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
 
 	return (
 		<Box className={classes.correlationWrapper}>
 			<div className={classes.correlationSideBarWrapper}>
 				<Text>Streams</Text>
 				<TextInput
-					disabled={Object.keys(fields).length === 0}
+					disabled={streamNames.length === 0}
 					w="100%"
 					placeholder="Search Fields"
 					key="search-fields"
 					value={searchText}
 					onChange={(e) => setSearchText(e.target.value)}
 				/>
-				<div
-					style={{
-						display: 'flex',
-						flexDirection: 'column',
-						gap: '14px',
-						height: `calc(100vh - 220px)`,
-					}}>
+				<div className={classes.streamBox}>
 					{Object.entries(fields).map(([stream, fieldsIter]: [any, any]) => {
 						const filteredFields = filterFields(fieldsIter);
 						const totalStreams = Object.entries(fields).length;
@@ -140,7 +199,6 @@ const Correlation = () => {
 								className={classes.streamWrapper}
 								style={{
 									height: heightPercentage,
-									flexShrink: 0,
 									border: `1px solid ${fieldsIter.color}`,
 								}}>
 								<div className={classes.streamNameWrapper}>
@@ -155,7 +213,7 @@ const Correlation = () => {
 										color={fieldsIter.headerColor}
 										cursor="pointer"
 										size={14}
-										onClick={() => removeStream(stream)}
+										onClick={() => setCorrelationData((store) => deleteStreamData(store, stream))}
 									/>
 								</div>
 								<div className={classes.fieldsWrapper}>
@@ -170,7 +228,7 @@ const Correlation = () => {
 													iconColor={fieldsIter.iconColor}
 													fieldName={field.replace(`${stream}.`, '')}
 													dataType={dataType}
-													onClick={() => addField(field, stream)}
+													onClick={() => setCorrelationData((store) => setSelectedFields(store, field, stream))}
 												/>
 											);
 										})
@@ -181,120 +239,50 @@ const Correlation = () => {
 							</div>
 						);
 					})}
-					{Object.keys(fields).length === 0 && (
+					{streamNames.length === 0 && (
 						<>
 							{/* First box */}
-							<div className={classes.noStreamsWrapper} style={{ border: '1px dashed #9F1239' }}>
-								<Select
-									searchable
-									classNames={{
-										input: classes.streamInput,
-										description: classes.streamSelectDescription,
-									}}
-									onChange={(value) => {
-										if (value) addStream(value); // Add stream when selected, affecting Object.keys(fields).length
-									}}
-									placeholder="Select Stream 1"
-									style={{ width: '100%', padding: '10px' }}
-									data={
-										userSpecificStreams?.map((stream: any) => ({
-											value: stream.name,
-											label: stream.name,
-										})) ?? []
-									}
-								/>
-								<div>
-									<Text fw={700} c="#CBCBCB">
-										Add Stream 1
-									</Text>
-								</div>
-							</div>
+							<StreamSelectBox
+								label="Add Stream 1"
+								placeholder="Select Stream 1"
+								disabled={false}
+								onChange={(value) => value && addStream(value)}
+								data={streamData}
+								isFirst={true}
+							/>
 
 							{/* Second box */}
-							<div className={classes.noStreamsWrapper}>
-								<Select
-									searchable
-									classNames={{
-										input: classes.streamInput,
-										description: classes.streamSelectDescription,
-									}}
-									disabled={Object.keys(fields).length < 1} // Enabled only after the first box adds a field
-									onChange={(value) => addStream(value)}
-									placeholder="Select Stream 2"
-									style={{ width: '100%', padding: '10px' }}
-									data={
-										userSpecificStreams?.map((stream: any) => ({
-											value: stream.name,
-											label: stream.name,
-										})) ?? []
-									}
-								/>
-								<div>
-									<Text fw={700} c={Object.keys(fields).length < 1 ? '#CBCBCB' : '#000'}>
-										{Object.keys(fields).length < 1 ? 'Select Stream 1 first' : 'Add Stream 2'}
-									</Text>
-								</div>
-							</div>
+							<StreamSelectBox
+								label="Add Stream 2"
+								placeholder="Select Stream 2"
+								disabled={streamNames.length < 1}
+								onChange={(value) => addStream(value)}
+								data={streamData}
+								isFirst={false}
+							/>
 						</>
 					)}
-					{Object.keys(fields).length === 1 && (
+					{streamNames.length === 1 && (
 						<>
 							{/* Render the single existing field */}
-							{Object.keys(fields).map((key) => (
-								<div key={key} className={classes.noStreamsWrapper} style={{ border: '1px dashed #7E22CE' }}>
-									<Select
-										searchable
-										classNames={{
-											input: classes.streamInput,
-											description: classes.streamSelectDescription,
-										}}
-										onChange={(value) => addStream(value)}
-										placeholder="Select Stream 2"
-										style={{ width: '100%', padding: '10px' }}
-										data={
-											userSpecificStreams?.map((stream: any) => ({
-												value: stream.name,
-												label: stream.name,
-											})) ?? []
-										}
-									/>
-									<div>
-										<Text fw={700} c="#CBCBCB">
-											Add Stream 2
-										</Text>
-									</div>
-								</div>
-							))}
+							<StreamSelectBox
+								label="Add Stream 2"
+								placeholder="Select Stream 2"
+								disabled={false}
+								onChange={(value) => addStream(value)}
+								data={streamData}
+								isFirst={false}
+							/>
 						</>
 					)}
 				</div>
 			</div>
-			<Stack
-				gap={0}
-				style={{
-					maxHeight: `calc(100vh - ${PRIMARY_HEADER_HEIGHT}px )`,
-					overflowY: 'scroll',
-					width: '100%',
-				}}>
-				<Stack
-					style={{
-						justifyContent: 'center',
-						borderBottom: '1px solid #DEE2E6',
-						padding: '10px',
-					}}>
+			<Stack gap={0} className={classes.selectionWrapper}>
+				<Stack className={classes.topSectionWrapper}>
 					<Stack>
-						<div style={{ display: 'flex', gap: '5px', alignItems: 'center', width: '100%' }}>
+						<div className={classes.fieldsJoinsWrapper}>
 							<div style={{ color: Object.keys(selectedFields).length > 0 ? 'black' : '#CBCBCB' }}>Fields</div>
-							<div
-								style={{
-									width: '100%',
-									backgroundColor: '#F7F8F9',
-									height: '36px',
-									borderRadius: '5px',
-									display: 'flex',
-									gap: '10px',
-									padding: '5px 10px',
-								}}>
+							<div className={classes.fieldsPillsWrapper}>
 								{Object.entries(selectedFields).map(([streamName, fieldsMap]: [any, any]) =>
 									fieldsMap.map((field: any, index: any) => (
 										<FieldItem
@@ -303,68 +291,64 @@ const Correlation = () => {
 											backgroundColor={fields[streamName]['backgroundColor']}
 											iconColor={fields[streamName]['iconColor']}
 											fieldName={field}
-											onDelete={() => removeField(field, streamName)}
+											onDelete={() => setCorrelationData((store) => deleteSelectedField(store, field, streamName))}
 										/>
 									)),
 								)}
 							</div>
 						</div>
-						<div style={{ display: 'flex', gap: '5px', alignItems: 'center', width: '100%' }}>
-							<div style={{ color: Object.keys(selectedFields).length > 0 ? 'black' : '#CBCBCB' }}>Joins</div>
-							<div
-								style={{
-									width: '100%',
-									backgroundColor: '#F7F8F9',
-									height: '36px',
-									borderRadius: '5px',
-									display: 'flex',
-									flexDirection: 'row',
-									gap: '10px',
-									alignContent: 'center',
-									padding: '5px',
-								}}>
-								<div>
+						<div className={classes.fieldsJoinsWrapper}>
+							<div>Joins</div>
+							<div className={classes.joinsWrapper}>
+								<div style={{ width: '50%' }}>
 									<Select
-										disabled={Object.keys(fields).length === 0}
-										placeholder={
-											Object.keys(fields)[0] ? `Select field from ${Object.keys(fields)[0]}` : 'Select Stream 1'
-										}
-										style={{ width: '300px' }}
-										data={
-											Object.keys(fields).length > 0 ? Object.keys(fields[Object.keys(fields)[0]].fieldTypeMap) : []
-										}
+										disabled={streamNames.length === 0}
+										placeholder={streamNames[0] ? `Select field from ${streamNames[0]}` : 'Select Stream 1'}
+										style={{ height: '100%' }}
+										data={streamNames.length > 0 ? Object.keys(fields[streamNames[0]].fieldTypeMap) : []}
+										value={select1Value}
+										onChange={(value) => handleFieldChange(value, true)}
 									/>
 								</div>
 								<div> = </div>
-								<div>
+								<div style={{ width: '50%' }}>
 									<Select
-										disabled={Object.keys(fields).length < 2}
-										placeholder={
-											Object.keys(fields)[1] ? `Select field from ${Object.keys(fields)[1]}` : 'Select Stream 2'
-										}
-										style={{ width: '300px' }}
-										data={
-											Object.keys(fields).length > 1 ? Object.keys(fields[Object.keys(fields)[1]].fieldTypeMap) : []
-										}
+										disabled={streamNames.length < 2}
+										placeholder={streamNames[1] ? `Select field from ${streamNames[1]}` : 'Select Stream 2'}
+										data={streamNames.length > 1 ? Object.keys(fields[streamNames[1]].fieldTypeMap) : []}
+										value={select2Value}
+										onChange={(value) => handleFieldChange(value, false)}
 									/>
 								</div>
 							</div>
+							<div>
+								<Button
+									onClick={() => getCorrelationData()}
+									variant="outline"
+									color="#4B52EA"
+									disabled={!select1Value || !select2Value}
+									style={{ height: '36px', borderRadius: '10px' }}>
+									Correlate
+								</Button>
+							</div>
 						</div>
 					</Stack>
-					<Stack
-						style={{
-							flexDirection: 'row',
-							padding: '5px',
-							height: '100%',
-						}}
-						w="100%">
-						<Querier />
+					<Stack className={classes.logTableControlWrapper} w="100%">
+						<Querier isCorrelation={true} />
 						<TimeRange />
+						<RefreshInterval />
+						<RefreshNow />
+						<ShareButton />
+						<MaximizeButton />
 					</Stack>
 				</Stack>
+				<SecondaryToolbar />
 				{Object.keys(selectedFields).length > 0 && (
 					<>
-						<CorrelationTable primaryHeaderHeight={primaryHeaderHeight} />
+						<CorrelationTable
+							{...{ errorMessage, logsLoading, showTable, hasNoData }}
+							primaryHeaderHeight={primaryHeaderHeight}
+						/>
 						<CorrelationFooter loaded={true} hasNoData={true} isFetchingCount={true} />
 					</>
 				)}

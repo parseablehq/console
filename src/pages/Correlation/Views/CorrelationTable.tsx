@@ -9,6 +9,9 @@ import { LOGS_FOOTER_HEIGHT } from '@/constants/theme';
 import { Log } from '@/@types/parseable/api/query';
 import { FieldTypeMap } from '@/pages/Stream/providers/StreamProvider';
 import _ from 'lodash';
+import { Box } from '@mantine/core';
+import EmptyBox from '@/components/Empty';
+import { ErrorView, LoadingView } from '@/pages/Stream/Views/Explore/LoadingViews';
 
 type CellType = string | number | boolean | null | undefined;
 
@@ -64,12 +67,22 @@ const makeColumnsFromSelectedFields = (
 	);
 };
 
-const Table = (props: { primaryHeaderHeight: number }) => {
+const Table = (props: {
+	primaryHeaderHeight: number;
+	errorMessage: string | null;
+	logsLoading: boolean;
+	hasNoData: boolean;
+	showTable: boolean;
+}) => {
+	const { errorMessage, logsLoading, primaryHeaderHeight, showTable, hasNoData } = props;
 	const [{ pageData, wrapDisabledColumns }] = useCorrelationStore((store) => store.tableOpts);
 	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
 	const [columns, setColumns] = useState<MRT_ColumnDef<Log, unknown>[]>([]);
+	console.log(pageData);
 
 	const [{ selectedFields }] = useCorrelationStore((store) => store);
+
+	const showTableOrLoader = logsLoading || showTable || !errorMessage || !hasNoData;
 
 	useEffect(() => {
 		const updatedColumns = makeColumnsFromSelectedFields(selectedFields, isSecureHTTPContext, {
@@ -104,53 +117,88 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 		[wrapDisabledColumns],
 	);
 	if (columns.length == 0) return;
+
 	return (
-		<MantineReactTable
-			enableBottomToolbar={false}
-			enableTopToolbar={false}
-			enableColumnResizing={true}
-			mantineTableBodyCellProps={({ column: { id } }) => makeCellCustomStyles(id)}
-			mantineTableHeadRowProps={{ style: { border: 'none' } }}
-			mantineTableHeadCellProps={{
-				style: {
-					fontWeight: 600,
-					fontSize: '0.65rem',
-					border: 'none',
-					padding: '0.5rem 1rem',
-				},
-			}}
-			mantineTableBodyRowProps={({ row }) => {
-				return {
-					style: {
-						border: 'none',
-						background: row.index % 2 === 0 ? '#f8f9fa' : 'white',
-					},
-				};
-			}}
-			mantineTableHeadProps={{
-				style: {
-					border: 'none',
-				},
-			}}
-			columns={columns}
-			data={pageData}
-			mantinePaperProps={{ style: { border: 'none' } }}
-			enablePagination={false}
-			enableColumnPinning={true}
-			initialState={{}}
-			enableStickyHeader={true}
-			defaultColumn={{ minSize: 100 }}
-			layoutMode="grid"
-			state={{}}
-			mantineTableContainerProps={{
-				style: {
-					height: `calc(100vh - ${props.primaryHeaderHeight + LOGS_FOOTER_HEIGHT}px )`,
-				},
-			}}
-			// renderColumnActionsMenuItems={({ column }) => {
-			// 	return <Column columnName={column.id} />;
-			// }}
-		/>
+		<Box className={tableStyles.container}>
+			{!errorMessage ? (
+				showTableOrLoader ? (
+					<Box className={tableStyles.innerContainer} style={{ maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
+						<Box
+							className={tableStyles.innerContainer}
+							style={{
+								maxHeight: `calc(100vh - ${primaryHeaderHeight}px )`,
+								height: `calc(100vh - ${primaryHeaderHeight}px )`,
+								position: 'relative',
+							}}>
+							<Box
+								style={{
+									position: 'absolute',
+									...(logsLoading ? {} : { display: 'none' }),
+									height: '100%',
+									width: '100%',
+									background: 'white',
+									zIndex: 9,
+								}}>
+								{logsLoading && <LoadingView />}
+							</Box>
+							{hasNoData ? (
+								<EmptyBox message="No Matching Rows" />
+							) : (
+								<MantineReactTable
+									enableBottomToolbar={false}
+									enableTopToolbar={false}
+									enableColumnResizing={true}
+									mantineTableBodyCellProps={({ column: { id } }) => makeCellCustomStyles(id)}
+									mantineTableHeadRowProps={{ style: { border: 'none' } }}
+									mantineTableHeadCellProps={{
+										style: {
+											fontWeight: 600,
+											fontSize: '0.65rem',
+											border: 'none',
+											padding: '0.5rem 1rem',
+										},
+									}}
+									mantineTableBodyRowProps={({ row }) => {
+										return {
+											style: {
+												border: 'none',
+												background: row.index % 2 === 0 ? '#f8f9fa' : 'white',
+											},
+										};
+									}}
+									mantineTableHeadProps={{
+										style: {
+											border: 'none',
+										},
+									}}
+									columns={columns}
+									data={pageData}
+									mantinePaperProps={{ style: { border: 'none' } }}
+									enablePagination={false}
+									enableColumnPinning={true}
+									initialState={{}}
+									enableStickyHeader={true}
+									defaultColumn={{ minSize: 100 }}
+									layoutMode="grid"
+									state={{}}
+									mantineTableContainerProps={{
+										style: {
+											height: `calc(100vh - ${props.primaryHeaderHeight + LOGS_FOOTER_HEIGHT}px )`,
+										},
+									}}
+								/>
+							)}
+						</Box>
+					</Box>
+				) : hasNoData ? (
+					<></>
+				) : (
+					<LoadingView />
+				)
+			) : (
+				<ErrorView message={errorMessage} />
+			)}
+		</Box>
 	);
 };
 

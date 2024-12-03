@@ -6,10 +6,10 @@ import _ from 'lodash';
 
 export const CORRELATION_LOAD_LIMIT = 250;
 
-export const STREAM_COLORS = ['#FDA4AF', '#D8B4FE', '#7DE3D3', '#FEE45E'];
-export const STREAM_HEADER_COLORS = ['#9F1239', '#7E22CE', '#0F766E', '#A16207'];
-export const FIELD_BACKGROUND_COLORS = ['#FFF8F8', '#F8F1FF', '#F4FFFC', '#FFFEF3'];
-export const DATA_TYPE_COLORS = ['#B68A96', '#AB92C0', '#97C2BE', '#B7A181'];
+export const STREAM_COLORS = ['#FDA4AF', '#D8B4FE'];
+export const STREAM_HEADER_COLORS = ['#9F1239', '#7E22CE'];
+export const FIELD_BACKGROUND_COLORS = ['#FFF8F8', '#F8F1FF'];
+export const DATA_TYPE_COLORS = ['#B68A96', '#AB92C0'];
 
 const defaultSortKey = 'p_timestamp';
 const defaultSortOrder = 'desc' as 'desc';
@@ -35,6 +35,7 @@ type CorrelationStore = {
 		}
 	>;
 	selectedFields: Record<string, string[]>;
+	correlationCondition: string;
 	joins: Record<string, string[]>;
 	tableOpts: {
 		disabledColumns: string[];
@@ -67,6 +68,7 @@ type CorrelationStoreReducers = {
 	setStreamSchema: (store: CorrelationStore, schema: LogStreamSchemaData, streamName: string) => ReducerOutput;
 	setCurrentOffset: (store: CorrelationStore, offset: number) => ReducerOutput;
 	setCurrentPage: (store: CorrelationStore, page: number) => ReducerOutput;
+	setCorrelationCondition: (store: CorrelationStore, correlationCondition: string) => ReducerOutput;
 	setPageAndPageData: (store: CorrelationStore, pageNo: number, perPage?: number) => ReducerOutput;
 };
 
@@ -74,6 +76,7 @@ const initialState: CorrelationStore = {
 	streamData: {},
 	fields: {},
 	selectedFields: {},
+	correlationCondition: '',
 	joins: {},
 	tableOpts: {
 		disabledColumns: [],
@@ -270,18 +273,59 @@ const setStreamData = (store: CorrelationStore, currentStream: string, data: Log
 	}
 
 	const currentStreamCount = Object.keys(store.streamData || {}).length;
-	if (currentStreamCount >= 4 && !(currentStream in store.streamData)) {
-		console.warn('Stream limit reached. Cannot add more than 4 streams.');
+	if (currentStreamCount >= 2 && !(currentStream in store.streamData)) {
+		console.warn('Stream limit reached. Cannot add more than 2 streams.');
 		return store;
 	}
 
-	return {
-		streamData: {
-			...store.streamData,
-			[currentStream]: {
-				logData: data,
-			},
+	// Update streamData
+	const updatedStreamData = {
+		...store.streamData,
+		[currentStream]: {
+			logData: data,
 		},
+	};
+
+	// Recompute filtered and sliced data for the table
+	const filteredData = filterAndSortData(store.tableOpts, updatedStreamData[currentStream]?.logData || []);
+	const currentPage = store.tableOpts.currentPage || 1;
+	const newPageSlice = filteredData && getPageSlice(currentPage, store.tableOpts.perPage, filteredData);
+
+	// Rebuild `pageData` based on `selectedFields`
+	const updatedPageData = newPageSlice?.map((_record, index) => {
+		const combinedRecord: any = {};
+
+		for (const [stream, fields] of Object.entries(store.selectedFields)) {
+			const streamRecord = filteredData[index];
+			if (streamRecord) {
+				if (Array.isArray(fields)) {
+					fields.forEach((field) => {
+						combinedRecord[`${stream}.${field}`] = streamRecord[field];
+					});
+				}
+			}
+		}
+
+		return combinedRecord;
+	});
+
+	// Update the store with new data
+	return {
+		...store,
+		streamData: updatedStreamData,
+		tableOpts: {
+			...store.tableOpts,
+			pageData: updatedPageData || [],
+			currentPage,
+			totalPages: getTotalPages(filteredData, store.tableOpts.perPage),
+		},
+	};
+};
+
+const setCorrelationCondition = (store: CorrelationStore, correlationCondition: string) => {
+	return {
+		...store,
+		correlationCondition,
 	};
 };
 
@@ -371,6 +415,7 @@ const correlationStoreReducers: CorrelationStoreReducers = {
 	setCurrentPage,
 	setPageAndPageData,
 	setJoinFields,
+	setCorrelationCondition,
 };
 
 export { CorrelationProvider, useCorrelationStore, correlationStoreReducers };

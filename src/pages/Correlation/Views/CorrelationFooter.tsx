@@ -9,7 +9,7 @@ import useMountedState from '@/hooks/useMountedState';
 import classes from '../styles/Footer.module.css';
 import { LOGS_FOOTER_HEIGHT } from '@/constants/theme';
 import { correlationStoreReducers, useCorrelationStore } from '@/pages/Correlation/providers/CorrelationProvider';
-import { LOG_QUERY_LIMITS, useLogsStore, LOAD_LIMIT } from '@/pages/Stream/providers/LogsProvider';
+import { LOG_QUERY_LIMITS, LOAD_LIMIT } from '@/pages/Stream/providers/LogsProvider';
 
 const { setCurrentOffset, setCurrentPage, setPageAndPageData } = correlationStoreReducers;
 
@@ -22,7 +22,7 @@ const TotalCount = (props: { totalCount: number }) => {
 };
 
 const TotalLogsCount = (props: { hasTableLoaded: boolean; isFetchingCount: boolean; isTableEmpty: boolean }) => {
-	const [{ totalCount, perPage, pageData }] = useLogsStore((store) => store.tableOpts);
+	const [{ totalCount, perPage, pageData }] = useCorrelationStore((store) => store.tableOpts);
 	const displayedCount = _.size(pageData);
 	const showingCount = displayedCount < perPage ? displayedCount : perPage;
 	if (typeof totalCount !== 'number' || typeof displayedCount !== 'number') return <Stack />;

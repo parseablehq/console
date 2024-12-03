@@ -1,4 +1,4 @@
-import { getQueryLogsWithHeaders } from '@/api/query';
+import { getCorrelationQueryLogsWithHeaders } from '@/api/query';
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
 import { useLogsStore } from '@/pages/Stream/providers/LogsProvider';
@@ -19,12 +19,14 @@ const { setStreamData } = correlationStoreReducers;
 
 export const useCorrelationQueryLogs = () => {
 	const [error, setError] = useMountedState<string | null>(null);
-	const [, setCorrelationStore] = useCorrelationStore((store) => store.streamData);
+	const [{ selectedFields, streamData, correlationCondition }, setCorrelationStore] = useCorrelationStore(
+		(store) => store,
+	);
 	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
 	const [streamInfo] = useStreamStore((store) => store.info);
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
-	const { refetch: refetchSchema } = useGetStreamSchema({ streamName: currentStream || '' });
+	const { refetch: refetchSchema, isLoading: schemaLoading } = useGetStreamSchema({ streamName: currentStream || '' });
 	const [
 		{
 			timeRange,
@@ -34,12 +36,14 @@ export const useCorrelationQueryLogs = () => {
 
 	const defaultQueryOpts = {
 		queryEngine,
-		streamName: currentStream || '',
+		streamNames: correlationCondition ? Object.keys(streamData) : [currentStream || ''],
 		startTime: timeRange.startTime,
 		endTime: timeRange.endTime,
 		limit: CORRELATION_LOAD_LIMIT,
 		pageOffset: currentOffset,
 		timePartitionColumn,
+		selectedFields: _.flatMap(selectedFields, (values, key) => _.map(values, (value) => `${key}.${value}`)) || [],
+		correlationCondition: correlationCondition,
 	};
 
 	const {
@@ -49,9 +53,9 @@ export const useCorrelationQueryLogs = () => {
 	} = useQuery(
 		['fetch-logs', defaultQueryOpts],
 		() => {
-			refetchSchema();
+			!correlationCondition && refetchSchema();
 
-			return getQueryLogsWithHeaders(defaultQueryOpts);
+			return getCorrelationQueryLogsWithHeaders(defaultQueryOpts);
 		},
 		{
 			enabled: false,
@@ -78,6 +82,7 @@ export const useCorrelationQueryLogs = () => {
 	return {
 		error,
 		loading: logsLoading || logsRefetching,
+		schemaLoading,
 		getCorrelationData,
 	};
 };

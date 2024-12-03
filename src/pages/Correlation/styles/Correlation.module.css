@@ -14,6 +14,13 @@
 	gap: 15px;
 }
 
+.streamBox {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	height: calc(100vh - 220px);
+}
+
 .streamWrapper {
 	display: flex;
 	flex-direction: column;
@@ -21,6 +28,7 @@
 	padding: 12px;
 	border-radius: 8px;
 	gap: 12px;
+	flex-shrink: 0;
 }
 
 .streamNameWrapper {
@@ -74,4 +82,53 @@
 	height: 100%;
 	width: 100%;
 	font-size: 50px;
+}
+
+.selectionWrapper {
+	overflow-y: 'scroll';
+	width: 100%;
+	max-height: calc(100vh - 40px);
+}
+
+.topSectionWrapper {
+	justify-content: center;
+	padding: 10px;
+	border-bottom: 1px solid #dee2e6;
+}
+
+.fieldsJoinsWrapper {
+	display: flex;
+	gap: 14px;
+	align-items: center;
+	width: 100%;
+}
+
+.fieldItemsWrapper {
+	width: 100%;
+	height: 36px;
+}
+
+.fieldsPillsWrapper {
+	width: 100%;
+	height: 36px;
+	border: 1px solid #adb5bd;
+	border-radius: 5px;
+	display: flex;
+	gap: 10px;
+	padding: 5px 10px;
+}
+
+.joinsWrapper {
+	width: 100%;
+	height: 36px;
+	border-radius: 5px;
+	display: flex;
+	gap: 10px;
+	padding: 5px 10px;
+}
+
+.logTableControlWrapper {
+	flex-direction: row;
+	padding: 5px;
+	height: 100%;
 }
