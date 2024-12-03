@@ -12,8 +12,8 @@ import { generateQueryBuilderASTFromSQL } from '../utils';
 import { appStoreReducers, TimeRange, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const { getRelativeStartAndEndDate, formatDateWithTimezone, getLocalTimezone } = timeRangeUtils;
-const { onToggleView, setPerPage, setCustQuerySearchState, getCleanStoreForRefetch } = logsStoreReducers;
-const { setTimeRange, setCleanAppStore } = appStoreReducers;
+const { onToggleView, setPerPage, setCustQuerySearchState } = logsStoreReducers;
+const { setTimeRange, syncTimeRange } = appStoreReducers;
 const { applySavedFilters } = filterStoreReducers;
 const timeRangeFormat = 'DD-MMM-YYYY_HH-mmz';
 const keys = ['view', 'rows', 'interval', 'from', 'to', 'query', 'filterType'];
@@ -117,7 +117,7 @@ const useParamsController = () => {
 		}
 
 		if (storeAsParams.query !== presentParams.query) {
-			setAppStore((store) => setCleanAppStore(store));
+			setAppStore((store) => syncTimeRange(store));
 			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
 			if (presentParams.filterType === 'filters')
 				setFilterStore((store) =>
@@ -174,7 +174,7 @@ const useParamsController = () => {
 				setFilterStore((store) =>
 					applySavedFilters(store, generateQueryBuilderASTFromSQL(presentParams.query) as QueryType),
 				);
-			setAppStore((store) => setCleanAppStore(store));
+			setAppStore((store) => syncTimeRange(store));
 			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
 		}
 		syncTimeRangeToStore(storeAsParams, presentParams);
@@ -188,8 +188,6 @@ const useParamsController = () => {
 					if (!duration) return;
 
 					const { startTime, endTime } = getRelativeStartAndEndDate(duration);
-					setAppStore((store) => setCleanAppStore(store));
-					setLogsStore((store) => getCleanStoreForRefetch(store));
 					return setAppStore((store) => setTimeRange(store, { startTime, endTime, type: 'fixed' }));
 				}
 			} else if (_.has(presentParams, 'from') && _.has(presentParams, 'to')) {
@@ -197,8 +195,6 @@ const useParamsController = () => {
 					const startTime = dateParamStrToDateObj(presentParams.from);
 					const endTime = dateParamStrToDateObj(presentParams.to);
 					if (_.isDate(startTime) && _.isDate(endTime)) {
-						setAppStore((store) => setCleanAppStore(store));
-						setLogsStore((store) => getCleanStoreForRefetch(store));
 						return setAppStore((store) =>
 							setTimeRange(store, { startTime: dayjs(startTime), endTime: dayjs(endTime), type: 'custom' }),
 						);

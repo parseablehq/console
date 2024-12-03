@@ -6,7 +6,7 @@ import classes from '../../styles/Logs.module.css';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const { getCleanStoreForRefetch } = logsStoreReducers;
-const { setCleanAppStore } = appStoreReducers;
+const { syncTimeRange } = appStoreReducers;
 
 export const ErrorView = (props: { message: string }) => {
 	const [, setLogsStore] = useLogsStore((_store) => null);
@@ -14,7 +14,7 @@ export const ErrorView = (props: { message: string }) => {
 
 	const { message } = props;
 	const onRetry = useCallback(() => {
-		setAppStore((store) => setCleanAppStore(store));
+		setAppStore((store) => syncTimeRange(store));
 		setLogsStore((store) => getCleanStoreForRefetch(store));
 	}, []);
 	return (

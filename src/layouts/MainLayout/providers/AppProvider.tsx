@@ -78,7 +78,7 @@ type AppStoreReducers = {
 	changeStream: (store: AppStore, stream: string) => ReducerOutput;
 	setUserRoles: (store: AppStore, roles: UserRoles | null) => ReducerOutput;
 	setshiftInterval: (store: AppStore, interval: number) => ReducerOutput;
-	setCleanAppStore: (store: AppStore) => ReducerOutput;
+	syncTimeRange: (store: AppStore) => ReducerOutput;
 	setUserSpecificStreams: (store: AppStore, userSpecficStreams: LogStreamData | null) => ReducerOutput;
 	setUserAccessMap: (store: AppStore, accessRoles: string[] | null) => ReducerOutput;
 	setStreamSpecificUserAccess: (store: AppStore, streamSpecificUserAccess: string[] | null) => ReducerOutput;
@@ -132,7 +132,7 @@ function getHTTPContext() {
 	return window.isSecureContext;
 }
 // reducers
-const setCleanAppStore = (store: AppStore) => {
+const syncTimeRange = (store: AppStore) => {
 	const { timeRange } = store;
 	const { interval, type } = timeRange;
 	const duration = _.find(FIXED_DURATIONS, (duration) => duration.milliseconds === timeRange.interval);
@@ -251,7 +251,7 @@ const appStoreReducers: AppStoreReducers = {
 	setSavedFilters,
 	setTimeRange,
 	setshiftInterval,
-	setCleanAppStore,
+	syncTimeRange,
 	applyQueryWithResetTime,
 };
 

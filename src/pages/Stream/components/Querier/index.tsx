@@ -19,7 +19,7 @@ const { setFields, parseQuery, storeAppliedQuery, resetFilters, toggleSubmitBtn,
 const { toggleQueryBuilder, toggleCustQuerySearchViewMode, applyCustomQuery, resetCustQuerySearchState } =
 	logsStoreReducers;
 
-const { applyQueryWithResetTime, setCleanAppStore } = appStoreReducers;
+const { applyQueryWithResetTime, syncTimeRange } = appStoreReducers;
 
 const getLabel = (mode: string | null) => {
 	return mode === 'filters' ? 'Filters' : mode === 'sql' ? 'SQL' : '';
@@ -183,7 +183,7 @@ const Querier = () => {
 
 	const onClear = useCallback(() => {
 		setFilterStore((store) => resetFilters(store));
-		setAppStore((store) => setCleanAppStore(store));
+		setAppStore((store) => syncTimeRange(store));
 		setLogsStore((store) => resetCustQuerySearchState(store));
 	}, []);
 

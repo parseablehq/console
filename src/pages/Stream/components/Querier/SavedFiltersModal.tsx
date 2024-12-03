@@ -18,7 +18,7 @@ import { useLocation } from 'react-router-dom';
 const { toggleSavedFiltersModal, resetFilters, parseQuery, applySavedFilters, setAppliedFilterQuery } =
 	filterStoreReducers;
 const { applyCustomQuery, updateSavedFilterId, getCleanStoreForRefetch } = logsStoreReducers;
-const { setCleanAppStore, setTimeRange, applyQueryWithResetTime } = appStoreReducers;
+const { syncTimeRange, setTimeRange, applyQueryWithResetTime } = appStoreReducers;
 
 const renderDeleteIcon = () => <IconTrash size={px('1rem')} stroke={1.5} />;
 const renderCloseIcon = () => <IconX size={px('1rem')} stroke={1.5} />;
@@ -229,7 +229,7 @@ const SavedFiltersModal = () => {
 	);
 
 	const hardRefresh = useCallback(() => {
-		setAppStore((store) => setCleanAppStore(store));
+		setAppStore((store) => syncTimeRange(store));
 		setLogsStore((store) => getCleanStoreForRefetch(store));
 		closeModal();
 	}, []);
