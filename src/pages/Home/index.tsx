@@ -31,7 +31,7 @@ import _ from 'lodash';
 import { heights } from '@/components/Mantine/sizing';
 import { PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 
-const { changeStream, toggleCreateStreamModal } = appStoreReducers;
+const { changeStream, toggleCreateStreamModal, syncTimeRange } = appStoreReducers;
 
 type NoStreamsViewProps = {
 	hasCreateStreamAccess: boolean;
@@ -89,6 +89,7 @@ const Home: FC = () => {
 
 	useEffect(() => {
 		if (!Array.isArray(userSpecificStreams) || userSpecificStreams.length === 0 || !userRoles) return;
+		setAppStore((store) => syncTimeRange(store));
 		getStreamMetadata(userSpecificStreams.map((stream) => stream.name));
 	}, [userSpecificStreams, userRoles]);
 

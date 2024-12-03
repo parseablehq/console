@@ -134,9 +134,8 @@ function getHTTPContext() {
 // reducers
 const syncTimeRange = (store: AppStore) => {
 	const { timeRange } = store;
-	const { interval, type } = timeRange;
 	const duration = _.find(FIXED_DURATIONS, (duration) => duration.milliseconds === timeRange.interval);
-	const updatedTimeRange = interval && type === 'fixed' && { timeRange: getDefaultTimeRange(duration) };
+	const updatedTimeRange = { timeRange: getDefaultTimeRange(duration) };
 	return {
 		...updatedTimeRange,
 	};
