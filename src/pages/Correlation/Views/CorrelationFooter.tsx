@@ -1,9 +1,8 @@
 import { FC, useCallback } from 'react';
 import { usePagination } from '@mantine/hooks';
-import { Box, Center, Group, Loader, Menu, Pagination, Stack, Tooltip } from '@mantine/core';
+import { Box, Center, Group, Menu, Pagination, Stack } from '@mantine/core';
 import _ from 'lodash';
 import { Text } from '@mantine/core';
-import { HumanizeNumber } from '@/utils/formatBytes';
 import { IconSelector } from '@tabler/icons-react';
 import useMountedState from '@/hooks/useMountedState';
 import classes from '../styles/Footer.module.css';
@@ -12,38 +11,6 @@ import { correlationStoreReducers, useCorrelationStore } from '@/pages/Correlati
 import { LOG_QUERY_LIMITS, LOAD_LIMIT } from '@/pages/Stream/providers/LogsProvider';
 
 const { setCurrentOffset, setCurrentPage, setPageAndPageData } = correlationStoreReducers;
-
-const TotalCount = (props: { totalCount: number }) => {
-	return (
-		<Tooltip label={props.totalCount}>
-			<Text style={{ fontSize: '0.7rem' }}>{HumanizeNumber(props.totalCount)}</Text>
-		</Tooltip>
-	);
-};
-
-const TotalLogsCount = (props: { hasTableLoaded: boolean; isFetchingCount: boolean; isTableEmpty: boolean }) => {
-	const [{ totalCount, perPage, pageData }] = useCorrelationStore((store) => store.tableOpts);
-	const displayedCount = _.size(pageData);
-	const showingCount = displayedCount < perPage ? displayedCount : perPage;
-	if (typeof totalCount !== 'number' || typeof displayedCount !== 'number') return <Stack />;
-	return (
-		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }} gap={6}>
-			{props.hasTableLoaded ? (
-				props.isFetchingCount ? (
-					<Loader type="dots" />
-				) : (
-					<>
-						<Text style={{ fontSize: '0.7rem' }}>{`Showing ${showingCount} out of`}</Text>
-						<TotalCount totalCount={totalCount} />
-						<Text style={{ fontSize: '0.7rem' }}>records</Text>
-					</>
-				)
-			) : props.isTableEmpty ? null : (
-				<Loader type="dots" />
-			)}
-		</Stack>
-	);
-};
 
 const LimitControl: FC = () => {
 	const [opened, setOpened] = useMountedState(false);

@@ -66,8 +66,10 @@ export const useCorrelationQueryLogs = () => {
 				if (isInvalidResponse) return setError('Failed to query logs');
 
 				const { records, fields } = logs;
-				if (fields.length > 0) {
+				if (fields.length > 0 && !correlationCondition) {
 					return setCorrelationStore((store) => setStreamData(store, currentStream || '', records));
+				} else if (fields.length > 0 && correlationCondition) {
+					return setCorrelationStore((store) => setStreamData(store, 'correlatedStream', records));
 				} else {
 					notifyError({ message: `${currentStream} doesn't have any fields` });
 				}

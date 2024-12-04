@@ -21,7 +21,6 @@ import {
 	IconX,
 } from '@tabler/icons-react';
 import CorrelationFooter from './Views/CorrelationFooter';
-import Querier from '../Stream/components/Querier';
 import TimeRange from '@/components/Header/TimeRange';
 import RefreshInterval from '@/components/Header/RefreshInterval';
 import RefreshNow from '@/components/Header/RefreshNow';
@@ -29,6 +28,7 @@ import ShareButton from '@/components/Header/ShareButton';
 import { MaximizeButton } from '../Stream/components/PrimaryToolbar';
 import SecondaryToolbar from '../Stream/components/SecondaryToolbar';
 import { useLogsStore } from '../Stream/providers/LogsProvider';
+import CorrelationFilters from './components/CorrelationFilters';
 
 const { changeStream } = appStoreReducers;
 const { deleteStreamData, setSelectedFields, deleteSelectedField, setCorrelationCondition } = correlationStoreReducers;
@@ -154,6 +154,10 @@ const Correlation = () => {
 		}
 	};
 
+	useEffect(() => {
+		updateCorrelationCondition();
+	}, [select1Value, select2Value]);
+
 	// Event Handlers
 	const addStream = (value: string | null) => {
 		if (value) {
@@ -167,7 +171,6 @@ const Correlation = () => {
 		} else {
 			setSelect2Value(fieldValue);
 		}
-		updateCorrelationCondition();
 	};
 
 	// View Flags
@@ -334,7 +337,7 @@ const Correlation = () => {
 						</div>
 					</Stack>
 					<Stack className={classes.logTableControlWrapper} w="100%">
-						<Querier isCorrelation={true} />
+						<CorrelationFilters />
 						<TimeRange />
 						<RefreshInterval />
 						<RefreshNow />
