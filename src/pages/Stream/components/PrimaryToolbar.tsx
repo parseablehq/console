@@ -29,7 +29,7 @@ export const MaximizeButton = () => {
 	return <IconButton renderIcon={renderMaximizeIcon} size={38} onClick={onClick} tooltipLabel="Full screen" />;
 };
 
-const SavedFiltersButton = () => {
+export const SavedFiltersButton = () => {
 	const [_store, setLogsStore] = useFilterStore((_store) => null);
 	const onClick = useCallback(() => setLogsStore((store) => toggleSavedFiltersModal(store, true)), []);
 	return (
