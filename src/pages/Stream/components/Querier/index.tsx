@@ -43,7 +43,7 @@ const SQLEditorPlaceholder = () => {
 	);
 };
 
-const ModalTitle = ({ title, isCorrelation }: { title: string; isCorrelation: boolean }) => {
+const ModalTitle = ({ title }: { title: string }) => {
 	const [, setLogsStore] = useLogsStore((store) => store.custQuerySearchState);
 	const onChangeCustQueryViewMode = useCallback((mode: 'sql' | 'filters') => {
 		setLogsStore((store) => toggleCustQuerySearchViewMode(store, mode));
@@ -58,14 +58,12 @@ const ModalTitle = ({ title, isCorrelation }: { title: string; isCorrelation: bo
 					onClick={() => onChangeCustQueryViewMode('filters')}>
 					<Text style={{ fontSize: '1rem', fontWeight: 600 }}>Filters</Text>
 				</Tabs.Tab>
-				{!isCorrelation && (
-					<Tabs.Tab
-						className={title !== 'SQL' ? classes.tab : ''}
-						value="SQL"
-						onClick={() => onChangeCustQueryViewMode('sql')}>
-						<Text style={{ fontSize: '1rem', fontWeight: 600 }}>SQL</Text>
-					</Tabs.Tab>
-				)}
+				<Tabs.Tab
+					className={title !== 'SQL' ? classes.tab : ''}
+					value="SQL"
+					onClick={() => onChangeCustQueryViewMode('sql')}>
+					<Text style={{ fontSize: '1rem', fontWeight: 600 }}>SQL</Text>
+				</Tabs.Tab>
 			</Tabs.List>
 		</Tabs>
 	);
@@ -75,7 +73,6 @@ const QuerierModal = (props: {
 	onClear: () => void;
 	onSqlSearchApply: (query: string) => void;
 	onFiltersApply: () => void;
-	isCorrelation: boolean;
 }) => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
@@ -108,25 +105,23 @@ const QuerierModal = (props: {
 				body: { padding: '0 0.8rem', height: '70vh', width: '50vw', justifyContent: 'center' },
 				header: { padding: '1rem', paddingBottom: '0' },
 			}}
-			title={<ModalTitle isCorrelation title={getLabel(viewMode)} />}>
+			title={<ModalTitle title={getLabel(viewMode)} />}>
 			<Stack style={{ padding: '1rem 0.5rem', height: '100%' }} gap={2}>
 				{viewMode === 'filters' ? (
 					<FilterQueryBuilder onClear={props.onClear} onApply={props.onFiltersApply} />
 				) : (
-					!props.isCorrelation && (
-						<QueryCodeEditor
-							queryCodeEditorRef={queryCodeEditorRef}
-							onSqlSearchApply={props.onSqlSearchApply}
-							onClear={props.onClear}
-						/>
-					)
+					<QueryCodeEditor
+						queryCodeEditorRef={queryCodeEditorRef}
+						onSqlSearchApply={props.onSqlSearchApply}
+						onClear={props.onClear}
+					/>
 				)}
 			</Stack>
 		</Modal>
 	);
 };
 
-const Querier = ({ isCorrelation }: { isCorrelation: boolean }) => {
+const Querier = () => {
 	const [custQuerySearchState, setLogsStore] = useLogsStore((store) => store.custQuerySearchState);
 	const [{ startTime, endTime }, setAppStore] = useAppStore((store) => store.timeRange);
 	const { isQuerySearchActive, viewMode, showQueryBuilder, activeMode, savedFilterId } = custQuerySearchState;
@@ -235,58 +230,37 @@ const Querier = ({ isCorrelation }: { isCorrelation: boolean }) => {
 
 	return (
 		<Stack gap={0} style={{ flexDirection: 'row' }} className={classes.container}>
-			<QuerierModal
-				isCorrelation={isCorrelation}
-				onSqlSearchApply={onSqlSearchApply}
-				onFiltersApply={onFiltersApply}
-				onClear={onClear}
-			/>
+			<QuerierModal onSqlSearchApply={onSqlSearchApply} onFiltersApply={onFiltersApply} onClear={onClear} />
 			<SaveFilterModal />
 			<SavedFiltersModal />
-
-			{!isCorrelation ? (
-				<Menu position="bottom">
-					<Menu.Target>
-						<Stack
-							gap={0}
-							style={{
-								borderRight: '1px solid #e9ecef',
-								flexDirection: 'row',
-								alignItems: 'center',
-								justifyContent: 'center',
-								padding: '0 1rem',
-							}}>
-							<Text style={{ fontSize: '0.65rem', fontWeight: 600 }}>{getLabel(viewMode)}</Text>
-							<IconChevronDown size={px('1rem')} stroke={1.8} />
-						</Stack>
-					</Menu.Target>
-					<Menu.Dropdown>
-						<Menu.Item
-							onClick={() => onChangeCustQueryViewMode('filters')}
-							style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
-							Filters
-						</Menu.Item>
-						<Menu.Item
-							onClick={() => onChangeCustQueryViewMode('sql')}
-							style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
-							SQL
-						</Menu.Item>
-					</Menu.Dropdown>
-				</Menu>
-			) : (
-				<Stack
-					gap={0}
-					style={{
-						borderRight: '1px solid #e9ecef',
-						flexDirection: 'row',
-						alignItems: 'center',
-						justifyContent: 'center',
-						padding: '0 1rem',
-					}}>
-					<Text style={{ fontSize: '0.65rem', fontWeight: 600 }}>Filters</Text>
-				</Stack>
-			)}
-
+			<Menu position="bottom">
+				<Menu.Target>
+					<Stack
+						gap={0}
+						style={{
+							borderRight: '1px solid #e9ecef',
+							flexDirection: 'row',
+							alignItems: 'center',
+							justifyContent: 'center',
+							padding: '0 1rem',
+						}}>
+						<Text style={{ fontSize: '0.65rem', fontWeight: 600 }}>{getLabel(viewMode)}</Text>
+						<IconChevronDown size={px('1rem')} stroke={1.8} />
+					</Stack>
+				</Menu.Target>
+				<Menu.Dropdown>
+					<Menu.Item
+						onClick={() => onChangeCustQueryViewMode('filters')}
+						style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
+						Filters
+					</Menu.Item>
+					<Menu.Item
+						onClick={() => onChangeCustQueryViewMode('sql')}
+						style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
+						SQL
+					</Menu.Item>
+				</Menu.Dropdown>
+			</Menu>
 			<Stack
 				style={{ width: '100%', justifyContent: 'space-between' }}
 				onClick={openBuilderModal}
@@ -296,7 +270,6 @@ const Querier = ({ isCorrelation }: { isCorrelation: boolean }) => {
 					{viewMode === 'sql' && (activeMode === 'sql' ? <AppliedSQLQuery /> : <SQLEditorPlaceholder />)}
 				</Stack>
 			</Stack>
-
 			{isQuerySearchActive && (
 				<Stack
 					style={{
