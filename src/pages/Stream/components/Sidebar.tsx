@@ -46,7 +46,8 @@ const ConfigButton = (props: MenuItemProps) => {
 		<Stack
 			onClick={() => props.setCurrentView(viewName)}
 			style={{ padding: '4px 0', alignItems: 'center' }}
-			className={classes.menuItemContainer}>
+			className={classes.menuItemContainer}
+			data-id="manage-stream-btn">
 			<Tooltip label="Manage" position="right">
 				<Stack className={additionalClassNames} style={{ padding: '4px 4px' }}>
 					<IconSettings2

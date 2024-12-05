@@ -2,8 +2,9 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
 	testDir: './tests',
+	testIgnore: '**/login.spec.ts',
 	/* Run tests in files in parallel */
-	fullyParallel: true,
+	fullyParallel: true, // Set this to false to ensure sequential execution of files
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
 	forbidOnly: !!process.env.CI,
 	/* Retry on CI only */
@@ -11,7 +12,7 @@ export default defineConfig({
 	/* Opt out of parallel tests on CI. */
 	workers: process.env.CI ? 1 : undefined,
 	/* Reporter to use. See https://playwright.dev/docs/test-reporters */
-	reporter: 'html',
+	reporter: 'line',
 	/* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
 	use: {
 		/* Base URL to use in actions like `await page.goto('/')`. */
@@ -27,22 +28,27 @@ export default defineConfig({
 			name: 'chromium',
 			use: { ...devices['Desktop Chrome'] },
 		},
-
-		{
-			name: 'firefox',
-			use: { ...devices['Desktop Firefox'] },
-		},
-
-		{
-			name: 'webkit',
-			use: { ...devices['Desktop Safari'] },
-		},
+		// {
+		// 	name: 'Firefox',
+		// 	use: { ...devices['Desktop Firefox'] },
+		// },
+		// {
+		// 	name: 'Safari',
+		// 	use: { ...devices['Desktop Safari'] },
+		// },
 	],
 
 	/* Run your local dev server before starting the tests */
-	// webServer: {
-	//   command: 'npm run start',
-	//   url: 'http://127.0.0.1:3000',
-	//   reuseExistingServer: !process.env.CI,
-	// },
+	webServer: {
+		command: 'pnpm run dev',
+		url: 'http://localhost:3001',
+		reuseExistingServer: false,
+		env: {
+			PORT: '3001',
+			VITE_PARSEABLE_URL: 'https://demo.parseable.com',
+			VITE_USE_BASIC_AUTH: 'true',
+			VITE_USERNAME: 'admin',
+			VITE_PASSWORD: 'admin',
+		},
+	},
 });

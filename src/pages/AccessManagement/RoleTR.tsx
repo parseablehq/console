@@ -1,18 +1,4 @@
-import {
-	ActionIcon,
-	Badge,
-	Box,
-	Button,
-	Group,
-	Modal,
-	Select,
-	Stack,
-	Text,
-	TextInput,
-	Tooltip,
-	px,
-	rem,
-} from '@mantine/core';
+import { ActionIcon, Badge, Box, Button, Group, Modal, Select, Stack, Text, Tooltip, px, rem } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlus, IconTransform, IconTrash, IconX } from '@tabler/icons-react';
 import { FC, useEffect, useState } from 'react';
@@ -21,6 +7,7 @@ import { useUser } from '@/hooks/useUser';
 import { useRole } from '@/hooks/useRole';
 import styles from './styles/AccessManagement.module.css';
 import { CodeHighlight } from '@mantine/code-highlight';
+import DeleteOrResetModal from '@/components/Misc/DeleteOrResetModal';
 
 interface RoleTRProps {
 	user: {
@@ -56,8 +43,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 
 	const [deleteRole, setDeleteRole] = useState<string | null>(null);
 	const [opened, { open, close }] = useDisclosure(false);
-	const [UserInput, setUserInput] = useState<string>('');
-	const [SelectedRole, setSelectedRole] = useState<string>('');
+	const [selectedRole, setSelectedRole] = useState<string>('');
 	const [roleSearchValue, setRoleSearchValue] = useState<string>('');
 
 	const { getUserRolesData, getUserRolesMutation, updateUserMutation, updateUserIsSuccess } = useUser();
@@ -114,18 +100,16 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 	// For Delete User
 	const handleCloseDelete = () => {
 		closeDelete();
-		setUserInput('');
 	};
 
 	const handleDelete = () => {
 		deleteUserMutation({ userName: user.id, onSuccess: props.getUserRefetch });
 		closeDelete();
-		setUserInput('');
 	};
 
 	// For Delete Role
 	const handleRoleDelete = () => {
-		let filtered = Object.keys(getUserRolesData?.data).filter((role) => role !== deleteRole);
+		const filtered = Object.keys(getUserRolesData?.data).filter((role) => role !== deleteRole);
 		updateUserMutation({ userName: user.id, roles: filtered });
 		closeDeleteRole();
 		setDeleteRole(null);
@@ -133,7 +117,6 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 	};
 	const handleCloseRoleDelete = () => {
 		closeDeleteRole();
-		setUserInput('');
 	};
 
 	// For Edit Role
@@ -144,11 +127,11 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 	};
 
 	const handleEditUserRole = () => {
-		let userRoleArray: any = Object.keys(getUserRolesData?.data);
-		if (userRoleArray.includes(SelectedRole) || SelectedRole === '') {
+		const userRoleArray = Object.keys(getUserRolesData?.data);
+		if (userRoleArray.includes(selectedRole) || selectedRole === '') {
 			return;
 		}
-		userRoleArray.push(SelectedRole);
+		userRoleArray.push(selectedRole);
 
 		updateUserMutation({ userName: user.id, roles: userRoleArray });
 		handleCloseRoleEdit();
@@ -157,11 +140,10 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 	// for reset password
 	const handleCloseResetPassword = () => {
 		close();
-		setUserInput('');
 	};
 
-	const handleResetPassword = () => {
-		updateUserPasswordMutation({ userName: UserInput });
+	const handleResetPassword = (userName: string) => {
+		updateUserPasswordMutation({ userName });
 	};
 
 	const classes = styles;
@@ -225,106 +207,52 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 					</Tooltip>
 				</Box>
 			</td>
-			<Modal
-				withinPortal
-				size="md"
-				opened={openedDelete}
+			<DeleteOrResetModal
+				type="delete"
+				isModalOpen={openedDelete}
 				onClose={handleCloseDelete}
-				title={'Delete user'}
-				className={classes.modalStyle}
-				centered
-				styles={{ title: { fontWeight: 700 } }}>
-				<TextInput
-					label="Are you sure you want to delete this user?"
-					type="text"
-					onChange={(e) => {
-						setUserInput(e.target.value);
-					}}
-					placeholder={`Please enter the user to confirm, i.e. ${user.id}`}
-					required
-				/>
-
-				<Group justify="right" mt={10}>
-					<Button
-						variant="filled"
-						color="gray"
-						className={classes.modalActionBtn}
-						disabled={UserInput === user.id ? false : true}
-						onClick={handleDelete}>
-						Delete
-					</Button>
-					<Button onClick={handleCloseDelete} variant="outline" color="gray" className={classes.modalCancelBtn}>
-						Cancel
-					</Button>
-				</Group>
-			</Modal>
+				modalHeader="Delete user"
+				modalContent="Are you sure you want to delete this user?"
+				placeholder="Type the name of the user"
+				confirmationText={user.id}
+				onConfirm={handleDelete}
+			/>
 			{getUserRolesData?.data && deleteRole && getUserRolesData?.data[deleteRole] ? (
-				<Modal
-					withinPortal
-					size="md"
-					opened={openedDeleteRole}
+				<DeleteOrResetModal
+					type="delete"
+					isModalOpen={openedDeleteRole}
 					onClose={handleCloseRoleDelete}
-					title={'Delete user role'}
-					centered
-					className={classes.modalStyle}>
-					<Stack>
-						<Text>{getBadge(deleteRole, false)}</Text>
-						<TextInput
-							label="Are you sure you want to delete this user role?"
-							type="text"
-							onChange={(e) => {
-								setUserInput(e.target.value);
-							}}
-							placeholder={`Please enter the user to confirm, i.e. ${user.id}`}
-							required
-						/>
-					</Stack>
-
-					<Group justify="right" mt={10}>
-						<Button
-							variant="filled"
-							color="gray"
-							className={classes.modalActionBtn}
-							disabled={UserInput === user.id ? false : true}
-							onClick={handleRoleDelete}>
-							Delete
-						</Button>
-						<Button onClick={handleCloseRoleDelete} variant="outline" color="gray" className={classes.modalCancelBtn}>
-							Cancel
-						</Button>
-					</Group>
-				</Modal>
+					modalHeader="Delete user role"
+					specialContent={<Text>{getBadge(deleteRole, false)}</Text>}
+					modalContent="Are you sure you want to delete this user role?"
+					placeholder="Type the name of the user"
+					confirmationText={user.id}
+					onConfirm={handleRoleDelete}
+				/>
 			) : (
 				''
 			)}
 
-			<Modal
-				opened={opened}
+			<DeleteOrResetModal
+				type="reset"
+				isModalOpen={opened}
 				onClose={handleCloseResetPassword}
-				title="Change user password"
-				centered
-				className={classes.modalStyle}
-				styles={{ title: { fontWeight: 500 } }}>
-				<Stack>
-					<TextInput
-						label={"Are you sure you want to reset this user's password?"}
-						type="text"
-						placeholder={`Please enter the user to confirm, i.e. ${user.id}`}
-						onChange={(e) => {
-							setUserInput(e.target.value);
-						}}
-						required
-						mb={4}
-					/>
-
-					{updateUserPasswordIsError ? (
-						<Text className={classes.passwordText} color="red">
+				modalHeader="Change user password"
+				modalContent="Are you sure you want to reset this user's password?"
+				placeholder="Type the name of the user"
+				confirmationText={user.id}
+				onConfirm={() => handleResetPassword(user.id)}
+				actionProcessingContent={
+					updateUserPasswordIsError ? (
+						<Text className={classes.passwordText} mt={4} c="red">
 							{resetPasswordError}
 						</Text>
 					) : updateUserPasswordIsLoading ? (
-						<Text className={classes.passwordText}>loading</Text>
+						<Text mt={4} className={classes.passwordText}>
+							loading...
+						</Text>
 					) : udpateUserPasswordData?.data ? (
-						<Box>
+						<Box mt={4}>
 							<Text className={classes.passwordText}>Password</Text>
 							<CodeHighlight
 								className={classes.passwordPrims}
@@ -333,32 +261,16 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 								code={udpateUserPasswordData?.data}
 								copiedLabel="Password copied to clipboard"
 							/>
-							<Text className={classes.passwordText} color="red">
+							<Text className={classes.passwordText} c="red">
 								Warning this is the only time you are able to see Password
 							</Text>
 						</Box>
 					) : (
 						''
-					)}
-				</Stack>
-				<Group justify="right" mt={10}>
-					{user.method === 'native' ? (
-						<Button
-							variant="filled"
-							color="gray"
-							className={classes.modalActionBtn}
-							onClick={handleResetPassword}
-							disabled={UserInput === user.id ? false : true}>
-							Reset Password
-						</Button>
-					) : (
-						<Text>Cannot reset password for this user</Text>
-					)}
-					<Button onClick={handleCloseResetPassword} variant="outline" color="gray" className={classes.modalCancelBtn}>
-						Cancel
-					</Button>
-				</Group>
-			</Modal>
+					)
+				}
+				isActionInProgress={updateUserPasswordIsLoading}
+			/>
 			<Modal
 				opened={openedEditModal}
 				onClose={handleCloseRoleEdit}
@@ -372,10 +284,10 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 							setSelectedRole(value ?? '');
 						}}
 						nothingFoundMessage="No roles found"
-						value={SelectedRole}
+						value={selectedRole}
 						searchValue={roleSearchValue}
 						onSearchChange={(value) => setRoleSearchValue(value)}
-						onDropdownClose={() => setRoleSearchValue(SelectedRole)}
+						onDropdownClose={() => setRoleSearchValue(selectedRole)}
 						onDropdownOpen={() => setRoleSearchValue('')}
 						data={getRolesData?.data}
 						searchable
@@ -393,7 +305,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						// if role is already assigned or no role is selected then disable the button
 						disabled={
 							getUserRolesData?.data &&
-							(Object.keys(getUserRolesData?.data).includes(SelectedRole) || SelectedRole === '')
+							(Object.keys(getUserRolesData?.data).includes(selectedRole) || selectedRole === '')
 								? true
 								: false
 						}>

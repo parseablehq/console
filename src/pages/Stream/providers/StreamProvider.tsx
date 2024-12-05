@@ -208,7 +208,7 @@ const setRetention = (_store: StreamStore, retention: { duration?: string; descr
 		retention: {
 			duration: durationInNumber,
 			description: retention.description || '',
-			action: 'delete' as 'delete',
+			action: 'delete' as const,
 		},
 	};
 };

@@ -120,7 +120,7 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 					overflow: 'hidden',
 					textOverflow: 'ellipsis',
 					display: 'table-cell',
-					...(!_.includes(wrapDisabledColumns, columnName) ? { whiteSpace: 'nowrap' as 'nowrap' } : {}),
+					...(!_.includes(wrapDisabledColumns, columnName) ? { whiteSpace: 'nowrap' as const } : {}),
 				},
 			};
 		},

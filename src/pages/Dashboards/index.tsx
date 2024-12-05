@@ -12,6 +12,7 @@ import { useSyncTimeRange } from './hooks';
 import _ from 'lodash';
 import useParamsController from './hooks/useParamsController';
 import { useDocumentTitle } from '@mantine/hooks';
+import SavedFiltersModal from '../Stream/components/Querier/SavedFiltersModal';
 
 const LoadingView = () => {
 	return (
@@ -35,27 +36,30 @@ const Dashboards = () => {
 	}, [isStoreSynced]);
 
 	return (
-		<Box
-			style={{
-				flex: 1,
-				display: 'flex',
-				position: 'relative',
-				flexDirection: 'row',
-				width: '100%',
-				overflow: 'hidden',
-			}}>
-			{dashboards === null || !isStoreSynced ? (
-				<LoadingView />
-			) : createTileFormOpen ? (
-				<CreateTileForm />
-			) : (
-				<>
-					<SideBar updateTimeRange={updateTimeRange} />
-					<CreateDashboardModal />
-					<Dashboard />
-				</>
-			)}
-		</Box>
+		<>
+			<SavedFiltersModal />
+			<Box
+				style={{
+					flex: 1,
+					display: 'flex',
+					position: 'relative',
+					flexDirection: 'row',
+					width: '100%',
+					overflow: 'hidden',
+				}}>
+				{dashboards === null || !isStoreSynced ? (
+					<LoadingView />
+				) : createTileFormOpen ? (
+					<CreateTileForm />
+				) : (
+					<>
+						<SideBar updateTimeRange={updateTimeRange} />
+						<CreateDashboardModal />
+						<Dashboard />
+					</>
+				)}
+			</Box>
+		</>
 	);
 };
 
