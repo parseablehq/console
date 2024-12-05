@@ -26,9 +26,8 @@ import RefreshInterval from '@/components/Header/RefreshInterval';
 import RefreshNow from '@/components/Header/RefreshNow';
 import ShareButton from '@/components/Header/ShareButton';
 import { MaximizeButton } from '../Stream/components/PrimaryToolbar';
-import SecondaryToolbar from '../Stream/components/SecondaryToolbar';
 import { useLogsStore } from '../Stream/providers/LogsProvider';
-import CorrelationFilters from './components/CorrelationFilters';
+import MultiEventTimeLineGraph from './components/MultiEventTimeLineGraph';
 
 const { changeStream } = appStoreReducers;
 const { deleteStreamData, setSelectedFields, deleteSelectedField, setCorrelationCondition } = correlationStoreReducers;
@@ -136,7 +135,9 @@ const Correlation = () => {
 
 	// Effects
 	useEffect(() => {
-		getCorrelationData();
+		if (currentStream) {
+			getCorrelationData();
+		}
 	}, [currentStream, timeRange]);
 
 	// Utility Functions
@@ -337,7 +338,7 @@ const Correlation = () => {
 						</div>
 					</Stack>
 					<Stack className={classes.logTableControlWrapper} w="100%">
-						<CorrelationFilters />
+						{/* <CorrelationFilters /> */}
 						<TimeRange />
 						<RefreshInterval />
 						<RefreshNow />
@@ -345,7 +346,9 @@ const Correlation = () => {
 						<MaximizeButton />
 					</Stack>
 				</Stack>
-				<SecondaryToolbar />
+				<Stack className={classes.logsSecondaryToolbar} style={{ height: STREAM_SECONDARY_TOOLBAR_HRIGHT }}>
+					<MultiEventTimeLineGraph />
+				</Stack>
 				{Object.keys(selectedFields).length > 0 && (
 					<>
 						<CorrelationTable

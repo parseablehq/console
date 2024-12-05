@@ -1,8 +1,12 @@
 import { getPageSlice } from '@/pages/Stream/utils';
 import initContext from '@/utils/initContext';
-import { Log } from '@/@types/parseable/api/query';
+import { Log, LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
 import _ from 'lodash';
+import { QueryType } from '@/pages/Stream/providers/FilterProvider';
+import { QueryEngineType } from '@/@types/parseable/api/about';
+import { FilterQueryBuilder } from '@/utils/queryBuilder';
+import { formatQuery } from 'react-querybuilder';
 
 export const CORRELATION_LOAD_LIMIT = 250;
 
@@ -23,7 +27,7 @@ type ReducerOutput = {
 };
 
 type CorrelationStore = {
-	streamData: Record<string, { logData: Log[] } | null>;
+	streamData: Record<string, { logData: Log[]; eventTimeData: LogsResponseWithHeaders[] } | null>;
 	fields: Record<
 		string,
 		{
@@ -70,6 +74,11 @@ type CorrelationStoreReducers = {
 	setCurrentPage: (store: CorrelationStore, page: number) => ReducerOutput;
 	setCorrelationCondition: (store: CorrelationStore, correlationCondition: string) => ReducerOutput;
 	setPageAndPageData: (store: CorrelationStore, pageNo: number, perPage?: number) => ReducerOutput;
+	parseQuery: (
+		queryEngine: 'Parseable' | 'Trino' | undefined,
+		query: QueryType,
+		currentStream: string,
+	) => { where: string; parsedQuery: string };
 };
 
 const initialState: CorrelationStore = {
@@ -100,6 +109,21 @@ const initialState: CorrelationStore = {
 	},
 };
 
+const parseQuery = (queryEngine: QueryEngineType, query: QueryType, currentStream: string) => {
+	// todo - custom rule processor to prevent converting number strings into numbers for text fields
+	const where = formatQuery(query, { format: 'sql', parseNumbers: true, quoteFieldNamesWith: ['"', '"'] });
+	const timeRangeCondition = '(1=1)';
+
+	const filterQueryBuilder = new FilterQueryBuilder({
+		queryEngine,
+		streamName: currentStream,
+		whereClause: where,
+		timeRangeCondition,
+		limit: CORRELATION_LOAD_LIMIT,
+	});
+	return { where, parsedQuery: filterQueryBuilder.getQuery() };
+};
+
 const setJoinFields = (store: CorrelationStore, field: string, streamName: string): ReducerOutput => {
 	const updatedJoinFields = {
 		...store.joins,
@@ -128,26 +152,27 @@ const setSelectedFields = (store: CorrelationStore, field: string, streamName: s
 	};
 
 	const currentPage = 1;
-	const filteredData = filterAndSortData(tableOpts, store.streamData[streamName]?.logData || []);
-	const newPageSlice = filteredData && getPageSlice(currentPage, tableOpts.perPage, filteredData);
 
-	// Compute updated pageData with slicing logic
-	const updatedPageData = newPageSlice?.map((_record, index) => {
-		const combinedRecord: any = {};
+	// Compute updated pageData
+	const updatedPageData = Array.from({ length: tableOpts.perPage })
+		.map((_record, index) => {
+			const combinedRecord: any = {};
 
-		for (const [stream, fields] of Object.entries(updatedSelectedFields)) {
-			const streamRecord = filteredData[index];
-			if (streamRecord) {
-				if (Array.isArray(fields)) {
-					fields.forEach((field) => {
-						combinedRecord[`${stream}.${field}`] = streamRecord[field];
-					});
+			for (const [stream, fields] of Object.entries(updatedSelectedFields)) {
+				const streamFilteredData = filterAndSortData(tableOpts, store.streamData[stream]?.logData || []);
+				const streamRecord = streamFilteredData[index];
+				if (streamRecord) {
+					if (Array.isArray(fields)) {
+						fields.forEach((field) => {
+							combinedRecord[`${stream}.${field}`] = streamRecord[field];
+						});
+					}
 				}
 			}
-		}
 
-		return combinedRecord;
-	});
+			return combinedRecord;
+		})
+		.filter(Boolean);
 
 	// Return updated store
 	return {
@@ -157,7 +182,10 @@ const setSelectedFields = (store: CorrelationStore, field: string, streamName: s
 			...store.tableOpts,
 			pageData: updatedPageData || [],
 			currentPage,
-			totalPages: getTotalPages(filteredData, tableOpts.perPage),
+			totalPages: getTotalPages(
+				filterAndSortData(tableOpts, store.streamData[streamName]?.logData || []),
+				tableOpts.perPage,
+			),
 		},
 	};
 };
@@ -296,7 +324,10 @@ const setStreamData = (store: CorrelationStore, currentStream: string, data: Log
 		const combinedRecord: any = {};
 
 		for (const [stream, fields] of Object.entries(store.selectedFields)) {
-			const streamRecord = filteredData[index];
+			// Use the filtered data specific to the stream
+			const streamFilteredData = filterAndSortData(store.tableOpts, updatedStreamData[stream]?.logData || []);
+			const streamRecord = streamFilteredData[index]; // Pick record corresponding to index
+
 			if (streamRecord) {
 				if (Array.isArray(fields)) {
 					fields.forEach((field) => {
@@ -416,6 +447,7 @@ const correlationStoreReducers: CorrelationStoreReducers = {
 	setPageAndPageData,
 	setJoinFields,
 	setCorrelationCondition,
+	parseQuery,
 };
 
 export { CorrelationProvider, useCorrelationStore, correlationStoreReducers };

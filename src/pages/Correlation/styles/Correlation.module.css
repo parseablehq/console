@@ -129,6 +129,37 @@
 
 .logTableControlWrapper {
 	flex-direction: row;
+	justify-content: flex-end;
 	padding: 5px;
 	height: 100%;
+}
+
+.logsSecondaryToolbar {
+	border-bottom: 1px solid var(--mantine-color-gray-3);
+	width: 100%;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+}
+
+.graphContainer {
+	width: 100%;
+	height: 100%;
+	padding: 0.5rem;
+	padding-bottom: 1rem;
+	margin-left: -1.4rem;
+}
+
+.noDataContainer {
+	width: 98%;
+	height: 100%;
+	align-items: center;
+	justify-content: center;
+	border: 1px dashed var(--mantine-color-gray-4);
+}
+
+.noDataText {
+	text-align: center;
+	color: var(--mantine-color-gray-6);
+	font-size: var(--mantine-font-size-sm);
 }
