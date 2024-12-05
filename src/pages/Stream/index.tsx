@@ -1,5 +1,5 @@
 import { Box, Stack } from '@mantine/core';
-import { useDocumentTitle } from '@mantine/hooks';
+import { useDocumentTitle, useHotkeys } from '@mantine/hooks';
 import { FC, useCallback, useEffect } from 'react';
 import LiveLogTable from './Views/LiveTail/LiveLogTable';
 import ViewLog from './components/ViewLog';
@@ -20,7 +20,7 @@ import { useGetStreamSchema } from '@/hooks/useGetLogStreamSchema';
 import { useGetStreamInfo } from '@/hooks/useGetStreamInfo';
 import useParamsController from './hooks/useParamsController';
 
-const { streamChangeCleanup } = streamStoreReducers;
+const { streamChangeCleanup, toggleSideBar } = streamStoreReducers;
 
 const ErrorView = (props: { error: string | null; onRetry: () => void }) => {
 	return (
@@ -45,11 +45,13 @@ const Stream: FC = () => {
 	const [maximized] = useAppStore((store) => store.maximized);
 	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
 	const queryEngine = instanceConfig?.queryEngine;
-	const [sideBarOpen, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
+	const [, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
 	const { getStreamInfoRefetch, getStreamInfoLoading, getStreamInfoRefetching } = useGetStreamInfo(
 		currentStream || '',
 		currentStream !== null,
 	);
+
+	useHotkeys([['mod+/', () => setStreamStore((store) => toggleSideBar(store))]]);
 
 	const {
 		refetch: refetchSchema,
