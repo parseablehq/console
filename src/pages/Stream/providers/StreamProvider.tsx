@@ -170,29 +170,6 @@ const setStreamSchema = (_store: StreamStore, schema: LogStreamSchemaData) => {
 };
 
 const getCleanStoreForRefetch = (_store: StreamStore) => {
-	// const { tableOpts, data, timeRange } = store;
-	// const { interval, type } = timeRange;
-
-	// const duration = _.find(FIXED_DURATIONS, (duration) => duration.name === timeRange.label);
-	// const updatedTimeRange = interval && type === 'fixed' ? { timeRange: getDefaultTimeRange(duration) } : {};
-	// return {
-	// 	tableOpts: {
-	// 		...tableOpts,
-	// 		pageData: [],
-	// 		totalCount: 0,
-	// 		displayedCount: 0,
-	// 		currentPage: 0,
-	// 		currentOffset: 0,
-	// 		headers: [],
-	// 		totalPages: 0,
-	// 	},
-	// 	data: {
-	// 		...data,
-	// 		filteredData: [],
-	// 		rawData: [],
-	// 	},
-	// 	...updatedTimeRange,
-	// };
 	return initialState;
 };
 

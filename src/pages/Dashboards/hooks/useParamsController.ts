@@ -1,16 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useDashboardsStore, dashboardsStoreReducers } from '../providers/DashboardsProvider';
-import { TimeRange, useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsProvider';
 import { useSearchParams } from 'react-router-dom';
 import _ from 'lodash';
 import { FIXED_DURATIONS } from '@/constants/timeConstants';
 import dayjs from 'dayjs';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import moment from 'moment-timezone';
+import { appStoreReducers, TimeRange, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
 
 const { getRelativeStartAndEndDate, formatDateWithTimezone, getLocalTimezone } = timeRangeUtils;
 const { selectDashboard } = dashboardsStoreReducers;
-const { setTimeRange } = logsStoreReducers;
+const { setTimeRange } = appStoreReducers;
+const { getCleanStoreForRefetch } = logsStoreReducers;
 const timeRangeFormat = 'DD-MMM-YYYY_HH-mmz';
 const keys = ['id', 'interval', 'from', 'to'];
 
@@ -71,7 +73,8 @@ const paramsStringToParamsObj = (searchParams: URLSearchParams): Record<string, 
 const useParamsController = () => {
 	const [isStoreSynced, setStoreSynced] = useState(false);
 	const [activeDashboard, setDashboardsStore] = useDashboardsStore((store) => store.activeDashboard);
-	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
+	const [timeRange, setAppStore] = useAppStore((store) => store.timeRange);
+	const [, setLogStore] = useLogsStore((_store) => null);
 	const [searchParams, setSearchParams] = useSearchParams();
 	const dashboardId = activeDashboard?.dashboard_id || '';
 
@@ -114,14 +117,16 @@ const useParamsController = () => {
 					if (!duration) return;
 
 					const { startTime, endTime } = getRelativeStartAndEndDate(duration);
-					return setLogsStore((store) => setTimeRange(store, { startTime, endTime, type: 'fixed' }));
+					setLogStore((store) => getCleanStoreForRefetch(store));
+					return setAppStore((store) => setTimeRange(store, { startTime, endTime, type: 'fixed' }));
 				}
 			} else if (_.has(presentParams, 'from') && _.has(presentParams, 'to')) {
 				if (storeAsParams.from !== presentParams.from && storeAsParams.to !== presentParams.to) {
 					const startTime = dateParamStrToDateObj(presentParams.from);
 					const endTime = dateParamStrToDateObj(presentParams.to);
 					if (_.isDate(startTime) && _.isDate(endTime)) {
-						return setLogsStore((store) =>
+						setLogStore((store) => getCleanStoreForRefetch(store));
+						return setAppStore((store) =>
 							setTimeRange(store, { startTime: dayjs(startTime), endTime: dayjs(endTime), type: 'custom' }),
 						);
 					}

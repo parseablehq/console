@@ -40,6 +40,6 @@ export const useGetStreamSchema = (opts: { streamName: string }) => {
 		isError,
 		isLoading,
 		errorMessage,
-		isRefetching
+		isRefetching,
 	};
 };
