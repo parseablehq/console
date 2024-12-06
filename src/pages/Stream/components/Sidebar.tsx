@@ -1,11 +1,14 @@
 import { Stack, Tooltip } from '@mantine/core';
 import classes from '../styles/SideBar.module.css';
-import { IconBolt, IconFilterSearch, IconSettings2 } from '@tabler/icons-react';
+import { IconBolt, IconChevronsRight, IconFilterSearch, IconSettings2 } from '@tabler/icons-react';
 import { useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { STREAM_VIEWS } from '@/constants/routes';
 import _ from 'lodash';
+import { streamStoreReducers, useStreamStore } from '../providers/StreamProvider';
+
+const { toggleSideBar } = streamStoreReducers;
 
 type MenuItemProps = {
 	setCurrentView: (view: string) => void;
@@ -59,6 +62,24 @@ const ConfigButton = (props: MenuItemProps) => {
 	);
 };
 
+const ExpandCollapseButton = () => {
+	const [{ sideBarOpen }, setStreamStore] = useStreamStore((store) => store);
+	return (
+		<Stack
+			onClick={() => setStreamStore((store) => toggleSideBar(store))}
+			style={{ padding: '4px 0', alignItems: 'center', marginTop: 'auto' }}
+			className={classes.menuItemContainer}>
+			{sideBarOpen && (
+				<Tooltip label="Expand" position="right">
+					<Stack className={classes.collapseBtn} style={{ padding: '4px 4px' }}>
+						<IconChevronsRight className={classes.collapseIcon} stroke={1.2} size="1.2rem" />
+					</Stack>
+				</Tooltip>
+			)}
+		</Stack>
+	);
+};
+
 const LiveTailMenu = (props: MenuItemProps) => {
 	const viewName = 'live-tail';
 	const isActive = props.currentView === viewName;
@@ -103,6 +124,9 @@ const SideBar = () => {
 				<AllLogsButton setCurrentView={setCurrentView} currentView={view || ''} />
 				{isStandAloneMode && <LiveTailMenu setCurrentView={setCurrentView} currentView={view || ''} />}
 				<ConfigButton setCurrentView={setCurrentView} currentView={view || ''} />
+			</Stack>
+			<Stack style={{ marginTop: 'auto' }}>
+				<ExpandCollapseButton />
 			</Stack>
 		</Stack>
 	);
