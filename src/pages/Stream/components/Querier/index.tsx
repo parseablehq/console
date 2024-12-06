@@ -8,7 +8,7 @@ import QueryCodeEditor, { defaultCustSQLQuery } from './QueryCodeEditor';
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { useCallback, useEffect, useRef } from 'react';
 import { filterStoreReducers, noValueOperators, useFilterStore } from '../../providers/FilterProvider';
-import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useStreamStore } from '../../providers/StreamProvider';
 import SaveFilterModal from './SaveFilterModal';
 import SavedFiltersModal from './SavedFiltersModal';
@@ -18,6 +18,8 @@ const { setFields, parseQuery, storeAppliedQuery, resetFilters, toggleSubmitBtn,
 	filterStoreReducers;
 const { toggleQueryBuilder, toggleCustQuerySearchViewMode, applyCustomQuery, resetCustQuerySearchState } =
 	logsStoreReducers;
+
+const { applyQueryWithResetTime, syncTimeRange } = appStoreReducers;
 
 const getLabel = (mode: string | null) => {
 	return mode === 'filters' ? 'Filters' : mode === 'sql' ? 'SQL' : '';
@@ -76,7 +78,7 @@ const QuerierModal = (props: {
 	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
 	const [{ showQueryBuilder, viewMode }, setLogsStore] = useLogsStore((store) => store.custQuerySearchState);
 	const [streamInfo] = useStreamStore((store) => store.info);
-	const [timeRange] = useLogsStore((store) => store.timeRange);
+	const [timeRange] = useAppStore((store) => store.timeRange);
 	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
 	const onClose = useCallback(() => {
 		setLogsStore((store) => toggleQueryBuilder(store, false));
@@ -121,7 +123,7 @@ const QuerierModal = (props: {
 
 const Querier = () => {
 	const [custQuerySearchState, setLogsStore] = useLogsStore((store) => store.custQuerySearchState);
-	const [{ startTime, endTime }] = useLogsStore((store) => store.timeRange);
+	const [{ startTime, endTime }, setAppStore] = useAppStore((store) => store.timeRange);
 	const { isQuerySearchActive, viewMode, showQueryBuilder, activeMode, savedFilterId } = custQuerySearchState;
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
@@ -147,7 +149,8 @@ const Querier = () => {
 	const triggerRefetch = useCallback(
 		(query: string, mode: 'filters' | 'sql', id?: string) => {
 			const time_filter = id ? _.find(activeSavedFilters, (filter) => filter.filter_id === id)?.time_filter : null;
-			setLogsStore((store) => applyCustomQuery(store, query, mode, id, time_filter));
+			setAppStore((store) => applyQueryWithResetTime(store, time_filter || null));
+			setLogsStore((store) => applyCustomQuery(store, query, mode, id));
 		},
 		[activeSavedFilters],
 	);
@@ -180,6 +183,7 @@ const Querier = () => {
 
 	const onClear = useCallback(() => {
 		setFilterStore((store) => resetFilters(store));
+		setAppStore((store) => syncTimeRange(store));
 		setLogsStore((store) => resetCustQuerySearchState(store));
 	}, []);
 

@@ -7,9 +7,12 @@ import { REFRESH_INTERVALS } from '@/constants/timeConstants';
 import classes from './styles/LogQuery.module.css';
 import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsProvider';
 import _ from 'lodash';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const { setRefreshInterval, getCleanStoreForRefetch } = logsStoreReducers;
+const { syncTimeRange } = appStoreReducers;
 const RefreshInterval: FC = () => {
+	const [, setAppStore] = useAppStore((_store) => null);
 	const [refreshInterval, setLogsStore] = useLogsStore((store) => store.refreshInterval);
 	const Icon = useMemo(() => (refreshInterval ? IconRefresh : IconRefreshOff), [refreshInterval]);
 	const timerRef = useRef<NodeJS.Timer | null>(null);
@@ -34,6 +37,7 @@ const RefreshInterval: FC = () => {
 		clearIntervalInstance();
 		if (refreshInterval !== null) {
 			const intervalId = setInterval(() => {
+				setAppStore(syncTimeRange);
 				setLogsStore(getCleanStoreForRefetch);
 			}, refreshInterval);
 			timerRef.current = intervalId;

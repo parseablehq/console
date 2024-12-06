@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { TimeRange, useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsProvider';
+import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsProvider';
 import { useSearchParams } from 'react-router-dom';
 import _ from 'lodash';
 import { FIXED_DURATIONS } from '@/constants/timeConstants';
@@ -9,9 +9,11 @@ import timeRangeUtils from '@/utils/timeRangeUtils';
 import moment from 'moment-timezone';
 import { filterStoreReducers, QueryType, useFilterStore } from '../providers/FilterProvider';
 import { generateQueryBuilderASTFromSQL } from '../utils';
+import { appStoreReducers, TimeRange, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const { getRelativeStartAndEndDate, formatDateWithTimezone, getLocalTimezone } = timeRangeUtils;
-const { setTimeRange, onToggleView, setPerPage, setCustQuerySearchState } = logsStoreReducers;
+const { onToggleView, setPerPage, setCustQuerySearchState } = logsStoreReducers;
+const { setTimeRange, syncTimeRange } = appStoreReducers;
 const { applySavedFilters } = filterStoreReducers;
 const timeRangeFormat = 'DD-MMM-YYYY_HH-mmz';
 const keys = ['view', 'rows', 'interval', 'from', 'to', 'query', 'filterType'];
@@ -88,7 +90,8 @@ const useParamsController = () => {
 	const [tableOpts] = useLogsStore((store) => store.tableOpts);
 	const [viewMode] = useLogsStore((store) => store.viewMode);
 	const [custQuerySearchState] = useLogsStore((store) => store.custQuerySearchState);
-	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
+	const [timeRange, setAppStore] = useAppStore((store) => store.timeRange);
+	const [, setLogsStore] = useLogsStore((_store) => null);
 	const [, setFilterStore] = useFilterStore((store) => store);
 
 	const { currentOffset, currentPage, perPage } = tableOpts;
@@ -114,6 +117,7 @@ const useParamsController = () => {
 		}
 
 		if (storeAsParams.query !== presentParams.query) {
+			setAppStore((store) => syncTimeRange(store));
 			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
 			if (presentParams.filterType === 'filters')
 				setFilterStore((store) =>
@@ -170,6 +174,7 @@ const useParamsController = () => {
 				setFilterStore((store) =>
 					applySavedFilters(store, generateQueryBuilderASTFromSQL(presentParams.query) as QueryType),
 				);
+			setAppStore((store) => syncTimeRange(store));
 			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
 		}
 		syncTimeRangeToStore(storeAsParams, presentParams);
@@ -183,14 +188,14 @@ const useParamsController = () => {
 					if (!duration) return;
 
 					const { startTime, endTime } = getRelativeStartAndEndDate(duration);
-					return setLogsStore((store) => setTimeRange(store, { startTime, endTime, type: 'fixed' }));
+					return setAppStore((store) => setTimeRange(store, { startTime, endTime, type: 'fixed' }));
 				}
 			} else if (_.has(presentParams, 'from') && _.has(presentParams, 'to')) {
 				if (storeAsParams.from !== presentParams.from && storeAsParams.to !== presentParams.to) {
 					const startTime = dateParamStrToDateObj(presentParams.from);
 					const endTime = dateParamStrToDateObj(presentParams.to);
 					if (_.isDate(startTime) && _.isDate(endTime)) {
-						return setLogsStore((store) =>
+						return setAppStore((store) =>
 							setTimeRange(store, { startTime: dayjs(startTime), endTime: dayjs(endTime), type: 'custom' }),
 						);
 					}

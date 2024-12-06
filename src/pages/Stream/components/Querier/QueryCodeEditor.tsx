@@ -80,7 +80,7 @@ const QueryCodeEditor: FC<{
 	const { data: resAIQuery, postLLMQuery } = usePostLLM();
 	const isLlmActive = !!llmActive;
 	const isSqlSearchActive = isQuerySearchActive && activeMode === 'sql';
-	const [timeRange] = useLogsStore((store) => store.timeRange);
+	const [timeRange] = useAppStore((store) => store.timeRange);
 
 	useEffect(() => {
 		if (props.queryCodeEditorRef.current === '' || currentStream !== localStreamName) {

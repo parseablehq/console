@@ -23,7 +23,6 @@ import {
 } from '@/@types/parseable/api/dashboards';
 import { CodeHighlight } from '@mantine/code-highlight';
 import { sanitiseSqlString } from '@/utils/sanitiseSqlString';
-import { useLogsStore } from '../Stream/providers/LogsProvider';
 import dayjs from 'dayjs';
 import TimeRange from '@/components/Header/TimeRange';
 import { colors, isCircularChart, isGraph, normalizeGraphColorConfig } from './Charts';
@@ -291,7 +290,7 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 	const [fields, setFields] = useState<Field[]>([]);
 	const [initialHeight, setInitialHeight] = useState(0);
 	const [dashboards] = useDashboardsStore((store) => store.dashboards);
-	const [timeRange] = useLogsStore((store) => store.timeRange);
+	const [timeRange] = useAppStore((store) => store.timeRange);
 	const [appliedFilterQuery, setLogsStore] = useFilterStore((store) => store.appliedFilterQuery);
 	const [aiQuery, setAiQuery] = useState('');
 	const [userSpecificStreams] = useAppStore((store) => store.userSpecificStreams);
