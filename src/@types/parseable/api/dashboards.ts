@@ -44,7 +44,7 @@ export type TickConfig = {
 export type Visualization = {
 	visualization_type: VizType;
 	size: TileSize;
-	circular_chart_config?: null | { name_key: string; value_key: string } | {};
+	circular_chart_config?: null | { name_key: string; value_key: string } | object;
 	graph_config?:
 		| null
 		| { x_key: string; y_keys: string[]; type: CommonGraphBasicType; orientation: CommonGraphOrientationType }
