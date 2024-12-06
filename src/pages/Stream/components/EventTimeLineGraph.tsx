@@ -6,16 +6,17 @@ import dayjs from 'dayjs';
 import { ChartTooltipProps, AreaChart } from '@mantine/charts';
 import { HumanizeNumber } from '@/utils/formatBytes';
 import { logsStoreReducers, useLogsStore } from '../providers/LogsProvider';
-import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useFilterStore, filterStoreReducers } from '../providers/FilterProvider';
 import { LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 import _ from 'lodash';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import { useStreamStore } from '../providers/StreamProvider';
 
-const { setTimeRange } = logsStoreReducers;
+const { setTimeRange } = appStoreReducers;
 const { parseQuery } = filterStoreReducers;
 const { makeTimeRangeLabel } = timeRangeUtils;
+const { getCleanStoreForRefetch } = logsStoreReducers;
 
 type CompactInterval = 'minute' | 'day' | 'hour' | 'quarter-hour' | 'half-hour' | 'month';
 
@@ -266,8 +267,8 @@ const EventTimeLineGraph = () => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
 	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
-	const [{ activeMode, custSearchQuery }] = useLogsStore((store) => store.custQuerySearchState);
-	const [{ interval, startTime, endTime }] = useLogsStore((store) => store.timeRange);
+	const [{ activeMode, custSearchQuery }, setLogStore] = useLogsStore((store) => store.custQuerySearchState);
+	const [{ interval, startTime, endTime }] = useAppStore((store) => store.timeRange);
 	const [localStream, setLocalStream] = useState<string | null>('');
 	const [{ info }] = useStreamStore((store) => store);
 	const firstEventAt = 'first-event-at' in info ? info['first-event-at'] : undefined;
@@ -306,7 +307,7 @@ const EventTimeLineGraph = () => {
 		return parseGraphData(fetchQueryMutation?.data, avgEventCount, startTime, endTime, interval);
 	}, [fetchQueryMutation?.data, interval, firstEventAt]);
 	const hasData = Array.isArray(graphData) && graphData.length !== 0;
-	const [, setLogsStore] = useLogsStore((store) => store.timeRange);
+	const [, setAppStore] = useAppStore((_store) => null);
 	const setTimeRangeFromGraph = useCallback((barValue: any) => {
 		const activePayload = barValue?.activePayload;
 		if (!Array.isArray(activePayload) || activePayload.length === 0) return;
@@ -318,7 +319,8 @@ const EventTimeLineGraph = () => {
 		if (!graphTickItem || typeof graphTickItem !== 'object' || _.isEmpty(graphTickItem)) return;
 
 		const { startTime, endTime } = graphTickItem;
-		setLogsStore((store) => setTimeRange(store, { type: 'custom', startTime: startTime, endTime: endTime }));
+		setLogStore((store) => getCleanStoreForRefetch(store));
+		setAppStore((store) => setTimeRange(store, { type: 'custom', startTime: startTime, endTime: endTime }));
 	}, []);
 
 	return (

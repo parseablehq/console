@@ -1,15 +1,18 @@
-import { useLogsStore, logsStoreReducers } from '../Stream/providers/LogsProvider';
 import { useCallback } from 'react';
 import _ from 'lodash';
 import dayjs from 'dayjs';
 import { useDashboardsStore } from './providers/DashboardsProvider';
 import { Dashboard } from '@/@types/parseable/api/dashboards';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { logsStoreReducers, useLogsStore } from '../Stream/providers/LogsProvider';
 
-const { setTimeRange } = logsStoreReducers;
+const { setTimeRange } = appStoreReducers;
+const { getCleanStoreForRefetch } = logsStoreReducers;
 
 export const useSyncTimeRange = () => {
 	const [dashboards] = useDashboardsStore((store) => store.dashboards);
-	const [, setLogsStore] = useLogsStore(() => null);
+	const [, setLogStore] = useLogsStore(() => null);
+	const [, setAppStore] = useAppStore(() => null);
 
 	const updateTimeRange = useCallback(
 		(dashboard: Dashboard) => {
@@ -17,10 +20,13 @@ export const useSyncTimeRange = () => {
 
 			const { time_filter } = dashboard;
 			const hasTimeFilter = !_.isEmpty(time_filter);
-			hasTimeFilter &&
-				setLogsStore((store) =>
+
+			if (hasTimeFilter) {
+				setLogStore((store) => getCleanStoreForRefetch(store));
+				setAppStore((store) =>
 					setTimeRange(store, { startTime: dayjs(time_filter.from), endTime: dayjs(time_filter.to), type: 'custom' }),
 				);
+			}
 		},
 		[dashboards],
 	);
