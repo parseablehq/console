@@ -556,7 +556,6 @@ const AlertsModal = (props: {
 			classNames={{ title: classes.modalTitle }}>
 			<Stack gap={0}>
 				<Stack mih={400} style={{ maxHeight: 600, overflow: 'scroll' }}>
-					{/* @ts-ignore */}
 					<AlertForm form={form} alert={alert} />
 				</Stack>
 				<Stack style={{ flexDirection: 'row', margin: '1.2rem 0', justifyContent: 'flex-end' }}>

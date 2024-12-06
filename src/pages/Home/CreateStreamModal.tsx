@@ -344,7 +344,7 @@ const useCreateStreamForm = () => {
 					if (allValues.schemaType === dynamicType) return null;
 
 					const { fields } = allValues;
-					const existingNames = _.map(fields, (v, _k) => v.name);
+					const existingNames = _.map(fields, (v) => v.name);
 					return isValidFieldName(val, existingNames);
 				},
 				data_type: (val, allValues) => {

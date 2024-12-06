@@ -10,8 +10,8 @@ const { setSavedFilters } = appStoreReducers;
 const { updateSavedFilterId } = logsStoreReducers;
 
 const useSavedFiltersQuery = () => {
-	const [, setAppStore] = useAppStore((_store) => null);
-	const [, setLogsStore] = useLogsStore((_store) => null);
+	const [, setAppStore] = useAppStore(() => null);
+	const [, setLogsStore] = useLogsStore(() => null);
 	const { isError, isSuccess, isLoading, refetch, isRefetching } = useQuery(
 		['saved-filters'],
 		() => getSavedFilters(),

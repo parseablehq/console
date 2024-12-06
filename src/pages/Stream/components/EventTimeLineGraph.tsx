@@ -92,7 +92,7 @@ const getEndOfTs = (time: Date, compactType: CompactInterval): Date => {
 };
 
 const incrementDateByCompactType = (date: Date, type: CompactInterval): Date => {
-	let tempDate = new Date(date);
+	const tempDate = new Date(date);
 	if (type === 'minute') {
 		tempDate.setMinutes(tempDate.getMinutes() + 1);
 	} else if (type === 'hour') {
