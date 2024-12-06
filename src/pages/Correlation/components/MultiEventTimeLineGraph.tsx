@@ -5,17 +5,16 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import { AreaChart } from '@mantine/charts';
 import { HumanizeNumber } from '@/utils/formatBytes';
-import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 import _ from 'lodash';
 import timeRangeUtils from '@/utils/timeRangeUtils';
-import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
 import { filterStoreReducers, useFilterStore } from '@/pages/Stream/providers/FilterProvider';
 import { useCorrelationStore } from '../providers/CorrelationProvider';
 
-const { setTimeRange } = logsStoreReducers;
 const { parseQuery } = filterStoreReducers;
 const { makeTimeRangeLabel } = timeRangeUtils;
+const { setTimeRange } = appStoreReducers;
 
 type CompactInterval = 'minute' | 'day' | 'hour' | 'quarter-hour' | 'half-hour' | 'month';
 
@@ -284,7 +283,7 @@ const MultiEventTimeLineGraph = () => {
 	const [fields] = useCorrelationStore((store) => store.fields);
 	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
 	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
-	const [{ interval, startTime, endTime }] = useLogsStore((store) => store.timeRange);
+	const [{ interval, startTime, endTime }] = useAppStore((store) => store.timeRange);
 
 	const [multipleStreamData, setMultipleStreamData] = useState<any>([]);
 
@@ -331,7 +330,7 @@ const MultiEventTimeLineGraph = () => {
 	console.log(graphData);
 
 	const hasData = Array.isArray(graphData) && graphData.length !== 0;
-	const [, setLogsStore] = useLogsStore((store) => store.timeRange);
+	const [, setLogsStore] = useAppStore((store) => store.timeRange);
 	const setTimeRangeFromGraph = useCallback((barValue: any) => {
 		const activePayload = barValue?.activePayload;
 		if (!Array.isArray(activePayload) || activePayload.length === 0) return;

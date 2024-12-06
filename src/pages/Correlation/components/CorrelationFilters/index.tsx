@@ -3,7 +3,7 @@ import { IconFilter } from '@tabler/icons-react';
 import classes from '../../styles/CorrelationFilters.module.css';
 import { Text } from '@mantine/core';
 import { useCallback, useEffect, useRef } from 'react';
-import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
 import { QueryPills, FilterQueryBuilder } from '@/pages/Stream/components/Querier/FilterQueryBuilder';
 import { defaultCustSQLQuery } from '@/pages/Stream/components/Querier/QueryCodeEditor';
@@ -14,6 +14,8 @@ import { useStreamStore } from '@/pages/Stream/providers/StreamProvider';
 const { setFields, parseQuery, storeAppliedQuery, resetFilters, toggleSubmitBtn } = filterStoreReducers;
 const { toggleQueryBuilder, toggleCustQuerySearchViewMode, applyCustomQuery, resetCustQuerySearchState } =
 	logsStoreReducers;
+
+const { applyQueryWithResetTime } = appStoreReducers;
 
 const FilterPlaceholder = () => {
 	return (
@@ -49,7 +51,7 @@ const QuerierModal = (props: { onClear: () => void; onFiltersApply: () => void }
 	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
 	const [{ showQueryBuilder }, setLogsStore] = useLogsStore((store) => store.custQuerySearchState);
 	const [streamInfo] = useStreamStore((store) => store.info);
-	const [timeRange] = useLogsStore((store) => store.timeRange);
+	const [timeRange] = useAppStore((store) => store.timeRange);
 	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
 	const onClose = useCallback(() => {
 		setLogsStore((store) => toggleQueryBuilder(store, false));
@@ -86,7 +88,7 @@ const QuerierModal = (props: { onClear: () => void; onFiltersApply: () => void }
 
 const CorrelationFilters = () => {
 	const [custQuerySearchState, setLogsStore] = useLogsStore((store) => store.custQuerySearchState);
-	const [{ startTime, endTime }] = useLogsStore((store) => store.timeRange);
+	const [{ startTime, endTime }, setAppStore] = useAppStore((store) => store.timeRange);
 	const { isQuerySearchActive, viewMode, showQueryBuilder, activeMode, savedFilterId } = custQuerySearchState;
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
@@ -110,9 +112,10 @@ const CorrelationFilters = () => {
 	}, [currentStream]);
 
 	const triggerRefetch = useCallback(
-		(query: string, mode: 'filters', id?: string) => {
+		(query: string, mode: 'filters' | 'sql', id?: string) => {
 			const time_filter = id ? _.find(activeSavedFilters, (filter) => filter.filter_id === id)?.time_filter : null;
-			setLogsStore((store) => applyCustomQuery(store, query, mode, id, time_filter));
+			setAppStore((store) => applyQueryWithResetTime(store, time_filter || null));
+			setLogsStore((store) => applyCustomQuery(store, query, mode, id));
 		},
 		[activeSavedFilters],
 	);

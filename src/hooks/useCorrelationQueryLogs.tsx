@@ -27,9 +27,9 @@ export const useCorrelationQueryLogs = () => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
 	const { refetch: refetchSchema, isLoading: schemaLoading } = useGetStreamSchema({ streamName: currentStream || '' });
+	const [timeRange] = useAppStore((store) => store.timeRange);
 	const [
 		{
-			timeRange,
 			tableOpts: { currentOffset },
 		},
 	] = useLogsStore((store) => store);
