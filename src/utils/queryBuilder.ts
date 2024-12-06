@@ -7,7 +7,7 @@ type QueryEngine = QueryEngineType;
 
 type QueryLogs = {
 	queryEngine?: QueryEngine;
-	streamName: string;
+	streamName?: string;
 	startTime: Date;
 	endTime: Date;
 	limit?: number;
@@ -48,7 +48,7 @@ export class QueryBuilder {
 	queryEngine?: QueryEngine;
 	startTime: Date;
 	endTime: Date;
-	streamName: string;
+	streamName?: string;
 	limit?: number;
 	pageOffset?: number;
 	timePartitionColumn?: string;

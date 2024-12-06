@@ -26,7 +26,6 @@ import RefreshInterval from '@/components/Header/RefreshInterval';
 import RefreshNow from '@/components/Header/RefreshNow';
 import ShareButton from '@/components/Header/ShareButton';
 import { MaximizeButton } from '../Stream/components/PrimaryToolbar';
-import { useLogsStore } from '../Stream/providers/LogsProvider';
 import MultiEventTimeLineGraph from './components/MultiEventTimeLineGraph';
 
 const { changeStream } = appStoreReducers;
@@ -112,7 +111,7 @@ const Correlation = () => {
 	const [userSpecificStreams] = useAppStore((store) => store.userSpecificStreams);
 	const [{ fields, selectedFields, tableOpts }, setCorrelationData] = useCorrelationStore((store) => store);
 	const { getCorrelationData, loading: logsLoading, error: errorMessage, schemaLoading } = useCorrelationQueryLogs();
-	const [timeRange] = useLogsStore((store) => store.timeRange);
+	const [timeRange] = useAppStore((store) => store.timeRange);
 	const [currentStream, setAppStore] = useAppStore((store) => store.currentStream);
 	const [maximized] = useAppStore((store) => store.maximized);
 
