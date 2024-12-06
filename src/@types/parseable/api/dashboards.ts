@@ -116,9 +116,9 @@ export type BarChartBasicTypes = 'default' | 'stacked' | 'percent';
 export type AreaChartBasicTypes = 'default' | 'stacked' | 'percent';
 
 // orientation
-export type BarChartOrientationType = 'horizontal' | 'vertical'
-export type AreaChartOrientationType =  'horizontal' | 'vertical'
-export type LineChartOrientationType =  'horizontal' | 'vertical'
+export type BarChartOrientationType = 'horizontal' | 'vertical';
+export type AreaChartOrientationType = 'horizontal' | 'vertical';
+export type LineChartOrientationType = 'horizontal' | 'vertical';
 
 export type BarChartProps = {
 	data: TileData;
@@ -137,7 +137,7 @@ export type LineChartProps = {
 	xUnit: UnitType;
 	yUnit: UnitType;
 	orientation: LineChartOrientationType;
-}
+};
 
 export type AreaChartProps = {
 	data: TileData;

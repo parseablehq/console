@@ -44,7 +44,7 @@ const StreamDropdown = () => {
 					height: STREAM_PRIMARY_TOOLBAR_HEIGHT,
 				},
 			}}
-			data={userSpecificStreams?.map((stream: any) => ({ value: stream.name, label: stream.name })) ?? []}
+			data={userSpecificStreams?.map((stream: { name: string }) => ({ value: stream.name, label: stream.name })) ?? []}
 		/>
 	);
 };

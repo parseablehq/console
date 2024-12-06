@@ -9,7 +9,7 @@ const { getCleanStoreForRefetch } = logsStoreReducers;
 const renderRefreshIcon = () => <IconReload size={px('1rem')} stroke={1.5} />;
 
 const RefreshNow: FC = () => {
-	const [, setLogsStore] = useLogsStore((_store) => null);
+	const [, setLogsStore] = useLogsStore(() => null);
 
 	const onRefresh = useCallback(() => {
 		setLogsStore((store) => getCleanStoreForRefetch(store));

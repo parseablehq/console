@@ -1,11 +1,7 @@
 import { notify } from './notification';
 import { LOAD_LIMIT } from '@/pages/Stream/providers/LogsProvider';
 
-export const sanitiseSqlString = (
-	sqlString: string,
-	shouldNotify: boolean = true,
-	limit: number = LOAD_LIMIT,
-): string => {
+export const sanitiseSqlString = (sqlString: string, shouldNotify = true, limit: number = LOAD_LIMIT): string => {
 	const withoutComments = sqlString.replace(/--.*$/gm, '');
 	const withoutNewLines = withoutComments.replace(/\n/g, ' ');
 	const withoutTrailingSemicolon = withoutNewLines.replace(/;/g, '').trim();

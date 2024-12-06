@@ -144,7 +144,7 @@ const Navbar: FC = () => {
 
 	useEffect(() => {
 		if (streamName && streamName.length !== 0 && userSpecificStreams && userSpecificStreams.length !== 0) {
-			const hasAccessToStream = userSpecificStreams.find((stream: any) => stream.name === streamName);
+			const hasAccessToStream = userSpecificStreams.find((stream: { name: string }) => stream.name === streamName);
 			return hasAccessToStream ? navigateToPage(STREAM_ROUTE) : navigateToPage('/');
 		}
 	}, [streamName, userSpecificStreams]);
@@ -202,7 +202,9 @@ const Navbar: FC = () => {
 									? toggleUserModal
 									: navAction.key === 'logout'
 									? signOutHandler
-									: () => {};
+									: () => {
+											return;
+									  };
 							return (
 								<Stack
 									className={`${styles.navItemContainer} ${isActiveItem && styles.navItemActive}`}

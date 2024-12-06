@@ -200,7 +200,7 @@ const useTileForm = (opts: {
 		initialValues: formOpts,
 		validate: {
 			name: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
-			description: (_val) => null,
+			description: () => null,
 			query: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
 			isQueryValidated: (val) => (val === true ? null : 'Query not validated'),
 			dashboardId: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
@@ -208,7 +208,7 @@ const useTileForm = (opts: {
 				visualization_type: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
 				size: (val) => (_.isEmpty(val) ? 'Cannot be empty' : null),
 				circular_chart_config: {
-					name_key: (_value, values, _path) => {
+					name_key: (_value, values) => {
 						const {
 							visualization: { visualization_type, circular_chart_config },
 						} = values;
@@ -217,7 +217,7 @@ const useTileForm = (opts: {
 							return _.isEmpty(name_key) ? 'Cannot be empty' : null;
 						}
 					},
-					value_key: (_value, values, _path) => {
+					value_key: (_value, values) => {
 						const {
 							visualization: { visualization_type, circular_chart_config },
 						} = values;
@@ -230,7 +230,7 @@ const useTileForm = (opts: {
 				graph_config: {
 					// these validations only prevent form submission
 					// validated individually on respective components
-					x_key: (_value, values, _path) => {
+					x_key: (_value, values) => {
 						const {
 							visualization: { visualization_type, graph_config },
 						} = values;
@@ -239,7 +239,7 @@ const useTileForm = (opts: {
 							return _.isEmpty(x_key) ? 'Cannot be empty' : null;
 						}
 					},
-					y_keys: (y_keys, values, _path) => {
+					y_keys: (y_keys, values) => {
 						const {
 							visualization: { visualization_type },
 						} = values;

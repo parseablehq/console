@@ -1,7 +1,6 @@
 import { getLogStreamSchema } from '@/api/logStream';
 import { useStreamStore, streamStoreReducers } from '@/pages/Stream/providers/StreamProvider';
 import { AxiosError, isAxiosError } from 'axios';
-import _ from 'lodash';
 import { useQuery } from 'react-query';
 import { useState } from 'react';
 
@@ -9,7 +8,7 @@ const { setStreamSchema } = streamStoreReducers;
 
 export const useGetStreamSchema = (opts: { streamName: string }) => {
 	const { streamName } = opts;
-	const [, setStreamStore] = useStreamStore((_store) => null);
+	const [, setStreamStore] = useStreamStore(() => null);
 	const [errorMessage, setErrorMesssage] = useState<string | null>(null);
 
 	const { isError, isSuccess, isLoading, refetch, isRefetching } = useQuery(
@@ -40,6 +39,6 @@ export const useGetStreamSchema = (opts: { streamName: string }) => {
 		isError,
 		isLoading,
 		errorMessage,
-		isRefetching
+		isRefetching,
 	};
 };

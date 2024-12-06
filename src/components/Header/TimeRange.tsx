@@ -12,7 +12,7 @@ import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsPr
 import _ from 'lodash';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 
-const {getRelativeStartAndEndDate} = timeRangeUtils
+const { getRelativeStartAndEndDate } = timeRangeUtils;
 const { setTimeRange, setshiftInterval } = logsStoreReducers;
 export type FixedDuration = (typeof FIXED_DURATIONS)[number];
 
@@ -70,7 +70,7 @@ const TimeRange: FC = () => {
 	}, []);
 
 	const onDurationSelect = (duration: FixedDuration) => {
-		const {startTime, endTime} = getRelativeStartAndEndDate(duration);
+		const { startTime, endTime } = getRelativeStartAndEndDate(duration);
 		setLogsStore((store) => setTimeRange(store, { startTime, endTime, type: 'fixed' }));
 		setOpened(false);
 	};

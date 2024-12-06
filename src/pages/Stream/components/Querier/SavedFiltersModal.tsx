@@ -61,7 +61,7 @@ const SavedFilterItem = (props: {
 	const { deleteSavedFilterMutation, isDeleting, isRefetching } = useSavedFiltersQuery();
 
 	const location = useLocation();
-	const [, setFilterStore] = useFilterStore((_store) => null);
+	const [, setFilterStore] = useFilterStore(() => null);
 
 	const toggleShowQuery = useCallback(() => {
 		return setShowQuery((prev) => !prev);

@@ -57,4 +57,6 @@ const ParseableAnimated: MantineLoaderComponent = forwardRef(() => (
 	</svg>
 ));
 
+ParseableAnimated.displayName = 'ParseableAnimated';
+
 export default ParseableAnimated;

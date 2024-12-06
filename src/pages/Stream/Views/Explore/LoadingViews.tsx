@@ -7,7 +7,7 @@ import classes from '../../styles/Logs.module.css';
 const { getCleanStoreForRefetch } = logsStoreReducers;
 
 export const ErrorView = (props: { message: string }) => {
-	const [, setLogsStore] = useLogsStore((_store) => null);
+	const [, setLogsStore] = useLogsStore(() => null);
 	const { message } = props;
 	const onRetry = useCallback(() => {
 		setLogsStore((store) => getCleanStoreForRefetch(store));

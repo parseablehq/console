@@ -9,7 +9,6 @@ import { useEffect } from 'react';
 import { useDashboardsQuery } from '@/hooks/useDashboards';
 import CreateTileForm from './CreateTileForm';
 import { useSyncTimeRange } from './hooks';
-import _ from 'lodash';
 import useParamsController from './hooks/useParamsController';
 import { useDocumentTitle } from '@mantine/hooks';
 import SavedFiltersModal from '../Stream/components/Querier/SavedFiltersModal';

@@ -125,7 +125,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 
 	// For Delete Role
 	const handleRoleDelete = () => {
-		let filtered = Object.keys(getUserRolesData?.data).filter((role) => role !== deleteRole);
+		const filtered = Object.keys(getUserRolesData?.data).filter((role) => role !== deleteRole);
 		updateUserMutation({ userName: user.id, roles: filtered });
 		closeDeleteRole();
 		setDeleteRole(null);
@@ -144,7 +144,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 	};
 
 	const handleEditUserRole = () => {
-		let userRoleArray: any = Object.keys(getUserRolesData?.data);
+		const userRoleArray: any = Object.keys(getUserRolesData?.data);
 		if (userRoleArray.includes(SelectedRole) || SelectedRole === '') {
 			return;
 		}

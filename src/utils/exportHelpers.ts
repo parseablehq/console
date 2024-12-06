@@ -48,8 +48,8 @@ const _isVulnerableValue = (val: string | number | Date) => {
 		.head()
 		.thru((startChar) => _.includes(['=', '+', '-', '@'], startChar))
 		.value();
-}
-	
+};
+
 export const sanitizeCSVData = (data: Data, headers: string[]): any[] => {
 	if (data) {
 		return data.map((d) => {
