@@ -64,6 +64,7 @@ export const useFetchCount = () => {
 	const { isQuerySearchActive, custSearchQuery, activeMode } = custQuerySearchState;
 	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
 
+	/* eslint-disable no-useless-escape */
 	const defaultQuery = `select count(*) as count from \"${currentStream}\"`;
 	const query = (() => {
 		if (isQuerySearchActive) {

@@ -132,6 +132,7 @@ const QueryCodeEditor: FC<{
 	useEffect(() => {
 		if (currentStream !== localStreamName) {
 			setlocalStreamName(currentStream);
+			/* eslint-disable no-useless-escape */
 			const query = `SELECT * FROM \"${currentStream}\" LIMIT ${LOAD_LIMIT}; `;
 			updateQuery(query);
 		}

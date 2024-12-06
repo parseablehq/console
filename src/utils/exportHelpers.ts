@@ -23,6 +23,7 @@ export const downloadDataAsJson = (data: Data, filename: string) => {
 export const downloadDataAsCSV = (data: Data, filename: string) => {
 	if (data === null || data.length === 0) return;
 
+	/* eslint-disable no-useless-escape */
 	const csvString = data
 		.map((row) =>
 			Object.values(row)

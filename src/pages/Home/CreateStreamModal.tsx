@@ -34,6 +34,7 @@ const { toggleCreateStreamModal } = appStoreReducers;
 
 const allowedSpecialCharacters = ['-', '_'];
 
+/* eslint-disable no-useless-escape */
 const isValidStreamName = (val: string) => {
 	if (!/[A-Za-z]/.test(val)) {
 		return 'Name should contain at least one letter';
@@ -100,6 +101,7 @@ const getDataTypeFormValuesFromSchema = (schema: LogStreamSchemaData) => {
 				} else {
 					if (_.get(detectedDataType, 'List')) {
 						const listDatatype = _.get(detectedDataType, 'List', null);
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						// @ts-ignore
 						return listDatatype ? _.get(formValuesListDatatypeMap, listDatatype?.data_type, null) : null;
 					} else if (_.get(detectedDataType, 'Timestamp')) {
