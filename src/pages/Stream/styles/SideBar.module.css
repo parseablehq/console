@@ -50,3 +50,18 @@
 .icon {
     color: var(--mantine-color-gray-6);
 }
+
+.collapseBtn {
+	display: flex;
+	align-items: end;
+	cursor: pointer;
+}
+
+.collapseIcon{
+	color: var(--mantine-color-gray-6);
+	border-radius: 0.175rem;
+	&:hover {
+		background-color: #F0F3F5;
+		color: black;
+	}
+}
