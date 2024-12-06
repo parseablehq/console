@@ -7,18 +7,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      steps:
-        - uses: actions/checkout@v4
-        - uses: actions/setup-node@v4
-          with:
-            node-version: lts/*
-        - name: Install dependencies
-          run: |
-            pnpm install
-
-        - name: Prettify code
-          uses: creyD/prettier_action@v4.3
-
-        - name: Run ESLint
-          run: |
-            pnpm run lint
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: Install dependencies
+        run: npm install -g pnpm && pnpm install
+      - name: Prettify code
+        uses: creyD/prettier_action@v4.3
+      - name: Run ESLint
+        run: pnpm run lint
