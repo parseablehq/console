@@ -78,6 +78,7 @@ const Table = (props: {
 	const [{ pageData, wrapDisabledColumns }] = useCorrelationStore((store) => store.tableOpts);
 	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
 	const [columns, setColumns] = useState<MRT_ColumnDef<Log, unknown>[]>([]);
+	console.log(pageData);
 
 	const [{ selectedFields }] = useCorrelationStore((store) => store);
 

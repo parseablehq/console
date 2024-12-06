@@ -128,7 +128,7 @@ const PrimaryToolbar = () => {
 			{view === 'explore' ? (
 				<Stack style={{ flexDirection: 'row', height: STREAM_PRIMARY_TOOLBAR_HEIGHT }} w="100%">
 					<StreamDropdown />
-					<Querier />
+					<Querier isCorrelation={false} />
 					<AddCorrelationButton />
 					<SavedFiltersButton />
 					<TimeRange />
