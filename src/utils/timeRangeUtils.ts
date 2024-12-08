@@ -77,7 +77,7 @@ const getLocalTimezone = () => {
 	return moment.tz(localTimeZone).format('z');
 };
 
-const formatDateWithTimezone = (dateTime: string | Date, format: string = 'DD/MM/YYYY h:mm a z'): string => {
+const formatDateWithTimezone = (dateTime: string | Date, format = 'DD/MM/YYYY h:mm a z'): string => {
 	const localTimeZone = moment.tz.guess();
 	const convertedDate = moment.tz(dateTime, localTimeZone);
 	return convertedDate.format(format);
@@ -105,7 +105,7 @@ const timeRangeUtils = {
 	formatDay,
 	formatDateAsCastType,
 	getRelativeStartAndEndDate,
-	getLocalTimezone
+	getLocalTimezone,
 };
 
 export default timeRangeUtils;

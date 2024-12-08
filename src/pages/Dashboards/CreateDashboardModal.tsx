@@ -29,7 +29,7 @@ const useDashboardForm = (opts: FormOpts) => {
 		initialValues: opts,
 		validate: {
 			name: (val) => (_.isEmpty(val) ? 'Name cannot be empty' : null),
-			description: (_val) => null,
+			description: () => null,
 		},
 		validateInputOnChange: true,
 		validateInputOnBlur: true,

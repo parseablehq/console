@@ -73,7 +73,7 @@ const TableRow = (props: IngestorTableRow) => {
 		<Table.Tr key={window.location.host}>
 			<Table.Td>
 				<Stack style={{ flexDirection: 'row' }} gap={8}>
-					{window.location.protocol}//{window.location.host}
+					{`${window.location.protocol}//${window.location.host}`}
 				</Stack>
 			</Table.Td>
 			{isMetricsFetching || metrics === null ? (

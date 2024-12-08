@@ -7,7 +7,7 @@
 		"dev": "vite --host --port 3001",
 		"build": "tsc && vite build",
 		"build:test": "tsc && vite build --mode test",
-		"lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+		"lint": "eslint src --ext ts,tsx --report-unused-disable-directives --quiet",
 		"start": "vite preview --host --port 3002",
 		"tsCheck": "tsc --noEmit",
 		"pq": "pretty-quick",

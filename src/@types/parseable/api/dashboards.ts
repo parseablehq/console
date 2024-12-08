@@ -44,11 +44,11 @@ export type TickConfig = {
 export type Visualization = {
 	visualization_type: VizType;
 	size: TileSize;
-	circular_chart_config?: null | { name_key: string; value_key: string } | {};
+	circular_chart_config?: null | { name_key: string; value_key: string } | object;
 	graph_config?:
 		| null
 		| { x_key: string; y_keys: string[]; type: CommonGraphBasicType; orientation: CommonGraphOrientationType }
-		| {};
+		| object;
 	color_config: ColorConfig[];
 	tick_config: TickConfig[];
 };
@@ -116,9 +116,9 @@ export type BarChartBasicTypes = 'default' | 'stacked' | 'percent';
 export type AreaChartBasicTypes = 'default' | 'stacked' | 'percent';
 
 // orientation
-export type BarChartOrientationType = 'horizontal' | 'vertical'
-export type AreaChartOrientationType =  'horizontal' | 'vertical'
-export type LineChartOrientationType =  'horizontal' | 'vertical'
+export type BarChartOrientationType = 'horizontal' | 'vertical';
+export type AreaChartOrientationType = 'horizontal' | 'vertical';
+export type LineChartOrientationType = 'horizontal' | 'vertical';
 
 export type BarChartProps = {
 	data: TileData;
@@ -137,7 +137,7 @@ export type LineChartProps = {
 	xUnit: UnitType;
 	yUnit: UnitType;
 	orientation: LineChartOrientationType;
-}
+};
 
 export type AreaChartProps = {
 	data: TileData;

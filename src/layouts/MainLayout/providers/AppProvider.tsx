@@ -122,8 +122,7 @@ const generateUserAcccessMap = (accessRoles: string[] | null) => {
 	return Object.keys(accessKeyMap).reduce((acc, accessKey: string) => {
 		return {
 			...acc,
-			[accessKey]:
-				accessRoles !== null && accessKeyMap.hasOwnProperty(accessKey) && accessRoles.includes(accessKeyMap[accessKey]),
+			[accessKey]: accessRoles !== null && accessKey in accessKeyMap && accessRoles.includes(accessKeyMap[accessKey]),
 		};
 	}, {});
 };

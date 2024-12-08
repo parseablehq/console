@@ -254,7 +254,7 @@ const ImportDashboardModal = () => {
 };
 
 const NoDashboardsView = () => {
-	const [, setDashboardsStore] = useDashboardsStore((_store) => null);
+	const [, setDashboardsStore] = useDashboardsStore(() => null);
 
 	const openCreateDashboardModal = useCallback(() => {
 		setDashboardsStore((store) => toggleCreateDashboardModal(store, true));
@@ -289,7 +289,7 @@ const NoDashboardsView = () => {
 };
 
 const NoTilesView = () => {
-	const [, setDashbaordsStore] = useDashboardsStore((_store) => null);
+	const [, setDashbaordsStore] = useDashboardsStore(() => null);
 
 	const openCreateTileModal = useCallback(() => {
 		setDashbaordsStore((store) => toggleCreateTileModal(store, true));

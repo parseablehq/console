@@ -8,7 +8,7 @@ import { useCallback, useState } from 'react';
 
 export type MetaData = {
 	[key: string]: {
-		stats: LogStreamStat | {};
+		stats: LogStreamStat | object;
 		retention: LogStreamRetention | [];
 	};
 };

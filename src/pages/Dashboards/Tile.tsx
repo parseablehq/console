@@ -165,7 +165,7 @@ function TileControls(props: { tile: TileType; data: TileQueryResponse }) {
 	} = props;
 	const { records = [], fields = [] } = data;
 	const [allowDrag] = useDashboardsStore((store) => store.allowDrag);
-	const [, setDashboardsStore] = useDashboardsStore((_store) => null);
+	const [, setDashboardsStore] = useDashboardsStore(() => null);
 
 	const exportPng = useCallback(() => {
 		handleCapture({ className: makeExportClassName(tile_id), fileName: name });

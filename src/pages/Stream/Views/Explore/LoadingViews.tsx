@@ -9,8 +9,8 @@ const { getCleanStoreForRefetch } = logsStoreReducers;
 const { syncTimeRange } = appStoreReducers;
 
 export const ErrorView = (props: { message: string }) => {
-	const [, setLogsStore] = useLogsStore((_store) => null);
-	const [, setAppStore] = useAppStore((_store) => null);
+	const [, setLogsStore] = useLogsStore(() => null);
+	const [, setAppStore] = useAppStore(() => null);
 
 	const { message } = props;
 	const onRetry = useCallback(() => {

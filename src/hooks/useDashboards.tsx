@@ -154,7 +154,7 @@ export const useTileQuery = (opts: {
 	onSuccess?: (data: TileQueryResponse) => void;
 	enabled?: boolean;
 }) => {
-	const [, setDashboardsStore] = useDashboardsStore((_store) => null);
+	const [, setDashboardsStore] = useDashboardsStore(() => null);
 	const { query, startTime, endTime, tileId, enabled = true } = opts;
 	const { isLoading, isFetching, isError, refetch } = useQuery(
 		[tileId, startTime, endTime],

@@ -8,7 +8,7 @@ import { useClusterStore, clusterStoreReducers } from '@/pages/Systems/providers
 const { setIngestorMachines, setCurrentMachineData } = clusterStoreReducers;
 
 export const useClusterInfo = () => {
-	const [, setClusterStore] = useClusterStore((_store) => null);
+	const [, setClusterStore] = useClusterStore(() => null);
 	const {
 		data: clusterInfoData,
 		isError: getClusterInfoError,

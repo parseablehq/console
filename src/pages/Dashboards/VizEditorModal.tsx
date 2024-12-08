@@ -604,7 +604,7 @@ const Config = (props: { form: TileFormType }) => {
 const VizEditorModal = (props: { form: TileFormType }) => {
 	const { form } = props;
 	const [vizEditorModalOpen] = useDashboardsStore((store) => store.vizEditorModalOpen);
-	const [, setDashboardStore] = useDashboardsStore((_store) => null);
+	const [, setDashboardStore] = useDashboardsStore(() => null);
 	const closeVizModal = useCallback(() => {
 		setDashboardStore((store) => toggleVizEditorModal(store, false));
 	}, []);

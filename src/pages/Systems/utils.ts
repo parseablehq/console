@@ -20,6 +20,7 @@ export function parsePrometheusResponse(response: string): null | PrometheusMetr
 			.trim()
 			.split('\n')
 			.forEach((line) => {
+				/* eslint-disable no-useless-escape */
 				const matchWithLabels = line.match(/(\w+)\{([^\}]+)\}\s+(\d+)/);
 				const matchWithoutLabels = line.match(/(\w+)\s+(\d+)/);
 

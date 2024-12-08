@@ -181,7 +181,7 @@ const RuleSet = (props: RuleSetProps) => {
 };
 
 const AddRuleGroupBtn = () => {
-	const [, setFilterStore] = useFilterStore((_store) => null);
+	const [, setFilterStore] = useFilterStore(() => null);
 	const onClick = useCallback(() => {
 		setFilterStore((store) => createRuleGroup(store));
 	}, []);
@@ -207,7 +207,7 @@ const RuleSetPills = (props: RuleSetPillProps) => {
 	const { ruleSet } = props;
 	const { rules, combinator } = ruleSet;
 
-	const [, setFilterStore] = useFilterStore((_store) => null);
+	const [, setFilterStore] = useFilterStore(() => null);
 	const onDeleteRule = useCallback((ruleId: string) => {
 		setFilterStore((store) => deleteRuleFromGroup(store, ruleSet.id, ruleId));
 	}, []);

@@ -194,8 +194,7 @@ const setDashboards = (store: DashboardsStore, dashboards: Dashboard[], dashboar
 	const activeDashboard = (() => {
 		if (_.isString(dashboardId) && !_.isEmpty(dashboardId)) {
 			return _.find(dashboards, (dashboard) => dashboard.dashboard_id === dashboardId);
-		}	
-		else if (activeDashboardFromStore) {
+		} else if (activeDashboardFromStore) {
 			const id = activeDashboardFromStore.dashboard_id;
 			const dashboard = _.find(dashboards, (dashboard) => dashboard.dashboard_id === id);
 			return dashboard || defaultActiveDashboard;
@@ -288,7 +287,7 @@ const dashboardsStoreReducers: DashboardsStoreReducers = {
 	toggleImportTileModal,
 	toggleImportDashboardModal,
 	handlePaging,
-	toggleDuplicateTileModal
+	toggleDuplicateTileModal,
 };
 
 export { DashbaordsProvider, useDashboardsStore, dashboardsStoreReducers };

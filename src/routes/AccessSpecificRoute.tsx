@@ -1,7 +1,6 @@
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useEffect, type FC } from 'react';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
-import _ from 'lodash';
 import { getStreamsSepcificAccess } from '@/components/Navbar/rolesHandler';
 interface AccessSpecificRouteProps {
 	accessRequired: string[];

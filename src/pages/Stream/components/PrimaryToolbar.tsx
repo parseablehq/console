@@ -24,13 +24,13 @@ const renderMaximizeIcon = () => <IconMaximize size={px('1rem')} stroke={1.5} />
 const renderDeleteIcon = () => <IconTrash data-id="delete-stream-btn" size={px('1rem')} stroke={1.5} />;
 
 const MaximizeButton = () => {
-	const [_appStore, setAppStore] = useAppStore((_store) => null);
+	const [, setAppStore] = useAppStore(() => null);
 	const onClick = useCallback(() => setAppStore(appStoreReducers.toggleMaximize), []);
 	return <IconButton renderIcon={renderMaximizeIcon} size={38} onClick={onClick} tooltipLabel="Full screen" />;
 };
 
 const SavedFiltersButton = () => {
-	const [_store, setLogsStore] = useFilterStore((_store) => null);
+	const [, setLogsStore] = useFilterStore(() => null);
 	const onClick = useCallback(() => setLogsStore((store) => toggleSavedFiltersModal(store, true)), []);
 	return (
 		<Button
@@ -44,7 +44,7 @@ const SavedFiltersButton = () => {
 };
 
 const DeleteStreamButton = () => {
-	const [_store, setLogsStore] = useLogsStore((_store) => null);
+	const [, setLogsStore] = useLogsStore(() => null);
 	const onClick = useCallback(() => setLogsStore(toggleDeleteModal), []);
 	return <IconButton renderIcon={renderDeleteIcon} size={38} onClick={onClick} tooltipLabel="Delete" />;
 };

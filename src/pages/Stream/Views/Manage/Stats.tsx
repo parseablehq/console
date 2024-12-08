@@ -50,7 +50,7 @@ const EventsCountRow = () => {
 	const [stats] = useStreamStore((store) => store.stats);
 	const eventsData = _.chain(stats)
 		.get('ingestion', {})
-		.thru((e: {}) => ({ ...defaultEventCountData, ...e }))
+		.thru((e) => ({ ...defaultEventCountData, ...e }))
 		.value();
 
 	return (
@@ -87,7 +87,7 @@ const IngestedSizeRow = () => {
 	const [stats] = useStreamStore((store) => store.stats);
 	const ingestionData = _.chain(stats)
 		.get('ingestion', {})
-		.thru((e: {}) => ({ ...defaultIngestedSizeData, ...e }))
+		.thru((e) => ({ ...defaultIngestedSizeData, ...e }))
 		.value();
 
 	return (
@@ -124,11 +124,11 @@ const StorageSizeRow = () => {
 	const [stats] = useStreamStore((store) => store.stats);
 	const storageData = _.chain(stats)
 		.get('storage', {})
-		.thru((e: {}) => ({ ...defaultStorageData, ...e }))
+		.thru((e) => ({ ...defaultStorageData, ...e }))
 		.value();
 	const ingestionData = _.chain(stats)
 		.get('ingestion', {})
-		.thru((e: {}) => ({ ...defaultIngestedSizeData, ...e }))
+		.thru((e) => ({ ...defaultIngestedSizeData, ...e }))
 		.value();
 	const compressionSize = calcCompressionRate(storageData.size, ingestionData.size);
 	return (
