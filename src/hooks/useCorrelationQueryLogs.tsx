@@ -5,7 +5,6 @@ import { useLogsStore } from '@/pages/Stream/providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
 import { AxiosError } from 'axios';
-import { useGetStreamSchema } from '@/hooks/useGetCorrelationStreamSchema';
 import { useStreamStore } from '@/pages/Stream/providers/StreamProvider';
 import {
 	CORRELATION_LOAD_LIMIT,
@@ -26,7 +25,6 @@ export const useCorrelationQueryLogs = () => {
 	const [streamInfo] = useStreamStore((store) => store.info);
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
-	const { refetch: refetchSchema, isLoading: schemaLoading } = useGetStreamSchema({ streamName: currentStream || '' });
 	const [timeRange] = useAppStore((store) => store.timeRange);
 	const [
 		{
@@ -53,8 +51,6 @@ export const useCorrelationQueryLogs = () => {
 	} = useQuery(
 		['fetch-logs', defaultQueryOpts],
 		() => {
-			!correlationCondition && refetchSchema();
-
 			return getCorrelationQueryLogsWithHeaders(defaultQueryOpts);
 		},
 		{
@@ -84,7 +80,6 @@ export const useCorrelationQueryLogs = () => {
 	return {
 		error,
 		loading: logsLoading || logsRefetching,
-		schemaLoading,
 		getCorrelationData,
 	};
 };

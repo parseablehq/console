@@ -22,7 +22,6 @@ export const useGetStreamSchema = (opts: { streamName: string }) => {
 			refetchOnWindowFocus: false,
 			onSuccess: (data) => {
 				setErrorMesssage(null);
-
 				setCorrelationStore((store) => setStreamSchema(store, data.data, streamName));
 			},
 			onError: (data: AxiosError) => {

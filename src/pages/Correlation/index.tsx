@@ -27,6 +27,7 @@ import RefreshNow from '@/components/Header/RefreshNow';
 import ShareButton from '@/components/Header/ShareButton';
 import { MaximizeButton } from '../Stream/components/PrimaryToolbar';
 import MultiEventTimeLineGraph from './components/MultiEventTimeLineGraph';
+import { useGetStreamSchema } from '@/hooks/useGetCorrelationStreamSchema';
 
 const { changeStream } = appStoreReducers;
 const { deleteStreamData, setSelectedFields, deleteSelectedField, setCorrelationCondition } = correlationStoreReducers;
@@ -109,11 +110,14 @@ const Correlation = () => {
 	useDocumentTitle('Parseable | Correlation');
 	// State Management Hooks
 	const [userSpecificStreams] = useAppStore((store) => store.userSpecificStreams);
-	const [{ fields, selectedFields, tableOpts }, setCorrelationData] = useCorrelationStore((store) => store);
-	const { getCorrelationData, loading: logsLoading, error: errorMessage, schemaLoading } = useCorrelationQueryLogs();
+	const [{ fields, selectedFields, tableOpts, correlationCondition }, setCorrelationData] = useCorrelationStore(
+		(store) => store,
+	);
 	const [timeRange] = useAppStore((store) => store.timeRange);
 	const [currentStream, setAppStore] = useAppStore((store) => store.currentStream);
 	const [maximized] = useAppStore((store) => store.maximized);
+	const { refetch: refetchSchema, isLoading: schemaLoading } = useGetStreamSchema({ streamName: currentStream || '' });
+	const { getCorrelationData, loading: logsLoading, error: errorMessage } = useCorrelationQueryLogs();
 
 	// Local State
 	const [searchText, setSearchText] = useState('');
@@ -135,9 +139,16 @@ const Correlation = () => {
 	// Effects
 	useEffect(() => {
 		if (currentStream) {
+			!correlationCondition && refetchSchema();
 			getCorrelationData();
 		}
-	}, [currentStream, timeRange]);
+	}, [currentStream]);
+
+	useEffect(() => {
+		if (currentStream) {
+			getCorrelationData();
+		}
+	}, [timeRange]);
 
 	// Utility Functions
 	const filterFields = (fieldsIter: any) => {
