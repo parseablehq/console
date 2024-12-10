@@ -85,7 +85,7 @@
 }
 
 .selectionWrapper {
-	overflow-y: 'scroll';
+	overflow-y: scroll;
 	width: 100%;
 	max-height: calc(100vh - 40px);
 }
@@ -101,6 +101,8 @@
 	gap: 14px;
 	align-items: center;
 	width: 100%;
+	overflow-x: auto;
+	white-space: nowrap;
 }
 
 .fieldItemsWrapper {

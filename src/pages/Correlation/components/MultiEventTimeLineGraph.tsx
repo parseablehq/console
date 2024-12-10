@@ -287,13 +287,12 @@ const MultiEventTimeLineGraph = () => {
 	const [multipleStreamData, setMultipleStreamData] = useState<any>([]);
 
 	const { interval, startTime, endTime } = timeRange;
-	useEffect(() => {
-		setMultipleStreamData([]);
-	}, [timeRange]);
 
 	useEffect(() => {
-		if (!fields || Object.keys(fields).length === 0) return;
-		debugger;
+		if (!fields || Object.keys(fields).length === 0) {
+			setMultipleStreamData([]);
+			return;
+		}
 		const queries = Object.keys(fields).map((streamKey) => {
 			const { modifiedEndTime, modifiedStartTime, compactType } = getModifiedTimeRange(startTime, endTime, interval);
 			const logsQuery = {
@@ -311,12 +310,10 @@ const MultiEventTimeLineGraph = () => {
 				query: graphQuery,
 			};
 		});
-
+		setMultipleStreamData([]);
 		queries.forEach((queryData: any) =>
-			fetchQueryMutation.mutate(queryData, {
-				onSuccess: (data) => {
-					setMultipleStreamData((prevData: any) => [...prevData, data]);
-				},
+			fetchQueryMutation.mutateAsync(queryData).then((data) => {
+				setMultipleStreamData((prevData: any) => [...prevData, data]);
 			}),
 		);
 	}, [fields, timeRange]);
@@ -324,9 +321,14 @@ const MultiEventTimeLineGraph = () => {
 	const isLoading = fetchQueryMutation.isLoading;
 	const avgEventCount = useMemo(() => calcAverage(fetchQueryMutation?.data), [fetchQueryMutation?.data]);
 	const graphData = useMemo(() => {
-		if (!multipleStreamData || multipleStreamData.length === 0) return [];
+		if (
+			!multipleStreamData ||
+			multipleStreamData.length === 0 ||
+			multipleStreamData.length !== Object.keys(fields).length
+		)
+			return [];
 		return parseGraphData(multipleStreamData, startTime, endTime, interval);
-	}, [multipleStreamData, timeRange, interval]);
+	}, [multipleStreamData]);
 
 	console.log(graphData);
 
