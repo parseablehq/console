@@ -1,7 +1,6 @@
 import { getCorrelationQueryLogsWithHeaders } from '@/api/query';
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
-import { useLogsStore } from '@/pages/Stream/providers/LogsProvider';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
 import { AxiosError } from 'axios';
@@ -30,7 +29,7 @@ export const useCorrelationQueryLogs = () => {
 		{
 			tableOpts: { currentOffset },
 		},
-	] = useLogsStore((store) => store);
+	] = useCorrelationStore((store) => store);
 
 	const defaultQueryOpts = {
 		queryEngine,

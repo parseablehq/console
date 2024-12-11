@@ -299,13 +299,6 @@ const setStreamData = (store: CorrelationStore, currentStream: string, data: Log
 	if (!currentStream) {
 		return { fields: store.fields };
 	}
-
-	const currentStreamCount = Object.keys(store.streamData || {}).length;
-	if (currentStreamCount >= 2 && !(currentStream in store.streamData)) {
-		console.warn('Stream limit reached. Cannot add more than 2 streams.');
-		return store;
-	}
-
 	// Update streamData
 	const updatedStreamData = {
 		...store.streamData,
@@ -319,6 +312,18 @@ const setStreamData = (store: CorrelationStore, currentStream: string, data: Log
 	const currentPage = store.tableOpts.currentPage || 1;
 	const newPageSlice = filteredData && getPageSlice(currentPage, store.tableOpts.perPage, filteredData);
 
+	if (store.correlationCondition) {
+		return {
+			...store,
+			streamData: filteredData,
+			tableOpts: {
+				...store.tableOpts,
+				pageData: filteredData || [],
+				currentPage,
+				totalPages: getTotalPages(filteredData, store.tableOpts.perPage),
+			},
+		};
+	}
 	// Rebuild `pageData` based on `selectedFields`
 	const updatedPageData = newPageSlice?.map((_record, index) => {
 		const combinedRecord: any = {};
@@ -422,15 +427,20 @@ const setStreamSchema = (store: CorrelationStore, schema: LogStreamSchemaData, s
 const deleteStreamData = (store: CorrelationStore, currentStream: string) => {
 	const newfields = { ...store.fields };
 	const newStreamData = { ...store.streamData };
+	const newSelectedFields = { ...store.selectedFields };
 
+	// Remove the currentStream from fields, streamData, and selectedFields
 	if (currentStream in newfields) {
 		delete newfields[currentStream];
 		delete newStreamData[currentStream];
+		delete newSelectedFields[currentStream];
 	}
 
 	return {
+		...store,
 		fields: newfields,
 		streamData: newStreamData,
+		selectedFields: newSelectedFields,
 	};
 };
 

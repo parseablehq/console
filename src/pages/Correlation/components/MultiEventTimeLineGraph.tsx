@@ -330,8 +330,6 @@ const MultiEventTimeLineGraph = () => {
 		return parseGraphData(multipleStreamData, startTime, endTime, interval);
 	}, [multipleStreamData]);
 
-	console.log(graphData);
-
 	const hasData = Array.isArray(graphData) && graphData.length !== 0;
 	const [, setLogsStore] = useAppStore((store) => store.timeRange);
 	const setTimeRangeFromGraph = useCallback((barValue: any) => {

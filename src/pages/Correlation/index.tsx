@@ -54,6 +54,7 @@ const FieldItem = ({
 	backgroundColor,
 	iconColor,
 	dataType,
+	isSelected,
 	onClick,
 	onDelete,
 }: {
@@ -62,6 +63,7 @@ const FieldItem = ({
 	backgroundColor: string;
 	iconColor: string;
 	dataType?: string;
+	isSelected?: boolean;
 	onClick?: () => void;
 	onDelete?: () => void;
 }) => {
@@ -71,11 +73,14 @@ const FieldItem = ({
 				border: `1px solid ${headerColor}`,
 				backgroundColor,
 				color: headerColor,
+				opacity: isSelected ? 0.5 : 1,
 				...(dataType ? {} : { width: 'fit-content', borderRadius: '12px' }),
 			}}
 			className={classes.fieldItem}
 			onClick={onClick}>
-			<Text size="sm">{fieldName}</Text>
+			<Text size="sm" className={classes.fieldItemText}>
+				{fieldName}
+			</Text>
 			{!dataType && <IconX color={iconColor} size={16} onClick={onDelete} />}
 			{dataType && dataTypeIcons(iconColor)[dataType]}
 		</div>
@@ -233,6 +238,7 @@ const Correlation = () => {
 								<div className={classes.fieldsWrapper}>
 									{filteredFields.length > 0 ? (
 										filteredFields.map((field: string) => {
+											const isSelected = selectedFields[stream]?.includes(field);
 											const dataType = fieldsIter.fieldTypeMap[field];
 											return (
 												<FieldItem
@@ -242,6 +248,7 @@ const Correlation = () => {
 													iconColor={fieldsIter.iconColor}
 													fieldName={field.replace(`${stream}.`, '')}
 													dataType={dataType}
+													isSelected={isSelected}
 													onClick={() => setCorrelationData((store) => setSelectedFields(store, field, stream))}
 												/>
 											);
