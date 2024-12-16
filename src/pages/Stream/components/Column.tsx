@@ -20,14 +20,14 @@ const Column: FC<Column> = (props) => {
 	const [uniqueValues, setUniqueValues] = useState<string[]>([]);
 	const [filteredValues, setFilteredValues] = useState<string[]>([]);
 	const [selectedValues, setSelectedValues] = useState<string[]>([]);
-	const [rawData, setLogsStore] = useLogsStore((store) => store.data.rawData);
+	const [{ rawData, filteredData }, setLogsStore] = useLogsStore((store) => store.data);
 	const [wrapDisabledColumns] = useLogsStore((store) => store.tableOpts.wrapDisabledColumns);
 	const inputValueRef = useRef('');
 
 	useEffect(() => {
-		const uniqueValues = getUniqueValues(rawData, columnName);
+		const uniqueValues = getUniqueValues(filteredData || rawData, columnName);
 		setUniqueValues(uniqueValues);
-	}, [rawData]);
+	}, [rawData, filteredData]);
 
 	const onSearch = useCallback(
 		(e: ChangeEvent<HTMLInputElement>) => {
