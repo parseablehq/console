@@ -1,5 +1,5 @@
-import { Box } from '@mantine/core';
-import { useCallback, useMemo } from 'react';
+import { Box, Menu } from '@mantine/core';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import EmptyBox from '@/components/Empty';
 import FilterPills from '../../components/FilterPills';
@@ -21,8 +21,9 @@ import { Log } from '@/@types/parseable/api/query';
 import { CopyIcon } from './JSONView';
 import { FieldTypeMap, useStreamStore } from '../../providers/StreamProvider';
 import timeRangeUtils from '@/utils/timeRangeUtils';
+import { IconBraces } from '@tabler/icons-react';
 
-const { setSelectedLog } = logsStoreReducers;
+const { setSelectedLog, setRowNumber } = logsStoreReducers;
 const TableContainer = (props: { children: ReactNode }) => {
 	return <Box className={tableStyles.container}>{props.children}</Box>;
 };
@@ -97,8 +98,9 @@ const makeColumnVisiblityOpts = (columns: string[]) => {
 };
 
 const Table = (props: { primaryHeaderHeight: number }) => {
-	const [{ orderedHeaders, disabledColumns, pinnedColumns, pageData, wrapDisabledColumns }, setLogsStore] =
-		useLogsStore((store) => store.tableOpts);
+	const [{ orderedHeaders, disabledColumns, pageData, wrapDisabledColumns, rowNumber }, setLogsStore] = useLogsStore(
+		(store) => store.tableOpts,
+	);
 	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
 	const [fieldTypeMap] = useStreamStore((store) => store.fieldTypeMap);
 	const columns = useMemo(() => makeHeaderOpts(orderedHeaders, isSecureHTTPContext, fieldTypeMap), [orderedHeaders]);
@@ -126,67 +128,156 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 		},
 		[wrapDisabledColumns],
 	);
+	const [contextMenu, setContextMenu] = useState<{
+		visible: boolean;
+		x: number;
+		y: number;
+		row: any | null;
+	}>({
+		visible: false,
+		x: 0,
+		y: 0,
+		row: null,
+	});
+
+	const contextMenuRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (contextMenuRef.current && !contextMenuRef.current.contains(event.target as Node)) {
+				closeContextMenu();
+			}
+		};
+
+		if (contextMenu.visible) {
+			document.addEventListener('mousedown', handleClickOutside);
+		}
+
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, [contextMenu.visible]);
+
+	const closeContextMenu = () => setContextMenu({ visible: false, x: 0, y: 0, row: null });
+
+	const handleRowClick = (index: number, event: React.MouseEvent) => {
+		if ((event.ctrlKey || event.metaKey) && rowNumber.length > 0) {
+			const lastIndex = rowNumber[rowNumber.length - 1];
+			const start = Math.min(lastIndex, index);
+			const end = Math.max(lastIndex, index);
+
+			const newSelectedRows = Array.from({ length: end - start + 1 }, (_, i) => start + i);
+			setLogsStore((store) => setRowNumber(store, newSelectedRows));
+		} else {
+			setLogsStore((store) => {
+				if (rowNumber.includes(index)) {
+					return setRowNumber(
+						store,
+						rowNumber.filter((rowIndex) => rowIndex !== index),
+					);
+				} else {
+					return setRowNumber(store, [index]);
+				}
+			});
+		}
+	};
 
 	return (
-		<MantineReactTable
-			enableBottomToolbar={false}
-			enableTopToolbar={false}
-			enableColumnResizing={true}
-			mantineTableBodyCellProps={({ column: { id } }) => makeCellCustomStyles(id)}
-			mantineTableHeadRowProps={{ style: { border: 'none' } }}
-			mantineTableHeadCellProps={{
-				style: {
-					fontWeight: 600,
-					fontSize: '0.65rem',
-					border: 'none',
-					padding: '0.5rem 1rem',
-				},
-			}}
-			mantineTableBodyRowProps={({ row }) => {
-				return {
-					onClick: () => {
-						selectLog(row.original);
+		<>
+			<MantineReactTable
+				enableBottomToolbar={false}
+				enableTopToolbar={false}
+				enableColumnResizing={true}
+				mantineTableBodyCellProps={({ column: { id } }) => makeCellCustomStyles(id)}
+				mantineTableHeadRowProps={{ style: { border: 'none' } }}
+				mantineTableHeadCellProps={{
+					style: {
+						fontWeight: 600,
+						fontSize: '0.65rem',
+						border: 'none',
+						padding: '0.5rem 1rem',
 					},
+				}}
+				mantineTableBodyRowProps={({ row }) => {
+					return {
+						onClick: (event) => {
+							event.preventDefault();
+							handleRowClick(row.index, event);
+						},
+						onContextMenu: (event) => {
+							event.preventDefault();
+							setContextMenu({
+								visible: true,
+								x: event.pageX,
+								y: event.pageY,
+								row: row.original,
+							});
+						},
+						style: {
+							border: rowNumber.includes(row.index) ? '2px solid #007BFF' : 'none',
+							background: row.index % 2 === 0 ? '#f8f9fa' : 'white',
+							transition: 'border 0.2s',
+						},
+					};
+				}}
+				mantineTableHeadProps={{
 					style: {
 						border: 'none',
-						background: row.index % 2 === 0 ? '#f8f9fa' : 'white',
 					},
-				};
-			}}
-			mantineTableHeadProps={{
-				style: {
-					border: 'none',
-				},
-			}}
-			columns={columns}
-			data={pageData}
-			mantinePaperProps={{ style: { border: 'none' } }}
-			enablePagination={false}
-			enableColumnPinning={true}
-			initialState={{
-				columnPinning: {
-					left: pinnedColumns,
-				},
-			}}
-			enableStickyHeader={true}
-			defaultColumn={{ minSize: 100 }}
-			layoutMode="grid"
-			state={{
-				columnPinning: {
-					left: pinnedColumns,
-				},
-				columnVisibility,
-				columnOrder: orderedHeaders,
-			}}
-			mantineTableContainerProps={{
-				style: {
-					height: `calc(100vh - ${props.primaryHeaderHeight + LOGS_FOOTER_HEIGHT}px )`,
-				},
-			}}
-			renderColumnActionsMenuItems={({ column }) => {
-				return <Column columnName={column.id} />;
-			}}
-		/>
+				}}
+				columns={columns}
+				data={pageData}
+				mantinePaperProps={{ style: { border: 'none' } }}
+				enablePagination={false}
+				enableColumnPinning={true}
+				initialState={{
+					columnPinning: {
+						left: ['rowNumber'],
+					},
+				}}
+				enableStickyHeader={true}
+				defaultColumn={{ minSize: 100 }}
+				layoutMode="grid"
+				state={{
+					columnPinning: {
+						left: ['rowNumber'],
+					},
+					columnVisibility,
+					columnOrder: orderedHeaders,
+				}}
+				mantineTableContainerProps={{
+					style: {
+						height: `calc(100vh - ${props.primaryHeaderHeight + LOGS_FOOTER_HEIGHT}px )`,
+					},
+				}}
+				renderColumnActionsMenuItems={({ column }) => {
+					return <Column columnName={column.id} />;
+				}}
+			/>
+			{contextMenu.visible && (
+				<div
+					ref={contextMenuRef}
+					style={{
+						top: contextMenu.y,
+						left: contextMenu.x,
+					}}
+					className={tableStyles.contextMenuContainer}
+					onClick={closeContextMenu}>
+					<Menu opened={contextMenu.visible} onClose={closeContextMenu}>
+						{rowNumber.length === 1 && (
+							<Menu.Item
+								leftSection={<IconBraces />}
+								onClick={() => {
+									selectLog(contextMenu.row);
+									closeContextMenu();
+								}}>
+								View JSON
+							</Menu.Item>
+						)}
+					</Menu>
+				</div>
+			)}
+		</>
 	);
 };
 
