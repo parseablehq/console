@@ -21,7 +21,9 @@ import { Log } from '@/@types/parseable/api/query';
 import { CopyIcon } from './JSONView';
 import { FieldTypeMap, useStreamStore } from '../../providers/StreamProvider';
 import timeRangeUtils from '@/utils/timeRangeUtils';
-import { IconBraces } from '@tabler/icons-react';
+import { IconBraces, IconDotsVertical, IconShare } from '@tabler/icons-react';
+import { copyTextToClipboard } from '@/utils';
+import { notifySuccess } from '@/utils/notification';
 
 const { setSelectedLog, setRowNumber } = logsStoreReducers;
 const TableContainer = (props: { children: ReactNode }) => {
@@ -55,10 +57,16 @@ const getSanitizedValue = (value: CellType, isTimestamp: boolean) => {
 	return String(value);
 };
 
-const makeHeaderOpts = (headers: string[], isSecureHTTPContext: boolean, fieldTypeMap: FieldTypeMap) => {
+const makeHeaderOpts = (
+	headers: string[],
+	isSecureHTTPContext: boolean,
+	fieldTypeMap: FieldTypeMap,
+	rowNumber: string,
+	setContextMenu: any,
+) => {
 	return _.reduce(
 		headers,
-		(acc: { accessorKey: string; header: string; grow: boolean }[], header) => {
+		(acc: { accessorKey: string; header: string; grow: boolean }[], header, index) => {
 			const isTimestamp = _.get(fieldTypeMap, header, null) === 'timestamp';
 
 			return [
@@ -77,8 +85,30 @@ const makeHeaderOpts = (headers: string[], isSecureHTTPContext: boolean, fieldTy
 							})
 							.value();
 						const sanitizedValue = getSanitizedValue(value, isTimestamp);
+						let isFirstSelectedRow = false;
+						if (rowNumber) {
+							const [start] = rowNumber.split(':').map(Number);
+							isFirstSelectedRow = cell.row.index === start;
+						}
+						const isFirstColumn = index === 0;
 						return (
 							<div className={tableStyles.customCellContainer} style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+								<div
+									className={tableStyles.actionIconContainer}
+									onClick={(event) => {
+										event.stopPropagation();
+										setContextMenu({
+											visible: true,
+											x: event.pageX,
+											y: event.pageY,
+											row: cell.row.original,
+										});
+									}}
+									style={{
+										display: isFirstSelectedRow && isFirstColumn ? 'flex' : '',
+									}}>
+									{isSecureHTTPContext ? sanitizedValue && <IconDotsVertical stroke={1.2} size={'0.8rem'} /> : null}
+								</div>
 								{sanitizedValue}
 								<div className={tableStyles.copyIconContainer}>
 									{isSecureHTTPContext ? sanitizedValue && <CopyIcon value={sanitizedValue} /> : null}
@@ -92,18 +122,33 @@ const makeHeaderOpts = (headers: string[], isSecureHTTPContext: boolean, fieldTy
 		[],
 	);
 };
-
 const makeColumnVisiblityOpts = (columns: string[]) => {
 	return _.reduce(columns, (acc, column) => ({ ...acc, [column]: false }), {});
 };
 
 const Table = (props: { primaryHeaderHeight: number }) => {
+	const [contextMenu, setContextMenu] = useState<{
+		visible: boolean;
+		x: number;
+		y: number;
+		row: any | null;
+	}>({
+		visible: false,
+		x: 0,
+		y: 0,
+		row: null,
+	});
+
+	const contextMenuRef = useRef<HTMLDivElement>(null);
 	const [{ orderedHeaders, disabledColumns, pageData, wrapDisabledColumns, rowNumber }, setLogsStore] = useLogsStore(
 		(store) => store.tableOpts,
 	);
 	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
 	const [fieldTypeMap] = useStreamStore((store) => store.fieldTypeMap);
-	const columns = useMemo(() => makeHeaderOpts(orderedHeaders, isSecureHTTPContext, fieldTypeMap), [orderedHeaders]);
+	const columns = useMemo(
+		() => makeHeaderOpts(orderedHeaders, isSecureHTTPContext, fieldTypeMap, rowNumber, setContextMenu),
+		[orderedHeaders, rowNumber],
+	);
 	const columnVisibility = useMemo(() => makeColumnVisiblityOpts(disabledColumns), [disabledColumns, orderedHeaders]);
 	const selectLog = useCallback((log: Log) => {
 		const selectedText = window.getSelection()?.toString();
@@ -128,20 +173,6 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 		},
 		[wrapDisabledColumns],
 	);
-	const [contextMenu, setContextMenu] = useState<{
-		visible: boolean;
-		x: number;
-		y: number;
-		row: any | null;
-	}>({
-		visible: false,
-		x: 0,
-		y: 0,
-		row: null,
-	});
-
-	const contextMenuRef = useRef<HTMLDivElement>(null);
-
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (contextMenuRef.current && !contextMenuRef.current.contains(event.target as Node)) {
@@ -160,25 +191,32 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 
 	const closeContextMenu = () => setContextMenu({ visible: false, x: 0, y: 0, row: null });
 
-	const handleRowClick = (index: number, event: React.MouseEvent) => {
-		if ((event.ctrlKey || event.metaKey) && rowNumber.length > 0) {
-			const lastIndex = rowNumber[rowNumber.length - 1];
-			const start = Math.min(lastIndex, index);
-			const end = Math.max(lastIndex, index);
+	const copyUrl = useCallback(() => {
+		copyTextToClipboard(window.location.href);
+		notifySuccess({ message: 'Link Copied!' });
+	}, [window.location.href]);
 
-			const newSelectedRows = Array.from({ length: end - start + 1 }, (_, i) => start + i);
-			setLogsStore((store) => setRowNumber(store, newSelectedRows));
+	const handleRowClick = (index: number, event: React.MouseEvent) => {
+		let newRange = `${index}:${index}`;
+
+		if ((event.ctrlKey || event.metaKey) && rowNumber) {
+			const [start, end] = rowNumber.split(':').map(Number);
+			const lastIndex = Math.max(start, end);
+
+			const startIndex = Math.min(lastIndex, index);
+			const endIndex = Math.max(lastIndex, index);
+			newRange = `${startIndex}:${endIndex}`;
+			setLogsStore((store) => setRowNumber(store, newRange));
 		} else {
-			setLogsStore((store) => {
-				if (rowNumber.includes(index)) {
-					return setRowNumber(
-						store,
-						rowNumber.filter((rowIndex) => rowIndex !== index),
-					);
-				} else {
-					return setRowNumber(store, [index]);
+			if (rowNumber) {
+				const [start, end] = rowNumber.split(':').map(Number);
+				if (index >= start && index <= end) {
+					setLogsStore((store) => setRowNumber(store, ''));
+					return;
 				}
-			});
+			}
+
+			setLogsStore((store) => setRowNumber(store, newRange));
 		}
 	};
 
@@ -204,22 +242,21 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 							event.preventDefault();
 							handleRowClick(row.index, event);
 						},
-						onContextMenu: (event) => {
-							event.preventDefault();
-							setContextMenu({
-								visible: true,
-								x: event.pageX,
-								y: event.pageY,
-								row: row.original,
-							});
-						},
 						style: {
-							border: rowNumber.includes(row.index) ? '2px solid #007BFF' : 'none',
+							border: 'none',
 							background: row.index % 2 === 0 ? '#f8f9fa' : 'white',
-							transition: 'border 0.2s',
+							backgroundColor:
+								rowNumber &&
+								(() => {
+									const [start, end] = rowNumber.split(':').map(Number);
+									return row.index >= start && row.index <= end;
+								})()
+									? '#DDE3FE'
+									: '',
 						},
 					};
 				}}
+				mantineTableProps={{ highlightOnHover: false }}
 				mantineTableHeadProps={{
 					style: {
 						border: 'none',
@@ -264,16 +301,36 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 					className={tableStyles.contextMenuContainer}
 					onClick={closeContextMenu}>
 					<Menu opened={contextMenu.visible} onClose={closeContextMenu}>
-						{rowNumber.length === 1 && (
-							<Menu.Item
-								leftSection={<IconBraces />}
-								onClick={() => {
-									selectLog(contextMenu.row);
-									closeContextMenu();
-								}}>
-								View JSON
-							</Menu.Item>
-						)}
+						{(() => {
+							const [start, end] = rowNumber.split(':').map(Number);
+							const rowCount = end - start + 1;
+
+							if (rowCount === 1) {
+								return (
+									<Menu.Item
+										leftSection={<IconBraces />}
+										onClick={() => {
+											selectLog(contextMenu.row);
+											closeContextMenu();
+										}}>
+										View JSON
+									</Menu.Item>
+								);
+							} else if (rowCount > 1) {
+								return (
+									<Menu.Item
+										leftSection={<IconShare />}
+										onClick={() => {
+											copyUrl();
+											closeContextMenu();
+										}}>
+										Share
+									</Menu.Item>
+								);
+							}
+
+							return null;
+						})()}
 					</Menu>
 				</div>
 			)}

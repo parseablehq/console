@@ -52,10 +52,10 @@ const deriveTimeRangeParams = (timerange: TimeRange): { interval: string } | { f
 	}
 };
 
-const deriveRowNumber = (rowNumber: number[]) => {
+const deriveRowNumber = (rowNumber: string) => {
 	if (rowNumber.length > 0) {
 		return {
-			rowNumber: JSON.stringify(rowNumber),
+			rowNumber,
 		};
 	}
 };
@@ -68,7 +68,7 @@ const storeToParamsObj = (opts: {
 	rows: string;
 	query: string;
 	filterType: string;
-	rowNumber: number[];
+	rowNumber: string;
 }): Record<string, string> => {
 	const { timeRange, offset, page, view, rows, query, filterType, rowNumber } = opts;
 	const params: Record<string, string> = {
@@ -198,7 +198,7 @@ const useParamsController = () => {
 	const syncRowNumber = useCallback((storeAsParams: Record<string, string>, presentParams: Record<string, string>) => {
 		if (_.has(presentParams, 'rowNumber')) {
 			if (storeAsParams.rowNumber !== presentParams.rowNumber) {
-				setLogsStore((store) => setRowNumber(store, JSON.parse(presentParams.rowNumber)));
+				setLogsStore((store) => setRowNumber(store, presentParams.rowNumber));
 			}
 		}
 	}, []);
