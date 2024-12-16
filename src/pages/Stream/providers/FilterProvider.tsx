@@ -69,6 +69,7 @@ type FilterStore = {
 	fieldTypeMap: FieldTypeMap;
 	fieldNames: string[];
 	isSumbitDisabled: boolean;
+	isQueryFromParams: boolean;
 	appliedQuery: QueryType;
 	isSaveFiltersModalOpen: boolean;
 	isSavedFiltersModalOpen: boolean;
@@ -92,6 +93,7 @@ const initialState: FilterStore = {
 	appliedFilterQuery: '',
 	fieldTypeMap: {},
 	fieldNames: [],
+	isQueryFromParams: false,
 	isSumbitDisabled: true,
 	appliedQuery: defaultQuery,
 	isSaveFiltersModalOpen: false,
@@ -130,6 +132,7 @@ type FilterStoreReducers = {
 	deleteRuleFromGroup: (store: FilterStore, groupId: string, ruleId: string) => ReducerOutput;
 	updateGroupCombinator: (store: FilterStore, id: string, op: Combinator) => ReducerOutput;
 	updateParentCombinator: (store: FilterStore, combinator: Combinator) => ReducerOutput;
+	updateAppliedQuery: (store: FilterStore, appliedQuery: QueryType) => ReducerOutput;
 	updateRule: (store: FilterStore, groupId: string, ruleId: string, updateOpts: RuleUpdateOpts) => ReducerOutput;
 	parseQuery: (
 		queryEngine: 'Parseable' | 'Trino' | undefined,
@@ -138,6 +141,7 @@ type FilterStoreReducers = {
 		timeRangeOpts?: { startTime: Date; endTime: Date; timePartitionColumn: string },
 	) => { where: string; parsedQuery: string };
 	toggleSubmitBtn: (store: FilterStore, val: boolean) => ReducerOutput;
+	toogleQueryParamsFlag: (store: FilterStore, val: boolean) => ReducerOutput;
 	toggleSaveFiltersModal: (_store: FilterStore, val: boolean) => ReducerOutput;
 	toggleSavedFiltersModal: (_store: FilterStore, val: boolean) => ReducerOutput;
 	applySavedFilters: (store: FilterStore, query: QueryType) => ReducerOutput;
@@ -174,6 +178,13 @@ const addRuleToGroup = (store: FilterStore, groupId: string) => {
 					  };
 			}),
 		},
+	};
+};
+
+const toogleQueryParamsFlag = (_store: FilterStore, val: boolean) => {
+	return {
+		..._store,
+		isQueryFromParams: val,
 	};
 };
 
@@ -340,6 +351,13 @@ const toggleSavedFiltersModal = (_store: FilterStore, val: boolean) => {
 	};
 };
 
+const updateAppliedQuery = (store: FilterStore, appliedQuery: QueryType) => {
+	return {
+		...store,
+		appliedQuery,
+	};
+};
+
 const applySavedFilters = (store: FilterStore, query: QueryType) => {
 	return {
 		...store,
@@ -358,11 +376,13 @@ const filterStoreReducers: FilterStoreReducers = {
 	deleteRuleFromGroup,
 	updateGroupCombinator,
 	updateParentCombinator,
+	updateAppliedQuery,
 	updateRule,
 	parseQuery,
 	toggleSubmitBtn,
 	toggleSaveFiltersModal,
 	toggleSavedFiltersModal,
+	toogleQueryParamsFlag,
 	applySavedFilters,
 	setAppliedFilterQuery,
 };

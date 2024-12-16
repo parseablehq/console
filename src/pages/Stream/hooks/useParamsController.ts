@@ -21,7 +21,7 @@ const {
 	setCurrentOffset,
 	setTargetColumns,
 } = logsStoreReducers;
-const { applySavedFilters } = filterStoreReducers;
+const { toogleQueryParamsFlag, setAppliedFilterQuery, applySavedFilters, updateAppliedQuery } = filterStoreReducers;
 const timeRangeFormat = 'DD-MMM-YYYY_HH-mmz';
 const keys = ['view', 'rows', 'page', 'interval', 'from', 'to', 'query', 'filterType', 'fields'];
 
@@ -130,10 +130,17 @@ const useParamsController = () => {
 
 		if (storeAsParams.query !== presentParams.query) {
 			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
-			if (presentParams.filterType === 'filters')
+
+			if (presentParams.filterType === 'filters') {
 				setFilterStore((store) =>
-					applySavedFilters(store, generateQueryBuilderASTFromSQL(presentParams.query) as QueryType),
+					updateAppliedQuery(store, generateQueryBuilderASTFromSQL(presentParams.query) as QueryType),
 				);
+				setFilterStore((store) =>
+					// applySavedFilters(store, generateQueryBuilderASTFromSQL(presentParams.query) as QueryType),
+					setAppliedFilterQuery(store, presentParams.query),
+				);
+				setFilterStore((store) => toogleQueryParamsFlag(store, true));
+			}
 		}
 
 		if (storeAsParams.fields !== presentParams.fields) {
