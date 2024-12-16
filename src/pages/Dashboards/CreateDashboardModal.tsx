@@ -5,9 +5,9 @@ import { useCallback, useEffect } from 'react';
 import _ from 'lodash';
 import { useDashboardsQuery } from '@/hooks/useDashboards';
 import { useForm } from '@mantine/form';
-import { useLogsStore } from '../Stream/providers/LogsProvider';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import { Tile } from '@/@types/parseable/api/dashboards';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const { toggleCreateDashboardModal, toggleEditDashboardModal } = dashboardsStoreReducers;
 const { makeTimeRangeOptions, getDefaultTimeRangeOption } = timeRangeUtils;
@@ -29,7 +29,7 @@ const useDashboardForm = (opts: FormOpts) => {
 		initialValues: opts,
 		validate: {
 			name: (val) => (_.isEmpty(val) ? 'Name cannot be empty' : null),
-			description: (_val) => (null),
+			description: (_val) => null,
 		},
 		validateInputOnChange: true,
 		validateInputOnBlur: true,
@@ -53,7 +53,7 @@ const defaultOpts = {
 const CreateDashboardModal = () => {
 	const [createMode, setDashbaordsStore] = useDashboardsStore((store) => store.createDashboardModalOpen);
 	const [editMode] = useDashboardsStore((store) => store.editDashboardModalOpen);
-	const [timeRange] = useLogsStore((store) => store.timeRange);
+	const [timeRange] = useAppStore((store) => store.timeRange);
 	const [activeDashboard] = useDashboardsStore((store) => store.activeDashboard);
 	const timeRangeOptions = makeTimeRangeOptions({
 		selected: editMode && activeDashboard ? activeDashboard.time_filter : null,

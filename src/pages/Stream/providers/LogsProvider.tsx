@@ -1,15 +1,12 @@
 import { Log } from '@/@types/parseable/api/query';
 import { LogStreamData, LogStreamSchemaData } from '@/@types/parseable/api/stream';
-import { FIXED_DURATIONS, FixedDuration } from '@/constants/timeConstants';
+import { FIXED_DURATIONS } from '@/constants/timeConstants';
 import initContext from '@/utils/initContext';
-import dayjs, { Dayjs } from 'dayjs';
 import { addOrRemoveElement } from '@/utils';
 import { getPageSlice } from '../utils';
 import _ from 'lodash';
 import { sanitizeCSVData } from '@/utils/exportHelpers';
 import timeRangeUtils from '@/utils/timeRangeUtils';
-
-const { makeTimeRangeLabel } = timeRangeUtils;
 
 export const DEFAULT_FIXED_DURATIONS = FIXED_DURATIONS[0];
 export const LOG_QUERY_LIMITS = [50, 100, 150, 200];
@@ -83,15 +80,6 @@ export type TransformedAlerts = {
 	alerts: TransformedAlert[];
 };
 
-export type TimeRange = {
-	startTime: Date;
-	endTime: Date;
-	type: 'fixed' | 'custom';
-	label: string;
-	interval: number;
-	shiftInterval: number;
-};
-
 enum SortOrder {
 	ASCENDING = 1,
 	DESCENDING = -1,
@@ -115,31 +103,12 @@ type LiveTailConfig = {
 	liveTailSearchField: string;
 	showLiveTail: boolean;
 };
-
 export const formatLogTs = (timestamp: string) => {
 	if (!_.endsWith(timestamp, 'Z')) {
 		return timeRangeUtils.formatDateWithTimezone(`${timestamp}Z`, 'yyyy-MM-DDTHH:mm:ss.SSSZ');
 	} else {
 		return timeRangeUtils.formatDateWithTimezone(timestamp, 'yyyy-MM-DDTHH:mm:ss.SSSZ');
 	}
-};
-
-const getDefaultTimeRange = (duration: FixedDuration = DEFAULT_FIXED_DURATIONS) => {
-	const now = dayjs().startOf('minute');
-	const { milliseconds } = duration;
-
-	const startTime = now.subtract(milliseconds, 'milliseconds');
-	const endTime = now;
-	const label = makeTimeRangeLabel(startTime.toDate(), endTime.toDate());
-
-	return {
-		startTime: startTime.toDate(),
-		endTime: now.toDate(),
-		type: 'fixed' as const,
-		label,
-		interval: milliseconds,
-		shiftInterval: 1,
-	};
 };
 
 const defaultQuickFilters = {
@@ -184,7 +153,6 @@ type CustQuerySearchState = {
 };
 
 type LogsStore = {
-	timeRange: TimeRange;
 	quickFilters: QuickFilters;
 	liveTailConfig: LiveTailConfig;
 	refreshInterval: number | null;
@@ -235,12 +203,6 @@ type LogsStore = {
 };
 
 type LogsStoreReducers = {
-	setTimeRange: (
-		store: LogsStore,
-		payload: { startTime: dayjs.Dayjs; endTime: dayjs.Dayjs; type: 'fixed' | 'custom' },
-	) => ReducerOutput;
-	setshiftInterval: (store: LogsStore, interval: number) => ReducerOutput;
-	// resetTimeRange: (store: LogsStore) => ReducerOutput;
 	deleteFilterItem: (store: LogsStore, key: string) => ReducerOutput;
 	addFilterItem: (store: LogsStore, key: string, value: string[]) => ReducerOutput;
 	setLiveTailStatus: (store: LogsStore, liveTailStatus: LiveTailStatus) => ReducerOutput;
@@ -277,13 +239,7 @@ type LogsStoreReducers = {
 	// data reducers
 	setLogData: (store: LogsStore, data: Log[], headers: string[], jqFilteredData?: Log[]) => ReducerOutput;
 	setStreamSchema: (store: LogsStore, schema: LogStreamSchemaData) => ReducerOutput;
-	applyCustomQuery: (
-		store: LogsStore,
-		query: string,
-		mode: 'filters' | 'sql',
-		savedFilterId?: string,
-		timeRangePayload?: { from: string; to: string } | null,
-	) => ReducerOutput;
+	applyCustomQuery: (store: LogsStore, query: string, mode: 'filters' | 'sql', savedFilterId?: string) => ReducerOutput;
 	getUniqueValues: (data: Log[], key: string) => string[];
 	makeExportData: (data: Log[], headers: string[], type: string) => Log[];
 	setRetention: (store: LogsStore, retention: { description: string; duration: string }) => ReducerOutput;
@@ -305,7 +261,6 @@ const defaultSortKey = 'p_timestamp';
 const defaultSortOrder = 'desc' as const;
 
 const initialState: LogsStore = {
-	timeRange: getDefaultTimeRange(),
 	quickFilters: defaultQuickFilters,
 	liveTailConfig: defaultLiveTailConfig,
 	refreshInterval: null,
@@ -373,39 +328,6 @@ const setSelectedLog = (_store: LogsStore, log: Log | null) => {
 };
 
 // reducers
-const setTimeRange = (
-	store: LogsStore,
-	payload: { startTime: dayjs.Dayjs; endTime: Dayjs; type: 'fixed' | 'custom' },
-) => {
-	const { startTime, endTime, type } = payload;
-	const label = makeTimeRangeLabel(startTime.toDate(), endTime.toDate());
-	const interval = endTime.diff(startTime, 'milliseconds');
-	const cleanStore = getCleanStoreForRefetch(store);
-	return {
-		...cleanStore,
-		timeRange: { ...store.timeRange, startTime: startTime.toDate(), endTime: endTime.toDate(), label, interval, type },
-		viewMode: store.viewMode,
-	};
-};
-
-const setshiftInterval = (store: LogsStore, interval: number) => {
-	const { timeRange } = store;
-	return {
-		timeRange: {
-			...timeRange,
-			shiftInterval: interval,
-		},
-	};
-};
-
-// const resetTimeRange = (store: LogsStore) => {
-// 	const now = dayjs();
-// 	const timeDiff = store.timeRange.endTime.getTime() - store.timeRange.startTime.getTime();
-// 	const startTime = now.subtract(timeDiff).toDate();
-// 	const endTime = now.toDate();
-// 	return store.timeRange.type === 'custom' ? store : { timeRange: { ...store.timeRange, startTime, endTime } };
-// };
-
 const deleteFilterItem = (store: LogsStore, key: string) => {
 	const filters = store.quickFilters.filters;
 	const updatedFilters = (({ [key]: _, ...filters }) => filters)(filters);
@@ -462,7 +384,6 @@ const toggleQueryBuilder = (store: LogsStore, val?: boolean) => {
 };
 
 const setCustQuerySearchState = (store: LogsStore, query: string, viewMode: string) => {
-	const { timeRange } = store;
 	return {
 		custQuerySearchState: {
 			showQueryBuilder: false,
@@ -473,16 +394,14 @@ const setCustQuerySearchState = (store: LogsStore, query: string, viewMode: stri
 			activeMode: viewMode === 'filters' ? ('filters' as const) : ('sql' as const),
 		},
 		...getCleanStoreForRefetch(store),
-		timeRange,
 	};
 };
 
 const resetCustQuerySearchState = (store: LogsStore) => {
-	const { custQuerySearchState, timeRange } = store;
+	const { custQuerySearchState } = store;
 	return {
 		custQuerySearchState: { ...defaultCustQuerySearchState, viewMode: custQuerySearchState.viewMode },
 		...getCleanStoreForRefetch(store),
-		timeRange,
 	};
 };
 
@@ -705,12 +624,7 @@ const setPageAndPageData = (store: LogsStore, pageNo: number, perPage?: number) 
 };
 
 const getCleanStoreForRefetch = (store: LogsStore) => {
-	const { tableOpts, data, timeRange } = store;
-	const { interval, type } = timeRange;
-
-	const duration = _.find(FIXED_DURATIONS, (duration) => duration.milliseconds === timeRange.interval);
-
-	const updatedTimeRange = interval && type === 'fixed' ? { timeRange: getDefaultTimeRange(duration) } : { timeRange };
+	const { tableOpts, data } = store;
 	return {
 		tableOpts: {
 			...tableOpts,
@@ -727,15 +641,11 @@ const getCleanStoreForRefetch = (store: LogsStore) => {
 			filteredData: [],
 			rawData: [],
 		},
-		...updatedTimeRange,
 	};
 };
 
 const setCleanStoreForStreamChange = (store: LogsStore) => {
-	const { tableOpts, timeRange, alerts } = store;
-	const { interval, type } = timeRange;
-	const duration = _.find(FIXED_DURATIONS, (duration) => duration.milliseconds === timeRange.interval);
-	const updatedTimeRange = interval && type === 'fixed' ? { timeRange: getDefaultTimeRange(duration) } : { timeRange };
+	const { tableOpts, alerts } = store;
 	return {
 		...initialState,
 		tableOpts: {
@@ -752,40 +662,12 @@ const setCleanStoreForStreamChange = (store: LogsStore) => {
 			pinnedColumns: [],
 			filters: {},
 		},
-		...updatedTimeRange,
 		alerts,
 	};
 };
 
-const applyCustomQuery = (
-	store: LogsStore,
-	query: string,
-	mode: 'filters' | 'sql',
-	savedFilterId?: string,
-	timeRangePayload?: { from: string; to: string } | null,
-) => {
-	const { custQuerySearchState, timeRange } = store;
-
-	const updatedTimeRange = (() => {
-		if (!timeRangePayload) {
-			return { timeRange };
-		} else {
-			const startTime = dayjs(timeRangePayload.from);
-			const endTime = dayjs(timeRangePayload.to);
-			const label = makeTimeRangeLabel(startTime.toDate(), endTime.toDate());
-			const interval = endTime.diff(startTime, 'milliseconds');
-			return {
-				timeRange: {
-					...store.timeRange,
-					startTime: startTime.toDate(),
-					endTime: endTime.toDate(),
-					label,
-					interval,
-					type: 'custom' as const, // always
-				},
-			};
-		}
-	})();
+const applyCustomQuery = (store: LogsStore, query: string, mode: 'filters' | 'sql', savedFilterId?: string) => {
+	const { custQuerySearchState } = store;
 
 	return {
 		custQuerySearchState: {
@@ -798,7 +680,6 @@ const applyCustomQuery = (
 			viewMode: mode,
 		},
 		...getCleanStoreForRefetch(store),
-		...updatedTimeRange,
 	};
 };
 
@@ -994,9 +875,6 @@ const toggleWordWrap = (store: LogsStore) => {
 };
 
 const logsStoreReducers: LogsStoreReducers = {
-	setTimeRange,
-	setshiftInterval,
-	// resetTimeRange,
 	deleteFilterItem,
 	addFilterItem,
 	setLiveTailStatus,

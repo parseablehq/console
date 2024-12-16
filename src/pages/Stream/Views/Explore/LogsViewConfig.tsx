@@ -1,18 +1,19 @@
 import { LOGS_CONFIG_SIDEBAR_WIDTH } from '@/constants/theme';
 import { Checkbox, Divider, Group, ScrollArea, Select, Skeleton, Stack, Text, TextInput, Tooltip } from '@mantine/core';
 import classes from '../../styles/LogsViewConfig.module.css';
-import { useStreamStore } from '../../providers/StreamProvider';
+import { streamStoreReducers, useStreamStore } from '../../providers/StreamProvider';
 import _ from 'lodash';
 import { Field } from '@/@types/parseable/dataType';
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
-import { IconGripVertical, IconPin, IconPinFilled } from '@tabler/icons-react';
+import { IconChevronsLeft, IconGripVertical, IconPin, IconPinFilled } from '@tabler/icons-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
-import { ResizableBox } from 'react-resizable';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const { toggleConfigViewType, toggleDisabledColumns, setOrderedHeaders, togglePinnedColumns, setDisabledColumns } =
 	logsStoreReducers;
+
+const { toggleSideBar } = streamStoreReducers;
 
 const Header = () => {
 	const [configViewType, setLogsStore] = useLogsStore((store) => store.tableOpts.configViewType);
@@ -300,6 +301,8 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 const LogsViewConfig = (props: { schemaLoading: boolean; logsLoading: boolean; infoLoading: boolean }) => {
 	const [configViewType] = useLogsStore((store) => store.tableOpts.configViewType);
 	const [maximized] = useAppStore((store) => store.maximized);
+	const [{ sideBarOpen }, setStreamStore] = useStreamStore((store) => store);
+
 	const divRef = useRef<HTMLDivElement | null>(null);
 	const [height, setHeight] = useState(0);
 
@@ -308,23 +311,35 @@ const LogsViewConfig = (props: { schemaLoading: boolean; logsLoading: boolean; i
 			setHeight(divRef.current.offsetHeight);
 		}
 	}, [maximized]);
+
 	return (
-		<Stack ref={divRef}>
-			<ResizableBox
-				width={LOGS_CONFIG_SIDEBAR_WIDTH}
-				height={height}
-				axis="x"
-				maxConstraints={[500, height]}
-				minConstraints={[200, height]}>
-				<Stack style={{ width: '100%', height: '100%' }} className={classes.container}>
-					<Header />
-					{configViewType === 'schema' ? (
-						<SchemaList isLoading={props.schemaLoading || props.infoLoading} />
-					) : (
-						<ColumnsList isLoading={props.logsLoading || props.infoLoading} />
-					)}
-				</Stack>
-			</ResizableBox>
+		<Stack
+			ref={divRef}
+			style={{
+				borderRight: '1px solid var(--mantine-color-gray-2)',
+				width: sideBarOpen ? 0 : LOGS_CONFIG_SIDEBAR_WIDTH,
+				transition: 'width 0.5s',
+			}}>
+			<Stack style={{ width: LOGS_CONFIG_SIDEBAR_WIDTH, height: height - 30 }} className={classes.container}>
+				<Header />
+				{configViewType === 'schema' ? (
+					<SchemaList isLoading={props.schemaLoading || props.infoLoading} />
+				) : (
+					<ColumnsList isLoading={props.logsLoading || props.infoLoading} />
+				)}
+			</Stack>
+			<Stack className={classes.collapseBtn}>
+				{!sideBarOpen && (
+					<Tooltip label="Collapse" position="left">
+						<IconChevronsLeft
+							className={classes.collapseIcon}
+							onClick={() => setStreamStore((store) => toggleSideBar(store))}
+							stroke={1.2}
+							size="1.2rem"
+						/>
+					</Tooltip>
+				)}
+			</Stack>
 		</Stack>
 	);
 };

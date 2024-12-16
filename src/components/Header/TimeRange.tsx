@@ -8,12 +8,14 @@ import { Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import { FIXED_DURATIONS } from '@/constants/timeConstants';
 import classes from './styles/LogQuery.module.css';
 import { useOuterClick } from '@/hooks/useOuterClick';
-import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
 import _ from 'lodash';
 import timeRangeUtils from '@/utils/timeRangeUtils';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
 
-const {getRelativeStartAndEndDate} = timeRangeUtils
-const { setTimeRange, setshiftInterval } = logsStoreReducers;
+const { getRelativeStartAndEndDate } = timeRangeUtils;
+const { setTimeRange, setshiftInterval } = appStoreReducers;
+const { getCleanStoreForRefetch } = logsStoreReducers;
 export type FixedDuration = (typeof FIXED_DURATIONS)[number];
 
 const { timeRangeContainer, fixedRangeBtn, fixedRangeBtnSelected, customRangeContainer, shiftIntervalContainer } =
@@ -40,7 +42,8 @@ const RelativeTimeIntervals = (props: {
 };
 
 const TimeRange: FC = () => {
-	const [timeRange, setLogsStore] = useLogsStore((store) => store.timeRange);
+	const [timeRange, setAppStore] = useAppStore((store) => store.timeRange);
+	const [, setLogStore] = useLogsStore((_store) => null);
 	const { label, shiftInterval, interval, startTime, endTime, type } = timeRange;
 	const handleOuterClick = useCallback((event: any) => {
 		const targetClassNames: string[] = event.target?.classList || [];
@@ -70,8 +73,9 @@ const TimeRange: FC = () => {
 	}, []);
 
 	const onDurationSelect = (duration: FixedDuration) => {
-		const {startTime, endTime} = getRelativeStartAndEndDate(duration);
-		setLogsStore((store) => setTimeRange(store, { startTime, endTime, type: 'fixed' }));
+		const { startTime, endTime } = getRelativeStartAndEndDate(duration);
+		setLogStore((store) => getCleanStoreForRefetch(store));
+		setAppStore((store) => setTimeRange(store, { startTime, endTime, type: 'fixed' }));
 		setOpened(false);
 	};
 
@@ -79,7 +83,8 @@ const TimeRange: FC = () => {
 		const now = dayjs().startOf('minute');
 		const startTime = now.subtract(FIXED_DURATIONS[0].milliseconds, 'milliseconds');
 		const endTime = now;
-		setLogsStore((store) => setTimeRange(store, { startTime, endTime, type: 'fixed' }));
+		setLogStore((store) => getCleanStoreForRefetch(store));
+		setAppStore((store) => setTimeRange(store, { startTime, endTime, type: 'fixed' }));
 		setOpened(false);
 	}, []);
 
@@ -93,7 +98,7 @@ const TimeRange: FC = () => {
 
 	const onSetShiftInterval = useCallback((val: number | string) => {
 		if (typeof val === 'number') {
-			setLogsStore((store) => setshiftInterval(store, val));
+			setAppStore((store) => setshiftInterval(store, val));
 			setShowTick(false); // Hide the tick when editing starts again
 			debouncedShowTick(); // Show the tick after the user stops typing
 		}
@@ -104,13 +109,15 @@ const TimeRange: FC = () => {
 		if (direction === 'left') {
 			const newStartTime = new Date(startTime.getTime() - changeInMs);
 			const newEndTime = new Date(endTime.getTime() - changeInMs);
-			setLogsStore((store) =>
+			setLogStore((store) => getCleanStoreForRefetch(store));
+			setAppStore((store) =>
 				setTimeRange(store, { startTime: dayjs(newStartTime), endTime: dayjs(newEndTime), type: 'custom' }),
 			);
 		} else {
 			const newStartTime = new Date(startTime.getTime() + changeInMs);
 			const newEndTime = new Date(endTime.getTime() + changeInMs);
-			setLogsStore((store) =>
+			setLogStore((store) => getCleanStoreForRefetch(store));
+			setAppStore((store) =>
 				setTimeRange(store, { startTime: dayjs(newStartTime), endTime: dayjs(newEndTime), type: 'custom' }),
 			);
 		}
@@ -197,7 +204,8 @@ function isDateInRange(startDate: Date, endDate: Date, currentDate: Date) {
 }
 
 const CustomTimeRange: FC<CustomTimeRangeProps> = ({ setOpened, resetToRelative }) => {
-	const [{ startTime: startTimeFromStore, endTime: endTimeFromStore, type }, setLogsStore] = useLogsStore(
+	const [, setLogStore] = useLogsStore((_store) => null);
+	const [{ startTime: startTimeFromStore, endTime: endTimeFromStore, type }, setAppStore] = useAppStore(
 		(store) => store.timeRange,
 	);
 
@@ -229,7 +237,8 @@ const CustomTimeRange: FC<CustomTimeRangeProps> = ({ setOpened, resetToRelative 
 	};
 
 	const onApply = () => {
-		setLogsStore((store) =>
+		setLogStore((store) => getCleanStoreForRefetch(store));
+		setAppStore((store) =>
 			setTimeRange(store, {
 				type: 'custom',
 				startTime: dayjs(localSelectedRange.startTime).startOf('minute'),
