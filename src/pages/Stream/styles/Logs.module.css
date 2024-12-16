@@ -272,6 +272,15 @@
 			right: 0;
 			display: none;
 		}
+		.actionIconContainer {
+			position: absolute;
+			top: 25%;
+			left: 0;
+			cursor: pointer;
+			border-radius: 4px;
+			background-color: white;
+			display: none;
+		}
 	}
 }
 
