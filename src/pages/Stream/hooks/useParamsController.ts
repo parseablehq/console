@@ -135,10 +135,7 @@ const useParamsController = () => {
 				setFilterStore((store) =>
 					updateAppliedQuery(store, generateQueryBuilderASTFromSQL(presentParams.query) as QueryType),
 				);
-				setFilterStore((store) =>
-					// applySavedFilters(store, generateQueryBuilderASTFromSQL(presentParams.query) as QueryType),
-					setAppliedFilterQuery(store, presentParams.query),
-				);
+				setFilterStore((store) => setAppliedFilterQuery(store, presentParams.query));
 				setFilterStore((store) => toogleQueryParamsFlag(store, true));
 			}
 		}
