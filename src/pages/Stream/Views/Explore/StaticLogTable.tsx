@@ -21,7 +21,7 @@ import { Log } from '@/@types/parseable/api/query';
 import { CopyIcon } from './JSONView';
 import { FieldTypeMap, useStreamStore } from '../../providers/StreamProvider';
 import timeRangeUtils from '@/utils/timeRangeUtils';
-import { IconBraces, IconDotsVertical, IconShare } from '@tabler/icons-react';
+import { IconDotsVertical } from '@tabler/icons-react';
 import { copyTextToClipboard } from '@/utils';
 import { notifySuccess } from '@/utils/notification';
 
@@ -196,6 +196,15 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 		notifySuccess({ message: 'Link Copied!' });
 	}, [window.location.href]);
 
+	const copyJSON = useCallback(() => {
+		const [start, end] = rowNumber.split(':').map(Number);
+
+		const rowsToCopy = pageData.slice(start, end + 1);
+
+		copyTextToClipboard(rowsToCopy);
+		notifySuccess({ message: 'JSON Copied!' });
+	}, [rowNumber]);
+
 	const handleRowClick = (index: number, event: React.MouseEvent) => {
 		let newRange = `${index}:${index}`;
 
@@ -308,7 +317,6 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 							if (rowCount === 1) {
 								return (
 									<Menu.Item
-										leftSection={<IconBraces />}
 										onClick={() => {
 											selectLog(contextMenu.row);
 											closeContextMenu();
@@ -319,7 +327,6 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 							} else if (rowCount > 1) {
 								return (
 									<Menu.Item
-										leftSection={<IconShare />}
 										onClick={() => {
 											copyUrl();
 											closeContextMenu();
@@ -331,6 +338,13 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 
 							return null;
 						})()}
+						<Menu.Item
+							onClick={() => {
+								copyJSON();
+								closeContextMenu();
+							}}>
+							Copy JSON
+						</Menu.Item>
 					</Menu>
 				</div>
 			)}
