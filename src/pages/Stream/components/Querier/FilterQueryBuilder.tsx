@@ -6,10 +6,10 @@ import {
 	Box,
 	ThemeIcon,
 	Select,
-	Input,
 	CloseIcon,
 	Pill,
 	ActionIcon,
+	Autocomplete,
 } from '@mantine/core';
 import { IconFilter, IconPlus } from '@tabler/icons-react';
 import classes from '../../styles/Querier.module.css';
@@ -23,7 +23,7 @@ export const FilterPlaceholder = () => {
 	);
 };
 
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFilterStore, filterStoreReducers, operatorLabelMap } from '../../providers/FilterProvider';
 import { useLogsStore } from '../../providers/LogsProvider';
 import {
@@ -60,6 +60,22 @@ type RuleViewType = {
 const RuleView = (props: RuleViewType) => {
 	const { rule, type, groupId } = props;
 	const [fieldNames, setFilterStore] = useFilterStore((store) => store.fieldNames);
+	const [pageData] = useLogsStore((store) => store.tableOpts.pageData);
+	const [columnValues, setColumnValues] = useState<string[]>([]);
+
+	const getUniqueColValues = useMemo(() => {
+		if (!rule.field) return [];
+		return Array.from(
+			new Set(pageData.filter((item) => item[rule.field] !== null).map((item) => String(item[rule.field]))),
+		);
+	}, [pageData, rule.field]);
+
+	useEffect(() => {
+		if (rule.field) {
+			setColumnValues(getUniqueColValues);
+		}
+	}, [rule.field, getUniqueColValues]);
+
 	const onFieldChange = useCallback((field: string | null) => {
 		if (field === null) return;
 		setFilterStore((store) => updateRule(store, groupId, rule.id, { field }));
@@ -70,8 +86,8 @@ const RuleView = (props: RuleViewType) => {
 		setFilterStore((store) => updateRule(store, groupId, rule.id, { operator }));
 	}, []);
 
-	const onValueChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-		setFilterStore((store) => updateRule(store, groupId, rule.id, { value: e.target.value }));
+	const onValueChange = useCallback((value: string) => {
+		setFilterStore((store) => updateRule(store, groupId, rule.id, { value }));
 	}, []);
 
 	const deleteBtnHandler = useCallback(() => {
@@ -91,14 +107,15 @@ const RuleView = (props: RuleViewType) => {
 				onChange={onOperatorChange}
 				w="33%"
 			/>
-			<Input
+
+			<Autocomplete
 				value={value}
-				onChange={onValueChange}
 				w="33%"
-				classNames={{ input: classes.fieldInput }}
 				error={isError}
-				type={type}
-				disabled={isDisabled}
+				limit={10}
+				classNames={{ input: classes.fieldInput }}
+				onChange={onValueChange}
+				data={columnValues}
 			/>
 			<ActionIcon className={classes.deleteRulebtn} onClick={deleteBtnHandler} variant="light">
 				<CloseIcon />
