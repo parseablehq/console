@@ -332,16 +332,6 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 										View JSON
 									</Menu.Item>
 								);
-							} else if (rowCount > 1) {
-								return (
-									<Menu.Item
-										onClick={() => {
-											copyUrl();
-											closeContextMenu();
-										}}>
-										Share
-									</Menu.Item>
-								);
 							}
 
 							return null;
@@ -352,6 +342,13 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 								closeContextMenu();
 							}}>
 							Copy JSON
+						</Menu.Item>
+						<Menu.Item
+							onClick={() => {
+								copyUrl();
+								closeContextMenu();
+							}}>
+							Copy permalink
 						</Menu.Item>
 					</Menu>
 				</div>
