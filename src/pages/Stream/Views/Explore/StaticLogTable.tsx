@@ -92,7 +92,13 @@ const makeHeaderOpts = (
 						}
 						const isFirstColumn = index === 0;
 						return (
-							<div className={tableStyles.customCellContainer} style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+							<div
+								className={tableStyles.customCellContainer}
+								style={{
+									marginLeft: isFirstSelectedRow && isFirstColumn ? '4px' : '',
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+								}}>
 								<div
 									className={tableStyles.actionIconContainer}
 									onClick={(event) => {
@@ -107,7 +113,9 @@ const makeHeaderOpts = (
 									style={{
 										display: isFirstSelectedRow && isFirstColumn ? 'flex' : '',
 									}}>
-									{isSecureHTTPContext ? sanitizedValue && <IconDotsVertical stroke={1.2} size={'0.8rem'} /> : null}
+									{isSecureHTTPContext
+										? sanitizedValue && <IconDotsVertical stroke={1.2} size={'0.8rem'} color="#545beb" />
+										: null}
 								</div>
 								{sanitizedValue}
 								<div className={tableStyles.copyIconContainer}>
@@ -260,7 +268,7 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 									const [start, end] = rowNumber.split(':').map(Number);
 									return row.index >= start && row.index <= end;
 								})()
-									? '#DDE3FE'
+									? '#E8EDFE'
 									: '',
 						},
 					};

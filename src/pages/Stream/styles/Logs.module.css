@@ -275,10 +275,12 @@
 		.actionIconContainer {
 			position: absolute;
 			top: 25%;
-			left: 0;
+			left: 3px;
 			cursor: pointer;
+			padding: 1px 0px;
 			border-radius: 4px;
 			background-color: white;
+			border: 0.8px solid #545beb;
 			display: none;
 		}
 	}
