@@ -9,13 +9,13 @@ import { HOME_ROUTE } from '@/constants/routes';
 import { useId } from '@mantine/hooks';
 import { useEffect } from 'react';
 import Cookies from 'js-cookie';
-import { getQueryParam } from '@/utils';
+import { useGetQueryParam } from '@/utils';
 import { isAxiosError } from 'axios';
 import _ from 'lodash';
 
 export const useLoginForm = () => {
 	const notificationId = useId();
-	const queryParams = getQueryParam();
+	const queryParams = useGetQueryParam();
 	const [loading, setLoading] = useMountedState(false);
 	const [error, setError] = useMountedState<string | null>(null);
 	const auth = Cookies.get('session');

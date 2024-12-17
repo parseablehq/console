@@ -43,7 +43,7 @@ const RelativeTimeIntervals = (props: {
 
 const TimeRange: FC = () => {
 	const [timeRange, setAppStore] = useAppStore((store) => store.timeRange);
-	const [, setLogStore] = useLogsStore((_store) => null);
+	const [, setLogStore] = useLogsStore(() => null);
 	const { label, shiftInterval, interval, startTime, endTime, type } = timeRange;
 	const handleOuterClick = useCallback((event: any) => {
 		const targetClassNames: string[] = event.target?.classList || [];
@@ -204,7 +204,7 @@ function isDateInRange(startDate: Date, endDate: Date, currentDate: Date) {
 }
 
 const CustomTimeRange: FC<CustomTimeRangeProps> = ({ setOpened, resetToRelative }) => {
-	const [, setLogStore] = useLogsStore((_store) => null);
+	const [, setLogStore] = useLogsStore(() => null);
 	const [{ startTime: startTimeFromStore, endTime: endTimeFromStore, type }, setAppStore] = useAppStore(
 		(store) => store.timeRange,
 	);

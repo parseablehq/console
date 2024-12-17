@@ -6,7 +6,7 @@ import { useStreamStore, streamStoreReducers } from '@/pages/Stream/providers/St
 const { setCacheEnabled } = streamStoreReducers;
 
 export const useCacheToggle = (streamName: string) => {
-	const [, setStreamStore] = useStreamStore((_store) => null);
+	const [, setStreamStore] = useStreamStore(() => null);
 	const {
 		data: checkCacheData,
 		refetch: getCacheStatusRefetch,
