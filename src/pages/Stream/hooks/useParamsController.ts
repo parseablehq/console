@@ -108,6 +108,14 @@ const useParamsController = () => {
 
 	const [searchParams, setSearchParams] = useSearchParams();
 
+	const syncRowNumber = useCallback((storeAsParams: Record<string, string>, presentParams: Record<string, string>) => {
+		if (_.has(presentParams, 'rowNumber')) {
+			if (storeAsParams.rowNumber !== presentParams.rowNumber) {
+				setLogsStore((store) => setRowNumber(store, presentParams.rowNumber));
+			}
+		}
+	}, []);
+
 	useEffect(() => {
 		const storeAsParams = storeToParamsObj({
 			timeRange,
@@ -150,7 +158,7 @@ const useParamsController = () => {
 				rows: `${perPage}`,
 				query: custQuerySearchState.custSearchQuery,
 				filterType: custQuerySearchState.viewMode,
-				rowNumber: rowNumber,
+				rowNumber,
 			});
 			const presentParams = paramsStringToParamsObj(searchParams);
 			if (_.isEqual(storeAsParams, presentParams)) return;
@@ -169,7 +177,7 @@ const useParamsController = () => {
 			rows: `${perPage}`,
 			query: custQuerySearchState.custSearchQuery,
 			filterType: custQuerySearchState.viewMode,
-			rowNumber: rowNumber,
+			rowNumber,
 		});
 		const presentParams = paramsStringToParamsObj(searchParams);
 
@@ -194,14 +202,6 @@ const useParamsController = () => {
 		syncTimeRangeToStore(storeAsParams, presentParams);
 		syncRowNumber(storeAsParams, presentParams);
 	}, [searchParams]);
-
-	const syncRowNumber = useCallback((storeAsParams: Record<string, string>, presentParams: Record<string, string>) => {
-		if (_.has(presentParams, 'rowNumber')) {
-			if (storeAsParams.rowNumber !== presentParams.rowNumber) {
-				setLogsStore((store) => setRowNumber(store, presentParams.rowNumber));
-			}
-		}
-	}, []);
 
 	const syncTimeRangeToStore = useCallback(
 		(storeAsParams: Record<string, string>, presentParams: Record<string, string>) => {

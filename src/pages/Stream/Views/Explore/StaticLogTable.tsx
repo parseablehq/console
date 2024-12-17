@@ -1,6 +1,6 @@
 import { Box, Menu } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { ReactNode } from 'react';
+import type { Dispatch, ReactNode, SetStateAction } from 'react';
 import EmptyBox from '@/components/Empty';
 import FilterPills from '../../components/FilterPills';
 import tableStyles from '../../styles/Logs.module.css';
@@ -57,12 +57,19 @@ const getSanitizedValue = (value: CellType, isTimestamp: boolean) => {
 	return String(value);
 };
 
+type ContextMenuState = {
+	visible: boolean;
+	x: number;
+	y: number;
+	row: Log | null;
+};
+
 const makeHeaderOpts = (
 	headers: string[],
 	isSecureHTTPContext: boolean,
 	fieldTypeMap: FieldTypeMap,
 	rowNumber: string,
-	setContextMenu: any,
+	setContextMenu: Dispatch<SetStateAction<ContextMenuState>>,
 ) => {
 	return _.reduce(
 		headers,
@@ -135,12 +142,7 @@ const makeColumnVisiblityOpts = (columns: string[]) => {
 };
 
 const Table = (props: { primaryHeaderHeight: number }) => {
-	const [contextMenu, setContextMenu] = useState<{
-		visible: boolean;
-		x: number;
-		y: number;
-		row: any | null;
-	}>({
+	const [contextMenu, setContextMenu] = useState<ContextMenuState>({
 		visible: false,
 		x: 0,
 		y: 0,
@@ -158,7 +160,8 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 		[orderedHeaders, rowNumber],
 	);
 	const columnVisibility = useMemo(() => makeColumnVisiblityOpts(disabledColumns), [disabledColumns, orderedHeaders]);
-	const selectLog = useCallback((log: Log) => {
+	const selectLog = useCallback((log: Log | null) => {
+		if (!log) return;
 		const selectedText = window.getSelection()?.toString();
 		if (selectedText !== undefined && selectedText?.length > 0) return;
 
@@ -242,7 +245,7 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 			<MantineReactTable
 				enableBottomToolbar={false}
 				enableTopToolbar={false}
-				enableColumnResizing={true}
+				enableColumnResizing
 				mantineTableBodyCellProps={({ column: { id } }) => makeCellCustomStyles(id)}
 				mantineTableHeadRowProps={{ style: { border: 'none' } }}
 				mantineTableHeadCellProps={{
@@ -283,13 +286,13 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 				data={pageData}
 				mantinePaperProps={{ style: { border: 'none' } }}
 				enablePagination={false}
-				enableColumnPinning={true}
+				enableColumnPinning
 				initialState={{
 					columnPinning: {
 						left: ['rowNumber'],
 					},
 				}}
-				enableStickyHeader={true}
+				enableStickyHeader
 				defaultColumn={{ minSize: 100 }}
 				layoutMode="grid"
 				state={{
