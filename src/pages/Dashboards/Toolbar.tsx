@@ -77,7 +77,7 @@ const EditLayoutButton = (props: { layoutRef: React.MutableRefObject<ReactGridLa
 };
 
 const AddTileButton = () => {
-	const [, setDashbaordsStore] = useDashboardsStore((_store) => null);
+	const [, setDashbaordsStore] = useDashboardsStore(() => null);
 
 	const onClick = useCallback(() => {
 		setDashbaordsStore((store) => toggleCreateTileModal(store, true));
@@ -97,7 +97,7 @@ const AddTileButton = () => {
 };
 
 const ImportTileButton = () => {
-	const [, setDashbaordsStore] = useDashboardsStore((_store) => null);
+	const [, setDashbaordsStore] = useDashboardsStore(() => null);
 
 	const onClick = useCallback(() => {
 		setDashbaordsStore((store) => toggleImportTileModal(store, true));
@@ -157,7 +157,7 @@ const renderDeleteIcon = () => <IconTrash size={px('1rem')} stroke={1.5} />;
 const renderShareIcon = () => <IconShare size={px('1rem')} stroke={1.5} />;
 
 const DeleteDashboardButton = () => {
-	const [_store, setDashbaordsStore] = useDashboardsStore((_store) => null);
+	const [, setDashbaordsStore] = useDashboardsStore(() => null);
 	const onClick = useCallback(() => setDashbaordsStore((store) => toggleDeleteDashboardModal(store, true)), []);
 	return <IconButton renderIcon={renderDeleteIcon} size={36} onClick={onClick} tooltipLabel="Delete Dashboard" />;
 };

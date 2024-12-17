@@ -12,7 +12,7 @@ import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/Ap
 const { setRefreshInterval, getCleanStoreForRefetch } = logsStoreReducers;
 const { syncTimeRange } = appStoreReducers;
 const RefreshInterval: FC = () => {
-	const [, setAppStore] = useAppStore((_store) => null);
+	const [, setAppStore] = useAppStore(() => null);
 	const [refreshInterval, setLogsStore] = useLogsStore((store) => store.refreshInterval);
 	const Icon = useMemo(() => (refreshInterval ? IconRefresh : IconRefreshOff), [refreshInterval]);
 	const timerRef = useRef<NodeJS.Timer | null>(null);

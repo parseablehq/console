@@ -13,4 +13,4 @@ export const loginIn = (username: string, password: string) => {
 
 export const logOut = () => {
 	return Axios().get(LOGOUT_URL);
-}
+};

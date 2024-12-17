@@ -239,7 +239,7 @@ const sanitizeBytes = (str: any) => {
 type StreamInfoProps = {
 	stream: string;
 	data: {
-		stats: LogStreamStat | {};
+		stats: LogStreamStat | object;
 		retention: LogStreamRetention | [];
 	};
 	navigateToStream: (stream: string) => void;

@@ -68,7 +68,7 @@ const DashboardList = (props: { updateTimeRange: (dashboard: Dashboard) => void 
 const renderShareIcon = () => <IconFileDownload size={px('1rem')} stroke={1.5} />;
 
 const ImportDashboardButton = () => {
-	const [_store, setDashbaordsStore] = useDashboardsStore((_store) => null);
+	const [, setDashbaordsStore] = useDashboardsStore(() => null);
 	const onClick = useCallback(() => {
 		setDashbaordsStore((store) => toggleImportDashboardModal(store, true));
 	}, []);
