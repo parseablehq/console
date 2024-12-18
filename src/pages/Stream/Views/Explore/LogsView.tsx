@@ -6,6 +6,7 @@ import useLogsFetcher from './useLogsFetcher';
 import LogsViewConfig from './LogsViewConfig';
 
 import { useEffect } from 'react';
+import _ from 'lodash';
 
 const { setPageAndPageData, setTargetPage, setTargetColumns, setDisabledColumns } = logsStoreReducers;
 
