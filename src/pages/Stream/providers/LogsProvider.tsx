@@ -189,6 +189,7 @@ type LogsStore = {
 		instantSearchValue: string;
 		configViewType: 'schema' | 'columns';
 		enableWordWrap: boolean;
+		rowNumber: string;
 	};
 
 	data: LogQueryData;
@@ -255,6 +256,7 @@ type LogsStoreReducers = {
 	setTargetColumns: (store: LogsStore, columms: string[]) => ReducerOutput;
 	setOrderedHeaders: (store: LogsStore, columns: string[]) => ReducerOutput;
 	toggleWordWrap: (store: LogsStore) => ReducerOutput;
+	setRowNumber: (store: LogsStore, rowNumber: string) => ReducerOutput;
 };
 
 const defaultSortKey = 'p_timestamp';
@@ -296,6 +298,7 @@ const initialState: LogsStore = {
 		instantSearchValue: '',
 		configViewType: 'columns',
 		enableWordWrap: true,
+		rowNumber: '',
 	},
 
 	// data
@@ -472,6 +475,16 @@ const togglePinnedColumns = (store: LogsStore, columnName: string) => {
 		tableOpts: {
 			...tableOpts,
 			pinnedColumns: addOrRemoveElement(tableOpts.pinnedColumns, columnName),
+		},
+	};
+};
+
+const setRowNumber = (store: LogsStore, rowNumber: string) => {
+	const { tableOpts } = store;
+	return {
+		tableOpts: {
+			...tableOpts,
+			rowNumber,
 		},
 	};
 };
@@ -885,6 +898,7 @@ const logsStoreReducers: LogsStoreReducers = {
 	toggleDeleteModal,
 	toggleDisabledColumns,
 	togglePinnedColumns,
+	setRowNumber,
 	setLogData,
 	setStreamSchema,
 	setPerPage,

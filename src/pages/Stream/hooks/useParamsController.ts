@@ -13,14 +13,22 @@ import { appStoreReducers, TimeRange, useAppStore } from '@/layouts/MainLayout/p
 import { getOffset, joinOrSplit } from '@/utils';
 
 const { getRelativeStartAndEndDate, formatDateWithTimezone, getLocalTimezone } = timeRangeUtils;
+
 const { setTimeRange, syncTimeRange } = appStoreReducers;
-const { onToggleView, setPerPage, setCustQuerySearchState, setTargetPage, setCurrentOffset, setTargetColumns } =
-	logsStoreReducers;
+const {
+	onToggleView,
+	setPerPage,
+	setCustQuerySearchState,
+	setTargetPage,
+	setCurrentOffset,
+	setTargetColumns,
+	setRowNumber,
+} = logsStoreReducers;
 const { toogleQueryParamsFlag, setAppliedFilterQuery, applySavedFilters, updateQuery, updateAppliedQuery } =
 	filterStoreReducers;
 
 const timeRangeFormat = 'DD-MMM-YYYY_HH-mmz';
-const keys = ['view', 'rows', 'page', 'interval', 'from', 'to', 'query', 'filterType', 'fields'];
+const keys = ['view', 'rows', 'page', 'interval', 'from', 'to', 'query', 'filterType', 'fields', 'rowNumber'];
 
 const dateToParamString = (date: Date) => {
 	return formatDateWithTimezone(date, timeRangeFormat);
@@ -56,6 +64,14 @@ const deriveTimeRangeParams = (timerange: TimeRange): { interval: string } | { f
 	}
 };
 
+const deriveRowNumber = (rowNumber: string) => {
+	if (rowNumber.length > 0) {
+		return {
+			rowNumber,
+		};
+	}
+};
+
 const storeToParamsObj = (opts: {
 	timeRange: TimeRange;
 	view: string;
@@ -64,11 +80,13 @@ const storeToParamsObj = (opts: {
 	query: string;
 	filterType: string;
 	fields: string;
+	rowNumber: string;
 }): Record<string, string> => {
-	const { timeRange, page, view, rows, query, filterType, fields } = opts;
+	const { timeRange, page, view, rows, query, filterType, fields, rowNumber } = opts;
 
 	const params: Record<string, string> = {
 		...deriveTimeRangeParams(timeRange),
+		...deriveRowNumber(rowNumber),
 		view,
 		rows,
 		page,
@@ -99,12 +117,21 @@ const useParamsController = () => {
 	const [, setLogsStore] = useLogsStore(() => null);
 	const [, setFilterStore] = useFilterStore((store) => store);
 
-	const { currentOffset, currentPage, targetPage, perPage, headers, disabledColumns, targetColumns } = tableOpts;
+	const { currentOffset, currentPage, targetPage, perPage, headers, disabledColumns, targetColumns, rowNumber } =
+		tableOpts;
 
 	const visibleHeaders = headers.filter((el) => !columnsToSkip.includes(el));
 
 	const activeHeaders = visibleHeaders.filter((el) => !disabledColumns.includes(el));
 	const [searchParams, setSearchParams] = useSearchParams();
+
+	const syncRowNumber = useCallback((storeAsParams: Record<string, string>, presentParams: Record<string, string>) => {
+		if (_.has(presentParams, 'rowNumber')) {
+			if (storeAsParams.rowNumber !== presentParams.rowNumber) {
+				setLogsStore((store) => setRowNumber(store, presentParams.rowNumber));
+			}
+		}
+	}, []);
 	const pageOffset = Math.ceil(currentOffset / perPage);
 
 	useEffect(() => {
@@ -116,6 +143,7 @@ const useParamsController = () => {
 			query: custQuerySearchState.custSearchQuery,
 			filterType: custQuerySearchState.viewMode,
 			fields: `${joinOrSplit(!_.isEmpty(targetColumns) ? targetColumns : activeHeaders)}`,
+			rowNumber,
 		});
 		const presentParams = paramsStringToParamsObj(searchParams);
 		if (storeAsParams.query !== presentParams.query) {
@@ -160,6 +188,7 @@ const useParamsController = () => {
 			}
 		}
 
+		syncRowNumber(storeAsParams, presentParams);
 		setStoreSynced(true);
 	}, []);
 
@@ -173,6 +202,7 @@ const useParamsController = () => {
 				query: custQuerySearchState.custSearchQuery,
 				filterType: custQuerySearchState.viewMode,
 				fields: `${joinOrSplit(!_.isEmpty(targetColumns) ? targetColumns : activeHeaders)}`,
+				rowNumber,
 			});
 
 			const presentParams = paramsStringToParamsObj(searchParams);
@@ -199,6 +229,7 @@ const useParamsController = () => {
 			query: custQuerySearchState.custSearchQuery,
 			filterType: custQuerySearchState.viewMode,
 			fields: `${joinOrSplit(!_.isEmpty(targetColumns) ? targetColumns : activeHeaders)}`,
+			rowNumber,
 		});
 		const presentParams = paramsStringToParamsObj(searchParams);
 
@@ -221,6 +252,7 @@ const useParamsController = () => {
 			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
 		}
 		syncTimeRangeToStore(storeAsParams, presentParams);
+		syncRowNumber(storeAsParams, presentParams);
 	}, [searchParams]);
 
 	const syncTimeRangeToStore = useCallback(
