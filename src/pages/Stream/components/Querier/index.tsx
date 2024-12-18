@@ -133,7 +133,7 @@ const Querier = () => {
 	}, []);
 	const [schema] = useStreamStore((store) => store.schema);
 	const [streamInfo] = useStreamStore((store) => store.info);
-	const [{ query, isSumbitDisabled }, setFilterStore] = useFilterStore((store) => store);
+	const [{ query, isSumbitDisabled, isQueryFromParams }, setFilterStore] = useFilterStore((store) => store);
 	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
 
 	useEffect(() => {
@@ -202,7 +202,7 @@ const Querier = () => {
 
 		// trigger query fetch if the rules were updated by the remove btn on pills
 		// -----------------------------------
-		if (!showQueryBuilder && (activeMode === 'filters' || savedFilterId)) {
+		if (!showQueryBuilder && (activeMode === 'filters' || savedFilterId) && !isQueryFromParams) {
 			if (!shouldSumbitDisabled) {
 				onFiltersApply({ isUncontrolled: true });
 			} else {

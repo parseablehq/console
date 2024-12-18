@@ -4,13 +4,16 @@ import JsonView from './JSONView';
 import LogTable from './StaticLogTable';
 import useLogsFetcher from './useLogsFetcher';
 import LogsViewConfig from './LogsViewConfig';
+import { useFilterStore, filterStoreReducers } from '../../providers/FilterProvider';
 
 import { useEffect } from 'react';
 import _ from 'lodash';
 
 const { setPageAndPageData, setTargetPage, setTargetColumns, setDisabledColumns } = logsStoreReducers;
+const { toogleQueryParamsFlag } = filterStoreReducers;
 
 const LogsView = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
+	const [, setFilterStore] = useFilterStore((store) => store);
 	const { schemaLoading, infoLoading } = props;
 	const { errorMessage, hasNoData, showTable, isFetchingCount, logsLoading } = useLogsFetcher({
 		schemaLoading,
@@ -36,6 +39,7 @@ const LogsView = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
 				setLogsStore((store) => setTargetPage(store, undefined));
 			}
 		}
+		if (showTable) setFilterStore((store) => toogleQueryParamsFlag(store, false));
 	}, [showTable, currentPage]);
 
 	useEffect(() => {

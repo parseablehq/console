@@ -16,7 +16,8 @@ const { getRelativeStartAndEndDate, formatDateWithTimezone, getLocalTimezone } =
 const { setTimeRange, syncTimeRange } = appStoreReducers;
 const { onToggleView, setPerPage, setCustQuerySearchState, setTargetPage, setCurrentOffset, setTargetColumns } =
 	logsStoreReducers;
-const { toogleQueryParamsFlag, setAppliedFilterQuery, applySavedFilters, updateAppliedQuery } = filterStoreReducers;
+const { toogleQueryParamsFlag, setAppliedFilterQuery, applySavedFilters, updateQuery, updateAppliedQuery } =
+	filterStoreReducers;
 
 const timeRangeFormat = 'DD-MMM-YYYY_HH-mmz';
 const keys = ['view', 'rows', 'page', 'interval', 'from', 'to', 'query', 'filterType', 'fields'];
@@ -117,25 +118,25 @@ const useParamsController = () => {
 			fields: `${joinOrSplit(!_.isEmpty(targetColumns) ? targetColumns : activeHeaders)}`,
 		});
 		const presentParams = paramsStringToParamsObj(searchParams);
+		if (storeAsParams.query !== presentParams.query) {
+			if (presentParams.filterType === 'filters') {
+				setFilterStore((store) => updateQuery(store, generateQueryBuilderASTFromSQL(presentParams.query) as QueryType));
+				setFilterStore((store) => updateAppliedQuery(store, store.query));
+
+				setFilterStore((store) => setAppliedFilterQuery(store, presentParams.query));
+				setFilterStore((store) => toogleQueryParamsFlag(store, true));
+			}
+			setAppStore((store) => syncTimeRange(store));
+			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
+		}
+
 		syncTimeRangeToStore(storeAsParams, presentParams);
+
 		if (['table', 'json'].includes(presentParams.view) && presentParams.view !== storeAsParams.view) {
 			setLogsStore((store) => onToggleView(store, presentParams.view as 'table' | 'json'));
 		}
 		if (storeAsParams.rows !== presentParams.rows && LOG_QUERY_LIMITS.includes(_.toNumber(presentParams.rows))) {
 			setLogsStore((store) => setPerPage(store, _.toNumber(presentParams.rows)));
-		}
-
-		if (storeAsParams.query !== presentParams.query) {
-			setAppStore((store) => syncTimeRange(store));
-			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
-
-			if (presentParams.filterType === 'filters') {
-				setFilterStore((store) =>
-					updateAppliedQuery(store, generateQueryBuilderASTFromSQL(presentParams.query) as QueryType),
-				);
-				setFilterStore((store) => setAppliedFilterQuery(store, presentParams.query));
-				setFilterStore((store) => toogleQueryParamsFlag(store, true));
-			}
 		}
 
 		if (storeAsParams.fields !== presentParams.fields) {

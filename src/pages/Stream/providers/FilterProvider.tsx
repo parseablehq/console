@@ -134,6 +134,7 @@ type FilterStoreReducers = {
 	updateParentCombinator: (store: FilterStore, combinator: Combinator) => ReducerOutput;
 	updateAppliedQuery: (store: FilterStore, appliedQuery: QueryType) => ReducerOutput;
 	updateRule: (store: FilterStore, groupId: string, ruleId: string, updateOpts: RuleUpdateOpts) => ReducerOutput;
+	updateQuery: (store: FilterStore, query: QueryType) => ReducerOutput;
 	parseQuery: (
 		queryEngine: 'Parseable' | 'Trino' | undefined,
 		query: QueryType,
@@ -358,6 +359,13 @@ const updateAppliedQuery = (store: FilterStore, appliedQuery: QueryType) => {
 	};
 };
 
+const updateQuery = (store: FilterStore, query: QueryType) => {
+	return {
+		...store,
+		query,
+	};
+};
+
 const applySavedFilters = (store: FilterStore, query: QueryType) => {
 	return {
 		...store,
@@ -378,6 +386,7 @@ const filterStoreReducers: FilterStoreReducers = {
 	updateParentCombinator,
 	updateAppliedQuery,
 	updateRule,
+	updateQuery,
 	parseQuery,
 	toggleSubmitBtn,
 	toggleSaveFiltersModal,
