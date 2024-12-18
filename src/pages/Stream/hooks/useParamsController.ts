@@ -12,11 +12,11 @@ import { generateQueryBuilderASTFromSQL } from '../utils';
 import { appStoreReducers, TimeRange, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const { getRelativeStartAndEndDate, formatDateWithTimezone, getLocalTimezone } = timeRangeUtils;
-const { onToggleView, setPerPage, setCustQuerySearchState } = logsStoreReducers;
+const { onToggleView, setPerPage, setCustQuerySearchState, setRowNumber } = logsStoreReducers;
 const { setTimeRange, syncTimeRange } = appStoreReducers;
 const { applySavedFilters } = filterStoreReducers;
 const timeRangeFormat = 'DD-MMM-YYYY_HH-mmz';
-const keys = ['view', 'rows', 'interval', 'from', 'to', 'query', 'filterType'];
+const keys = ['view', 'rows', 'interval', 'from', 'to', 'query', 'filterType', 'rowNumber'];
 
 const dateToParamString = (date: Date) => {
 	return formatDateWithTimezone(date, timeRangeFormat);
@@ -52,6 +52,14 @@ const deriveTimeRangeParams = (timerange: TimeRange): { interval: string } | { f
 	}
 };
 
+const deriveRowNumber = (rowNumber: string) => {
+	if (rowNumber.length > 0) {
+		return {
+			rowNumber,
+		};
+	}
+};
+
 const storeToParamsObj = (opts: {
 	timeRange: TimeRange;
 	view: string;
@@ -60,10 +68,12 @@ const storeToParamsObj = (opts: {
 	rows: string;
 	query: string;
 	filterType: string;
+	rowNumber: string;
 }): Record<string, string> => {
-	const { timeRange, offset, page, view, rows, query, filterType } = opts;
+	const { timeRange, offset, page, view, rows, query, filterType, rowNumber } = opts;
 	const params: Record<string, string> = {
 		...deriveTimeRangeParams(timeRange),
+		...deriveRowNumber(rowNumber),
 		view,
 		offset,
 		rows,
@@ -94,9 +104,17 @@ const useParamsController = () => {
 	const [, setLogsStore] = useLogsStore(() => null);
 	const [, setFilterStore] = useFilterStore((store) => store);
 
-	const { currentOffset, currentPage, perPage } = tableOpts;
+	const { currentOffset, currentPage, perPage, rowNumber } = tableOpts;
 
 	const [searchParams, setSearchParams] = useSearchParams();
+
+	const syncRowNumber = useCallback((storeAsParams: Record<string, string>, presentParams: Record<string, string>) => {
+		if (_.has(presentParams, 'rowNumber')) {
+			if (storeAsParams.rowNumber !== presentParams.rowNumber) {
+				setLogsStore((store) => setRowNumber(store, presentParams.rowNumber));
+			}
+		}
+	}, []);
 
 	useEffect(() => {
 		const storeAsParams = storeToParamsObj({
@@ -107,6 +125,7 @@ const useParamsController = () => {
 			rows: `${perPage}`,
 			query: custQuerySearchState.custSearchQuery,
 			filterType: custQuerySearchState.viewMode,
+			rowNumber,
 		});
 		const presentParams = paramsStringToParamsObj(searchParams);
 		if (['table', 'json'].includes(presentParams.view) && presentParams.view !== storeAsParams.view) {
@@ -125,6 +144,7 @@ const useParamsController = () => {
 				);
 		}
 		syncTimeRangeToStore(storeAsParams, presentParams);
+		syncRowNumber(storeAsParams, presentParams);
 		setStoreSynced(true);
 	}, []);
 
@@ -138,6 +158,7 @@ const useParamsController = () => {
 				rows: `${perPage}`,
 				query: custQuerySearchState.custSearchQuery,
 				filterType: custQuerySearchState.viewMode,
+				rowNumber,
 			});
 			const presentParams = paramsStringToParamsObj(searchParams);
 			if (_.isEqual(storeAsParams, presentParams)) return;
@@ -156,6 +177,7 @@ const useParamsController = () => {
 			rows: `${perPage}`,
 			query: custQuerySearchState.custSearchQuery,
 			filterType: custQuerySearchState.viewMode,
+			rowNumber,
 		});
 		const presentParams = paramsStringToParamsObj(searchParams);
 
@@ -178,6 +200,7 @@ const useParamsController = () => {
 			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
 		}
 		syncTimeRangeToStore(storeAsParams, presentParams);
+		syncRowNumber(storeAsParams, presentParams);
 	}, [searchParams]);
 
 	const syncTimeRangeToStore = useCallback(

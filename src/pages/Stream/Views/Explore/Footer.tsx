@@ -10,7 +10,7 @@ import useMountedState from '@/hooks/useMountedState';
 import classes from '../../styles/Footer.module.css';
 import { LOGS_FOOTER_HEIGHT } from '@/constants/theme';
 
-const { setPageAndPageData, setCurrentPage, setCurrentOffset } = logsStoreReducers;
+const { setPageAndPageData, setCurrentPage, setCurrentOffset, setRowNumber } = logsStoreReducers;
 
 const TotalCount = (props: { totalCount: number }) => {
 	return (
@@ -93,6 +93,7 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: b
 	const { totalPages, currentOffset, currentPage, perPage, totalCount } = tableOpts;
 
 	const onPageChange = useCallback((page: number) => {
+		setLogsStore((store) => setRowNumber(store, ''));
 		setLogsStore((store) => setPageAndPageData(store, page));
 	}, []);
 
