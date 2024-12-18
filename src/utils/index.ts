@@ -38,7 +38,7 @@ export const parseLogData = (value?: any, columnName?: string) => {
 };
 
 //getQueryParam
-export const getQueryParam = () => {
+export const useGetQueryParam = () => {
 	const location = useLocation();
 	return useMemo(() => {
 		const searchParams = new URLSearchParams(location.search);

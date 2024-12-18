@@ -11,8 +11,8 @@ const { getCleanStoreForRefetch } = logsStoreReducers;
 
 export const useSyncTimeRange = () => {
 	const [dashboards] = useDashboardsStore((store) => store.dashboards);
-	const [, setLogStore] = useLogsStore((_store) => null);
-	const [, setAppStore] = useAppStore((_store) => null);
+	const [, setLogStore] = useLogsStore(() => null);
+	const [, setAppStore] = useAppStore(() => null);
 
 	const updateTimeRange = useCallback(
 		(dashboard: Dashboard) => {

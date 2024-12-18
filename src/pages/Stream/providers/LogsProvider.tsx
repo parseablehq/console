@@ -481,16 +481,10 @@ const filterAndSortData = (
 	data: Log[],
 ) => {
 	const { sortOrder, sortKey, filters } = opts;
+	const filterSets = _.mapValues(filters, (values) => new Set(values));
 	const filteredData = _.isEmpty(filters)
 		? data
-		: (_.reduce(
-				data,
-				(acc: Log[], d: Log) => {
-					const doesMatch = _.some(filters, (value, key) => _.includes(value, _.toString(d[key])));
-					return doesMatch ? [...acc, d] : acc;
-				},
-				[],
-		  ) as Log[]);
+		: _.filter(data, (item) => _.every(filterSets, (valueSet, key) => valueSet.has(_.toString(item[key]))));
 	const sortedData = _.orderBy(filteredData, [sortKey], [sortOrder]);
 	return sortedData;
 };

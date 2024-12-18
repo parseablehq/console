@@ -4,7 +4,6 @@ import JsonView from './JSONView';
 import LogTable from './StaticLogTable';
 import useLogsFetcher from './useLogsFetcher';
 import LogsViewConfig from './LogsViewConfig';
-import _ from 'lodash';
 
 import { useEffect } from 'react';
 

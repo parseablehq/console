@@ -1,4 +1,4 @@
-export var ErrorMarker: any[] = [];
+export let ErrorMarker: any[] = [];
 
 // example format to generate error
 // let err = {
@@ -20,10 +20,10 @@ export var ErrorMarker: any[] = [];
 //   });
 // }
 export function errChecker(code: string, streamName: string) {
-	let arr = code.split('\r\n');
+	const arr = code.split('\r\n');
 	ErrorMarker = [];
 	arr.map((wordsString: string, j: any) => {
-		let wordsArray = wordsString.split(' ');
+		const wordsArray = wordsString.split(' ');
 		wordsArray.map((word: string, i: any) => {
 			if (word.toLowerCase() === 'from' && wordsArray[i + 1]) {
 				if (wordsArray[i + 1] !== streamName && wordsArray[i + 1] !== `${streamName};`) {

@@ -43,7 +43,7 @@ const RelativeTimeIntervals = (props: {
 
 const TimeRange: FC = () => {
 	const [timeRange, setAppStore] = useAppStore((store) => store.timeRange);
-	const [, setLogStore] = useLogsStore((_store) => null);
+	const [, setLogStore] = useLogsStore(() => null);
 	const { label, shiftInterval, interval, startTime, endTime, type } = timeRange;
 	const handleOuterClick = useCallback((event: any) => {
 		const targetClassNames: string[] = event.target?.classList || [];
@@ -204,7 +204,7 @@ function isDateInRange(startDate: Date, endDate: Date, currentDate: Date) {
 }
 
 const CustomTimeRange: FC<CustomTimeRangeProps> = ({ setOpened, resetToRelative }) => {
-	const [, setLogStore] = useLogsStore((_store) => null);
+	const [, setLogStore] = useLogsStore(() => null);
 	const [{ startTime: startTimeFromStore, endTime: endTimeFromStore, type }, setAppStore] = useAppStore(
 		(store) => store.timeRange,
 	);
@@ -229,10 +229,10 @@ const CustomTimeRange: FC<CustomTimeRangeProps> = ({ setOpened, resetToRelative 
 	const onTimeSelect = (key: keyof typeof localSelectedRange, time: string) => {
 		setLocalSelectedRange((state) => {
 			const [hours, minutes] = time.split(':').map(Number);
-			const date = state[key];
-			date.setHours(hours, minutes, 0, 0);
-			state[key] = date;
-			return { ...state };
+			if (isNaN(hours) || isNaN(minutes)) return state;
+			const updatedDate = new Date(state[key]);
+			updatedDate.setHours(hours, minutes, 0, 0);
+			return { ...state, [key]: updatedDate };
 		});
 	};
 
@@ -304,7 +304,11 @@ const CustomTimeRange: FC<CustomTimeRangeProps> = ({ setOpened, resetToRelative 
 						}}
 						renderDay={(date) => highlightDate(date, 'startTime')}
 					/>
-					<TimeInput value={startingTime} onChange={(e) => onTimeSelect('startTime', e.currentTarget.value)} />
+					<TimeInput
+						error={isStartTimeMoreThenEndTime && 'Start time must be earlier than end time.'}
+						value={startingTime}
+						onChange={(e) => onTimeSelect('startTime', e.currentTarget.value)}
+					/>
 				</Stack>
 				<Stack className={classes.datePickerContainer}>
 					<DatePicker

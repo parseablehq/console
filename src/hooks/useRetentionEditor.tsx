@@ -8,7 +8,7 @@ import _ from 'lodash';
 const { setRetention } = streamStoreReducers;
 
 export const useRetentionQuery = (streamName: string, hasSettingsAccess: boolean) => {
-	const [, setStreamStore] = useStreamStore((_store) => null);
+	const [, setStreamStore] = useStreamStore(() => null);
 	const {
 		data: getLogRetentionData,
 		isError: getLogRetentionIsError,

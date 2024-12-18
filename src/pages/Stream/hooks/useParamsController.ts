@@ -95,7 +95,7 @@ const useParamsController = () => {
 	const [viewMode] = useLogsStore((store) => store.viewMode);
 	const [custQuerySearchState] = useLogsStore((store) => store.custQuerySearchState);
 	const [timeRange, setAppStore] = useAppStore((store) => store.timeRange);
-	const [, setLogsStore] = useLogsStore((_store) => null);
+	const [, setLogsStore] = useLogsStore(() => null);
 	const [, setFilterStore] = useFilterStore((store) => store);
 
 	const { currentOffset, currentPage, targetPage, perPage, headers, disabledColumns, targetColumns } = tableOpts;
