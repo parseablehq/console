@@ -86,6 +86,9 @@
 	font-size: 12px;
 	display: flex;
 	justify-content: space-between;
+	overflow: hidden;
+	min-height: 24px;
+	max-width: 155px;
 }
 
 .fieldItemText {
