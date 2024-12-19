@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useEffect } from 'react';
 import { useLogsStore, logsStoreReducers, LOAD_LIMIT, LOG_QUERY_LIMITS } from '../../providers/LogsProvider';
 import { usePagination } from '@mantine/hooks';
 import { Box, Center, Group, Loader, Menu, Pagination, Stack, Tooltip } from '@mantine/core';
@@ -90,14 +90,29 @@ const LimitControl: FC = () => {
 
 const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: boolean }) => {
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
-	const { totalPages, currentOffset, currentPage, perPage, totalCount } = tableOpts;
+	const { totalPages, currentOffset, currentPage, perPage, totalCount, targetPage } = tableOpts;
 
-	const onPageChange = useCallback((page: number) => {
-		setLogsStore((store) => setRowNumber(store, ''));
-		setLogsStore((store) => setPageAndPageData(store, page));
-	}, []);
+	const onPageChange = useCallback(
+		(page: number) => {
+			setLogsStore((store) => setPageAndPageData(store, page));
+			if (props.loaded && !targetPage) {
+				setLogsStore((store) => setRowNumber(store, ''));
+			}
+		},
+		[props.loaded, targetPage],
+	);
 
-	const pagination = usePagination({ total: totalPages ?? 1, initialPage: 1, onChange: onPageChange });
+	useEffect(() => {
+		if (!props.loaded) return;
+		pagination.setPage(targetPage ? targetPage : 1);
+	}, [props.loaded]);
+
+	const pagination = usePagination({
+		total: totalPages ?? 1,
+		initialPage: 1,
+		onChange: onPageChange,
+	});
+
 	const onChangeOffset = useCallback(
 		(key: 'prev' | 'next') => {
 			if (key === 'prev') {
@@ -132,7 +147,7 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: b
 						total={totalPages}
 						value={currentPage}
 						onChange={(page) => {
-							pagination.setPage(page);
+							pagination && pagination.setPage(page);
 						}}
 						size="sm">
 						<Group gap={5} justify="center">
@@ -172,23 +187,6 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: b
 				) : null}
 			</Stack>
 			<Stack w="100%" align="flex-end" style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-				{/* {props.loaded && (
-					<Menu position="top">
-						<Menu.Target>
-							<div>
-								<IconButton renderIcon={renderExportIcon} />
-							</div>
-						</Menu.Target>
-						<Menu.Dropdown>
-							<Menu.Item onClick={() => exportHandler('CSV')} style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
-								CSV
-							</Menu.Item>
-							<Menu.Item onClick={() => exportHandler('JSON')} style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
-								JSON
-							</Menu.Item>
-						</Menu.Dropdown>
-					</Menu>
-				)} */}
 				<LimitControl />
 			</Stack>
 		</Stack>
