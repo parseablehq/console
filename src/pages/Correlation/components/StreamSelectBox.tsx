@@ -23,7 +23,7 @@ export const StreamSelectBox: React.FC<StreamSelectBoxProps> = ({
 			<Select
 				searchable
 				classNames={{
-					input: classes.streamInput,
+					input: disabled ? classes.streamInput_disabled : classes.streamInput,
 					description: classes.streamSelectDescription,
 				}}
 				onChange={onChange}
@@ -33,7 +33,7 @@ export const StreamSelectBox: React.FC<StreamSelectBoxProps> = ({
 				disabled={disabled}
 			/>
 			<div>
-				<Text fw={700} c={disabled ? '#CBCBCB' : '#000'}>
+				<Text fw={500} c={disabled ? '#CBCBCB' : '#000'}>
 					{disabled ? 'Select Stream 1 first' : label}
 				</Text>
 			</div>

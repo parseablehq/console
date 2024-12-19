@@ -136,7 +136,7 @@ const Correlation = () => {
 
 	const updateCorrelationCondition = () => {
 		if (select1Value && select2Value) {
-			const condition = `"${streamNames[0]}.${select1Value}" = "${streamNames[1]}.${select2Value}"`;
+			const condition = `"${streamNames[0]}".${select1Value} = "${streamNames[1]}".${select2Value}`;
 			setCorrelationData((store) => setCorrelationCondition(store, condition));
 		}
 	};
@@ -285,7 +285,8 @@ const Correlation = () => {
 							</Text>
 							<div
 								style={{
-									border: streamNames.length > 0 ? '1px solid black' : '1px solid #e1e5e8',
+									border: streamNames.length > 0 ? '1px solid #CBCBCB' : '1px solid #e1e5e8',
+									backgroundColor: streamNames.length > 0 ? 'white' : '#F7F8F9',
 								}}
 								className={classes.fieldsPillsWrapper}>
 								{Object.entries(selectedFields).map(([streamName, fieldsMap]: [any, any]) =>
@@ -364,14 +365,24 @@ const Correlation = () => {
 							</div>
 						</div>
 					</Stack>
-					<Stack className={classes.logTableControlWrapper} w="100%">
+					<div
+						style={{
+							display: 'flex',
+							justifyContent: 'space-between',
+							alignItems: 'center',
+							width: '100%',
+							paddingRight: '10px',
+						}}>
 						{/* <CorrelationFilters /> */}
-						<TimeRange />
-						<RefreshInterval />
-						<RefreshNow />
-						<ShareButton />
-						<MaximizeButton />
-					</Stack>
+						<div className={classes.logTableControlWrapper}>
+							<TimeRange />
+							<RefreshInterval />
+							<RefreshNow />
+							<ShareButton />
+							<MaximizeButton />
+						</div>
+						<Button className={classes.clearBtn}>Clear</Button>
+					</div>
 				</Stack>
 				<Stack className={classes.logsSecondaryToolbar} style={{ height: STREAM_SECONDARY_TOOLBAR_HRIGHT }}>
 					<MultiEventTimeLineGraph />

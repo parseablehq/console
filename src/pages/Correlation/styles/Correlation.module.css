@@ -25,6 +25,12 @@
 .streamInput {
 	cursor: pointer;
 	border-radius: rem(8px);
+	border-color: #828282;
+}
+
+.streamInput_disabled {
+	cursor: pointer;
+	border-radius: rem(8px);
 }
 
 .streamSelectDescription {
@@ -164,9 +170,22 @@
 
 .logTableControlWrapper {
 	flex-direction: row;
-	justify-content: flex-end;
+	gap: 10px;
+	display: flex;
 	padding: 5px;
 	height: 100%;
+	margin-left: 44px;
+}
+
+.clearBtn {
+	border: none;
+	color: #3c3c3c;
+	background-color: white;
+
+	&:hover {
+		background-color: #545beb;
+		border-radius: 10px;
+	}
 }
 
 .logsSecondaryToolbar {

@@ -176,9 +176,14 @@ export class CorrelationQueryBuilder {
 	getParseableQuery() {
 		const query =
 			this.correlationCondition && this.selectedFields
-				? `select ${this.selectedFields.map((field) => `${field} as "${field}"`).join(', ')} from \"${
-						this.streamNames[0]
-				  }\" join \"${this.streamNames[1]}\" on ${this.correlationCondition} offset 0 LIMIT ${this.limit}`
+				? `select ${this.selectedFields
+						.map((field) => {
+							const [streamName, fieldName] = field.split('.');
+							return `"${streamName}"."${fieldName}" as "${field}"`;
+						})
+						.join(', ')} from \"${this.streamNames[0]}\" join \"${this.streamNames[1]}\" on ${
+						this.correlationCondition
+				  } offset 0 LIMIT ${this.limit}`
 				: `SELECT * FROM \"${this.streamNames[0]}\" LIMIT ${this.limit}`;
 		return {
 			startTime: this.startTime,
