@@ -92,10 +92,15 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: b
 	const [tableOpts, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const { totalPages, currentOffset, currentPage, perPage, totalCount, targetPage } = tableOpts;
 
-	const onPageChange = useCallback((page: number) => {
-		setLogsStore((store) => setRowNumber(store, ''));
-		setLogsStore((store) => setPageAndPageData(store, page));
-	}, []);
+	const onPageChange = useCallback(
+		(page: number) => {
+			setLogsStore((store) => setPageAndPageData(store, page));
+			if (props.loaded && !targetPage) {
+				setLogsStore((store) => setRowNumber(store, ''));
+			}
+		},
+		[props.loaded, targetPage],
+	);
 
 	useEffect(() => {
 		if (!props.loaded) return;
