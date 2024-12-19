@@ -264,15 +264,18 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 						},
 						style: {
 							border: 'none',
-							background: row.index % 2 === 0 ? '#f8f9fa' : 'white',
 							backgroundColor:
-								rowNumber &&
-								(() => {
-									const [start, end] = rowNumber.split(':').map(Number);
-									return row.index >= start && row.index <= end;
-								})()
+								row.index % 2 === 0
+									? rowNumber &&
+									  row.index >= _.toNumber(rowNumber.split(':')[0]) &&
+									  row.index <= _.toNumber(rowNumber.split(':')[1])
+										? '#E8EDFE'
+										: '#f8f9fa'
+									: rowNumber &&
+									  row.index >= _.toNumber(rowNumber.split(':')[0]) &&
+									  row.index <= _.toNumber(rowNumber.split(':')[1])
 									? '#E8EDFE'
-									: '',
+									: 'white',
 						},
 					};
 				}}
