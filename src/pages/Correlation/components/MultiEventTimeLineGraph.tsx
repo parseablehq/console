@@ -258,12 +258,14 @@ const parseGraphData = (
 	const { modifiedEndTime, modifiedStartTime, compactType } = getModifiedTimeRange(startTime, endTime, interval);
 	const allTimestamps = getAllIntervals(modifiedStartTime, modifiedEndTime, compactType);
 
+	const hasSecondDataset = dataSets[1] !== undefined;
+
 	const secondResponseMap =
 		secondResponse.length > 0
 			? new Map(
 					secondResponse.map((entry) => [new Date(`${entry.date_bin_timestamp}Z`).toISOString(), entry.log_count]),
 			  )
-			: null;
+			: new Map();
 	const calculateTimeRange = (timestamp: Date | string) => {
 		const startTime = dayjs(timestamp);
 		const endTimeByCompactType = incrementDateByCompactType(startTime.toDate(), compactType);
@@ -288,7 +290,7 @@ const parseGraphData = (
 			endTime,
 		};
 
-		if (secondResponseMap) {
+		if (hasSecondDataset) {
 			defaultOpts.stream1 = secondCount;
 		}
 
@@ -331,11 +333,15 @@ const MultiEventTimeLineGraph = () => {
 			};
 		});
 		setMultipleStreamData([]);
-		queries.forEach((queryData: any) =>
-			fetchQueryMutation.mutateAsync(queryData).then((data) => {
-				setMultipleStreamData((prevData: any) => [...prevData, data]);
-			}),
-		);
+		Promise.all(queries.map((queryData: any) => fetchQueryMutation.mutateAsync(queryData)))
+			.then((results) => {
+				console.log(results);
+
+				setMultipleStreamData(results);
+			})
+			.catch((error) => {
+				console.error('Error fetching queries:', error);
+			});
 	}, [fields, timeRange]);
 
 	const isLoading = fetchQueryMutation.isLoading;
