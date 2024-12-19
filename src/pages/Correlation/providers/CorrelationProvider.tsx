@@ -10,7 +10,7 @@ import { formatQuery } from 'react-querybuilder';
 
 export const CORRELATION_LOAD_LIMIT = 250;
 
-export const STREAM_COLORS = ['#FDA4AF', '#D8B4FE'];
+export const STREAM_COLORS = ['#FDA4AF', '#c084fc'];
 export const STREAM_HEADER_COLORS = ['#9F1239', '#7E22CE'];
 export const FIELD_BACKGROUND_COLORS = ['#FFF8F8', '#F8F1FF'];
 export const DATA_TYPE_COLORS = ['#B68A96', '#AB92C0'];
@@ -31,7 +31,7 @@ type CorrelationStore = {
 	fields: Record<
 		string,
 		{
-			fieldTypeMap: Record<string, 'text' | 'number' | 'timestamp'>;
+			fieldTypeMap: Record<string, 'text' | 'number' | 'timestamp' | 'list' | 'boolean'>;
 			color: string;
 			headerColor: string;
 			backgroundColor: string;
@@ -306,7 +306,6 @@ const setStreamData = (store: CorrelationStore, currentStream: string, data: Log
 			logData: data,
 		},
 	};
-
 	// Recompute filtered and sliced data for the table
 	const filteredData = filterAndSortData(store.tableOpts, updatedStreamData[currentStream]?.logData || []);
 	const currentPage = store.tableOpts.currentPage || 1;
@@ -315,7 +314,12 @@ const setStreamData = (store: CorrelationStore, currentStream: string, data: Log
 	if (store.correlationCondition) {
 		return {
 			...store,
-			streamData: filteredData,
+			streamData: {
+				...store.streamData,
+				[currentStream]: {
+					logData: data,
+				},
+			},
 			tableOpts: {
 				...store.tableOpts,
 				pageData: filteredData || [],
@@ -387,10 +391,12 @@ const setCurrentPage = (store: CorrelationStore, currentPage: number) => {
 	};
 };
 
-const parseType = (type: any): 'text' | 'number' | 'timestamp' => {
+const parseType = (type: any): 'text' | 'number' | 'timestamp' | 'list' | 'boolean' => {
 	if (typeof type === 'object') {
 		if (type && type.Timestamp) {
 			return 'timestamp';
+		} else if (type.List) {
+			return 'list';
 		}
 		return 'text'; // Default to text for any other object types
 	}
@@ -398,6 +404,8 @@ const parseType = (type: any): 'text' | 'number' | 'timestamp' => {
 	const lowercaseType = (type || '').toLowerCase();
 	if (lowercaseType.startsWith('int') || lowercaseType.startsWith('float') || lowercaseType.startsWith('double')) {
 		return 'number';
+	} else if (lowercaseType.startsWith('bool')) {
+		return 'boolean';
 	} else {
 		return 'text';
 	}
@@ -407,7 +415,7 @@ const setStreamSchema = (store: CorrelationStore, schema: LogStreamSchemaData, s
 	const fieldTypeMap = schema.fields.reduce((acc, field) => {
 		return { ...acc, [field.name]: parseType(field.data_type) };
 	}, {});
-
+	debugger;
 	const currentStreamCount = Object.keys(store.fields || {}).length;
 
 	return {

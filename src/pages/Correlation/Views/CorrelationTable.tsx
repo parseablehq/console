@@ -1,7 +1,7 @@
 import { MantineReactTable, MRT_ColumnDef } from 'mantine-react-table';
 import { useCorrelationStore } from '../providers/CorrelationProvider';
 import { useCallback, useEffect, useState } from 'react';
-import tableStyles from '../styles/Logs.module.css';
+import tableStyles from '../styles/CorrelationLogs.module.css';
 import { formatLogTs } from '@/pages/Stream/providers/LogsProvider';
 import { CopyIcon } from '@/pages/Stream/Views/Explore/JSONView';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
@@ -11,7 +11,8 @@ import { FieldTypeMap } from '@/pages/Stream/providers/StreamProvider';
 import _ from 'lodash';
 import { Box } from '@mantine/core';
 import EmptyBox from '@/components/Empty';
-import { ErrorView, LoadingView } from '@/pages/Stream/Views/Explore/LoadingViews';
+import { LoadingView } from '@/pages/Stream/Views/Explore/LoadingViews';
+import { ErrorView } from '../components/ErrorView';
 
 type CellType = string | number | boolean | null | undefined;
 

@@ -1,3 +1,11 @@
+.container {
+	height: 100%;
+	width: 100%;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
 .correlationWrapper {
 	flex: 1;
 	display: flex;
@@ -6,12 +14,22 @@
 }
 
 .correlationSideBarWrapper {
-	width: 230px;
+	width: 240px;
 	border-right: 1px solid #dee2e6;
 	padding: 14px;
 	display: flex;
 	flex-direction: column;
 	gap: 15px;
+}
+
+.streamInput {
+	cursor: pointer;
+	border-radius: rem(8px);
+}
+
+.streamSelectDescription {
+	font-size: 12px;
+	font-weight: 500;
 }
 
 .streamBox {
@@ -59,7 +77,6 @@
 	cursor: pointer;
 	display: flex;
 	align-items: center;
-	gap: 10px;
 	font-size: 12px;
 	display: flex;
 	justify-content: space-between;
@@ -69,7 +86,7 @@
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	width: 100%;
+	width: 80%;
 }
 
 .noStreamsWrapper {
@@ -82,13 +99,23 @@
 	gap: 50px;
 }
 
-.addStreamPlaceholder {
+.logoContainer {
+	object-fit: contain;
+}
+
+.addStreamPlaceholderWrapper {
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	height: 100%;
+	height: 70%;
 	width: 100%;
-	font-size: 50px;
+	gap: 24px;
+}
+
+.addStreamPlaceholder {
+	font-size: 20px;
+	color: #212529;
 }
 
 .selectionWrapper {
@@ -120,7 +147,6 @@
 .fieldsPillsWrapper {
 	width: 100%;
 	height: 36px;
-	border: 1px solid #adb5bd;
 	border-radius: 5px;
 	display: flex;
 	gap: 10px;
@@ -133,7 +159,7 @@
 	border-radius: 5px;
 	display: flex;
 	gap: 10px;
-	padding: 5px 10px;
+	align-items: center;
 }
 
 .logTableControlWrapper {
