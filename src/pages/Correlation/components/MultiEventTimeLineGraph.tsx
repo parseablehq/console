@@ -180,6 +180,7 @@ interface ChartTooltipProps {
 	payload?: {
 		name: string;
 		value: number;
+		color: string;
 		payload: {
 			startTime: dayjs.Dayjs;
 			endTime: dayjs.Dayjs;
@@ -197,13 +198,18 @@ function ChartTooltip({ payload, series }: ChartTooltipProps) {
 	const label = makeTimeRangeLabel(startTime.toDate(), endTime.toDate());
 
 	// Map payload data to corresponding series labels
-	const data = payload.reduce((acc: Record<string, number>, item) => {
-		const seriesItem = series.find((s) => s.name === item.name);
-		if (seriesItem) {
-			acc[seriesItem.label] = item.value;
-		}
-		return acc;
-	}, {});
+	const data = series
+		.map((seriesItem) => {
+			const matchingPayload = payload.find((item) => item.name === seriesItem.name);
+			return matchingPayload
+				? {
+						label: seriesItem.label,
+						value: matchingPayload.value,
+						color: matchingPayload.color,
+				  }
+				: null;
+		})
+		.filter((item): item is { label: string; value: number; color: string } => item !== null);
 
 	return (
 		<Paper px="md" py="sm" withBorder shadow="md" radius="md">
@@ -211,9 +217,23 @@ function ChartTooltip({ payload, series }: ChartTooltipProps) {
 				{label}
 			</Text>
 			<Stack>
-				{Object.entries(data).map(([key, value], index) => (
-					<Stack key={index} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-						<Text>{key}</Text>
+				{data.map(({ label, value, color }, index) => (
+					<Stack
+						key={index}
+						style={{
+							flexDirection: 'row',
+							justifyContent: 'space-between',
+							alignItems: 'center',
+						}}>
+						<div
+							style={{
+								width: 12,
+								height: 12,
+								backgroundColor: color,
+								borderRadius: '50%',
+								marginRight: 8,
+							}}></div>
+						<Text style={{ flex: 1 }}>{label}</Text>
 						<Text>{value}</Text>
 					</Stack>
 				))}

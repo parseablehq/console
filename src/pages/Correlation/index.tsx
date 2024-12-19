@@ -160,6 +160,13 @@ const Correlation = () => {
 		}
 	};
 
+	const clearQuery = () => {
+		setSelect1Value(null);
+		setSelect2Value(null);
+		setCorrelationData((store) => setCorrelationCondition(store, ''));
+		setCorrelationData((store) => setSelectedFields(store, '', '', true));
+	};
+
 	// View Flags
 	const hasContentLoaded = !schemaLoading && !logsLoading;
 	const hasNoData = hasContentLoaded && !errorMessage && tableOpts.pageData.length === 0;
@@ -381,7 +388,9 @@ const Correlation = () => {
 							<ShareButton />
 							<MaximizeButton />
 						</div>
-						<Button className={classes.clearBtn}>Clear</Button>
+						<Button className={classes.clearBtn} onClick={clearQuery} disabled={streamNames.length == 0}>
+							Clear
+						</Button>
 					</div>
 				</Stack>
 				<Stack className={classes.logsSecondaryToolbar} style={{ height: STREAM_SECONDARY_TOOLBAR_HRIGHT }}>

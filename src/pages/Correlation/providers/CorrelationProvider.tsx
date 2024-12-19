@@ -66,7 +66,7 @@ type CorrelationStore = {
 type CorrelationStoreReducers = {
 	setStreamData: (store: CorrelationStore, currentStream: string, data: Log[]) => ReducerOutput;
 	deleteStreamData: (store: CorrelationStore, currentStream: string) => ReducerOutput;
-	setSelectedFields: (store: CorrelationStore, field: string, streamName: string) => ReducerOutput;
+	setSelectedFields: (store: CorrelationStore, field: string, streamName: string, clearAll?: boolean) => ReducerOutput;
 	setJoinFields: (store: CorrelationStore, field: string, streamName: string) => ReducerOutput;
 	deleteSelectedField: (store: CorrelationStore, field: string, streamName: string) => ReducerOutput;
 	setStreamSchema: (store: CorrelationStore, schema: LogStreamSchemaData, streamName: string) => ReducerOutput;
@@ -140,16 +140,25 @@ const setJoinFields = (store: CorrelationStore, field: string, streamName: strin
 	};
 };
 
-const setSelectedFields = (store: CorrelationStore, field: string, streamName: string): ReducerOutput => {
+const setSelectedFields = (
+	store: CorrelationStore,
+	field: string,
+	streamName: string,
+	clearAll = false,
+): ReducerOutput => {
 	const { tableOpts } = store;
-	const updatedSelectedFields = {
-		...store.selectedFields,
-		[streamName]: store.selectedFields[streamName]
-			? store.selectedFields[streamName].includes(field)
-				? store.selectedFields[streamName]
-				: [...store.selectedFields[streamName], field]
-			: [field],
-	};
+
+	// Clear all selected fields if clearAll is true
+	const updatedSelectedFields = clearAll
+		? {}
+		: {
+				...store.selectedFields,
+				[streamName]: store.selectedFields[streamName]
+					? store.selectedFields[streamName].includes(field)
+						? store.selectedFields[streamName]
+						: [...store.selectedFields[streamName], field]
+					: [field],
+		  };
 
 	const currentPage = 1;
 
@@ -306,10 +315,10 @@ const setStreamData = (store: CorrelationStore, currentStream: string, data: Log
 			logData: data,
 		},
 	};
+
 	// Recompute filtered and sliced data for the table
 	const filteredData = filterAndSortData(store.tableOpts, updatedStreamData[currentStream]?.logData || []);
 	const currentPage = store.tableOpts.currentPage || 1;
-	const newPageSlice = filteredData && getPageSlice(currentPage, store.tableOpts.perPage, filteredData);
 
 	if (store.correlationCondition) {
 		return {
@@ -329,25 +338,23 @@ const setStreamData = (store: CorrelationStore, currentStream: string, data: Log
 		};
 	}
 	// Rebuild `pageData` based on `selectedFields`
-	const updatedPageData = newPageSlice?.map((_record, index) => {
-		const combinedRecord: any = {};
+	const updatedPageData: { [x: string]: string | number | Date | null }[] = [];
+	for (const [stream, fields] of Object.entries(store.selectedFields)) {
+		// Use the filtered data specific to each stream
+		const streamFilteredData = filterAndSortData(store.tableOpts, updatedStreamData[stream]?.logData || []);
+		const streamPageSlice = getPageSlice(currentPage, store.tableOpts.perPage, streamFilteredData);
 
-		for (const [stream, fields] of Object.entries(store.selectedFields)) {
-			// Use the filtered data specific to the stream
-			const streamFilteredData = filterAndSortData(store.tableOpts, updatedStreamData[stream]?.logData || []);
-			const streamRecord = streamFilteredData[index]; // Pick record corresponding to index
-
-			if (streamRecord) {
+		if (Array.isArray(streamPageSlice)) {
+			streamPageSlice.forEach((record, index) => {
+				if (!updatedPageData[index]) updatedPageData[index] = {};
 				if (Array.isArray(fields)) {
 					fields.forEach((field) => {
-						combinedRecord[`${stream}.${field}`] = streamRecord[field];
+						updatedPageData[index][`${stream}.${field}`] = record[field];
 					});
 				}
-			}
+			});
 		}
-
-		return combinedRecord;
-	});
+	}
 
 	// Update the store with new data
 	return {
@@ -415,7 +422,7 @@ const setStreamSchema = (store: CorrelationStore, schema: LogStreamSchemaData, s
 	const fieldTypeMap = schema.fields.reduce((acc, field) => {
 		return { ...acc, [field.name]: parseType(field.data_type) };
 	}, {});
-	debugger;
+
 	const currentStreamCount = Object.keys(store.fields || {}).length;
 
 	return {

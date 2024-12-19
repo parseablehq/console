@@ -32,10 +32,9 @@ const ErrorIcon: FC<{
 	);
 };
 
-export const ErrorView = (props: { message: string }) => {
+export const ErrorView = () => {
 	const [, setAppStore] = useAppStore((_store) => null);
 
-	const { message } = props;
 	const onRetry = useCallback(() => {
 		setAppStore((store) => syncTimeRange(store));
 	}, []);

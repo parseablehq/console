@@ -196,7 +196,7 @@ const Table = (props: {
 					<LoadingView />
 				)
 			) : (
-				<ErrorView message={errorMessage} />
+				<ErrorView />
 			)}
 		</Box>
 	);
