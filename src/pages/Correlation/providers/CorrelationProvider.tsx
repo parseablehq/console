@@ -16,7 +16,7 @@ export const FIELD_BACKGROUND_COLORS = ['#FFF8F8', '#F8F1FF'];
 export const DATA_TYPE_COLORS = ['#B68A96', '#AB92C0'];
 
 const defaultSortKey = 'p_timestamp';
-const defaultSortOrder = 'desc' as 'desc';
+const defaultSortOrder = 'desc' as const;
 
 type ReducerOutput = {
 	streamData?: Record<string, any>;

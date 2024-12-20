@@ -1,5 +1,6 @@
 import { Select, Text } from '@mantine/core';
 import classes from '../styles/Correlation.module.css';
+import { FC } from 'react';
 
 type StreamSelectBoxProps = {
 	label: string;
@@ -10,7 +11,7 @@ type StreamSelectBoxProps = {
 	isFirst: boolean;
 };
 
-export const StreamSelectBox: React.FC<StreamSelectBoxProps> = ({
+export const StreamSelectBox: FC<StreamSelectBoxProps> = ({
 	label,
 	placeholder,
 	disabled,

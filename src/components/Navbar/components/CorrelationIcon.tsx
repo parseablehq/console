@@ -26,3 +26,5 @@ export const CorrelationIcon = forwardRef<
 		/>
 	</svg>
 ));
+
+CorrelationIcon.displayName = 'CorrelationIcon';
