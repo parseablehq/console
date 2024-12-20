@@ -335,8 +335,6 @@ const MultiEventTimeLineGraph = () => {
 		setMultipleStreamData([]);
 		Promise.all(queries.map((queryData: any) => fetchQueryMutation.mutateAsync(queryData)))
 			.then((results) => {
-				console.log(results);
-
 				setMultipleStreamData(results);
 			})
 			.catch((error) => {

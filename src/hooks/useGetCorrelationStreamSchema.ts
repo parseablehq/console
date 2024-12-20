@@ -42,5 +42,6 @@ export const useGetStreamSchema = (opts: { streamName: string }) => {
 		isLoading,
 		errorMessage,
 		isRefetching,
+		streamName,
 	};
 };

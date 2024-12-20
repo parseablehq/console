@@ -40,7 +40,6 @@ type CorrelationStore = {
 	>;
 	selectedFields: Record<string, string[]>;
 	correlationCondition: string;
-	joins: Record<string, string[]>;
 	tableOpts: {
 		disabledColumns: string[];
 		wrapDisabledColumns: string[];
@@ -67,7 +66,6 @@ type CorrelationStoreReducers = {
 	setStreamData: (store: CorrelationStore, currentStream: string, data: Log[]) => ReducerOutput;
 	deleteStreamData: (store: CorrelationStore, currentStream: string) => ReducerOutput;
 	setSelectedFields: (store: CorrelationStore, field: string, streamName: string, clearAll?: boolean) => ReducerOutput;
-	setJoinFields: (store: CorrelationStore, field: string, streamName: string) => ReducerOutput;
 	deleteSelectedField: (store: CorrelationStore, field: string, streamName: string) => ReducerOutput;
 	setStreamSchema: (store: CorrelationStore, schema: LogStreamSchemaData, streamName: string) => ReducerOutput;
 	setCurrentOffset: (store: CorrelationStore, offset: number) => ReducerOutput;
@@ -86,7 +84,6 @@ const initialState: CorrelationStore = {
 	fields: {},
 	selectedFields: {},
 	correlationCondition: '',
-	joins: {},
 	tableOpts: {
 		disabledColumns: [],
 		wrapDisabledColumns: [],
@@ -124,22 +121,6 @@ const parseQuery = (queryEngine: QueryEngineType, query: QueryType, currentStrea
 	return { where, parsedQuery: filterQueryBuilder.getQuery() };
 };
 
-const setJoinFields = (store: CorrelationStore, field: string, streamName: string): ReducerOutput => {
-	const updatedJoinFields = {
-		...store.joins,
-		[streamName]: store.joins[streamName]
-			? store.joins[streamName].includes(field)
-				? store.joins[streamName]
-				: [...store.joins[streamName], field]
-			: [field],
-	};
-
-	return {
-		...store,
-		joins: updatedJoinFields,
-	};
-};
-
 const setSelectedFields = (
 	store: CorrelationStore,
 	field: string,
@@ -147,7 +128,6 @@ const setSelectedFields = (
 	clearAll = false,
 ): ReducerOutput => {
 	const { tableOpts } = store;
-
 	// Clear all selected fields if clearAll is true
 	const updatedSelectedFields = clearAll
 		? {}
@@ -161,27 +141,30 @@ const setSelectedFields = (
 		  };
 
 	const currentPage = 1;
+	const isCorrelatedStream = Object.keys(store.streamData).includes('correlatedStream');
 
 	// Compute updated pageData
-	const updatedPageData = Array.from({ length: tableOpts.perPage })
-		.map((_record, index) => {
-			const combinedRecord: any = {};
+	const updatedPageData = isCorrelatedStream
+		? store.tableOpts.pageData
+		: Array.from({ length: tableOpts.perPage })
+				.map((_record, index) => {
+					const combinedRecord: any = {};
 
-			for (const [stream, fields] of Object.entries(updatedSelectedFields)) {
-				const streamFilteredData = filterAndSortData(tableOpts, store.streamData[stream]?.logData || []);
-				const streamRecord = streamFilteredData[index];
-				if (streamRecord) {
-					if (Array.isArray(fields)) {
-						fields.forEach((field) => {
-							combinedRecord[`${stream}.${field}`] = streamRecord[field];
-						});
+					for (const [stream, fields] of Object.entries(updatedSelectedFields)) {
+						const streamFilteredData = filterAndSortData(tableOpts, store.streamData[stream]?.logData || []);
+						const streamRecord = streamFilteredData[index];
+						if (streamRecord) {
+							if (Array.isArray(fields)) {
+								fields.forEach((field) => {
+									combinedRecord[`${stream}.${field}`] = streamRecord[field];
+								});
+							}
+						}
 					}
-				}
-			}
 
-			return combinedRecord;
-		})
-		.filter(Boolean);
+					return combinedRecord;
+				})
+				.filter(Boolean);
 
 	// Return updated store
 	return {
@@ -451,9 +434,22 @@ const deleteStreamData = (store: CorrelationStore, currentStream: string) => {
 		delete newSelectedFields[currentStream];
 	}
 
+	// Reassign colors to the remaining streams based on their new order
+	const updatedFields = Object.keys(newfields)
+		.map((streamName, index) => ({
+			[streamName]: {
+				...newfields[streamName],
+				color: STREAM_COLORS[index],
+				headerColor: STREAM_HEADER_COLORS[index],
+				backgroundColor: FIELD_BACKGROUND_COLORS[index],
+				iconColor: DATA_TYPE_COLORS[index],
+			},
+		}))
+		.reduce((acc, fieldEntry) => ({ ...acc, ...fieldEntry }), {});
+
 	return {
 		...store,
-		fields: newfields,
+		fields: updatedFields,
 		streamData: newStreamData,
 		selectedFields: newSelectedFields,
 	};
@@ -470,7 +466,6 @@ const correlationStoreReducers: CorrelationStoreReducers = {
 	setCurrentOffset,
 	setCurrentPage,
 	setPageAndPageData,
-	setJoinFields,
 	setCorrelationCondition,
 	parseQuery,
 };

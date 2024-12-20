@@ -1,9 +1,10 @@
 import _ from 'lodash';
 import { useDocumentTitle } from '@mantine/hooks';
-import { Stack, Box, TextInput, Text, Select, Button, Center } from '@mantine/core';
+import { Stack, Box, TextInput, Text, Select, Button, Center, Skeleton } from '@mantine/core';
 import {
 	PRIMARY_HEADER_HEIGHT,
 	STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT,
+	STREAM_PRIMARY_TOOLBAR_HEIGHT,
 	STREAM_SECONDARY_TOOLBAR_HRIGHT,
 } from '@/constants/theme';
 import { useEffect, useState } from 'react';
@@ -69,14 +70,16 @@ const FieldItem = ({
 				backgroundColor,
 				color: headerColor,
 				opacity: isSelected ? 0.5 : 1,
-				...(dataType ? {} : { width: 'fit-content', borderRadius: '12px' }),
+				...(dataType
+					? { height: '24px', minHeight: '24px' }
+					: { width: 'fit-content', borderRadius: '12px', height: '100%' }),
 			}}
 			className={classes.fieldItem}
 			onClick={onClick}>
 			<Text size="sm" className={classes.fieldItemText}>
 				{fieldName}
 			</Text>
-			{!dataType && <IconX color={iconColor} size={16} onClick={onDelete} />}
+			{!dataType && <IconX color={iconColor} size={12} onClick={onDelete} />}
 			{dataType && dataTypeIcons(iconColor)[dataType]}
 		</div>
 	);
@@ -92,7 +95,11 @@ const Correlation = () => {
 	const [timeRange] = useAppStore((store) => store.timeRange);
 	const [currentStream, setAppStore] = useAppStore((store) => store.currentStream);
 	const [maximized] = useAppStore((store) => store.maximized);
-	const { refetch: refetchSchema, isLoading: schemaLoading } = useGetStreamSchema({ streamName: currentStream || '' });
+	const {
+		refetch: refetchSchema,
+		isLoading: schemaLoading,
+		streamName: schemaStreamName,
+	} = useGetStreamSchema({ streamName: currentStream || '' });
 	const { getCorrelationData, loading: logsLoading, error: errorMessage } = useCorrelationQueryLogs();
 
 	// Local State
@@ -217,7 +224,18 @@ const Correlation = () => {
 									/>
 								</div>
 								<div className={classes.fieldsWrapper}>
-									{filteredFields.length > 0 ? (
+									{schemaStreamName === stream && (logsLoading || schemaLoading) ? (
+										<Stack style={{ padding: '0.5rem 0.7rem' }}>
+											<Skeleton height="24px" />
+											<Skeleton height="24px" />
+											<Skeleton height="24px" />
+											<Skeleton height="24px" />
+											<Skeleton height="24px" />
+											<Skeleton height="24px" />
+											<Skeleton height="24px" />
+											<Skeleton height="24px" />
+										</Stack>
+									) : filteredFields.length > 0 ? (
 										filteredFields.map((field: string) => {
 											const isSelected = selectedFields[stream]?.includes(field);
 											const dataType = fieldsIter.fieldTypeMap[field];
@@ -282,7 +300,7 @@ const Correlation = () => {
 			<Stack gap={0} className={classes.selectionWrapper}>
 				<Stack className={classes.topSectionWrapper}>
 					<Stack>
-						<div className={classes.fieldsJoinsWrapper}>
+						<div className={classes.fieldsJoinsWrapper} style={{ height: STREAM_PRIMARY_TOOLBAR_HEIGHT }}>
 							<Text
 								style={{
 									width: '35px',
@@ -310,7 +328,7 @@ const Correlation = () => {
 								)}
 							</div>
 						</div>
-						<div className={classes.fieldsJoinsWrapper}>
+						<div className={classes.fieldsJoinsWrapper} style={{ height: STREAM_PRIMARY_TOOLBAR_HEIGHT }}>
 							<Text
 								style={{
 									width: '35px',
@@ -323,9 +341,6 @@ const Correlation = () => {
 							<div className={classes.joinsWrapper}>
 								<div style={{ width: '50%' }}>
 									<Select
-										styles={{
-											input: { height: 36 },
-										}}
 										disabled={streamNames.length === 0}
 										placeholder={streamNames[0] ? `Select field from ${streamNames[0]}` : 'Select Stream 1'}
 										style={{ height: '100%' }}
@@ -340,12 +355,9 @@ const Correlation = () => {
 										onChange={(value) => handleFieldChange(value, true)}
 									/>
 								</div>
-								<Text size="xl"> = </Text>
+								<Text size="md"> = </Text>
 								<div style={{ width: '50%' }}>
 									<Select
-										styles={{
-											input: { height: 36 },
-										}}
 										disabled={streamNames.length < 2}
 										placeholder={streamNames[1] ? `Select field from ${streamNames[1]}` : 'Select Stream 2'}
 										data={
@@ -360,16 +372,13 @@ const Correlation = () => {
 									/>
 								</div>
 							</div>
-							<div>
-								<Button
-									onClick={() => getCorrelationData()}
-									variant="outline"
-									color="#4B52EA"
-									disabled={!select1Value || !select2Value || Object.keys(selectedFields).length < 1}
-									style={{ height: '36px', borderRadius: '10px' }}>
-									Correlate
-								</Button>
-							</div>
+							<Button
+								className={classes.correlateBtn}
+								h="100%"
+								disabled={!select1Value || !select2Value || Object.keys(selectedFields).length < 1}
+								onClick={() => getCorrelationData()}>
+								Correlate
+							</Button>
 						</div>
 					</Stack>
 					<div

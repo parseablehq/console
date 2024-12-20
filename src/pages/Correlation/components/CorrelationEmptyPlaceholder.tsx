@@ -17,13 +17,13 @@ export const CorrelationEmptyPlaceholder: FC<CorrelationProps> = ({ height, widt
 				height="10.8844"
 				rx="1.81406"
 				stroke="#A5ACFF"
-				stroke-width="6.45"
+				strokeWidth="6.45"
 				mask="url(#path-1-inside-1_198_1034)"
 			/>
 			<path
 				d="M20.2911 42.449H3.81578C3.26138 42.449 2.9008 41.8655 3.14873 41.3697L11.3864 24.8943C11.6612 24.3447 12.4456 24.3447 12.7205 24.8943L20.9581 41.3697C21.2061 41.8655 20.8455 42.449 20.2911 42.449Z"
 				stroke="#A5ACFF"
-				stroke-width="3.225"
+				strokeWidth="3.225"
 			/>
 			<rect
 				x="115.728"
@@ -32,7 +32,7 @@ export const CorrelationEmptyPlaceholder: FC<CorrelationProps> = ({ height, widt
 				height="12.0317"
 				rx="6.01587"
 				stroke="#A5ACFF"
-				stroke-width="2.48077"
+				strokeWidth="2.48077"
 			/>
 			<path
 				d="M108.441 96.1454C108.886 96.1454 109.247 95.7844 109.247 95.3392C109.247 94.8939 108.886 94.5329 108.441 94.5329V96.1454ZM79.5166 76.7954L74.8617 84.8579H84.1715L79.5166 76.7954ZM108.441 94.5329H81.3307V96.1454H108.441V94.5329ZM80.3229 93.5251V84.0517H78.7104V93.5251H80.3229ZM81.3307 94.5329C80.7741 94.5329 80.3229 94.0817 80.3229 93.5251H78.7104C78.7104 94.9723 79.8835 96.1454 81.3307 96.1454V94.5329Z"
@@ -46,27 +46,27 @@ export const CorrelationEmptyPlaceholder: FC<CorrelationProps> = ({ height, widt
 				d="M44.1424 59.8639L36.0799 55.209V64.5188L44.1424 59.8639ZM13.3033 48.9795C13.3033 48.5342 12.9423 48.1732 12.4971 48.1732C12.0518 48.1732 11.6908 48.5342 11.6908 48.9795H13.3033ZM14.3111 60.6701H36.8861V59.0576H14.3111V60.6701ZM13.3033 58.0498V48.9795H11.6908V58.0498H13.3033ZM14.3111 59.0576C13.7545 59.0576 13.3033 58.6064 13.3033 58.0498H11.6908C11.6908 59.497 12.864 60.6701 14.3111 60.6701V59.0576Z"
 				fill="#D5D5FF"
 			/>
-			<g clip-path="url(#clip0_198_1034)">
+			<g clipPath="url(#clip0_198_1034)">
 				<path
 					d="M51.0962 30.839C51.0962 29.556 51.6059 28.3255 52.5131 27.4183C53.4203 26.5111 54.6507 26.0015 55.9337 26.0015H89.7962C91.0792 26.0015 92.3096 26.5111 93.2168 27.4183C94.124 28.3255 94.6337 29.556 94.6337 30.839V64.7015C94.6337 65.9844 94.124 67.2149 93.2168 68.1221C92.3096 69.0293 91.0792 69.539 89.7962 69.539H55.9337C54.6507 69.539 53.4203 69.0293 52.5131 68.1221C51.6059 67.2149 51.0962 65.9844 51.0962 64.7015V30.839Z"
 					stroke="#A5ACFF"
-					stroke-width="3.225"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="3.225"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M51.0962 42.9326H94.6337"
 					stroke="#A5ACFF"
-					stroke-width="3.225"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="3.225"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M68.0273 26.0015V69.539"
 					stroke="#A5ACFF"
-					stroke-width="3.225"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="3.225"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 			</g>
 			<defs>

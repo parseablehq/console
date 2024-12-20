@@ -11,8 +11,7 @@ import { FieldTypeMap } from '@/pages/Stream/providers/StreamProvider';
 import _ from 'lodash';
 import { Box } from '@mantine/core';
 import EmptyBox from '@/components/Empty';
-import { LoadingView } from '@/pages/Stream/Views/Explore/LoadingViews';
-import { ErrorView } from '../components/ErrorView';
+import { ErrorView, LoadingView } from '@/pages/Stream/Views/Explore/LoadingViews';
 
 type CellType = string | number | boolean | null | undefined;
 
@@ -77,28 +76,32 @@ const Table = (props: {
 }) => {
 	const { errorMessage, logsLoading, primaryHeaderHeight, showTable, hasNoData } = props;
 	const [{ pageData, wrapDisabledColumns }] = useCorrelationStore((store) => store.tableOpts);
+	const [streamData] = useCorrelationStore((store) => store.streamData);
 	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
 	const [columns, setColumns] = useState<MRT_ColumnDef<Log, unknown>[]>([]);
 
 	const [{ selectedFields }] = useCorrelationStore((store) => store);
 
 	const showTableOrLoader = logsLoading || showTable || !errorMessage || !hasNoData;
+	const isCorrelatedStream = Object.keys(streamData).includes('correlatedStream');
 
 	useEffect(() => {
-		const updatedColumns = makeColumnsFromSelectedFields(selectedFields, isSecureHTTPContext, {
-			datetime: 'text',
-			host: 'text',
-			id: 'text',
-			method: 'text',
-			p_metadata: 'text',
-			p_tags: 'text',
-			p_timestamp: 'timestamp',
-			referrer: 'text',
-			status: 'number',
-			'user-identifier': 'text',
-		});
-		setColumns(updatedColumns);
-	}, [selectedFields]);
+		if (!isCorrelatedStream) {
+			const updatedColumns = makeColumnsFromSelectedFields(selectedFields, isSecureHTTPContext, {
+				datetime: 'text',
+				host: 'text',
+				id: 'text',
+				method: 'text',
+				p_metadata: 'text',
+				p_tags: 'text',
+				p_timestamp: 'timestamp',
+				referrer: 'text',
+				status: 'number',
+				'user-identifier': 'text',
+			});
+			setColumns(updatedColumns);
+		}
+	}, [selectedFields, streamData]);
 
 	const makeCellCustomStyles = useCallback(
 		(columnName: string) => {
@@ -196,7 +199,7 @@ const Table = (props: {
 					<LoadingView />
 				)
 			) : (
-				<ErrorView />
+				<ErrorView message={errorMessage} />
 			)}
 		</Box>
 	);

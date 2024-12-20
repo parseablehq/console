@@ -78,7 +78,7 @@
 	width: 100%;
 	border-radius: 4px;
 	padding: 6px;
-	height: 24px;
+	gap: 5px;
 	align-items: center;
 	cursor: pointer;
 	display: flex;
@@ -87,7 +87,6 @@
 	display: flex;
 	justify-content: space-between;
 	overflow: hidden;
-	min-height: 24px;
 	max-width: 155px;
 }
 
@@ -155,8 +154,8 @@
 
 .fieldsPillsWrapper {
 	width: 100%;
-	height: 36px;
-	border-radius: 5px;
+	height: 100%;
+	border-radius: 3px;
 	display: flex;
 	gap: 10px;
 	padding: 5px 10px;
@@ -164,7 +163,7 @@
 
 .joinsWrapper {
 	width: 100%;
-	height: 36px;
+	height: 100%;
 	border-radius: 5px;
 	display: flex;
 	gap: 10px;
@@ -219,4 +218,21 @@
 	text-align: center;
 	color: var(--mantine-color-gray-6);
 	font-size: var(--mantine-font-size-sm);
+}
+
+.correlateBtn {
+	background-color: white;
+	color: var(--mantine-color-gray-7);
+	border: 1px #e9ecef solid;
+	border-radius: rem(8px);
+	font-size: 0.65rem;
+	cursor: pointer;
+	width: 8%;
+	&:hover {
+		color: black;
+	}
+}
+.correlateBtn:hover {
+	background-color: #e0e0e0;
+	cursor: pointer;
 }
