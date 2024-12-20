@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { HotTierConfig, LogStreamSchemaData, LogStreamStat, StreamInfo } from '@/@types/parseable/api/stream';
 import initContext from '@/utils/initContext';
 import _ from 'lodash';
@@ -75,7 +76,7 @@ type StreamStore = {
 	schema: LogStreamSchemaData | null;
 	fieldNames: string[];
 	fieldTypeMap: FieldTypeMap;
-	stats: LogStreamStat | {};
+	stats: LogStreamStat | object;
 	// configs
 	retention: {
 		action: 'delete';
@@ -84,7 +85,7 @@ type StreamStore = {
 	};
 	alertsConfig: TransformedAlerts;
 	hotTier: HotTierConfig;
-	info: StreamInfo | {};
+	info: StreamInfo | object;
 	sideBarOpen: boolean;
 	cacheEnabled: boolean | null;
 };

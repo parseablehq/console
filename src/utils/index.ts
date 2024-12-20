@@ -38,7 +38,7 @@ export const parseLogData = (value?: any, columnName?: string) => {
 };
 
 //getQueryParam
-export const getQueryParam = () => {
+export const useGetQueryParam = () => {
 	const location = useLocation();
 	return useMemo(() => {
 		const searchParams = new URLSearchParams(location.search);
@@ -103,5 +103,23 @@ export const copyTextToClipboard = async (value: any) => {
 		return await navigator.clipboard.writeText(value);
 	} else {
 		return await navigator.clipboard.writeText(JSON.stringify(value, null, 2));
+	}
+};
+
+export const getOffset = (page: number, rowSize: number) => {
+	const product = page * rowSize;
+	if (product % 1000 === 0) {
+		return Math.floor((product - 1) / 1000) * 1000;
+	}
+
+	return Math.floor(product / 1000) * 1000;
+};
+
+export const joinOrSplit = (value: string[] | string): string | string[] => {
+	const joinOperator = ',';
+	if (Array.isArray(value)) {
+		return value.join(joinOperator);
+	} else {
+		return value.split(joinOperator);
 	}
 };

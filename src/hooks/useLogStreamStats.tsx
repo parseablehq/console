@@ -8,7 +8,7 @@ import { AxiosError, isAxiosError } from 'axios';
 const { setStats } = streamStoreReducers;
 
 export const useLogStreamStats = (streamName: string, fetchStartTime?: Dayjs) => {
-	const [, setStreamStore] = useStreamStore((_store) => null);
+	const [, setStreamStore] = useStreamStore(() => null);
 	const {
 		data: getLogStreamStatsData,
 		isSuccess: getLogStreamStatsDataIsSuccess,

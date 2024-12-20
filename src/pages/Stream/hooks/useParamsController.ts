@@ -3,20 +3,32 @@ import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsPr
 import { useSearchParams } from 'react-router-dom';
 import _ from 'lodash';
 import { FIXED_DURATIONS } from '@/constants/timeConstants';
-import { LOG_QUERY_LIMITS } from '@/pages/Stream/providers/LogsProvider';
+import { LOG_QUERY_LIMITS, columnsToSkip } from '@/pages/Stream/providers/LogsProvider';
 import dayjs from 'dayjs';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import moment from 'moment-timezone';
 import { filterStoreReducers, QueryType, useFilterStore } from '../providers/FilterProvider';
 import { generateQueryBuilderASTFromSQL } from '../utils';
 import { appStoreReducers, TimeRange, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { getOffset, joinOrSplit } from '@/utils';
 
 const { getRelativeStartAndEndDate, formatDateWithTimezone, getLocalTimezone } = timeRangeUtils;
-const { onToggleView, setPerPage, setCustQuerySearchState } = logsStoreReducers;
+
 const { setTimeRange, syncTimeRange } = appStoreReducers;
-const { applySavedFilters } = filterStoreReducers;
+const {
+	onToggleView,
+	setPerPage,
+	setCustQuerySearchState,
+	setTargetPage,
+	setCurrentOffset,
+	setTargetColumns,
+	setRowNumber,
+} = logsStoreReducers;
+const { toogleQueryParamsFlag, setAppliedFilterQuery, applySavedFilters, updateQuery, updateAppliedQuery } =
+	filterStoreReducers;
+
 const timeRangeFormat = 'DD-MMM-YYYY_HH-mmz';
-const keys = ['view', 'rows', 'interval', 'from', 'to', 'query', 'filterType'];
+const keys = ['view', 'rows', 'page', 'interval', 'from', 'to', 'query', 'filterType', 'fields', 'rowNumber'];
 
 const dateToParamString = (date: Date) => {
 	return formatDateWithTimezone(date, timeRangeFormat);
@@ -52,24 +64,35 @@ const deriveTimeRangeParams = (timerange: TimeRange): { interval: string } | { f
 	}
 };
 
+const deriveRowNumber = (rowNumber: string) => {
+	if (rowNumber.length > 0) {
+		return {
+			rowNumber,
+		};
+	}
+};
+
 const storeToParamsObj = (opts: {
 	timeRange: TimeRange;
 	view: string;
-	offset: string;
 	page: string;
 	rows: string;
 	query: string;
 	filterType: string;
+	fields: string;
+	rowNumber: string;
 }): Record<string, string> => {
-	const { timeRange, offset, page, view, rows, query, filterType } = opts;
+	const { timeRange, page, view, rows, query, filterType, fields, rowNumber } = opts;
+
 	const params: Record<string, string> = {
 		...deriveTimeRangeParams(timeRange),
+		...deriveRowNumber(rowNumber),
 		view,
-		offset,
 		rows,
 		page,
 		query,
 		filterType: query ? filterType : '',
+		fields,
 	};
 	return _.pickBy(params, (val, key) => !_.isEmpty(val) && _.includes(keys, key));
 };
@@ -91,24 +114,52 @@ const useParamsController = () => {
 	const [viewMode] = useLogsStore((store) => store.viewMode);
 	const [custQuerySearchState] = useLogsStore((store) => store.custQuerySearchState);
 	const [timeRange, setAppStore] = useAppStore((store) => store.timeRange);
-	const [, setLogsStore] = useLogsStore((_store) => null);
+	const [, setLogsStore] = useLogsStore(() => null);
 	const [, setFilterStore] = useFilterStore((store) => store);
 
-	const { currentOffset, currentPage, perPage } = tableOpts;
+	const { currentOffset, currentPage, targetPage, perPage, headers, disabledColumns, targetColumns, rowNumber } =
+		tableOpts;
 
+	const visibleHeaders = headers.filter((el) => !columnsToSkip.includes(el));
+
+	const activeHeaders = visibleHeaders.filter((el) => !disabledColumns.includes(el));
 	const [searchParams, setSearchParams] = useSearchParams();
+
+	const syncRowNumber = useCallback((storeAsParams: Record<string, string>, presentParams: Record<string, string>) => {
+		if (_.has(presentParams, 'rowNumber')) {
+			if (storeAsParams.rowNumber !== presentParams.rowNumber) {
+				setLogsStore((store) => setRowNumber(store, presentParams.rowNumber));
+			}
+		}
+	}, []);
+	const pageOffset = Math.ceil(currentOffset / perPage);
 
 	useEffect(() => {
 		const storeAsParams = storeToParamsObj({
 			timeRange,
-			offset: `${currentOffset}`,
-			page: `${currentPage}`,
+			page: `${targetPage ? targetPage : Math.ceil(currentPage + pageOffset)}`,
 			view: viewMode,
 			rows: `${perPage}`,
 			query: custQuerySearchState.custSearchQuery,
 			filterType: custQuerySearchState.viewMode,
+			fields: `${joinOrSplit(!_.isEmpty(targetColumns) ? targetColumns : activeHeaders)}`,
+			rowNumber,
 		});
 		const presentParams = paramsStringToParamsObj(searchParams);
+		if (storeAsParams.query !== presentParams.query) {
+			if (presentParams.filterType === 'filters') {
+				setFilterStore((store) => updateQuery(store, generateQueryBuilderASTFromSQL(presentParams.query) as QueryType));
+				setFilterStore((store) => updateAppliedQuery(store, store.query));
+
+				setFilterStore((store) => setAppliedFilterQuery(store, presentParams.query));
+				setFilterStore((store) => toogleQueryParamsFlag(store, true));
+			}
+			setAppStore((store) => syncTimeRange(store));
+			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
+		}
+
+		syncTimeRangeToStore(storeAsParams, presentParams);
+
 		if (['table', 'json'].includes(presentParams.view) && presentParams.view !== storeAsParams.view) {
 			setLogsStore((store) => onToggleView(store, presentParams.view as 'table' | 'json'));
 		}
@@ -116,15 +167,28 @@ const useParamsController = () => {
 			setLogsStore((store) => setPerPage(store, _.toNumber(presentParams.rows)));
 		}
 
-		if (storeAsParams.query !== presentParams.query) {
-			setAppStore((store) => syncTimeRange(store));
-			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
-			if (presentParams.filterType === 'filters')
-				setFilterStore((store) =>
-					applySavedFilters(store, generateQueryBuilderASTFromSQL(presentParams.query) as QueryType),
-				);
+		if (storeAsParams.fields !== presentParams.fields) {
+			setLogsStore((store) => setTargetColumns(store, joinOrSplit(presentParams.fields) as string[]));
 		}
-		syncTimeRangeToStore(storeAsParams, presentParams);
+
+		if (storeAsParams.page !== presentParams.page && !_.isEmpty(presentParams.page)) {
+			setLogsStore((store) => setTargetPage(store, _.toNumber(presentParams.page)));
+
+			const offset = getOffset(_.toNumber(presentParams.page), _.toNumber(presentParams.rows));
+
+			if (offset > 0) {
+				setLogsStore((store) => setCurrentOffset(store, offset));
+
+				setLogsStore((store) =>
+					setTargetPage(
+						store,
+						Math.abs(_.toNumber(presentParams.page) - Math.ceil(offset / _.toNumber(presentParams.rows))),
+					),
+				);
+			}
+		}
+
+		syncRowNumber(storeAsParams, presentParams);
 		setStoreSynced(true);
 	}, []);
 
@@ -132,30 +196,40 @@ const useParamsController = () => {
 		if (isStoreSynced) {
 			const storeAsParams = storeToParamsObj({
 				timeRange,
-				offset: `${currentOffset}`,
-				page: `${currentPage}`,
+				page: `${targetPage ? targetPage : Math.ceil(currentPage + pageOffset)}`,
 				view: viewMode,
 				rows: `${perPage}`,
 				query: custQuerySearchState.custSearchQuery,
 				filterType: custQuerySearchState.viewMode,
+				fields: `${joinOrSplit(!_.isEmpty(targetColumns) ? targetColumns : activeHeaders)}`,
+				rowNumber,
 			});
+
 			const presentParams = paramsStringToParamsObj(searchParams);
 			if (_.isEqual(storeAsParams, presentParams)) return;
 			setSearchParams(storeAsParams);
 		}
-	}, [tableOpts, viewMode, timeRange.startTime.toISOString(), timeRange.endTime.toISOString(), custQuerySearchState]);
+	}, [
+		tableOpts,
+		targetPage,
+		viewMode,
+		timeRange.startTime.toISOString(),
+		timeRange.endTime.toISOString(),
+		custQuerySearchState,
+	]);
 
 	useEffect(() => {
 		if (!isStoreSynced) return;
 
 		const storeAsParams = storeToParamsObj({
 			timeRange,
-			offset: `${currentOffset}`,
-			page: `${currentPage}`,
+			page: `${targetPage ? targetPage : Math.ceil(currentPage + pageOffset)}`,
 			view: viewMode,
 			rows: `${perPage}`,
 			query: custQuerySearchState.custSearchQuery,
 			filterType: custQuerySearchState.viewMode,
+			fields: `${joinOrSplit(!_.isEmpty(targetColumns) ? targetColumns : activeHeaders)}`,
+			rowNumber,
 		});
 		const presentParams = paramsStringToParamsObj(searchParams);
 
@@ -178,6 +252,7 @@ const useParamsController = () => {
 			setLogsStore((store) => setCustQuerySearchState(store, presentParams.query, presentParams.filterType));
 		}
 		syncTimeRangeToStore(storeAsParams, presentParams);
+		syncRowNumber(storeAsParams, presentParams);
 	}, [searchParams]);
 
 	const syncTimeRangeToStore = useCallback(

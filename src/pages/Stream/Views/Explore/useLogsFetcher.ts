@@ -31,7 +31,7 @@ const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean })
 	useEffect(() => {
 		if (infoLoading || !firstEventAt) return;
 
-		if (currentPage === 0 && currentOffset === 0) {
+		if (currentPage === 0) {
 			getQueryData();
 			refetchCount();
 		}

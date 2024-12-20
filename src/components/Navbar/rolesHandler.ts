@@ -72,9 +72,9 @@ const getStreamsSepcificAccess = (rolesWithRoleName: UserRoles | null, stream?: 
 		return null;
 	}
 
-	let access: string[] = [];
+	const access: string[] = [];
 	let roles: any[] = [];
-	for (var prop in rolesWithRoleName) {
+	for (const prop in rolesWithRoleName) {
 		roles = [...roles, ...rolesWithRoleName[prop]];
 	}
 	roles.forEach((role: any) => {
@@ -121,7 +121,7 @@ const getStreamsSepcificAccess = (rolesWithRoleName: UserRoles | null, stream?: 
 const getUserSepcificStreams = (rolesWithRoleName: object[], streams: any[]) => {
 	let userStreams: any[] = [];
 	let roles: any[] = [];
-	for (var prop in rolesWithRoleName) {
+	for (const prop in rolesWithRoleName) {
 		roles = [...roles, ...(rolesWithRoleName[prop] as any)];
 	}
 	roles.forEach((role: any) => {

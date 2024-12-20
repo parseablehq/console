@@ -57,6 +57,7 @@ export const useQueryLogs = () => {
 		setLogsStore,
 	] = useLogsStore((store) => store);
 	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
+	const [isQueryFromParams] = useFilterStore((store) => store.isQueryFromParams);
 	const { isQuerySearchActive, custSearchQuery, activeMode } = custQuerySearchState;
 
 	const getColumnFilters = useCallback(
@@ -99,13 +100,16 @@ export const useQueryLogs = () => {
 		() => {
 			refetchSchema();
 			if (isQuerySearchActive) {
-				if (activeMode === 'filters') {
+				if (activeMode === 'filters' && isQueryFromParams === false) {
 					const { parsedQuery } = parseQuery(queryEngine, appliedQuery, currentStream || '', {
 						startTime: timeRange.startTime,
 						endTime: timeRange.endTime,
 						timePartitionColumn,
 					});
 					const queryStrWithOffset = appendOffsetToQuery(parsedQuery, defaultQueryOpts.pageOffset);
+					return getQueryResultWithHeaders({ ...defaultQueryOpts, access: [] }, queryStrWithOffset);
+				} else if (activeMode === 'filters' && isQueryFromParams === true) {
+					const queryStrWithOffset = appendOffsetToQuery(custSearchQuery, defaultQueryOpts.pageOffset);
 					return getQueryResultWithHeaders({ ...defaultQueryOpts, access: [] }, queryStrWithOffset);
 				} else {
 					const queryStrWithOffset = appendOffsetToQuery(custSearchQuery, defaultQueryOpts.pageOffset);

@@ -62,7 +62,7 @@ const SavedFilterItem = (props: {
 	const { deleteSavedFilterMutation, isDeleting, isRefetching } = useSavedFiltersQuery();
 
 	const location = useLocation();
-	const [, setFilterStore] = useFilterStore((_store) => null);
+	const [, setFilterStore] = useFilterStore(() => null);
 
 	const toggleShowQuery = useCallback(() => {
 		return setShowQuery((prev) => !prev);
@@ -85,7 +85,16 @@ const SavedFilterItem = (props: {
 
 	const onApplyFilters = useCallback(() => {
 		if (location.pathname.includes('dashboard')) {
-			setFilterStore((store) => setAppliedFilterQuery(store, query.filter_query));
+			if (query.filter_query) {
+				setFilterStore((store) => setAppliedFilterQuery(store, query.filter_query));
+			} else if (query.filter_builder) {
+				setFilterStore((store) =>
+					setAppliedFilterQuery(
+						store,
+						parseQuery(props.queryEngine, query.filter_builder as QueryType, stream_name).parsedQuery,
+					),
+				);
+			}
 			setFilterStore((store) => toggleSavedFiltersModal(store, false));
 		} else {
 			if (query.filter_query) {

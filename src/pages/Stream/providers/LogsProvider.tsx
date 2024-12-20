@@ -171,12 +171,14 @@ type LogsStore = {
 	tableOpts: {
 		disabledColumns: string[];
 		wrapDisabledColumns: string[];
+		targetColumns: string[];
 		pinnedColumns: string[];
 		pageData: Log[];
 		totalPages: number;
 		totalCount: number;
 		displayedCount: number;
 		currentPage: number;
+		targetPage: number | undefined;
 		perPage: number;
 		currentOffset: number;
 		headers: string[];
@@ -187,6 +189,7 @@ type LogsStore = {
 		instantSearchValue: string;
 		configViewType: 'schema' | 'columns';
 		enableWordWrap: boolean;
+		rowNumber: string;
 	};
 
 	data: LogQueryData;
@@ -227,6 +230,7 @@ type LogsStoreReducers = {
 	setCurrentOffset: (store: LogsStore, offset: number) => ReducerOutput;
 	setPerPage: (store: LogsStore, perPage: number) => ReducerOutput;
 	setCurrentPage: (store: LogsStore, page: number) => ReducerOutput;
+	setTargetPage: (store: LogsStore, target: number | undefined) => ReducerOutput;
 	setTotalCount: (store: LogsStore, totalCount: number) => ReducerOutput;
 	setPageAndPageData: (store: LogsStore, pageNo: number, perPage?: number) => ReducerOutput;
 	setAndSortData: (store: LogsStore, sortKey: string, sortOrder: 'asc' | 'desc') => ReducerOutput;
@@ -249,8 +253,10 @@ type LogsStoreReducers = {
 	onToggleView: (store: LogsStore, viewMode: 'json' | 'table') => ReducerOutput;
 	toggleConfigViewType: (store: LogsStore) => ReducerOutput;
 	setDisabledColumns: (store: LogsStore, columns: string[]) => ReducerOutput;
+	setTargetColumns: (store: LogsStore, columms: string[]) => ReducerOutput;
 	setOrderedHeaders: (store: LogsStore, columns: string[]) => ReducerOutput;
 	toggleWordWrap: (store: LogsStore) => ReducerOutput;
+	setRowNumber: (store: LogsStore, rowNumber: string) => ReducerOutput;
 };
 
 const defaultSortKey = 'p_timestamp';
@@ -272,6 +278,7 @@ const initialState: LogsStore = {
 	},
 
 	tableOpts: {
+		targetColumns: [],
 		disabledColumns: [],
 		wrapDisabledColumns: [],
 		pinnedColumns: [],
@@ -281,6 +288,7 @@ const initialState: LogsStore = {
 		displayedCount: 0,
 		totalPages: 0,
 		currentPage: 0,
+		targetPage: undefined,
 		currentOffset: 0,
 		headers: [],
 		orderedHeaders: [],
@@ -290,6 +298,7 @@ const initialState: LogsStore = {
 		instantSearchValue: '',
 		configViewType: 'columns',
 		enableWordWrap: true,
+		rowNumber: '',
 	},
 
 	// data
@@ -451,6 +460,15 @@ const setDisabledColumns = (store: LogsStore, columns: string[]) => {
 	};
 };
 
+const setTargetColumns = (store: LogsStore, columns: string[]) => {
+	return {
+		tableOpts: {
+			...store.tableOpts,
+			targetColumns: columns,
+		},
+	};
+};
+
 const togglePinnedColumns = (store: LogsStore, columnName: string) => {
 	const { tableOpts } = store;
 	return {
@@ -461,21 +479,25 @@ const togglePinnedColumns = (store: LogsStore, columnName: string) => {
 	};
 };
 
+const setRowNumber = (store: LogsStore, rowNumber: string) => {
+	const { tableOpts } = store;
+	return {
+		tableOpts: {
+			...tableOpts,
+			rowNumber,
+		},
+	};
+};
+
 const filterAndSortData = (
 	opts: { sortOrder: 'asc' | 'desc'; sortKey: string; filters: Record<string, string[]> },
 	data: Log[],
 ) => {
 	const { sortOrder, sortKey, filters } = opts;
+	const filterSets = _.mapValues(filters, (values) => new Set(values));
 	const filteredData = _.isEmpty(filters)
 		? data
-		: (_.reduce(
-				data,
-				(acc: Log[], d: Log) => {
-					const doesMatch = _.some(filters, (value, key) => _.includes(value, _.toString(d[key])));
-					return doesMatch ? [...acc, d] : acc;
-				},
-				[],
-		  ) as Log[]);
+		: _.filter(data, (item) => _.every(filterSets, (valueSet, key) => valueSet.has(_.toString(item[key]))));
 	const sortedData = _.orderBy(filteredData, [sortKey], [sortOrder]);
 	return sortedData;
 };
@@ -549,6 +571,15 @@ const setPerPage = (store: LogsStore, perPage: number) => {
 		tableOpts: {
 			...store.tableOpts,
 			perPage,
+		},
+	};
+};
+
+const setTargetPage = (store: LogsStore, target: number | undefined) => {
+	return {
+		tableOpts: {
+			...store.tableOpts,
+			targetPage: target ? target : undefined,
 		},
 	};
 };
@@ -867,10 +898,12 @@ const logsStoreReducers: LogsStoreReducers = {
 	toggleDeleteModal,
 	toggleDisabledColumns,
 	togglePinnedColumns,
+	setRowNumber,
 	setLogData,
 	setStreamSchema,
 	setPerPage,
 	setCurrentPage,
+	setTargetPage,
 	setCurrentOffset,
 	setTotalCount,
 	setPageAndPageData,
@@ -892,6 +925,7 @@ const logsStoreReducers: LogsStoreReducers = {
 	onToggleView,
 	toggleConfigViewType,
 	setDisabledColumns,
+	setTargetColumns,
 	setOrderedHeaders,
 	toggleWordWrap,
 	toggleWrapDisabledColumns,

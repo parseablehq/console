@@ -53,7 +53,7 @@ export type HotTierConfig =
 			available_size: string;
 			oldest_date_time_entry: string;
 	  }
-	| {};
+	| object;
 
 export type UpdateHotTierConfig = {
 	size: string;

@@ -1,6 +1,5 @@
 import { Divider, Stack } from '@mantine/core';
 import classes from './styles/Systems.module.css';
-import _ from 'lodash';
 import ServerList from './ServerList';
 import ServerDetail from './ServerDetails';
 import { PRIMARY_HEADER_HEIGHT } from '@/constants/theme';

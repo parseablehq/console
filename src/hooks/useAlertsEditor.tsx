@@ -6,7 +6,7 @@ import { useStreamStore, streamStoreReducers } from '@/pages/Stream/providers/St
 const { setAlertsConfig } = streamStoreReducers;
 
 const useAlertsQuery = (streamName: string, hasAlertsAccess: boolean, isStandAloneMode: boolean | null) => {
-	const [, setStreamStore] = useStreamStore((_store) => null);
+	const [, setStreamStore] = useStreamStore(() => null);
 	const { data, isError, isSuccess, isLoading, refetch } = useQuery(
 		['fetch-log-stream-alert', streamName, hasAlertsAccess],
 		() => getLogStreamAlerts(streamName),

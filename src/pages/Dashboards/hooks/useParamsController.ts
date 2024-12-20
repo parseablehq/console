@@ -74,7 +74,7 @@ const useParamsController = () => {
 	const [isStoreSynced, setStoreSynced] = useState(false);
 	const [activeDashboard, setDashboardsStore] = useDashboardsStore((store) => store.activeDashboard);
 	const [timeRange, setAppStore] = useAppStore((store) => store.timeRange);
-	const [, setLogStore] = useLogsStore((_store) => null);
+	const [, setLogStore] = useLogsStore(() => null);
 	const [searchParams, setSearchParams] = useSearchParams();
 	const dashboardId = activeDashboard?.dashboard_id || '';
 

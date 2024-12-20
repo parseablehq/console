@@ -7,7 +7,7 @@ import { useQuery } from 'react-query';
 const { setStreamInfo } = streamStoreReducers;
 
 export const useGetStreamInfo = (currentStream: string, initialFetch: boolean) => {
-	const [, setStreamStore] = useStreamStore((_store) => null);
+	const [, setStreamStore] = useStreamStore(() => null);
 	const {
 		data: getStreamInfoData,
 		isError: getStreamInfoError,

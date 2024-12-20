@@ -92,7 +92,7 @@ const getEndOfTs = (time: Date, compactType: CompactInterval): Date => {
 };
 
 const incrementDateByCompactType = (date: Date, type: CompactInterval): Date => {
-	let tempDate = new Date(date);
+	const tempDate = new Date(date);
 	if (type === 'minute') {
 		tempDate.setMinutes(tempDate.getMinutes() + 1);
 	} else if (type === 'hour') {
@@ -151,6 +151,7 @@ const generateCountQuery = (
 	whereClause: string,
 ) => {
 	const range = compactTypeIntervalMap[compactType];
+	/* eslint-disable no-useless-escape */
 	return `SELECT DATE_BIN('${range}', p_timestamp, '${startTime.toISOString()}') AS date_bin_timestamp, COUNT(*) AS log_count FROM \"${streamName}\" WHERE p_timestamp BETWEEN '${startTime.toISOString()}' AND '${endTime.toISOString()}' AND ${whereClause} GROUP BY date_bin_timestamp ORDER BY date_bin_timestamp`;
 };
 

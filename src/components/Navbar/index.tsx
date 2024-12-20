@@ -216,7 +216,9 @@ const Navbar: FC = () => {
 									? toggleUserModal
 									: navAction.key === 'logout'
 									? signOutHandler
-									: () => {};
+									: () => {
+											return;
+									  };
 							return (
 								<Stack
 									className={`${styles.navItemContainer} ${isActiveItem && styles.navItemActive}`}

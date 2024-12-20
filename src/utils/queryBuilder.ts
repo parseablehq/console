@@ -78,6 +78,7 @@ export class QueryBuilder {
 		return formatDateAsCastType(optimizeTime(this.endTime));
 	}
 
+	/* eslint-disable no-useless-escape */
 	trinoQuery(): string {
 		const optimizedStartTime = this.getStartTime();
 		const optimizedEndTime = this.getEndTime();
