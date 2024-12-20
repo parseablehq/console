@@ -10,7 +10,7 @@ import IconButton from '@/components/Button/IconButton';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const navigateToDocs = () => {
-	return window.open('https://www.parseable.com/docs/server/api/rbac', '_blank');
+	return window.open('https://www.parseable.io/docs/server/features/rbac-role-based-access-control', '_blank');
 };
 
 const renderDocsIcon = () => <IconBook2 stroke={1.5} size="1rem" />;
@@ -167,7 +167,7 @@ const Roles: FC = () => {
 	return (
 		<Box className={classes.container}>
 			<Stack className={classes.header} gap={0}>
-				<Text component="h2" style={{ fontWeight: 600 }}>
+				<Text className={classes.sectionHeaderText} component="h2" style={{ fontWeight: 600 }}>
 					Roles
 				</Text>
 				<Stack style={{ flexDirection: 'row' }} gap={0}>
@@ -206,14 +206,16 @@ const Roles: FC = () => {
 				</Table>
 			</ScrollArea>
 			<Modal
+				size="lg"
 				opened={defaultRoleModalOpen}
 				onClose={handleDefaultRoleModalClose}
 				title="Set default oidc role"
 				centered
-				styles={{ title: { fontWeight: 500 } }}
+				styles={{ title: { fontWeight: 500, fontSize: '16px' } }}
 				className={classes.modalStyle}>
 				<Stack>
 					<Select
+						size="lg"
 						placeholder="Select Role"
 						label="Select a role to automatically assign to new oidc users"
 						data={getRolesData?.data ?? []}
@@ -228,6 +230,7 @@ const Roles: FC = () => {
 
 				<Group justify="right" mt={10}>
 					<Button
+						size="md"
 						variant="filled"
 						color="gray"
 						className={classes.modalActionBtn}
@@ -236,6 +239,7 @@ const Roles: FC = () => {
 						Set default
 					</Button>
 					<Button
+						size="md"
 						onClick={handleDefaultRoleModalClose}
 						variant="outline"
 						color="gray"
@@ -245,14 +249,16 @@ const Roles: FC = () => {
 				</Group>
 			</Modal>
 			<Modal
+				size="lg"
 				opened={modalOpen}
 				onClose={handleClose}
 				title="Create Role"
 				centered
 				className={classes.modalStyle}
-				styles={{ title: { fontWeight: 500 } }}>
+				styles={{ title: { fontWeight: 500, fontSize: '16px' } }}>
 				<Stack>
 					<TextInput
+						size="lg"
 						type="text"
 						label="Enter the name of the Role"
 						placeholder="Type the name of the Role to create"
@@ -266,6 +272,7 @@ const Roles: FC = () => {
 						placeholder="Select privilege"
 						label="Select a privilege to assign"
 						data={['admin', 'editor', 'writer', 'reader', 'ingestor']}
+						size="lg"
 						onChange={(value) => {
 							setSelectedPrivilege(value ?? '');
 						}}
@@ -312,6 +319,7 @@ const Roles: FC = () => {
 
 				<Group justify="right" mt={10}>
 					<Button
+						size="md"
 						variant="filled"
 						color="gray"
 						data-testid="create-role-modal-button"
@@ -321,6 +329,7 @@ const Roles: FC = () => {
 						Create
 					</Button>
 					<Button
+						size="md"
 						onClick={handleClose}
 						variant="outline"
 						color="gray"

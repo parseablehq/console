@@ -16,7 +16,7 @@
 	background: #fff;
 	padding: 0;
 	width: 36px;
-	color: #211F1F;
+	color: #211f1f;
 	border: 1px #e9ecef solid;
 	border-radius: rem(8px);
 
@@ -26,12 +26,12 @@
 }
 
 .refreshNowBtn:hover {
-	background-color: #E0E0E0;
+	background-color: #e0e0e0;
 }
 
 .streamButton {
 	background: #fff;
-	color: #211F1F;
+	color: #211f1f;
 	border: 1px #e9ecef solid;
 	border-radius: rem(8px);
 }
@@ -49,7 +49,34 @@
 }
 
 .intervalbtn:hover {
-	background-color: #E0E0E0;
+	background-color: #e0e0e0;
+}
+
+.streamSelect {
+	@media (min-width: 1024px) {
+		/* sm: Styles for HD devices */
+		font-size: 10px;
+	}
+
+	@media (min-width: 1980px) {
+		/* md: Styles for FULL HD devices */
+		font-size: 12px;
+	}
+
+	@media (min-width: 1600px) {
+		/* lg: Styles for 2K devices */
+		font-size: 14px;
+	}
+
+	@media (min-width: 2160px) {
+		/* xl: Styles for 4K devices */
+		font-size: 18px;
+	}
+
+	@media (min-width: 3200px) {
+		/* 2xl: Styles for 8K devices */
+		font-size: 24px;
+	}
 }
 
 .homeIcon {
@@ -97,7 +124,6 @@
 	background: #424242;
 	font-weight: 600;
 	color: #fff;
-
 }
 
 .customRangeContainer {
@@ -158,7 +184,7 @@
 	background-color: white;
 	padding: 6px 12px;
 	margin-right: 0.625rem;
-	color: #211F1F;
+	color: #211f1f;
 	border: 1px #e9ecef solid;
 }
 
@@ -177,7 +203,7 @@
 }
 
 .timeRangeBTn:hover {
-	background-color: #E0E0E0;
+	background-color: #e0e0e0;
 	color: black;
 }
 
@@ -187,7 +213,7 @@
 }
 
 .dropdownOption {
-	color: #211F1F;
+	color: #211f1f;
 	font-size: var(--mantine-font-size-md);
 }
 
@@ -210,11 +236,11 @@
 }
 
 .customTimeRangeApplyBtn {
-	background: #545BEB;
+	background: #545beb;
 	color: white;
 
 	&:hover {
-		background: #FC466B;
+		background: #fc466b;
 	}
 }
 
@@ -263,8 +289,6 @@
 	white-space: nowrap;
 }
 
-
-
 .modeContainer {
 	width: 5rem;
 	height: 100%;
@@ -301,7 +325,7 @@
 	overflow: hidden;
 	border-radius: rem(8px);
 	align-items: center;
-	height: 1.6rem
+	height: 1.6rem;
 }
 
 .timeRangeCtrlIcon {
@@ -310,7 +334,7 @@
 	justify-content: center;
 
 	&:hover {
-		background-color: #E0E0E0;
+		background-color: #e0e0e0;
 		color: black;
 	}
 

@@ -13,10 +13,10 @@ import IconButton from '@/components/Button/IconButton';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const navigateToDocs = () => {
-	return window.open('https://www.parseable.io/docs/rbac', '_blank');
+	return window.open('https://www.parseable.io/docs/server/features/rbac-role-based-access-control', '_blank');
 };
 
-const renderDocsIcon = () => <IconBook2 stroke={1.5} size="1rem" />;
+const renderDocsIcon = () => <IconBook2 className={classes.docsIcon} stroke={1.5} size="1rem" />;
 
 const Users: FC = () => {
 	useDocumentTitle('Parseable | Users');
@@ -107,7 +107,9 @@ const Users: FC = () => {
 			className={classes.container}
 			style={{ maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2}px - ${20}px)` }}>
 			<Stack className={classes.header} gap={0}>
-				<Text style={{ fontWeight: 600 }}>Users</Text>
+				<Text className={classes.sectionHeaderText} style={{ fontWeight: 600 }}>
+					Users
+				</Text>
 				<Stack style={{ flexDirection: 'row' }} gap={0}>
 					<Button
 						className={classes.createUserBtn}
@@ -141,9 +143,11 @@ const Users: FC = () => {
 				title="Create user"
 				centered
 				className={classes.modalStyle}
-				styles={{ title: { fontWeight: 500 } }}>
+				size="lg"
+				styles={{ title: { fontWeight: 500, fontSize: '16px' } }}>
 				<Stack>
 					<TextInput
+						size="lg"
 						type="text"
 						label="Enter the name of the user"
 						placeholder="Type the name of the user to create"
@@ -154,6 +158,7 @@ const Users: FC = () => {
 						required
 					/>
 					<Select
+						size="lg"
 						placeholder="Select a role to assign"
 						onChange={(value) => {
 							setSelectedRole(value ?? '');
@@ -198,6 +203,7 @@ const Users: FC = () => {
 
 				<Group justify="right" mt={10}>
 					<Button
+						size="md"
 						variant="filled"
 						color="gray"
 						className={classes.modalActionBtn}
@@ -205,7 +211,7 @@ const Users: FC = () => {
 						disabled={!createVaildtion() || !!createUserData?.data}>
 						Create
 					</Button>
-					<Button onClick={handleClose} variant="outline" color="gray" className={classes.modalCancelBtn}>
+					<Button size="md" onClick={handleClose} variant="outline" color="gray" className={classes.modalCancelBtn}>
 						Cancel
 					</Button>
 				</Group>

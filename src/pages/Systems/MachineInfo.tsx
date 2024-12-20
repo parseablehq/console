@@ -112,7 +112,7 @@ const IngestorInfo = () => {
 	const ingestor = _.find(ingestorMachines, (ingestor) => ingestor.domain_name === recentRecord?.address);
 	const [selectedMachine] = useClusterStore((store) => store.currentMachine);
 	const ingestorInfo = _.find(ingestorMachines, (ingestor) => ingestor.domain_name === selectedMachine);
-	const error = ingestor ? ingestor.error : null || null;
+	const error = ingestor ? ingestor.error : null;
 	const toggleDeleteModal = useCallback(() => {
 		setDeleteModalOpen((prev) => !prev);
 	}, []);
@@ -121,7 +121,9 @@ const IngestorInfo = () => {
 			<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={8}>
 				<Group style={{ justifyContent: 'space-between', width: '100%' }}>
 					<Group>
-						<Text fw={500}>Instance Info</Text>
+						<Text className={classes.infoTitle} fw={500}>
+							Instance Info
+						</Text>
 						{error && (
 							<Tooltip label={error}>
 								<ThemeIcon className={classes.infoIcon} variant="filled" size="sm">
@@ -166,7 +168,9 @@ const QuerierInfo = () => {
 
 	return (
 		<Stack style={{ width: '70%', height: '100%' }} className={classes.machineInfoSection}>
-			<Text fw={500}>Instance Info</Text>
+			<Text className={classes.infoTitle} fw={500}>
+				Instance Info
+			</Text>
 			<Stack flex={1} style={{ justifyContent: 'space-around' }}>
 				<Stack style={{ width: '100%', flexDirection: 'row' }}>
 					<InfoItem title="Address" value={currentMachine || ''} showCopyBtn />
@@ -190,7 +194,9 @@ const MemoryInfo = () => {
 	return (
 		<Stack className={classes.memoryInfoSection} gap={4}>
 			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-				<Text fw={500}>Memory Usage</Text>
+				<Text className={classes.infoTitle} fw={500}>
+					Memory Usage
+				</Text>
 				<Text>{formatBytes(recentRecord?.process_resident_memory_bytes || 0)}</Text>
 			</Stack>
 			<Stack h="100%" w="100%" flex={1}>
