@@ -174,7 +174,7 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 				className: tableStyles.customCell,
 				style: {
 					padding: '0.5rem 1rem',
-					fontSize: '0.6rem',
+					// fontSize: '0.6rem',
 					overflow: 'hidden',
 					textOverflow: 'ellipsis',
 					display: 'table-cell',
