@@ -8,7 +8,6 @@ import {
 	IconHomeStats,
 	IconListDetails,
 	IconLayoutDashboard,
-	IconHierarchy2,
 } from '@tabler/icons-react';
 import { FC, useCallback, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
@@ -34,6 +33,7 @@ import UserModal from './UserModal';
 import { signOutHandler } from '@/utils';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
+import { CorrelationIcon } from './components/CorrelationIcon';
 
 const { setUserRoles, setUserSpecificStreams, setUserAccessMap, changeStream, setStreamSpecificUserAccess } =
 	appStoreReducers;
@@ -58,7 +58,7 @@ const navItems = [
 		route: STREAM_ROUTE,
 	},
 	{
-		icon: IconHierarchy2,
+		icon: '',
 		label: 'Correlation',
 		path: '/correlation',
 		route: CORRELATION_ROUTE,
@@ -181,7 +181,16 @@ const Navbar: FC = () => {
 									onClick={() => navigateToPage(navItem.route)}
 									key={index}>
 									<Tooltip label={navItem.label} position="right">
-										<navItem.icon stroke={isActiveItem ? 1.4 : 1.2} size={'1.2rem'} />
+										{navItem.route === CORRELATION_ROUTE ? (
+											<CorrelationIcon
+												stroke={isActiveItem ? '#000000' : '#858e96'}
+												strokeWidth={isActiveItem ? 1.4 : 1.2}
+												height="1.2rem"
+												width="1.2rem"
+											/>
+										) : (
+											<navItem.icon stroke={isActiveItem ? 1.4 : 1.2} size="1.2rem" />
+										)}
 									</Tooltip>
 								</Stack>
 							);
