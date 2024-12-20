@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { useDocumentTitle } from '@mantine/hooks';
-import { Stack, Box, TextInput, Text, Select, Button, Center, Skeleton } from '@mantine/core';
+import { Stack, Box, TextInput, Text, Select, Button, Center, Skeleton, Stepper } from '@mantine/core';
 import {
 	PRIMARY_HEADER_HEIGHT,
 	STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT,
@@ -316,6 +316,11 @@ const Correlation = () => {
 									backgroundColor: streamNames.length > 0 ? 'white' : '#F7F8F9',
 								}}
 								className={classes.fieldsPillsWrapper}>
+								{Object.keys(selectedFields).length < 1 && (
+									<Text c={'#ACB5BD'} size="sm">
+										Click on fields to correlate
+									</Text>
+								)}
 								{Object.entries(selectedFields).map(([streamName, fieldsMap]: [any, any]) =>
 									fieldsMap.map((field: any, index: any) => (
 										<FieldItem
@@ -343,6 +348,9 @@ const Correlation = () => {
 							<div className={classes.joinsWrapper}>
 								<div style={{ width: '50%' }}>
 									<Select
+										styles={{
+											input: { height: 26 },
+										}}
 										disabled={streamNames.length === 0}
 										placeholder={streamNames[0] ? `Select field from ${streamNames[0]}` : 'Select Stream 1'}
 										style={{ height: '100%' }}
@@ -361,6 +369,9 @@ const Correlation = () => {
 								<Text size="md"> = </Text>
 								<div style={{ width: '50%' }}>
 									<Select
+										styles={{
+											input: { height: 26 },
+										}}
 										disabled={streamNames.length < 2}
 										placeholder={streamNames[1] ? `Select field from ${streamNames[1]}` : 'Select Stream 2'}
 										radius="md"
@@ -376,13 +387,6 @@ const Correlation = () => {
 									/>
 								</div>
 							</div>
-							<Button
-								className={classes.correlateBtn}
-								h="100%"
-								disabled={!select1Value || !select2Value || Object.keys(selectedFields).length < 1}
-								onClick={() => getCorrelationData()}>
-								Correlate
-							</Button>
 						</div>
 					</Stack>
 					<div
@@ -391,7 +395,6 @@ const Correlation = () => {
 							justifyContent: 'space-between',
 							alignItems: 'center',
 							width: '100%',
-							paddingRight: '10px',
 						}}>
 						{/* <CorrelationFilters /> */}
 						<div className={classes.logTableControlWrapper}>
@@ -401,9 +404,17 @@ const Correlation = () => {
 							<ShareButton />
 							<MaximizeButton />
 						</div>
-						<Button className={classes.clearBtn} onClick={clearQuery} disabled={streamNames.length == 0}>
-							Clear
-						</Button>
+						<div style={{ display: 'flex', gap: '5px', alignItems: 'center', height: '25px' }}>
+							<Button
+								className={classes.correlateBtn}
+								disabled={!select1Value || !select2Value || Object.keys(selectedFields).length < 1}
+								onClick={() => getCorrelationData()}>
+								Correlate
+							</Button>
+							<Button className={classes.clearBtn} onClick={clearQuery} disabled={streamNames.length == 0}>
+								Clear
+							</Button>
+						</div>
 					</div>
 				</Stack>
 				<Stack className={classes.logsSecondaryToolbar} style={{ height: STREAM_SECONDARY_TOOLBAR_HRIGHT }}>
@@ -421,7 +432,26 @@ const Correlation = () => {
 				{Object.keys(selectedFields).length === 0 && (
 					<Center className={classes.container}>
 						<CorrelationEmptyPlaceholder height={200} width={200} />
-						<Text className={classes.addStreamPlaceholder}>Create Correlation to view data</Text>
+						<Stepper
+							styles={{
+								stepBody: {
+									marginTop: '5%',
+									color: 'var(--mantine-color-gray-6)',
+								},
+								stepCompletedIcon: {
+									color: '#535BED',
+								},
+								stepIcon: {
+									color: 'var(--mantine-color-gray-6)',
+								},
+							}}
+							color="gray"
+							active={streamNames.length}
+							orientation="vertical">
+							<Stepper.Step label="Select first stream" />
+							<Stepper.Step label="Select second stream" />
+							<Stepper.Step label="Click on fields to correlate" />
+						</Stepper>
 					</Center>
 				)}
 			</Stack>

@@ -41,7 +41,7 @@
 .streamBox {
 	display: flex;
 	flex-direction: column;
-	gap: 14px;
+	gap: 10px;
 	height: calc(100vh - 150px);
 }
 
@@ -154,16 +154,17 @@
 .fieldsPillsWrapper {
 	width: 100%;
 	height: 100%;
-	border-radius: calc(0.5rem * var(--mantine-scale));
+	border-radius: rem(8px);
 	display: flex;
 	gap: 10px;
-	padding: 5px 10px;
+	padding: 5px 8px;
+	align-items: center;
 }
 
 .joinsWrapper {
 	width: 100%;
 	height: 100%;
-	border-radius: calc(0.5rem * var(--mantine-scale));
+	border-radius: rem(8px);
 	display: flex;
 	gap: 10px;
 	align-items: center;
@@ -185,7 +186,7 @@
 
 	&:hover {
 		background-color: #545beb;
-		border-radius: 10px;
+		border-radius: rem(8px);
 	}
 }
 
@@ -226,7 +227,6 @@
 	border-radius: rem(8px);
 	font-size: 0.65rem;
 	cursor: pointer;
-	width: 8%;
 	&:hover {
 		color: black;
 	}
