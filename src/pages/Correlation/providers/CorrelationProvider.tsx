@@ -447,6 +447,29 @@ const deleteStreamData = (store: CorrelationStore, currentStream: string) => {
 		}))
 		.reduce((acc, fieldEntry) => ({ ...acc, ...fieldEntry }), {});
 
+	// Filter out fields related to the deleted stream from pageData
+	const updatedPageData = store.tableOpts.pageData.map((row) => {
+		// Remove keys that belong to the deleted stream
+		const filteredRow = Object.keys(row)
+			.filter((key) => !key.startsWith(`${currentStream}.`))
+			.reduce((acc, key) => {
+				acc[key] = row[key];
+				return acc;
+			}, {} as Record<string, string | number | Date | null>);
+		return filteredRow;
+	});
+
+	return {
+		...store,
+		fields: updatedFields,
+		streamData: newStreamData,
+		selectedFields: newSelectedFields,
+		tableOpts: {
+			...store.tableOpts,
+			pageData: updatedPageData,
+		},
+	};
+
 	return {
 		...store,
 		fields: updatedFields,

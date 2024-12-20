@@ -1,11 +1,9 @@
 import { FC } from 'react';
 
-type CorrelationProps = {
+export const CorrelationEmptyPlaceholder: FC<{
 	height?: number | string;
 	width?: number | string;
-};
-
-export const CorrelationEmptyPlaceholder: FC<CorrelationProps> = ({ height, width }) => {
+}> = ({ height, width }) => {
 	return (
 		<svg height={height} width={width} viewBox="0 0 129 103" fill="none" xmlns="http://www.w3.org/2000/svg">
 			<mask id="path-1-inside-1_198_1034" fill="white">

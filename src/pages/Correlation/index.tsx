@@ -144,6 +144,7 @@ const Correlation = () => {
 	const updateCorrelationCondition = () => {
 		if (select1Value && select2Value) {
 			const condition = `"${streamNames[0]}".${select1Value} = "${streamNames[1]}".${select2Value}`;
+			setAppStore((store) => changeStream(store, ''));
 			setCorrelationData((store) => setCorrelationCondition(store, condition));
 		}
 	};
@@ -186,6 +187,7 @@ const Correlation = () => {
 				<TextInput
 					disabled={streamNames.length === 0}
 					w="100%"
+					radius="md"
 					placeholder="Search Fields"
 					key="search-fields"
 					value={searchText}
@@ -344,6 +346,7 @@ const Correlation = () => {
 										disabled={streamNames.length === 0}
 										placeholder={streamNames[0] ? `Select field from ${streamNames[0]}` : 'Select Stream 1'}
 										style={{ height: '100%' }}
+										radius="md"
 										data={
 											streamNames.length > 0
 												? Object.keys(fields[streamNames[0]].fieldTypeMap).filter(
@@ -360,6 +363,7 @@ const Correlation = () => {
 									<Select
 										disabled={streamNames.length < 2}
 										placeholder={streamNames[1] ? `Select field from ${streamNames[1]}` : 'Select Stream 2'}
+										radius="md"
 										data={
 											streamNames.length > 1
 												? Object.keys(fields[streamNames[0]].fieldTypeMap).filter(
