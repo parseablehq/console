@@ -39,10 +39,19 @@ const getSanitizedValue = (value: CellType, isTimestamp: boolean) => {
 };
 
 const makeColumnsFromSelectedFields = (pageData: Log[], isSecureHTTPContext: boolean, fieldTypeMap: FieldTypeMap) => {
+	if (!pageData || pageData.length === 0 || !pageData[0]) {
+		return [];
+	}
 	return Object.keys(pageData[0]).map((field: string) => ({
 		id: field,
 		header: field,
-		accessorKey: field,
+		accessorFn: (row: any) => {
+			try {
+				return _.get(row, field, '');
+			} catch {
+				return '';
+			}
+		},
 		grow: true,
 		Cell: ({ cell }: { cell: any }) => {
 			const value = _.get(cell.row.original, field, '');
@@ -150,14 +159,12 @@ const Table = (props: {
 											padding: '0.5rem 1rem',
 										},
 									}}
-									mantineTableBodyRowProps={({ row }) => {
-										return {
-											style: {
-												border: 'none',
-												background: row.index % 2 === 0 ? '#f8f9fa' : 'white',
-											},
-										};
-									}}
+									mantineTableBodyRowProps={({ row }) => ({
+										style: {
+											border: 'none',
+											background: row.index % 2 === 0 ? '#f8f9fa' : 'white',
+										},
+									})}
 									mantineTableHeadProps={{
 										style: {
 											border: 'none',
@@ -175,7 +182,7 @@ const Table = (props: {
 									state={{}}
 									mantineTableContainerProps={{
 										style: {
-											height: `calc(100vh - ${props.primaryHeaderHeight + LOGS_FOOTER_HEIGHT}px )`,
+											height: `calc(100vh - ${primaryHeaderHeight + LOGS_FOOTER_HEIGHT}px )`,
 										},
 									}}
 								/>
