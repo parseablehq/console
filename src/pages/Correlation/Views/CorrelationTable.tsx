@@ -38,33 +38,27 @@ const getSanitizedValue = (value: CellType, isTimestamp: boolean) => {
 	return String(value);
 };
 
-const makeColumnsFromSelectedFields = (
-	selectedFields: Record<string, string[]>,
-	isSecureHTTPContext: boolean,
-	fieldTypeMap: FieldTypeMap,
-) => {
-	return Object.entries(selectedFields).flatMap(([streamName, fields]) =>
-		fields.map((field: string) => ({
-			id: `${streamName}.${field}`,
-			header: `${streamName}.${field}`,
-			accessorKey: `${streamName}.${field}`,
-			grow: true,
-			Cell: ({ cell }: { cell: any }) => {
-				const value = _.get(cell.row.original, `${streamName}.${field}`, '');
-				const isTimestamp = _.get(fieldTypeMap, `${streamName}.${field}`, null) === 'timestamp';
-				const sanitizedValue = getSanitizedValue(value, isTimestamp);
+const makeColumnsFromSelectedFields = (pageData: Log[], isSecureHTTPContext: boolean, fieldTypeMap: FieldTypeMap) => {
+	return Object.keys(pageData[0]).map((field: string) => ({
+		id: field,
+		header: field,
+		accessorKey: field,
+		grow: true,
+		Cell: ({ cell }: { cell: any }) => {
+			const value = _.get(cell.row.original, field, '');
+			const isTimestamp = _.get(fieldTypeMap, field, null) === 'timestamp';
+			const sanitizedValue = getSanitizedValue(value, isTimestamp);
 
-				return (
-					<div className={tableStyles.customCellContainer} style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-						{sanitizedValue}
-						<div className={tableStyles.copyIconContainer}>
-							{isSecureHTTPContext && sanitizedValue && <CopyIcon value={sanitizedValue} />}
-						</div>
+			return (
+				<div className={tableStyles.customCellContainer} style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+					{sanitizedValue}
+					<div className={tableStyles.copyIconContainer}>
+						{isSecureHTTPContext && sanitizedValue && <CopyIcon value={sanitizedValue} />}
 					</div>
-				);
-			},
-		})),
-	);
+				</div>
+			);
+		},
+	}));
 };
 
 const Table = (props: {
@@ -76,32 +70,27 @@ const Table = (props: {
 }) => {
 	const { errorMessage, logsLoading, primaryHeaderHeight, showTable, hasNoData } = props;
 	const [{ pageData, wrapDisabledColumns }] = useCorrelationStore((store) => store.tableOpts);
-	const [streamData] = useCorrelationStore((store) => store.streamData);
 	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
 	const [columns, setColumns] = useState<MRT_ColumnDef<Log, unknown>[]>([]);
 
-	const [{ selectedFields }] = useCorrelationStore((store) => store);
-
-	const showTableOrLoader = logsLoading || showTable || !errorMessage || !hasNoData;
-	const isCorrelatedStream = Object.keys(streamData).includes('correlatedStream');
+	const showTableOrLoader =
+		(logsLoading || showTable || !errorMessage || !hasNoData) && columns.length === Object.keys(pageData[0]).length;
 
 	useEffect(() => {
-		if (!isCorrelatedStream) {
-			const updatedColumns = makeColumnsFromSelectedFields(selectedFields, isSecureHTTPContext, {
-				datetime: 'text',
-				host: 'text',
-				id: 'text',
-				method: 'text',
-				p_metadata: 'text',
-				p_tags: 'text',
-				p_timestamp: 'timestamp',
-				referrer: 'text',
-				status: 'number',
-				'user-identifier': 'text',
-			});
-			setColumns(updatedColumns);
-		}
-	}, [selectedFields, streamData]);
+		const updatedColumns = makeColumnsFromSelectedFields(pageData, isSecureHTTPContext, {
+			datetime: 'text',
+			host: 'text',
+			id: 'text',
+			method: 'text',
+			p_metadata: 'text',
+			p_tags: 'text',
+			p_timestamp: 'timestamp',
+			referrer: 'text',
+			status: 'number',
+			'user-identifier': 'text',
+		});
+		setColumns(updatedColumns);
+	}, [pageData]);
 
 	const makeCellCustomStyles = useCallback(
 		(columnName: string) => {

@@ -185,6 +185,7 @@ const setSelectedFields = (
 const setPageAndPageData = (store: CorrelationStore, pageNo: number, perPage?: number) => {
 	const { tableOpts, selectedFields, streamData } = store;
 	const streamNames = Object.keys(selectedFields);
+	const isCorrelatedStream = Object.keys(streamData).includes('correlatedStream');
 
 	const combinedFilteredData = streamNames.flatMap((streamName) => {
 		return streamData[streamName]?.logData || [];
@@ -204,6 +205,18 @@ const setPageAndPageData = (store: CorrelationStore, pageNo: number, perPage?: n
 	}
 
 	const updatedPerPage = perPage || tableOpts.perPage;
+
+	if (isCorrelatedStream) {
+		return {
+			...store,
+			tableOpts: {
+				...store.tableOpts,
+				currentPage: pageNo,
+				perPage: updatedPerPage,
+			},
+		};
+	}
+
 	const newPageSlice = getPageSlice(pageNo, updatedPerPage, combinedFilteredData);
 	const updatedPageData = newPageSlice?.map((record) => {
 		const combinedRecord: any = {};
