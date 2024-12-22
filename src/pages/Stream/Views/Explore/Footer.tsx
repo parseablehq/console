@@ -15,7 +15,7 @@ const { setPageAndPageData, setCurrentPage, setCurrentOffset, setRowNumber } = l
 const TotalCount = (props: { totalCount: number }) => {
 	return (
 		<Tooltip label={props.totalCount}>
-			<Text style={{ fontSize: '0.7rem' }}>{HumanizeNumber(props.totalCount)}</Text>
+			<Text className={classes.footerCountText}>{HumanizeNumber(props.totalCount)}</Text>
 		</Tooltip>
 	);
 };
@@ -32,9 +32,9 @@ const TotalLogsCount = (props: { hasTableLoaded: boolean; isFetchingCount: boole
 					<Loader type="dots" />
 				) : (
 					<>
-						<Text style={{ fontSize: '0.7rem' }}>{`Showing ${showingCount} out of`}</Text>
+						<Text className={classes.footerCountText}>{`Showing ${showingCount} out of`}</Text>
 						<TotalCount totalCount={totalCount} />
-						<Text style={{ fontSize: '0.7rem' }}>records</Text>
+						<Text className={classes.footerCountText}>records</Text>
 					</>
 				)
 			) : props.isTableEmpty ? null : (
@@ -77,7 +77,7 @@ const LimitControl: FC = () => {
 								key={limit}
 								onClick={() => onSelect(limit)}>
 								<Center>
-									<Text>{limit}</Text>
+									<Text className={classes.footerCountText}>{limit}</Text>
 								</Center>
 							</Menu.Item>
 						);
@@ -149,7 +149,7 @@ const Footer = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: b
 						onChange={(page) => {
 							pagination && pagination.setPage(page);
 						}}
-						size="sm">
+						size="md">
 						<Group gap={5} justify="center">
 							<Pagination.First
 								onClick={() => {

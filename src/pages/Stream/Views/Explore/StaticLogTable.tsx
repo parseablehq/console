@@ -251,7 +251,7 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 				mantineTableHeadCellProps={{
 					style: {
 						fontWeight: 600,
-						fontSize: '0.65rem',
+						fontSize: '1rem',
 						border: 'none',
 						padding: '0.5rem 1rem',
 					},
