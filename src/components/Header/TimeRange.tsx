@@ -138,7 +138,10 @@ const TimeRange: FC = () => {
 						{type === 'fixed' ? (
 							<RelativeTimeIntervals interval={interval} onDurationSelect={onDurationSelect} />
 						) : (
-							<Text onClick={toggleMenu} style={{ fontSize: '0.65rem', fontWeight: 500, whiteSpace: 'nowrap' }}>
+							<Text
+								onClick={toggleMenu}
+								className={classes.timeRangeText}
+								style={{ fontWeight: 500, whiteSpace: 'nowrap' }}>
 								{label}
 							</Text>
 						)}
