@@ -174,7 +174,7 @@ const Roles: FC = () => {
 					<Button
 						className={classes.createUserBtn}
 						data-testid="create-role-button"
-						rightSection={<IconUserPlus size={px('1rem')} stroke={1.5} />}
+						leftSection={<IconUserPlus size={px('1rem')} stroke={1.5} />}
 						onClick={() => {
 							setModalOpen(true);
 						}}>
@@ -183,7 +183,7 @@ const Roles: FC = () => {
 					{oidcActive && (
 						<Button
 							className={classes.createUserBtn}
-							rightSection={<IconPencil size={px('1.2rem')} stroke={1.5} />}
+							leftSection={<IconPencil size={px('1.2rem')} stroke={1.5} />}
 							onClick={() => {
 								setDefaultRoleModalOpen(true);
 							}}>

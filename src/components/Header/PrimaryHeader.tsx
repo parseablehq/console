@@ -32,6 +32,7 @@ const PrimaryHeader: FC = () => {
 				style={{ flexDirection: 'row', height: '100%', justifyContent: 'flex-end' }}
 				gap={8}>
 				<Button
+					className={styles.headerText}
 					variant="outline"
 					style={{ border: 'none' }}
 					component={'a'}
@@ -40,7 +41,7 @@ const PrimaryHeader: FC = () => {
 					Upgrade
 				</Button>
 				<Divider orientation="vertical" />
-				<Button onClick={toggleHelpModal} style={{ border: 'none' }} variant="outline">
+				<Button className={styles.headerText} onClick={toggleHelpModal} style={{ border: 'none' }} variant="outline">
 					Help
 				</Button>
 			</Stack>

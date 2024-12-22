@@ -1,58 +1,85 @@
 .container {
-    background-color: white;
-    display: flex;
-    align-items: center;
-    color: #495057;
-    font-size: 1rem;
-    font-weight: 500;
-    line-height: normal;
-    width: 100%;
+	background-color: white;
+	display: flex;
+	align-items: center;
+	color: #495057;
+	font-size: 1rem;
+	font-weight: 500;
+	line-height: normal;
+	width: 100%;
 }
 
 .logoContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	transition: width 0.4s ease-in-out;
-    background-color: var(--mantine-color-gray-0);
+	background-color: var(--mantine-color-gray-0);
 	border-bottom: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
-    height: 100%;
+	height: 100%;
 }
 
 .navContainer {
-    width: calc(100%);
-    justify-content: space-between;
+	width: calc(100%);
+	justify-content: space-between;
 }
 
 .actionBtn {
-    transition: transform 0.2s ease-in-out;
+	transition: transform 0.2s ease-in-out;
 }
 
 .actionBtn:hover {
-    transform: scale(1.3);
-    background-color: #f8f9fa;
+	transform: scale(1.3);
+	background-color: #f8f9fa;
 }
 
 .primaryHeaderContainer {
-    background-color: white;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    flex-direction: row;
-    background-color: var(--mantine-color-gray-0);
+	background-color: white;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	flex-direction: row;
+	background-color: var(--mantine-color-gray-0);
 }
 
 .rightSection {
 	border-bottom: rem(1px) solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
-    flex-direction: row;
-    justify-content: flex-end;
-    height: 100%;
-    flex: 1;
-    align-items: center;
+	flex-direction: row;
+	justify-content: flex-end;
+	height: 100%;
+	flex: 1;
+	align-items: center;
 }
 
 .divider {
-    border: 1px solid;
-    height: 70%;
-    border-color: var(--mantine-color-gray-4);
+	border: 1px solid;
+	height: 70%;
+	border-color: var(--mantine-color-gray-4);
+}
+
+.headerText {
+	@media (min-width: 1024px) {
+		/* sm: Styles for HD devices */
+		font-size: 10px;
+	}
+
+	@media (min-width: 1980px) {
+		/* md: Styles for FULL HD devices */
+		font-size: 12px;
+	}
+
+	@media (min-width: 1600px) {
+		/* lg: Styles for 2K devices */
+		font-size: 14px;
+	}
+
+	@media (min-width: 2160px) {
+		/* xl: Styles for 4K devices */
+		font-size: 18px;
+	}
+
+	@media (min-width: 3200px) {
+		/* 2xl: Styles for 8K devices */
+		font-size: 24px;
+	}
 }

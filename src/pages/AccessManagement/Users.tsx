@@ -114,7 +114,7 @@ const Users: FC = () => {
 					<Button
 						className={classes.createUserBtn}
 						onClick={() => setModalOpen(true)}
-						rightSection={<IconUserPlus size={px('1rem')} stroke={1.5} />}>
+						leftSection={<IconUserPlus size={px('1rem')} stroke={1.5} />}>
 						Create User
 					</Button>
 					<IconButton renderIcon={renderDocsIcon} onClick={navigateToDocs} tooltipLabel="Docs" />
