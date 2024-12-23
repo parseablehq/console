@@ -98,7 +98,13 @@ const DeleteOrResetModal = ({
 								Please type <span className={classes.confirmationTextHighlight}>{`"${confirmationText}"`}</span> to
 								confirm {type === 'delete' ? 'deletion' : 'reset'}.
 							</Text>
-							<TextInput value={confirmText} onChange={onChangeHandler} placeholder={placeholder} required />
+							<TextInput
+								classNames={{ input: classes.inputField }}
+								value={confirmText}
+								onChange={onChangeHandler}
+								placeholder={placeholder}
+								required
+							/>
 						</>
 					)}
 

@@ -147,6 +147,7 @@ const Home: FC = () => {
 						key="search-stream"
 						value={searchTerm}
 						rightSection={shortcutKeyElement}
+						classNames={{ input: homeStyles.searchBar }}
 						rightSectionWidth={80}
 						onChange={(event) => {
 							setSearchTerm(event.target.value);

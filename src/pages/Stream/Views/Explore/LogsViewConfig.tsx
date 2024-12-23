@@ -35,6 +35,7 @@ const Header = () => {
 					{ label: 'Schema Fields', value: 'schema' },
 				]}
 				value={configViewType}
+				classNames={{ input: classes.streamInput, description: classes.streamSelectDescription }}
 				allowDeselect={false}
 				onChange={(value) => onChange(value)}
 				style={{ width: '100%', height: '100%' }}
@@ -73,7 +74,12 @@ const SearchBar = (props: {
 	const { placeholder, value, onChangeHandler } = props;
 	return (
 		<Stack className={classes.searchBarContainer}>
-			<TextInput placeholder={placeholder} value={value} onChange={onChangeHandler} />
+			<TextInput
+				placeholder={placeholder}
+				value={value}
+				onChange={onChangeHandler}
+				classNames={{ input: classes.searchBar }}
+			/>
 		</Stack>
 	);
 };

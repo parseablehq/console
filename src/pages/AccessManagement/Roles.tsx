@@ -220,6 +220,7 @@ const Roles: FC = () => {
 						onChange={(value) => {
 							setInputDefaultRole(value ?? '');
 						}}
+						classNames={{ input: classes.selectInput, description: classes.selectDescription }}
 						value={inputDefaultRole}
 						nothingFoundMessage="No options"
 						searchable
@@ -259,6 +260,7 @@ const Roles: FC = () => {
 						onChange={(e) => {
 							setCreateRoleInput(e.target.value);
 						}}
+						classNames={{ input: classes.inputField }}
 						value={createRoleInput}
 						required
 					/>
@@ -270,6 +272,7 @@ const Roles: FC = () => {
 							setSelectedPrivilege(value ?? '');
 						}}
 						value={selectedPrivilege}
+						classNames={{ input: classes.selectInput, description: classes.selectDescription }}
 						nothingFoundMessage="No options"
 						required
 					/>
@@ -282,6 +285,7 @@ const Roles: FC = () => {
 								onChange={(value) => {
 									setSelectedStream(value ?? '');
 								}}
+								classNames={{ input: classes.selectInput, description: classes.selectDescription }}
 								value={SelectedStream}
 								searchValue={streamSearchValue}
 								onSearchChange={(value) => setStreamSearchValue(value)}
@@ -300,6 +304,7 @@ const Roles: FC = () => {
 									onChange={(e) => {
 										setTagInput(e.target.value);
 									}}
+									classNames={{ input: classes.inputField }}
 								/>
 							) : (
 								''

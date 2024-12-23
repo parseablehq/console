@@ -1,36 +1,40 @@
 .noDashboardsContainer {
-    /* border: 1px solid var(--mantine-color-gray-1); */
-    flex: 1;
-    margin: 4rem;
-    border-radius: 0.25rem;
-    align-items: center;
-    justify-content: center;
-    padding: 0 20rem;
+	/* border: 1px solid var(--mantine-color-gray-1); */
+	flex: 1;
+	margin: 4rem;
+	border-radius: 0.25rem;
+	align-items: center;
+	justify-content: center;
+	padding: 0 20rem;
 }
 
 .dashboardIconContainer {
-    width: fit-content;
-    background-color: var(--mantine-color-brandPrimary-0);
-    border-radius: 50%;
-    padding: 0.5rem;
-    align-self: center;
+	width: fit-content;
+	background-color: var(--mantine-color-brandPrimary-0);
+	border-radius: 50%;
+	padding: 0.5rem;
+	align-self: center;
 }
 
 .tilesViewContainer {
-   margin-bottom: 1rem;
+	margin-bottom: 1rem;
 }
 
 .dashboardIcon {
-    color: var(--mantine-color-brandPrimary-4);
+	color: var(--mantine-color-brandPrimary-4);
 }
 
 .noDashboardsViewTitle {
-    font-weight: 500;
-    font-size: 0.9rem;
-    text-align: center;
+	font-weight: 500;
+	font-size: 0.9rem;
+	text-align: center;
 }
 
 .noDashboardsViewDescription {
-    font-size: 0.8rem;
-    text-align: center;
+	font-size: 0.8rem;
+	text-align: center;
+}
+
+.inputField {
+	border-radius: rem(8px);
 }

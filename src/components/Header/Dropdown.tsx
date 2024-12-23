@@ -23,7 +23,11 @@ const Dropdown: FC<DropdownProps> = (props) => {
 			onChange={onChange}
 			allowDeselect={false}
 			value={value}
-			classNames={{ option: classes.dropdownOption, input: classes.dropdownBtn }}
+			classNames={{
+				option: classes.dropdownOption,
+				input: classes.dropdownBtn,
+				description: classes.dropdownDescription,
+			}}
 		/>
 	);
 };

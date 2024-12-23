@@ -99,8 +99,16 @@ const RuleView = (props: RuleViewType) => {
 	const isError = !isDisabled ? value === '' : false;
 	return (
 		<Stack className={classes.ruleContainer}>
-			<Select data={fieldNames} searchable value={rule.field} onChange={onFieldChange} w="33%" />
 			<Select
+				classNames={{ input: classes.selectInput, description: classes.selectDescription }}
+				data={fieldNames}
+				searchable
+				value={rule.field}
+				onChange={onFieldChange}
+				w="33%"
+			/>
+			<Select
+				classNames={{ input: classes.selectInput, description: classes.selectDescription }}
 				data={type === 'number' ? numberFieldOperators : textFieldOperators}
 				searchable
 				value={rule.operator}

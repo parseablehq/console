@@ -381,7 +381,7 @@ const DuplicateTileModal = () => {
 			title={<Text style={{ fontSize: '0.9rem', fontWeight: 600 }}>Duplicate Tile</Text>}>
 			<Stack>
 				<Stack gap={12}>
-					<TextInput value={inputValue} onChange={handleInputChange} />
+					<TextInput classNames={{ input: classes.inputField }} value={inputValue} onChange={handleInputChange} />
 				</Stack>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
 					<Box>

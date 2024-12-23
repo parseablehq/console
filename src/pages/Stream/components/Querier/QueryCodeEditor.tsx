@@ -160,6 +160,7 @@ const QueryCodeEditor: FC<{
 							name="ai_query"
 							id="ai_query"
 							value={aiQuery}
+							classNames={{ input: queryCodeStyles.inputField }}
 							onChange={(e) => setAiQuery(e.target.value)}
 							placeholder="Enter plain text to generate SQL query using OpenAI"
 							w="85%"

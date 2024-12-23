@@ -1,106 +1,109 @@
 .labelBtn {
-    display: flex;
-    align-items: center;
-    text-align: left;
-    padding: 0.4rem 1rem;
-    font-weight: 500;
-    height: 100%;
-    width: 100%;
-    font-size: 0.65rem;
+	display: flex;
+	align-items: center;
+	text-align: left;
+	padding: 0.4rem 1rem;
+	font-weight: 500;
+	height: 100%;
+	width: 100%;
+	font-size: 0.65rem;
 }
 
 .labelBtn:hover {
-    background-color: var(--mantine-color-gray-1)
+	background-color: var(--mantine-color-gray-1);
 }
 
 .labelIcon {
-    color: #adb5bd;
-    margin-left: 0.625rem;
+	color: #adb5bd;
+	margin-left: 0.625rem;
 }
 
 .labelIconActive {
-    color: #545beb;
+	color: #545beb;
 }
 
 .filterText {
-    display: flex;
-    align-items: center;
-    color: #211F1F;
-    padding: 0;
-    cursor: default;
-    background-color: white;
-    font-size: 0.875rem;
-    font-weight: 400;
+	display: flex;
+	align-items: center;
+	color: #211f1f;
+	padding: 0;
+	cursor: default;
+	background-color: white;
+	font-size: 0.875rem;
+	font-weight: 400;
 }
 
 .checkBoxStyle {
-    padding: 0.75rem 0.5rem 0.75rem 0.5rem;
-    border-radius: 4px;
-    font-weight: 400;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    cursor: pointer;
+	padding: 0.75rem 0.5rem 0.75rem 0.5rem;
+	border-radius: 4px;
+	font-weight: 400;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	cursor: pointer;
 }
 
-.checkBoxLabel { 
-   cursor: pointer; 
+.checkBoxLabel {
+	cursor: pointer;
 }
 
 .checkBoxStyle .mantine-Checkbox-label {
-    font-size: 0.875rem;
+	font-size: 0.875rem;
 }
 
 .checkBoxStyle:hover {
-    background-color: #f8f9fa;
-    color: #fc466b;
+	background-color: #f8f9fa;
+	color: #fc466b;
 }
 
 .applyBtn {
-    margin-top: 0.625rem;
-    width: 100%;
-    background-color: #545beb;
+	margin-top: 0.625rem;
+	width: 100%;
+	background-color: #545beb;
 }
 
 .applyBtn:disabled {
-    background-color: var(--mantine-color-gray-3);
+	background-color: var(--mantine-color-gray-3);
 }
 
-
 .applyBtn:disabled:hover {
-    background-color: var(--mantine-color-gray-3);
+	background-color: var(--mantine-color-gray-3);
 }
 
 .applyBtn:hover {
-    background-color: #1f288e;
+	background-color: #1f288e;
 }
 
 .sortBtn {
-    display: flex;
-    align-items: center;
-    color: #211F1F;
-    padding: 0;
-    font-size: 0.7rem;
-    font-weight: 400;
-    background-color: white;
+	display: flex;
+	align-items: center;
+	color: #211f1f;
+	padding: 0;
+	font-size: 0.7rem;
+	font-weight: 400;
+	background-color: white;
 }
 
 .sortBtn:hover {
-   background-color: var(--mantine-color-gray-1);
-   color: var(--mantine-color-gray-8);
+	background-color: var(--mantine-color-gray-1);
+	color: var(--mantine-color-gray-8);
 }
 
 .sortBtnActive {
-    display: flex;
-    align-items: center;
-    color: #fc466b;
-    padding: 0;
-    font-size: 0.7rem;
-    font-weight: 500;
-    background-color: white;
+	display: flex;
+	align-items: center;
+	color: #fc466b;
+	padding: 0;
+	font-size: 0.7rem;
+	font-weight: 500;
+	background-color: white;
 }
 
 .sortBtnActive:hover {
-    color: #fc466b;
-    background-color: var(--mantine-color-gray-1);
+	color: #fc466b;
+	background-color: var(--mantine-color-gray-1);
+}
+
+.inputField {
+	border-radius: rem(8px);
 }

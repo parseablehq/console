@@ -113,13 +113,13 @@ const CreateDashboardModal = () => {
 			<Stack style={{ padding: '0.5rem 0 1rem 0' }} gap={28}>
 				<Stack gap={10}>
 					<TextInput
-						classNames={{ label: classes.fieldTitle }}
+						classNames={{ label: classes.fieldTitle, input: classes.inputField }}
 						label="Name"
 						key="name"
 						{...form.getInputProps('name')}
 					/>
 					<TextInput
-						classNames={{ label: classes.fieldTitle }}
+						classNames={{ label: classes.fieldTitle, input: classes.inputField }}
 						label="Description (Optional)"
 						key="description"
 						{...form.getInputProps('description')}
@@ -129,6 +129,7 @@ const CreateDashboardModal = () => {
 							<Text style={{ fontSize: '0.7rem', fontWeight: 500 }}>Time Range</Text>
 							<Select
 								data={timeRangeOptions}
+								classNames={{ input: classes.selectInput, description: classes.selectDescription }}
 								{...form.getInputProps('time_filter')}
 								{...(form.values.time_filter === null ? { value: 'none' } : {})}
 								disabled={!editMode}
