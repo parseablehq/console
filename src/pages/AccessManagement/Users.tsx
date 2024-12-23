@@ -6,6 +6,7 @@ import RoleTR from './RoleTR';
 import { IconBook2, IconUserPlus } from '@tabler/icons-react';
 import { useRole } from '@/hooks/useRole';
 import classes from './styles/AccessManagement.module.css';
+import responsive from '@/styles/responsiveText.module.css';
 import { heights } from '@/components/Mantine/sizing';
 import { HEADER_HEIGHT } from '@/constants/theme';
 import { CodeHighlight } from '@mantine/code-highlight';
@@ -16,7 +17,7 @@ const navigateToDocs = () => {
 	return window.open('https://www.parseable.io/docs/server/features/rbac-role-based-access-control', '_blank');
 };
 
-const renderDocsIcon = () => <IconBook2 className={classes.docsIcon} stroke={1.5} size="1rem" />;
+const renderDocsIcon = () => <IconBook2 className={responsive.responsiveText} stroke={1.5} size="1rem" />;
 
 const Users: FC = () => {
 	useDocumentTitle('Parseable | Users');
@@ -107,7 +108,7 @@ const Users: FC = () => {
 			className={classes.container}
 			style={{ maxHeight: `calc(${heights.screen} - ${HEADER_HEIGHT * 2}px - ${20}px)` }}>
 			<Stack className={classes.header} gap={0}>
-				<Text className={classes.sectionHeaderText} style={{ fontWeight: 600 }}>
+				<Text className={responsive.responsiveText} style={{ fontWeight: 600 }}>
 					Users
 				</Text>
 				<Stack style={{ flexDirection: 'row' }} gap={0}>

@@ -4,6 +4,7 @@ import { NAVBAR_WIDTH, PRIMARY_HEADER_HEIGHT } from '@/constants/theme';
 import { Button, Divider, Image, Stack } from '@mantine/core';
 import { FC, useCallback } from 'react';
 import styles from './styles/Header.module.css';
+import responsive from '@/styles/responsiveText.module.css';
 import HelpModal from './HelpModal';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
@@ -32,7 +33,7 @@ const PrimaryHeader: FC = () => {
 				style={{ flexDirection: 'row', height: '100%', justifyContent: 'flex-end' }}
 				gap={8}>
 				<Button
-					className={styles.headerText}
+					className={responsive.responsiveText}
 					variant="outline"
 					style={{ border: 'none' }}
 					component={'a'}
@@ -41,7 +42,11 @@ const PrimaryHeader: FC = () => {
 					Upgrade
 				</Button>
 				<Divider orientation="vertical" />
-				<Button className={styles.headerText} onClick={toggleHelpModal} style={{ border: 'none' }} variant="outline">
+				<Button
+					className={responsive.responsiveText}
+					onClick={toggleHelpModal}
+					style={{ border: 'none' }}
+					variant="outline">
 					Help
 				</Button>
 			</Stack>

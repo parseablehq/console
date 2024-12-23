@@ -1,5 +1,6 @@
 import { Box, Button, Loader, Modal, Select, Stack, Text, TextInput } from '@mantine/core';
 import classes from './styles/CreateDashboardModal.module.css';
+import responsive from '@/styles/responsiveText.module.css';
 import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
 import { useCallback, useEffect } from 'react';
 import _ from 'lodash';
@@ -113,13 +114,13 @@ const CreateDashboardModal = () => {
 			<Stack style={{ padding: '0.5rem 0 1rem 0' }} gap={28}>
 				<Stack gap={10}>
 					<TextInput
-						classNames={{ label: classes.fieldTitle, input: classes.createDashboardText }}
+						classNames={{ label: classes.fieldTitle, input: responsive.responsiveText }}
 						label="Name"
 						key="name"
 						{...form.getInputProps('name')}
 					/>
 					<TextInput
-						classNames={{ label: classes.fieldTitle, input: classes.createDashboardText }}
+						classNames={{ label: classes.fieldTitle, input: responsive.responsiveText }}
 						label="Description (Optional)"
 						key="description"
 						{...form.getInputProps('description')}
@@ -128,7 +129,7 @@ const CreateDashboardModal = () => {
 						<Stack gap={4} style={{ width: '100%' }}>
 							<Text className={classes.fieldTitle}>Time Range</Text>
 							<Select
-								classNames={{ option: classes.createDashboardText, input: classes.createDashboardText }}
+								classNames={{ option: responsive.responsiveText, input: responsive.responsiveText }}
 								data={timeRangeOptions}
 								{...form.getInputProps('time_filter')}
 								{...(form.values.time_filter === null ? { value: 'none' } : {})}
@@ -145,12 +146,12 @@ const CreateDashboardModal = () => {
 					) : (
 						<>
 							<Box>
-								<Button className={classes.createDashboardText} variant="outline" onClick={closeModal}>
+								<Button className={responsive.responsiveText} variant="outline" onClick={closeModal}>
 									Cancel
 								</Button>
 							</Box>
 							<Box>
-								<Button className={classes.createDashboardText} disabled={!form.isValid()} onClick={onSubmit}>
+								<Button className={responsive.responsiveText} disabled={!form.isValid()} onClick={onSubmit}>
 									{!editMode ? 'Create' : 'Save'}
 								</Button>
 							</Box>

@@ -7,6 +7,7 @@ import type { FC } from 'react';
 import { Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import { FIXED_DURATIONS } from '@/constants/timeConstants';
 import classes from './styles/LogQuery.module.css';
+import responsive from '@/styles/responsiveText.module.css';
 import { useOuterClick } from '@/hooks/useOuterClick';
 import _ from 'lodash';
 import timeRangeUtils from '@/utils/timeRangeUtils';
@@ -140,7 +141,7 @@ const TimeRange: FC = () => {
 						) : (
 							<Text
 								onClick={toggleMenu}
-								className={classes.timeRangeText}
+								className={responsive.responsiveText}
 								style={{ fontWeight: 500, whiteSpace: 'nowrap' }}>
 								{label}
 							</Text>

@@ -6,6 +6,7 @@ import PrivilegeTR from './PrivilegeTR';
 import { IconBook2, IconPencil, IconUserPlus } from '@tabler/icons-react';
 import { useRole } from '@/hooks/useRole';
 import classes from './styles/AccessManagement.module.css';
+import responsive from '@/styles/responsiveText.module.css';
 import IconButton from '@/components/Button/IconButton';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
@@ -167,7 +168,7 @@ const Roles: FC = () => {
 	return (
 		<Box className={classes.container}>
 			<Stack className={classes.header} gap={0}>
-				<Text className={classes.sectionHeaderText} component="h2" style={{ fontWeight: 600 }}>
+				<Text className={responsive.responsiveText} component="h2" style={{ fontWeight: 600 }}>
 					Roles
 				</Text>
 				<Stack style={{ flexDirection: 'row' }} gap={0}>

@@ -59,10 +59,6 @@
 	color: white;
 }
 
-.tableContainer {
-	/* height: calc(100% - 70px); */
-}
-
 .tableStyle {
 	overflow: scroll;
 	width: 100%;
@@ -171,35 +167,7 @@
 
 .passwordText {
 	font-weight: 500;
-	/* font-size: 0.875rem; */
 
-	@media (min-width: 1024px) {
-		/* sm: Styles for HD devices */
-		font-size: 10px;
-	}
-
-	@media (min-width: 1980px) {
-		/* md: Styles for FULL HD devices */
-		font-size: 12px;
-	}
-
-	@media (min-width: 1600px) {
-		/* lg: Styles for 2K devices */
-		font-size: 14px;
-	}
-
-	@media (min-width: 2160px) {
-		/* xl: Styles for 4K devices */
-		font-size: 18px;
-	}
-
-	@media (min-width: 3200px) {
-		/* 2xl: Styles for 8K devices */
-		font-size: 24px;
-	}
-}
-
-.rolesPill {
 	@media (min-width: 1024px) {
 		/* sm: Styles for HD devices */
 		font-size: 10px;
@@ -253,60 +221,6 @@
 
 .actionBtn:hover {
 	color: #545beb;
-}
-
-.docsIcon {
-	@media (min-width: 1024px) {
-		/* sm: Styles for HD devices */
-		font-size: 10px;
-	}
-
-	@media (min-width: 1980px) {
-		/* md: Styles for FULL HD devices */
-		font-size: 12px;
-	}
-
-	@media (min-width: 1600px) {
-		/* lg: Styles for 2K devices */
-		font-size: 14px;
-	}
-
-	@media (min-width: 2160px) {
-		/* xl: Styles for 4K devices */
-		font-size: 18px;
-	}
-
-	@media (min-width: 3200px) {
-		/* 2xl: Styles for 8K devices */
-		font-size: 24px;
-	}
-}
-
-.sectionHeaderText {
-	@media (min-width: 1024px) {
-		/* sm: Styles for HD devices */
-		font-size: 10px;
-	}
-
-	@media (min-width: 1980px) {
-		/* md: Styles for FULL HD devices */
-		font-size: 12px;
-	}
-
-	@media (min-width: 1600px) {
-		/* lg: Styles for 2K devices */
-		font-size: 14px;
-	}
-
-	@media (min-width: 2160px) {
-		/* xl: Styles for 4K devices */
-		font-size: 18px;
-	}
-
-	@media (min-width: 3200px) {
-		/* 2xl: Styles for 8K devices */
-		font-size: 24px;
-	}
 }
 
 .createUserBtn {

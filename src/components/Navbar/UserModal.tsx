@@ -2,11 +2,11 @@ import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { Modal, Stack } from '@mantine/core';
 import { Text } from '@mantine/core';
 import Cookies from 'js-cookie';
-import classes from './styles/Navbar.module.css';
+import responsive from '@/styles/responsiveText.module.css';
 
 const ModalTitle = () => {
 	return (
-		<Text className={classes.userModalSectionTitle} style={{ fontWeight: 600, marginLeft: '0.5rem' }}>
+		<Text className={responsive.responsiveText} style={{ fontWeight: 600, marginLeft: '0.5rem' }}>
 			User Details
 		</Text>
 	);
@@ -33,18 +33,18 @@ const UserModal = (props: UserModalProps) => {
 			title={<ModalTitle />}>
 			<Stack style={{ padding: '1rem' }}>
 				<Stack gap={0}>
-					<Text className={classes.userModalSectionTitle} style={{ fontWeight: 500 }}>
+					<Text className={responsive.responsiveText} style={{ fontWeight: 500 }}>
 						Username:
 					</Text>
-					<Text className={classes.userModalSectionTitle}>{username}</Text>
+					<Text className={responsive.responsiveText}>{username}</Text>
 				</Stack>
 				<Stack gap={0}>
-					<Text className={classes.userModalSectionTitle} style={{ fontWeight: 500 }}>
+					<Text className={responsive.responsiveText} style={{ fontWeight: 500 }}>
 						Roles:
 					</Text>
 					{Object.entries(userRoles).map(([key, value], index) => {
 						return (
-							<Text key={index} className={classes.userModalSectionTitle}>
+							<Text key={index} className={responsive.responsiveText}>
 								{index + 1}. {key} ({value[0].privilege})
 							</Text>
 						);

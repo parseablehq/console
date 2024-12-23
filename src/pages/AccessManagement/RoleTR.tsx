@@ -6,6 +6,7 @@ import { AxiosResponse } from 'axios';
 import { useUser } from '@/hooks/useUser';
 import { useRole } from '@/hooks/useRole';
 import styles from './styles/AccessManagement.module.css';
+import responsive from '@/styles/responsiveText.module.css';
 import { CodeHighlight } from '@mantine/code-highlight';
 import DeleteOrResetModal from '@/components/Misc/DeleteOrResetModal';
 
@@ -157,7 +158,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 					'loading..'
 				) : getUserRolesData?.data ? (
 					<Stack
-						className={classes.rolesPill}
+						className={responsive.responsiveText}
 						style={{ flexDirection: 'row', alignItems: 'center' }}
 						gap={0}
 						align="end">

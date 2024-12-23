@@ -56,30 +56,3 @@
 	height: 70%;
 	border-color: var(--mantine-color-gray-4);
 }
-
-.headerText {
-	@media (min-width: 1024px) {
-		/* sm: Styles for HD devices */
-		font-size: 10px;
-	}
-
-	@media (min-width: 1980px) {
-		/* md: Styles for FULL HD devices */
-		font-size: 12px;
-	}
-
-	@media (min-width: 1600px) {
-		/* lg: Styles for 2K devices */
-		font-size: 14px;
-	}
-
-	@media (min-width: 2160px) {
-		/* xl: Styles for 4K devices */
-		font-size: 18px;
-	}
-
-	@media (min-width: 3200px) {
-		/* 2xl: Styles for 8K devices */
-		font-size: 24px;
-	}
-}
