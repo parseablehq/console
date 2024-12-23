@@ -174,18 +174,26 @@ export class CorrelationQueryBuilder {
 		this.selectedFields = selectedFields;
 	}
 
-	getParseableQuery() {
+	getCorrelationQuery() {
 		const query =
-			this.correlationCondition && this.selectedFields
-				? `select ${this.selectedFields
-						.map((field) => {
-							const [streamName, fieldName] = field.split('.');
-							return `"${streamName}"."${fieldName}" as "${field}"`;
-						})
-						.join(', ')} from \"${this.streamNames[0]}\" join \"${this.streamNames[1]}\" on ${
-						this.correlationCondition
-				  } offset 0 LIMIT ${this.limit}`
-				: `SELECT * FROM \"${this.streamNames[0]}\" LIMIT ${this.limit}`;
+			this.selectedFields &&
+			`select ${this.selectedFields
+				.map((field) => {
+					const [streamName, fieldName] = field.split('.');
+					return `"${streamName}"."${fieldName}" as "${field}"`;
+				})
+				.join(', ')} from \"${this.streamNames[0]}\" join \"${this.streamNames[1]}\" on ${
+				this.correlationCondition
+			} offset 0 LIMIT ${this.limit}`;
+		return {
+			startTime: this.startTime,
+			endTime: this.endTime,
+			query,
+		};
+	}
+
+	getParseableQuery() {
+		const query = `SELECT * FROM \"${this.streamNames[0]}\" LIMIT ${this.limit}`;
 		return {
 			startTime: this.startTime,
 			endTime: this.endTime,

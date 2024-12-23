@@ -69,6 +69,12 @@ export const getQueryLogsWithHeaders = (logsQuery: QueryLogs) => {
 export const getCorrelationQueryLogsWithHeaders = (logsQuery: CorrelationLogs) => {
 	const queryBuilder = new CorrelationQueryBuilder(logsQuery);
 	const endPoint = LOG_QUERY_URL({ fields: true }, queryBuilder.getResourcePath());
+	return Axios().post<LogsResponseWithHeaders>(endPoint, queryBuilder.getCorrelationQuery(), {});
+};
+
+export const getStreamDataWithHeaders = (logsQuery: CorrelationLogs) => {
+	const queryBuilder = new CorrelationQueryBuilder(logsQuery);
+	const endPoint = LOG_QUERY_URL({ fields: true }, queryBuilder.getResourcePath());
 	return Axios().post<LogsResponseWithHeaders>(endPoint, queryBuilder.getQuery(), {});
 };
 

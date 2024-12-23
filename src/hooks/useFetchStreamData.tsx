@@ -1,4 +1,4 @@
-import { getCorrelationQueryLogsWithHeaders } from '@/api/query';
+import { getStreamDataWithHeaders } from '@/api/query';
 import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
@@ -16,7 +16,7 @@ import { LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 
 const { setStreamData } = correlationStoreReducers;
 
-export const useCorrelationQueryLogs = () => {
+export const useFetchStreamData = () => {
 	const [error, setError] = useMountedState<string | null>(null);
 	const [{ selectedFields, correlationCondition, fields }, setCorrelationStore] = useCorrelationStore((store) => store);
 	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
@@ -45,13 +45,15 @@ export const useCorrelationQueryLogs = () => {
 	const {
 		isLoading: logsLoading,
 		isRefetching: logsRefetching,
-		refetch: getCorrelationData,
+		refetch: getFetchStreamData,
 	} = useQuery(
 		['fetch-logs', defaultQueryOpts],
 		async () => {
-			const queryOpts = { ...defaultQueryOpts, streamNames };
-			const response = await getCorrelationQueryLogsWithHeaders(queryOpts);
-			return [response];
+			const fetchPromises = streamNames.map((streamName) => {
+				const queryOpts = { ...defaultQueryOpts, streamNames: [streamName] };
+				return getStreamDataWithHeaders(queryOpts);
+			});
+			return Promise.all(fetchPromises);
 		},
 		{
 			enabled: false,
@@ -82,6 +84,6 @@ export const useCorrelationQueryLogs = () => {
 	return {
 		error,
 		loading: logsLoading || logsRefetching,
-		getCorrelationData,
+		getFetchStreamData,
 	};
 };

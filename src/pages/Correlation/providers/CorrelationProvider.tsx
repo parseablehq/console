@@ -24,6 +24,7 @@ type ReducerOutput = {
 	joins?: Record<string, any>;
 	tableOpts?: any;
 	selectedFields?: any;
+	isCorrelatedData?: boolean;
 };
 
 type CorrelationStore = {
@@ -40,6 +41,7 @@ type CorrelationStore = {
 	>;
 	selectedFields: Record<string, string[]>;
 	correlationCondition: string;
+	isCorrelatedData: boolean;
 	tableOpts: {
 		disabledColumns: string[];
 		wrapDisabledColumns: string[];
@@ -72,6 +74,7 @@ type CorrelationStoreReducers = {
 	setCurrentPage: (store: CorrelationStore, page: number) => ReducerOutput;
 	setCorrelationCondition: (store: CorrelationStore, correlationCondition: string) => ReducerOutput;
 	setPageAndPageData: (store: CorrelationStore, pageNo: number, perPage?: number) => ReducerOutput;
+	setIsCorrelatedFlag: (store: CorrelationStore, flag: boolean) => ReducerOutput;
 	parseQuery: (
 		queryEngine: 'Parseable' | 'Trino' | undefined,
 		query: QueryType,
@@ -84,6 +87,7 @@ const initialState: CorrelationStore = {
 	fields: {},
 	selectedFields: {},
 	correlationCondition: '',
+	isCorrelatedData: false,
 	tableOpts: {
 		disabledColumns: [],
 		wrapDisabledColumns: [],
@@ -121,6 +125,13 @@ const parseQuery = (queryEngine: QueryEngineType, query: QueryType, currentStrea
 	return { where, parsedQuery: filterQueryBuilder.getQuery() };
 };
 
+const setIsCorrelatedFlag = (store: CorrelationStore, flag: boolean) => {
+	return {
+		...store,
+		isCorrelatedData: flag,
+	};
+};
+
 const setSelectedFields = (
 	store: CorrelationStore,
 	field: string,
@@ -141,10 +152,9 @@ const setSelectedFields = (
 		  };
 
 	const currentPage = 1;
-	const isCorrelatedStream = Object.keys(store.streamData).includes('correlatedStream');
 
 	// Compute updated pageData
-	const updatedPageData = isCorrelatedStream
+	const updatedPageData = store.isCorrelatedData
 		? store.tableOpts.pageData
 		: Array.from({ length: tableOpts.perPage })
 				.map((_record, index) => {
@@ -183,9 +193,8 @@ const setSelectedFields = (
 };
 
 const setPageAndPageData = (store: CorrelationStore, pageNo: number, perPage?: number) => {
-	const { tableOpts, selectedFields, streamData } = store;
+	const { tableOpts, selectedFields, streamData, isCorrelatedData } = store;
 	const streamNames = Object.keys(selectedFields);
-	const isCorrelatedStream = Object.keys(streamData).includes('correlatedStream');
 
 	const combinedFilteredData = streamNames.flatMap((streamName) => {
 		return streamData[streamName]?.logData || [];
@@ -206,7 +215,7 @@ const setPageAndPageData = (store: CorrelationStore, pageNo: number, perPage?: n
 
 	const updatedPerPage = perPage || tableOpts.perPage;
 
-	if (isCorrelatedStream) {
+	if (isCorrelatedData) {
 		return {
 			...store,
 			tableOpts: {
@@ -482,13 +491,6 @@ const deleteStreamData = (store: CorrelationStore, currentStream: string) => {
 			pageData: updatedPageData,
 		},
 	};
-
-	return {
-		...store,
-		fields: updatedFields,
-		streamData: newStreamData,
-		selectedFields: newSelectedFields,
-	};
 };
 
 const { Provider: CorrelationProvider, useStore: useCorrelationStore } = initContext(initialState);
@@ -504,6 +506,7 @@ const correlationStoreReducers: CorrelationStoreReducers = {
 	setPageAndPageData,
 	setCorrelationCondition,
 	parseQuery,
+	setIsCorrelatedFlag,
 };
 
 export { CorrelationProvider, useCorrelationStore, correlationStoreReducers };

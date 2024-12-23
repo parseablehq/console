@@ -13,12 +13,12 @@ export const useGetStreamSchema = (opts: { streamName: string }) => {
 
 	const [errorMessage, setErrorMesssage] = useState<string | null>(null);
 
-	const { isError, isSuccess, isLoading, refetch, isRefetching } = useQuery(
+	const { isError, isSuccess, isLoading, isRefetching } = useQuery(
 		['stream-schema', streamName],
 		() => getLogStreamSchema(streamName),
 		{
 			retry: false,
-			enabled: streamName !== '',
+			enabled: streamName !== '' && streamName !== 'correlatedStream',
 			refetchOnWindowFocus: false,
 			onSuccess: (data) => {
 				setErrorMesssage(null);
@@ -36,7 +36,6 @@ export const useGetStreamSchema = (opts: { streamName: string }) => {
 	);
 
 	return {
-		refetch,
 		isSuccess,
 		isError,
 		isLoading,

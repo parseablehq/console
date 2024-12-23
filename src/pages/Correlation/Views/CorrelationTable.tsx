@@ -74,16 +74,18 @@ const Table = (props: {
 	primaryHeaderHeight: number;
 	errorMessage: string | null;
 	logsLoading: boolean;
+	streamsLoading: boolean;
 	hasNoData: boolean;
 	showTable: boolean;
 }) => {
-	const { errorMessage, logsLoading, primaryHeaderHeight, showTable, hasNoData } = props;
+	const { errorMessage, logsLoading, streamsLoading, primaryHeaderHeight, showTable, hasNoData } = props;
 	const [{ pageData, wrapDisabledColumns }] = useCorrelationStore((store) => store.tableOpts);
 	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
 	const [columns, setColumns] = useState<MRT_ColumnDef<Log, unknown>[]>([]);
 
 	const showTableOrLoader =
-		(logsLoading || showTable || !errorMessage || !hasNoData) && columns.length === Object.keys(pageData[0]).length;
+		(logsLoading || streamsLoading || showTable || !errorMessage || !hasNoData) &&
+		columns.length === Object.keys(pageData[0]).length;
 
 	useEffect(() => {
 		const updatedColumns = makeColumnsFromSelectedFields(pageData, isSecureHTTPContext, {

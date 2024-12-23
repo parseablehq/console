@@ -32,9 +32,11 @@ import MultiEventTimeLineGraph from './components/MultiEventTimeLineGraph';
 import { useGetStreamSchema } from '@/hooks/useGetCorrelationStreamSchema';
 import { CorrelationEmptyPlaceholder } from './components/CorrelationEmptyPlaceholder';
 import { StreamSelectBox } from './components/StreamSelectBox';
+import { useFetchStreamData } from '@/hooks/useFetchStreamData';
 
 const { changeStream } = appStoreReducers;
-const { deleteStreamData, setSelectedFields, deleteSelectedField, setCorrelationCondition } = correlationStoreReducers;
+const { deleteStreamData, setSelectedFields, deleteSelectedField, setCorrelationCondition, setIsCorrelatedFlag } =
+	correlationStoreReducers;
 
 const dataTypeIcons = (iconColor: string): Record<string, JSX.Element> => ({
 	text: <IconLetterASmall size={16} style={{ color: iconColor }} />,
@@ -89,18 +91,19 @@ const Correlation = () => {
 	useDocumentTitle('Parseable | Correlation');
 	// State Management Hooks
 	const [userSpecificStreams] = useAppStore((store) => store.userSpecificStreams);
-	const [{ fields, selectedFields, tableOpts, correlationCondition }, setCorrelationData] = useCorrelationStore(
+	const [{ fields, selectedFields, tableOpts, isCorrelatedData }, setCorrelationData] = useCorrelationStore(
 		(store) => store,
 	);
 	const [timeRange] = useAppStore((store) => store.timeRange);
 	const [currentStream, setAppStore] = useAppStore((store) => store.currentStream);
 	const [maximized] = useAppStore((store) => store.maximized);
 	const {
-		refetch: refetchSchema,
 		isLoading: schemaLoading,
 		streamName: schemaStreamName,
+		isSuccess,
 	} = useGetStreamSchema({ streamName: currentStream || '' });
 	const { getCorrelationData, loading: logsLoading, error: errorMessage } = useCorrelationQueryLogs();
+	const { getFetchStreamData, loading: streamsLoading } = useFetchStreamData();
 
 	// Local State
 	const [searchText, setSearchText] = useState('');
@@ -121,17 +124,26 @@ const Correlation = () => {
 
 	// Effects
 	useEffect(() => {
-		if (currentStream) {
-			!correlationCondition && refetchSchema();
-			getCorrelationData();
+		if (currentStream && streamNames && isSuccess) {
+			getFetchStreamData();
 		}
-	}, [currentStream]);
+	}, [currentStream, isSuccess]);
 
 	useEffect(() => {
-		if (currentStream) {
+		getFetchStreamData();
+	}, [isCorrelatedData]);
+
+	useEffect(() => {
+		if (isCorrelatedData) {
 			getCorrelationData();
+		} else {
+			getFetchStreamData();
 		}
 	}, [timeRange]);
+
+	useEffect(() => {
+		updateCorrelationCondition();
+	}, [select1Value, select2Value]);
 
 	// Utility Functions
 	const filterFields = (fieldsIter: any) => {
@@ -144,14 +156,10 @@ const Correlation = () => {
 	const updateCorrelationCondition = () => {
 		if (select1Value && select2Value) {
 			const condition = `"${streamNames[0]}".${select1Value} = "${streamNames[1]}".${select2Value}`;
-			setAppStore((store) => changeStream(store, ''));
+			setAppStore((store) => changeStream(store, 'correlatedStream'));
 			setCorrelationData((store) => setCorrelationCondition(store, condition));
 		}
 	};
-
-	useEffect(() => {
-		updateCorrelationCondition();
-	}, [select1Value, select2Value]);
 
 	// Event Handlers
 	const addStream = (value: string | null) => {
@@ -173,10 +181,11 @@ const Correlation = () => {
 		setSelect2Value(null);
 		setCorrelationData((store) => setCorrelationCondition(store, ''));
 		setCorrelationData((store) => setSelectedFields(store, '', '', true));
+		setCorrelationData((store) => setIsCorrelatedFlag(store, false));
 	};
 
 	// View Flags
-	const hasContentLoaded = !schemaLoading && !logsLoading;
+	const hasContentLoaded = !schemaLoading && !logsLoading && !streamsLoading;
 	const hasNoData = hasContentLoaded && !errorMessage && tableOpts.pageData.length === 0;
 	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
 
@@ -226,7 +235,7 @@ const Correlation = () => {
 									/>
 								</div>
 								<div className={classes.fieldsWrapper}>
-									{schemaStreamName === stream && (logsLoading || schemaLoading) ? (
+									{schemaStreamName === stream && (logsLoading || schemaLoading || streamsLoading) ? (
 										<Stack style={{ padding: '0.5rem 0.7rem' }}>
 											<Skeleton height="24px" />
 											<Skeleton height="24px" />
@@ -407,8 +416,10 @@ const Correlation = () => {
 						<div style={{ display: 'flex', gap: '5px', alignItems: 'center', height: '25px' }}>
 							<Button
 								className={classes.correlateBtn}
-								disabled={!select1Value || !select2Value || Object.keys(selectedFields).length < 1}
-								onClick={() => getCorrelationData()}>
+								onClick={() => {
+									setCorrelationData((store) => setIsCorrelatedFlag(store, true));
+									getCorrelationData();
+								}}>
 								Correlate
 							</Button>
 							<Button className={classes.clearBtn} onClick={clearQuery} disabled={streamNames.length == 0}>
@@ -423,7 +434,7 @@ const Correlation = () => {
 				{Object.keys(selectedFields).length > 0 && (
 					<>
 						<CorrelationTable
-							{...{ errorMessage, logsLoading, showTable, hasNoData }}
+							{...{ errorMessage, logsLoading, streamsLoading, showTable, hasNoData }}
 							primaryHeaderHeight={primaryHeaderHeight}
 						/>
 						<CorrelationFooter loaded={true} hasNoData={true} isFetchingCount={true} />
