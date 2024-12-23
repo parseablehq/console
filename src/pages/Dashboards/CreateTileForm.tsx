@@ -70,7 +70,9 @@ const SectionHeader = (props: { title: string; actionBtnProps?: { label: string;
 	const { title, actionBtnProps } = props;
 	return (
 		<Stack className={classes.sectionHeader}>
-			<Text style={{ fontSize: '0.725rem', fontWeight: 500 }}>{title}</Text>
+			<Text className={classes.createTileFormText} style={{ fontWeight: 500 }}>
+				{title}
+			</Text>
 			{actionBtnProps && (
 				<Button onClick={actionBtnProps.onClick} variant="outline">
 					{actionBtnProps.label}
@@ -102,7 +104,7 @@ const EmptyVizView = (props: { msg: string | null }) => {
 			<IconChartPie stroke={1.2} className={classes.warningIcon} />
 			<Text className={classes.warningText}>{props.msg}</Text>
 			{_.includes([emptyVizWarning, invalidVizConfig], props.msg) && (
-				<Button variant="outline" onClick={openVizModal}>
+				<Button className={classes.createTileFormText} variant="outline" onClick={openVizModal}>
 					{props.msg === emptyVizWarning ? 'Select Visualization' : 'Edit Visualization'}
 				</Button>
 			)}
@@ -176,7 +178,7 @@ const DataPreview = (props: { form: TileFormType }) => {
 								code={JSON.stringify(data?.records || [], null, 2)}
 								style={{ background: 'white' }}
 								language="json"
-								styles={{ copy: { marginLeft: '550px' } }}
+								styles={{ copy: { marginLeft: '550px' }, code: { fontSize: classes.createTileFormText } }}
 								copyLabel="Copy Records"
 							/>
 						</Stack>
@@ -384,7 +386,7 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 					<Select
 						data={allStreams}
 						onChange={onStreamSelect}
-						classNames={{ label: classes.fieldTitle }}
+						classNames={{ label: classes.fieldTitle, option: classes.fieldTitle, input: classes.fieldTitle }}
 						key="stream"
 						placeholder="Select Stream"
 					/>
@@ -401,6 +403,7 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 					{llmActive ? (
 						<Stack gap={0} style={{ flexDirection: 'row', width: '100%' }}>
 							<TextInput
+								classNames={{ input: classes.createTileFormText }}
 								type="text"
 								name="ai_query"
 								id="ai_query"
@@ -415,6 +418,7 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 								disabled={!isValidStream}
 							/>
 							<Button
+								className={classes.createTileFormText}
 								variant="filled"
 								color="brandPrimary.4"
 								radius={0}
@@ -443,7 +447,7 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 							options={{
 								scrollBeyondLastLine: false,
 								readOnly: false,
-								fontSize: 10,
+								fontSize: 14,
 								wordWrap: 'on',
 								minimap: { enabled: false },
 								automaticLayout: true,
@@ -463,11 +467,12 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 				}}>
 				<Box>
 					<Button
+						className={classes.createTileFormText}
 						variant="outline"
 						disabled={_.isEmpty(query) || isLoading}
 						loading={isLoading}
 						onClick={validateQuery}
-						w="10rem">
+						w="14rem">
 						{!isQueryValidated ? 'Validate Query' : 'Refetch Data'}
 					</Button>
 				</Box>
@@ -488,7 +493,7 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 			<SectionHeader title="Tile Config" />
 			<Stack style={{ flexDirection: 'row', padding: '0 1rem' }}>
 				<TextInput
-					classNames={{ label: classes.fieldTitle }}
+					classNames={{ label: classes.fieldTitle, input: classes.createTileFormText }}
 					label="Name"
 					key="name"
 					{...form.getInputProps('name')}
@@ -496,17 +501,23 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 				/>
 				<Select
 					data={allDashboards}
-					classNames={{ label: classes.fieldTitle }}
+					classNames={{
+						label: classes.fieldTitle,
+						option: classes.createTileFormText,
+						input: classes.createTileFormText,
+					}}
 					label="Dashboard"
 					key="dashboardId"
 					{...form.getInputProps('dashboardId')}
-					style={{ width: '50%' }}
+					style={{
+						width: '50%',
+					}}
 					disabled
 				/>
 			</Stack>
 			<Stack style={{ padding: '0 1rem' }}>
 				<TextInput
-					classNames={{ label: classes.fieldTitle }}
+					classNames={{ label: classes.fieldTitle, input: classes.createTileFormText }}
 					label="Description (Optional)"
 					key="description"
 					{...form.getInputProps('description')}
@@ -651,16 +662,23 @@ const CreateTileForm = () => {
 			<Stack style={{ justifyContent: 'space-between', padding: '1rem', flexDirection: 'row' }}>
 				<Stack gap={10} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
 					<IconArrowLeft onClick={closeForm} stroke={1.2} size={'1.4rem'} className={classes.arrowLeftIcon} />
-					<Text style={{ fontSize: '0.8rem', fontWeight: 600 }}>{editTileId ? 'Edit Tile' : 'Create Tile'}</Text>
+					<Text className={classes.createTileFormText} style={{ fontWeight: 600 }}>
+						{editTileId ? 'Edit Tile' : 'Create Tile'}
+					</Text>
 				</Stack>
 				<Stack style={{ flexDirection: 'row' }} gap={20}>
 					<Box>
-						<Button onClick={closeForm} disabled={isUpdatingDashboard} variant="outline">
+						<Button
+							className={classes.createTileFormText}
+							onClick={closeForm}
+							disabled={isUpdatingDashboard}
+							variant="outline">
 							Cancel
 						</Button>
 					</Box>
 					<Box>
 						<Button
+							className={classes.createTileFormText}
 							disabled={!form.isValid() || !form.isDirty()}
 							onClick={onCreate}
 							loading={isUpdatingDashboard}

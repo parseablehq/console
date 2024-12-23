@@ -113,21 +113,22 @@ const CreateDashboardModal = () => {
 			<Stack style={{ padding: '0.5rem 0 1rem 0' }} gap={28}>
 				<Stack gap={10}>
 					<TextInput
-						classNames={{ label: classes.fieldTitle }}
+						classNames={{ label: classes.fieldTitle, input: classes.createDashboardText }}
 						label="Name"
 						key="name"
 						{...form.getInputProps('name')}
 					/>
 					<TextInput
-						classNames={{ label: classes.fieldTitle }}
+						classNames={{ label: classes.fieldTitle, input: classes.createDashboardText }}
 						label="Description (Optional)"
 						key="description"
 						{...form.getInputProps('description')}
 					/>
 					<Stack style={{ flexDirection: 'row', alignItems: 'center' }}>
 						<Stack gap={4} style={{ width: '100%' }}>
-							<Text style={{ fontSize: '0.7rem', fontWeight: 500 }}>Time Range</Text>
+							<Text className={classes.fieldTitle}>Time Range</Text>
 							<Select
+								classNames={{ option: classes.createDashboardText, input: classes.createDashboardText }}
 								data={timeRangeOptions}
 								{...form.getInputProps('time_filter')}
 								{...(form.values.time_filter === null ? { value: 'none' } : {})}
@@ -144,12 +145,12 @@ const CreateDashboardModal = () => {
 					) : (
 						<>
 							<Box>
-								<Button variant="outline" onClick={closeModal}>
+								<Button className={classes.createDashboardText} variant="outline" onClick={closeModal}>
 									Cancel
 								</Button>
 							</Box>
 							<Box>
-								<Button disabled={!form.isValid()} onClick={onSubmit}>
+								<Button className={classes.createDashboardText} disabled={!form.isValid()} onClick={onSubmit}>
 									{!editMode ? 'Create' : 'Save'}
 								</Button>
 							</Box>
