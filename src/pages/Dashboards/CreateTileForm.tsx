@@ -384,7 +384,11 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 					<Select
 						data={allStreams}
 						onChange={onStreamSelect}
-						classNames={{ label: classes.fieldTitle }}
+						classNames={{
+							label: classes.fieldTitle,
+							input: classes.selectInput,
+							description: classes.selectDescription,
+						}}
 						key="stream"
 						placeholder="Select Stream"
 					/>
@@ -405,6 +409,7 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 								name="ai_query"
 								id="ai_query"
 								value={aiQuery}
+								classNames={{ input: classes.inputField }}
 								onChange={(e) => setAiQuery(e.target.value)}
 								placeholder={
 									isValidStream
@@ -488,7 +493,7 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 			<SectionHeader title="Tile Config" />
 			<Stack style={{ flexDirection: 'row', padding: '0 1rem' }}>
 				<TextInput
-					classNames={{ label: classes.fieldTitle }}
+					classNames={{ label: classes.fieldTitle, input: classes.inputField }}
 					label="Name"
 					key="name"
 					{...form.getInputProps('name')}
@@ -496,7 +501,7 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 				/>
 				<Select
 					data={allDashboards}
-					classNames={{ label: classes.fieldTitle }}
+					classNames={{ label: classes.fieldTitle, input: classes.selectInput, description: classes.selectDescription }}
 					label="Dashboard"
 					key="dashboardId"
 					{...form.getInputProps('dashboardId')}
@@ -506,7 +511,7 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 			</Stack>
 			<Stack style={{ padding: '0 1rem' }}>
 				<TextInput
-					classNames={{ label: classes.fieldTitle }}
+					classNames={{ label: classes.fieldTitle, input: classes.inputField }}
 					label="Description (Optional)"
 					key="description"
 					{...form.getInputProps('description')}

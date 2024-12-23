@@ -77,7 +77,7 @@ const RetentionForm = (props: { updateRetentionConfig: ({ config }: { config: an
 						style={{ width: '50%' }}
 					/>
 					<TextInput
-						classNames={{ label: classes.fieldDescription }}
+						classNames={{ label: classes.fieldDescription, input: classes.inputField }}
 						styles={{ label: { marginBottom: 4 } }}
 						label="Action"
 						key="action"
@@ -87,7 +87,7 @@ const RetentionForm = (props: { updateRetentionConfig: ({ config }: { config: an
 					/>
 				</Stack>
 				<TextInput
-					classNames={{ label: classes.fieldDescription }}
+					classNames={{ label: classes.fieldDescription, input: classes.inputField }}
 					styles={{ label: { marginBottom: 4 } }}
 					label="Description"
 					key="description"

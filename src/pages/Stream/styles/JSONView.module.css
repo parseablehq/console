@@ -50,5 +50,8 @@
 
 .itemContainer {
 	margin-right: 0.2rem;
+}
 
+.inputField {
+	border-radius: rem(8px);
 }

@@ -321,6 +321,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 						onChange={(value) => {
 							setSelectedPrivilege(value ?? '');
 						}}
+						classNames={{ input: classes.selectInput, description: classes.selectDescription }}
 						value={selectedPrivilege}
 						nothingFoundMessage="No options"
 					/>
@@ -340,6 +341,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 								onDropdownOpen={() => setStreamSearchValue('')}
 								data={getLogStreamListData?.data?.map((stream) => ({ value: stream.name, label: stream.name })) ?? []}
 								searchable
+								classNames={{ input: classes.selectInput, description: classes.selectDescription }}
 								label="Select a stream to assign"
 								required
 							/>
@@ -348,6 +350,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 									type="text"
 									placeholder={'Please enter the Tag.'}
 									label="Tag"
+									classNames={{ input: styles.inputField }}
 									onChange={(e) => {
 										setTagInput(e.target.value);
 									}}

@@ -1,7 +1,7 @@
 .container {
-    border-top: none;
-    border-left: none;
-    border-bottom: none;
+	border-top: none;
+	border-left: none;
+	border-bottom: none;
 }
 
 .headerContainer {
@@ -32,12 +32,12 @@
 }
 
 .fieldNameText {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    overflow-wrap: break-word;
-    max-width: 100%;
-    font-size: 0.65rem;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	overflow-wrap: break-word;
+	max-width: 100%;
+	font-size: 0.65rem;
 }
 
 .fieldDataType {
@@ -117,13 +117,29 @@
 	padding: 4px;
 }
 
-.collapseIcon{
+.collapseIcon {
 	color: var(--mantine-color-gray-6);
 	border-radius: 0.175rem;
 	height: 20px;
 	width: 20px;
 	&:hover {
-		background-color: #F0F3F5;
+		background-color: #f0f3f5;
 		color: black;
 	}
+}
+
+.streamSelectDescription {
+	font-size: 12px;
+	font-weight: 500;
+	color: var(--mantine-color-gray-6);
+}
+
+.streamInput {
+	cursor: pointer;
+	border: 1px var(--mantine-color-gray-2) solid;
+	border-radius: rem(8px);
+}
+
+.searchBar {
+	border-radius: rem(8px);
 }

@@ -1,39 +1,43 @@
 .container {
-    flex: 1;
-    display: flex;
-    position: relative;
-    flex-direction: column;
+	flex: 1;
+	display: flex;
+	position: relative;
+	flex-direction: column;
 }
 
 .noDataViewContainer {
-    height: 100%; 
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    display: flex;
+	height: 100%;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	display: flex;
 }
 
 .messageStyle {
-    margin-top: 1rem;
-    color: #D4D4D4;
+	margin-top: 1rem;
+	color: #d4d4d4;
 }
 
 .btnStyle {
-    margin-top: 1rem;
-    color: #FFFFFF;
-	background: #545BEB;
+	margin-top: 1rem;
+	color: #ffffff;
+	background: #545beb;
 }
 
 .createStreamButton {
-    background-color: white;
-    color: #211F1F;
-    border: 1px #e9ecef solid;
-    margin-right: 0.625rem;
-    border-radius: rem(8px);
-    text-transform: capitalize;  
-    height: 1.65rem;
-    &:hover {
-        background-color: #E0E0E0;
-        color: black;
-    }
+	background-color: white;
+	color: #211f1f;
+	border: 1px #e9ecef solid;
+	margin-right: 0.625rem;
+	border-radius: rem(8px);
+	text-transform: capitalize;
+	height: 1.65rem;
+	&:hover {
+		background-color: #e0e0e0;
+		color: black;
+	}
+}
+
+.searchBar {
+	border-radius: rem(8px);
 }
