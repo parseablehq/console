@@ -66,7 +66,7 @@ const RefreshInterval: FC = () => {
 
 					return (
 						<Menu.Item key={interval} onClick={() => onSelectedInterval(interval)}>
-							<Text>{ms(interval)}</Text>
+							<Text className={classes.text}>{ms(interval)}</Text>
 						</Menu.Item>
 					);
 				})}

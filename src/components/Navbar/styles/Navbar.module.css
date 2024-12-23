@@ -1,85 +1,85 @@
 .container {
-    display: flex;
-    background: white;
-    flex-direction: column;
-    align-items: center;
-    color: #4d4d4d;
-    font-family: 'Inter', sans-serif;
-    font-size: 16px;
-    font-weight: 400;
-    line-height: normal;
-    position: relative;
+	display: flex;
+	background: white;
+	flex-direction: column;
+	align-items: center;
+	color: #4d4d4d;
+	font-family: 'Inter', sans-serif;
+	font-size: 16px;
+	font-weight: 400;
+	line-height: normal;
+	position: relative;
 }
 
 .userManagementBtn {
-    color: #4d4d4d;
-    padding-left: 0;
-    padding-right: 0;
+	color: #4d4d4d;
+	padding-left: 0;
+	padding-right: 0;
 }
 
 .userManagementBtnActive {
-    color: #545BEB;
-    font-weight: 700;
-    padding-left: 0;
-    padding-right: 0;
+	color: #545beb;
+	font-weight: 700;
+	padding-left: 0;
+	padding-right: 0;
 }
 
 .linkBtnActive {
-    color: #545BEB;
-    font-weight: 700;
-    &:hover {
-        color: #FC466B;
-    }
+	color: #545beb;
+	font-weight: 700;
+	&:hover {
+		color: #fc466b;
+	}
 }
 
 .linkBtn {
-    color: #4d4d4d;
+	color: #4d4d4d;
 }
 
 .actionBtn {
-    height: 40px;
-    color: #4d4d4d;
+	height: 40px;
+	color: #4d4d4d;
 }
 
 .userBtn {
-    cursor: default;
-    height: 40px;
-    color: #4d4d4d;
-    &:hover {
-        background-color: white;
-    }
+	cursor: default;
+	height: 40px;
+	color: #4d4d4d;
+	&:hover {
+		background-color: white;
+	}
 }
 
 .userContainer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .userText {
-    font-size: 14px;
+	font-size: 14px;
 }
 
 .modalStyle {
-    overflow-y: inherit;
+	overflow-y: inherit;
 }
 
 .modalActionBtn {
-    background-color: #4d4d4d;
-    color: white;
+	background-color: #4d4d4d;
+	color: white;
 }
 
 .modalActionBtn:disabled {
-    background-color: var(--mantine-color-gray-4);
+	background-color: var(--mantine-color-gray-4);
 }
 
 .modalActionBtn:disabled:hover {
-    background-color: var(--mantine-color-gray-4);
+	background-color: var(--mantine-color-gray-4);
 }
 
 .modalCancelBtn {
-    border-color: #e0e0e0;
-    color: white;
+	border-color: #e0e0e0;
+	color: white;
 }
 
 .navbar {
@@ -88,58 +88,58 @@
 	flex-direction: column;
 	transition: width 0.4s ease-in-out;
 	flex: '0 0 auto';
-    background-color: var(--mantine-color-gray-0);
-    border-right: 1px solid var(--mantine-color-gray-2);
+	background-color: var(--mantine-color-gray-0);
+	border-right: 1px solid var(--mantine-color-gray-2);
 }
 
 .navbarMain {
-    display: flex;
-    flex-direction: column;
+	display: flex;
+	flex-direction: column;
 	flex: 1;
-    justify-content: space-between;
+	justify-content: space-between;
 }
 
 .option {
-    font-size: var(--mantine-font-size-sm);
-    &:hover {
-        color: var(--mantine-color-brandSecondary-4);
-        background-color: var(--mantine-color-gray-4);
-    }
-    border-radius: rem(6px);
-    padding: 0.5rem;
-  }
-  
-  .option[aria-selected="true"] {
-    background-color: var(--mantine-color-brandPrimary-6);
-    color: white;
-  }
+	font-size: var(--mantine-font-size-sm);
+	&:hover {
+		color: var(--mantine-color-brandSecondary-4);
+		background-color: var(--mantine-color-gray-4);
+	}
+	border-radius: rem(6px);
+	padding: 0.5rem;
+}
+
+.option[aria-selected='true'] {
+	background-color: var(--mantine-color-brandPrimary-6);
+	color: white;
+}
 
 .navItemContainer {
-    width: 100%;
-    align-items: center;
-    padding: 0.5rem 0;
-    cursor: pointer;
-    color: var(--mantine-color-gray-6);
-    border-right: 2px solid transparent;
-    padding-left: 2px;
+	width: 100%;
+	align-items: center;
+	padding: 0.5rem 0;
+	cursor: pointer;
+	color: var(--mantine-color-gray-6);
+	border-right: 2px solid transparent;
+	padding-left: 2px;
 }
 
 .navItemLabel {
-    font-size: 0.75rem;
+	font-size: 0.75rem;
 }
 
 .navItemActive {
-    color: var(--mantine-color-gray-8);
-    border-right: 2px solid var(--mantine-color-brandPrimary-4);
+	color: var(--mantine-color-gray-8);
+	border-right: 2px solid var(--mantine-color-brandPrimary-4);
 }
 
 .lowerContainer {
-    color: var(--mantine-color-gray-5);
-    align-items: center;
+	color: var(--mantine-color-gray-5);
+	align-items: center;
 }
 
 .maximizeToggleContainer {
-    top: 4%;
-    right: -14%;
-    cursor: pointer;
+	top: 4%;
+	right: -14%;
+	cursor: pointer;
 }

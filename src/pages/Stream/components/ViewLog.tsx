@@ -71,7 +71,7 @@ const ViewLog: FC = () => {
 						code={JSON.stringify(sanitizedLog, null, 2)}
 						language="json"
 						withCopyButton={isSecureHTTPContext}
-						styles={{ copy: { marginLeft: '550px' } }}
+						styles={{ copy: { marginLeft: '550px' }, code: { fontSize: classes.viewLogsText } }}
 						copyLabel="Copy Log"
 					/>
 				</Box>

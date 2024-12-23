@@ -29,7 +29,9 @@ const FilterPlaceholder = () => {
 	return (
 		<Group className={classes.placeholderText} gap={0}>
 			<IconFilter size={'0.8rem'} stroke={1.8} style={{ marginRight: 6 }} />
-			<Text style={{ fontSize: '0.65rem', fontWeight: 600 }}>Click to add filter</Text>
+			<Text className={classes.querierText} style={{ fontWeight: 600 }}>
+				Click to add filter
+			</Text>
 		</Group>
 	);
 };
@@ -38,7 +40,9 @@ const SQLEditorPlaceholder = () => {
 	return (
 		<Group className={classes.placeholderText} gap={0}>
 			<IconCodeCircle size={'1rem'} stroke={1.8} style={{ marginRight: 6 }} />
-			<Text style={{ fontSize: '0.65rem', fontWeight: 600 }}>Click to write query</Text>
+			<Text className={classes.querierText} style={{ fontWeight: 600 }}>
+				Click to write query
+			</Text>
 		</Group>
 	);
 };
@@ -56,13 +60,17 @@ const ModalTitle = ({ title }: { title: string }) => {
 					className={title !== 'Filters' ? classes.tab : ''}
 					value="Filters"
 					onClick={() => onChangeCustQueryViewMode('filters')}>
-					<Text style={{ fontSize: '1rem', fontWeight: 600 }}>Filters</Text>
+					<Text className={classes.querierText} style={{ fontWeight: 600 }}>
+						Filters
+					</Text>
 				</Tabs.Tab>
 				<Tabs.Tab
 					className={title !== 'SQL' ? classes.tab : ''}
 					value="SQL"
 					onClick={() => onChangeCustQueryViewMode('sql')}>
-					<Text style={{ fontSize: '1rem', fontWeight: 600 }}>SQL</Text>
+					<Text className={classes.querierText} style={{ fontWeight: 600 }}>
+						SQL
+					</Text>
 				</Tabs.Tab>
 			</Tabs.List>
 		</Tabs>
@@ -244,7 +252,9 @@ const Querier = () => {
 							justifyContent: 'center',
 							padding: '0 1rem',
 						}}>
-						<Text style={{ fontSize: '0.65rem', fontWeight: 600 }}>{getLabel(viewMode)}</Text>
+						<Text className={classes.querierText} style={{ fontWeight: 600 }}>
+							{getLabel(viewMode)}
+						</Text>
 						<IconChevronDown size={px('1rem')} stroke={1.8} />
 					</Stack>
 				</Menu.Target>

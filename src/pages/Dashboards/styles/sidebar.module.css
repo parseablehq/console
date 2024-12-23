@@ -1,38 +1,110 @@
 .container {
-    border-right: 1px solid var(--mantine-color-gray-1);
+	border-right: 1px solid var(--mantine-color-gray-1);
 }
 
 .dashboardItem {
-    cursor: pointer;
-    border: 1px solid var(--mantine-color-gray-1);
-    border-radius: 0.2rem;
-    padding: 0.4rem 1rem;
-    margin: 0 0.7rem;
-    margin-top: 0;
-    &.active {
-        background-color: var(--mantine-color-gray-1);
-    }
+	cursor: pointer;
+	border: 1px solid var(--mantine-color-gray-1);
+	border-radius: 0.2rem;
+	padding: 0.4rem 1rem;
+	margin: 0 0.7rem;
+	margin-top: 0;
+	&.active {
+		background-color: var(--mantine-color-gray-1);
+	}
 }
 
 .dashboardTitle {
-    font-weight: 500;
-    font-size: 0.7rem;
+	font-weight: 500;
+	/* font-size: 0.7rem; */
+	@media (min-width: 1024px) {
+		/* sm: Styles for HD devices */
+		font-size: 10px;
+	}
+
+	@media (min-width: 1980px) {
+		/* md: Styles for FULL HD devices */
+		font-size: 12px;
+	}
+
+	@media (min-width: 1600px) {
+		/* lg: Styles for 2K devices */
+		font-size: 14px;
+	}
+
+	@media (min-width: 2160px) {
+		/* xl: Styles for 4K devices */
+		font-size: 18px;
+	}
+
+	@media (min-width: 3200px) {
+		/* 2xl: Styles for 8K devices */
+		font-size: 24px;
+	}
 }
 
 .tilesCountText {
-    font-size: 0.65rem;
-    color: var(--mantine-color-gray-7);
+	/* font-size: 0.65rem; */
+	color: var(--mantine-color-gray-7);
+	@media (min-width: 1024px) {
+		/* sm: Styles for HD devices */
+		font-size: 10px;
+	}
+
+	@media (min-width: 1980px) {
+		/* md: Styles for FULL HD devices */
+		font-size: 12px;
+	}
+
+	@media (min-width: 1600px) {
+		/* lg: Styles for 2K devices */
+		font-size: 14px;
+	}
+
+	@media (min-width: 2160px) {
+		/* xl: Styles for 4K devices */
+		font-size: 18px;
+	}
+
+	@media (min-width: 3200px) {
+		/* 2xl: Styles for 8K devices */
+		font-size: 24px;
+	}
 }
 
 .createDashboardBtn {
-    background-color: white;
-    color: #211F1F;
-    border: 1px #e9ecef solid;
-    border-radius: rem(8px);
-    text-transform: capitalize;  
-    height: 1.65rem;
-    &:hover {
-        background-color: #E0E0E0;
-        color: black;
-    }
+	background-color: white;
+	color: #211f1f;
+	border: 1px #e9ecef solid;
+	border-radius: rem(8px);
+	text-transform: capitalize;
+	height: 1.65rem;
+	@media (min-width: 1024px) {
+		/* sm: Styles for HD devices */
+		font-size: 10px;
+	}
+
+	@media (min-width: 1980px) {
+		/* md: Styles for FULL HD devices */
+		font-size: 12px;
+	}
+
+	@media (min-width: 1600px) {
+		/* lg: Styles for 2K devices */
+		font-size: 14px;
+	}
+
+	@media (min-width: 2160px) {
+		/* xl: Styles for 4K devices */
+		font-size: 18px;
+	}
+
+	@media (min-width: 3200px) {
+		/* 2xl: Styles for 8K devices */
+		font-size: 24px;
+	}
+	&:hover {
+		background-color: #e0e0e0;
+		color: black;
+	}
 }
