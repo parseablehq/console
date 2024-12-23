@@ -27,7 +27,6 @@ export const useGetStreamMetadata = () => {
 			let encounteredError = false;
 			try {
 				// stats
-				debugger;
 				const allStatsReqs = streams.map((stream) => getLogStreamStats(stream));
 				const statsResults = await Promise.allSettled(allStatsReqs);
 
