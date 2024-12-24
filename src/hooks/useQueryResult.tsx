@@ -68,7 +68,8 @@ export const useFetchCount = () => {
 	const defaultQuery = `select count(*) as count from \"${currentStream}\"`;
 	const query = (() => {
 		if (isQuerySearchActive) {
-			const finalQuery = custSearchQuery.replace(/SELECT[\s\S]*?FROM/i, 'SELECT COUNT(*) as count FROM');
+			const finalQuery = `WITH count as ( ${custSearchQuery} )SELECT count(*) as count from count`;
+
 			if (activeMode === 'filters') {
 				const { where } = parseQuery('Parseable', appliedQuery, '');
 				const finalQuery = defaultQuery + ' ' + 'where' + ' ' + where;
