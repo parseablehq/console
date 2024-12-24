@@ -283,6 +283,7 @@ const parseQuery = (
 		whereClause: where,
 		timeRangeCondition,
 		limit: LOAD_LIMIT,
+		timePartitionColumn: timeRangeOpts ? timeRangeOpts.timePartitionColumn : 'p_timestamp',
 	});
 	return { where, parsedQuery: filterQueryBuilder.getQuery() };
 };
