@@ -1,7 +1,7 @@
 import { QueryEngineType } from '@/@types/parseable/api/about';
 export type LogsQuery = {
 	queryEngine?: QueryEngineType;
-	streamName: string;
+	streamName?: string;
 	startTime: Date;
 	endTime: Date;
 	access: string[] | null;
