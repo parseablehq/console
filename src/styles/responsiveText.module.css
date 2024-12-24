@@ -1,9 +1,4 @@
-.savedFiltersBtn {
-	background-color: white;
-	color: var(--mantine-color-gray-7);
-	border: 1px #e9ecef solid;
-	border-radius: rem(8px);
-	/* font-size: 0.65rem;*/
+.responsiveText {
 	@media (min-width: 1024px) {
 		/* sm: Styles for HD devices */
 		font-size: 10px;
@@ -28,11 +23,4 @@
 		/* 2xl: Styles for 8K devices */
 		font-size: 24px;
 	}
-	&:hover {
-		color: black;
-	}
-}
-
-.savedFiltersBtn:hover {
-	background-color: #e0e0e0;
 }

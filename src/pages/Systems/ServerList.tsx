@@ -24,7 +24,12 @@ const ServerItem = (props: { machine: MachineType }) => {
 
 	return (
 		<Stack className={itemClassName} gap={8} onClick={onClick}>
-			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+			<Stack
+				style={{
+					flexDirection: 'row',
+					justifyContent: 'space-between',
+					alignItems: 'center',
+				}}>
 				<Pill className={classes.serverTypePill}>{_.capitalize(props.machine.type)}</Pill>
 				<ThemeIcon
 					className={props.machine.reachable ? classes.liveIcon : classes.serverDownIcon}

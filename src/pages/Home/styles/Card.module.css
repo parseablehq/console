@@ -12,7 +12,7 @@
 	flex-direction: row;
 	align-items: center;
 	width: 100%;
-	border: 1px solid var(--mantine-color-gray-1)
+	border: 1px solid var(--mantine-color-gray-1);
 }
 
 .streamBoxCol {
@@ -25,5 +25,56 @@
 
 .bigNo {
 	color: var(--mantine-color-brandPrimary-4);
-	font-size: 0.75rem;
+	/* font-size: 0.75rem; */
+	@media (min-width: 1024px) {
+		/* sm: Styles for HD devices */
+		font-size: 10px;
+	}
+
+	@media (min-width: 1980px) {
+		/* md: Styles for FULL HD devices */
+		font-size: 12px;
+	}
+
+	@media (min-width: 1600px) {
+		/* lg: Styles for 2K devices */
+		font-size: 14px;
+	}
+
+	@media (min-width: 2160px) {
+		/* xl: Styles for 4K devices */
+		font-size: 18px;
+	}
+
+	@media (min-width: 3200px) {
+		/* 2xl: Styles for 8K devices */
+		font-size: 24px;
+	}
+}
+
+.streamBoxText {
+	@media (min-width: 1024px) {
+		/* sm: Styles for HD devices */
+		font-size: 10px;
+	}
+
+	@media (min-width: 1980px) {
+		/* md: Styles for FULL HD devices */
+		font-size: 12px;
+	}
+
+	@media (min-width: 1600px) {
+		/* lg: Styles for 2K devices */
+		font-size: 14px;
+	}
+
+	@media (min-width: 2160px) {
+		/* xl: Styles for 4K devices */
+		font-size: 18px;
+	}
+
+	@media (min-width: 3200px) {
+		/* 2xl: Styles for 8K devices */
+		font-size: 24px;
+	}
 }

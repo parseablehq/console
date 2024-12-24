@@ -34,6 +34,7 @@ const SavedFiltersButton = () => {
 	const onClick = useCallback(() => setLogsStore((store) => toggleSavedFiltersModal(store, true)), []);
 	return (
 		<Button
+			size="lg"
 			className={classes.savedFiltersBtn}
 			h="100%"
 			leftSection={<IconFilterHeart size={px('1rem')} stroke={1.5} />}

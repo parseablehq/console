@@ -1,39 +1,144 @@
 .container {
-    flex: 1;
-    display: flex;
-    position: relative;
-    flex-direction: column;
+	flex: 1;
+	display: flex;
+	position: relative;
+	flex-direction: column;
 }
 
 .noDataViewContainer {
-    height: 100%; 
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    display: flex;
+	height: 100%;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	display: flex;
 }
 
 .messageStyle {
-    margin-top: 1rem;
-    color: #D4D4D4;
+	margin-top: 1rem;
+	color: #d4d4d4;
 }
 
 .btnStyle {
-    margin-top: 1rem;
-    color: #FFFFFF;
-	background: #545BEB;
+	margin-top: 1rem;
+	color: #ffffff;
+	background: #545beb;
 }
 
 .createStreamButton {
-    background-color: white;
-    color: #211F1F;
-    border: 1px #e9ecef solid;
-    margin-right: 0.625rem;
-    border-radius: rem(8px);
-    text-transform: capitalize;  
-    height: 1.65rem;
-    &:hover {
-        background-color: #E0E0E0;
-        color: black;
-    }
+	background-color: white;
+	color: #211f1f;
+	border: 1px #e9ecef solid;
+	margin-right: 0.625rem;
+	border-radius: rem(8px);
+	text-transform: capitalize;
+	height: 1.65rem;
+	@media (min-width: 1024px) {
+		/* sm: Styles for HD devices */
+		font-size: 10px;
+	}
+
+	@media (min-width: 1980px) {
+		/* md: Styles for FULL HD devices */
+		font-size: 12px;
+	}
+
+	@media (min-width: 1600px) {
+		/* lg: Styles for 2K devices */
+		font-size: 14px;
+	}
+
+	@media (min-width: 2160px) {
+		/* xl: Styles for 4K devices */
+		font-size: 18px;
+	}
+
+	@media (min-width: 3200px) {
+		/* 2xl: Styles for 8K devices */
+		font-size: 24px;
+	}
+	&:hover {
+		background-color: #e0e0e0;
+		color: black;
+	}
+}
+
+.title {
+	@media (min-width: 1024px) {
+		/* sm: Styles for HD devices */
+		font-size: 10px;
+	}
+
+	@media (min-width: 1980px) {
+		/* md: Styles for FULL HD devices */
+		font-size: 12px;
+	}
+
+	@media (min-width: 1600px) {
+		/* lg: Styles for 2K devices */
+		font-size: 14px;
+	}
+
+	@media (min-width: 2160px) {
+		/* xl: Styles for 4K devices */
+		font-size: 18px;
+	}
+
+	@media (min-width: 3200px) {
+		/* 2xl: Styles for 8K devices */
+		font-size: 24px;
+	}
+}
+
+.streamList {
+	@media (min-width: 1024px) {
+		/* sm: Styles for HD devices */
+		font-size: 10px;
+	}
+
+	@media (min-width: 1980px) {
+		/* md: Styles for FULL HD devices */
+		font-size: 12px;
+	}
+
+	@media (min-width: 1600px) {
+		/* lg: Styles for 2K devices */
+		font-size: 14px;
+	}
+
+	@media (min-width: 2160px) {
+		/* xl: Styles for 4K devices */
+		font-size: 18px;
+	}
+
+	@media (min-width: 3200px) {
+		/* 2xl: Styles for 8K devices */
+		font-size: 24px;
+	}
+}
+
+.searchBox {
+	@media (min-width: 1024px) {
+		/* sm: Styles for HD devices */
+		font-size: 10px;
+	}
+
+	@media (min-width: 1980px) {
+		/* md: Styles for FULL HD devices */
+		font-size: 12px;
+	}
+
+	@media (min-width: 1600px) {
+		/* lg: Styles for 2K devices */
+		font-size: 14px;
+	}
+
+	@media (min-width: 2160px) {
+		/* xl: Styles for 4K devices */
+		font-size: 18px;
+	}
+
+	@media (min-width: 3200px) {
+		/* 2xl: Styles for 8K devices */
+		font-size: 24px;
+	}
 }
