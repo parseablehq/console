@@ -97,11 +97,9 @@ const Correlation = () => {
 	const [timeRange] = useAppStore((store) => store.timeRange);
 	const [currentStream, setAppStore] = useAppStore((store) => store.currentStream);
 	const [maximized] = useAppStore((store) => store.maximized);
-	const {
-		isLoading: schemaLoading,
-		streamName: schemaStreamName,
-		isSuccess,
-	} = useGetStreamSchema({ streamName: currentStream || '' });
+	const { isLoading: schemaLoading, streamName: schemaStreamName } = useGetStreamSchema({
+		streamName: currentStream || '',
+	});
 	const { getCorrelationData, loading: logsLoading, error: errorMessage } = useCorrelationQueryLogs();
 	const { getFetchStreamData, loading: streamsLoading } = useFetchStreamData();
 
@@ -124,10 +122,10 @@ const Correlation = () => {
 
 	// Effects
 	useEffect(() => {
-		if (currentStream && streamNames && isSuccess) {
+		if (currentStream && streamNames.length > 0 && Object.keys(fields).includes(currentStream)) {
 			getFetchStreamData();
 		}
-	}, [currentStream, isSuccess]);
+	}, [currentStream, fields]);
 
 	useEffect(() => {
 		getFetchStreamData();

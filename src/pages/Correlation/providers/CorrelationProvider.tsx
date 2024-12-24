@@ -216,12 +216,16 @@ const setPageAndPageData = (store: CorrelationStore, pageNo: number, perPage?: n
 	const updatedPerPage = perPage || tableOpts.perPage;
 
 	if (isCorrelatedData) {
+		const filteredData = filterAndSortData(store.tableOpts, streamData['correlatedStream']?.logData || []);
+		const newPageSlice = getPageSlice(pageNo, updatedPerPage, filteredData);
 		return {
 			...store,
 			tableOpts: {
 				...store.tableOpts,
 				currentPage: pageNo,
 				perPage: updatedPerPage,
+				pageData: newPageSlice,
+				totalPages: getTotalPages(filteredData, updatedPerPage),
 			},
 		};
 	}
@@ -325,7 +329,8 @@ const setStreamData = (store: CorrelationStore, currentStream: string, data: Log
 	const filteredData = filterAndSortData(store.tableOpts, updatedStreamData[currentStream]?.logData || []);
 	const currentPage = store.tableOpts.currentPage || 1;
 
-	if (store.correlationCondition) {
+	if (store.isCorrelatedData) {
+		const streamPageSlice = filteredData && getPageSlice(currentPage, store.tableOpts.perPage, filteredData);
 		return {
 			...store,
 			streamData: {
@@ -336,7 +341,7 @@ const setStreamData = (store: CorrelationStore, currentStream: string, data: Log
 			},
 			tableOpts: {
 				...store.tableOpts,
-				pageData: filteredData || [],
+				pageData: streamPageSlice,
 				currentPage,
 				totalPages: getTotalPages(filteredData, store.tableOpts.perPage),
 			},
