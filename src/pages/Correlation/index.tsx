@@ -97,7 +97,7 @@ const Correlation = () => {
 	const [timeRange] = useAppStore((store) => store.timeRange);
 	const [currentStream, setAppStore] = useAppStore((store) => store.currentStream);
 	const [maximized] = useAppStore((store) => store.maximized);
-	const { isLoading: schemaLoading, streamName: schemaStreamName } = useGetStreamSchema({
+	const { isLoading: schemaLoading } = useGetStreamSchema({
 		streamName: currentStream || '',
 	});
 	const { getCorrelationData, loading: logsLoading, error: errorMessage } = useCorrelationQueryLogs();
@@ -233,7 +233,7 @@ const Correlation = () => {
 									/>
 								</div>
 								<div className={classes.fieldsWrapper}>
-									{schemaStreamName === stream && (logsLoading || schemaLoading || streamsLoading) ? (
+									{logsLoading || schemaLoading || streamsLoading ? (
 										<Stack style={{ padding: '0.5rem 0.7rem' }}>
 											<Skeleton height="24px" />
 											<Skeleton height="24px" />
