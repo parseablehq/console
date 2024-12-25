@@ -7,6 +7,7 @@ import {
 	CLUSTER_ROUTE,
 	STREAM_ROUTE,
 	DASHBOARDS_ROUTE,
+	ALERTS_ROUTE,
 } from '@/constants/routes';
 import FullPageLayout from '@/layouts/FullPageLayout';
 import NotFound from '@/pages/Errors/NotFound';
@@ -21,6 +22,7 @@ import {
 	SystemsElement,
 	UsersElement,
 	DashboardsElement,
+	AlertsElement,
 } from './elements';
 import AccessSpecificRoute from './AccessSpecificRoute';
 import OIDCNotConFigured from '@/pages/Errors/OIDC';
@@ -42,6 +44,7 @@ const AppRouter: FC = () => {
 						<Route element={<AccessSpecificRoute accessRequired={['Cluster']} />}>
 							<Route path={CLUSTER_ROUTE} element={<SystemsElement />} />
 						</Route>
+						<Route path={ALERTS_ROUTE} element={<AlertsElement />} />
 					</Route>
 				</Route>
 				<Route path={LOGIN_ROUTE} element={<LoginElement />} />
