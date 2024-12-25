@@ -6,7 +6,6 @@ import { AxiosResponse } from 'axios';
 import { useUser } from '@/hooks/useUser';
 import { useRole } from '@/hooks/useRole';
 import styles from './styles/AccessManagement.module.css';
-import responsive from '@/styles/responsiveText.module.css';
 import { CodeHighlight } from '@mantine/code-highlight';
 import DeleteOrResetModal from '@/components/Misc/DeleteOrResetModal';
 
@@ -77,7 +76,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 
 	const getBadge = (role: any, withAction: boolean) => {
 		return (
-			<Badge size="lg" color="orange" rightSection={withAction ? removeButton(role) : ''} variant={'light'}>
+			<Badge color="orange" rightSection={withAction ? removeButton(role) : ''} variant={'light'}>
 				{role}
 			</Badge>
 		);
@@ -157,11 +156,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				) : getUserRolesIsLoading ? (
 					'loading..'
 				) : getUserRolesData?.data ? (
-					<Stack
-						className={responsive.responsiveText}
-						style={{ flexDirection: 'row', alignItems: 'center' }}
-						gap={0}
-						align="end">
+					<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={0} align="end">
 						{getBadges()}
 						<Tooltip
 							label={'Add a Role'}

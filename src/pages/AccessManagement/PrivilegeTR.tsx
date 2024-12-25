@@ -59,7 +59,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 	const getBadge = (privilege: any, i: number, withAction: boolean) => {
 		if (privilege.privilege === 'admin' || privilege.privilege === 'editor') {
 			return (
-				<Badge size="lg" color="violet" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
+				<Badge color="violet" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
 					{privilege.privilege}
 				</Badge>
 			);
@@ -75,13 +75,13 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 				);
 			}
 			return (
-				<Badge size="lg" color="orange" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
+				<Badge color="orange" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
 					{privilege.privilege} of {privilege.resource?.stream === '*' ? 'All' : privilege.resource?.stream}
 				</Badge>
 			);
 		}
 		return (
-			<Badge size="lg" color="blue" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
+			<Badge color="blue" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
 				{privilege.privilege} of {privilege.resource?.stream === '*' ? 'All' : privilege.resource?.stream}
 			</Badge>
 		);
@@ -124,7 +124,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 			return Badges;
 		} else {
 			return (
-				<Badge size="lg" color="red" variant={'light'}>
+				<Badge color="red" variant={'light'}>
 					No Role
 				</Badge>
 			);

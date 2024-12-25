@@ -98,7 +98,7 @@ const DeleteOrResetModal = ({
 								Please type <span className={classes.confirmationTextHighlight}>{`"${confirmationText}"`}</span> to
 								confirm {type === 'delete' ? 'deletion' : 'reset'}.
 							</Text>
-							<TextInput size="lg" value={confirmText} onChange={onChangeHandler} placeholder={placeholder} required />
+							<TextInput value={confirmText} onChange={onChangeHandler} placeholder={placeholder} required />
 						</>
 					)}
 
@@ -109,14 +109,13 @@ const DeleteOrResetModal = ({
 				{/* Action buttons */}
 				<Stack className={classes.actionButtonsContainer}>
 					<Box>
-						<Button variant="outline" size="lg" onClick={closeModal}>
+						<Button variant="outline" onClick={closeModal}>
 							Cancel
 						</Button>
 					</Box>
 					<Box>
 						{/* Disable the button if the confirmation text is not correct or the action is processing. */}
 						<Button
-							size="lg"
 							disabled={(type !== 'simple' && confirmationText !== confirmText) || isActionInProgress}
 							onClick={tryConfirm}>
 							{type === 'reset' ? 'Reset' : 'Delete'}

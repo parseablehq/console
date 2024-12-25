@@ -1,7 +1,6 @@
 import { Select } from '@mantine/core';
 import { useCallback, useEffect, useRef } from 'react';
 import classes from './styles/LogQuery.module.css';
-import responsive from '@/styles/responsiveText.module.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { STREAM_VIEWS } from '@/constants/routes';
@@ -34,7 +33,6 @@ const StreamDropdown = () => {
 
 	return (
 		<Select
-			size="sm"
 			searchable
 			limit={20}
 			value={valueRef.current}
@@ -42,8 +40,6 @@ const StreamDropdown = () => {
 			classNames={{
 				input: classes.streamInput,
 				description: classes.streamSelectDescription,
-
-				option: responsive.responsiveText,
 			}}
 			onChange={handleChange}
 			styles={{
