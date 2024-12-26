@@ -295,15 +295,18 @@ const CustomTimeRange: FC<CustomTimeRangeProps> = ({ setOpened, resetToRelative 
 			<Text style={{ fontSize: '0.7rem', fontWeight: 500 }}>Absolute Range</Text>
 			<Stack style={{ flexDirection: 'row', alignItems: 'flex-start' }} gap={30}>
 				<Stack className={classes.datePickerContainer}>
-					<DatePicker
-						value={localSelectedRange.startTime}
-						onChange={(date) => {
-							if (date) {
-								onRangeSelect('startTime', date);
-							}
-						}}
-						renderDay={(date) => highlightDate(date, 'startTime')}
-					/>
+					<Box style={{ height: px(220) }}>
+						<DatePicker
+							value={localSelectedRange.startTime}
+							defaultDate={localSelectedRange.startTime}
+							onChange={(date) => {
+								if (date) {
+									onRangeSelect('startTime', date);
+								}
+							}}
+							renderDay={(date) => highlightDate(date, 'startTime')}
+						/>
+					</Box>
 					<TimeInput
 						error={isStartTimeMoreThenEndTime && 'Start time must be earlier than end time.'}
 						value={startingTime}
@@ -311,15 +314,18 @@ const CustomTimeRange: FC<CustomTimeRangeProps> = ({ setOpened, resetToRelative 
 					/>
 				</Stack>
 				<Stack className={classes.datePickerContainer}>
-					<DatePicker
-						value={localSelectedRange.endTime}
-						onChange={(date) => {
-							if (date) {
-								onRangeSelect('endTime', date);
-							}
-						}}
-						renderDay={(date) => highlightDate(date, 'endTime')}
-					/>
+					<Box style={{ height: px(220) }}>
+						<DatePicker
+							value={localSelectedRange.endTime}
+							defaultDate={localSelectedRange.endTime}
+							onChange={(date) => {
+								if (date) {
+									onRangeSelect('endTime', date);
+								}
+							}}
+							renderDay={(date) => highlightDate(date, 'endTime')}
+						/>
+					</Box>
 					<TimeInput value={endingTime} onChange={(e) => onTimeSelect('endTime', e.currentTarget.value)} />
 				</Stack>
 			</Stack>
