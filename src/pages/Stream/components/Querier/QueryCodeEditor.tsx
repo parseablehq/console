@@ -231,8 +231,8 @@ export const SchemaList = (props: { currentStream: string | null; fields: Field[
 			<ScrollArea scrollbars="y" onScrollPositionChange={onScrollPositionChange}>
 				<Box ref={schemaListDivRef}>
 					<Text
-						className={queryCodeStyles.queryCodeEditorText}
 						style={{
+							fontSize: '0.7rem',
 							color: '#098658',
 							fontFamily: 'monospace',
 						}}>{`/* Schema for ${currentStream}`}</Text>
@@ -242,8 +242,7 @@ export const SchemaList = (props: { currentStream: string | null; fields: Field[
 								return (
 									<Text
 										key={index}
-										className={queryCodeStyles.queryCodeEditorText}
-										style={{ color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
+										style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
 								);
 							})}
 						</Box>
@@ -252,16 +251,12 @@ export const SchemaList = (props: { currentStream: string | null; fields: Field[
 								return (
 									<Text
 										key={index}
-										className={queryCodeStyles.queryCodeEditorText}
-										style={{ color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
+										style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}>{`${config}\n\n`}</Text>
 								);
 							})}
 						</Box>
 					</Flex>
-					<Text className={queryCodeStyles.queryCodeEditorText} style={{ color: '#098658', fontFamily: 'monospace' }}>
-						{' '}
-						*/
-					</Text>
+					<Text style={{ fontSize: '0.7rem', color: '#098658', fontFamily: 'monospace' }}> */</Text>
 				</Box>
 			</ScrollArea>
 			{schemaDivHeight > 190 && scrollPosition.y < 10 ? (

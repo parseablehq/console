@@ -34,12 +34,10 @@ const Header = () => {
 					{ label: 'Table Headers', value: 'columns' },
 					{ label: 'Schema Fields', value: 'schema' },
 				]}
-				size="lg"
 				value={configViewType}
 				allowDeselect={false}
 				onChange={(value) => onChange(value)}
 				style={{ width: '100%', height: '100%' }}
-				className={classes.sidebarFields}
 			/>
 		</Stack>
 	);
@@ -75,7 +73,7 @@ const SearchBar = (props: {
 	const { placeholder, value, onChangeHandler } = props;
 	return (
 		<Stack className={classes.searchBarContainer}>
-			<TextInput size="lg" placeholder={placeholder} value={value} onChange={onChangeHandler} />
+			<TextInput placeholder={placeholder} value={value} onChange={onChangeHandler} />
 		</Stack>
 	);
 };
@@ -150,7 +148,7 @@ const ColumnItem = (props: {
 				</Stack>
 				<Checkbox value={props.column} checked={props.visible} readOnly onChange={onToggle} />
 			</Stack>
-			<Stack style={{ width: '100%', position: 'relative', height: '1.3rem' }}>
+			<Stack style={{ width: '100%', position: 'relative', height: '1rem' }}>
 				<Tooltip label={props.column}>
 					<Text className={classes.fieldNameText} style={{ whiteSpace: 'normal', position: 'absolute' }} lineClamp={1}>
 						{props.column}
