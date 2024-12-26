@@ -112,7 +112,7 @@ const IngestorInfo = () => {
 	const ingestor = _.find(ingestorMachines, (ingestor) => ingestor.domain_name === recentRecord?.address);
 	const [selectedMachine] = useClusterStore((store) => store.currentMachine);
 	const ingestorInfo = _.find(ingestorMachines, (ingestor) => ingestor.domain_name === selectedMachine);
-	const error = ingestor ? ingestor.error : null || null;
+	const error = ingestor ? ingestor.error : null;
 	const toggleDeleteModal = useCallback(() => {
 		setDeleteModalOpen((prev) => !prev);
 	}, []);

@@ -68,7 +68,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 		if (privilege.privilege === 'reader') {
 			if (privilege.resource?.tag) {
 				return (
-					<Badge color="orange" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
+					<Badge size="lg" color="orange" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
 						{privilege.privilege} of {privilege.resource?.stream === '*' ? 'All' : privilege.resource?.stream} with{' '}
 						{privilege.resource?.tag}
 					</Badge>

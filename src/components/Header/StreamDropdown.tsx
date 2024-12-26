@@ -37,7 +37,10 @@ const StreamDropdown = () => {
 			limit={20}
 			value={valueRef.current}
 			h="100%"
-			classNames={{ input: classes.streamInput, description: classes.streamSelectDescription }}
+			classNames={{
+				input: classes.streamInput,
+				description: classes.streamSelectDescription,
+			}}
 			onChange={handleChange}
 			styles={{
 				input: {

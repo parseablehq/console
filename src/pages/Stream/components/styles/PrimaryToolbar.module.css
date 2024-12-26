@@ -2,13 +2,13 @@
 	background-color: white;
 	color: var(--mantine-color-gray-7);
 	border: 1px #e9ecef solid;
-    border-radius: rem(8px);
+	border-radius: rem(8px);
 	font-size: 0.65rem;
 	&:hover {
 		color: black;
 	}
-  }
-  
-  .savedFiltersBtn:hover {
-    background-color: #E0E0E0;
-  }
+}
+
+.savedFiltersBtn:hover {
+	background-color: #e0e0e0;
+}

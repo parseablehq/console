@@ -140,6 +140,7 @@
 	border-top: 1px solid var(--mantine-color-gray-2);
 	/* border-bottom: 1px solid var(--mantine-color-gray-2); */
 	cursor: pointer;
+
 	&:hover {
 		background-color: var(--mantine-color-gray-0);
 	}
@@ -247,8 +248,6 @@
 }
 
 .fieldDescription {
-	font-size: var(--mantine-font-size-md);
-	color: var(--mantine-color-gray-6);
 	font-size: var(--mantine-font-size-md);
 	color: var(--mantine-color-gray-6);
 }

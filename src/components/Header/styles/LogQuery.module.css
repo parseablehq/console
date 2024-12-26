@@ -41,7 +41,6 @@
 	color: var(--mantine-color-gray-7);
 	border: 1px #e9ecef solid;
 	border-radius: rem(8px);
-	font-size: 0.65rem;
 
 	&:hover {
 		color: black;
@@ -73,7 +72,6 @@
 
 .fixedRangeBtn {
 	padding: 0.65rem;
-	font-size: 0.675rem;
 	background: #f8f9fa;
 	text-transform: capitalize;
 	cursor: pointer;
@@ -257,10 +255,8 @@
 
 .iconBtnIcon {
 	color: var(--mantine-color-brandPrimary-6);
-	/* color: white;
-	background-color: var(--mantine-color-brandPrimary-4); */
+
 	border-radius: 0.25rem;
-	/* padding: 0.25rem; */
 }
 
 .iconBtnLabel {
@@ -278,7 +274,6 @@
 }
 
 .modeLabel {
-	/* color: white; */
 	font-weight: 600;
 }
 

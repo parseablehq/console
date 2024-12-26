@@ -1,75 +1,75 @@
 .container {
-    transition: none;
-    border: 1px solid var(--mantine-color-gray-2);
-    height: 100%;
-    border-radius: 0.4rem;
-    overflow: hidden;
+	transition: none;
+	border: 1px solid var(--mantine-color-gray-2);
+	height: 100%;
+	border-radius: 0.4rem;
+	overflow: hidden;
 }
 
 .tileHeader {
-    padding: 0.6rem 0.9rem;
-    border-bottom: 1px solid var(--mantine-color-gray-2);
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    height: 3.4rem;
+	padding: 0.6rem 0.9rem;
+	border-bottom: 1px solid var(--mantine-color-gray-2);
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	height: 3.4rem;
 }
 
 .tileTitle {
-    font-size: 0.75rem;
-    font-weight: 500;
-    flex: 1;
+	font-size: 0.75rem;
+	font-weight: 500;
+	flex: 1;
 }
 
 .tileDescription {
-    color: var(--mantine-color-gray-6);
-    font-size: 0.75rem;
+	color: var(--mantine-color-gray-6);
+	font-size: 0.75rem;
 }
 
 .tileContainer {
-    flex: 1;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
+	flex: 1;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
 }
 
 .warningText {
-    color: var(--mantine-color-gray-5);
-    font-size: 0.75rem;
+	color: var(--mantine-color-gray-5);
+	font-size: 0.75rem;
 }
 
 .warningIcon {
-    color: var(--mantine-color-gray-5);
+	color: var(--mantine-color-gray-5);
 }
 
 .tileControlIcon {
-    color: var(--mantine-color-gray-7);
-    cursor: pointer;
+	color: var(--mantine-color-gray-7);
+	cursor: pointer;
 }
 
 .tileCtrlItemIcon {
-    color: var(--mantine-color-gray-7);
+	color: var(--mantine-color-gray-7);
 }
 
 .tileCtrlItemText {
-    font-size: 0.75rem;
-    color: var(--mantine-color-gray-7);
-    font-weight: 500;
+	font-size: 0.75rem;
+	color: var(--mantine-color-gray-7);
+	font-weight: 500;
 }
 
 .tileCtrlLabel {
-    color: var(--mantine-color-gray-5);
-    font-size: 0.7rem;
-    padding: 0.25rem 0.25rem;
+	color: var(--mantine-color-gray-5);
+	font-size: 0.7rem;
+	padding: 0.25rem 0.25rem;
 }
 
 .dragIcon {
-    color: var(--mantine-color-brandPrimary-3);
+	color: var(--mantine-color-brandPrimary-3);
 }
 
 .tileTimeRangeText {
-    font-size: 0.65rem;
-    font-weight: 400;
-    color: var(--mantine-color-gray-6);
-    display: none;
+	font-size: 0.65rem;
+	font-weight: 400;
+	color: var(--mantine-color-gray-6);
+	display: none;
 }

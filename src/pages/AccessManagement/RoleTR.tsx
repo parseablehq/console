@@ -156,15 +156,18 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 				) : getUserRolesIsLoading ? (
 					'loading..'
 				) : getUserRolesData?.data ? (
-					<Stack style={{ flexDirection: 'row' }} gap={0} align="end">
+					<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={0} align="end">
 						{getBadges()}
 						<Tooltip
 							label={'Add a Role'}
 							style={{ color: 'white', backgroundColor: 'black' }}
 							withArrow
 							position="right">
-							<Badge color="green" onClick={openEditModal} style={{ textAlign: 'center', alignItems: 'center' }}>
-								<IconPlus size={'1rem'} style={{ paddingTop: 6 }} />
+							<Badge
+								color="green"
+								onClick={openEditModal}
+								style={{ textAlign: 'center', alignItems: 'center', marginLeft: '0.2rem' }}>
+								<IconPlus size={'0.7rem'} style={{ paddingTop: 2 }} />
 							</Badge>
 						</Tooltip>
 					</Stack>

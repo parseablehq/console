@@ -58,8 +58,8 @@
 }
 
 .fieldDescription {
-	font-size: 0.65rem;
 	color: var(--mantine-color-gray-6);
+	font-size: 0.65rem;
 }
 
 .fieldsContainer {

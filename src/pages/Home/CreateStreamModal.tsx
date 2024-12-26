@@ -491,6 +491,7 @@ const DetectSchemaSection = (props: { form: StreamFormType }) => {
 				</Stack>
 				<Stack>
 					<Switch
+						size="lg"
 						checked={showAutoDetectInputs}
 						onChange={(event) => setShowAutoDetectInputs(event.currentTarget.checked)}
 					/>

@@ -9,20 +9,20 @@
 }
 
 .headerText {
-	font-size: 0.9rem;
 	font-weight: 600;
+	font-size: 0.9rem;
 }
 
 .warningText {
 	margin-top: 0.4rem;
-	font-size: 0.7rem;
 	font-weight: 500;
 	color: var(--mantine-color-gray-8);
+	font-size: 0.7rem;
 }
 
 .confirmationText {
-	font-size: 0.7rem;
 	color: var(--mantine-color-gray-7);
+	font-size: 0.7rem;
 }
 
 .confirmationTextHighlight {

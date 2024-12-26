@@ -10,7 +10,7 @@ import IconButton from '@/components/Button/IconButton';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 const navigateToDocs = () => {
-	return window.open('https://www.parseable.com/docs/server/api/rbac', '_blank');
+	return window.open('https://www.parseable.io/docs/server/features/rbac-role-based-access-control', '_blank');
 };
 
 const renderDocsIcon = () => <IconBook2 stroke={1.5} size="1rem" />;
@@ -174,7 +174,7 @@ const Roles: FC = () => {
 					<Button
 						className={classes.createUserBtn}
 						data-testid="create-role-button"
-						rightSection={<IconUserPlus size={px('1rem')} stroke={1.5} />}
+						leftSection={<IconUserPlus size={px('1rem')} stroke={1.5} />}
 						onClick={() => {
 							setModalOpen(true);
 						}}>
@@ -183,7 +183,7 @@ const Roles: FC = () => {
 					{oidcActive && (
 						<Button
 							className={classes.createUserBtn}
-							rightSection={<IconPencil size={px('1.2rem')} stroke={1.5} />}
+							leftSection={<IconPencil size={px('1.2rem')} stroke={1.5} />}
 							onClick={() => {
 								setDefaultRoleModalOpen(true);
 							}}>
