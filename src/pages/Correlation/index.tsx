@@ -1,31 +1,30 @@
-import _ from 'lodash';
+import { useEffect, useState } from 'react';
 import { useDocumentTitle } from '@mantine/hooks';
 import { Stack, Box, TextInput, Text, Select, Button, Center, Skeleton, Stepper } from '@mantine/core';
+import { IconTrashX } from '@tabler/icons-react';
 import {
 	PRIMARY_HEADER_HEIGHT,
 	STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT,
 	STREAM_PRIMARY_TOOLBAR_HEIGHT,
 	STREAM_SECONDARY_TOOLBAR_HRIGHT,
 } from '@/constants/theme';
-import { useEffect, useState } from 'react';
 import classes from './styles/Correlation.module.css';
+import { useCorrelationQueryLogs } from '@/hooks/useCorrelationQueryLogs';
+import { useGetStreamSchema } from '@/hooks/useGetCorrelationStreamSchema';
+import { useFetchStreamData } from '@/hooks/useFetchStreamData';
 import { correlationStoreReducers, useCorrelationStore } from './providers/CorrelationProvider';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { useCorrelationQueryLogs } from '@/hooks/useCorrelationQueryLogs';
 import CorrelationTable from './Views/CorrelationTable';
-import { IconTrashX } from '@tabler/icons-react';
 import CorrelationFooter from './Views/CorrelationFooter';
 import TimeRange from '@/components/Header/TimeRange';
 import RefreshInterval from '@/components/Header/RefreshInterval';
 import RefreshNow from '@/components/Header/RefreshNow';
 import ShareButton from '@/components/Header/ShareButton';
-import { MaximizeButton } from '../Stream/components/PrimaryToolbar';
 import MultiEventTimeLineGraph from './components/MultiEventTimeLineGraph';
-import { useGetStreamSchema } from '@/hooks/useGetCorrelationStreamSchema';
 import { CorrelationEmptyPlaceholder } from './components/CorrelationEmptyPlaceholder';
 import { StreamSelectBox } from './components/StreamSelectBox';
-import { useFetchStreamData } from '@/hooks/useFetchStreamData';
 import { CorrelationFieldItem } from './components/CorrelationFieldItem';
+import { MaximizeButton } from '../Stream/components/PrimaryToolbar';
 
 const { changeStream } = appStoreReducers;
 const { deleteStreamData, setSelectedFields, deleteSelectedField, setCorrelationCondition, setIsCorrelatedFlag } =
