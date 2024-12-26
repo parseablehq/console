@@ -13,15 +13,7 @@ import { correlationStoreReducers, useCorrelationStore } from './providers/Corre
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useCorrelationQueryLogs } from '@/hooks/useCorrelationQueryLogs';
 import CorrelationTable from './Views/CorrelationTable';
-import {
-	IconChartCircles,
-	IconClockHour5,
-	IconLetterASmall,
-	IconLetterLSmall,
-	IconNumber123,
-	IconTrashX,
-	IconX,
-} from '@tabler/icons-react';
+import { IconTrashX } from '@tabler/icons-react';
 import CorrelationFooter from './Views/CorrelationFooter';
 import TimeRange from '@/components/Header/TimeRange';
 import RefreshInterval from '@/components/Header/RefreshInterval';
@@ -33,59 +25,11 @@ import { useGetStreamSchema } from '@/hooks/useGetCorrelationStreamSchema';
 import { CorrelationEmptyPlaceholder } from './components/CorrelationEmptyPlaceholder';
 import { StreamSelectBox } from './components/StreamSelectBox';
 import { useFetchStreamData } from '@/hooks/useFetchStreamData';
+import { CorrelationFieldItem } from './components/CorrelationFieldItem';
 
 const { changeStream } = appStoreReducers;
 const { deleteStreamData, setSelectedFields, deleteSelectedField, setCorrelationCondition, setIsCorrelatedFlag } =
 	correlationStoreReducers;
-
-const dataTypeIcons = (iconColor: string): Record<string, JSX.Element> => ({
-	text: <IconLetterASmall size={16} style={{ color: iconColor }} />,
-	timestamp: <IconClockHour5 size={16} style={{ color: iconColor }} />,
-	number: <IconNumber123 size={16} style={{ color: iconColor }} />,
-	boolean: <IconChartCircles size={16} style={{ color: iconColor }} />,
-	list: <IconLetterLSmall size={16} style={{ color: iconColor }} />,
-});
-
-const FieldItem = ({
-	headerColor,
-	fieldName,
-	backgroundColor,
-	iconColor,
-	dataType,
-	isSelected,
-	onClick,
-	onDelete,
-}: {
-	headerColor: string;
-	fieldName: string;
-	backgroundColor: string;
-	iconColor: string;
-	dataType?: string;
-	isSelected?: boolean;
-	onClick?: () => void;
-	onDelete?: () => void;
-}) => {
-	return (
-		<div
-			style={{
-				border: `1px solid ${headerColor}`,
-				backgroundColor,
-				color: headerColor,
-				opacity: isSelected ? 0.5 : 1,
-				...(dataType
-					? { height: '24px', minHeight: '24px' }
-					: { width: 'fit-content', borderRadius: '12px', height: '100%' }),
-			}}
-			className={classes.fieldItem}
-			onClick={onClick}>
-			<Text size="sm" className={classes.fieldItemText}>
-				{fieldName}
-			</Text>
-			{!dataType && <IconX color={iconColor} size={12} onClick={onDelete} />}
-			{dataType && dataTypeIcons(iconColor)[dataType]}
-		</div>
-	);
-};
 
 const Correlation = () => {
 	useDocumentTitle('Parseable | Correlation');
@@ -249,7 +193,7 @@ const Correlation = () => {
 											const isSelected = selectedFields[stream]?.includes(field);
 											const dataType = fieldsIter.fieldTypeMap[field];
 											return (
-												<FieldItem
+												<CorrelationFieldItem
 													key={`${stream}-${field}`}
 													headerColor={fieldsIter.headerColor}
 													backgroundColor={fieldsIter.backgroundColor}
@@ -297,7 +241,7 @@ const Correlation = () => {
 							<StreamSelectBox
 								label="Add Stream 2"
 								placeholder="Select Stream 2"
-								disabled={false}
+								disabled={logsLoading}
 								onChange={(value) => addStream(value)}
 								data={streamData}
 								isFirst={false}
@@ -330,7 +274,7 @@ const Correlation = () => {
 								)}
 								{Object.entries(selectedFields).map(([streamName, fieldsMap]: [any, any]) =>
 									fieldsMap.map((field: any, index: any) => (
-										<FieldItem
+										<CorrelationFieldItem
 											key={`${streamName}-${index}`}
 											headerColor={fields[streamName]['headerColor']}
 											backgroundColor={fields[streamName]['backgroundColor']}
@@ -435,7 +379,7 @@ const Correlation = () => {
 							{...{ errorMessage, logsLoading, streamsLoading, showTable, hasNoData }}
 							primaryHeaderHeight={primaryHeaderHeight}
 						/>
-						<CorrelationFooter loaded={true} hasNoData={true} isFetchingCount={true} />
+						<CorrelationFooter loaded={!logsLoading} hasNoData={true} isFetchingCount={true} />
 					</>
 				)}
 				{Object.keys(selectedFields).length === 0 && (
