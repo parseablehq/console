@@ -60,7 +60,7 @@ const navItems = [
 	{
 		icon: IconBell,
 		label: 'Alerts',
-		path: '/alerts',
+		path: '/list',
 		route: ALERTS_ROUTE,
 	},
 ];
