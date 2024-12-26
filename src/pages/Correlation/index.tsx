@@ -287,7 +287,10 @@ const Correlation = () => {
 											backgroundColor={fields[streamName]['backgroundColor']}
 											iconColor={fields[streamName]['iconColor']}
 											fieldName={field}
-											onDelete={() => setCorrelationData((store) => deleteSelectedField(store, field, streamName))}
+											onDelete={() => {
+												isCorrelatedData && setIsCorrelationEnabled(true);
+												setCorrelationData((store) => deleteSelectedField(store, field, streamName));
+											}}
 										/>
 									)),
 								)}
@@ -335,8 +338,8 @@ const Correlation = () => {
 										radius="md"
 										data={
 											streamNames.length > 1
-												? Object.keys(fields[streamNames[0]].fieldTypeMap).filter(
-														(key) => fields[streamNames[0]].fieldTypeMap[key] !== 'list',
+												? Object.keys(fields[streamNames[1]].fieldTypeMap).filter(
+														(key) => fields[streamNames[1]].fieldTypeMap[key] !== 'list',
 												  )
 												: []
 										}
