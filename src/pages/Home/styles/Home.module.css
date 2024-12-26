@@ -37,3 +37,7 @@
 		color: black;
 	}
 }
+
+.searchBar {
+	border-radius: rem(8px);
+}

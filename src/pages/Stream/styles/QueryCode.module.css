@@ -67,3 +67,7 @@
 .schemaListShadow {
 	box-shadow: #e3ebfb 0px -50px 20px -30px inset;
 }
+
+.inputField {
+	border-radius: rem(8px);
+}

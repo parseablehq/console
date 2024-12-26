@@ -192,3 +192,15 @@
 .tab:hover {
 	background: var(--mantine-color-gray-1);
 }
+
+.selectDescription {
+	font-size: 12px;
+	font-weight: 500;
+	color: var(--mantine-color-gray-6);
+}
+
+.selectInput {
+	cursor: pointer;
+	border: 1px var(--mantine-color-gray-2) solid;
+	border-radius: rem(8px);
+}

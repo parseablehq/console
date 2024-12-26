@@ -286,6 +286,7 @@ const RoleTR: FC<RoleTRProps> = (props) => {
 						onChange={(value) => {
 							setSelectedRole(value ?? '');
 						}}
+						classNames={{ input: styles.selectInput, description: styles.selectDescription }}
 						nothingFoundMessage="No roles found"
 						value={selectedRole}
 						searchValue={roleSearchValue}

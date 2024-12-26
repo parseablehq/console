@@ -188,6 +188,12 @@
 	font-size: var(--mantine-font-size-md);
 }
 
+.dropdownDescription {
+	font-size: 12px;
+	font-weight: 500;
+	color: var(--mantine-color-gray-6);
+}
+
 .liveTailFilterContainer {
 	display: flex;
 	gap: 12px;

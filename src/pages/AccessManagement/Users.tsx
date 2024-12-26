@@ -150,6 +150,7 @@ const Users: FC = () => {
 						onChange={(e) => {
 							setCreateUserInput(e.target.value);
 						}}
+						classNames={{ input: classes.inputField }}
 						value={createUserInput}
 						required
 					/>
@@ -165,6 +166,7 @@ const Users: FC = () => {
 						onDropdownClose={() => setRoleSearchValue(selectedRole)}
 						onDropdownOpen={() => setRoleSearchValue('')}
 						data={getRolesData?.data || []}
+						classNames={{ input: classes.selectInput, description: classes.selectDescription }}
 						searchable
 						label="Select a role to assign"
 						required

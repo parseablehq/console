@@ -127,3 +127,19 @@
 		color: black;
 	}
 }
+
+.streamSelectDescription {
+	font-size: 12px;
+	font-weight: 500;
+	color: var(--mantine-color-gray-6);
+}
+
+.streamInput {
+	cursor: pointer;
+	border: 1px var(--mantine-color-gray-2) solid;
+	border-radius: rem(8px);
+}
+
+.searchBar {
+	border-radius: rem(8px);
+}

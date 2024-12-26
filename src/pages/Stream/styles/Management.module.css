@@ -168,3 +168,7 @@
 	color: var(--mantine-color-gray-6);
 	cursor: pointer;
 }
+
+.inputField {
+	border-radius: rem(8px);
+}

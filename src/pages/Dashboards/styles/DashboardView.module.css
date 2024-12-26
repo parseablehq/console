@@ -34,3 +34,7 @@
 	font-size: 0.8rem;
 	text-align: center;
 }
+
+.inputField {
+	border-radius: rem(8px);
+}

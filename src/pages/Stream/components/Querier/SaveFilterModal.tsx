@@ -4,6 +4,7 @@ import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useLogsStore } from '../../providers/LogsProvider';
 import { CodeHighlight } from '@mantine/code-highlight';
 import _ from 'lodash';
+import classes from './styles/SavedFiltersModalStyles.module.css';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { CreateSavedFilterType, SavedFilterType } from '@/@types/parseable/api/savedFilters';
 import useSavedFiltersQuery from '@/hooks/useSavedFilters';
@@ -158,6 +159,7 @@ const SaveFilterModal = () => {
 						onChange={onNameChange}
 						withAsterisk
 						label="Name"
+						classNames={{ input: classes.inputField }}
 						error={isDirty && formObject?.isError && 'Name cannot be empty'}
 						value={formObject?.filter_name}
 					/>
@@ -166,6 +168,7 @@ const SaveFilterModal = () => {
 					<Stack gap={4} style={{ width: '100%' }}>
 						<Text style={{ fontSize: '0.7rem', fontWeight: 500 }}>Time Range</Text>
 						<Select
+							classNames={{ input: classes.selectInput, description: classes.selectDescription }}
 							data={formObject?.timeRangeOptions}
 							value={formObject?.selectedTimeRangeOption.value}
 							onChange={onToggleIncludeTimeRange}

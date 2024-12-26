@@ -129,8 +129,21 @@ const FieldRow = (props: {
 	const rmvBtnProps = _.isFunction(props.onRemove) ? { onClick: props.onRemove } : { color: 'gray' };
 	return (
 		<Stack style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-			<TextInput w="47%" withAsterisk placeholder="Field name" key="name" {...props.nameInputProps} />
-			<Select w="47%" placeholder="Select Datatype" data={datatypes} {...props.datatypeInputProps} />
+			<TextInput
+				classNames={{ input: styles.inputField }}
+				w="47%"
+				withAsterisk
+				placeholder="Field name"
+				key="name"
+				{...props.nameInputProps}
+			/>
+			<Select
+				classNames={{ input: styles.selectInput, description: styles.selectDescription }}
+				w="47%"
+				placeholder="Select Datatype"
+				data={datatypes}
+				{...props.datatypeInputProps}
+			/>
 			<Stack w="6%" style={{ alignItems: 'center', paddingTop: 4 }}>
 				<ActionIcon className={styles.deleteRulebtn} variant="light" {...rmvBtnProps}>
 					<CloseIcon />
@@ -176,7 +189,12 @@ const SchemaTypeField = (props: { inputProps: GetInputPropsReturnType }) => {
 				</Stack>
 				<Text className={styles.fieldDescription}>Choose dynamic or static schema</Text>
 			</Stack>
-			<Select w={200} data={[dynamicType, staticType]} {...props.inputProps} />
+			<Select
+				classNames={{ input: styles.selectInput, description: styles.selectDescription }}
+				w={200}
+				data={[dynamicType, staticType]}
+				{...props.inputProps}
+			/>
 		</Stack>
 	);
 };
@@ -563,7 +581,7 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 		<Stack>
 			<TextInput
 				withAsterisk
-				classNames={{ label: styles.fieldTitle }}
+				classNames={{ label: styles.fieldTitle, input: styles.inputField }}
 				styles={{ label: { marginBottom: 8 } }}
 				label="Name"
 				placeholder="Name"
