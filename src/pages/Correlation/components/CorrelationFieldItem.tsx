@@ -6,8 +6,9 @@ import {
 	IconNumber123,
 	IconX,
 } from '@tabler/icons-react';
-import { Text } from '@mantine/core';
+import { Text, Tooltip } from '@mantine/core';
 import classes from '../styles/Correlation.module.css';
+import { useRef, useState, useEffect } from 'react';
 
 const dataTypeIcons = (iconColor: string): Record<string, JSX.Element> => ({
 	text: <IconLetterASmall size={16} style={{ color: iconColor }} />,
@@ -16,6 +17,17 @@ const dataTypeIcons = (iconColor: string): Record<string, JSX.Element> => ({
 	boolean: <IconChartCircles size={16} style={{ color: iconColor }} />,
 	list: <IconLetterLSmall size={16} style={{ color: iconColor }} />,
 });
+
+interface CorrelationFieldItemProps {
+	headerColor: string;
+	fieldName: string;
+	backgroundColor: string;
+	iconColor: string;
+	dataType?: string;
+	isSelected?: boolean;
+	onClick?: () => void;
+	onDelete?: () => void;
+}
 
 export const CorrelationFieldItem = ({
 	headerColor,
@@ -26,16 +38,16 @@ export const CorrelationFieldItem = ({
 	isSelected,
 	onClick,
 	onDelete,
-}: {
-	headerColor: string;
-	fieldName: string;
-	backgroundColor: string;
-	iconColor: string;
-	dataType?: string;
-	isSelected?: boolean;
-	onClick?: () => void;
-	onDelete?: () => void;
-}) => {
+}: CorrelationFieldItemProps) => {
+	const textRef = useRef<HTMLDivElement>(null);
+	const [isOverflowing, setIsOverflowing] = useState(false);
+
+	useEffect(() => {
+		if (textRef.current) {
+			setIsOverflowing(textRef.current.scrollWidth > textRef.current.clientWidth);
+		}
+	}, [fieldName]);
+
 	return (
 		<div
 			style={{
@@ -49,9 +61,17 @@ export const CorrelationFieldItem = ({
 			}}
 			className={classes.fieldItem}
 			onClick={onClick}>
-			<Text size="sm" className={classes.fieldItemText}>
-				{fieldName}
-			</Text>
+			{isOverflowing ? (
+				<Tooltip label={fieldName} position="top">
+					<Text size="sm" className={classes.fieldItemText} ref={textRef}>
+						{fieldName}
+					</Text>
+				</Tooltip>
+			) : (
+				<Text size="sm" className={classes.fieldItemText} ref={textRef}>
+					{fieldName}
+				</Text>
+			)}
 			{!dataType && <IconX color={iconColor} size={12} onClick={onDelete} />}
 			{dataType && dataTypeIcons(iconColor)[dataType]}
 		</div>

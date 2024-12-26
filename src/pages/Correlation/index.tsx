@@ -50,6 +50,7 @@ const Correlation = () => {
 	const [searchText, setSearchText] = useState('');
 	const [select1Value, setSelect1Value] = useState<string | null>(null);
 	const [select2Value, setSelect2Value] = useState<string | null>(null);
+	const [isCorrelationEnabled, setIsCorrelationEnabled] = useState<boolean>(false);
 
 	// Derived Constants
 	const primaryHeaderHeight = maximized
@@ -99,6 +100,7 @@ const Correlation = () => {
 			const condition = `"${streamNames[0]}".${select1Value} = "${streamNames[1]}".${select2Value}`;
 			setAppStore((store) => changeStream(store, 'correlatedStream'));
 			setCorrelationData((store) => setCorrelationCondition(store, condition));
+			setIsCorrelationEnabled(true);
 		}
 	};
 
@@ -171,6 +173,9 @@ const Correlation = () => {
 										size={14}
 										onClick={() => {
 											setAppStore((store) => changeStream(store, ''));
+											setCorrelationData((store) => setIsCorrelatedFlag(store, false));
+											setSelect1Value(null);
+											setSelect2Value(null);
 											setCorrelationData((store) => deleteStreamData(store, stream));
 										}}
 									/>
@@ -200,7 +205,10 @@ const Correlation = () => {
 													fieldName={field.replace(`${stream}.`, '')}
 													dataType={dataType}
 													isSelected={isSelected}
-													onClick={() => setCorrelationData((store) => setSelectedFields(store, field, stream))}
+													onClick={() => {
+														isCorrelatedData && setIsCorrelationEnabled(true);
+														setCorrelationData((store) => setSelectedFields(store, field, stream));
+													}}
 												/>
 											);
 										})
@@ -357,8 +365,11 @@ const Correlation = () => {
 						<div style={{ display: 'flex', gap: '5px', alignItems: 'center', height: '25px' }}>
 							<Button
 								className={classes.correlateBtn}
+								variant="outline"
+								disabled={!isCorrelationEnabled}
 								onClick={() => {
 									setCorrelationData((store) => setIsCorrelatedFlag(store, true));
+									setIsCorrelationEnabled(false);
 									getCorrelationData();
 								}}>
 								Correlate
