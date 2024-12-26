@@ -110,6 +110,8 @@ const initialState: CorrelationStore = {
 	},
 };
 
+// Utilites
+
 const parseQuery = (queryEngine: QueryEngineType, query: QueryType, currentStream: string) => {
 	// todo - custom rule processor to prevent converting number strings into numbers for text fields
 	const where = formatQuery(query, { format: 'sql', parseNumbers: true, quoteFieldNamesWith: ['"', '"'] });
@@ -125,58 +127,122 @@ const parseQuery = (queryEngine: QueryEngineType, query: QueryType, currentStrea
 	return { where, parsedQuery: filterQueryBuilder.getQuery() };
 };
 
+const filterAndSortData = (
+	opts: { sortOrder: 'asc' | 'desc'; sortKey: string; filters: Record<string, string[]> },
+	data: Log[],
+) => {
+	const { sortOrder, sortKey, filters } = opts;
+	const filteredData = _.isEmpty(filters)
+		? data
+		: (_.reduce(
+				data,
+				(acc: Log[], d: Log) => {
+					const doesMatch = _.some(filters, (value, key) => _.includes(value, _.toString(d[key])));
+					return doesMatch ? [...acc, d] : acc;
+				},
+				[],
+		  ) as Log[]);
+	const sortedData = _.orderBy(filteredData, [sortKey], [sortOrder]);
+	return sortedData;
+};
+
+// Helpers
+
+const updateSelectedFields = (store: CorrelationStore, field: string, streamName: string, clearAll: boolean) => {
+	return clearAll
+		? {}
+		: {
+				...store.selectedFields,
+				[streamName]: store.selectedFields[streamName]?.includes(field)
+					? store.selectedFields[streamName]
+					: [...(store.selectedFields[streamName] || []), field],
+		  };
+};
+
+const generatePageData = (store: CorrelationStore, updatedSelectedFields: Record<string, string[]>) => {
+	return Array.from({ length: store.tableOpts.perPage })
+		.map((_record, index) => {
+			const combinedRecord: Record<string, any> = {};
+
+			Object.entries(updatedSelectedFields).forEach(([stream, fields]) => {
+				const streamData = filterAndSortData(store.tableOpts, store.streamData[stream]?.logData || []);
+				const streamRecord = streamData[index];
+
+				if (streamRecord && Array.isArray(fields)) {
+					fields.forEach((field) => {
+						combinedRecord[`${stream}.${field}`] = streamRecord[field];
+					});
+				}
+			});
+
+			return combinedRecord;
+		})
+		.filter(Boolean);
+};
+
+const updatePageDataForStreams = (
+	combinedFilteredData: Log[],
+	pageNo: number,
+	updatedPerPage: number,
+	selectedFields: Record<string, string[]>,
+) => {
+	return getPageSlice(pageNo, updatedPerPage, combinedFilteredData).map((record) => {
+		const combinedRecord: Record<string, any> = {};
+		Object.keys(selectedFields).forEach((stream) => {
+			const fields = selectedFields[stream];
+			if (record && Array.isArray(fields)) {
+				fields.forEach((field) => {
+					combinedRecord[`${stream}.${field}`] = record[field];
+				});
+			}
+		});
+		return combinedRecord;
+	});
+};
+
+const updateStreamPageData = (
+	store: CorrelationStore,
+	currentPage: number,
+	updatedStreamData: Record<string, { logData: Log[] } | null>,
+) => {
+	const updatedPageData: Record<string, any>[] = [];
+	Object.entries(store.selectedFields).forEach(([stream, fields]) => {
+		const streamData = filterAndSortData(store.tableOpts, updatedStreamData[stream]?.logData || []);
+		const streamPageSlice = getPageSlice(currentPage, store.tableOpts.perPage, streamData);
+
+		streamPageSlice.forEach((record, index) => {
+			if (!updatedPageData[index]) updatedPageData[index] = {};
+			if (Array.isArray(fields)) {
+				fields.forEach((field) => {
+					updatedPageData[index][`${stream}.${field}`] = record[field];
+				});
+			}
+		});
+	});
+	return updatedPageData;
+};
+
+// Reducer Functions
+
 const setIsCorrelatedFlag = (store: CorrelationStore, flag: boolean) => {
 	return {
 		...store,
 		isCorrelatedData: flag,
 	};
 };
-
 const setSelectedFields = (
 	store: CorrelationStore,
 	field: string,
 	streamName: string,
 	clearAll = false,
 ): ReducerOutput => {
-	const { tableOpts } = store;
-	// Clear all selected fields if clearAll is true
-	const updatedSelectedFields = clearAll
-		? {}
-		: {
-				...store.selectedFields,
-				[streamName]: store.selectedFields[streamName]
-					? store.selectedFields[streamName].includes(field)
-						? store.selectedFields[streamName]
-						: [...store.selectedFields[streamName], field]
-					: [field],
-		  };
-
+	const updatedSelectedFields = updateSelectedFields(store, field, streamName, clearAll);
 	const currentPage = 1;
 
-	// Compute updated pageData
 	const updatedPageData = store.isCorrelatedData
 		? store.tableOpts.pageData
-		: Array.from({ length: tableOpts.perPage })
-				.map((_record, index) => {
-					const combinedRecord: any = {};
+		: generatePageData(store, updatedSelectedFields);
 
-					for (const [stream, fields] of Object.entries(updatedSelectedFields)) {
-						const streamFilteredData = filterAndSortData(tableOpts, store.streamData[stream]?.logData || []);
-						const streamRecord = streamFilteredData[index];
-						if (streamRecord) {
-							if (Array.isArray(fields)) {
-								fields.forEach((field) => {
-									combinedRecord[`${stream}.${field}`] = streamRecord[field];
-								});
-							}
-						}
-					}
-
-					return combinedRecord;
-				})
-				.filter(Boolean);
-
-	// Return updated store
 	return {
 		...store,
 		selectedFields: updatedSelectedFields,
@@ -185,26 +251,23 @@ const setSelectedFields = (
 			pageData: updatedPageData || [],
 			currentPage,
 			totalPages: getTotalPages(
-				filterAndSortData(tableOpts, store.streamData[streamName]?.logData || []),
-				tableOpts.perPage,
+				filterAndSortData(store.tableOpts, store.streamData[streamName]?.logData || []),
+				store.tableOpts.perPage,
 			),
 		},
 	};
 };
 
-const setPageAndPageData = (store: CorrelationStore, pageNo: number, perPage?: number) => {
+const setPageAndPageData = (store: CorrelationStore, pageNo: number, perPage?: number): ReducerOutput => {
 	const { tableOpts, selectedFields, streamData, isCorrelatedData } = store;
 	const streamNames = Object.keys(selectedFields);
-
-	const combinedFilteredData = streamNames.flatMap((streamName) => {
-		return streamData[streamName]?.logData || [];
-	});
+	const combinedFilteredData = streamNames.flatMap((streamName) => streamData[streamName]?.logData || []);
 
 	if (!combinedFilteredData.length) {
 		return {
 			...store,
 			tableOpts: {
-				...store.tableOpts,
+				...tableOpts,
 				pageData: [],
 				currentPage: pageNo,
 				totalPages: 0,
@@ -214,60 +277,38 @@ const setPageAndPageData = (store: CorrelationStore, pageNo: number, perPage?: n
 	}
 
 	const updatedPerPage = perPage || tableOpts.perPage;
-
 	if (isCorrelatedData) {
-		const filteredData = filterAndSortData(store.tableOpts, streamData['correlatedStream']?.logData || []);
-		const newPageSlice = getPageSlice(pageNo, updatedPerPage, filteredData);
+		const filteredData = filterAndSortData(tableOpts, streamData['correlatedStream']?.logData || []);
 		return {
 			...store,
 			tableOpts: {
-				...store.tableOpts,
+				...tableOpts,
 				currentPage: pageNo,
 				perPage: updatedPerPage,
-				pageData: newPageSlice,
+				pageData: getPageSlice(pageNo, updatedPerPage, filteredData),
 				totalPages: getTotalPages(filteredData, updatedPerPage),
 			},
 		};
 	}
 
-	const newPageSlice = getPageSlice(pageNo, updatedPerPage, combinedFilteredData);
-	const updatedPageData = newPageSlice?.map((record) => {
-		const combinedRecord: any = {};
-
-		// Iterate over all streams and selected fields
-		streamNames.forEach((stream) => {
-			const fields = selectedFields[stream];
-			const streamRecord = record;
-
-			if (streamRecord && Array.isArray(fields)) {
-				fields.forEach((field) => {
-					// Combine the stream and field into a single record
-					combinedRecord[`${stream}.${field}`] = streamRecord[field];
-				});
-			}
-		});
-
-		return combinedRecord;
-	});
+	const updatedPageData = updatePageDataForStreams(combinedFilteredData, pageNo, updatedPerPage, selectedFields);
 
 	return {
 		...store,
 		tableOpts: {
-			...store.tableOpts,
+			...tableOpts,
 			pageData: updatedPageData || [],
 			currentPage: pageNo,
-			totalPages: getTotalPages(combinedFilteredData, updatedPerPage),
 			perPage: updatedPerPage,
+			totalPages: getTotalPages(combinedFilteredData, updatedPerPage),
 		},
 	};
 };
 
-const deleteSelectedField = (store: CorrelationStore, field: string, streamName: string) => {
-	if (!store.selectedFields[streamName]) {
-		return store;
-	}
+const deleteSelectedField = (store: CorrelationStore, field: string, streamName: string): ReducerOutput => {
+	if (!store.selectedFields[streamName]) return store;
 
-	const updatedFields = store.selectedFields[streamName].filter((selectedField: string) => selectedField !== field);
+	const updatedFields = store.selectedFields[streamName].filter((selectedField) => selectedField !== field);
 
 	const newSelectedFields = { ...store.selectedFields };
 
@@ -294,35 +335,12 @@ const deleteSelectedField = (store: CorrelationStore, field: string, streamName:
 	};
 };
 
-const filterAndSortData = (
-	opts: { sortOrder: 'asc' | 'desc'; sortKey: string; filters: Record<string, string[]> },
-	data: Log[],
-) => {
-	const { sortOrder, sortKey, filters } = opts;
-	const filteredData = _.isEmpty(filters)
-		? data
-		: (_.reduce(
-				data,
-				(acc: Log[], d: Log) => {
-					const doesMatch = _.some(filters, (value, key) => _.includes(value, _.toString(d[key])));
-					return doesMatch ? [...acc, d] : acc;
-				},
-				[],
-		  ) as Log[]);
-	const sortedData = _.orderBy(filteredData, [sortKey], [sortOrder]);
-	return sortedData;
-};
-
 const setStreamData = (store: CorrelationStore, currentStream: string, data: Log[]): ReducerOutput => {
-	if (!currentStream) {
-		return { fields: store.fields };
-	}
+	if (!currentStream) return { fields: store.fields };
 	// Update streamData
 	const updatedStreamData = {
 		...store.streamData,
-		[currentStream]: {
-			logData: data,
-		},
+		[currentStream]: { logData: data },
 	};
 
 	// Recompute filtered and sliced data for the table
@@ -330,41 +348,19 @@ const setStreamData = (store: CorrelationStore, currentStream: string, data: Log
 	const currentPage = store.tableOpts.currentPage || 1;
 
 	if (store.isCorrelatedData) {
-		const streamPageSlice = filteredData && getPageSlice(currentPage, store.tableOpts.perPage, filteredData);
 		return {
 			...store,
-			streamData: {
-				...store.streamData,
-				[currentStream]: {
-					logData: data,
-				},
-			},
+			streamData: updatedStreamData,
 			tableOpts: {
 				...store.tableOpts,
-				pageData: streamPageSlice,
+				pageData: getPageSlice(currentPage, store.tableOpts.perPage, filteredData),
 				currentPage,
 				totalPages: getTotalPages(filteredData, store.tableOpts.perPage),
 			},
 		};
 	}
 	// Rebuild `pageData` based on `selectedFields`
-	const updatedPageData: { [x: string]: string | number | Date | null }[] = [];
-	for (const [stream, fields] of Object.entries(store.selectedFields)) {
-		// Use the filtered data specific to each stream
-		const streamFilteredData = filterAndSortData(store.tableOpts, updatedStreamData[stream]?.logData || []);
-		const streamPageSlice = getPageSlice(currentPage, store.tableOpts.perPage, streamFilteredData);
-
-		if (Array.isArray(streamPageSlice)) {
-			streamPageSlice.forEach((record, index) => {
-				if (!updatedPageData[index]) updatedPageData[index] = {};
-				if (Array.isArray(fields)) {
-					fields.forEach((field) => {
-						updatedPageData[index][`${stream}.${field}`] = record[field];
-					});
-				}
-			});
-		}
-	}
+	const updatedPageData = updateStreamPageData(store, currentPage, updatedStreamData);
 
 	// Update the store with new data
 	return {
@@ -372,7 +368,7 @@ const setStreamData = (store: CorrelationStore, currentStream: string, data: Log
 		streamData: updatedStreamData,
 		tableOpts: {
 			...store.tableOpts,
-			pageData: updatedPageData || [],
+			pageData: updatedPageData,
 			currentPage,
 			totalPages: getTotalPages(filteredData, store.tableOpts.perPage),
 		},
