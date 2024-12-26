@@ -126,30 +126,7 @@
 }
 
 .leftSectionTitle {
-	@media (min-width: 1024px) {
-		/* sm: Styles for HD devices */
-		font-size: 10px;
-	}
-
-	@media (min-width: 1980px) {
-		/* md: Styles for FULL HD devices */
-		font-size: 12px;
-	}
-
-	@media (min-width: 1600px) {
-		/* lg: Styles for 2K devices */
-		font-size: 14px;
-	}
-
-	@media (min-width: 2160px) {
-		/* xl: Styles for 4K devices */
-		font-size: 18px;
-	}
-
-	@media (min-width: 3200px) {
-		/* 2xl: Styles for 8K devices */
-		font-size: 24px;
-	}
+	font-size: 0.8rem;
 	font-weight: 500;
 }
 
@@ -163,31 +140,6 @@
 	border-top: 1px solid var(--mantine-color-gray-2);
 	/* border-bottom: 1px solid var(--mantine-color-gray-2); */
 	cursor: pointer;
-
-	@media (min-width: 1024px) {
-		/* sm: Styles for HD devices */
-		font-size: 10px;
-	}
-
-	@media (min-width: 1980px) {
-		/* md: Styles for FULL HD devices */
-		font-size: 12px;
-	}
-
-	@media (min-width: 1600px) {
-		/* lg: Styles for 2K devices */
-		font-size: 14px;
-	}
-
-	@media (min-width: 2160px) {
-		/* xl: Styles for 4K devices */
-		font-size: 18px;
-	}
-
-	@media (min-width: 3200px) {
-		/* 2xl: Styles for 8K devices */
-		font-size: 24px;
-	}
 
 	&:hover {
 		background-color: var(--mantine-color-gray-0);
@@ -211,30 +163,7 @@
 	}
 
 	.serverDomain {
-		@media (min-width: 1024px) {
-			/* sm: Styles for HD devices */
-			font-size: 10px;
-		}
-
-		@media (min-width: 1980px) {
-			/* md: Styles for FULL HD devices */
-			font-size: 12px;
-		}
-
-		@media (min-width: 1600px) {
-			/* lg: Styles for 2K devices */
-			font-size: 14px;
-		}
-
-		@media (min-width: 2160px) {
-			/* xl: Styles for 4K devices */
-			font-size: 18px;
-		}
-
-		@media (min-width: 3200px) {
-			/* 2xl: Styles for 8K devices */
-			font-size: 24px;
-		}
+		font-size: 0.7rem;
 		color: var(--mantine-color-gray-7);
 	}
 }
@@ -311,87 +240,16 @@
 
 .compressionText {
 	color: var(--mantine-color-green-7);
-	@media (min-width: 1024px) {
-		/* sm: Styles for HD devices */
-		font-size: 10px;
-	}
-
-	@media (min-width: 1980px) {
-		/* md: Styles for FULL HD devices */
-		font-size: 12px;
-	}
-
-	@media (min-width: 1600px) {
-		/* lg: Styles for 2K devices */
-		font-size: 14px;
-	}
-
-	@media (min-width: 2160px) {
-		/* xl: Styles for 4K devices */
-		font-size: 18px;
-	}
-
-	@media (min-width: 3200px) {
-		/* 2xl: Styles for 8K devices */
-		font-size: 24px;
-	}
 }
 
 .fieldTitle {
-	/* font-size: var(--mantine-font-size-md); */
-	@media (min-width: 1024px) {
-		/* sm: Styles for HD devices */
-		font-size: 10px;
-	}
-
-	@media (min-width: 1980px) {
-		/* md: Styles for FULL HD devices */
-		font-size: 12px;
-	}
-
-	@media (min-width: 1600px) {
-		/* lg: Styles for 2K devices */
-		font-size: 14px;
-	}
-
-	@media (min-width: 2160px) {
-		/* xl: Styles for 4K devices */
-		font-size: 18px;
-	}
-
-	@media (min-width: 3200px) {
-		/* 2xl: Styles for 8K devices */
-		font-size: 24px;
-	}
+	font-size: var(--mantine-font-size-md);
 	font-weight: 500;
 }
 
 .fieldDescription {
+	font-size: var(--mantine-font-size-md);
 	color: var(--mantine-color-gray-6);
-	@media (min-width: 1024px) {
-		/* sm: Styles for HD devices */
-		font-size: 10px;
-	}
-
-	@media (min-width: 1980px) {
-		/* md: Styles for FULL HD devices */
-		font-size: 12px;
-	}
-
-	@media (min-width: 1600px) {
-		/* lg: Styles for 2K devices */
-		font-size: 14px;
-	}
-
-	@media (min-width: 2160px) {
-		/* xl: Styles for 4K devices */
-		font-size: 18px;
-	}
-
-	@media (min-width: 3200px) {
-		/* 2xl: Styles for 8K devices */
-		font-size: 24px;
-	}
 }
 
 .deleteBtn {
@@ -404,58 +262,4 @@
 
 .copyBtn:hover {
 	background: transparent;
-}
-
-.serverTypePill {
-	@media (min-width: 1024px) {
-		/* sm: Styles for HD devices */
-		font-size: 6px;
-	}
-
-	@media (min-width: 1980px) {
-		/* md: Styles for FULL HD devices */
-		font-size: 8px;
-	}
-
-	@media (min-width: 1600px) {
-		/* lg: Styles for 2K devices */
-		font-size: 10px;
-	}
-
-	@media (min-width: 2160px) {
-		/* xl: Styles for 4K devices */
-		font-size: 12px;
-	}
-
-	@media (min-width: 3200px) {
-		/* 2xl: Styles for 8K devices */
-		font-size: 14px;
-	}
-}
-
-.infoTitle {
-	@media (min-width: 1024px) {
-		/* sm: Styles for HD devices */
-		font-size: 10px;
-	}
-
-	@media (min-width: 1980px) {
-		/* md: Styles for FULL HD devices */
-		font-size: 12px;
-	}
-
-	@media (min-width: 1600px) {
-		/* lg: Styles for 2K devices */
-		font-size: 14px;
-	}
-
-	@media (min-width: 2160px) {
-		/* xl: Styles for 4K devices */
-		font-size: 18px;
-	}
-
-	@media (min-width: 3200px) {
-		/* 2xl: Styles for 8K devices */
-		font-size: 24px;
-	}
 }

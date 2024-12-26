@@ -6,7 +6,6 @@ import './styles/ReactGridLayout.css';
 import GridLayout from 'react-grid-layout';
 import { DASHBOARDS_SIDEBAR_WIDTH, NAVBAR_WIDTH } from '@/constants/theme';
 import classes from './styles/DashboardView.module.css';
-import responsive from '@/styles/responsiveText.module.css';
 import {
 	useDashboardsStore,
 	dashboardsStoreReducers,
@@ -149,12 +148,11 @@ const DashboardTemplates = (props: {
 			{_.map(templates, (template) => {
 				return (
 					<Stack style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-						<Text className={responsive.responsiveText} c="gray.7">
+						<Text style={{ fontSize: '0.76rem' }} c="gray.7">
 							{template.name}
 						</Text>
 						<Box>
 							<Button
-								className={responsive.responsiveText}
 								disabled={props.isImportingDashboard}
 								loading={props.isImportingDashboard}
 								onClick={() => props.onImport(template)}
@@ -222,11 +220,7 @@ const ImportDashboardModal = () => {
 				body: { padding: '0 1rem 1rem 1rem', width: 400 },
 				header: { padding: '1rem', paddingBottom: '0.4rem' },
 			}}
-			title={
-				<Text className={responsive.responsiveText} style={{ fontWeight: 600 }}>
-					Import Dashboard
-				</Text>
-			}>
+			title={<Text style={{ fontSize: '0.9rem', fontWeight: 600 }}>Import Dashboard</Text>}>
 			<Stack gap={24}>
 				{!isStandAloneMode && (
 					<>
@@ -235,7 +229,6 @@ const ImportDashboardModal = () => {
 					</>
 				)}
 				<FileInput
-					classNames={{ input: responsive.responsiveText }}
 					style={{ marginTop: '0.25rem' }}
 					label=""
 					placeholder="Import dashboard config downloaded from Parseable"
@@ -245,16 +238,12 @@ const ImportDashboardModal = () => {
 				/>
 				<Stack style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
 					<Box>
-						<Button className={responsive.responsiveText} onClick={closeModal} variant="outline">
+						<Button onClick={closeModal} variant="outline">
 							Cancel
 						</Button>
 					</Box>
 					<Box>
-						<Button
-							className={responsive.responsiveText}
-							disabled={file === null || isImportingDashboard}
-							onClick={onImport}
-							loading={isImportingDashboard}>
+						<Button disabled={file === null || isImportingDashboard} onClick={onImport} loading={isImportingDashboard}>
 							Import
 						</Button>
 					</Box>
@@ -392,7 +381,7 @@ const DuplicateTileModal = () => {
 			title={<Text style={{ fontSize: '0.9rem', fontWeight: 600 }}>Duplicate Tile</Text>}>
 			<Stack>
 				<Stack gap={12}>
-					<TextInput value={inputValue} onChange={handleInputChange} />
+					<TextInput classNames={{ input: classes.inputField }} value={inputValue} onChange={handleInputChange} />
 				</Stack>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
 					<Box>

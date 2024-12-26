@@ -67,7 +67,6 @@ const RetentionForm = (props: { updateRetentionConfig: ({ config }: { config: an
 			<Stack gap={8}>
 				<Stack gap={16} style={{ flexDirection: 'row', width: '100%' }}>
 					<NumberInput
-						size="lg"
 						withAsterisk
 						classNames={{ label: classes.fieldDescription }}
 						styles={{ label: { marginBottom: 4 } }}
@@ -78,8 +77,7 @@ const RetentionForm = (props: { updateRetentionConfig: ({ config }: { config: an
 						style={{ width: '50%' }}
 					/>
 					<TextInput
-						classNames={{ label: classes.fieldDescription }}
-						size="lg"
+						classNames={{ label: classes.fieldDescription, input: classes.inputField }}
 						styles={{ label: { marginBottom: 4 } }}
 						label="Action"
 						key="action"
@@ -89,9 +87,8 @@ const RetentionForm = (props: { updateRetentionConfig: ({ config }: { config: an
 					/>
 				</Stack>
 				<TextInput
-					classNames={{ label: classes.fieldDescription }}
+					classNames={{ label: classes.fieldDescription, input: classes.inputField }}
 					styles={{ label: { marginBottom: 4 } }}
-					size="lg"
 					label="Description"
 					key="description"
 					placeholder="Description"
@@ -100,18 +97,13 @@ const RetentionForm = (props: { updateRetentionConfig: ({ config }: { config: an
 			</Stack>
 			<Stack style={{ flexDirection: 'row', justifyContent: 'flex-end' }} mt="0.6rem">
 				<Button
-					size="lg"
 					className={classes.submitBtn}
 					onClick={() => onSubmit({ reset: true })}
 					variant="outline"
 					disabled={retention.duration === 0}>
 					Reset
 				</Button>
-				<Button
-					size="lg"
-					className={classes.submitBtn}
-					onClick={() => onSubmit({ reset: false })}
-					disabled={!form.isDirty()}>
+				<Button className={classes.submitBtn} onClick={() => onSubmit({ reset: false })} disabled={!form.isDirty()}>
 					Submit
 				</Button>
 			</Stack>
@@ -144,7 +136,7 @@ const DeleteHotTierModal = (props: {
 		<Modal
 			opened={props.showDeleteModal}
 			onClose={props.closeModal}
-			size="lg"
+			size="auto"
 			centered
 			styles={{
 				body: { padding: '0 1rem 1rem 1rem', width: 400 },
@@ -159,12 +151,12 @@ const DeleteHotTierModal = (props: {
 				</Stack>
 				<Stack style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
 					<Box>
-						<Button size="lg" onClick={props.closeModal} variant="outline">
+						<Button onClick={props.closeModal} variant="outline">
 							Cancel
 						</Button>
 					</Box>
 					<Box>
-						<Button size="lg" loading={props.isDeleting} onClick={onDelete}>
+						<Button loading={props.isDeleting} onClick={onDelete}>
 							Delete
 						</Button>
 					</Box>
@@ -252,7 +244,6 @@ const HotTierConfig = (props: {
 						{streamType === 'UserDefined' ? (
 							<NumberInput
 								classNames={{ label: classes.fieldDescription }}
-								size="lg"
 								placeholder="Size in GiB"
 								key="size"
 								value={localSizeValue}
@@ -300,7 +291,7 @@ const HotTierConfig = (props: {
 					</Stack>
 					<Stack style={{ alignItems: 'flex-end', ...(!hotTierNotSet ? { display: 'none' } : {}) }}>
 						<Box>
-							<Button size="lg" onClick={onUpdate} disabled={localSizeValue <= 0} loading={props.isUpdating}>
+							<Button onClick={onUpdate} disabled={localSizeValue <= 0} loading={props.isUpdating}>
 								Submit
 							</Button>
 						</Box>
@@ -328,7 +319,7 @@ const Settings = (props: {
 	return (
 		<Stack className={classes.sectionContainer} gap={0} w="100%">
 			<Header />
-			<Stack gap={26} h="100%" pr="0.65rem" pl="0.65rem">
+			<Stack gap={0} h="100%" pr="0.65rem" pl="0.65rem">
 				{props.isLoading ? (
 					<Stack style={{ flex: 1, width: '100%', alignItems: 'centrer', justifyContent: 'center' }}>
 						<Stack style={{ alignItems: 'center' }}>

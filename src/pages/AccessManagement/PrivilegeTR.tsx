@@ -59,7 +59,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 	const getBadge = (privilege: any, i: number, withAction: boolean) => {
 		if (privilege.privilege === 'admin' || privilege.privilege === 'editor') {
 			return (
-				<Badge size="lg" color="violet" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
+				<Badge color="violet" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
 					{privilege.privilege}
 				</Badge>
 			);
@@ -75,13 +75,13 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 				);
 			}
 			return (
-				<Badge size="lg" color="orange" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
+				<Badge color="orange" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
 					{privilege.privilege} of {privilege.resource?.stream === '*' ? 'All' : privilege.resource?.stream}
 				</Badge>
 			);
 		}
 		return (
-			<Badge size="lg" color="blue" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
+			<Badge color="blue" rightSection={withAction ? removeButton(i) : ''} variant={'light'}>
 				{privilege.privilege} of {privilege.resource?.stream === '*' ? 'All' : privilege.resource?.stream}
 			</Badge>
 		);
@@ -124,7 +124,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 			return Badges;
 		} else {
 			return (
-				<Badge size="lg" color="red" variant={'light'}>
+				<Badge color="red" variant={'light'}>
 					No Role
 				</Badge>
 			);
@@ -321,6 +321,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 						onChange={(value) => {
 							setSelectedPrivilege(value ?? '');
 						}}
+						classNames={{ input: classes.selectInput, description: classes.selectDescription }}
 						value={selectedPrivilege}
 						nothingFoundMessage="No options"
 					/>
@@ -340,6 +341,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 								onDropdownOpen={() => setStreamSearchValue('')}
 								data={getLogStreamListData?.data?.map((stream) => ({ value: stream.name, label: stream.name })) ?? []}
 								searchable
+								classNames={{ input: classes.selectInput, description: classes.selectDescription }}
 								label="Select a stream to assign"
 								required
 							/>
@@ -348,6 +350,7 @@ const PrivilegeTR: FC<PrivilegeTRProps> = (props) => {
 									type="text"
 									placeholder={'Please enter the Tag.'}
 									label="Tag"
+									classNames={{ input: styles.inputField }}
 									onChange={(e) => {
 										setTagInput(e.target.value);
 									}}

@@ -108,6 +108,7 @@ function UpdateTimePartitionLimit(props: { timePartition: string; currentStream:
 			{showEditField ? (
 				<Group style={{ flexDirection: 'row', alignItems: 'baseline' }} gap={6}>
 					<TextInput
+						classNames={{ input: classes.inputField }}
 						placeholder="Max Historical Difference"
 						value={value}
 						onChange={(e) => onChange(e)}

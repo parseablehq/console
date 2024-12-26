@@ -129,11 +129,24 @@ const FieldRow = (props: {
 	const rmvBtnProps = _.isFunction(props.onRemove) ? { onClick: props.onRemove } : { color: 'gray' };
 	return (
 		<Stack style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-			<TextInput w="47%" size="md" withAsterisk placeholder="Field name" key="name" {...props.nameInputProps} />
-			<Select w="47%" size="md" placeholder="Select Datatype" data={datatypes} {...props.datatypeInputProps} />
+			<TextInput
+				classNames={{ input: styles.inputField }}
+				w="47%"
+				withAsterisk
+				placeholder="Field name"
+				key="name"
+				{...props.nameInputProps}
+			/>
+			<Select
+				classNames={{ input: styles.selectInput, description: styles.selectDescription }}
+				w="47%"
+				placeholder="Select Datatype"
+				data={datatypes}
+				{...props.datatypeInputProps}
+			/>
 			<Stack w="6%" style={{ alignItems: 'center', paddingTop: 4 }}>
 				<ActionIcon className={styles.deleteRulebtn} variant="light" {...rmvBtnProps}>
-					<CloseIcon size="2rem" />
+					<CloseIcon />
 				</ActionIcon>
 			</Stack>
 		</Stack>
@@ -146,10 +159,9 @@ const AddFieldButton = ({ onClick }: { onClick: () => void }) => {
 	return (
 		<Box>
 			<Button
-				className={styles.fieldTitle}
 				variant="outline"
 				leftSection={
-					<ThemeIcon size="md" p={0} variant="outline" m={0} style={{ border: 0 }}>
+					<ThemeIcon size="xs" p={0} variant="outline" m={0} style={{ border: 0 }}>
 						<IconPlus stroke={2} />
 					</ThemeIcon>
 				}
@@ -177,7 +189,12 @@ const SchemaTypeField = (props: { inputProps: GetInputPropsReturnType }) => {
 				</Stack>
 				<Text className={styles.fieldDescription}>Choose dynamic or static schema</Text>
 			</Stack>
-			<Select size="lg" w={200} data={[dynamicType, staticType]} {...props.inputProps} />
+			<Select
+				classNames={{ input: styles.selectInput, description: styles.selectDescription }}
+				w={200}
+				data={[dynamicType, staticType]}
+				{...props.inputProps}
+			/>
 		</Stack>
 	);
 };
@@ -253,7 +270,7 @@ const PartitionField = (props: {
 				setValue={(value: string) => onFieldChange(value)}
 				placeholder="Select or Add"
 				error={props.error}
-				style={{ width: 250 }}
+				style={{ width: 200 }}
 			/>
 		</Stack>
 	);
@@ -293,7 +310,6 @@ const CustomPartitionField = (props: {
 						: 'Add upto 3 columns'
 				}
 				data={props.partitionFields}
-				size="lg"
 				mt={6}
 				onChange={(val) => props.onChangeValue('customPartitionFields', val)}
 				maxTags={3}
@@ -485,7 +501,6 @@ const DetectSchemaSection = (props: { form: StreamFormType }) => {
 				style={{ marginBottom: showAutoDetectInputs ? '0.4rem' : 0, display: showAutoDetectInputs ? 'flex' : 'none' }}>
 				<FileInput
 					placeholder="Import JSON"
-					size="lg"
 					value={file}
 					disabled={isDetecting}
 					onChange={onImportFile}
@@ -495,7 +510,6 @@ const DetectSchemaSection = (props: { form: StreamFormType }) => {
 				<JsonInput
 					placeholder="Array of Log Records as JSON"
 					validationError="Invalid JSON"
-					size="lg"
 					autosize
 					minRows={4}
 					disabled={isDetecting}
@@ -567,9 +581,8 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 		<Stack>
 			<TextInput
 				withAsterisk
-				classNames={{ label: styles.fieldTitle }}
+				classNames={{ label: styles.fieldTitle, input: styles.inputField }}
 				styles={{ label: { marginBottom: 8 } }}
-				size="lg"
 				label="Name"
 				placeholder="Name"
 				key="name"
@@ -611,7 +624,7 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 			<Stack style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
 				<Box>
 					{!createLogStreamIsLoading ? (
-						<Button w="8rem" className={styles.fieldTitle} onClick={onSubmit} disabled={!_.isEmpty(form.errors)}>
+						<Button w="6rem" onClick={onSubmit} disabled={!_.isEmpty(form.errors)}>
 							Create
 						</Button>
 					) : (
@@ -639,7 +652,7 @@ const CreateStreamModal: FC = () => {
 			opened={createStreamModalOpen}
 			onClose={closeModal}
 			withinPortal
-			size="60rem"
+			size="xl"
 			centered
 			padding={20}
 			title="Create Stream"

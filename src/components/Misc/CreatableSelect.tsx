@@ -75,7 +75,6 @@ export function CreatableSelect(props: Props) {
 			}}>
 			<Combobox.Target>
 				<InputBase
-					size="lg"
 					rightSection={<Combobox.Chevron />}
 					value={search}
 					onChange={(event) => {
