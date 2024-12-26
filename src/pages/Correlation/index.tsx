@@ -180,20 +180,15 @@ const Correlation = () => {
 										}}
 									/>
 								</div>
-								<div className={classes.fieldsWrapper}>
-									{logsLoading || schemaLoading || streamsLoading ? (
-										<Stack style={{ padding: '0.5rem 0.7rem' }}>
-											<Skeleton height="24px" />
-											<Skeleton height="24px" />
-											<Skeleton height="24px" />
-											<Skeleton height="24px" />
-											<Skeleton height="24px" />
-											<Skeleton height="24px" />
-											<Skeleton height="24px" />
-											<Skeleton height="24px" />
-										</Stack>
-									) : filteredFields.length > 0 ? (
-										filteredFields.map((field: string) => {
+								{logsLoading || schemaLoading || streamsLoading ? (
+									<Stack style={{ padding: '0.5rem 0.7rem' }}>
+										{Array.from({ length: 8 }).map((_, index) => (
+											<Skeleton key={index} height="24px" />
+										))}
+									</Stack>
+								) : filteredFields.length > 0 ? (
+									<div className={classes.fieldsWrapper}>
+										{filteredFields.map((field: string) => {
 											const isSelected = selectedFields[stream]?.includes(field);
 											const dataType = fieldsIter.fieldTypeMap[field];
 											return (
@@ -206,16 +201,16 @@ const Correlation = () => {
 													dataType={dataType}
 													isSelected={isSelected}
 													onClick={() => {
-														isCorrelatedData && setIsCorrelationEnabled(true);
+														if (isCorrelatedData) setIsCorrelationEnabled(true);
 														setCorrelationData((store) => setSelectedFields(store, field, stream));
 													}}
 												/>
 											);
-										})
-									) : (
-										<Text>No fields match your search.</Text>
-									)}
-								</div>
+										})}
+									</div>
+								) : (
+									<Text className={classes.noFieldText}>No fields match your search.</Text>
+								)}
 							</div>
 						);
 					})}
