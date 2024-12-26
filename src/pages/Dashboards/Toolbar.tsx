@@ -63,7 +63,7 @@ const EditLayoutButton = (props: { layoutRef: React.MutableRefObject<ReactGridLa
 	}, [allowDrag, activeDashboard]);
 
 	return (
-		<Stack>
+		<Stack style={{ width: '7rem' }}>
 			<Button
 				onClick={onClick}
 				loading={isUpdatingDashboard}

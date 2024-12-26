@@ -6,7 +6,6 @@ import PrivilegeTR from './PrivilegeTR';
 import { IconBook2, IconPencil, IconUserPlus } from '@tabler/icons-react';
 import { useRole } from '@/hooks/useRole';
 import classes from './styles/AccessManagement.module.css';
-import responsive from '@/styles/responsiveText.module.css';
 import IconButton from '@/components/Button/IconButton';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
@@ -168,7 +167,7 @@ const Roles: FC = () => {
 	return (
 		<Box className={classes.container}>
 			<Stack className={classes.header} gap={0}>
-				<Text className={responsive.responsiveText} component="h2" style={{ fontWeight: 600 }}>
+				<Text component="h2" style={{ fontWeight: 600 }}>
 					Roles
 				</Text>
 				<Stack style={{ flexDirection: 'row' }} gap={0}>
@@ -207,22 +206,21 @@ const Roles: FC = () => {
 				</Table>
 			</ScrollArea>
 			<Modal
-				size="lg"
 				opened={defaultRoleModalOpen}
 				onClose={handleDefaultRoleModalClose}
 				title="Set default oidc role"
 				centered
-				styles={{ title: { fontWeight: 500, fontSize: '16px' } }}
+				styles={{ title: { fontWeight: 500 } }}
 				className={classes.modalStyle}>
 				<Stack>
 					<Select
-						size="lg"
 						placeholder="Select Role"
 						label="Select a role to automatically assign to new oidc users"
 						data={getRolesData?.data ?? []}
 						onChange={(value) => {
 							setInputDefaultRole(value ?? '');
 						}}
+						classNames={{ input: classes.selectInput, description: classes.selectDescription }}
 						value={inputDefaultRole}
 						nothingFoundMessage="No options"
 						searchable
@@ -231,7 +229,6 @@ const Roles: FC = () => {
 
 				<Group justify="right" mt={10}>
 					<Button
-						size="md"
 						variant="filled"
 						color="gray"
 						className={classes.modalActionBtn}
@@ -240,7 +237,6 @@ const Roles: FC = () => {
 						Set default
 					</Button>
 					<Button
-						size="md"
 						onClick={handleDefaultRoleModalClose}
 						variant="outline"
 						color="gray"
@@ -250,22 +246,21 @@ const Roles: FC = () => {
 				</Group>
 			</Modal>
 			<Modal
-				size="lg"
 				opened={modalOpen}
 				onClose={handleClose}
 				title="Create Role"
 				centered
 				className={classes.modalStyle}
-				styles={{ title: { fontWeight: 500, fontSize: '16px' } }}>
+				styles={{ title: { fontWeight: 500 } }}>
 				<Stack>
 					<TextInput
-						size="lg"
 						type="text"
 						label="Enter the name of the Role"
 						placeholder="Type the name of the Role to create"
 						onChange={(e) => {
 							setCreateRoleInput(e.target.value);
 						}}
+						classNames={{ input: classes.inputField }}
 						value={createRoleInput}
 						required
 					/>
@@ -273,11 +268,11 @@ const Roles: FC = () => {
 						placeholder="Select privilege"
 						label="Select a privilege to assign"
 						data={['admin', 'editor', 'writer', 'reader', 'ingestor']}
-						size="lg"
 						onChange={(value) => {
 							setSelectedPrivilege(value ?? '');
 						}}
 						value={selectedPrivilege}
+						classNames={{ input: classes.selectInput, description: classes.selectDescription }}
 						nothingFoundMessage="No options"
 						required
 					/>
@@ -290,6 +285,7 @@ const Roles: FC = () => {
 								onChange={(value) => {
 									setSelectedStream(value ?? '');
 								}}
+								classNames={{ input: classes.selectInput, description: classes.selectDescription }}
 								value={SelectedStream}
 								searchValue={streamSearchValue}
 								onSearchChange={(value) => setStreamSearchValue(value)}
@@ -308,6 +304,7 @@ const Roles: FC = () => {
 									onChange={(e) => {
 										setTagInput(e.target.value);
 									}}
+									classNames={{ input: classes.inputField }}
 								/>
 							) : (
 								''
@@ -320,7 +317,6 @@ const Roles: FC = () => {
 
 				<Group justify="right" mt={10}>
 					<Button
-						size="md"
 						variant="filled"
 						color="gray"
 						data-testid="create-role-modal-button"
@@ -330,7 +326,6 @@ const Roles: FC = () => {
 						Create
 					</Button>
 					<Button
-						size="md"
 						onClick={handleClose}
 						variant="outline"
 						color="gray"

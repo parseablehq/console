@@ -68,29 +68,6 @@
 	box-shadow: #e3ebfb 0px -50px 20px -30px inset;
 }
 
-.queryCodeEditorText {
-	@media (min-width: 1024px) {
-		/* sm: Styles for HD devices */
-		font-size: 10px;
-	}
-
-	@media (min-width: 1980px) {
-		/* md: Styles for FULL HD devices */
-		font-size: 12px;
-	}
-
-	@media (min-width: 1600px) {
-		/* lg: Styles for 2K devices */
-		font-size: 14px;
-	}
-
-	@media (min-width: 2160px) {
-		/* xl: Styles for 4K devices */
-		font-size: 18px;
-	}
-
-	@media (min-width: 3200px) {
-		/* 2xl: Styles for 8K devices */
-		font-size: 24px;
-	}
+.inputField {
+	border-radius: rem(8px);
 }

@@ -58,6 +58,7 @@ const Login: FC = () => {
 							)}
 							<TextInput
 								mt="sm"
+								classNames={{ input: loginStyles.inputField }}
 								className={formInput}
 								placeholder="J.Doe"
 								label="Username"

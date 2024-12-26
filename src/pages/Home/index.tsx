@@ -136,14 +136,10 @@ const Home: FC = () => {
 						flexDirection: 'row',
 						borderBottom: '1px solid var(--mantine-color-gray-3)',
 					}}>
-					<Text
-						className={classes.title}
-						// style={{ fontSize: '0.8rem' }}
-						fw={500}>
+					<Text style={{ fontSize: '0.8rem' }} fw={500}>
 						All Streams ({filteredMetaData && Object.keys(filteredMetaData).length})
 					</Text>
 					<TextInput
-						className={homeStyles.searchBox}
 						style={{ width: '30%' }}
 						placeholder="Search Stream"
 						leftSection={searchIcon}
@@ -151,6 +147,7 @@ const Home: FC = () => {
 						key="search-stream"
 						value={searchTerm}
 						rightSection={shortcutKeyElement}
+						classNames={{ input: homeStyles.searchBar }}
 						rightSectionWidth={80}
 						onChange={(event) => {
 							setSearchTerm(event.target.value);
@@ -195,7 +192,7 @@ const Home: FC = () => {
 									shouldHideFooter={Array.isArray(userSpecificStreams) && userSpecificStreams.length > 0}
 								/>
 							) : (
-								<Group className={classes.streamList} style={{ margin: '0 1rem', gap: '1rem' }}>
+								<Group style={{ margin: '0 1rem', gap: '1rem' }}>
 									{Object.entries(filteredMetaData || {}).map(([stream, data]) => (
 										<StreamInfo
 											key={stream}
@@ -220,7 +217,7 @@ export default Home;
 const BigNumber = (props: { label: string; value: any; color?: string }) => {
 	return (
 		<Box className={cardStyles.streamBoxCol} style={{ width: '11%' }}>
-			<Text style={{ color: 'black' }}>{props.label}</Text>
+			<Text style={{ color: 'black', fontSize: '0.6rem' }}>{props.label}</Text>
 			<Text fw={700} className={cardStyles.bigNo}>
 				{props.value}
 			</Text>
@@ -273,7 +270,7 @@ const StreamInfo: FC<StreamInfoProps> = (props) => {
 			<Box style={{ width: 200 }}>
 				<Box className={classes.streamBoxCol}>
 					<Tooltip label={stream}>
-						<Text className={classes.streamBoxText} fw={600} style={{ color: 'black' }} lineClamp={1}>
+						<Text fw={600} style={{ color: 'black', fontSize: '0.75rem' }} lineClamp={1}>
 							{stream}
 						</Text>
 					</Tooltip>

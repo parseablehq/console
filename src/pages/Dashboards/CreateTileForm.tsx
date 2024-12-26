@@ -1,6 +1,5 @@
 import { Box, Button, Divider, ScrollArea, Select, Stack, Text, TextInput } from '@mantine/core';
 import classes from './styles/Form.module.css';
-import responsive from '@/styles/responsiveText.module.css';
 import { useForm } from '@mantine/form';
 import { useDashboardsStore, dashboardsStoreReducers } from './providers/DashboardsProvider';
 import { MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -71,9 +70,7 @@ const SectionHeader = (props: { title: string; actionBtnProps?: { label: string;
 	const { title, actionBtnProps } = props;
 	return (
 		<Stack className={classes.sectionHeader}>
-			<Text className={responsive.responsiveTextTileFormText} style={{ fontWeight: 500 }}>
-				{title}
-			</Text>
+			<Text style={{ fontSize: '0.725rem', fontWeight: 500 }}>{title}</Text>
 			{actionBtnProps && (
 				<Button onClick={actionBtnProps.onClick} variant="outline">
 					{actionBtnProps.label}
@@ -105,7 +102,7 @@ const EmptyVizView = (props: { msg: string | null }) => {
 			<IconChartPie stroke={1.2} className={classes.warningIcon} />
 			<Text className={classes.warningText}>{props.msg}</Text>
 			{_.includes([emptyVizWarning, invalidVizConfig], props.msg) && (
-				<Button className={responsive.responsiveTextTileFormText} variant="outline" onClick={openVizModal}>
+				<Button variant="outline" onClick={openVizModal}>
 					{props.msg === emptyVizWarning ? 'Select Visualization' : 'Edit Visualization'}
 				</Button>
 			)}
@@ -179,7 +176,7 @@ const DataPreview = (props: { form: TileFormType }) => {
 								code={JSON.stringify(data?.records || [], null, 2)}
 								style={{ background: 'white' }}
 								language="json"
-								styles={{ copy: { marginLeft: '550px' }, code: { fontSize: responsive.responsiveText } }}
+								styles={{ copy: { marginLeft: '550px' } }}
 								copyLabel="Copy Records"
 							/>
 						</Stack>
@@ -387,7 +384,11 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 					<Select
 						data={allStreams}
 						onChange={onStreamSelect}
-						classNames={{ label: classes.fieldTitle, option: classes.fieldTitle, input: classes.fieldTitle }}
+						classNames={{
+							label: classes.fieldTitle,
+							input: classes.selectInput,
+							description: classes.selectDescription,
+						}}
 						key="stream"
 						placeholder="Select Stream"
 					/>
@@ -404,11 +405,11 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 					{llmActive ? (
 						<Stack gap={0} style={{ flexDirection: 'row', width: '100%' }}>
 							<TextInput
-								classNames={{ input: responsive.responsiveText }}
 								type="text"
 								name="ai_query"
 								id="ai_query"
 								value={aiQuery}
+								classNames={{ input: classes.inputField }}
 								onChange={(e) => setAiQuery(e.target.value)}
 								placeholder={
 									isValidStream
@@ -419,7 +420,6 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 								disabled={!isValidStream}
 							/>
 							<Button
-								className={responsive.responsiveTextTileFormText}
 								variant="filled"
 								color="brandPrimary.4"
 								radius={0}
@@ -448,7 +448,7 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 							options={{
 								scrollBeyondLastLine: false,
 								readOnly: false,
-								fontSize: 14,
+								fontSize: 10,
 								wordWrap: 'on',
 								minimap: { enabled: false },
 								automaticLayout: true,
@@ -468,12 +468,11 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 				}}>
 				<Box>
 					<Button
-						className={responsive.responsiveTextTileFormText}
 						variant="outline"
 						disabled={_.isEmpty(query) || isLoading}
 						loading={isLoading}
 						onClick={validateQuery}
-						w="14rem">
+						w="10rem">
 						{!isQueryValidated ? 'Validate Query' : 'Refetch Data'}
 					</Button>
 				</Box>
@@ -494,7 +493,7 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 			<SectionHeader title="Tile Config" />
 			<Stack style={{ flexDirection: 'row', padding: '0 1rem' }}>
 				<TextInput
-					classNames={{ label: classes.fieldTitle, input: responsive.responsiveText }}
+					classNames={{ label: classes.fieldTitle, input: classes.inputField }}
 					label="Name"
 					key="name"
 					{...form.getInputProps('name')}
@@ -502,23 +501,17 @@ const Config = (props: { form: TileFormType; onChangeValue: (key: string, value:
 				/>
 				<Select
 					data={allDashboards}
-					classNames={{
-						label: classes.fieldTitle,
-						option: responsive.responsiveTextTileFormText,
-						input: responsive.responsiveTextTileFormText,
-					}}
+					classNames={{ label: classes.fieldTitle, input: classes.selectInput, description: classes.selectDescription }}
 					label="Dashboard"
 					key="dashboardId"
 					{...form.getInputProps('dashboardId')}
-					style={{
-						width: '50%',
-					}}
+					style={{ width: '50%' }}
 					disabled
 				/>
 			</Stack>
 			<Stack style={{ padding: '0 1rem' }}>
 				<TextInput
-					classNames={{ label: classes.fieldTitle, input: responsive.responsiveText }}
+					classNames={{ label: classes.fieldTitle, input: classes.inputField }}
 					label="Description (Optional)"
 					key="description"
 					{...form.getInputProps('description')}
@@ -663,23 +656,16 @@ const CreateTileForm = () => {
 			<Stack style={{ justifyContent: 'space-between', padding: '1rem', flexDirection: 'row' }}>
 				<Stack gap={10} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
 					<IconArrowLeft onClick={closeForm} stroke={1.2} size={'1.4rem'} className={classes.arrowLeftIcon} />
-					<Text className={responsive.responsiveTextTileFormText} style={{ fontWeight: 600 }}>
-						{editTileId ? 'Edit Tile' : 'Create Tile'}
-					</Text>
+					<Text style={{ fontSize: '0.8rem', fontWeight: 600 }}>{editTileId ? 'Edit Tile' : 'Create Tile'}</Text>
 				</Stack>
 				<Stack style={{ flexDirection: 'row' }} gap={20}>
 					<Box>
-						<Button
-							className={responsive.responsiveTextTileFormText}
-							onClick={closeForm}
-							disabled={isUpdatingDashboard}
-							variant="outline">
+						<Button onClick={closeForm} disabled={isUpdatingDashboard} variant="outline">
 							Cancel
 						</Button>
 					</Box>
 					<Box>
 						<Button
-							className={responsive.responsiveTextTileFormText}
 							disabled={!form.isValid() || !form.isDirty()}
 							onClick={onCreate}
 							loading={isUpdatingDashboard}

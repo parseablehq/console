@@ -167,6 +167,7 @@ const Toolbar = (props: { isSearching: boolean; setSearching: React.Dispatch<Rea
 				placeholder="Search loaded data with text or jq. For jq input try `jq .[]`"
 				value={searchValue}
 				onChange={onChange}
+				classNames={{ input: classes.inputField }}
 				style={{ '--input-left-section-width': '2rem', '--input-right-section-width': '6rem' }}
 				rightSection={
 					!_.isEmpty(searchValue) &&
