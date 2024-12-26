@@ -387,7 +387,7 @@ const Correlation = () => {
 							{...{ errorMessage, logsLoading, streamsLoading, showTable, hasNoData }}
 							primaryHeaderHeight={primaryHeaderHeight}
 						/>
-						<CorrelationFooter loaded={!logsLoading} hasNoData={true} isFetchingCount={true} />
+						<CorrelationFooter loaded={showTable} hasNoData={hasNoData} isFetchingCount={true} />
 					</>
 				)}
 				{Object.keys(selectedFields).length === 0 && (

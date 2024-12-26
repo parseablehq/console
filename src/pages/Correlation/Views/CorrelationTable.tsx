@@ -83,9 +83,7 @@ const Table = (props: {
 	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
 	const [columns, setColumns] = useState<MRT_ColumnDef<Log, unknown>[]>([]);
 
-	const showTableOrLoader =
-		(logsLoading || streamsLoading || showTable || !errorMessage || !hasNoData) &&
-		columns.length === Object.keys(pageData[0]).length;
+	const showTableOrLoader = logsLoading || streamsLoading || showTable || !errorMessage || !hasNoData;
 
 	useEffect(() => {
 		const updatedColumns = makeColumnsFromSelectedFields(pageData, isSecureHTTPContext, {
@@ -119,7 +117,6 @@ const Table = (props: {
 		},
 		[wrapDisabledColumns],
 	);
-	if (columns.length == 0) return;
 
 	return (
 		<Box className={tableStyles.container}>
