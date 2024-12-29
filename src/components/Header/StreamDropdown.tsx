@@ -40,6 +40,7 @@ const StreamDropdown = () => {
 			classNames={{
 				input: classes.streamInput,
 				description: classes.streamSelectDescription,
+				option: classes.streamInputOptions,
 			}}
 			onChange={handleChange}
 			styles={{

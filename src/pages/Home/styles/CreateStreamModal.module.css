@@ -1,15 +1,15 @@
 .aboutTitle {
-	font-size: 0.8rem;
+	font-size: var(--mantine-font-size-xl);
 	font-weight: 500;
 }
 
 .fieldTitle {
-	font-size: var(--mantine-font-size-md);
+	font-size: var(--mantine-font-size-lg);
 	font-weight: 500;
 }
 
 .fieldDescription {
-	font-size: var(--mantine-font-size-sm);
+	font-size: var(--mantine-font-size-md);
 	color: var(--mantine-color-gray-6);
 }
 
@@ -33,10 +33,11 @@
 
 .inputField {
 	border-radius: rem(8px);
+	font-size: var(--mantine-font-size-lg);
 }
 
 .selectDescription {
-	font-size: 12px;
+	font-size: 14px;
 	font-weight: 500;
 	color: var(--mantine-color-gray-6);
 }
@@ -45,4 +46,5 @@
 	cursor: pointer;
 	border: 1px var(--mantine-color-gray-2) solid;
 	border-radius: rem(8px);
+	font-size: var(--mantine-font-size-lg);
 }

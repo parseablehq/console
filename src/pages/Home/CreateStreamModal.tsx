@@ -190,7 +190,8 @@ const SchemaTypeField = (props: { inputProps: GetInputPropsReturnType }) => {
 				<Text className={styles.fieldDescription}>Choose dynamic or static schema</Text>
 			</Stack>
 			<Select
-				classNames={{ input: styles.selectInput, description: styles.selectDescription }}
+				size="lg"
+				classNames={{ input: styles.selectInput, description: styles.selectDescription, option: styles.inputField }}
 				w={200}
 				data={[dynamicType, staticType]}
 				{...props.inputProps}
@@ -270,7 +271,7 @@ const PartitionField = (props: {
 				setValue={(value: string) => onFieldChange(value)}
 				placeholder="Select or Add"
 				error={props.error}
-				style={{ width: 200 }}
+				style={{ width: 220 }}
 			/>
 		</Stack>
 	);
@@ -302,6 +303,7 @@ const CustomPartitionField = (props: {
 				<Text className={styles.fieldDescription}>Select 3 columns to partition the events</Text>
 			</Stack>
 			<TagsInput
+				size="lg"
 				placeholder={
 					props.isStaticSchema
 						? shouldDisable
@@ -505,6 +507,7 @@ const DetectSchemaSection = (props: { form: StreamFormType }) => {
 					disabled={isDetecting}
 					onChange={onImportFile}
 					fileInputProps={{ accept: '.json' }}
+					classNames={{ input: styles.inputField }}
 				/>
 				<Divider label="or" />
 				<JsonInput
@@ -517,11 +520,13 @@ const DetectSchemaSection = (props: { form: StreamFormType }) => {
 					formatOnBlur
 					value={jsonInputValue}
 					onChange={setJsonInputValue}
+					classNames={{ input: styles.inputField }}
 				/>
 
 				<Stack style={{ alignItems: 'flex-end' }}>
 					<Box>
 						<Button
+							size="md"
 							disabled={_.isEmpty(jsonInputValue)}
 							onClick={detectSchemaHandler}
 							loading={isDetecting}
@@ -580,6 +585,7 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 	return (
 		<Stack>
 			<TextInput
+				size="lg"
 				withAsterisk
 				classNames={{ label: styles.fieldTitle, input: styles.inputField }}
 				styles={{ label: { marginBottom: 8 } }}
@@ -624,7 +630,7 @@ const CreateStreamForm = (props: { toggleModal: () => void }) => {
 			<Stack style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
 				<Box>
 					{!createLogStreamIsLoading ? (
-						<Button w="6rem" onClick={onSubmit} disabled={!_.isEmpty(form.errors)}>
+						<Button w="8rem" size="md" onClick={onSubmit} disabled={!_.isEmpty(form.errors)}>
 							Create
 						</Button>
 					) : (
@@ -652,7 +658,7 @@ const CreateStreamModal: FC = () => {
 			opened={createStreamModalOpen}
 			onClose={closeModal}
 			withinPortal
-			size="xl"
+			size="60rem"
 			centered
 			padding={20}
 			title="Create Stream"

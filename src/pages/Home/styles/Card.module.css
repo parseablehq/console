@@ -25,5 +25,5 @@
 
 .bigNo {
 	color: var(--mantine-color-brandPrimary-4);
-	font-size: 0.75rem;
+	font-size: var(--mantine-font-size-lg);
 }

@@ -31,6 +31,7 @@
 	margin-right: 0.625rem;
 	border-radius: rem(8px);
 	text-transform: capitalize;
+	font-size: var(--mantine-font-size-lg);
 	height: 1.65rem;
 	&:hover {
 		background-color: #e0e0e0;
@@ -40,4 +41,5 @@
 
 .searchBar {
 	border-radius: rem(8px);
+	font-size: var(--mantine-font-size-lg);
 }
