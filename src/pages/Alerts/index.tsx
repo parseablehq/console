@@ -1,7 +1,7 @@
 import { Button, Select, Stack, Text, TextInput, Box, Breadcrumbs, Anchor, Divider, Group } from '@mantine/core';
 import { CodeHighlight } from '@mantine/code-highlight';
 import { useDocumentTitle } from '@mantine/hooks';
-import { useEffect } from 'react';
+// import { useEffect } from 'react';
 // import { IconHomeStats } from '@tabler/icons-react';
 
 const items = [
@@ -38,29 +38,29 @@ const SeverityLevels = ['Low(P3)', 'Medium(P2)', 'High(P1)', 'Critical(P0)'];
 // 	);
 // };
 
-const AlertBuilderPills = () => {
-	return (
-		<Stack
-			style={{
-				padding: '1rem',
-				justifyContent: 'space-around',
-				border: '1px solid gray',
-			}}>
-			<TextInput w="33rem" label="Aggregate" styles={{ label: { paddingBottom: '0.5rem' } }} />
-			<Divider label="Metric" />
-			<Group w="100%" style={{ flexDirection: 'row' }}>
-				<Select w="32%" label="Field" />
-				<Select w="32%" label="Operator" />
-				<TextInput w="32%" label="Value" />
-			</Group>
-			<Divider label="Threshold" />
-			<Group w="100%" style={{ flexDirection: 'row' }}>
-				<Select w="32%" label="Operator" />
-				<TextInput w="32%" label="Value" />
-			</Group>
-		</Stack>
-	);
-};
+// const AlertBuilderPills = () => {
+// 	return (
+// 		<Stack
+// 			style={{
+// 				padding: '1rem',
+// 				justifyContent: 'space-around',
+// 				border: '1px solid gray',
+// 			}}>
+// 			<TextInput w="33rem" label="Aggregate" styles={{ label: { paddingBottom: '0.5rem' } }} />
+// 			<Divider label="Metric" />
+// 			<Group w="100%" style={{ flexDirection: 'row' }}>
+// 				<Select w="32%" label="Field" />
+// 				<Select w="32%" label="Operator" />
+// 				<TextInput w="32%" label="Value" />
+// 			</Group>
+// 			<Divider label="Threshold" />
+// 			<Group w="100%" style={{ flexDirection: 'row' }}>
+// 				<Select w="32%" label="Operator" />
+// 				<TextInput w="32%" label="Value" />
+// 			</Group>
+// 		</Stack>
+// 	);
+// };
 
 export default function Alerts() {
 	useDocumentTitle('Parseable | Alerts');
