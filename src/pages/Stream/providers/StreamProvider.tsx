@@ -87,7 +87,6 @@ type StreamStore = {
 	hotTier: HotTierConfig;
 	info: StreamInfo | object;
 	sideBarOpen: boolean;
-	cacheEnabled: boolean | null;
 };
 
 type LogsStoreReducers = {
@@ -100,7 +99,6 @@ type LogsStoreReducers = {
 	transformAlerts: (alerts: TransformedAlert[]) => Alert[];
 	setCleanStoreForStreamChange: (store: StreamStore) => ReducerOutput;
 	toggleSideBar: (store: StreamStore) => ReducerOutput;
-	setCacheEnabled: (store: StreamStore, enabled: boolean) => ReducerOutput;
 	setStreamInfo: (_store: StreamStore, infoResponse: AxiosResponse<StreamInfo>) => ReducerOutput;
 	setHotTier: (_store: StreamStore, hotTier: HotTierConfig) => ReducerOutput;
 };
@@ -121,7 +119,6 @@ const initialState: StreamStore = {
 	},
 	info: {},
 	sideBarOpen: false,
-	cacheEnabled: null,
 	hotTier: {},
 };
 
@@ -134,12 +131,6 @@ const streamChangeCleanup = (store: StreamStore) => {
 const toggleSideBar = (store: StreamStore) => {
 	return {
 		sideBarOpen: !store.sideBarOpen,
-	};
-};
-
-const setCacheEnabled = (_store: StreamStore, enabled: boolean) => {
-	return {
-		cacheEnabled: enabled,
 	};
 };
 
@@ -316,7 +307,6 @@ const streamStoreReducers: LogsStoreReducers = {
 	setCleanStoreForStreamChange,
 	setStats,
 	toggleSideBar,
-	setCacheEnabled,
 	setStreamInfo,
 	setHotTier,
 };
