@@ -180,26 +180,6 @@ const generatePageData = (store: CorrelationStore, updatedSelectedFields: Record
 		.filter(Boolean);
 };
 
-const updatePageDataForStreams = (
-	combinedFilteredData: Log[],
-	pageNo: number,
-	updatedPerPage: number,
-	selectedFields: Record<string, string[]>,
-) => {
-	return getPageSlice(pageNo, updatedPerPage, combinedFilteredData).map((record) => {
-		const combinedRecord: Record<string, any> = {};
-		Object.keys(selectedFields).forEach((stream) => {
-			const fields = selectedFields[stream];
-			if (record && Array.isArray(fields)) {
-				fields.forEach((field) => {
-					combinedRecord[`${stream}.${field}`] = record[field];
-				});
-			}
-		});
-		return combinedRecord;
-	});
-};
-
 const updateStreamPageData = (
 	store: CorrelationStore,
 	currentPage: number,
@@ -220,6 +200,36 @@ const updateStreamPageData = (
 		});
 	});
 	return updatedPageData;
+};
+
+const generatePaginatedPageData = (
+	store: CorrelationStore,
+	updatedSelectedFields: Record<string, string[]>,
+	pageNo: number,
+	perPage: number,
+) => {
+	const startIndex = (pageNo - 1) * perPage;
+	debugger;
+
+	return Array.from({ length: perPage })
+		.map((_record, offset) => {
+			const index = startIndex + offset;
+			const combinedRecord: Record<string, any> = {};
+
+			Object.entries(updatedSelectedFields).forEach(([stream, fields]) => {
+				const streamData = filterAndSortData(store.tableOpts, store.streamData[stream]?.logData || []);
+				const streamRecord = streamData[index];
+
+				if (streamRecord && Array.isArray(fields)) {
+					fields.forEach((field) => {
+						combinedRecord[`${stream}.${field}`] = streamRecord[field];
+					});
+				}
+			});
+
+			return combinedRecord;
+		})
+		.filter(Boolean);
 };
 
 // Reducer Functions
@@ -291,7 +301,7 @@ const setPageAndPageData = (store: CorrelationStore, pageNo: number, perPage?: n
 		};
 	}
 
-	const updatedPageData = updatePageDataForStreams(combinedFilteredData, pageNo, updatedPerPage, selectedFields);
+	const updatedPageData = generatePaginatedPageData(store, store.selectedFields, pageNo, updatedPerPage);
 
 	return {
 		...store,
