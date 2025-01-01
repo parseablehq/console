@@ -209,7 +209,6 @@ const generatePaginatedPageData = (
 	perPage: number,
 ) => {
 	const startIndex = (pageNo - 1) * perPage;
-	debugger;
 
 	return Array.from({ length: perPage })
 		.map((_record, offset) => {
@@ -270,10 +269,11 @@ const setSelectedFields = (
 
 const setPageAndPageData = (store: CorrelationStore, pageNo: number, perPage?: number): ReducerOutput => {
 	const { tableOpts, selectedFields, streamData, isCorrelatedData } = store;
-	const streamNames = Object.keys(selectedFields);
-	const combinedFilteredData = streamNames.flatMap((streamName) => streamData[streamName]?.logData || []);
+	const updatedPerPage = perPage || tableOpts.perPage;
 
-	if (!combinedFilteredData.length) {
+	const updatedPageData = generatePaginatedPageData(store, selectedFields, pageNo, updatedPerPage);
+
+	if (!updatedPageData.length) {
 		return {
 			...store,
 			tableOpts: {
@@ -286,7 +286,6 @@ const setPageAndPageData = (store: CorrelationStore, pageNo: number, perPage?: n
 		};
 	}
 
-	const updatedPerPage = perPage || tableOpts.perPage;
 	if (isCorrelatedData) {
 		const filteredData = filterAndSortData(tableOpts, streamData['correlatedStream']?.logData || []);
 		return {
@@ -301,7 +300,11 @@ const setPageAndPageData = (store: CorrelationStore, pageNo: number, perPage?: n
 		};
 	}
 
-	const updatedPageData = generatePaginatedPageData(store, store.selectedFields, pageNo, updatedPerPage);
+	const totalPages = Math.max(
+		...Object.values(streamData).map((stream) =>
+			_.isEmpty(stream?.logData) ? 0 : Math.ceil(_.size(stream?.logData) / updatedPerPage),
+		),
+	);
 
 	return {
 		...store,
@@ -310,7 +313,7 @@ const setPageAndPageData = (store: CorrelationStore, pageNo: number, perPage?: n
 			pageData: updatedPageData || [],
 			currentPage: pageNo,
 			perPage: updatedPerPage,
-			totalPages: getTotalPages(combinedFilteredData, updatedPerPage),
+			totalPages,
 		},
 	};
 };
