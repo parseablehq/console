@@ -141,12 +141,11 @@ const IngestorInfo = () => {
 			<Stack flex={1} style={{ justifyContent: 'space-around' }}>
 				<Stack style={{ width: '100%', flexDirection: 'row' }}>
 					<InfoItem title="Address" value={ingestorInfo?.domain_name || '–'} showCopyBtn />
-					<InfoItem title="Cache" value={recentRecord?.cache || '–'} />
 					<InfoItem title="Staging Files" value={HumanizeNumber(recentRecord?.parseable_staging_files || 0)} />
 					<InfoItem title="Staging Size" value={formatBytes(recentRecord?.parseable_storage_size_staging || 0) || ''} />
+					<InfoItem title="Commit" value={recentRecord?.commit || '–'} />
 				</Stack>
 				<Stack style={{ width: '100%', flexDirection: 'row' }}>
-					<InfoItem title="Commit" value={recentRecord?.commit || '–'} />
 					<InfoItem title="Staging Directory" width="75%" value={ingestorInfo?.staging_path || '–'} />
 				</Stack>
 			</Stack>
@@ -170,7 +169,6 @@ const QuerierInfo = () => {
 			<Stack flex={1} style={{ justifyContent: 'space-around' }}>
 				<Stack style={{ width: '100%', flexDirection: 'row' }}>
 					<InfoItem title="Address" value={currentMachine || ''} showCopyBtn />
-					<InfoItem title="Cache" value={instanceConfig?.cache || ''} />
 					<InfoItem title="Commit" value={instanceConfig?.commit || ''} />
 					<InfoItem title="Version" value={instanceConfig?.version || ''} />
 				</Stack>

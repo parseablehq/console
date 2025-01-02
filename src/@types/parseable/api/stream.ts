@@ -36,7 +36,6 @@ export type action = {
 export type StreamInfo = {
 	'created-at': string;
 	'first-event-at': string;
-	cache_enabled: boolean;
 	time_partition: string;
 	static_schema_flag: boolean;
 	time_partition_limit: string;

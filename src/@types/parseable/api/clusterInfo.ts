@@ -34,7 +34,6 @@ export type IngestorQueryRecord = {
 	event_time: string;
 	commit: string;
 	staging: string;
-	cache: string;
 	parseable_storage_size_data: number;
 	parseable_storage_size_staging: number;
 	parseable_lifetime_storage_size_data: number;
