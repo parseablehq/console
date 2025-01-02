@@ -257,6 +257,7 @@ const setAppliedFilterQuery = (_store: FilterStore, query: string | undefined) =
 	};
 };
 
+// clears applied filter query from filter store
 const clearAppliedFilterQuery = (_store: FilterStore) => {
 	return {
 		..._store,
