@@ -8,6 +8,7 @@ import { LogsProvider } from '@/pages/Stream/providers/LogsProvider';
 import { FilterProvider } from '@/pages/Stream/providers/FilterProvider';
 import { StreamProvider } from '@/pages/Stream/providers/StreamProvider';
 import { ClusterProvider } from '@/pages/Systems/providers/ClusterProvider';
+import { CorrelationProvider } from '@/pages/Correlation/providers/CorrelationProvider';
 import { DashbaordsProvider } from '@/pages/Dashboards/providers/DashboardsProvider';
 import Dashboards from '@/pages/Dashboards';
 
@@ -29,6 +30,23 @@ export const DashboardsElement: FC = () => {
 					</FilterProvider>
 				</DashbaordsProvider>
 			</LogsProvider>
+		</SuspensePage>
+	);
+};
+
+const Correlation = lazy(() => import('@/pages/Correlation'));
+export const CorrelationElement: FC = () => {
+	return (
+		<SuspensePage>
+			<StreamProvider>
+				<LogsProvider>
+					<FilterProvider>
+						<CorrelationProvider>
+							<Correlation />
+						</CorrelationProvider>
+					</FilterProvider>
+				</LogsProvider>
+			</StreamProvider>
 		</SuspensePage>
 	);
 };
