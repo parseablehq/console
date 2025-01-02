@@ -239,6 +239,11 @@
 	cursor: pointer;
 	border: 1px var(--mantine-color-gray-2) solid;
 	border-radius: rem(8px);
+	font-size: var(--mantine-font-size-lg);
+}
+
+.streamInputOptions {
+	font-size: var(--mantine-font-size-lg);
 }
 
 .chevronDown {

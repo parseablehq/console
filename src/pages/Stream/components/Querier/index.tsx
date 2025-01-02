@@ -244,7 +244,9 @@ const Querier = () => {
 							justifyContent: 'center',
 							padding: '0 1rem',
 						}}>
-						<Text style={{ fontSize: '0.65rem', fontWeight: 600 }}>{getLabel(viewMode)}</Text>
+						<Text size="md" style={{ fontWeight: 600 }}>
+							{getLabel(viewMode)}
+						</Text>
 						<IconChevronDown size={px('1rem')} stroke={1.8} />
 					</Stack>
 				</Menu.Target>
@@ -252,12 +254,12 @@ const Querier = () => {
 					<Menu.Item
 						onClick={() => onChangeCustQueryViewMode('filters')}
 						style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
-						Filters
+						<Text>Filters</Text>
 					</Menu.Item>
 					<Menu.Item
 						onClick={() => onChangeCustQueryViewMode('sql')}
 						style={{ padding: '0.5rem 2.25rem 0.5rem 0.75rem' }}>
-						SQL
+						<Text>SQL</Text>
 					</Menu.Item>
 				</Menu.Dropdown>
 			</Menu>

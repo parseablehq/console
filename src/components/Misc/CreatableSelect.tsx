@@ -60,6 +60,7 @@ export function CreatableSelect(props: Props) {
 
 	return (
 		<Combobox
+			size="lg"
 			store={combobox}
 			withinPortal={false}
 			onOptionSubmit={(val) => {
@@ -91,6 +92,7 @@ export function CreatableSelect(props: Props) {
 					placeholder={props.placeholder || 'Search or Type'}
 					rightSectionPointerEvents="none"
 					error={props.error}
+					size="lg"
 					style={style}
 				/>
 			</Combobox.Target>
