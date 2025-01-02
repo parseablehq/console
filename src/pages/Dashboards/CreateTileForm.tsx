@@ -302,6 +302,7 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 	const { data: resAIQuery, postLLMQuery } = usePostLLM();
 
 	useEffect(() => {
+		if (!appliedFilterQuery) return;
 		onEditorChange(appliedFilterQuery);
 	}, [appliedFilterQuery]);
 
