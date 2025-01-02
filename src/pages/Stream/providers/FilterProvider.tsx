@@ -147,6 +147,7 @@ type FilterStoreReducers = {
 	toggleSavedFiltersModal: (_store: FilterStore, val: boolean) => ReducerOutput;
 	applySavedFilters: (store: FilterStore, query: QueryType) => ReducerOutput;
 	setAppliedFilterQuery: (store: FilterStore, query: string | undefined) => ReducerOutput;
+	clearAppliedFilterQuery: (_store: FilterStore) => ReducerOutput;
 };
 
 const { Provider: FilterProvider, useStore: useFilterStore } = initContext(initialState);
@@ -253,6 +254,13 @@ const setAppliedFilterQuery = (_store: FilterStore, query: string | undefined) =
 	return {
 		..._store,
 		appliedFilterQuery: query ?? '',
+	};
+};
+
+const clearAppliedFilterQuery = (_store: FilterStore) => {
+	return {
+		..._store,
+		appliedFilterQuery: '',
 	};
 };
 
@@ -394,6 +402,7 @@ const filterStoreReducers: FilterStoreReducers = {
 	toogleQueryParamsFlag,
 	applySavedFilters,
 	setAppliedFilterQuery,
+	clearAppliedFilterQuery,
 };
 
 export { FilterProvider, useFilterStore, filterStoreReducers };

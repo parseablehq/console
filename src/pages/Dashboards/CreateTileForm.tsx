@@ -37,7 +37,7 @@ const noDataWarning = 'No data available for the query';
 const invalidVizConfig = 'Invalid visualization config';
 
 const { toggleVizEditorModal, toggleCreateTileModal } = dashboardsStoreReducers;
-const { toggleSavedFiltersModal, setAppliedFilterQuery } = filterStoreReducers;
+const { toggleSavedFiltersModal, setAppliedFilterQuery, clearAppliedFilterQuery } = filterStoreReducers;
 const { changeStream } = appStoreReducers;
 
 const getErrorMsg = (form: TileFormType, configType: 'basic' | 'data' | 'viz'): string | null => {
@@ -304,6 +304,7 @@ const Query = (props: { form: TileFormType; onChangeValue: (key: string, value: 
 	useEffect(() => {
 		if (!appliedFilterQuery) return;
 		onEditorChange(appliedFilterQuery);
+		setLogsStore((store) => clearAppliedFilterQuery(store));
 	}, [appliedFilterQuery]);
 
 	const onEditorChange = useCallback((query: string | undefined) => {
