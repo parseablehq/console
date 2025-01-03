@@ -298,9 +298,9 @@ export const FilterQueryBuilder = (props: { onClear: () => void; onApply: () => 
 	}, [query.rules, fields]);
 
 	return (
-		<Stack>
+		<Stack style={{ height: '100%' }}>
 			<Stack style={{ alignItems: 'center', justifyContent: 'center' }}>
-				<Stack style={{ height: '100%' }}>
+				<Stack>
 					<Stack style={{ flexDirection: 'row' }} gap={8}>
 						{ruleSets.map((ruleSet, index) => {
 							const shouldShowCombinatorPill = ruleSets.length !== 1 && index + 1 !== ruleSets.length;
@@ -314,7 +314,7 @@ export const FilterQueryBuilder = (props: { onClear: () => void; onApply: () => 
 					</Stack>
 				</Stack>
 			</Stack>
-			<Stack style={{ height: '100%', justifyContent: 'space-around' }}>
+			<Stack style={{ height: '100%', justifyContent: 'space-between' }}>
 				<ScrollArea>
 					<Stack gap={0} pl={20} pr={20}>
 						{query.rules.map((ruleSet, index) => {
