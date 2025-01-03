@@ -37,6 +37,7 @@ import {
 
 type RuleSetProps = {
 	ruleSet: RuleGroupTypeOverride;
+	index: number;
 };
 
 const activeBtnClass = `${classes.toggleBtnText} ${classes.toggleBtnActive}`;
@@ -159,8 +160,10 @@ const CombinatorToggle = (props: CombinatorToggleType) => {
 
 const RuleSet = (props: RuleSetProps) => {
 	const [{ query, fieldTypeMap }, setFilterStore] = useFilterStore((store) => store);
-	const { ruleSet } = props;
+	const { ruleSet, index } = props;
 	const { combinator: ruleSetCombinator, id, rules } = ruleSet;
+
+	console.log(rules);
 
 	const onCombinatorChange = useCallback(
 		(combinator: Combinator) => setFilterStore((store) => updateGroupCombinator(store, id, combinator)),
@@ -181,26 +184,33 @@ const RuleSet = (props: RuleSetProps) => {
 				{rules.map((rule) => {
 					return <RuleView rule={rule} key={rule.id} type={fieldTypeMap[rule.field] || 'text'} groupId={id} />;
 				})}
-				<Button
-					variant="light"
-					className={classes.addConditionBtn}
-					leftSection={
-						<ThemeIcon size="xs" p={0} variant="outline" m={0} style={{ border: 0 }}>
-							<IconPlus stroke={1.5} />
-						</ThemeIcon>
-					}
-					onClick={addCondtionBtnHandler}>
-					Condition
-				</Button>
+				{rules.length < 2 && (
+					<Button
+						variant="light"
+						className={classes.addConditionBtn}
+						leftSection={
+							<ThemeIcon size="xs" p={0} variant="outline" m={0} style={{ border: 0 }}>
+								<IconPlus stroke={1.5} />
+							</ThemeIcon>
+						}
+						onClick={addCondtionBtnHandler}>
+						Condition
+					</Button>
+				)}
 			</Stack>
-			<Stack style={{ height: 80, position: 'relative' }}>
-				<Stack className={classes.ruleSetConnector} />
-				<Stack style={{ position: 'absolute', height: 80, alignItems: 'center', justifyContent: 'center' }}>
-					<Stack className={classes.parentCombinatorToggleContainer}>
-						<CombinatorToggle isOrSelected={query.combinator === 'or'} onCombinatorChange={onParentCombinatorChange} />
+			{index < 1 ? (
+				<Stack style={{ height: 80, position: 'relative' }}>
+					<Stack className={classes.ruleSetConnector} />
+					<Stack style={{ position: 'absolute', height: 80, alignItems: 'center', justifyContent: 'center' }}>
+						<Stack className={classes.parentCombinatorToggleContainer}>
+							<CombinatorToggle
+								isOrSelected={query.combinator === 'or'}
+								onCombinatorChange={onParentCombinatorChange}
+							/>
+						</Stack>
 					</Stack>
 				</Stack>
-			</Stack>
+			) : null}
 		</Stack>
 	);
 };
@@ -292,10 +302,10 @@ export const FilterQueryBuilder = (props: { onClear: () => void; onApply: () => 
 		<Stack style={{ height: '100%', justifyContent: 'space-between' }}>
 			<ScrollArea>
 				<Stack gap={0} pl={20} pr={20}>
-					{query.rules.map((ruleSet) => {
-						return <RuleSet ruleSet={ruleSet} key={ruleSet.id} />;
+					{query.rules.map((ruleSet, index) => {
+						return <RuleSet ruleSet={ruleSet} key={ruleSet.id} index={index} />;
 					})}
-					<AddRuleGroupBtn />
+					{query.rules.length < 2 && <AddRuleGroupBtn />}
 				</Stack>
 			</ScrollArea>
 			<Stack className={classes.footer}>
