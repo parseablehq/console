@@ -163,8 +163,6 @@ const RuleSet = (props: RuleSetProps) => {
 	const { ruleSet, index } = props;
 	const { combinator: ruleSetCombinator, id, rules } = ruleSet;
 
-	console.log(rules);
-
 	const onCombinatorChange = useCallback(
 		(combinator: Combinator) => setFilterStore((store) => updateGroupCombinator(store, id, combinator)),
 		[],
