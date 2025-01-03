@@ -288,6 +288,7 @@ export const FilterQueryBuilder = (props: { onClear: () => void; onApply: () => 
 	const [{ query, isSumbitDisabled, fields }, setFilterStore] = useFilterStore((store) => store);
 	const [{ isQuerySearchActive, viewMode }] = useLogsStore((store) => store.custQuerySearchState);
 	const isFiltersApplied = isQuerySearchActive && viewMode === 'filters';
+	const { combinator, rules: ruleSets } = query;
 
 	useEffect(() => {
 		// init first rule
@@ -297,22 +298,39 @@ export const FilterQueryBuilder = (props: { onClear: () => void; onApply: () => 
 	}, [query.rules, fields]);
 
 	return (
-		<Stack style={{ height: '100%', justifyContent: 'space-between' }}>
-			<ScrollArea>
-				<Stack gap={0} pl={20} pr={20}>
-					{query.rules.map((ruleSet, index) => {
-						return <RuleSet ruleSet={ruleSet} key={ruleSet.id} index={index} />;
-					})}
-					{query.rules.length < 2 && <AddRuleGroupBtn />}
+		<Stack>
+			<Stack style={{ alignItems: 'center', justifyContent: 'center' }}>
+				<Stack style={{ height: '100%' }}>
+					<Stack style={{ flexDirection: 'row' }} gap={8}>
+						{ruleSets.map((ruleSet, index) => {
+							const shouldShowCombinatorPill = ruleSets.length !== 1 && index + 1 !== ruleSets.length;
+							return (
+								<Stack style={{ flexDirection: 'row' }} gap={8} key={ruleSet.id}>
+									<RuleSetPills ruleSet={ruleSet} />
+									{shouldShowCombinatorPill && <Pill className={classes.parentCombinatorPill}>{combinator}</Pill>}
+								</Stack>
+							);
+						})}
+					</Stack>
 				</Stack>
-			</ScrollArea>
-			<Stack className={classes.footer}>
-				<Button onClick={props.onClear} disabled={!isFiltersApplied} variant="outline">
-					Clear
-				</Button>
-				<Button onClick={() => props.onApply()} disabled={isSumbitDisabled}>
-					Apply
-				</Button>
+			</Stack>
+			<Stack style={{ height: '100%', justifyContent: 'space-around' }}>
+				<ScrollArea>
+					<Stack gap={0} pl={20} pr={20}>
+						{query.rules.map((ruleSet, index) => {
+							return <RuleSet ruleSet={ruleSet} key={ruleSet.id} index={index} />;
+						})}
+						{query.rules.length < 2 && <AddRuleGroupBtn />}
+					</Stack>
+				</ScrollArea>
+				<Stack className={classes.footer}>
+					<Button onClick={props.onClear} disabled={!isFiltersApplied} variant="outline">
+						Clear
+					</Button>
+					<Button onClick={() => props.onApply()} disabled={isSumbitDisabled}>
+						Apply
+					</Button>
+				</Stack>
 			</Stack>
 		</Stack>
 	);
