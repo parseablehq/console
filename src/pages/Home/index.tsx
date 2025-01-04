@@ -120,9 +120,11 @@ const Home: FC = () => {
 
 	const searchIcon = <IconSearch size={px('0.8rem')} />;
 	const shortcutKeyElement = (
-		<span style={{ marginBottom: '3px' }}>
-			<Kbd style={{ borderBottom: '1px solid #dee2e6' }}>Ctrl + K</Kbd>
-		</span>
+		<Stack style={{ borderRadius: '8px' }}>
+			<Kbd size="0.6rem" style={{ borderBottom: '1px solid #dee2e6', fontSize: '8px' }}>
+				Ctrl + K
+			</Kbd>
+		</Stack>
 	);
 
 	return (
@@ -136,10 +138,11 @@ const Home: FC = () => {
 						flexDirection: 'row',
 						borderBottom: '1px solid var(--mantine-color-gray-3)',
 					}}>
-					<Text style={{ fontSize: '0.8rem' }} fw={500}>
+					<Text size="lg" fw={500}>
 						All Streams ({filteredMetaData && Object.keys(filteredMetaData).length})
 					</Text>
 					<TextInput
+						size="lg"
 						style={{ width: '30%' }}
 						placeholder="Search Stream"
 						leftSection={searchIcon}
@@ -217,7 +220,9 @@ export default Home;
 const BigNumber = (props: { label: string; value: any; color?: string }) => {
 	return (
 		<Box className={cardStyles.streamBoxCol} style={{ width: '11%' }}>
-			<Text style={{ color: 'black', fontSize: '0.6rem' }}>{props.label}</Text>
+			<Text size="md" style={{ color: 'black' }}>
+				{props.label}
+			</Text>
 			<Text fw={700} className={cardStyles.bigNo}>
 				{props.value}
 			</Text>
@@ -270,7 +275,7 @@ const StreamInfo: FC<StreamInfoProps> = (props) => {
 			<Box style={{ width: 200 }}>
 				<Box className={classes.streamBoxCol}>
 					<Tooltip label={stream}>
-						<Text fw={600} style={{ color: 'black', fontSize: '0.75rem' }} lineClamp={1}>
+						<Text fw={600} size="xl" style={{ color: 'black' }} lineClamp={1}>
 							{stream}
 						</Text>
 					</Tooltip>
