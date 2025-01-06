@@ -15,7 +15,7 @@ export type MetaData = {
 
 // until dedicated endpoint been provided - fetch one by one
 export const useGetStreamMetadata = () => {
-	const [isLoading, setLoading] = useState<boolean>(true);
+	const [isLoading, setLoading] = useState<boolean>(false);
 	const [error, setError] = useState<boolean>(false);
 	const [metaData, setMetadata] = useState<MetaData | null>(null);
 	const [userRoles] = useAppStore((store) => store.userRoles);
@@ -71,6 +71,7 @@ export const useGetStreamMetadata = () => {
 				}, {});
 
 				setMetadata(metadata);
+				setLoading(false);
 				setError(encounteredError);
 			} catch {
 				setError(true);
