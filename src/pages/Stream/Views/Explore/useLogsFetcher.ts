@@ -5,6 +5,7 @@ import { useQueryLogs } from '@/hooks/useQueryLogs';
 import { useFetchCount } from '@/hooks/useQueryResult';
 import { useStreamStore } from '../../providers/StreamProvider';
 import { AxiosError } from 'axios';
+import _ from 'lodash';
 
 const { setCleanStoreForStreamChange } = logsStoreReducers;
 const { syncTimeRange } = appStoreReducers;
@@ -19,7 +20,10 @@ const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean })
 	const [{ info }] = useStreamStore((store) => store);
 	const firstEventAt = 'first-event-at' in info ? info['first-event-at'] : undefined;
 
-	const errorMessage = (queryLogsError as AxiosError)?.response?.data as string;
+	const errorMessage =
+		_.isEmpty((queryLogsError as AxiosError)?.response?.data as string)
+			? 'Failed to query logs'
+			: (queryLogsError as AxiosError)?.response?.data;
 
 	const { refetchCount, isCountLoading, isCountRefetching } = useFetchCount();
 	const hasContentLoaded = schemaLoading === false && logsLoading === false;
