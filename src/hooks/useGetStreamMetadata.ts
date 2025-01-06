@@ -71,7 +71,6 @@ export const useGetStreamMetadata = () => {
 				}, {});
 
 				setMetadata(metadata);
-				setLoading(false);
 				setError(encounteredError);
 			} catch {
 				setError(true);
