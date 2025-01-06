@@ -37,6 +37,7 @@ import {
 
 type RuleSetProps = {
 	ruleSet: RuleGroupTypeOverride;
+	index: number;
 };
 
 const activeBtnClass = `${classes.toggleBtnText} ${classes.toggleBtnActive}`;
@@ -159,7 +160,7 @@ const CombinatorToggle = (props: CombinatorToggleType) => {
 
 const RuleSet = (props: RuleSetProps) => {
 	const [{ query, fieldTypeMap }, setFilterStore] = useFilterStore((store) => store);
-	const { ruleSet } = props;
+	const { ruleSet, index } = props;
 	const { combinator: ruleSetCombinator, id, rules } = ruleSet;
 
 	const onCombinatorChange = useCallback(
@@ -181,26 +182,33 @@ const RuleSet = (props: RuleSetProps) => {
 				{rules.map((rule) => {
 					return <RuleView rule={rule} key={rule.id} type={fieldTypeMap[rule.field] || 'text'} groupId={id} />;
 				})}
-				<Button
-					variant="light"
-					className={classes.addConditionBtn}
-					leftSection={
-						<ThemeIcon size="xs" p={0} variant="outline" m={0} style={{ border: 0 }}>
-							<IconPlus stroke={1.5} />
-						</ThemeIcon>
-					}
-					onClick={addCondtionBtnHandler}>
-					Condition
-				</Button>
+				{rules.length < 2 && (
+					<Button
+						variant="light"
+						className={classes.addConditionBtn}
+						leftSection={
+							<ThemeIcon size="xs" p={0} variant="outline" m={0} style={{ border: 0 }}>
+								<IconPlus stroke={1.5} />
+							</ThemeIcon>
+						}
+						onClick={addCondtionBtnHandler}>
+						Condition
+					</Button>
+				)}
 			</Stack>
-			<Stack style={{ height: 80, position: 'relative' }}>
-				<Stack className={classes.ruleSetConnector} />
-				<Stack style={{ position: 'absolute', height: 80, alignItems: 'center', justifyContent: 'center' }}>
-					<Stack className={classes.parentCombinatorToggleContainer}>
-						<CombinatorToggle isOrSelected={query.combinator === 'or'} onCombinatorChange={onParentCombinatorChange} />
+			{index < 1 ? (
+				<Stack style={{ height: 80, position: 'relative' }}>
+					<Stack className={classes.ruleSetConnector} />
+					<Stack style={{ position: 'absolute', height: 80, alignItems: 'center', justifyContent: 'center' }}>
+						<Stack className={classes.parentCombinatorToggleContainer}>
+							<CombinatorToggle
+								isOrSelected={query.combinator === 'or'}
+								onCombinatorChange={onParentCombinatorChange}
+							/>
+						</Stack>
 					</Stack>
 				</Stack>
-			</Stack>
+			) : null}
 		</Stack>
 	);
 };
@@ -280,6 +288,7 @@ export const FilterQueryBuilder = (props: { onClear: () => void; onApply: () => 
 	const [{ query, isSumbitDisabled, fields }, setFilterStore] = useFilterStore((store) => store);
 	const [{ isQuerySearchActive, viewMode }] = useLogsStore((store) => store.custQuerySearchState);
 	const isFiltersApplied = isQuerySearchActive && viewMode === 'filters';
+	const { combinator, rules: ruleSets } = query;
 
 	useEffect(() => {
 		// init first rule
@@ -289,22 +298,39 @@ export const FilterQueryBuilder = (props: { onClear: () => void; onApply: () => 
 	}, [query.rules, fields]);
 
 	return (
-		<Stack style={{ height: '100%', justifyContent: 'space-between' }}>
-			<ScrollArea>
-				<Stack gap={0} pl={20} pr={20}>
-					{query.rules.map((ruleSet) => {
-						return <RuleSet ruleSet={ruleSet} key={ruleSet.id} />;
-					})}
-					<AddRuleGroupBtn />
+		<Stack style={{ height: '100%' }}>
+			<ScrollArea scrollbarSize={6} scrollHideDelay={0} offsetScrollbars={false}>
+				<Stack style={{ alignItems: 'center', justifyContent: 'center' }}>
+					<Stack style={{ flexDirection: 'row' }} gap={8}>
+						{ruleSets.map((ruleSet, index) => {
+							const shouldShowCombinatorPill = ruleSets.length !== 1 && index + 1 !== ruleSets.length;
+							return (
+								<Stack style={{ flexDirection: 'row' }} gap={8} key={ruleSet.id}>
+									<RuleSetPills ruleSet={ruleSet} />
+									{shouldShowCombinatorPill && <Pill className={classes.parentCombinatorPill}>{combinator}</Pill>}
+								</Stack>
+							);
+						})}
+					</Stack>
 				</Stack>
 			</ScrollArea>
-			<Stack className={classes.footer}>
-				<Button onClick={props.onClear} disabled={!isFiltersApplied} variant="outline">
-					Clear
-				</Button>
-				<Button onClick={() => props.onApply()} disabled={isSumbitDisabled}>
-					Apply
-				</Button>
+			<Stack style={{ height: '100%', justifyContent: 'space-between' }}>
+				<ScrollArea>
+					<Stack gap={0} pl={20} pr={20}>
+						{query.rules.map((ruleSet, index) => {
+							return <RuleSet ruleSet={ruleSet} key={ruleSet.id} index={index} />;
+						})}
+						{query.rules.length < 2 && <AddRuleGroupBtn />}
+					</Stack>
+				</ScrollArea>
+				<Stack className={classes.footer}>
+					<Button onClick={props.onClear} disabled={!isFiltersApplied} variant="outline">
+						Clear
+					</Button>
+					<Button onClick={() => props.onApply()} disabled={isSumbitDisabled}>
+						Apply
+					</Button>
+				</Stack>
 			</Stack>
 		</Stack>
 	);
