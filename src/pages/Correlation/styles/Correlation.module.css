@@ -133,7 +133,6 @@
 .selectionWrapper {
 	overflow-y: scroll;
 	width: 100%;
-	max-height: calc(100vh - 40px);
 }
 
 .topSectionWrapper {

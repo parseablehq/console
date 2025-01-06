@@ -8,7 +8,7 @@ import { QueryEngineType } from '@/@types/parseable/api/about';
 import { FilterQueryBuilder } from '@/utils/queryBuilder';
 import { formatQuery } from 'react-querybuilder';
 
-export const CORRELATION_LOAD_LIMIT = 250;
+export const CORRELATION_LOAD_LIMIT = 1000;
 
 export const STREAM_COLORS = ['#FDA4AF', '#c084fc'];
 export const STREAM_HEADER_COLORS = ['#9F1239', '#7E22CE'];
@@ -42,6 +42,7 @@ type CorrelationStore = {
 	selectedFields: Record<string, string[]>;
 	correlationCondition: string;
 	isCorrelatedData: boolean;
+	allPageData: any;
 	tableOpts: {
 		disabledColumns: string[];
 		wrapDisabledColumns: string[];
@@ -88,6 +89,7 @@ const initialState: CorrelationStore = {
 	selectedFields: {},
 	correlationCondition: '',
 	isCorrelatedData: false,
+	allPageData: [],
 	tableOpts: {
 		disabledColumns: [],
 		wrapDisabledColumns: [],
@@ -127,7 +129,7 @@ const parseQuery = (queryEngine: QueryEngineType, query: QueryType, currentStrea
 	return { where, parsedQuery: filterQueryBuilder.getQuery() };
 };
 
-const filterAndSortData = (
+export const filterAndSortData = (
 	opts: { sortOrder: 'asc' | 'desc'; sortKey: string; filters: Record<string, string[]> },
 	data: Log[],
 ) => {
@@ -355,10 +357,9 @@ const setStreamData = (store: CorrelationStore, currentStream: string, data: Log
 		...store.streamData,
 		[currentStream]: { logData: data },
 	};
-
 	// Recompute filtered and sliced data for the table
 	const filteredData = filterAndSortData(store.tableOpts, updatedStreamData[currentStream]?.logData || []);
-	const currentPage = store.tableOpts.currentPage || 1;
+	const currentPage = 1;
 
 	if (store.isCorrelatedData) {
 		return {

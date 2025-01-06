@@ -19,12 +19,12 @@ import CorrelationFooter from './Views/CorrelationFooter';
 import TimeRange from '@/components/Header/TimeRange';
 import RefreshInterval from '@/components/Header/RefreshInterval';
 import RefreshNow from '@/components/Header/RefreshNow';
-import ShareButton from '@/components/Header/ShareButton';
 import MultiEventTimeLineGraph from './components/MultiEventTimeLineGraph';
 import { CorrelationEmptyPlaceholder } from './components/CorrelationEmptyPlaceholder';
 import { StreamSelectBox } from './components/StreamSelectBox';
 import { CorrelationFieldItem } from './components/CorrelationFieldItem';
 import { MaximizeButton } from '../Stream/components/PrimaryToolbar';
+import ShareButton from './components/ShareButton';
 
 const { changeStream } = appStoreReducers;
 const { deleteStreamData, setSelectedFields, deleteSelectedField, setCorrelationCondition, setIsCorrelatedFlag } =
@@ -252,7 +252,10 @@ const Correlation = () => {
 					)}
 				</div>
 			</div>
-			<Stack gap={0} className={classes.selectionWrapper}>
+			<Stack
+				gap={0}
+				style={{ maxHeight: maximized ? '100vh' : `calc(100vh - ${PRIMARY_HEADER_HEIGHT}px)` }}
+				className={classes.selectionWrapper}>
 				<Stack className={classes.topSectionWrapper}>
 					<Stack>
 						<div className={classes.fieldsJoinsWrapper} style={{ height: STREAM_PRIMARY_TOOLBAR_HEIGHT }}>

@@ -13,12 +13,15 @@ import {
 import { notifyError } from '@/utils/notification';
 import { useQuery } from 'react-query';
 import { LogsResponseWithHeaders } from '@/@types/parseable/api/query';
+import { useRef, useEffect } from 'react';
 
 const { setStreamData } = correlationStoreReducers;
 
 export const useFetchStreamData = () => {
 	const [error, setError] = useMountedState<string | null>(null);
-	const [{ selectedFields, correlationCondition, fields }, setCorrelationStore] = useCorrelationStore((store) => store);
+	const [{ selectedFields, correlationCondition, fields, streamData }, setCorrelationStore] = useCorrelationStore(
+		(store) => store,
+	);
 	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
 	const [streamInfo] = useStreamStore((store) => store.info);
 	const [currentStream] = useAppStore((store) => store.currentStream);
@@ -30,6 +33,16 @@ export const useFetchStreamData = () => {
 		},
 	] = useCorrelationStore((store) => store);
 	const streamNames = Object.keys(fields);
+
+	const prevTimeRangeRef = useRef({ startTime: timeRange.startTime, endTime: timeRange.endTime });
+
+	const hasTimeRangeChanged =
+		prevTimeRangeRef.current.startTime !== timeRange.startTime ||
+		prevTimeRangeRef.current.endTime !== timeRange.endTime;
+
+	useEffect(() => {
+		prevTimeRangeRef.current = { startTime: timeRange.startTime, endTime: timeRange.endTime };
+	}, [timeRange.startTime, timeRange.endTime]);
 
 	const defaultQueryOpts = {
 		queryEngine,
@@ -49,7 +62,11 @@ export const useFetchStreamData = () => {
 	} = useQuery(
 		['fetch-logs', defaultQueryOpts],
 		async () => {
-			const fetchPromises = streamNames.map((streamName) => {
+			const streamsToFetch = hasTimeRangeChanged
+				? streamNames
+				: streamNames.filter((streamName) => !Object.keys(streamData).includes(streamName));
+
+			const fetchPromises = streamsToFetch.map((streamName) => {
 				const queryOpts = { ...defaultQueryOpts, streamNames: [streamName] };
 				return getStreamDataWithHeaders(queryOpts);
 			});
