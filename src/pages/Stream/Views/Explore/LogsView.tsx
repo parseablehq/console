@@ -15,7 +15,7 @@ const { toogleQueryParamsFlag } = filterStoreReducers;
 const LogsView = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
 	const [, setFilterStore] = useFilterStore((store) => store);
 	const { schemaLoading, infoLoading } = props;
-	const { errorMessage, hasNoData, showTable, isFetchingCount, logsLoading } = useLogsFetcher({
+	const { hasNoData, showTable, isFetchingCount, logsLoading, queryLogsError } = useLogsFetcher({
 		schemaLoading,
 		infoLoading,
 	});
@@ -24,7 +24,7 @@ const LogsView = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
 	const { currentPage, targetPage, headers, targetColumns } = tableOpts;
 	const [viewMode, setLogsStore] = useLogsStore((store) => store.viewMode);
 	const viewOpts = {
-		errorMessage,
+		errorMessage: queryLogsError,
 		hasNoData,
 		showTable,
 		isFetchingCount,

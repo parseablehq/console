@@ -4,6 +4,7 @@ import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { useQueryLogs } from '@/hooks/useQueryLogs';
 import { useFetchCount } from '@/hooks/useQueryResult';
 import { useStreamStore } from '../../providers/StreamProvider';
+import { AxiosError } from 'axios';
 
 const { setCleanStoreForStreamChange } = logsStoreReducers;
 const { syncTimeRange } = appStoreReducers;
@@ -14,9 +15,11 @@ const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean })
 	const [{ timeRange }, setAppStore] = useAppStore((store) => store);
 	const [{ tableOpts }, setLogsStore] = useLogsStore((store) => store);
 	const { currentOffset, currentPage, pageData } = tableOpts;
-	const { getQueryData, loading: logsLoading, error: errorMessage } = useQueryLogs();
+	const { getQueryData, loading: logsLoading, queryLogsError } = useQueryLogs();
 	const [{ info }] = useStreamStore((store) => store);
 	const firstEventAt = 'first-event-at' in info ? info['first-event-at'] : undefined;
+
+	const errorMessage = (queryLogsError as AxiosError)?.response?.data as string;
 
 	const { refetchCount, isCountLoading, isCountRefetching } = useFetchCount();
 	const hasContentLoaded = schemaLoading === false && logsLoading === false;
@@ -47,7 +50,7 @@ const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean })
 
 	return {
 		logsLoading: infoLoading || logsLoading,
-		errorMessage,
+		queryLogsError: errorMessage,
 		hasContentLoaded,
 		hasNoData,
 		showTable,
