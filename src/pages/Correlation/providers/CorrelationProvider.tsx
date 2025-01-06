@@ -43,6 +43,7 @@ type CorrelationStore = {
 	correlationCondition: string;
 	isCorrelatedData: boolean;
 	allPageData: any;
+	correlationId: string;
 	tableOpts: {
 		disabledColumns: string[];
 		wrapDisabledColumns: string[];
@@ -81,6 +82,7 @@ type CorrelationStoreReducers = {
 		query: QueryType,
 		currentStream: string,
 	) => { where: string; parsedQuery: string };
+	setCorrelationId: (store: CorrelationStore, id: string) => ReducerOutput;
 };
 
 const initialState: CorrelationStore = {
@@ -90,6 +92,7 @@ const initialState: CorrelationStore = {
 	correlationCondition: '',
 	isCorrelatedData: false,
 	allPageData: [],
+	correlationId: '',
 	tableOpts: {
 		disabledColumns: [],
 		wrapDisabledColumns: [],
@@ -234,6 +237,13 @@ const generatePaginatedPageData = (
 };
 
 // Reducer Functions
+
+const setCorrelationId = (store: CorrelationStore, id: string) => {
+	return {
+		...store,
+		correlationId: id,
+	};
+};
 
 const setIsCorrelatedFlag = (store: CorrelationStore, flag: boolean) => {
 	return {
@@ -522,6 +532,7 @@ const correlationStoreReducers: CorrelationStoreReducers = {
 	setCorrelationCondition,
 	parseQuery,
 	setIsCorrelatedFlag,
+	setCorrelationId,
 };
 
 export { CorrelationProvider, useCorrelationStore, correlationStoreReducers };

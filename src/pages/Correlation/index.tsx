@@ -25,6 +25,8 @@ import { StreamSelectBox } from './components/StreamSelectBox';
 import { CorrelationFieldItem } from './components/CorrelationFieldItem';
 import { MaximizeButton } from '../Stream/components/PrimaryToolbar';
 import ShareButton from './components/ShareButton';
+import useParamsController from './hooks/useParamsController';
+import _ from 'lodash';
 
 const { changeStream } = appStoreReducers;
 const { deleteStreamData, setSelectedFields, deleteSelectedField, setCorrelationCondition, setIsCorrelatedFlag } =
@@ -37,6 +39,7 @@ const Correlation = () => {
 	const [{ fields, selectedFields, tableOpts, isCorrelatedData }, setCorrelationData] = useCorrelationStore(
 		(store) => store,
 	);
+	const { isStoreSynced } = useParamsController();
 	const [timeRange] = useAppStore((store) => store.timeRange);
 	const [currentStream, setAppStore] = useAppStore((store) => store.currentStream);
 	const [maximized] = useAppStore((store) => store.maximized);
@@ -51,6 +54,7 @@ const Correlation = () => {
 	const [select1Value, setSelect1Value] = useState<string | null>(null);
 	const [select2Value, setSelect2Value] = useState<string | null>(null);
 	const [isCorrelationEnabled, setIsCorrelationEnabled] = useState<boolean>(false);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	// Derived Constants
 	const primaryHeaderHeight = maximized
@@ -65,6 +69,11 @@ const Correlation = () => {
 		})) ?? [];
 
 	// Effects
+	useEffect(() => {
+		if (isStoreSynced) {
+			setIsLoading(false);
+		}
+	}, [isStoreSynced]);
 	useEffect(() => {
 		if (currentStream && streamNames.length > 0 && Object.keys(fields).includes(currentStream)) {
 			getFetchStreamData();
@@ -131,6 +140,8 @@ const Correlation = () => {
 	const hasContentLoaded = !schemaLoading && !logsLoading && !streamsLoading;
 	const hasNoData = hasContentLoaded && !errorMessage && tableOpts.pageData.length === 0;
 	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
+
+	if (isLoading) return;
 
 	return (
 		<Box className={classes.correlationWrapper}>
