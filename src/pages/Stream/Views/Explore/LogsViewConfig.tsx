@@ -323,6 +323,7 @@ const LogsViewConfig = (props: { schemaLoading: boolean; logsLoading: boolean; i
 			ref={divRef}
 			style={{
 				borderRight: '1px solid var(--mantine-color-gray-2)',
+				display: sideBarOpen ? 'none' : 'block',
 				width: sideBarOpen ? 0 : LOGS_CONFIG_SIDEBAR_WIDTH,
 				transition: 'width 0.5s',
 			}}>
