@@ -4,7 +4,6 @@ import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { useQueryLogs } from '@/hooks/useQueryLogs';
 import { useFetchCount } from '@/hooks/useQueryResult';
 import { useStreamStore } from '../../providers/StreamProvider';
-import { AxiosError } from 'axios';
 import _ from 'lodash';
 
 const { setCleanStoreForStreamChange } = logsStoreReducers;
@@ -20,14 +19,10 @@ const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean })
 	const [{ info }] = useStreamStore((store) => store);
 	const firstEventAt = 'first-event-at' in info ? info['first-event-at'] : undefined;
 
-	const errorMessage = _.isEmpty((queryLogsError as AxiosError)?.response?.data as string)
-		? 'Failed to query logs'
-		: ((queryLogsError as AxiosError)?.response?.data as string);
-
 	const { refetchCount, isCountLoading, isCountRefetching } = useFetchCount();
 	const hasContentLoaded = schemaLoading === false && logsLoading === false;
-	const hasNoData = hasContentLoaded && !errorMessage && pageData.length === 0;
-	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
+	const hasNoData = hasContentLoaded && !queryLogsError && pageData.length === 0;
+	const showTable = hasContentLoaded && !hasNoData && !queryLogsError;
 
 	useEffect(() => {
 		setAppStore(syncTimeRange);
@@ -53,7 +48,7 @@ const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean })
 
 	return {
 		logsLoading: infoLoading || logsLoading,
-		queryLogsError: errorMessage,
+		queryLogsError,
 		hasContentLoaded,
 		hasNoData,
 		showTable,
