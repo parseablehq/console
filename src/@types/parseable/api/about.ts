@@ -1,4 +1,4 @@
-export type QueryEngineType = 'Trino' | 'Parseable' | undefined;
+export type QueryEngineType = 'Parseable' | undefined;
 
 export type AboutData = {
 	commit: string;

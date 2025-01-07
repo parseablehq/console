@@ -44,7 +44,7 @@ const SavedFilterItem = (props: {
 	onSqlSearchApply: (query: string, id: string, time_filter: null | { from: string; to: string }) => void;
 	onFilterBuilderQueryApply: (query: QueryType, id: string) => void;
 	currentStream: string;
-	queryEngine: 'Parseable' | 'Trino' | undefined;
+	queryEngine: 'Parseable' | undefined;
 	savedFilterId: string | null;
 	isStoredAndCurrentTimeRangeAreSame: (from: string, to: string) => boolean;
 	hardRefresh: () => void;

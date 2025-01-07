@@ -18,7 +18,6 @@ type QueryData = {
 	logsQuery: LogsQuery;
 	query: string;
 	onSuccess?: () => void;
-	useTrino?: boolean;
 };
 
 export const useQueryResult = () => {

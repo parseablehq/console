@@ -136,7 +136,7 @@ type FilterStoreReducers = {
 	updateRule: (store: FilterStore, groupId: string, ruleId: string, updateOpts: RuleUpdateOpts) => ReducerOutput;
 	updateQuery: (store: FilterStore, query: QueryType) => ReducerOutput;
 	parseQuery: (
-		queryEngine: 'Parseable' | 'Trino' | undefined,
+		queryEngine: 'Parseable' | undefined,
 		query: QueryType,
 		currentStream: string,
 		timeRangeOpts?: { startTime: Date; endTime: Date; timePartitionColumn: string },
