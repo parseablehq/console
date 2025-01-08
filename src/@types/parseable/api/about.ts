@@ -1,10 +1,12 @@
 export type QueryEngineType = 'Trino' | 'Parseable' | undefined;
 
+export type LicenseType = 'Parseable Enterprise v1' | 'AGPL-3.0-only' | undefined;
+
 export type AboutData = {
 	commit: string;
 	deploymentId: string;
 	latestVersion: string;
-	license: string;
+	license: LicenseType;
 	mode: string;
 	staging: string;
 	store: { type: string; path: string };
