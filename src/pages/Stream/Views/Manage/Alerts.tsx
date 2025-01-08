@@ -656,7 +656,6 @@ const AlertList = (props: {
 
 const Alerts = (props: {
 	isLoading: boolean;
-	schemaLoading: boolean;
 	isError: boolean;
 	hasAlertsAccess: boolean;
 	updateAlerts: ({ config, onSuccess }: { config: any; onSuccess?: () => void }) => void;
@@ -685,11 +684,7 @@ const Alerts = (props: {
 			) : hideAlerts ? (
 				<RestrictedView msg={!props.isStandAloneMode ? 'Alerts is unavailable on distributed mode.' : ''} />
 			) : (
-				<AlertList
-					selectAlert={selectAlert}
-					isLoading={props.isLoading || props.schemaLoading}
-					updateAlerts={props.updateAlerts}
-				/>
+				<AlertList selectAlert={selectAlert} isLoading={props.isLoading} updateAlerts={props.updateAlerts} />
 			)}
 		</Stack>
 	);

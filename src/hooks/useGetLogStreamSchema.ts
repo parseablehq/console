@@ -16,7 +16,7 @@ export const useGetStreamSchema = (opts: { streamName: string }) => {
 		() => getLogStreamSchema(streamName),
 		{
 			retry: false,
-			enabled: streamName !== '',
+			enabled: false,
 			refetchOnWindowFocus: false,
 			onSuccess: (data) => {
 				setErrorMesssage(null);
