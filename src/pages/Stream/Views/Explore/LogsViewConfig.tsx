@@ -304,7 +304,7 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 	);
 };
 
-const LogsViewConfig = (props: { schemaLoading: boolean; logsLoading: boolean; infoLoading: boolean }) => {
+const LogsViewConfig = (props: { isFetchingCount: boolean; logsLoading: boolean; isStoreSyncing: boolean }) => {
 	const [configViewType] = useLogsStore((store) => store.tableOpts.configViewType);
 	const [maximized] = useAppStore((store) => store.maximized);
 	const [{ sideBarOpen }, setStreamStore] = useStreamStore((store) => store);
@@ -332,9 +332,9 @@ const LogsViewConfig = (props: { schemaLoading: boolean; logsLoading: boolean; i
 				className={classes.container}>
 				<Header />
 				{configViewType === 'schema' ? (
-					<SchemaList isLoading={props.schemaLoading || props.infoLoading} />
+					<SchemaList isLoading={props.isFetchingCount || props.isStoreSyncing} />
 				) : (
-					<ColumnsList isLoading={props.logsLoading || props.infoLoading} />
+					<ColumnsList isLoading={props.logsLoading || props.isStoreSyncing || props.isFetchingCount} />
 				)}
 			</Stack>
 			<Stack className={classes.collapseBtn}>

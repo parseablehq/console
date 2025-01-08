@@ -11,7 +11,6 @@ import { useFilterStore, filterStoreReducers } from '../providers/FilterProvider
 import { LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 import _ from 'lodash';
 import timeRangeUtils from '@/utils/timeRangeUtils';
-import { useStreamStore } from '../providers/StreamProvider';
 
 const { setTimeRange } = appStoreReducers;
 const { parseQuery } = filterStoreReducers;
@@ -268,18 +267,17 @@ const EventTimeLineGraph = () => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
 	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
+	const [{ totalCount }] = useLogsStore((store) => store.tableOpts);
 	const [{ activeMode, custSearchQuery }, setLogStore] = useLogsStore((store) => store.custQuerySearchState);
 	const [{ interval, startTime, endTime }] = useAppStore((store) => store.timeRange);
 	const [localStream, setLocalStream] = useState<string | null>('');
-	const [{ info }] = useStreamStore((store) => store);
-	const firstEventAt = 'first-event-at' in info ? info['first-event-at'] : undefined;
 
 	useEffect(() => {
 		setLocalStream(currentStream);
 	}, [currentStream]);
 
 	useEffect(() => {
-		if (!localStream || localStream.length === 0 || !firstEventAt) return;
+		if (!localStream || localStream.length === 0 || totalCount === 0) return;
 		const { modifiedEndTime, modifiedStartTime, compactType } = getModifiedTimeRange(startTime, endTime, interval);
 
 		const logsQuery = {
@@ -299,14 +297,14 @@ const EventTimeLineGraph = () => {
 			logsQuery,
 			query: graphQuery,
 		});
-	}, [localStream, startTime.toISOString(), endTime.toISOString(), custSearchQuery, firstEventAt]);
+	}, [localStream, startTime.toISOString(), endTime.toISOString(), custSearchQuery, totalCount]);
 
 	const isLoading = fetchQueryMutation.isLoading;
 	const avgEventCount = useMemo(() => calcAverage(fetchQueryMutation?.data), [fetchQueryMutation?.data]);
-	const graphData = useMemo(() => {
-		if (!firstEventAt) return null;
-		return parseGraphData(fetchQueryMutation?.data, avgEventCount, startTime, endTime, interval);
-	}, [fetchQueryMutation?.data, interval, firstEventAt]);
+	const graphData = useMemo(
+		() => parseGraphData(fetchQueryMutation?.data, avgEventCount, startTime, endTime, interval),
+		[fetchQueryMutation?.data, interval, totalCount],
+	);
 	const hasData = Array.isArray(graphData) && graphData.length !== 0;
 	const [, setAppStore] = useAppStore((_store) => null);
 	const setTimeRangeFromGraph = useCallback((barValue: any) => {

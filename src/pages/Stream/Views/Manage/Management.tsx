@@ -8,9 +8,10 @@ import { useLogStreamStats } from '@/hooks/useLogStreamStats';
 import Info from './Info';
 import DeleteStreamModal from '../../components/DeleteStreamModal';
 import { useRetentionQuery } from '@/hooks/useRetentionEditor';
+import { useGetStreamInfo } from '@/hooks/useGetStreamInfo';
 import { useHotTier } from '@/hooks/useHotTier';
 
-const Management = (props: { schemaLoading: boolean }) => {
+const Management = () => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
 	const [userAccessMap] = useAppStore((store) => store.userAccessMap);
@@ -19,6 +20,7 @@ const Management = (props: { schemaLoading: boolean }) => {
 	const getStreamAlertsConfig = useAlertsQuery(currentStream || '', hasAlertsAccess, isStandAloneMode);
 	const getStreamStats = useLogStreamStats(currentStream || '');
 	const getRetentionConfig = useRetentionQuery(currentStream || '', hasSettingsAccess);
+	const getStreamInfo = useGetStreamInfo(currentStream || '', currentStream !== null);
 	const hotTierFetch = useHotTier(currentStream || '', hasSettingsAccess);
 
 	// todo - handle loading and error states separately
@@ -34,7 +36,7 @@ const Management = (props: { schemaLoading: boolean }) => {
 					isLoading={getStreamStats.getLogStreamStatsDataIsLoading}
 					isError={getStreamStats.getLogStreamStatsDataIsError}
 				/>
-				<Info />
+				<Info isLoading={getStreamInfo.getStreamInfoLoading} isError={getStreamInfo.getStreamInfoError} />
 			</Stack>
 			<Stack style={{ flexDirection: 'row', height: '57%' }} gap={24}>
 				<Stack w="49.4%">
@@ -51,7 +53,6 @@ const Management = (props: { schemaLoading: boolean }) => {
 				</Stack>
 				<Alerts
 					isLoading={isAlertsLoading}
-					schemaLoading={props.schemaLoading}
 					updateAlerts={getStreamAlertsConfig.updateLogStreamAlerts}
 					isError={getStreamAlertsConfig.isError}
 					hasAlertsAccess={hasAlertsAccess}

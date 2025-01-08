@@ -374,7 +374,7 @@ const LogTable = (props: {
 		? PRIMARY_HEADER_HEIGHT + STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT + STREAM_SECONDARY_TOOLBAR_HRIGHT
 		: 0;
 
-	const showTableOrLoader = logsLoading || showTable || !errorMessage || !hasNoData;
+	const showTableOrLoader = (logsLoading || showTable || !errorMessage || !hasNoData) && !isFetchingCount;
 
 	return (
 		<TableContainer>
@@ -398,7 +398,7 @@ const LogTable = (props: {
 									background: 'white',
 									zIndex: 9,
 								}}>
-								{logsLoading && <LoadingView />}
+								{(logsLoading || isFetchingCount) && <LoadingView />}
 							</Box>
 							{hasNoData ? (
 								<EmptyBox message="No Matching Rows" />

@@ -3,50 +3,47 @@ import { useEffect } from 'react';
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { useQueryLogs } from '@/hooks/useQueryLogs';
 import { useFetchCount } from '@/hooks/useQueryResult';
-import { useStreamStore } from '../../providers/StreamProvider';
 
 const { setCleanStoreForStreamChange } = logsStoreReducers;
 const { syncTimeRange } = appStoreReducers;
 
-const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
-	const { schemaLoading, infoLoading } = props;
+const useLogsFetcher = (props: { isStoreSyncing: boolean }) => {
+	const { isStoreSyncing } = props;
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [{ timeRange }, setAppStore] = useAppStore((store) => store);
 	const [{ tableOpts }, setLogsStore] = useLogsStore((store) => store);
-	const { currentOffset, currentPage, pageData } = tableOpts;
+	const { currentOffset, currentPage, pageData, totalCount } = tableOpts;
 	const { getQueryData, loading: logsLoading, error: errorMessage } = useQueryLogs();
-	const [{ info }] = useStreamStore((store) => store);
-	const firstEventAt = 'first-event-at' in info ? info['first-event-at'] : undefined;
 
 	const { refetchCount, isCountLoading, isCountRefetching } = useFetchCount();
-	const hasContentLoaded = schemaLoading === false && logsLoading === false;
+	const hasContentLoaded = !isCountLoading && !logsLoading && !isCountRefetching;
 	const hasNoData = hasContentLoaded && !errorMessage && pageData.length === 0;
 	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
 
 	useEffect(() => {
 		setAppStore(syncTimeRange);
 		setLogsStore(setCleanStoreForStreamChange);
+		refetchCount();
 	}, [currentStream]);
 
 	useEffect(() => {
-		if (infoLoading || !firstEventAt) return;
+		if (isStoreSyncing || totalCount === 0) return;
 
 		if (currentPage === 0) {
 			getQueryData();
-			refetchCount();
 		}
-	}, [currentPage, currentStream, timeRange, infoLoading, firstEventAt]);
+	}, [currentPage, currentStream, timeRange, isStoreSyncing, totalCount]);
 
 	useEffect(() => {
-		if (infoLoading || !firstEventAt) return;
+		if (isStoreSyncing || totalCount === 0) return;
 
 		if (currentOffset !== 0 && currentPage !== 0) {
 			getQueryData();
 		}
-	}, [currentOffset, infoLoading, firstEventAt]);
+	}, [currentOffset, isStoreSyncing, totalCount]);
 
 	return {
-		logsLoading: infoLoading || logsLoading,
+		logsLoading: isStoreSyncing || logsLoading,
 		errorMessage,
 		hasContentLoaded,
 		hasNoData,
