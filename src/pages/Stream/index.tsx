@@ -42,7 +42,7 @@ const Stream: FC = () => {
 	if (!currentStream) return null;
 	if (!_.includes(STREAM_VIEWS, view)) return null;
 
-	const isInfoLoading = (!isStoreSynced || instanceConfig === null) && view === 'explore';
+	const isStoreSyncing = (!isStoreSynced || instanceConfig === null) && view === 'explore';
 	return (
 		<Box
 			style={{
@@ -66,7 +66,7 @@ const Stream: FC = () => {
 				<PrimaryToolbar />
 				{view === 'explore' && <SecondaryToolbar />}
 				{view === 'explore' ? (
-					<LogsView infoLoading={isInfoLoading} />
+					<LogsView isStoreSyncing={isStoreSyncing} />
 				) : view === 'live-tail' ? (
 					<LiveLogTable />
 				) : (

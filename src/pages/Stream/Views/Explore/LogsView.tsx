@@ -12,11 +12,11 @@ import _ from 'lodash';
 const { setPageAndPageData, setTargetPage, setTargetColumns, setDisabledColumns } = logsStoreReducers;
 const { toogleQueryParamsFlag } = filterStoreReducers;
 
-const LogsView = (props: { infoLoading: boolean }) => {
+const LogsView = (props: { isStoreSyncing: boolean }) => {
 	const [, setFilterStore] = useFilterStore((store) => store);
-	const { infoLoading } = props;
+	const { isStoreSyncing } = props;
 	const { errorMessage, hasNoData, showTable, isFetchingCount, logsLoading } = useLogsFetcher({
-		infoLoading,
+		isStoreSyncing,
 	});
 
 	const [tableOpts] = useLogsStore((store) => store.tableOpts);
@@ -57,7 +57,7 @@ const LogsView = (props: { infoLoading: boolean }) => {
 	return (
 		<Box style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
 			{viewMode === 'table' && (
-				<LogsViewConfig isFetchingCount={isFetchingCount} logsLoading={logsLoading} infoLoading={infoLoading} />
+				<LogsViewConfig isFetchingCount={isFetchingCount} logsLoading={logsLoading} isStoreSyncing={isStoreSyncing} />
 			)}
 			{viewMode === 'table' ? <LogTable {...viewOpts} /> : <JsonView {...viewOpts} />}
 		</Box>

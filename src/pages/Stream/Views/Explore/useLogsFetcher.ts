@@ -7,8 +7,8 @@ import { useFetchCount } from '@/hooks/useQueryResult';
 const { setCleanStoreForStreamChange } = logsStoreReducers;
 const { syncTimeRange } = appStoreReducers;
 
-const useLogsFetcher = (props: { infoLoading: boolean }) => {
-	const { infoLoading } = props;
+const useLogsFetcher = (props: { isStoreSyncing: boolean }) => {
+	const { isStoreSyncing } = props;
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [{ timeRange }, setAppStore] = useAppStore((store) => store);
 	const [{ tableOpts }, setLogsStore] = useLogsStore((store) => store);
@@ -27,23 +27,23 @@ const useLogsFetcher = (props: { infoLoading: boolean }) => {
 	}, [currentStream]);
 
 	useEffect(() => {
-		if (infoLoading || totalCount === 0) return;
+		if (isStoreSyncing || totalCount === 0) return;
 
 		if (currentPage === 0) {
 			getQueryData();
 		}
-	}, [currentPage, currentStream, timeRange, infoLoading, totalCount]);
+	}, [currentPage, currentStream, timeRange, isStoreSyncing, totalCount]);
 
 	useEffect(() => {
-		if (infoLoading || totalCount === 0) return;
+		if (isStoreSyncing || totalCount === 0) return;
 
 		if (currentOffset !== 0 && currentPage !== 0) {
 			getQueryData();
 		}
-	}, [currentOffset, infoLoading, totalCount]);
+	}, [currentOffset, isStoreSyncing, totalCount]);
 
 	return {
-		logsLoading: infoLoading || logsLoading,
+		logsLoading: isStoreSyncing || logsLoading,
 		errorMessage,
 		hasContentLoaded,
 		hasNoData,
