@@ -15,7 +15,7 @@ const useLogsFetcher = (props: { isStoreSyncing: boolean }) => {
 	const { currentOffset, currentPage, pageData, totalCount } = tableOpts;
 	const { getQueryData, loading: logsLoading, error: errorMessage } = useQueryLogs();
 
-	const { refetchCount, isCountLoading, isCountRefetching } = useFetchCount();
+	const { isCountLoading, isCountRefetching } = useFetchCount();
 	const hasContentLoaded = !isCountLoading && !logsLoading && !isCountRefetching;
 	const hasNoData = hasContentLoaded && !errorMessage && pageData.length === 0;
 	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
@@ -23,7 +23,6 @@ const useLogsFetcher = (props: { isStoreSyncing: boolean }) => {
 	useEffect(() => {
 		setAppStore(syncTimeRange);
 		setLogsStore(setCleanStoreForStreamChange);
-		refetchCount();
 	}, [currentStream]);
 
 	useEffect(() => {

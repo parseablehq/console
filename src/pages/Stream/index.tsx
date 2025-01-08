@@ -15,6 +15,7 @@ import { useParams } from 'react-router-dom';
 import { STREAM_VIEWS } from '@/constants/routes';
 import LogsView from './Views/Explore/LogsView';
 import useParamsController from './hooks/useParamsController';
+import { useFetchCount } from '@/hooks/useQueryResult';
 
 const { streamChangeCleanup, toggleSideBar } = streamStoreReducers;
 
@@ -24,18 +25,23 @@ const Stream: FC = () => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const { isStoreSynced } = useParamsController();
 	const [maximized] = useAppStore((store) => store.maximized);
+	const [timeRange] = useAppStore((store) => store.timeRange);
 	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
 	const [, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
+	const { refetchCount } = useFetchCount();
 
 	useHotkeys([['mod+/', () => setStreamStore((store) => toggleSideBar(store))]]);
 
 	useEffect(() => {
 		if (isStoreSynced) {
 			if (!_.isEmpty(currentStream)) {
-				if (view === 'explore') setStreamStore(streamChangeCleanup);
+				if (view === 'explore') {
+					setStreamStore(streamChangeCleanup);
+					refetchCount();
+				}
 			}
 		}
-	}, [isStoreSynced, currentStream]);
+	}, [isStoreSynced, currentStream, timeRange]);
 
 	const sideBarWidth = SECONDARY_SIDEBAR_WIDTH;
 
