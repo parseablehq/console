@@ -80,9 +80,9 @@ const QuerierModal = (props: {
 
 	const [parsedFilterQuery, setParsedFilterQuery] = useState('');
 
-	const getParsedFilterQuery = (query: string) => {
+	const getParsedFilterQuery = useCallback((query: string) => {
 		setParsedFilterQuery(query);
-	};
+	}, []);
 	const onClose = useCallback(() => {
 		setLogsStore((store) => toggleQueryBuilder(store, false));
 	}, []);
