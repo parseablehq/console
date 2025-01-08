@@ -18,6 +18,7 @@ import { IconCheck, IconCopy, IconSearch } from '@tabler/icons-react';
 import { copyTextToClipboard } from '@/utils';
 import { useStreamStore } from '../../providers/StreamProvider';
 import timeRangeUtils from '@/utils/timeRangeUtils';
+import { AxiosError } from 'axios';
 
 const { setInstantSearchValue, applyInstantSearch, applyJqSearch } = logsStoreReducers;
 
@@ -187,7 +188,7 @@ const TableContainer = (props: { children: ReactNode }) => {
 };
 
 const JsonView = (props: {
-	errorMessage: string | null;
+	errorMessage: AxiosError;
 	hasNoData: boolean;
 	showTable: boolean;
 	isFetchingCount: boolean;
@@ -224,7 +225,7 @@ const JsonView = (props: {
 					<LoadingView />
 				)
 			) : (
-				<ErrorView message={errorMessage} />
+				<ErrorView message={(errorMessage?.response?.data as string) || 'Failed to query logs'} />
 			)}
 			<Footer loaded={showTable} hasNoData={hasNoData} isFetchingCount={isFetchingCount} />
 		</TableContainer>

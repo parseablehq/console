@@ -24,6 +24,7 @@ import timeRangeUtils from '@/utils/timeRangeUtils';
 import { IconDotsVertical } from '@tabler/icons-react';
 import { copyTextToClipboard } from '@/utils';
 import { notifySuccess } from '@/utils/notification';
+import { AxiosError } from 'axios';
 
 const { setSelectedLog, setRowNumber } = logsStoreReducers;
 const TableContainer = (props: { children: ReactNode }) => {
@@ -362,7 +363,7 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 };
 
 const LogTable = (props: {
-	errorMessage: string | null;
+	errorMessage: AxiosError;
 	hasNoData: boolean;
 	showTable: boolean;
 	isFetchingCount: boolean;
@@ -413,7 +414,7 @@ const LogTable = (props: {
 					<LoadingView />
 				)
 			) : (
-				<ErrorView message={errorMessage} />
+				<ErrorView message={(errorMessage?.response?.data as string) || 'Failed to query logs'} />
 			)}
 			<Footer loaded={showTable} hasNoData={hasNoData} isFetchingCount={isFetchingCount} />
 		</TableContainer>
