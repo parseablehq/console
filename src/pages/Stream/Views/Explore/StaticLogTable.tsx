@@ -120,9 +120,7 @@ const makeHeaderOpts = (
 									style={{
 										display: isFirstSelectedRow && isFirstColumn ? 'flex' : '',
 									}}>
-									{isSecureHTTPContext
-										? sanitizedValue && <IconDotsVertical stroke={1.2} size={'0.8rem'} color="#545beb" />
-										: null}
+									{isSecureHTTPContext ? <IconDotsVertical stroke={1.2} size={'0.8rem'} color="#545beb" /> : null}
 								</div>
 								{sanitizedValue}
 								<div className={tableStyles.copyIconContainer}>
