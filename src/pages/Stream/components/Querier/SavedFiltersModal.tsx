@@ -44,7 +44,6 @@ const SavedFilterItem = (props: {
 	onSqlSearchApply: (query: string, id: string, time_filter: null | { from: string; to: string }) => void;
 	onFilterBuilderQueryApply: (query: QueryType, id: string) => void;
 	currentStream: string;
-	queryEngine: 'Parseable' | 'Trino' | undefined;
 	savedFilterId: string | null;
 	isStoredAndCurrentTimeRangeAreSame: (from: string, to: string) => boolean;
 	hardRefresh: () => void;
@@ -89,10 +88,7 @@ const SavedFilterItem = (props: {
 				setFilterStore((store) => setAppliedFilterQuery(store, query.filter_query));
 			} else if (query.filter_builder) {
 				setFilterStore((store) =>
-					setAppliedFilterQuery(
-						store,
-						parseQuery(props.queryEngine, query.filter_builder as QueryType, stream_name).parsedQuery,
-					),
+					setAppliedFilterQuery(store, parseQuery(query.filter_builder as QueryType, stream_name).parsedQuery),
 				);
 			}
 			setFilterStore((store) => toggleSavedFiltersModal(store, false));
@@ -171,7 +167,7 @@ const SavedFilterItem = (props: {
 							_.isString(query.filter_query)
 								? query.filter_query
 								: query.filter_builder
-								? parseQuery(props.queryEngine, query.filter_builder, stream_name).parsedQuery
+								? parseQuery(query.filter_builder, stream_name).parsedQuery
 								: ''
 						}
 						language="sql"
@@ -197,7 +193,6 @@ const SavedFiltersModal = () => {
 	const [savedFilters] = useAppStore((store) => store.savedFilters);
 	const [activeSavedFilters] = useAppStore((store) => store.activeSavedFilters);
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
 	const { isLoading, refetch, isError } = useSavedFiltersQuery();
 	const onSqlSearchApply = useCallback(
 		(query: string, id: string, time_filter: null | { from: string; to: string }) => {
@@ -281,7 +276,6 @@ const SavedFiltersModal = () => {
 									onSqlSearchApply={onSqlSearchApply}
 									onFilterBuilderQueryApply={onFilterBuilderQueryApply}
 									currentStream={currentStream || ''}
-									queryEngine={queryEngine}
 									savedFilterId={savedFilterId}
 									isStoredAndCurrentTimeRangeAreSame={isStoredAndCurrentTimeRangeAreSame}
 									hardRefresh={hardRefresh}
