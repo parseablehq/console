@@ -54,6 +54,7 @@ export class QueryBuilder {
 
 	parseableQuery(): string {
 		const offsetPart = typeof this.pageOffset === 'number' ? `OFFSET ${this.pageOffset}` : '';
+		// eslint-disable-next-line
 		return `SELECT * FROM \"${this.streamName}\" ${offsetPart} LIMIT ${this.limit}`;
 	}
 
@@ -80,6 +81,7 @@ export class FilterQueryBuilder {
 	}
 
 	getParseableQuery(): string {
+		// eslint-disable-next-line
 		return `select * from \"${this.streamName}\" where ${this.whereClause} LIMIT ${this.limit}`;
 	}
 
