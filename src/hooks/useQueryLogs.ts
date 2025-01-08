@@ -31,7 +31,6 @@ export const useQueryLogs = () => {
 	// data ref will always have the unfiltered data.
 	// Only mutate it when data is fetched, otherwise read only
 	const _dataRef = useRef<Log[] | null>(null);
-	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
 	const [streamInfo] = useStreamStore((store) => store.info);
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
