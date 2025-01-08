@@ -1,12 +1,8 @@
 import timeRangeUtils from '@/utils/timeRangeUtils';
-import { QueryEngineType } from '@/@types/parseable/api/about';
 
 const { formatDateAsCastType } = timeRangeUtils;
 
-type QueryEngine = QueryEngineType;
-
 type QueryLogs = {
-	queryEngine?: QueryEngine;
 	streamName: string;
 	startTime: Date;
 	endTime: Date;
@@ -19,7 +15,6 @@ type FilterQueryBuilderType = {
 	streamName: string;
 	limit: number;
 	whereClause: string;
-	queryEngine?: QueryEngine;
 	timeRangeCondition?: string;
 };
 
@@ -34,7 +29,6 @@ const optimizeTime = (date: Date) => {
 };
 
 export class QueryBuilder {
-	queryEngine?: QueryEngine;
 	startTime: Date;
 	endTime: Date;
 	streamName: string;
@@ -42,16 +36,7 @@ export class QueryBuilder {
 	pageOffset?: number;
 	timePartitionColumn?: string;
 
-	constructor({
-		queryEngine,
-		startTime,
-		endTime,
-		streamName,
-		limit,
-		pageOffset,
-		timePartitionColumn = 'p_timestamp',
-	}: QueryLogs) {
-		this.queryEngine = queryEngine;
+	constructor({ startTime, endTime, streamName, limit, pageOffset, timePartitionColumn = 'p_timestamp' }: QueryLogs) {
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.streamName = streamName;
@@ -73,29 +58,21 @@ export class QueryBuilder {
 	}
 
 	getQuery(): string {
-		switch (this.queryEngine) {
-			default:
-				return this.parseableQuery();
-		}
+		return this.parseableQuery();
 	}
 
 	getResourcePath(): string {
-		switch (this.queryEngine) {
-			default:
-				return PARSEABLE_RESOURCE_PATH;
-		}
+		return PARSEABLE_RESOURCE_PATH;
 	}
 }
 
 export class FilterQueryBuilder {
-	queryEngine?: QueryEngine;
 	whereClause: string;
 	streamName: string;
 	limit: number;
 	timeRangeCondition?: string;
 
-	constructor({ streamName, limit, whereClause, queryEngine, timeRangeCondition = '(1=1)' }: FilterQueryBuilderType) {
-		this.queryEngine = queryEngine;
+	constructor({ streamName, limit, whereClause, timeRangeCondition = '(1=1)' }: FilterQueryBuilderType) {
 		this.whereClause = whereClause;
 		this.streamName = streamName;
 		this.limit = limit;
@@ -107,9 +84,6 @@ export class FilterQueryBuilder {
 	}
 
 	getQuery(): string {
-		switch (this.queryEngine) {
-			default:
-				return this.getParseableQuery();
-		}
+		return this.getParseableQuery();
 	}
 }

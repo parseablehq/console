@@ -5,7 +5,6 @@ import { FilterQueryBuilder } from '@/utils/queryBuilder';
 import { Field, RuleGroupType, RuleType, formatQuery } from 'react-querybuilder';
 import { LOAD_LIMIT } from './LogsProvider';
 import { timeRangeSQLCondition } from '@/api/query';
-import { QueryEngineType } from '@/@types/parseable/api/about';
 
 // write transformer (for saved filters) if you are updating the operators below
 export const textFieldOperators = [
@@ -136,7 +135,6 @@ type FilterStoreReducers = {
 	updateRule: (store: FilterStore, groupId: string, ruleId: string, updateOpts: RuleUpdateOpts) => ReducerOutput;
 	updateQuery: (store: FilterStore, query: QueryType) => ReducerOutput;
 	parseQuery: (
-		queryEngine: 'Parseable' | undefined,
 		query: QueryType,
 		currentStream: string,
 		timeRangeOpts?: { startTime: Date; endTime: Date; timePartitionColumn: string },
@@ -275,7 +273,6 @@ const toggleSubmitBtn = (_store: FilterStore, val: boolean) => {
 
 // todo - custom rule processor to prevent converting number strings into numbers for text fields
 const parseQuery = (
-	queryEngine: QueryEngineType,
 	query: QueryType,
 	currentStream: string,
 	timeRangeOpts?: { startTime: Date; endTime: Date; timePartitionColumn: string },
@@ -287,7 +284,6 @@ const parseQuery = (
 		: '(1=1)';
 
 	const filterQueryBuilder = new FilterQueryBuilder({
-		queryEngine,
 		streamName: currentStream,
 		whereClause: where,
 		timeRangeCondition,

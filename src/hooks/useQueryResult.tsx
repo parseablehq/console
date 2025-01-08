@@ -9,12 +9,10 @@ import { useFilterStore, filterStoreReducers } from '@/pages/Stream/providers/Fi
 import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { notifyError } from '@/utils/notification';
-import { QueryEngineType } from '@/@types/parseable/api/about';
 
 const { parseQuery } = filterStoreReducers;
 
 type QueryData = {
-	queryEngine: QueryEngineType;
 	logsQuery: LogsQuery;
 	query: string;
 	onSuccess?: () => void;
@@ -70,7 +68,7 @@ export const useFetchCount = () => {
 			const finalQuery = `WITH user_query_count as ( ${custSearchQuery} )SELECT count(*) as count from user_query_count`;
 
 			if (activeMode === 'filters') {
-				const { where } = parseQuery('Parseable', appliedQuery, '');
+				const { where } = parseQuery(appliedQuery, '');
 				const finalQuery = defaultQuery + ' ' + 'where' + ' ' + where;
 				return finalQuery;
 			} else {
