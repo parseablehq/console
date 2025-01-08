@@ -70,7 +70,6 @@ export const useQueryLogs = () => {
 
 	// refactor
 	const defaultQueryOpts = {
-		queryEngine,
 		streamName: currentStream || '',
 		startTime: timeRange.startTime,
 		endTime: timeRange.endTime,
@@ -90,7 +89,7 @@ export const useQueryLogs = () => {
 			refetchSchema();
 			if (isQuerySearchActive) {
 				if (activeMode === 'filters' && isQueryFromParams === false) {
-					const { parsedQuery } = parseQuery(queryEngine, appliedQuery, currentStream || '', {
+					const { parsedQuery } = parseQuery(appliedQuery, currentStream || '', {
 						startTime: timeRange.startTime,
 						endTime: timeRange.endTime,
 						timePartitionColumn,

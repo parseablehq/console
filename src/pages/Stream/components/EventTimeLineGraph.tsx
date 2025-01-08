@@ -266,7 +266,6 @@ function ChartTooltip({ payload }: ChartTooltipProps) {
 const EventTimeLineGraph = () => {
 	const { fetchQueryMutation } = useQueryResult();
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
 	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
 	const [{ activeMode, custSearchQuery }, setLogStore] = useLogsStore((store) => store.custQuerySearchState);
 	const [{ interval, startTime, endTime }] = useAppStore((store) => store.timeRange);
@@ -289,13 +288,10 @@ const EventTimeLineGraph = () => {
 			access: [],
 		};
 		const whereClause =
-			activeMode === 'sql'
-				? extractWhereClause(custSearchQuery)
-				: parseQuery(queryEngine, appliedQuery, localStream).where;
+			activeMode === 'sql' ? extractWhereClause(custSearchQuery) : parseQuery(appliedQuery, localStream).where;
 		const query = generateCountQuery(localStream, modifiedStartTime, modifiedEndTime, compactType, whereClause);
 		const graphQuery = removeOffsetFromQuery(query);
 		fetchQueryMutation.mutate({
-			queryEngine: 'Parseable', // query for graph should always hit the endpoint for parseable query
 			logsQuery,
 			query: graphQuery,
 		});

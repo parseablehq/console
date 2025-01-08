@@ -33,9 +33,8 @@ const Column: FC<Column> = (props) => {
 		(e: ChangeEvent<HTMLInputElement>) => {
 			const searchStr = e.target.value.trim();
 			inputValueRef.current = searchStr;
-			const regexPattern = new RegExp(searchStr, 'i');
 			const matches = _.chain(uniqueValues)
-				.filter((uniqueValue) => regexPattern.test(uniqueValue))
+				.filter((uniqueValue) => uniqueValue.toLowerCase().includes(searchStr.toLowerCase()))
 				.value();
 			setFilteredValues(matches);
 		},

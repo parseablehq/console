@@ -44,7 +44,6 @@ const Stream: FC = () => {
 	const { isStoreSynced } = useParamsController();
 	const [maximized] = useAppStore((store) => store.maximized);
 	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
-	const queryEngine = instanceConfig?.queryEngine;
 	const [, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
 	const { getStreamInfoRefetch, getStreamInfoLoading, getStreamInfoRefetching } = useGetStreamInfo(
 		currentStream || '',
@@ -70,7 +69,7 @@ const Stream: FC = () => {
 	useEffect(() => {
 		if (isStoreSynced) {
 			if (!_.isEmpty(currentStream)) {
-				if (view === 'explore' && queryEngine && queryEngine !== 'Parseable') {
+				if (view === 'explore') {
 					setStreamStore(streamChangeCleanup);
 					getStreamInfoRefetch();
 				} else {
