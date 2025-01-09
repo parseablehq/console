@@ -74,10 +74,9 @@ const QuerierModal = (props: {
 	onSqlSearchApply: (query: string) => void;
 	onFiltersApply: () => void;
 }) => {
-	const [{ showQueryBuilder, viewMode, custSearchQuery }, setLogsStore] = useLogsStore(
+	const [{ showQueryBuilder, viewMode, custSearchQuery, activeMode }, setLogsStore] = useLogsStore(
 		(store) => store.custQuerySearchState,
 	);
-
 	const [parsedFilterQuery, setParsedFilterQuery] = useState('');
 
 	const getParsedFilterQuery = useCallback((query: string) => {
@@ -85,7 +84,10 @@ const QuerierModal = (props: {
 	}, []);
 	const onClose = useCallback(() => {
 		setLogsStore((store) => toggleQueryBuilder(store, false));
-	}, []);
+		setParsedFilterQuery('');
+		setLogsStore((store) => toggleCustQuerySearchViewMode(store, activeMode !== null ? activeMode : 'filters'));
+	}, [activeMode]);
+
 	const queryCodeEditorRef = useRef<any>(''); // to store input value even after the editor unmounts
 
 	useEffect(() => {
