@@ -13,6 +13,7 @@ import { useStreamStore } from '../../providers/StreamProvider';
 import SaveFilterModal from './SaveFilterModal';
 import SavedFiltersModal from './SavedFiltersModal';
 import _ from 'lodash';
+import useParamsController from '@/pages/Stream/hooks/useParamsController';
 
 const { setFields, parseQuery, storeAppliedQuery, resetFilters, toggleSubmitBtn, toggleSaveFiltersModal } =
 	filterStoreReducers;
@@ -74,6 +75,7 @@ const QuerierModal = (props: {
 	onSqlSearchApply: (query: string) => void;
 	onFiltersApply: () => void;
 }) => {
+	const { isStoreSynced } = useParamsController();
 	const [{ showQueryBuilder, viewMode, custSearchQuery, activeMode }, setLogsStore] = useLogsStore(
 		(store) => store.custQuerySearchState,
 	);
@@ -91,6 +93,7 @@ const QuerierModal = (props: {
 	const queryCodeEditorRef = useRef<any>(''); // to store input value even after the editor unmounts
 
 	useEffect(() => {
+		if (!isStoreSynced) return;
 		if (!_.isEmpty(parsedFilterQuery)) {
 			queryCodeEditorRef.current = parsedFilterQuery;
 			return;
@@ -99,7 +102,7 @@ const QuerierModal = (props: {
 			queryCodeEditorRef.current = custSearchQuery;
 			return;
 		}
-	}, [parsedFilterQuery, custSearchQuery]);
+	}, [isStoreSynced, parsedFilterQuery, custSearchQuery]);
 
 	return (
 		<Modal
