@@ -149,9 +149,8 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 	});
 
 	const contextMenuRef = useRef<HTMLDivElement>(null);
-	const [{ orderedHeaders, disabledColumns, pageData, wrapDisabledColumns, rowNumber }, setLogsStore] = useLogsStore(
-		(store) => store.tableOpts,
-	);
+	const [{ orderedHeaders, disabledColumns, pageData, wrapDisabledColumns, rowNumber, pinnedColumns }, setLogsStore] =
+		useLogsStore((store) => store.tableOpts);
 	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
 	const [fieldTypeMap] = useStreamStore((store) => store.fieldTypeMap);
 	const columns = useMemo(
@@ -291,7 +290,7 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 				enableColumnPinning
 				initialState={{
 					columnPinning: {
-						left: ['rowNumber'],
+						left: pinnedColumns,
 					},
 				}}
 				enableStickyHeader
@@ -299,7 +298,7 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 				layoutMode="grid"
 				state={{
 					columnPinning: {
-						left: ['rowNumber'],
+						left: pinnedColumns,
 					},
 					columnVisibility,
 					columnOrder: orderedHeaders,
