@@ -99,31 +99,12 @@ export const addOrRemoveElement = (array: any[], element: any) => {
 };
 
 export const copyTextToClipboard = async (value: any) => {
-	try {
-		await navigator.clipboard.writeText(_.isString(value) ? value : JSON.stringify(value, null, 2));
-	} catch (error) {
-		console.warn('Clipboard API failed, falling back to execCommand:', error);
-		fallbackCopyToClipboard(value);
+	if (_.isString(value)) {
+		return await navigator.clipboard.writeText(value);
+	} else {
+		return await navigator.clipboard.writeText(JSON.stringify(value, null, 2));
 	}
 };
-
-function fallbackCopyToClipboard(text: string) {
-	const textarea = document.createElement('textarea');
-	textarea.value = text;
-	document.body.appendChild(textarea);
-	textarea.select();
-	try {
-		const successful = document.execCommand('copy');
-		if (successful) {
-			alert('Copied to clipboard!');
-		} else {
-			alert('Copy failed. Please copy manually.');
-		}
-	} catch (err) {
-		console.error('Fallback copy failed:', err);
-	}
-	document.body.removeChild(textarea);
-}
 
 export const getOffset = (page: number, rowSize: number) => {
 	const product = page * rowSize;

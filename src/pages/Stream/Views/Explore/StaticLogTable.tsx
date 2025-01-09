@@ -341,20 +341,24 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 
 							return null;
 						})()}
-						<Menu.Item
-							onClick={() => {
-								copyJSON();
-								closeContextMenu();
-							}}>
-							Copy JSON
-						</Menu.Item>
-						<Menu.Item
-							onClick={() => {
-								copyUrl();
-								closeContextMenu();
-							}}>
-							Copy permalink
-						</Menu.Item>
+						{isSecureHTTPContext && (
+							<>
+								<Menu.Item
+									onClick={() => {
+										copyJSON();
+										closeContextMenu();
+									}}>
+									Copy JSON
+								</Menu.Item>
+								<Menu.Item
+									onClick={() => {
+										copyUrl();
+										closeContextMenu();
+									}}>
+									Copy permalink
+								</Menu.Item>
+							</>
+						)}
 					</Menu>
 				</div>
 			)}
