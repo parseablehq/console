@@ -1,5 +1,5 @@
 import { Stack, Box, Button, Text, px } from '@mantine/core';
-import { IconClock, IconTrash, IconX } from '@tabler/icons-react';
+import { IconClock, IconEye, IconEyeOff, IconTrash, IconX } from '@tabler/icons-react';
 import _ from 'lodash';
 import { useState, useCallback } from 'react';
 import classes from '../styles/SavedCorrelationItem.module.css';
@@ -16,6 +16,14 @@ const renderCloseIcon = () => <IconX size={px('1rem')} stroke={1.5} />;
 const DeleteButton = (props: { onClick: () => void }) => {
 	return <IconButton renderIcon={renderDeleteIcon} size={38} onClick={props.onClick} />;
 };
+const renderEyeOffIcon = () => <IconEyeOff size={px('1rem')} stroke={1.5} />;
+const renderEyeIcon = () => <IconEye size={px('1rem')} stroke={1.5} />;
+
+const VisiblityToggleButton = (props: { showQuery: boolean; onClick: () => void }) => {
+	return (
+		<IconButton renderIcon={props.showQuery ? renderEyeOffIcon : renderEyeIcon} size={38} onClick={props.onClick} />
+	);
+};
 
 const getTimeRangeLabel = (startTime: string, endTime: string) => {
 	return `${dayjs(startTime).format('hh:mm A DD MMM YY')} to ${dayjs(endTime).format('hh:mm A DD MMM YY')}`;
@@ -23,9 +31,10 @@ const getTimeRangeLabel = (startTime: string, endTime: string) => {
 
 const SavedCorrelationItem = (props: { item: Correlation }) => {
 	const {
-		item: { startTime, endTime, id, title },
+		item: { startTime, endTime, id, title, joinConfig },
 	} = props;
 	const [showDeletePropmt, setShowDeletePrompt] = useState<boolean>(false);
+	const [showQuery, setShowQuery] = useState<boolean>(false);
 	const { deleteSavedCorrelationMutation, getCorrelationByIdMutation } = useCorrelationsQuery();
 	const [, setCorrelationData] = useCorrelationStore((store) => store);
 
@@ -43,6 +52,10 @@ const SavedCorrelationItem = (props: { item: Correlation }) => {
 	const onCorrelationAppy = useCallback(() => {
 		getCorrelationByIdMutation(id);
 		closeModal();
+	}, []);
+
+	const toggleShowQuery = useCallback(() => {
+		return setShowQuery((prev) => !prev);
 	}, []);
 
 	return (
@@ -73,6 +86,7 @@ const SavedCorrelationItem = (props: { item: Correlation }) => {
 						</Stack>
 					) : (
 						<>
+							<VisiblityToggleButton showQuery={showQuery} onClick={toggleShowQuery} />
 							<DeleteButton onClick={handleDelete} />
 							<Box>
 								<Button variant="outline" onClick={onCorrelationAppy}>
@@ -83,28 +97,13 @@ const SavedCorrelationItem = (props: { item: Correlation }) => {
 					)}
 				</Stack>
 			</Stack>
-			{/* {showQuery && (
+			{showQuery && (
 				<Stack>
-					<CodeHighlight
-						code={
-							_.isString(query.filter_query)
-								? query.filter_query
-								: query.filter_builder
-								? parseQuery(props.queryEngine, query.filter_builder, stream_name).parsedQuery
-								: ''
-						}
-						language="sql"
-						withCopyButton={false}
-						styles={{
-							code: {
-								fontSize: '0.72rem',
-								whiteSpace: 'pre-wrap',
-								wordBreak: 'break-word',
-							},
-						}}
-					/>
+					{joinConfig.joinConditions.map((join: { tableName: string }) => {
+						return <Text>Table: {join.tableName}</Text>;
+					})}
 				</Stack>
-			)} */}
+			)}
 		</Stack>
 	);
 };
