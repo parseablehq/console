@@ -332,7 +332,6 @@ const MultiEventTimeLineGraph = () => {
 			const graphQuery = removeOffsetFromQuery(query);
 
 			return {
-				queryEngine: 'Parseable',
 				logsQuery,
 				query: graphQuery,
 			};
