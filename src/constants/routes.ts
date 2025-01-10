@@ -12,7 +12,12 @@ export const CLUSTER_ROUTE = '/cluster';
 export const STREAM_ROUTE = '/:streamName/:view?';
 export const DASHBOARDS_ROUTE = '/dashboards';
 
+// ----Alerts
+export const ALERTS_ROUTE = '/alerts';
+// ----
+
 export const STREAM_VIEWS = ['explore', 'manage', 'live-tail'];
+export const ALERTS_VIEW = ['list', 'create'];
 
 export const PATHS = {
 	all: '/*',
@@ -27,4 +32,5 @@ export const PATHS = {
 	cluster: '/cluster',
 	manage: '/:streamName/:view?',
 	dashboards: '/dashboards',
+	alerts: '/alerts',
 } as { [key: string]: string };
