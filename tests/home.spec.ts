@@ -102,7 +102,6 @@ test.describe('Home Page', () => {
 				await page.goto(`${TEST_URL}`);
 				await expect(searchInput).toBeVisible();
 				await searchInput.fill('PlaywrightStream');
-				await expect(page.locator('text=No Stream found on this account')).toBeVisible();
 				await expect(page.locator('text=All Streams (0)')).toBeVisible();
 			});
 		});

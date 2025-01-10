@@ -4,12 +4,12 @@ import { Log, LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
 import _ from 'lodash';
 import { QueryType } from '@/pages/Stream/providers/FilterProvider';
-import { QueryEngineType } from '@/@types/parseable/api/about';
 import { FilterQueryBuilder } from '@/utils/queryBuilder';
 import { formatQuery } from 'react-querybuilder';
 import { Correlation } from '@/@types/parseable/api/correlation';
 
 export const CORRELATION_LOAD_LIMIT = 1000;
+export const STREAM_DATA_LOAD_LIMIT = 250;
 
 export const STREAM_COLORS = ['#FDA4AF', '#c084fc'];
 export const STREAM_HEADER_COLORS = ['#9F1239', '#7E22CE'];
@@ -82,11 +82,7 @@ type CorrelationStoreReducers = {
 	setCorrelationCondition: (store: CorrelationStore, correlationCondition: string) => ReducerOutput;
 	setPageAndPageData: (store: CorrelationStore, pageNo: number, perPage?: number) => ReducerOutput;
 	setIsCorrelatedFlag: (store: CorrelationStore, flag: boolean) => ReducerOutput;
-	parseQuery: (
-		queryEngine: 'Parseable' | 'Trino' | undefined,
-		query: QueryType,
-		currentStream: string,
-	) => { where: string; parsedQuery: string };
+	parseQuery: (query: QueryType, currentStream: string) => { where: string; parsedQuery: string };
 	setCorrelationId: (store: CorrelationStore, id: string) => ReducerOutput;
 	setCorrelations: (store: CorrelationStore, correlations: Correlation[]) => ReducerOutput;
 	toggleSavedCorrelationsModal: (_store: CorrelationStore, val: boolean) => ReducerOutput;
@@ -131,13 +127,12 @@ const initialState: CorrelationStore = {
 
 // Utilites
 
-const parseQuery = (queryEngine: QueryEngineType, query: QueryType, currentStream: string) => {
+const parseQuery = (query: QueryType, currentStream: string) => {
 	// todo - custom rule processor to prevent converting number strings into numbers for text fields
 	const where = formatQuery(query, { format: 'sql', parseNumbers: true, quoteFieldNamesWith: ['"', '"'] });
 	const timeRangeCondition = '(1=1)';
 
 	const filterQueryBuilder = new FilterQueryBuilder({
-		queryEngine,
 		streamName: currentStream,
 		whereClause: where,
 		timeRangeCondition,

@@ -1,14 +1,11 @@
 import { Axios } from './axios';
 import { LOG_QUERY_URL } from './constants';
 import { Log, LogsQuery, LogsResponseWithHeaders } from '@/@types/parseable/api/query';
-import { QueryEngineType } from '@/@types/parseable/api/about';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import { CorrelationQueryBuilder, QueryBuilder } from '@/utils/queryBuilder';
 
 const { formatDateAsCastType } = timeRangeUtils;
-type QueryEngine = QueryEngineType;
 type QueryLogs = {
-	queryEngine: QueryEngine;
 	streamName: string;
 	startTime: Date;
 	endTime: Date;
@@ -21,7 +18,6 @@ type CorrelationLogs = {
 	startTime: Date;
 	endTime: Date;
 	limit: number;
-	queryEngine?: QueryEngine;
 	correlationCondition?: string;
 	selectedFields?: string[];
 };
