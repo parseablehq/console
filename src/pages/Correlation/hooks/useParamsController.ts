@@ -6,13 +6,11 @@ import dayjs from 'dayjs';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import moment from 'moment-timezone';
 import { appStoreReducers, TimeRange, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
 import { correlationStoreReducers, useCorrelationStore } from '../providers/CorrelationProvider';
 
 const { getRelativeStartAndEndDate, formatDateWithTimezone, getLocalTimezone } = timeRangeUtils;
 const { setCorrelationId } = correlationStoreReducers;
 const { setTimeRange } = appStoreReducers;
-const { getCleanStoreForRefetch } = logsStoreReducers;
 const timeRangeFormat = 'DD-MMM-YYYY_HH-mmz';
 const keys = ['id', 'interval', 'from', 'to'];
 
@@ -74,12 +72,14 @@ const useParamsController = () => {
 	const [isStoreSynced, setStoreSynced] = useState(false);
 	const [{ correlationId }, setCorrelationStore] = useCorrelationStore((store) => store);
 	const [timeRange, setAppStore] = useAppStore((store) => store.timeRange);
-	const [, setLogStore] = useLogsStore(() => null);
 	const [searchParams, setSearchParams] = useSearchParams();
 
 	useEffect(() => {
 		const storeAsParams = storeToParamsObj({ correlationId, timeRange });
 		const presentParams = paramsStringToParamsObj(searchParams);
+		if (storeAsParams.id !== presentParams.id) {
+			setCorrelationStore((store) => setCorrelationId(store, presentParams.id));
+		}
 		syncTimeRangeToStore(storeAsParams, presentParams);
 		setStoreSynced(true);
 	}, []);
@@ -116,7 +116,6 @@ const useParamsController = () => {
 					if (!duration) return;
 
 					const { startTime, endTime } = getRelativeStartAndEndDate(duration);
-					setLogStore((store) => getCleanStoreForRefetch(store));
 					return setAppStore((store) => setTimeRange(store, { startTime, endTime, type: 'fixed' }));
 				}
 			} else if (_.has(presentParams, 'from') && _.has(presentParams, 'to')) {
@@ -124,7 +123,6 @@ const useParamsController = () => {
 					const startTime = dateParamStrToDateObj(presentParams.from);
 					const endTime = dateParamStrToDateObj(presentParams.to);
 					if (_.isDate(startTime) && _.isDate(endTime)) {
-						setLogStore((store) => getCleanStoreForRefetch(store));
 						return setAppStore((store) =>
 							setTimeRange(store, { startTime: dayjs(startTime), endTime: dayjs(endTime), type: 'custom' }),
 						);

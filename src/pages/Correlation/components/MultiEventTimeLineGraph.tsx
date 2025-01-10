@@ -304,6 +304,7 @@ const parseGraphData = (
 const MultiEventTimeLineGraph = () => {
 	const { fetchQueryMutation } = useQueryResult();
 	const [fields] = useCorrelationStore((store) => store.fields);
+	const [activeCorrelation] = useCorrelationStore((store) => store.activeCorrelation);
 	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
 	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
 	const [timeRange] = useAppStore((store) => store.timeRange);
@@ -312,7 +313,11 @@ const MultiEventTimeLineGraph = () => {
 	const { interval, startTime, endTime } = timeRange;
 
 	useEffect(() => {
-		if (!fields || Object.keys(fields).length === 0) {
+		if (
+			!fields ||
+			Object.keys(fields).length === 0 ||
+			(activeCorrelation && Object.keys(fields).length !== activeCorrelation?.tableConfigs.length)
+		) {
 			setMultipleStreamData([]);
 			return;
 		}
@@ -341,7 +346,7 @@ const MultiEventTimeLineGraph = () => {
 			.catch((error) => {
 				console.error('Error fetching queries:', error);
 			});
-	}, [fields, timeRange]);
+	}, [fields, timeRange, activeCorrelation]);
 
 	const isLoading = fetchQueryMutation.isLoading;
 	const avgEventCount = useMemo(() => calcAverage(fetchQueryMutation?.data), [fetchQueryMutation?.data]);

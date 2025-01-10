@@ -117,6 +117,7 @@ const Table = (props: {
 		},
 		[wrapDisabledColumns],
 	);
+	console.log(pageData);
 
 	return (
 		<Box className={tableStyles.container}>
