@@ -58,7 +58,7 @@ const navItems = [
 		route: STREAM_ROUTE,
 	},
 	{
-		icon: '',
+		icon: CorrelationIcon,
 		label: 'Correlation',
 		path: '/correlation',
 		route: CORRELATION_ROUTE,
@@ -181,15 +181,13 @@ const Navbar: FC = () => {
 									onClick={() => navigateToPage(navItem.route)}
 									key={index}>
 									<Tooltip label={navItem.label} position="right">
-										{navItem.route === CORRELATION_ROUTE ? (
-											<CorrelationIcon
+										{navItem.label === 'Correlation' ? (
+											<navItem.icon
 												stroke={isActiveItem ? '#000000' : '#858e96'}
 												strokeWidth={isActiveItem ? 1.4 : 1.2}
-												height="1.2rem"
-												width="1.2rem"
 											/>
 										) : (
-											<navItem.icon stroke={isActiveItem ? 1.4 : 1.2} size="1.2rem" />
+											<navItem.icon stroke={isActiveItem ? '1.4' : '1.2'} size="1.2rem" />
 										)}
 									</Tooltip>
 								</Stack>
