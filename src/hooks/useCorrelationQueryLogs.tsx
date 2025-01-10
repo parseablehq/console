@@ -19,7 +19,6 @@ const { setStreamData } = correlationStoreReducers;
 export const useCorrelationQueryLogs = () => {
 	const [error, setError] = useMountedState<string | null>(null);
 	const [{ selectedFields, correlationCondition, fields }, setCorrelationStore] = useCorrelationStore((store) => store);
-	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
 	const [streamInfo] = useStreamStore((store) => store.info);
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
@@ -32,7 +31,6 @@ export const useCorrelationQueryLogs = () => {
 	const streamNames = Object.keys(fields);
 
 	const defaultQueryOpts = {
-		queryEngine,
 		startTime: timeRange.startTime,
 		endTime: timeRange.endTime,
 		limit: CORRELATION_LOAD_LIMIT,

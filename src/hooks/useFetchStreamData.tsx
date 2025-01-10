@@ -22,7 +22,6 @@ export const useFetchStreamData = () => {
 	const [{ selectedFields, correlationCondition, fields, streamData }, setCorrelationStore] = useCorrelationStore(
 		(store) => store,
 	);
-	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
 	const [streamInfo] = useStreamStore((store) => store.info);
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
@@ -45,7 +44,6 @@ export const useFetchStreamData = () => {
 	}, [timeRange.startTime, timeRange.endTime]);
 
 	const defaultQueryOpts = {
-		queryEngine,
 		startTime: timeRange.startTime,
 		endTime: timeRange.endTime,
 		limit: STREAM_DATA_LOAD_LIMIT,

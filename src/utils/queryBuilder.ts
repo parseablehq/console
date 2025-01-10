@@ -21,7 +21,6 @@ type FilterQueryBuilderType = {
 type CorrelationQueryBuilderType = {
 	streamNames: string[];
 	limit: number;
-	queryEngine?: QueryEngine;
 	correlationCondition?: string;
 	selectedFields?: string[];
 	startTime: Date;
@@ -101,7 +100,6 @@ export class FilterQueryBuilder {
 }
 
 export class CorrelationQueryBuilder {
-	queryEngine?: QueryEngine;
 	streamNames: string[];
 	limit: number;
 	correlationCondition?: string;
@@ -112,13 +110,11 @@ export class CorrelationQueryBuilder {
 	constructor({
 		streamNames,
 		limit,
-		queryEngine,
 		correlationCondition,
 		selectedFields,
 		startTime,
 		endTime,
 	}: CorrelationQueryBuilderType) {
-		this.queryEngine = queryEngine;
 		this.streamNames = streamNames;
 		this.startTime = startTime;
 		this.endTime = endTime;
@@ -154,18 +150,10 @@ export class CorrelationQueryBuilder {
 		};
 	}
 	getResourcePath(): string {
-		switch (this.queryEngine) {
-			case 'Trino':
-				return TRINO_RESOURCE_PATH;
-			default:
-				return PARSEABLE_RESOURCE_PATH;
-		}
+		return PARSEABLE_RESOURCE_PATH;
 	}
 
 	getQuery() {
-		switch (this.queryEngine) {
-			default:
-				return this.getParseableQuery();
-		}
+		return this.getParseableQuery();
 	}
 }

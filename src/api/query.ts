@@ -18,7 +18,6 @@ type CorrelationLogs = {
 	startTime: Date;
 	endTime: Date;
 	limit: number;
-	queryEngine?: QueryEngine;
 	correlationCondition?: string;
 	selectedFields?: string[];
 };

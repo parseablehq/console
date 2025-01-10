@@ -304,7 +304,6 @@ const parseGraphData = (
 const MultiEventTimeLineGraph = () => {
 	const { fetchQueryMutation } = useQueryResult();
 	const [fields] = useCorrelationStore((store) => store.fields);
-	const [queryEngine] = useAppStore((store) => store.instanceConfig?.queryEngine);
 	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
 	const [timeRange] = useAppStore((store) => store.timeRange);
 	const [multipleStreamData, setMultipleStreamData] = useState<any>([]);
@@ -323,7 +322,7 @@ const MultiEventTimeLineGraph = () => {
 				endTime: modifiedEndTime,
 				access: [],
 			};
-			const whereClause = parseQuery(queryEngine, appliedQuery, streamKey).where;
+			const whereClause = parseQuery(appliedQuery, streamKey).where;
 			const query = generateCountQuery(streamKey, modifiedStartTime, modifiedEndTime, compactType, whereClause);
 			const graphQuery = removeOffsetFromQuery(query);
 
