@@ -99,8 +99,12 @@ const SavedCorrelationItem = (props: { item: Correlation }) => {
 			</Stack>
 			{showQuery && (
 				<Stack>
-					{joinConfig.joinConditions.map((join: { tableName: string }) => {
-						return <Text>Table: {join.tableName}</Text>;
+					{joinConfig.joinConditions.map((join: { tableName: string; field: string }) => {
+						return (
+							<Text>
+								{join.tableName}.{join.field}
+							</Text>
+						);
 					})}
 				</Stack>
 			)}

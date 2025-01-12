@@ -12,7 +12,6 @@ import {
 } from '@/pages/Correlation/providers/CorrelationProvider';
 import { notifyError } from '@/utils/notification';
 import { useQuery } from 'react-query';
-import { LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 import { useRef, useEffect } from 'react';
 
 const { setStreamData } = correlationStoreReducers;
@@ -23,7 +22,6 @@ export const useFetchStreamData = () => {
 		(store) => store,
 	);
 	const [streamInfo] = useStreamStore((store) => store.info);
-	const [currentStream] = useAppStore((store) => store.currentStream);
 	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
 	const [timeRange] = useAppStore((store) => store.timeRange);
 	const [
@@ -66,7 +64,7 @@ export const useFetchStreamData = () => {
 
 			const fetchPromises = streamsToFetch.map((streamName) => {
 				const queryOpts = { ...defaultQueryOpts, streamNames: [streamName] };
-				return getStreamDataWithHeaders(queryOpts);
+				return getStreamDataWithHeaders(queryOpts).then((data) => ({ streamName, data }));
 			});
 			return Promise.all(fetchPromises);
 		},
@@ -74,18 +72,21 @@ export const useFetchStreamData = () => {
 			enabled: false,
 			refetchOnWindowFocus: false,
 			onSuccess: async (responses) => {
-				responses.map((data: { data: LogsResponseWithHeaders; status: StatusCodes }) => {
+				responses.forEach(({ streamName, data }) => {
 					const logs = data.data;
 					const isInvalidResponse = _.isEmpty(logs) || _.isNil(logs) || data.status !== StatusCodes.OK;
-					if (isInvalidResponse) return setError('Failed to query logs');
+					if (isInvalidResponse) {
+						setError('Failed to query logs');
+						return;
+					}
 
 					const { records, fields } = logs;
 					if (fields.length > 0 && !correlationCondition) {
-						return setCorrelationStore((store) => setStreamData(store, currentStream || '', records));
+						setCorrelationStore((store) => setStreamData(store, streamName, records));
 					} else if (fields.length > 0 && correlationCondition) {
-						return setCorrelationStore((store) => setStreamData(store, 'correlatedStream', records));
+						setCorrelationStore((store) => setStreamData(store, 'correlatedStream', records));
 					} else {
-						notifyError({ message: `${currentStream} doesn't have any fields` });
+						notifyError({ message: `${streamName} doesn't have any fields` });
 					}
 				});
 			},
