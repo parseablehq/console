@@ -128,8 +128,6 @@ const Correlation = () => {
 		setIsCorrelationEnabled(false);
 	};
 
-	console.log(Object.keys(selectedFields).length);
-
 	// View Flags
 	const hasContentLoaded = !schemaLoading && !logsLoading && !streamsLoading;
 	const hasNoData = hasContentLoaded && !errorMessage && tableOpts.pageData.length === 0;
