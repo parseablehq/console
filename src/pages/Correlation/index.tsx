@@ -125,7 +125,10 @@ const Correlation = () => {
 		setCorrelationData((store) => setCorrelationCondition(store, ''));
 		setCorrelationData((store) => setSelectedFields(store, '', '', true));
 		setCorrelationData((store) => setIsCorrelatedFlag(store, false));
+		setIsCorrelationEnabled(false);
 	};
+
+	console.log(Object.keys(selectedFields).length);
 
 	// View Flags
 	const hasContentLoaded = !schemaLoading && !logsLoading && !streamsLoading;
@@ -367,7 +370,7 @@ const Correlation = () => {
 							<Button
 								className={classes.correlateBtn}
 								variant="outline"
-								disabled={!isCorrelationEnabled}
+								disabled={!isCorrelationEnabled || Object.keys(selectedFields).length === 0}
 								onClick={() => {
 									setCorrelationData((store) => setIsCorrelatedFlag(store, true));
 									setIsCorrelationEnabled(false);
