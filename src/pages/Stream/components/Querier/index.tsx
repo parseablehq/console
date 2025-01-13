@@ -147,6 +147,7 @@ const Querier = () => {
 	const [streamInfo] = useStreamStore((store) => store.info);
 	const [{ query, isSumbitDisabled, isQueryFromParams }, setFilterStore] = useFilterStore((store) => store);
 	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
+	const { isStoreSynced } = useParamsController();
 
 	useEffect(() => {
 		if (schema) {
@@ -155,7 +156,8 @@ const Querier = () => {
 	}, [schema]);
 
 	useEffect(() => {
-		return setFilterStore(resetFilters);
+		if (!isStoreSynced) return;
+		setFilterStore(resetFilters);
 	}, [currentStream]);
 
 	const triggerRefetch = useCallback(
