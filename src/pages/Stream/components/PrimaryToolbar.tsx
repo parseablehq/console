@@ -10,20 +10,21 @@ import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/Ap
 import { useCallback, useEffect } from 'react';
 import StreamDropdown from '@/components/Header/StreamDropdown';
 import { notifications } from '@mantine/notifications';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import _ from 'lodash';
 import StreamingButton from '@/components/Header/StreamingButton';
 import ShareButton from '@/components/Header/ShareButton';
 import { useLogsStore, logsStoreReducers } from '../providers/LogsProvider';
 import { filterStoreReducers, useFilterStore } from '../providers/FilterProvider';
 import classes from './styles/PrimaryToolbar.module.css';
+import { CorrelationIcon } from '@/components/Navbar/components/CorrelationIcon';
 
 const { toggleDeleteModal, onToggleView } = logsStoreReducers;
 const { toggleSavedFiltersModal } = filterStoreReducers;
 const renderMaximizeIcon = () => <IconMaximize size={px('1rem')} stroke={1.5} />;
 const renderDeleteIcon = () => <IconTrash data-id="delete-stream-btn" size={px('1rem')} stroke={1.5} />;
 
-const MaximizeButton = () => {
+export const MaximizeButton = () => {
 	const [, setAppStore] = useAppStore(() => null);
 	const onClick = useCallback(() => setAppStore(appStoreReducers.toggleMaximize), []);
 	return <IconButton renderIcon={renderMaximizeIcon} size={38} onClick={onClick} tooltipLabel="Full screen" />;
@@ -39,6 +40,20 @@ const SavedFiltersButton = () => {
 			leftSection={<IconFilterHeart size={px('1rem')} stroke={1.5} />}
 			onClick={onClick}>
 			Saved Filters
+		</Button>
+	);
+};
+
+const AddCorrelationButton = () => {
+	const navigate = useNavigate();
+
+	return (
+		<Button
+			className={classes.savedFiltersBtn}
+			h="100%"
+			onClick={() => navigate('/correlation')}
+			leftSection={<CorrelationIcon stroke={'#000000'} strokeWidth={1} />}>
+			Correlate
 		</Button>
 	);
 };
@@ -114,6 +129,7 @@ const PrimaryToolbar = () => {
 			{view === 'explore' ? (
 				<Stack style={{ flexDirection: 'row', height: STREAM_PRIMARY_TOOLBAR_HEIGHT }} w="100%">
 					<StreamDropdown />
+					<AddCorrelationButton />
 					<Querier />
 					<SavedFiltersButton />
 					<TimeRange />

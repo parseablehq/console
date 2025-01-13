@@ -2,7 +2,7 @@ import { Axios } from './axios';
 import { LOG_QUERY_URL } from './constants';
 import { Log, LogsQuery, LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 import timeRangeUtils from '@/utils/timeRangeUtils';
-import { QueryBuilder } from '@/utils/queryBuilder';
+import { CorrelationQueryBuilder, QueryBuilder } from '@/utils/queryBuilder';
 
 const { formatDateAsCastType } = timeRangeUtils;
 type QueryLogs = {
@@ -11,6 +11,15 @@ type QueryLogs = {
 	endTime: Date;
 	limit: number;
 	pageOffset: number;
+};
+
+type CorrelationLogs = {
+	streamNames: string[];
+	startTime: Date;
+	endTime: Date;
+	limit: number;
+	correlationCondition?: string;
+	selectedFields?: string[];
 };
 
 // to optimize query performace, it has been decided to round off the time at the given level
@@ -51,6 +60,18 @@ export const getQueryLogsWithHeaders = (logsQuery: QueryLogs) => {
 	const queryBuilder = new QueryBuilder(logsQuery);
 	const endPoint = LOG_QUERY_URL({ fields: true }, queryBuilder.getResourcePath());
 	return Axios().post<LogsResponseWithHeaders>(endPoint, formQueryOpts(logsQuery), {});
+};
+
+export const getCorrelationQueryLogsWithHeaders = (logsQuery: CorrelationLogs) => {
+	const queryBuilder = new CorrelationQueryBuilder(logsQuery);
+	const endPoint = LOG_QUERY_URL({ fields: true }, queryBuilder.getResourcePath());
+	return Axios().post<LogsResponseWithHeaders>(endPoint, queryBuilder.getCorrelationQuery(), {});
+};
+
+export const getStreamDataWithHeaders = (logsQuery: CorrelationLogs) => {
+	const queryBuilder = new CorrelationQueryBuilder(logsQuery);
+	const endPoint = LOG_QUERY_URL({ fields: true }, queryBuilder.getResourcePath());
+	return Axios().post<LogsResponseWithHeaders>(endPoint, queryBuilder.getQuery(), {});
 };
 
 // ------ Custom sql query
