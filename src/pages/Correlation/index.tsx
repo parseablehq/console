@@ -193,6 +193,7 @@ const Correlation = () => {
 		setCorrelationData((store) => setIsCorrelatedFlag(store, false));
 		setCorrelationData((store) => setCorrelationId(store, ''));
 		setCorrelationData((store) => setActiveCorrelation(store, null));
+		setIsCorrelationEnabled(false);
 	};
 	const openSaveCorrelationModal = useCallback((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		e.stopPropagation();
@@ -457,7 +458,9 @@ const Correlation = () => {
 							<Button
 								className={classes.correlateBtn}
 								variant="outline"
-								disabled={!isCorrelationEnabled || activeCorrelation !== null}
+								disabled={
+									!isCorrelationEnabled || Object.keys(selectedFields).length === 0 || activeCorrelation !== null
+								}
 								onClick={() => {
 									setCorrelationData((store) => setIsCorrelatedFlag(store, true));
 									setIsCorrelationEnabled(false);
