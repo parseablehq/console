@@ -7,7 +7,7 @@ import { AxiosError } from 'axios';
 import { useStreamStore } from '@/pages/Stream/providers/StreamProvider';
 import {
 	correlationStoreReducers,
-	STREAM_DATA_LOAD_LIMIT,
+	CORRELATION_LOAD_LIMIT,
 	useCorrelationStore,
 } from '@/pages/Correlation/providers/CorrelationProvider';
 import { notifyError } from '@/utils/notification';
@@ -46,7 +46,7 @@ export const useFetchStreamData = () => {
 	const defaultQueryOpts = {
 		startTime: timeRange.startTime,
 		endTime: timeRange.endTime,
-		limit: STREAM_DATA_LOAD_LIMIT,
+		limit: CORRELATION_LOAD_LIMIT,
 		pageOffset: currentOffset,
 		timePartitionColumn,
 		selectedFields: _.flatMap(selectedFields, (values, key) => _.map(values, (value) => `${key}.${value}`)) || [],

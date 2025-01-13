@@ -14,7 +14,9 @@ export default function ShareButton() {
 	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [{ streamData, selectedFields }] = useCorrelationStore((store) => store);
-	const [{ tableOpts }] = useCorrelationStore((store) => store);
+	const [{ tableOpts, fields }] = useCorrelationStore((store) => store);
+
+	const streamNames = Object.keys(fields);
 
 	const { pageData } = tableOpts;
 
@@ -41,7 +43,12 @@ export default function ShareButton() {
 
 	const exportHandler = useCallback(
 		(fileType: string | null) => {
-			const filename = `${currentStream}-logs`;
+			let filename = 'correlation-logs';
+			if (streamNames.length === 1) {
+				filename = `correlation-${streamNames[0]}-logs`;
+			} else if (streamNames.length > 1) {
+				filename = `correlation-${streamNames[0]}-${streamNames[1]}-logs`;
+			}
 
 			if (pageData.length === 0) {
 				console.error('No data to export');

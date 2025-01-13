@@ -223,7 +223,7 @@ const Correlation = () => {
 								placeholder="Select Stream 1"
 								disabled={false}
 								onChange={(value) => value && addStream(value)}
-								data={streamData}
+								data={streamData.filter((stream) => !streamNames.includes(stream.value))}
 								isFirst={true}
 							/>
 
@@ -233,7 +233,7 @@ const Correlation = () => {
 								placeholder="Select Stream 2"
 								disabled={streamNames.length < 1}
 								onChange={(value) => addStream(value)}
-								data={streamData}
+								data={streamData.filter((stream) => !streamNames.includes(stream.value))}
 								isFirst={false}
 							/>
 						</>
@@ -246,7 +246,7 @@ const Correlation = () => {
 								placeholder="Select Stream 2"
 								disabled={logsLoading}
 								onChange={(value) => addStream(value)}
-								data={streamData}
+								data={streamData.filter((stream) => !streamNames.includes(stream.value))}
 								isFirst={false}
 							/>
 						</>
@@ -376,7 +376,10 @@ const Correlation = () => {
 								}}>
 								Correlate
 							</Button>
-							<Button className={classes.clearBtn} onClick={clearQuery} disabled={streamNames.length == 0}>
+							<Button
+								className={classes.clearBtn}
+								onClick={clearQuery}
+								disabled={streamNames.length == 0 || Object.keys(selectedFields).length === 0}>
 								Clear
 							</Button>
 						</div>
