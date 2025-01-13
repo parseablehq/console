@@ -77,8 +77,10 @@ export const useCorrelationsQuery = () => {
 	const { mutate: saveCorrelationMutation, isLoading: isCorrelationSaving } = useMutation(
 		(data: { correlationData: any; onSuccess?: () => void }) => saveCorrelation(data.correlationData),
 		{
-			onSuccess: (_data, variables) => {
+			onSuccess: (data, variables) => {
 				variables.onSuccess && variables.onSuccess();
+				//set activeCorrelation and id
+				setCorrelatedStore((store) => setCorrelationId(store, data.data.id));
 				fetchCorrelations();
 				notifySuccess({ message: 'Correlation saved successfully' });
 			},

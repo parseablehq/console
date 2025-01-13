@@ -22,8 +22,10 @@ interface FormObjectType extends Omit<Correlation, 'correlation_id' | 'version'>
 }
 
 const SaveCorrelationModal = () => {
-	const [{ isSaveCorrelationModalOpen, selectedFields, fields, correlationCondition }, setCorrelationData] =
-		useCorrelationStore((store) => store);
+	const [
+		{ isSaveCorrelationModalOpen, selectedFields, fields, correlationCondition, activeCorrelation },
+		setCorrelationData,
+	] = useCorrelationStore((store) => store);
 
 	const [formObject, setFormObject] = useState<FormObjectType | null>(null);
 	const [timeRange] = useAppStore((store) => store.timeRange);
@@ -38,23 +40,44 @@ const SaveCorrelationModal = () => {
 	useEffect(() => {
 		const timeRangeOptions = makeTimeRangeOptions({ selected: null, current: timeRange });
 		const selectedTimeRangeOption = getDefaultTimeRangeOption(timeRangeOptions);
-		setFormObject({
-			version: 'v1',
-			title: '',
-			isNew: true,
-			isError: false,
-			timeRangeOptions,
-			selectedTimeRangeOption,
-			tableConfigs: [],
-			joinConfig: {
-				joinConditions: [],
-			},
-			id: '',
-			filter: null,
-			startTime: '',
-			endTime: '',
-		});
-	}, [timeRange]);
+
+		if (activeCorrelation !== null) {
+			//Modify this after BE changes
+			setFormObject({
+				version: 'v1',
+				title: activeCorrelation.title,
+				isNew: false,
+				isError: false,
+				timeRangeOptions,
+				selectedTimeRangeOption,
+				tableConfigs: [],
+				joinConfig: {
+					joinConditions: [],
+				},
+				id: '',
+				filter: null,
+				startTime: '',
+				endTime: '',
+			});
+		} else {
+			setFormObject({
+				version: 'v1',
+				title: '',
+				isNew: true,
+				isError: false,
+				timeRangeOptions,
+				selectedTimeRangeOption,
+				tableConfigs: [],
+				joinConfig: {
+					joinConditions: [],
+				},
+				id: '',
+				filter: null,
+				startTime: '',
+				endTime: '',
+			});
+		}
+	}, [timeRange, activeCorrelation]);
 
 	const closeModal = useCallback(() => {
 		setCorrelationData((store) => toggleSaveCorrelationModal(store, false));
