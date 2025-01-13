@@ -305,17 +305,36 @@ const MultiEventTimeLineGraph = () => {
 	const { fetchQueryMutation } = useQueryResult();
 	const [fields] = useCorrelationStore((store) => store.fields);
 	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
+	const [streamData] = useCorrelationStore((store) => store.streamData);
 	const [timeRange] = useAppStore((store) => store.timeRange);
-	const [multipleStreamData, setMultipleStreamData] = useState<any>([]);
+	const [multipleStreamData, setMultipleStreamData] = useState<{ [key: string]: any }>({});
 
 	const { interval, startTime, endTime } = timeRange;
 
+	const streamGraphData = Object.values(multipleStreamData);
+
+	useEffect(() => {
+		setMultipleStreamData((prevData) => {
+			const newData = { ...prevData };
+			const streamDataKeys = Object.keys(streamData);
+			Object.keys(newData).forEach((key) => {
+				if (!streamDataKeys.includes(key)) {
+					delete newData[key];
+				}
+			});
+			return newData;
+		});
+	}, [streamData]);
+
 	useEffect(() => {
 		if (!fields || Object.keys(fields).length === 0) {
-			setMultipleStreamData([]);
+			setMultipleStreamData({});
 			return;
 		}
-		const queries = Object.keys(fields).map((streamKey) => {
+
+		const streamNames = Object.keys(fields);
+		const streamsToFetch = streamNames.filter((streamName) => !Object.keys(streamData).includes(streamName));
+		const queries = streamsToFetch.map((streamKey) => {
 			const { modifiedEndTime, modifiedStartTime, compactType } = getModifiedTimeRange(startTime, endTime, interval);
 			const logsQuery = {
 				startTime: modifiedStartTime,
@@ -330,12 +349,18 @@ const MultiEventTimeLineGraph = () => {
 				queryEngine: 'Parseable',
 				logsQuery,
 				query: graphQuery,
+				streamKey,
 			};
 		});
-		setMultipleStreamData([]);
 		Promise.all(queries.map((queryData: any) => fetchQueryMutation.mutateAsync(queryData)))
 			.then((results) => {
-				setMultipleStreamData(results);
+				setMultipleStreamData((prevData: any) => {
+					const newData = { ...prevData };
+					results.forEach((result, index) => {
+						newData[queries[index].streamKey] = result;
+					});
+					return newData;
+				});
 			})
 			.catch((error) => {
 				console.error('Error fetching queries:', error);
@@ -345,14 +370,10 @@ const MultiEventTimeLineGraph = () => {
 	const isLoading = fetchQueryMutation.isLoading;
 	const avgEventCount = useMemo(() => calcAverage(fetchQueryMutation?.data), [fetchQueryMutation?.data]);
 	const graphData = useMemo(() => {
-		if (
-			!multipleStreamData ||
-			multipleStreamData.length === 0 ||
-			multipleStreamData.length !== Object.keys(fields).length
-		)
+		if (!streamGraphData || streamGraphData.length === 0 || streamGraphData.length !== Object.keys(fields).length)
 			return [];
-		return parseGraphData(multipleStreamData, startTime, endTime, interval);
-	}, [multipleStreamData]);
+		return parseGraphData(streamGraphData, startTime, endTime, interval);
+	}, [streamGraphData]);
 
 	const hasData = Array.isArray(graphData) && graphData.length !== 0;
 	const [, setLogsStore] = useAppStore((store) => store.timeRange);

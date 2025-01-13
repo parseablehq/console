@@ -192,6 +192,14 @@
 		background-color: #545beb;
 		border-radius: rem(8px);
 	}
+	&:disabled {
+		cursor: not-allowed;
+		background-color: white;
+	}
+
+	&:disabled:hover {
+		background-color: white;
+	}
 }
 
 .logsSecondaryToolbar {
