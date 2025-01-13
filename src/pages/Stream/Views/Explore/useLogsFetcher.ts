@@ -4,12 +4,14 @@ import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { useQueryLogs } from '@/hooks/useQueryLogs';
 import { useFetchCount } from '@/hooks/useQueryResult';
 import { useStreamStore } from '../../providers/StreamProvider';
+import useParamsController from '@/pages/Stream/hooks/useParamsController';
 import _ from 'lodash';
 
 const { setCleanStoreForStreamChange } = logsStoreReducers;
 const { syncTimeRange } = appStoreReducers;
 
 const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
+	const { isStoreSynced } = useParamsController();
 	const { schemaLoading, infoLoading } = props;
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [{ timeRange }, setAppStore] = useAppStore((store) => store);
@@ -25,6 +27,7 @@ const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean })
 	const showTable = hasContentLoaded && !hasNoData && !queryLogsError;
 
 	useEffect(() => {
+		if (!isStoreSynced) return;
 		setAppStore(syncTimeRange);
 		setLogsStore(setCleanStoreForStreamChange);
 	}, [currentStream]);
