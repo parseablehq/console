@@ -192,6 +192,14 @@
 		background-color: #545beb;
 		border-radius: rem(8px);
 	}
+	&:disabled {
+		cursor: not-allowed;
+		background-color: white;
+	}
+
+	&:disabled:hover {
+		background-color: white;
+	}
 }
 
 .logsSecondaryToolbar {
@@ -225,7 +233,6 @@
 }
 
 .correlateBtn {
-	background-color: white;
 	border-radius: rem(8px);
 	font-size: 0.65rem;
 	cursor: pointer;

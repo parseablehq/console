@@ -9,7 +9,6 @@ import { formatQuery } from 'react-querybuilder';
 import { Correlation } from '@/@types/parseable/api/correlation';
 
 export const CORRELATION_LOAD_LIMIT = 1000;
-export const STREAM_DATA_LOAD_LIMIT = 250;
 
 export const STREAM_COLORS = ['#FDA4AF', '#c084fc'];
 export const STREAM_HEADER_COLORS = ['#9F1239', '#7E22CE'];
