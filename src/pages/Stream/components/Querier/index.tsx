@@ -75,34 +75,38 @@ const QuerierModal = (props: {
 	onSqlSearchApply: (query: string) => void;
 	onFiltersApply: () => void;
 }) => {
-	const { isStoreSynced } = useParamsController();
 	const [{ showQueryBuilder, viewMode, custSearchQuery, activeMode }, setLogsStore] = useLogsStore(
 		(store) => store.custQuerySearchState,
 	);
 	const [parsedFilterQuery, setParsedFilterQuery] = useState('');
 
-	const getParsedFilterQuery = useCallback((query: string) => {
-		setParsedFilterQuery(query);
-	}, []);
+	const getParsedFilterQuery = useCallback(
+		(query: string) => {
+			setParsedFilterQuery(query);
+		},
+		[parsedFilterQuery],
+	);
 	const onClose = useCallback(() => {
 		setLogsStore((store) => toggleQueryBuilder(store, false));
-		setParsedFilterQuery('');
 		setLogsStore((store) => toggleCustQuerySearchViewMode(store, activeMode !== null ? activeMode : 'filters'));
 	}, [activeMode]);
 
 	const queryCodeEditorRef = useRef<any>(''); // to store input value even after the editor unmounts
 
 	useEffect(() => {
-		if (!isStoreSynced) return;
 		if (!_.isEmpty(parsedFilterQuery)) {
 			queryCodeEditorRef.current = parsedFilterQuery;
-			return;
-		}
-		if (!_.isEmpty(custSearchQuery)) {
+			// return;
+		} else {
 			queryCodeEditorRef.current = custSearchQuery;
-			return;
 		}
-	}, [isStoreSynced, parsedFilterQuery, custSearchQuery]);
+	}, [parsedFilterQuery, custSearchQuery]);
+
+	useEffect(() => {
+		if (showQueryBuilder === false) {
+			setParsedFilterQuery('');
+		}
+	}, [showQueryBuilder]);
 
 	return (
 		<Modal
