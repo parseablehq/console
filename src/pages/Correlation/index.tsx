@@ -367,7 +367,7 @@ const Correlation = () => {
 						<div style={{ display: 'flex', gap: '5px', alignItems: 'center', height: '25px' }}>
 							<Button
 								className={classes.correlateBtn}
-								variant="outline"
+								variant="filled"
 								disabled={!isCorrelationEnabled || Object.keys(selectedFields).length === 0}
 								onClick={() => {
 									setCorrelationData((store) => setIsCorrelatedFlag(store, true));

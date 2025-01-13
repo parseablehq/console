@@ -1,6 +1,6 @@
 import { Button, SegmentedControl, Stack, Tooltip, px, rem } from '@mantine/core';
 import IconButton from '@/components/Button/IconButton';
-import { IconBraces, IconFilterHeart, IconMaximize, IconPlus, IconTable, IconTrash } from '@tabler/icons-react';
+import { IconBraces, IconFilterHeart, IconMaximize, IconTable, IconTrash } from '@tabler/icons-react';
 import { STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT, STREAM_PRIMARY_TOOLBAR_HEIGHT } from '@/constants/theme';
 import TimeRange from '@/components/Header/TimeRange';
 import RefreshInterval from '@/components/Header/RefreshInterval';
@@ -17,6 +17,7 @@ import ShareButton from '@/components/Header/ShareButton';
 import { useLogsStore, logsStoreReducers } from '../providers/LogsProvider';
 import { filterStoreReducers, useFilterStore } from '../providers/FilterProvider';
 import classes from './styles/PrimaryToolbar.module.css';
+import { CorrelationIcon } from '@/components/Navbar/components/CorrelationIcon';
 
 const { toggleDeleteModal, onToggleView } = logsStoreReducers;
 const { toggleSavedFiltersModal } = filterStoreReducers;
@@ -51,8 +52,8 @@ const AddCorrelationButton = () => {
 			className={classes.savedFiltersBtn}
 			h="100%"
 			onClick={() => navigate('/correlation')}
-			leftSection={<IconPlus size={px('1rem')} stroke={1.5} />}>
-			Add correlation
+			leftSection={<CorrelationIcon stroke={'#000000'} strokeWidth={1} />}>
+			Correlate
 		</Button>
 	);
 };
@@ -128,8 +129,8 @@ const PrimaryToolbar = () => {
 			{view === 'explore' ? (
 				<Stack style={{ flexDirection: 'row', height: STREAM_PRIMARY_TOOLBAR_HEIGHT }} w="100%">
 					<StreamDropdown />
-					<Querier />
 					<AddCorrelationButton />
+					<Querier />
 					<SavedFiltersButton />
 					<TimeRange />
 					<RefreshInterval />
