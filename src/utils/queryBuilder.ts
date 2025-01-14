@@ -126,6 +126,7 @@ export class CorrelationQueryBuilder {
 	getCorrelationQuery() {
 		const query =
 			this.selectedFields &&
+			/* eslint-disable no-useless-escape */
 			`select ${this.selectedFields
 				.map((field) => {
 					const [streamName, fieldName] = field.split('.');
@@ -142,6 +143,7 @@ export class CorrelationQueryBuilder {
 	}
 
 	getParseableQuery() {
+		/* eslint-disable no-useless-escape */
 		const query = `SELECT * FROM \"${this.streamNames[0]}\" LIMIT ${this.limit}`;
 		return {
 			startTime: this.startTime,
