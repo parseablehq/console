@@ -44,6 +44,7 @@ type CorrelationStore = {
 	isCorrelatedData: boolean;
 	allPageData: any;
 	correlationId: string;
+	savedCorrelationId: string;
 	correlations: Correlation[] | null;
 	activeCorrelation: Correlation | null;
 	isSavedCorrelationsModalOpen: boolean;
@@ -88,6 +89,7 @@ type CorrelationStoreReducers = {
 	setActiveCorrelation: (_store: CorrelationStore, correlation: Correlation | null) => ReducerOutput;
 	toggleSaveCorrelationModal: (_store: CorrelationStore, val: boolean) => ReducerOutput;
 	cleanCorrelationStore: (store: CorrelationStore) => ReducerOutput;
+	setSavedCorrelationId: (store: CorrelationStore, id: string) => ReducerOutput;
 };
 
 const initialState: CorrelationStore = {
@@ -98,6 +100,7 @@ const initialState: CorrelationStore = {
 	isCorrelatedData: false,
 	allPageData: [],
 	correlationId: '',
+	savedCorrelationId: '',
 	correlations: null,
 	activeCorrelation: null,
 	isSavedCorrelationsModalOpen: false,
@@ -251,6 +254,9 @@ const cleanCorrelationStore = (store: CorrelationStore) => {
 		...store,
 		selectedFields: {},
 		correlationCondition: '',
+		correlationId: '',
+		isCorrelatedData: false,
+		fields: {},
 	};
 };
 
@@ -279,6 +285,13 @@ const setActiveCorrelation = (store: CorrelationStore, correlation: Correlation 
 	return {
 		...store,
 		activeCorrelation: correlation,
+	};
+};
+
+const setSavedCorrelationId = (store: CorrelationStore, id: string) => {
+	return {
+		...store,
+		savedCorrelationId: id,
 	};
 };
 const setCorrelationId = (store: CorrelationStore, id: string) => {
@@ -581,6 +594,7 @@ const correlationStoreReducers: CorrelationStoreReducers = {
 	toggleSaveCorrelationModal,
 	setActiveCorrelation,
 	cleanCorrelationStore,
+	setSavedCorrelationId,
 };
 
 export { CorrelationProvider, useCorrelationStore, correlationStoreReducers };

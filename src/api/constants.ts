@@ -26,6 +26,7 @@ export const LOG_STREAMS_ALERTS_URL = (streamName: string) => `${LOG_STREAM_LIST
 export const LIST_SAVED_FILTERS_URL = `${API_V1}/filters`;
 export const LIST_DASHBOARDS = `${API_V1}/dashboards`;
 export const LIST_CORRELATIONS = `${API_V1}/correlation`;
+export const UPDATE_CORRELATION_URL = (correlationId: string) => `${API_V1}/correlation/${correlationId}`;
 export const DELETE_SAVED_CORRELATION_URL = (correlationId: string) => `${API_V1}/correlation/${correlationId}`;
 export const GET_SAVED_CORRELATION_URL = (correlationId: string) => `${API_V1}/correlation/${correlationId}`;
 export const UPDATE_SAVED_FILTERS_URL = (filterId: string) => `${API_V1}/filters/${filterId}`;

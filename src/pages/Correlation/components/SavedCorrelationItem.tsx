@@ -1,6 +1,5 @@
 import { Stack, Box, Button, Text, px } from '@mantine/core';
 import { IconClock, IconEye, IconEyeOff, IconTrash, IconX } from '@tabler/icons-react';
-import _ from 'lodash';
 import { useState, useCallback } from 'react';
 import classes from '../styles/SavedCorrelationItem.module.css';
 import { Correlation } from '@/@types/parseable/api/correlation';
@@ -101,7 +100,7 @@ const SavedCorrelationItem = (props: { item: Correlation }) => {
 				<Stack>
 					{joinConfig.joinConditions.map((join: { tableName: string; field: string }) => {
 						return (
-							<Text>
+							<Text key={join.tableName}>
 								{join.tableName}.{join.field}
 							</Text>
 						);

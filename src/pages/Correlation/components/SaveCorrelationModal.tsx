@@ -23,7 +23,7 @@ interface FormObjectType extends Omit<Correlation, 'correlation_id' | 'version'>
 
 const SaveCorrelationModal = () => {
 	const [
-		{ isSaveCorrelationModalOpen, selectedFields, fields, correlationCondition, activeCorrelation },
+		{ isSaveCorrelationModalOpen, selectedFields, fields, correlationCondition, activeCorrelation, savedCorrelationId },
 		setCorrelationData,
 	] = useCorrelationStore((store) => store);
 
@@ -31,7 +31,7 @@ const SaveCorrelationModal = () => {
 	const [timeRange] = useAppStore((store) => store.timeRange);
 	const [isDirty, setDirty] = useState<boolean>(false);
 
-	const { saveCorrelationMutation } = useCorrelationsQuery();
+	const { saveCorrelationMutation, updateCorrelationMutation } = useCorrelationsQuery();
 
 	const streamNames = Object.keys(fields);
 
@@ -40,9 +40,7 @@ const SaveCorrelationModal = () => {
 	useEffect(() => {
 		const timeRangeOptions = makeTimeRangeOptions({ selected: null, current: timeRange });
 		const selectedTimeRangeOption = getDefaultTimeRangeOption(timeRangeOptions);
-
 		if (activeCorrelation !== null) {
-			//Modify this after BE changes
 			setFormObject({
 				version: 'v1',
 				title: activeCorrelation.title,
@@ -54,7 +52,7 @@ const SaveCorrelationModal = () => {
 				joinConfig: {
 					joinConditions: [],
 				},
-				id: '',
+				id: activeCorrelation.id,
 				filter: null,
 				startTime: '',
 				endTime: '',
@@ -82,6 +80,44 @@ const SaveCorrelationModal = () => {
 	const closeModal = useCallback(() => {
 		setCorrelationData((store) => toggleSaveCorrelationModal(store, false));
 	}, []);
+
+	const updateCorrelation = useCallback(() => {
+		updateCorrelationMutation({
+			correlationData: {
+				version: 'v1',
+				id: activeCorrelation?.id,
+				tableConfigs: [
+					{
+						selectedFields: selectedFields[streamNames[0]] || [],
+						tableName: streamNames[0],
+					},
+					{
+						selectedFields: selectedFields[streamNames[1]] || [],
+						tableName: streamNames[1],
+					},
+				],
+				joinConfig: {
+					joinConditions: [
+						{
+							tableName: streamNames[0],
+							field: joins[0].split('.')[1].trim(),
+						},
+						{
+							tableName: streamNames[1],
+							field: joins[1].split('.')[1].trim(),
+						},
+					],
+				},
+				filter: null,
+				startTime: formObject?.selectedTimeRangeOption.time_filter?.from,
+				endTime: formObject?.selectedTimeRangeOption.time_filter?.to,
+				title: formObject?.title,
+			},
+			onSuccess: () => {
+				closeModal();
+			},
+		});
+	}, [formObject]);
 
 	const saveCorrelation = useCallback(() => {
 		saveCorrelationMutation({
@@ -150,8 +186,10 @@ const SaveCorrelationModal = () => {
 			});
 		}
 
-		if (!_.isEmpty(formObject.title) && !_.isEmpty(formObject.version)) {
+		if (!_.isEmpty(formObject.title) && !_.isEmpty(formObject.version) && savedCorrelationId) {
 			saveCorrelation();
+		} else {
+			updateCorrelation();
 		}
 	}, [formObject]);
 
@@ -210,7 +248,7 @@ const SaveCorrelationModal = () => {
 					</Box>
 					<Box>
 						<Button miw={100} onClick={onSubmit}>
-							Save
+							{!savedCorrelationId ? 'Update' : 'Save'}
 						</Button>
 					</Box>
 				</Stack>

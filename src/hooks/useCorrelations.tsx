@@ -1,17 +1,24 @@
 import { useMutation, useQuery } from 'react-query';
 import _ from 'lodash';
 
-import { deleteSavedCorrelation, getCorrelationById, getCorrelations, saveCorrelation } from '@/api/correlations';
+import {
+	deleteSavedCorrelation,
+	getCorrelationById,
+	getCorrelations,
+	saveCorrelation,
+	updateCorrelation,
+} from '@/api/correlations';
 import { correlationStoreReducers, useCorrelationStore } from '@/pages/Correlation/providers/CorrelationProvider';
 import { notifyError, notifySuccess } from '@/utils/notification';
 import { AxiosError, isAxiosError } from 'axios';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import dayjs from 'dayjs';
 
-const { setCorrelations, setActiveCorrelation, setCorrelationId } = correlationStoreReducers;
+const { setCorrelations, setActiveCorrelation, setCorrelationId, setSavedCorrelationId, cleanCorrelationStore } =
+	correlationStoreReducers;
 const { setTimeRange } = appStoreReducers;
 export const useCorrelationsQuery = () => {
-	const [, setCorrelatedStore] = useCorrelationStore((store) => store);
+	const [{ correlationId }, setCorrelatedStore] = useCorrelationStore((store) => store);
 	const [, setAppStore] = useAppStore((store) => store);
 	const {
 		isError: fetchCorrelationsError,
@@ -60,6 +67,9 @@ export const useCorrelationsQuery = () => {
 		{
 			onSuccess: (_data, variables) => {
 				variables.onSuccess && variables.onSuccess();
+				if (variables.correlationId === correlationId) {
+					setCorrelatedStore(cleanCorrelationStore);
+				}
 				fetchCorrelations();
 				notifySuccess({ message: 'Deleted Successfully' });
 			},
@@ -79,10 +89,31 @@ export const useCorrelationsQuery = () => {
 		{
 			onSuccess: (data, variables) => {
 				variables.onSuccess && variables.onSuccess();
-				//set activeCorrelation and id
 				setCorrelatedStore((store) => setCorrelationId(store, data.data.id));
+				setCorrelatedStore((store) => setSavedCorrelationId(store, data.data.id));
 				fetchCorrelations();
 				notifySuccess({ message: 'Correlation saved successfully' });
+			},
+			onError: (data: AxiosError) => {
+				if (isAxiosError(data) && data.response) {
+					const error = data.response?.data as string;
+					typeof error === 'string' && notifyError({ message: error });
+				} else if (data.message && typeof data.message === 'string') {
+					notifyError({ message: data.message });
+				}
+			},
+		},
+	);
+
+	const { mutate: updateCorrelationMutation, isLoading: isCorrelationUpdating } = useMutation(
+		(data: { correlationData: any; onSuccess?: () => void }) => updateCorrelation(data.correlationData),
+		{
+			onSuccess: (data, variables) => {
+				variables.onSuccess && variables.onSuccess();
+				setCorrelatedStore((store) => setCorrelationId(store, data.data.id));
+				setCorrelatedStore((store) => setActiveCorrelation(store, data.data));
+				fetchCorrelations();
+				notifySuccess({ message: 'Correlation updated successfully' });
 			},
 			onError: (data: AxiosError) => {
 				if (isAxiosError(data) && data.response) {
@@ -111,5 +142,8 @@ export const useCorrelationsQuery = () => {
 
 		saveCorrelationMutation,
 		isCorrelationSaving,
+
+		updateCorrelationMutation,
+		isCorrelationUpdating,
 	};
 };
