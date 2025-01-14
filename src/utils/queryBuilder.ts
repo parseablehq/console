@@ -18,6 +18,15 @@ type FilterQueryBuilderType = {
 	timeRangeCondition?: string;
 };
 
+type CorrelationQueryBuilderType = {
+	streamNames: string[];
+	limit: number;
+	correlationCondition?: string;
+	selectedFields?: string[];
+	startTime: Date;
+	endTime: Date;
+};
+
 //! RESOURCE PATH CONSTANTS
 const PARSEABLE_RESOURCE_PATH = 'query';
 
@@ -31,7 +40,7 @@ const optimizeTime = (date: Date) => {
 export class QueryBuilder {
 	startTime: Date;
 	endTime: Date;
-	streamName: string;
+	streamName?: string;
 	limit?: number;
 	pageOffset?: number;
 	timePartitionColumn?: string;
@@ -86,6 +95,67 @@ export class FilterQueryBuilder {
 	}
 
 	getQuery(): string {
+		return this.getParseableQuery();
+	}
+}
+
+export class CorrelationQueryBuilder {
+	streamNames: string[];
+	limit: number;
+	correlationCondition?: string;
+	selectedFields?: string[];
+	startTime: Date;
+	endTime: Date;
+
+	constructor({
+		streamNames,
+		limit,
+		correlationCondition,
+		selectedFields,
+		startTime,
+		endTime,
+	}: CorrelationQueryBuilderType) {
+		this.streamNames = streamNames;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.limit = limit;
+		this.correlationCondition = correlationCondition;
+		this.selectedFields = selectedFields;
+	}
+
+	getCorrelationQuery() {
+		const query =
+			this.selectedFields &&
+			/* eslint-disable no-useless-escape */
+			`select ${this.selectedFields
+				.map((field) => {
+					const [streamName, fieldName] = field.split('.');
+					return `"${streamName}"."${fieldName}" as "${field}"`;
+				})
+				.join(', ')} from \"${this.streamNames[0]}\" join \"${this.streamNames[1]}\" on ${
+				this.correlationCondition
+			} offset 0 LIMIT ${this.limit}`;
+		return {
+			startTime: this.startTime,
+			endTime: this.endTime,
+			query,
+		};
+	}
+
+	getParseableQuery() {
+		/* eslint-disable no-useless-escape */
+		const query = `SELECT * FROM \"${this.streamNames[0]}\" LIMIT ${this.limit}`;
+		return {
+			startTime: this.startTime,
+			endTime: this.endTime,
+			query,
+		};
+	}
+	getResourcePath(): string {
+		return PARSEABLE_RESOURCE_PATH;
+	}
+
+	getQuery() {
 		return this.getParseableQuery();
 	}
 }

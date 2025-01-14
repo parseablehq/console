@@ -11,6 +11,7 @@ export const OIDC_NOT_CONFIGURED_ROUTE = '/oidc-not-configured';
 export const CLUSTER_ROUTE = '/cluster';
 export const STREAM_ROUTE = '/:streamName/:view?';
 export const DASHBOARDS_ROUTE = '/dashboards';
+export const CORRELATION_ROUTE = '/correlation';
 
 export const STREAM_VIEWS = ['explore', 'manage', 'live-tail'];
 
@@ -27,4 +28,5 @@ export const PATHS = {
 	cluster: '/cluster',
 	manage: '/:streamName/:view?',
 	dashboards: '/dashboards',
+	correlation: '/correlation',
 } as { [key: string]: string };
