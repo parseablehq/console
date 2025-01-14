@@ -96,7 +96,6 @@ const QuerierModal = (props: {
 	useEffect(() => {
 		if (!_.isEmpty(parsedFilterQuery)) {
 			queryCodeEditorRef.current = parsedFilterQuery;
-			// return;
 		} else {
 			queryCodeEditorRef.current = custSearchQuery;
 		}
