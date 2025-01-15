@@ -289,7 +289,7 @@ export const QueryPills = () => {
 export const FilterQueryBuilder = (props: {
 	onClear: () => void;
 	onApply: () => void;
-	filterBuilderQuery: (query: string) => void;
+	filterBuilderQuery?: (query: string) => void;
 }) => {
 	const [{ query, isSumbitDisabled, fields }, setFilterStore] = useFilterStore((store) => store);
 	const [{ isQuerySearchActive, viewMode }] = useLogsStore((store) => store.custQuerySearchState);
@@ -304,7 +304,7 @@ export const FilterQueryBuilder = (props: {
 		}
 
 		const { parsedQuery } = parseQuery(query, currentStream || '');
-		props.filterBuilderQuery(parsedQuery);
+		props.filterBuilderQuery && props.filterBuilderQuery(parsedQuery);
 	}, [query.rules, fields]);
 
 	return (
