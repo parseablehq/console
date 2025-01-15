@@ -3,7 +3,7 @@ export const HOME_ROUTE = '/';
 export const LOGIN_ROUTE = '/login';
 // -----
 export const MANAGE_ROUTE = '/:streamName/manage';
-export const LIVE_TAIL_ROUTE = '/:streamName/live-tail';
+// export const LIVE_TAIL_ROUTE = '/:streamName/live-tail';
 export const EXPLORE_ROUTE = '/:streamName/explore';
 // -----
 export const USERS_MANAGEMENT_ROUTE = '/users';
@@ -13,14 +13,18 @@ export const STREAM_ROUTE = '/:streamName/:view?';
 export const DASHBOARDS_ROUTE = '/dashboards';
 export const CORRELATION_ROUTE = '/correlation';
 
-export const STREAM_VIEWS = ['explore', 'manage', 'live-tail'];
+export const STREAM_VIEWS = [
+	'explore',
+	'manage',
+	//  'live-tail'
+];
 
 export const PATHS = {
 	all: '/*',
 	home: '/',
 	explore: '/:streamName/:view?',
 	login: '/login',
-	liveTail: '/:streamName/:view?',
+	// liveTail: '/:streamName/:view?',
 	stats: '/:streamName/stats',
 	config: '/:streamName/config',
 	users: '/users',

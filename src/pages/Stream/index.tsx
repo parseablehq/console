@@ -1,7 +1,7 @@
 import { Box, Stack } from '@mantine/core';
 import { useDocumentTitle, useHotkeys } from '@mantine/hooks';
 import { FC, useCallback, useEffect } from 'react';
-import LiveLogTable from './Views/LiveTail/LiveLogTable';
+
 import ViewLog from './components/ViewLog';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import SideBar from './components/Sidebar';
@@ -116,8 +116,6 @@ const Stream: FC = () => {
 					) : (
 						<LogsView schemaLoading={isSchemaFetching} infoLoading={isInfoLoading} />
 					)
-				) : view === 'live-tail' ? (
-					<LiveLogTable />
 				) : (
 					<Management schemaLoading={isSchemaFetching} />
 				)}
