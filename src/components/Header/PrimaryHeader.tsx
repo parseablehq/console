@@ -7,7 +7,7 @@ import styles from './styles/Header.module.css';
 import HelpModal from './HelpModal';
 import _ from 'lodash';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { ENTERPRISE_LICENSE_TYPE } from '@/constants';
+import { OSS_LICENSE_TYPE } from '@/constants';
 
 const PrimaryHeader: FC = () => {
 	const classes = styles;
@@ -34,7 +34,7 @@ const PrimaryHeader: FC = () => {
 				className={classes.rightSection}
 				style={{ flexDirection: 'row', height: '100%', justifyContent: 'flex-end' }}
 				gap={8}>
-				{instanceConfig?.license && !_.isEqual(instanceConfig?.license, ENTERPRISE_LICENSE_TYPE) && (
+				{instanceConfig?.license && _.isEqual(instanceConfig?.license, OSS_LICENSE_TYPE) && (
 					<Button
 						variant="outline"
 						style={{ border: 'none' }}

@@ -1,3 +1,3 @@
-const ENTERPRISE_LICENSE_TYPE = 'Parseable Enterprise v1';
+const OSS_LICENSE_TYPE = 'AGPL-3.0-only';
 
-export { ENTERPRISE_LICENSE_TYPE };
+export { OSS_LICENSE_TYPE };

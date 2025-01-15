@@ -4,7 +4,7 @@ import { useAbout } from '@/hooks/useGetAbout';
 import { IconInfoCircle } from '@tabler/icons-react';
 import styles from './styles/InfoModal.module.css';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { ENTERPRISE_LICENSE_TYPE } from '@/constants';
+import { OSS_LICENSE_TYPE } from '@/constants';
 import _ from 'lodash';
 
 const { setInstanceConfig } = appStoreReducers;
@@ -62,7 +62,7 @@ const InfoModal: FC<InfoModalProps> = (props) => {
 							<Box className={aboutTextInnerBox}>
 								<Text className={aboutTextKey}> License: </Text>
 								<Text className={aboutTextValue}> {getAboutData?.data.license} </Text>
-								{!_.isEqual(getAboutData?.data.license, ENTERPRISE_LICENSE_TYPE) && (
+								{_.isEqual(getAboutData?.data.license, OSS_LICENSE_TYPE) && (
 									<Button
 										variant="outline"
 										component={'a'}
