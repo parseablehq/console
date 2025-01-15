@@ -20,5 +20,4 @@ export type AboutData = {
 	analytics: {
 		clarityTag: string;
 	};
-	queryEngine: QueryEngineType;
 };

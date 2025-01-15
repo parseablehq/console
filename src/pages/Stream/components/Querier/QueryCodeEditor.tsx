@@ -1,7 +1,6 @@
 import React, { FC, MutableRefObject, useCallback, useEffect, useState, useRef } from 'react';
 import Editor from '@monaco-editor/react';
 import { Box, Button, Flex, ScrollArea, Stack, Text, TextInput } from '@mantine/core';
-import { QueryEngineType } from '@/@types/parseable/api/about';
 import { ErrorMarker, errChecker } from '../ErrorMarker';
 import useMountedState from '@/hooks/useMountedState';
 import { notify } from '@/utils/notification';
@@ -33,7 +32,6 @@ const genColumnConfig = (fields: Field[]) => {
 };
 
 export const defaultCustSQLQuery = (
-	queryEngine: QueryEngineType,
 	streamName: string | null,
 	startTime: Date,
 	endTime: Date,
@@ -41,7 +39,6 @@ export const defaultCustSQLQuery = (
 ) => {
 	if (streamName && streamName.length > 0) {
 		const { query } = formQueryOpts({
-			queryEngine,
 			streamName: streamName || '',
 			limit: LOAD_LIMIT,
 			startTime,
@@ -62,7 +59,6 @@ const QueryCodeEditor: FC<{
 }> = (props) => {
 	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
 	const llmActive = _.get(instanceConfig, 'llmActive', false);
-	const queryEngine = _.get(instanceConfig, 'queryEngine', 'Parseable');
 	const [streamInfo] = useStreamStore((store) => store.info);
 	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
 	const [{ isQuerySearchActive, activeMode, savedFilterId, custSearchQuery }] = useLogsStore(
@@ -85,7 +81,6 @@ const QueryCodeEditor: FC<{
 	useEffect(() => {
 		if (props.queryCodeEditorRef.current === '' || currentStream !== localStreamName) {
 			props.queryCodeEditorRef.current = defaultCustSQLQuery(
-				queryEngine,
 				currentStream,
 				timeRange.startTime,
 				timeRange.endTime,

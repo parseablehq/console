@@ -1,7 +1,7 @@
 <svg height='100px' width='100px'  version="1.1" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 16 16" >
   <defs>
     <filter id="iconfilter" primitiveUnits="objectBoundingBox" >
-   <feFlood flood-color="#545beb"/>
+   <feFlood flood-color="#3a3a8c"/>
       
       
       <feOffset>
@@ -13,7 +13,7 @@
       
     </filter>
      <filter id="iconfilterRed" primitiveUnits="objectBoundingBox" >
-   <feFlood flood-color="#fc466b"/>
+   <feFlood flood-color="#00A896"/>
       
       
       <feOffset>

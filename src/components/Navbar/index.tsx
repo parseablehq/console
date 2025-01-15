@@ -13,7 +13,14 @@ import { FC, useCallback, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
-import { HOME_ROUTE, CLUSTER_ROUTE, USERS_MANAGEMENT_ROUTE, STREAM_ROUTE, DASHBOARDS_ROUTE } from '@/constants/routes';
+import {
+	HOME_ROUTE,
+	CLUSTER_ROUTE,
+	USERS_MANAGEMENT_ROUTE,
+	STREAM_ROUTE,
+	DASHBOARDS_ROUTE,
+	CORRELATION_ROUTE,
+} from '@/constants/routes';
 import InfoModal from './infoModal';
 import { getStreamsSepcificAccess, getUserSepcificStreams } from './rolesHandler';
 import Cookies from 'js-cookie';
@@ -26,6 +33,7 @@ import UserModal from './UserModal';
 import { signOutHandler } from '@/utils';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
+import { CorrelationIcon } from './components/CorrelationIcon';
 
 const { setUserRoles, setUserSpecificStreams, setUserAccessMap, changeStream, setStreamSpecificUserAccess } =
 	appStoreReducers;
@@ -48,6 +56,12 @@ const navItems = [
 		label: 'Stream',
 		path: '/explore',
 		route: STREAM_ROUTE,
+	},
+	{
+		icon: CorrelationIcon,
+		label: 'Correlation',
+		path: '/correlation',
+		route: CORRELATION_ROUTE,
 	},
 ];
 
@@ -167,7 +181,14 @@ const Navbar: FC = () => {
 									onClick={() => navigateToPage(navItem.route)}
 									key={index}>
 									<Tooltip label={navItem.label} position="right">
-										<navItem.icon stroke={isActiveItem ? 1.4 : 1.2} size={'1.2rem'} />
+										{navItem.label === 'Correlation' ? (
+											<navItem.icon
+												stroke={isActiveItem ? '#000000' : '#858e96'}
+												strokeWidth={isActiveItem ? 1.4 : 1.2}
+											/>
+										) : (
+											<navItem.icon stroke={isActiveItem ? '1.4' : '1.2'} size="1.2rem" />
+										)}
 									</Tooltip>
 								</Stack>
 							);

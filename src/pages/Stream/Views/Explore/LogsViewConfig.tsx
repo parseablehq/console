@@ -254,7 +254,7 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 				onChangeHandler={onSearchHandler}
 				disabled={_.isEmpty(headers)}
 			/>
-			<Stack style={{ height: '100%' }} gap={0}>
+			<Stack style={{ flex: 1, overflowY: 'auto' }} gap={0}>
 				<Group
 					gap={8}
 					style={{ display: 'flex', justifyContent: 'flex-start', padding: '0 1rem', marginBottom: '0.3rem' }}>
@@ -272,7 +272,7 @@ const ColumnsList = (props: { isLoading: boolean }) => {
 						Clear All
 					</Text>
 				</Group>
-				<ScrollArea scrollbars="y">
+				<ScrollArea style={{ flex: 1 }}>
 					<DragDropContext onDragEnd={onDropEnd}>
 						<Droppable droppableId="columns">
 							{(provided) => (
@@ -323,10 +323,13 @@ const LogsViewConfig = (props: { schemaLoading: boolean; logsLoading: boolean; i
 			ref={divRef}
 			style={{
 				borderRight: '1px solid var(--mantine-color-gray-2)',
+				display: sideBarOpen ? 'none' : 'block',
 				width: sideBarOpen ? 0 : LOGS_CONFIG_SIDEBAR_WIDTH,
 				transition: 'width 0.5s',
 			}}>
-			<Stack style={{ width: LOGS_CONFIG_SIDEBAR_WIDTH, height: height - 30 }} className={classes.container}>
+			<Stack
+				style={{ width: LOGS_CONFIG_SIDEBAR_WIDTH, height: height - 30, overflowY: 'hidden', flex: 1 }}
+				className={classes.container}>
 				<Header />
 				{configViewType === 'schema' ? (
 					<SchemaList isLoading={props.schemaLoading || props.infoLoading} />

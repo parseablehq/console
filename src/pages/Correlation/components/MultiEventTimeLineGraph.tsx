@@ -1,33 +1,22 @@
 import { Paper, Skeleton, Stack, Text } from '@mantine/core';
-import classes from '../styles/EventTimeLineGraph.module.css';
+import classes from '../styles/Correlation.module.css';
 import { useQueryResult } from '@/hooks/useQueryResult';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
-import { ChartTooltipProps, AreaChart } from '@mantine/charts';
+import { AreaChart } from '@mantine/charts';
 import { HumanizeNumber } from '@/utils/formatBytes';
-import { logsStoreReducers, useLogsStore } from '../providers/LogsProvider';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { useFilterStore, filterStoreReducers } from '../providers/FilterProvider';
 import { LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 import _ from 'lodash';
 import timeRangeUtils from '@/utils/timeRangeUtils';
-import { useStreamStore } from '../providers/StreamProvider';
+import { filterStoreReducers, useFilterStore } from '@/pages/Stream/providers/FilterProvider';
+import { useCorrelationStore } from '../providers/CorrelationProvider';
 
-const { setTimeRange } = appStoreReducers;
 const { parseQuery } = filterStoreReducers;
 const { makeTimeRangeLabel } = timeRangeUtils;
-const { getCleanStoreForRefetch } = logsStoreReducers;
+const { setTimeRange } = appStoreReducers;
 
 type CompactInterval = 'minute' | 'day' | 'hour' | 'quarter-hour' | 'half-hour' | 'month';
-
-function extractWhereClause(sql: string) {
-	const whereClauseRegex = /WHERE\s+(.*?)(?=\s*(ORDER\s+BY|GROUP\s+BY|OFFSET|LIMIT|$))/i;
-	const match = sql.match(whereClauseRegex);
-	if (match) {
-		return match[1].trim();
-	}
-	return '(1 = 1)';
-}
 
 function removeOffsetFromQuery(query: string): string {
 	const offsetRegex = /\sOFFSET\s+\d+/i;
@@ -91,38 +80,6 @@ const getEndOfTs = (time: Date, compactType: CompactInterval): Date => {
 	}
 };
 
-const incrementDateByCompactType = (date: Date, type: CompactInterval): Date => {
-	const tempDate = new Date(date);
-	if (type === 'minute') {
-		tempDate.setMinutes(tempDate.getMinutes() + 1);
-	} else if (type === 'hour') {
-		tempDate.setHours(tempDate.getHours() + 1);
-	} else if (type === 'day') {
-		tempDate.setDate(tempDate.getDate() + 1);
-	} else if (type === 'quarter-hour') {
-		tempDate.setMinutes(tempDate.getMinutes() + 15);
-	} else if (type === 'half-hour') {
-		tempDate.setMinutes(tempDate.getMinutes() + 30);
-	} else if (type === 'month') {
-		tempDate.setMonth(tempDate.getMonth() + 1);
-	} else {
-		tempDate;
-	}
-	return new Date(tempDate);
-};
-
-const getAllIntervals = (start: Date, end: Date, compactType: CompactInterval): Date[] => {
-	const result = [];
-	let currentDate = new Date(start);
-
-	while (currentDate <= end) {
-		result.push(new Date(currentDate));
-		currentDate = incrementDateByCompactType(currentDate, compactType);
-	}
-
-	return result;
-};
-
 const getModifiedTimeRange = (
 	startTime: Date,
 	endTime: Date,
@@ -179,6 +136,38 @@ const calcAverage = (data: LogsResponseWithHeaders | undefined) => {
 	return parseInt(Math.abs(total / records.length).toFixed(0));
 };
 
+const getAllIntervals = (start: Date, end: Date, compactType: CompactInterval): Date[] => {
+	const result = [];
+	let currentDate = new Date(start);
+
+	while (currentDate <= end) {
+		result.push(new Date(currentDate));
+		currentDate = incrementDateByCompactType(currentDate, compactType);
+	}
+
+	return result;
+};
+
+const incrementDateByCompactType = (date: Date, type: CompactInterval): Date => {
+	const tempDate = new Date(date);
+	if (type === 'minute') {
+		tempDate.setMinutes(tempDate.getMinutes() + 1);
+	} else if (type === 'hour') {
+		tempDate.setHours(tempDate.getHours() + 1);
+	} else if (type === 'day') {
+		tempDate.setDate(tempDate.getDate() + 1);
+	} else if (type === 'quarter-hour') {
+		tempDate.setMinutes(tempDate.getMinutes() + 15);
+	} else if (type === 'half-hour') {
+		tempDate.setMinutes(tempDate.getMinutes() + 30);
+	} else if (type === 'month') {
+		tempDate.setMonth(tempDate.getMonth() + 1);
+	} else {
+		tempDate;
+	}
+	return new Date(tempDate);
+};
+
 type GraphTickItem = {
 	events: number;
 	minute: Date;
@@ -188,123 +177,206 @@ type GraphTickItem = {
 	endTime: dayjs.Dayjs;
 };
 
-// date_bin removes tz info
-// filling data with empty values where there is no rec
-const parseGraphData = (
-	data: LogsResponseWithHeaders | undefined,
-	avg: number,
-	startTime: Date,
-	endTime: Date,
-	interval: number,
-): GraphTickItem[] => {
-	if (!data || !Array.isArray(data?.records)) return [];
-
-	const { fields, records } = data;
-	if (_.isEmpty(records) || !_.includes(fields, 'log_count') || !_.includes(fields, 'date_bin_timestamp')) return [];
-
-	const { modifiedEndTime, modifiedStartTime, compactType } = getModifiedTimeRange(startTime, endTime, interval);
-	const allTimestamps = getAllIntervals(modifiedStartTime, modifiedEndTime, compactType);
-	const parsedData = allTimestamps.map((ts) => {
-		const countData = records.find((d) => {
-			return new Date(`${d.date_bin_timestamp}Z`).toISOString() === ts.toISOString();
-		});
-
-		const startTime = dayjs(ts);
-		const endTimeByCompactType = incrementDateByCompactType(startTime.toDate(), compactType);
-		const endTime = dayjs(endTimeByCompactType);
-
-		const defaultOpts = {
-			events: 0,
-			minute: ts,
-			aboveAvgPercent: 0,
-			compactType,
-			startTime,
-			endTime,
+interface ChartTooltipProps {
+	payload?: {
+		name: string;
+		value: number;
+		color: string;
+		payload: {
+			startTime: dayjs.Dayjs;
+			endTime: dayjs.Dayjs;
 		};
+	}[];
+	series: { name: string; label: string }[];
+}
 
-		if (!countData || typeof countData !== 'object') {
-			return defaultOpts;
-		} else {
-			const aboveAvgCount = _.toNumber(countData.log_count) - avg;
-			const aboveAvgPercent = parseInt(((aboveAvgCount / avg) * 100).toFixed(2));
-			return {
-				...defaultOpts,
-				events: _.toNumber(countData.log_count),
-				aboveAvgPercent,
-			};
-		}
-	});
-
-	return parsedData;
-};
-
-function ChartTooltip({ payload }: ChartTooltipProps) {
+function ChartTooltip({ payload, series }: ChartTooltipProps) {
 	if (!payload || (Array.isArray(payload) && payload.length === 0)) return null;
 
-	const { aboveAvgPercent, events, startTime, endTime } = payload[0]?.payload as GraphTickItem;
-	const isAboveAvg = aboveAvgPercent > 0;
+	const { startTime, endTime } = payload[0].payload;
+
+	// Convert Dayjs to Date
 	const label = makeTimeRangeLabel(startTime.toDate(), endTime.toDate());
+
+	// Map payload data to corresponding series labels
+	const data = series
+		.map((seriesItem) => {
+			const matchingPayload = payload.find((item) => item.name === seriesItem.name);
+			return matchingPayload
+				? {
+						label: seriesItem.label,
+						value: matchingPayload.value,
+						color: matchingPayload.color,
+				  }
+				: null;
+		})
+		.filter((item): item is { label: string; value: number; color: string } => item !== null);
 
 	return (
 		<Paper px="md" py="sm" withBorder shadow="md" radius="md">
 			<Text fw={600} mb={5}>
 				{label}
 			</Text>
-			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-				<Text>Events</Text>
-				<Text>{events}</Text>
-			</Stack>
-			<Stack mt={4} style={{ flexDirection: 'row' }}>
-				<Text size="sm" c={isAboveAvg ? 'red.6' : 'green.8'}>{`${isAboveAvg ? '+' : ''}${aboveAvgPercent}% ${
-					isAboveAvg ? 'above' : 'below'
-				} average in the given time-range`}</Text>
+			<Stack>
+				{data.map(({ label, value, color }, index) => (
+					<Stack
+						key={index}
+						style={{
+							flexDirection: 'row',
+							justifyContent: 'space-between',
+							alignItems: 'center',
+						}}>
+						<div
+							style={{
+								width: 12,
+								height: 12,
+								backgroundColor: color,
+								borderRadius: '50%',
+								marginRight: 8,
+							}}></div>
+						<Text style={{ flex: 1 }}>{label}</Text>
+						<Text>{value}</Text>
+					</Stack>
+				))}
 			</Stack>
 		</Paper>
 	);
 }
 
-const EventTimeLineGraph = () => {
-	const { fetchQueryMutation } = useQueryResult();
-	const [currentStream] = useAppStore((store) => store.currentStream);
-	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
-	const [{ activeMode, custSearchQuery }, setLogStore] = useLogsStore((store) => store.custQuerySearchState);
-	const [{ interval, startTime, endTime }] = useAppStore((store) => store.timeRange);
-	const [localStream, setLocalStream] = useState<string | null>('');
-	const [{ info }] = useStreamStore((store) => store);
-	const firstEventAt = 'first-event-at' in info ? info['first-event-at'] : undefined;
+// date_bin removes tz info
+// filling data with empty values where there is no rec
+const parseGraphData = (
+	dataSets: (LogsResponseWithHeaders | undefined)[],
+	startTime: Date,
+	endTime: Date,
+	interval: number,
+) => {
+	if (!dataSets || !Array.isArray(dataSets)) return [];
 
-	useEffect(() => {
-		setLocalStream(currentStream);
-	}, [currentStream]);
+	const firstResponse = dataSets[0]?.records || [];
+	const secondResponse = dataSets[1]?.records || [];
 
-	useEffect(() => {
-		if (!localStream || localStream.length === 0 || !firstEventAt) return;
-		const { modifiedEndTime, modifiedStartTime, compactType } = getModifiedTimeRange(startTime, endTime, interval);
+	const { modifiedEndTime, modifiedStartTime, compactType } = getModifiedTimeRange(startTime, endTime, interval);
+	const allTimestamps = getAllIntervals(modifiedStartTime, modifiedEndTime, compactType);
 
-		const logsQuery = {
-			streamName: localStream,
-			startTime: modifiedStartTime,
-			endTime: modifiedEndTime,
-			access: [],
-		};
-		const whereClause =
-			activeMode === 'sql' ? extractWhereClause(custSearchQuery) : parseQuery(appliedQuery, localStream).where;
-		const query = generateCountQuery(localStream, modifiedStartTime, modifiedEndTime, compactType, whereClause);
-		const graphQuery = removeOffsetFromQuery(query);
-		fetchQueryMutation.mutate({
-			logsQuery,
-			query: graphQuery,
+	const hasSecondDataset = dataSets[1] !== undefined;
+
+	const secondResponseMap =
+		secondResponse.length > 0
+			? new Map(
+					secondResponse.map((entry) => [new Date(`${entry.date_bin_timestamp}Z`).toISOString(), entry.log_count]),
+			  )
+			: new Map();
+	const calculateTimeRange = (timestamp: Date | string) => {
+		const startTime = dayjs(timestamp);
+		const endTimeByCompactType = incrementDateByCompactType(startTime.toDate(), compactType);
+		const endTime = dayjs(endTimeByCompactType);
+		return { startTime, endTime };
+	};
+	const combinedData = allTimestamps.map((ts) => {
+		const firstRecord = firstResponse.find((record) => {
+			const recordTimestamp = new Date(`${record.date_bin_timestamp}Z`).toISOString();
+			const tsISO = ts.toISOString();
+			return recordTimestamp === tsISO;
 		});
-	}, [localStream, startTime.toISOString(), endTime.toISOString(), custSearchQuery, firstEventAt]);
+
+		const secondCount = secondResponseMap?.get(ts.toISOString()) ?? 0;
+		const { startTime, endTime } = calculateTimeRange(ts);
+
+		const defaultOpts: Record<string, any> = {
+			stream: firstRecord?.log_count || 0,
+			minute: ts,
+			compactType,
+			startTime,
+			endTime,
+		};
+
+		if (hasSecondDataset) {
+			defaultOpts.stream1 = secondCount;
+		}
+
+		return defaultOpts;
+	});
+
+	return combinedData;
+};
+
+const MultiEventTimeLineGraph = () => {
+	const { fetchQueryMutation } = useQueryResult();
+	const [fields] = useCorrelationStore((store) => store.fields);
+	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
+	const [streamData] = useCorrelationStore((store) => store.streamData);
+	const [timeRange] = useAppStore((store) => store.timeRange);
+	const [multipleStreamData, setMultipleStreamData] = useState<{ [key: string]: any }>({});
+
+	const { interval, startTime, endTime } = timeRange;
+
+	const streamGraphData = Object.values(multipleStreamData);
+
+	useEffect(() => {
+		setMultipleStreamData((prevData) => {
+			const newData = { ...prevData };
+			const streamDataKeys = Object.keys(streamData);
+			Object.keys(newData).forEach((key) => {
+				if (!streamDataKeys.includes(key)) {
+					delete newData[key];
+				}
+			});
+			return newData;
+		});
+	}, [streamData]);
+
+	useEffect(() => {
+		if (!fields || Object.keys(fields).length === 0) {
+			setMultipleStreamData({});
+			return;
+		}
+
+		const streamNames = Object.keys(fields);
+		const streamsToFetch = streamNames.filter((streamName) => !Object.keys(streamData).includes(streamName));
+		const queries = streamsToFetch.map((streamKey) => {
+			const { modifiedEndTime, modifiedStartTime, compactType } = getModifiedTimeRange(startTime, endTime, interval);
+			const logsQuery = {
+				startTime: modifiedStartTime,
+				endTime: modifiedEndTime,
+				access: [],
+			};
+			const whereClause = parseQuery(appliedQuery, streamKey).where;
+			const query = generateCountQuery(streamKey, modifiedStartTime, modifiedEndTime, compactType, whereClause);
+			const graphQuery = removeOffsetFromQuery(query);
+
+			return {
+				queryEngine: 'Parseable',
+				logsQuery,
+				query: graphQuery,
+				streamKey,
+			};
+		});
+		Promise.all(queries.map((queryData: any) => fetchQueryMutation.mutateAsync(queryData)))
+			.then((results) => {
+				setMultipleStreamData((prevData: any) => {
+					const newData = { ...prevData };
+					results.forEach((result, index) => {
+						newData[queries[index].streamKey] = result;
+					});
+					return newData;
+				});
+			})
+			.catch((error) => {
+				console.error('Error fetching queries:', error);
+			});
+	}, [fields, timeRange]);
 
 	const isLoading = fetchQueryMutation.isLoading;
 	const avgEventCount = useMemo(() => calcAverage(fetchQueryMutation?.data), [fetchQueryMutation?.data]);
 	const graphData = useMemo(() => {
-		if (!firstEventAt) return null;
-		return parseGraphData(fetchQueryMutation?.data, avgEventCount, startTime, endTime, interval);
-	}, [fetchQueryMutation?.data, interval, firstEventAt]);
+		if (!streamGraphData || streamGraphData.length === 0 || streamGraphData.length !== Object.keys(fields).length)
+			return [];
+		return parseGraphData(streamGraphData, startTime, endTime, interval);
+	}, [streamGraphData]);
+
 	const hasData = Array.isArray(graphData) && graphData.length !== 0;
-	const [, setAppStore] = useAppStore((_store) => null);
+	const [, setLogsStore] = useAppStore((store) => store.timeRange);
 	const setTimeRangeFromGraph = useCallback((barValue: any) => {
 		const activePayload = barValue?.activePayload;
 		if (!Array.isArray(activePayload) || activePayload.length === 0) return;
@@ -316,8 +388,7 @@ const EventTimeLineGraph = () => {
 		if (!graphTickItem || typeof graphTickItem !== 'object' || _.isEmpty(graphTickItem)) return;
 
 		const { startTime, endTime } = graphTickItem;
-		setLogStore((store) => getCleanStoreForRefetch(store));
-		setAppStore((store) => setTimeRange(store, { type: 'custom', startTime: startTime, endTime: endTime }));
+		setLogsStore((store) => setTimeRange(store, { type: 'custom', startTime: startTime, endTime: endTime }));
 	}, []);
 
 	return (
@@ -333,9 +404,20 @@ const EventTimeLineGraph = () => {
 						w="100%"
 						data={graphData}
 						dataKey="minute"
-						series={[{ name: 'events', color: 'indigo.5', label: 'Events' }]}
+						series={[
+							{ name: 'stream', color: 'indigo.5', label: Object.keys(fields)[0] },
+							{ name: 'stream1', color: 'violet.5', label: Object.keys(fields)[1] },
+						]}
 						tooltipProps={{
-							content: ({ label, payload }) => <ChartTooltip label={label} payload={payload} />,
+							content: ({ payload }: any) => (
+								<ChartTooltip
+									payload={payload}
+									series={[
+										{ name: 'stream', label: Object.keys(fields)[0] },
+										{ name: 'stream1', label: Object.keys(fields)[1] },
+									]}
+								/>
+							),
 							position: { y: -20 },
 						}}
 						valueFormatter={(value) => new Intl.NumberFormat('en-US').format(value)}
@@ -358,4 +440,4 @@ const EventTimeLineGraph = () => {
 	);
 };
 
-export default EventTimeLineGraph;
+export default MultiEventTimeLineGraph;
