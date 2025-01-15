@@ -4,15 +4,16 @@ import classes from '../../styles/Querier.module.css';
 import { Text } from '@mantine/core';
 import { FilterQueryBuilder, QueryPills } from './FilterQueryBuilder';
 import { AppliedSQLQuery } from './QueryEditor';
-import QueryCodeEditor, { defaultCustSQLQuery } from './QueryCodeEditor';
+import QueryCodeEditor from './QueryCodeEditor';
 import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { filterStoreReducers, noValueOperators, useFilterStore } from '../../providers/FilterProvider';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { useStreamStore } from '../../providers/StreamProvider';
 import SaveFilterModal from './SaveFilterModal';
 import SavedFiltersModal from './SavedFiltersModal';
 import _ from 'lodash';
+import useParamsController from '@/pages/Stream/hooks/useParamsController';
 
 const { setFields, parseQuery, storeAppliedQuery, resetFilters, toggleSubmitBtn, toggleSaveFiltersModal } =
 	filterStoreReducers;
@@ -74,24 +75,37 @@ const QuerierModal = (props: {
 	onSqlSearchApply: (query: string) => void;
 	onFiltersApply: () => void;
 }) => {
-	const [currentStream] = useAppStore((store) => store.currentStream);
-	const [{ showQueryBuilder, viewMode }, setLogsStore] = useLogsStore((store) => store.custQuerySearchState);
-	const [streamInfo] = useStreamStore((store) => store.info);
-	const [timeRange] = useAppStore((store) => store.timeRange);
-	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
+	const [{ showQueryBuilder, viewMode, custSearchQuery, activeMode }, setLogsStore] = useLogsStore(
+		(store) => store.custQuerySearchState,
+	);
+	const [parsedFilterQuery, setParsedFilterQuery] = useState('');
+
+	const getParsedFilterQuery = useCallback(
+		(query: string) => {
+			setParsedFilterQuery(query);
+		},
+		[parsedFilterQuery],
+	);
 	const onClose = useCallback(() => {
 		setLogsStore((store) => toggleQueryBuilder(store, false));
-	}, []);
+		setLogsStore((store) => toggleCustQuerySearchViewMode(store, activeMode !== null ? activeMode : 'filters'));
+	}, [activeMode]);
+
 	const queryCodeEditorRef = useRef<any>(''); // to store input value even after the editor unmounts
 
 	useEffect(() => {
-		queryCodeEditorRef.current = defaultCustSQLQuery(
-			currentStream,
-			timeRange.startTime,
-			timeRange.endTime,
-			timePartitionColumn,
-		);
-	}, [currentStream, timeRange.endTime, timeRange.startTime, timePartitionColumn]);
+		if (!_.isEmpty(parsedFilterQuery)) {
+			queryCodeEditorRef.current = parsedFilterQuery;
+		} else {
+			queryCodeEditorRef.current = custSearchQuery;
+		}
+	}, [parsedFilterQuery, custSearchQuery]);
+
+	useEffect(() => {
+		if (showQueryBuilder === false) {
+			setParsedFilterQuery('');
+		}
+	}, [showQueryBuilder]);
 
 	return (
 		<Modal
@@ -106,7 +120,11 @@ const QuerierModal = (props: {
 			title={<ModalTitle title={getLabel(viewMode)} />}>
 			<Stack style={{ padding: '1rem 0.5rem', height: '100%' }} gap={2}>
 				{viewMode === 'filters' ? (
-					<FilterQueryBuilder onClear={props.onClear} onApply={props.onFiltersApply} />
+					<FilterQueryBuilder
+						onClear={props.onClear}
+						onApply={props.onFiltersApply}
+						filterBuilderQuery={getParsedFilterQuery}
+					/>
 				) : (
 					<QueryCodeEditor
 						queryCodeEditorRef={queryCodeEditorRef}
@@ -132,6 +150,7 @@ const Querier = () => {
 	const [streamInfo] = useStreamStore((store) => store.info);
 	const [{ query, isSumbitDisabled, isQueryFromParams }, setFilterStore] = useFilterStore((store) => store);
 	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
+	const { isStoreSynced } = useParamsController();
 
 	useEffect(() => {
 		if (schema) {
@@ -140,7 +159,8 @@ const Querier = () => {
 	}, [schema]);
 
 	useEffect(() => {
-		return setFilterStore(resetFilters);
+		if (!isStoreSynced) return;
+		setFilterStore(resetFilters);
 	}, [currentStream]);
 
 	const triggerRefetch = useCallback(

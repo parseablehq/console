@@ -34,6 +34,7 @@ import {
 	RuleTypeOverride,
 	Combinator,
 } from '../../providers/FilterProvider';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 
 type RuleSetProps = {
 	ruleSet: RuleGroupTypeOverride;
@@ -50,6 +51,7 @@ const {
 	updateGroupCombinator,
 	updateParentCombinator,
 	updateRule,
+	parseQuery,
 } = filterStoreReducers;
 
 type RuleViewType = {
@@ -284,17 +286,25 @@ export const QueryPills = () => {
 	);
 };
 
-export const FilterQueryBuilder = (props: { onClear: () => void; onApply: () => void }) => {
+export const FilterQueryBuilder = (props: {
+	onClear: () => void;
+	onApply: () => void;
+	filterBuilderQuery?: (query: string) => void;
+}) => {
 	const [{ query, isSumbitDisabled, fields }, setFilterStore] = useFilterStore((store) => store);
 	const [{ isQuerySearchActive, viewMode }] = useLogsStore((store) => store.custQuerySearchState);
 	const isFiltersApplied = isQuerySearchActive && viewMode === 'filters';
 	const { combinator, rules: ruleSets } = query;
+	const [currentStream] = useAppStore((store) => store.currentStream);
 
 	useEffect(() => {
 		// init first rule
 		if (query.rules.length === 0 && fields.length !== 0) {
 			setFilterStore((store) => createRuleGroup(store));
 		}
+
+		const { parsedQuery } = parseQuery(query, currentStream || '');
+		props.filterBuilderQuery && props.filterBuilderQuery(parsedQuery);
 	}, [query.rules, fields]);
 
 	return (
