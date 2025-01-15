@@ -14,8 +14,14 @@ import { AxiosError, isAxiosError } from 'axios';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import dayjs from 'dayjs';
 
-const { setCorrelations, setActiveCorrelation, setCorrelationId, setSavedCorrelationId, cleanCorrelationStore } =
-	correlationStoreReducers;
+const {
+	setCorrelations,
+	setActiveCorrelation,
+	setCorrelationId,
+	setSavedCorrelationId,
+	cleanCorrelationStore,
+	toggleSavedCorrelationsModal,
+} = correlationStoreReducers;
 const { setTimeRange } = appStoreReducers;
 export const useCorrelationsQuery = () => {
 	const [{ correlationId }, setCorrelatedStore] = useCorrelationStore((store) => store);
@@ -71,6 +77,7 @@ export const useCorrelationsQuery = () => {
 					setCorrelatedStore(cleanCorrelationStore);
 				}
 				fetchCorrelations();
+				setCorrelatedStore((store) => toggleSavedCorrelationsModal(store, false));
 				notifySuccess({ message: 'Deleted Successfully' });
 			},
 			onError: (data: AxiosError) => {

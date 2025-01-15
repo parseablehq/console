@@ -8,7 +8,7 @@ import IconButton from '@/components/Button/IconButton';
 import { useCorrelationsQuery } from '@/hooks/useCorrelations';
 import { correlationStoreReducers, useCorrelationStore } from '../providers/CorrelationProvider';
 
-const { toggleSavedCorrelationsModal } = correlationStoreReducers;
+const { toggleSavedCorrelationsModal, setCorrelationId } = correlationStoreReducers;
 
 const renderDeleteIcon = () => <IconTrash size={px('1rem')} stroke={1.5} />;
 const renderCloseIcon = () => <IconX size={px('1rem')} stroke={1.5} />;
@@ -34,7 +34,7 @@ const SavedCorrelationItem = (props: { item: Correlation }) => {
 	} = props;
 	const [showDeletePropmt, setShowDeletePrompt] = useState<boolean>(false);
 	const [showQuery, setShowQuery] = useState<boolean>(false);
-	const { deleteSavedCorrelationMutation, getCorrelationByIdMutation } = useCorrelationsQuery();
+	const { deleteSavedCorrelationMutation } = useCorrelationsQuery();
 	const [, setCorrelationData] = useCorrelationStore((store) => store);
 
 	const handleDelete = useCallback(() => {
@@ -49,7 +49,7 @@ const SavedCorrelationItem = (props: { item: Correlation }) => {
 	}, []);
 
 	const onCorrelationAppy = useCallback(() => {
-		getCorrelationByIdMutation(id);
+		setCorrelationData((store) => setCorrelationId(store, id));
 		closeModal();
 	}, []);
 

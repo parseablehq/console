@@ -317,7 +317,7 @@ const MultiEventTimeLineGraph = () => {
 	useEffect(() => {
 		setMultipleStreamData((prevData) => {
 			const newData = { ...prevData };
-			const streamDataKeys = Object.keys(streamData);
+			const streamDataKeys = Object.keys(fields);
 			Object.keys(newData).forEach((key) => {
 				if (!streamDataKeys.includes(key)) {
 					delete newData[key];
@@ -325,7 +325,7 @@ const MultiEventTimeLineGraph = () => {
 			});
 			return newData;
 		});
-	}, [streamData]);
+	}, [fields]);
 
 	useEffect(() => {
 		if (!fields || Object.keys(fields).length === 0) {
