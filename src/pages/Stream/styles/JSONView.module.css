@@ -54,4 +54,15 @@
 
 .inputField {
 	border-radius: rem(8px);
+	width: 100%;
+}
+
+.headerWrapper {
+	height: 50px;
+	padding: 1rem;
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	gap: 10px;
 }

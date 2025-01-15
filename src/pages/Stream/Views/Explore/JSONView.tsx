@@ -1,5 +1,5 @@
-import { Box, Loader, Stack, Text, TextInput } from '@mantine/core';
-import { ChangeEvent, ReactNode, useCallback, useRef, useState } from 'react';
+import { Box, Button, Loader, Stack, Text, TextInput } from '@mantine/core';
+import { ReactNode, useCallback, useRef, useState } from 'react';
 import classes from '../../styles/JSONView.module.css';
 import EmptyBox from '@/components/Empty';
 import { ErrorView, LoadingView } from './LoadingViews';
@@ -19,13 +19,18 @@ import { copyTextToClipboard } from '@/utils';
 import { useStreamStore } from '../../providers/StreamProvider';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import { AxiosError } from 'axios';
+import { useHotkeys } from '@mantine/hooks';
 
 const { setInstantSearchValue, applyInstantSearch, applyJqSearch } = logsStoreReducers;
 
 const Item = (props: { header: string | null; value: string; highlight: boolean }) => {
 	return (
 		<span className={classes.itemContainer}>
-			{props.header && <span className={classes.itemHeader}>{props.header}: </span>}
+			{props.header && (
+				<span style={{ background: props.highlight ? 'yellow' : 'transparent' }} className={classes.itemHeader}>
+					{props.header}:{' '}
+				</span>
+			)}
 			<span className={classes.itemValue}>
 				<span style={{ background: props.highlight ? 'yellow' : 'transparent' }}>{props.value}</span>{' '}
 			</span>
@@ -70,7 +75,7 @@ const Row = (props: {
 	log: Log;
 	searchValue: string;
 	disableHighlight: boolean;
-	shouldHighlight: (val: number | string | Date | null) => boolean;
+	shouldHighlight: (header: string | null, val: number | string | Date | null) => boolean;
 }) => {
 	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
 	const [fieldTypeMap] = useStreamStore((store) => store.fieldTypeMap);
@@ -90,7 +95,7 @@ const Row = (props: {
 								header={key}
 								key={key}
 								value={sanitizedValue}
-								highlight={disableHighlight ? false : shouldHighlight(value)}
+								highlight={disableHighlight ? false : shouldHighlight(key, value)}
 							/>
 						);
 					})
@@ -98,7 +103,7 @@ const Row = (props: {
 					<Item
 						header={null}
 						value={_.toString(log)}
-						highlight={disableHighlight ? false : shouldHighlight(_.toString(log))}
+						highlight={disableHighlight ? false : shouldHighlight(null, _.toString(log))}
 					/>
 				)}
 			</span>
@@ -113,8 +118,8 @@ const JsonRows = (props: { isSearching: boolean }) => {
 	const regExp = disableHighlight ? null : new RegExp(instantSearchValue, 'i');
 
 	const shouldHighlight = useCallback(
-		(val: number | string | Date | null) => {
-			return !!regExp?.test(_.toString(val));
+		(header: string | null, val: number | string | Date | null) => {
+			return !!regExp?.test(_.toString(val)) || !!regExp?.test(_.toString(header));
 		},
 		[regExp],
 	);
@@ -134,52 +139,103 @@ const JsonRows = (props: { isSearching: boolean }) => {
 	);
 };
 
-const Toolbar = (props: { isSearching: boolean; setSearching: React.Dispatch<React.SetStateAction<boolean>> }) => {
-	const { isSearching, setSearching } = props;
+const Toolbar = ({
+	isSearching,
+	setSearching,
+}: {
+	isSearching: boolean;
+	setSearching: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+	const [localSearchValue, setLocalSearchValue] = useState<string>('');
+	const searchInputRef = useRef<HTMLInputElement>(null);
+
 	const [searchValue, setLogsStore] = useLogsStore((store) => store.tableOpts.instantSearchValue);
 	const [{ rawData, filteredData }] = useLogsStore((store) => store.data);
 
 	const debouncedSearch = useCallback(
 		_.debounce(async (val: string) => {
-			const isJq = isJqSearch(val);
-			if (isJq) {
-				const jqResult = await jqSearch(rawData, val);
-				setLogsStore((store) => applyJqSearch(store, jqResult));
-			} else {
+			if (val.trim() === '') {
+				setLogsStore((store) => setInstantSearchValue(store, ''));
 				setLogsStore(applyInstantSearch);
+			} else {
+				const isJq = isJqSearch(val);
+				if (isJq) {
+					const jqResult = await jqSearch(rawData, val);
+					setLogsStore((store) => applyJqSearch(store, jqResult));
+				} else {
+					setLogsStore(applyInstantSearch);
+				}
 			}
 			setSearching(false);
-		}, 1000),
+		}, 500),
 		[rawData],
 	);
 
-	const onChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-		setLogsStore((store) => setInstantSearchValue(store, e.target.value));
-		debouncedSearch(e.target.value);
-		setSearching(true);
-	}, []);
+	const handleSearch = useCallback(() => {
+		if (localSearchValue.trim()) {
+			setSearching(true);
+			setLogsStore((store) => setInstantSearchValue(store, localSearchValue));
+			debouncedSearch(localSearchValue);
+		}
+	}, [localSearchValue, debouncedSearch, setSearching]);
+
+	const handleInputChange = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			const value = e.target.value;
+			setLocalSearchValue(value);
+			if (value.trim() === '') {
+				debouncedSearch(value);
+			}
+		},
+		[debouncedSearch],
+	);
+
+	useHotkeys([['mod+K', () => searchInputRef.current?.focus()]]);
+
+	const handleKeyDown = useCallback(
+		(e: React.KeyboardEvent<HTMLInputElement>) => {
+			if (e.key === 'Enter' && !isSearching && localSearchValue.trim()) {
+				handleSearch();
+			}
+		},
+		[isSearching, localSearchValue],
+	);
 
 	if (_.isEmpty(rawData)) return null;
 
+	const inputStyles = {
+		'--input-left-section-width': '2rem',
+		'--input-right-section-width': '6rem',
+		width: '100%',
+	} as React.CSSProperties;
+
 	return (
-		<Stack style={{ height: 50, padding: '1rem', width: '100%', justifyContent: 'center' }}>
+		<div className={classes.headerWrapper}>
 			<TextInput
 				leftSection={isSearching ? <Loader size="sm" /> : <IconSearch stroke={2.5} size="0.9rem" />}
 				placeholder="Search loaded data with text or jq. For jq input try `jq .[]`"
-				value={searchValue}
-				onChange={onChange}
+				value={localSearchValue}
+				onChange={handleInputChange}
+				onKeyDown={handleKeyDown}
+				ref={searchInputRef}
 				classNames={{ input: classes.inputField }}
-				style={{ '--input-left-section-width': '2rem', '--input-right-section-width': '6rem' }}
+				style={inputStyles}
 				rightSection={
-					!_.isEmpty(searchValue) &&
-					!isSearching && (
+					searchValue && !isSearching ? (
 						<Text style={{ fontSize: '0.7rem', textAlign: 'end' }} lineClamp={1}>
-							{_.size(filteredData)} Matches
+							{filteredData.length} Matches
 						</Text>
-					)
+					) : null
 				}
 			/>
-		</Stack>
+			<Button
+				onClick={handleSearch}
+				disabled={!localSearchValue.trim() || isSearching}
+				style={{ width: '10%' }}
+				leftSection={<IconSearch stroke={2.5} size="0.9rem" />}>
+				Search
+			</Button>
+		</div>
 	);
 };
 
