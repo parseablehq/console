@@ -1,5 +1,5 @@
-import { getQueryResultWithHeaders, getQueryResult } from '@/api/query';
-import { LogsQuery } from '@/@types/parseable/api/query';
+import { getQueryResultWithHeaders, getQueryResult, getGraphData } from '@/api/query';
+import { GraphQueryOpts, LogsQuery } from '@/@types/parseable/api/query';
 import { notifications } from '@mantine/notifications';
 import { isAxiosError, AxiosError } from 'axios';
 import { IconCheck } from '@tabler/icons-react';
@@ -50,6 +50,29 @@ export const useQueryResult = () => {
 	});
 
 	return { fetchQueryMutation };
+};
+
+export const useGraphData = () => {
+	const fetchGraphDataHandler = async (data: GraphQueryOpts) => {
+		const response = await getGraphData(data);
+		if (response.status !== 200) {
+			throw new Error(response.statusText);
+		}
+		return response.data;
+	};
+
+	const fetchGraphDataMutation = useMutation(fetchGraphDataHandler, {
+		onError: (data: AxiosError) => {
+			if (isAxiosError(data) && data.response) {
+				const error = data.response?.data as string;
+				typeof error === 'string' && notifyError({ message: error });
+			} else if (data.message && typeof data.message === 'string') {
+				notifyError({ message: data.message });
+			}
+		},
+	});
+
+	return { fetchGraphDataMutation };
 };
 
 export const useFetchCount = () => {
