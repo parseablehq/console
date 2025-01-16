@@ -70,16 +70,6 @@ export const useGraphData = () => {
 				notifyError({ message: data.message });
 			}
 		},
-		onSuccess: (_data) => {
-			notifications.update({
-				id: 'load-data',
-				color: 'green',
-				title: 'Data was loaded',
-				message: 'Successfully Loaded',
-				icon: <IconCheck size="1rem" />,
-				autoClose: 1000,
-			});
-		},
 	});
 
 	return { fetchGraphDataMutation };
