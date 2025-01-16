@@ -187,7 +187,7 @@ const EventTimeLineGraph = () => {
 			numBins,
 		};
 		fetchGraphDataMutation.mutate(logsQuery);
-	}, [localStream, startTime.toISOString(), endTime.toISOString(), custSearchQuery]);
+	}, [localStream, startTime.toISOString(), endTime.toISOString(), custSearchQuery, firstEventAt]);
 
 	const isLoading = fetchGraphDataMutation.isLoading;
 	const avgEventCount = useMemo(() => calcAverage(fetchGraphDataMutation?.data), [fetchGraphDataMutation?.data]);
