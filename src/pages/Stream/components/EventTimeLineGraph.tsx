@@ -73,7 +73,7 @@ type GraphTickItem = {
 };
 
 type LogRecord = {
-	date_bin_timestamp: string;
+	counts_timestamp: string;
 	log_count: number;
 };
 
@@ -89,14 +89,14 @@ const parseGraphData = (
 	if (!data || !Array.isArray(data?.records)) return [];
 
 	const { fields, records } = data;
-	if (_.isEmpty(records) || !_.includes(fields, 'log_count') || !_.includes(fields, 'date_bin_timestamp')) return [];
+	if (_.isEmpty(records) || !_.includes(fields, 'log_count') || !_.includes(fields, 'counts_timestamp')) return [];
 
 	const compactType = getCompactType(interval);
 	const ticksCount = interval < 10 * 60 * 1000 ? interval / (60 * 1000) : interval < 60 * 60 * 1000 ? 10 : 60;
 	const intervalDuration = (endTime.getTime() - startTime.getTime()) / ticksCount;
 
 	const isValidRecord = (record: any): record is LogRecord => {
-		return typeof record.date_bin_timestamp === 'string' && typeof record.log_count === 'number';
+		return typeof record.counts_timestamp === 'string' && typeof record.log_count === 'number';
 	};
 
 	const allTimestamps = Array.from(
@@ -107,7 +107,7 @@ const parseGraphData = (
 	const parsedData = allTimestamps.map((ts) => {
 		const countData = records.find((d) => {
 			if (!isValidRecord(d)) return false;
-			const recordTime = new Date(d.date_bin_timestamp).getTime();
+			const recordTime = new Date(d.counts_timestamp).getTime();
 			const tsTime = ts.getTime();
 			return Math.abs(recordTime - tsTime) < intervalDuration / 2;
 		});

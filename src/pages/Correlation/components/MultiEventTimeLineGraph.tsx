@@ -137,7 +137,7 @@ function ChartTooltip({ payload, series }: ChartTooltipProps) {
 }
 
 type LogRecord = {
-	date_bin_timestamp: string;
+	counts_timestamp: string;
 	log_count: number;
 };
 
@@ -166,7 +166,7 @@ const parseGraphData = (
 	const hasSecondDataset = dataSets[1] !== undefined;
 
 	const isValidRecord = (record: any): record is LogRecord => {
-		return typeof record.date_bin_timestamp === 'string' && typeof record.log_count === 'number';
+		return typeof record.counts_timestamp === 'string' && typeof record.log_count === 'number';
 	};
 
 	const secondResponseMap =
@@ -175,7 +175,7 @@ const parseGraphData = (
 					secondResponse
 						.filter((entry) => isValidRecord(entry))
 						.map((entry) => {
-							const timestamp = entry.date_bin_timestamp;
+							const timestamp = entry.counts_timestamp;
 							if (timestamp != null) {
 								return [new Date(timestamp).getTime(), entry.log_count];
 							}
@@ -188,7 +188,7 @@ const parseGraphData = (
 	const combinedData = allTimestamps.map((ts) => {
 		const firstRecord = firstResponse.find((record) => {
 			if (!isValidRecord(record)) return false;
-			const recordTimestamp = new Date(record.date_bin_timestamp).getTime();
+			const recordTimestamp = new Date(record.counts_timestamp).getTime();
 			const tsISO = ts.getTime();
 			return recordTimestamp === tsISO;
 		});
