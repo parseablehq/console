@@ -173,8 +173,15 @@ const parseGraphData = (
 		secondResponse.length > 0
 			? new Map(
 					secondResponse
-						.filter((entry) => isValidRecord(entry)) // Add the validation check here
-						.map((entry) => [new Date(entry.date_bin_timestamp).getTime(), entry.log_count]),
+						.filter((entry) => isValidRecord(entry))
+						.map((entry) => {
+							const timestamp = entry.date_bin_timestamp;
+							if (timestamp != null) {
+								return [new Date(timestamp).getTime(), entry.log_count];
+							}
+							return null;
+						})
+						.filter((entry): entry is [number, number] => entry !== null),
 			  )
 			: new Map();
 
