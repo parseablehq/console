@@ -178,16 +178,28 @@ const EventTimeLineGraph = () => {
 
 	useEffect(() => {
 		if (!localStream || localStream.length === 0 || !firstEventAt) return;
+
+		const adjustedStartTime = dayjs(startTime).startOf('minute');
+		const adjustedEndTime = dayjs(endTime).startOf('minute');
+
 		const totalMinutes = interval / (1000 * 60);
-		const numBins = totalMinutes < 10 ? totalMinutes : totalMinutes < 60 ? 10 : 60;
+		const numBins = Math.abs(totalMinutes < 10 ? totalMinutes : totalMinutes < 60 ? 10 : 60);
+
 		const logsQuery = {
 			stream: localStream,
-			startTime: dayjs(startTime).toISOString(),
-			endTime: dayjs(endTime).add(1, 'minute').toISOString(),
+			startTime: adjustedStartTime.toISOString(),
+			endTime: adjustedEndTime.add(1, 'minute').toISOString(),
 			numBins,
 		};
+
 		fetchGraphDataMutation.mutate(logsQuery);
-	}, [localStream, startTime.toISOString(), endTime.toISOString(), custSearchQuery, firstEventAt]);
+	}, [
+		localStream,
+		dayjs(startTime).startOf('minute').toISOString(),
+		dayjs(endTime).startOf('minute').toISOString(),
+		custSearchQuery,
+		firstEventAt,
+	]);
 
 	const isLoading = fetchGraphDataMutation.isLoading;
 	const avgEventCount = useMemo(() => calcAverage(fetchGraphDataMutation?.data), [fetchGraphDataMutation?.data]);
