@@ -89,11 +89,7 @@ export const useFetchCount = () => {
 		endTime: timeRange.endTime,
 		access: [],
 	};
-	const {
-		// isLoading: isCountLoading,
-		// isRefetching: isCountRefetching,
-		refetch: refetchCount,
-	} = useQuery(
+	const { refetch: refetchCount } = useQuery(
 		['fetchCount', logsQuery],
 		async () => {
 			setCountLoading(true);
