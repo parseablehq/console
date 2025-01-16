@@ -1,38 +1,22 @@
 import { Paper, Skeleton, Stack, Text } from '@mantine/core';
 import classes from '../styles/EventTimeLineGraph.module.css';
-import { useQueryResult } from '@/hooks/useQueryResult';
+import { useGraphData } from '@/hooks/useQueryResult';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import { ChartTooltipProps, AreaChart } from '@mantine/charts';
 import { HumanizeNumber } from '@/utils/formatBytes';
 import { logsStoreReducers, useLogsStore } from '../providers/LogsProvider';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { useFilterStore, filterStoreReducers } from '../providers/FilterProvider';
 import { LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 import _ from 'lodash';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import { useStreamStore } from '../providers/StreamProvider';
 
 const { setTimeRange } = appStoreReducers;
-const { parseQuery } = filterStoreReducers;
 const { makeTimeRangeLabel } = timeRangeUtils;
 const { getCleanStoreForRefetch } = logsStoreReducers;
 
 type CompactInterval = 'minute' | 'day' | 'hour' | 'quarter-hour' | 'half-hour' | 'month';
-
-function extractWhereClause(sql: string) {
-	const whereClauseRegex = /WHERE\s+(.*?)(?=\s*(ORDER\s+BY|GROUP\s+BY|OFFSET|LIMIT|$))/i;
-	const match = sql.match(whereClauseRegex);
-	if (match) {
-		return match[1].trim();
-	}
-	return '(1 = 1)';
-}
-
-function removeOffsetFromQuery(query: string): string {
-	const offsetRegex = /\sOFFSET\s+\d+/i;
-	return query.replace(offsetRegex, '');
-}
 
 const getCompactType = (interval: number): CompactInterval => {
 	const totalMinutes = interval / (1000 * 60);
@@ -53,106 +37,6 @@ const getCompactType = (interval: number): CompactInterval => {
 	} else {
 		return 'month';
 	}
-};
-
-const getStartOfTs = (time: Date, compactType: CompactInterval): Date => {
-	if (compactType === 'minute') {
-		return time;
-	} else if (compactType === 'hour') {
-		return new Date(time.getFullYear(), time.getMonth(), time.getDate(), time.getHours());
-	} else if (compactType === 'quarter-hour') {
-		const roundOff = 1000 * 60 * 15;
-		return new Date(Math.floor(time.getTime() / roundOff) * roundOff);
-	} else if (compactType === 'half-hour') {
-		const roundOff = 1000 * 60 * 30;
-		return new Date(Math.floor(time.getTime() / roundOff) * roundOff);
-	} else if (compactType === 'day') {
-		return new Date(time.getFullYear(), time.getMonth(), time.getDate());
-	} else {
-		return new Date(time.getFullYear(), time.getMonth());
-	}
-};
-
-const getEndOfTs = (time: Date, compactType: CompactInterval): Date => {
-	if (compactType === 'minute') {
-		return time;
-	} else if (compactType === 'hour') {
-		return new Date(time.getFullYear(), time.getMonth(), time.getDate(), time.getHours() + 1);
-	} else if (compactType === 'quarter-hour') {
-		const roundOff = 1000 * 60 * 15;
-		return new Date(Math.round(time.getTime() / roundOff) * roundOff);
-	} else if (compactType === 'half-hour') {
-		const roundOff = 1000 * 60 * 30;
-		return new Date(Math.round(time.getTime() / roundOff) * roundOff);
-	} else if (compactType === 'day') {
-		return new Date(time.getFullYear(), time.getMonth(), time.getDate() + 1);
-	} else {
-		return new Date(time.getFullYear(), time.getMonth() + 1);
-	}
-};
-
-const incrementDateByCompactType = (date: Date, type: CompactInterval): Date => {
-	const tempDate = new Date(date);
-	if (type === 'minute') {
-		tempDate.setMinutes(tempDate.getMinutes() + 1);
-	} else if (type === 'hour') {
-		tempDate.setHours(tempDate.getHours() + 1);
-	} else if (type === 'day') {
-		tempDate.setDate(tempDate.getDate() + 1);
-	} else if (type === 'quarter-hour') {
-		tempDate.setMinutes(tempDate.getMinutes() + 15);
-	} else if (type === 'half-hour') {
-		tempDate.setMinutes(tempDate.getMinutes() + 30);
-	} else if (type === 'month') {
-		tempDate.setMonth(tempDate.getMonth() + 1);
-	} else {
-		tempDate;
-	}
-	return new Date(tempDate);
-};
-
-const getAllIntervals = (start: Date, end: Date, compactType: CompactInterval): Date[] => {
-	const result = [];
-	let currentDate = new Date(start);
-
-	while (currentDate <= end) {
-		result.push(new Date(currentDate));
-		currentDate = incrementDateByCompactType(currentDate, compactType);
-	}
-
-	return result;
-};
-
-const getModifiedTimeRange = (
-	startTime: Date,
-	endTime: Date,
-	interval: number,
-): { modifiedStartTime: Date; modifiedEndTime: Date; compactType: CompactInterval } => {
-	const compactType = getCompactType(interval);
-	const modifiedStartTime = getStartOfTs(startTime, compactType);
-	const modifiedEndTime = getEndOfTs(endTime, compactType);
-	return { modifiedEndTime, modifiedStartTime, compactType };
-};
-
-const compactTypeIntervalMap = {
-	minute: '1 minute',
-	hour: '1 hour',
-	day: '24 hour',
-	'quarter-hour': '15 minute',
-	'half-hour': '30 minute',
-	month: '1 month',
-};
-
-const generateCountQuery = (
-	streamName: string,
-	startTime: Date,
-	endTime: Date,
-	compactType: CompactInterval,
-	whereClause: string,
-) => {
-	const range = compactTypeIntervalMap[compactType];
-	/* eslint-disable no-useless-escape */
-	return `SELECT DATE_BIN('${range}', p_timestamp, '${startTime.toISOString()}') AS date_bin_timestamp, COUNT(*) AS log_count FROM \"${streamName}\" WHERE p_timestamp BETWEEN '${startTime.toISOString()}' AND '${endTime.toISOString()}' AND ${whereClause} GROUP BY date_bin_timestamp ORDER BY date_bin_timestamp`;
 };
 
 const NoDataView = (props: { isError: boolean }) => {
@@ -188,6 +72,11 @@ type GraphTickItem = {
 	endTime: dayjs.Dayjs;
 };
 
+type LogRecord = {
+	date_bin_timestamp: string;
+	log_count: number;
+};
+
 // date_bin removes tz info
 // filling data with empty values where there is no rec
 const parseGraphData = (
@@ -202,37 +91,48 @@ const parseGraphData = (
 	const { fields, records } = data;
 	if (_.isEmpty(records) || !_.includes(fields, 'log_count') || !_.includes(fields, 'date_bin_timestamp')) return [];
 
-	const { modifiedEndTime, modifiedStartTime, compactType } = getModifiedTimeRange(startTime, endTime, interval);
-	const allTimestamps = getAllIntervals(modifiedStartTime, modifiedEndTime, compactType);
+	const compactType = getCompactType(interval);
+	const ticksCount = interval < 10 * 60 * 1000 ? interval / (60 * 1000) : interval < 60 * 60 * 1000 ? 10 : 60;
+	const intervalDuration = (endTime.getTime() - startTime.getTime()) / ticksCount;
+
+	const isValidRecord = (record: any): record is LogRecord => {
+		return typeof record.date_bin_timestamp === 'string' && typeof record.log_count === 'number';
+	};
+
+	const allTimestamps = Array.from(
+		{ length: ticksCount },
+		(_, index) => new Date(startTime.getTime() + index * intervalDuration),
+	);
+
 	const parsedData = allTimestamps.map((ts) => {
 		const countData = records.find((d) => {
-			return new Date(`${d.date_bin_timestamp}Z`).toISOString() === ts.toISOString();
+			if (!isValidRecord(d)) return false;
+			const recordTime = new Date(d.date_bin_timestamp).getTime();
+			const tsTime = ts.getTime();
+			return Math.abs(recordTime - tsTime) < intervalDuration / 2;
 		});
-
-		const startTime = dayjs(ts);
-		const endTimeByCompactType = incrementDateByCompactType(startTime.toDate(), compactType);
-		const endTime = dayjs(endTimeByCompactType);
 
 		const defaultOpts = {
 			events: 0,
 			minute: ts,
 			aboveAvgPercent: 0,
 			compactType,
-			startTime,
-			endTime,
+			startTime: dayjs(ts),
+			endTime: dayjs(new Date(ts.getTime() + intervalDuration)),
 		};
 
-		if (!countData || typeof countData !== 'object') {
+		if (!countData || !isValidRecord(countData)) {
 			return defaultOpts;
-		} else {
-			const aboveAvgCount = _.toNumber(countData.log_count) - avg;
-			const aboveAvgPercent = parseInt(((aboveAvgCount / avg) * 100).toFixed(2));
-			return {
-				...defaultOpts,
-				events: _.toNumber(countData.log_count),
-				aboveAvgPercent,
-			};
 		}
+
+		const aboveAvgCount = countData.log_count - avg;
+		const aboveAvgPercent = avg > 0 ? parseInt(((aboveAvgCount / avg) * 100).toFixed(2)) : 0;
+
+		return {
+			...defaultOpts,
+			events: countData.log_count,
+			aboveAvgPercent,
+		};
 	});
 
 	return parsedData;
@@ -264,10 +164,9 @@ function ChartTooltip({ payload }: ChartTooltipProps) {
 }
 
 const EventTimeLineGraph = () => {
-	const { fetchQueryMutation } = useQueryResult();
+	const { fetchGraphDataMutation } = useGraphData();
 	const [currentStream] = useAppStore((store) => store.currentStream);
-	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
-	const [{ activeMode, custSearchQuery }, setLogStore] = useLogsStore((store) => store.custQuerySearchState);
+	const [{ custSearchQuery }, setLogStore] = useLogsStore((store) => store.custQuerySearchState);
 	const [{ interval, startTime, endTime }] = useAppStore((store) => store.timeRange);
 	const [localStream, setLocalStream] = useState<string | null>('');
 	const [{ info }] = useStreamStore((store) => store);
@@ -279,30 +178,23 @@ const EventTimeLineGraph = () => {
 
 	useEffect(() => {
 		if (!localStream || localStream.length === 0 || !firstEventAt) return;
-		const { modifiedEndTime, modifiedStartTime, compactType } = getModifiedTimeRange(startTime, endTime, interval);
-
+		const totalMinutes = interval / (1000 * 60);
+		const numBins = totalMinutes < 10 ? totalMinutes : totalMinutes < 60 ? 10 : 60;
 		const logsQuery = {
-			streamName: localStream,
-			startTime: modifiedStartTime,
-			endTime: modifiedEndTime,
-			access: [],
+			stream: localStream,
+			startTime: dayjs(startTime).toISOString(),
+			endTime: dayjs(endTime).add(1, 'minute').toISOString(),
+			numBins,
 		};
-		const whereClause =
-			activeMode === 'sql' ? extractWhereClause(custSearchQuery) : parseQuery(appliedQuery, localStream).where;
-		const query = generateCountQuery(localStream, modifiedStartTime, modifiedEndTime, compactType, whereClause);
-		const graphQuery = removeOffsetFromQuery(query);
-		fetchQueryMutation.mutate({
-			logsQuery,
-			query: graphQuery,
-		});
-	}, [localStream, startTime.toISOString(), endTime.toISOString(), custSearchQuery, firstEventAt]);
+		fetchGraphDataMutation.mutate(logsQuery);
+	}, [localStream, startTime.toISOString(), endTime.toISOString(), custSearchQuery]);
 
-	const isLoading = fetchQueryMutation.isLoading;
-	const avgEventCount = useMemo(() => calcAverage(fetchQueryMutation?.data), [fetchQueryMutation?.data]);
+	const isLoading = fetchGraphDataMutation.isLoading;
+	const avgEventCount = useMemo(() => calcAverage(fetchGraphDataMutation?.data), [fetchGraphDataMutation?.data]);
 	const graphData = useMemo(() => {
 		if (!firstEventAt) return null;
-		return parseGraphData(fetchQueryMutation?.data, avgEventCount, startTime, endTime, interval);
-	}, [fetchQueryMutation?.data, interval, firstEventAt]);
+		return parseGraphData(fetchGraphDataMutation?.data, avgEventCount, startTime, endTime, interval);
+	}, [fetchGraphDataMutation?.data, interval, firstEventAt]);
 	const hasData = Array.isArray(graphData) && graphData.length !== 0;
 	const [, setAppStore] = useAppStore((_store) => null);
 	const setTimeRangeFromGraph = useCallback((barValue: any) => {
@@ -323,7 +215,7 @@ const EventTimeLineGraph = () => {
 	return (
 		<Stack className={classes.graphContainer}>
 			<Skeleton
-				visible={fetchQueryMutation.isLoading}
+				visible={fetchGraphDataMutation.isLoading}
 				h="100%"
 				w={isLoading ? '98%' : '100%'}
 				style={isLoading ? { marginLeft: '1.8rem', alignSelf: 'center' } : !hasData ? { marginLeft: '1rem' } : {}}>
@@ -351,7 +243,7 @@ const EventTimeLineGraph = () => {
 						dotProps={{ strokeWidth: 1, r: 2.5 }}
 					/>
 				) : (
-					<NoDataView isError={fetchQueryMutation.isError} />
+					<NoDataView isError={fetchGraphDataMutation.isError} />
 				)}
 			</Skeleton>
 		</Stack>

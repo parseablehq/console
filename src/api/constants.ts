@@ -20,6 +20,7 @@ const parseParamsToQueryString = (params: Params) => {
 // Streams Management
 export const LOG_STREAM_LIST_URL = `${API_V1}/logstream`;
 export const LOG_STREAMS_SCHEMA_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/schema`;
+export const GRAPH_DATA_URL = `${API_V1}/datebin`;
 export const LOG_QUERY_URL = (params?: Params, resourcePath = 'query') =>
 	`${API_V1}/${resourcePath}` + parseParamsToQueryString(params);
 export const LOG_STREAMS_ALERTS_URL = (streamName: string) => `${LOG_STREAM_LIST_URL}/${streamName}/alert`;

@@ -1,5 +1,5 @@
-import { getQueryResultWithHeaders, getQueryResult } from '@/api/query';
-import { LogsQuery } from '@/@types/parseable/api/query';
+import { getQueryResultWithHeaders, getQueryResult, getGraphData } from '@/api/query';
+import { GraphQuery, LogsQuery } from '@/@types/parseable/api/query';
 import { notifications } from '@mantine/notifications';
 import { isAxiosError, AxiosError } from 'axios';
 import { IconCheck } from '@tabler/icons-react';
@@ -50,6 +50,39 @@ export const useQueryResult = () => {
 	});
 
 	return { fetchQueryMutation };
+};
+
+export const useGraphData = () => {
+	const fetchGraphDataHandler = async (data: GraphQuery) => {
+		const response = await getGraphData(data);
+		if (response.status !== 200) {
+			throw new Error(response.statusText);
+		}
+		return response.data;
+	};
+
+	const fetchGraphDataMutation = useMutation(fetchGraphDataHandler, {
+		onError: (data: AxiosError) => {
+			if (isAxiosError(data) && data.response) {
+				const error = data.response?.data as string;
+				typeof error === 'string' && notifyError({ message: error });
+			} else if (data.message && typeof data.message === 'string') {
+				notifyError({ message: data.message });
+			}
+		},
+		onSuccess: (_data) => {
+			notifications.update({
+				id: 'load-data',
+				color: 'green',
+				title: 'Data was loaded',
+				message: 'Successfully Loaded',
+				icon: <IconCheck size="1rem" />,
+				autoClose: 1000,
+			});
+		},
+	});
+
+	return { fetchGraphDataMutation };
 };
 
 export const useFetchCount = () => {
