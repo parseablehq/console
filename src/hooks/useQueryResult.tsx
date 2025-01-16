@@ -9,6 +9,7 @@ import { useFilterStore, filterStoreReducers } from '@/pages/Stream/providers/Fi
 import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { notifyError } from '@/utils/notification';
+import { useState } from 'react';
 
 const { parseQuery } = filterStoreReducers;
 
@@ -83,6 +84,7 @@ export const useFetchCount = () => {
 	const [, setLogsStore] = useLogsStore(() => null);
 	const { isQuerySearchActive, custSearchQuery, activeMode } = custQuerySearchState;
 	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
+	const [countLoading, setCountLoading] = useState(true);
 
 	/* eslint-disable no-useless-escape */
 	const defaultQuery = `select count(*) as count from \"${currentStream}\"`;
@@ -110,13 +112,10 @@ export const useFetchCount = () => {
 		endTime: timeRange.endTime,
 		access: [],
 	};
-	const {
-		isLoading: isCountLoading,
-		isRefetching: isCountRefetching,
-		refetch: refetchCount,
-	} = useQuery(
+	const { refetch: refetchCount } = useQuery(
 		['fetchCount', logsQuery],
 		async () => {
+			setCountLoading(true);
 			const data = await getQueryResult(logsQuery, query);
 			const count = _.first(data.data)?.count;
 			typeof count === 'number' && setLogsStore((store) => setTotalCount(store, count));
@@ -127,12 +126,17 @@ export const useFetchCount = () => {
 			refetchOnWindowFocus: false,
 			retry: false,
 			enabled: false,
+			onSuccess: () => {
+				setCountLoading(false);
+			},
+			onError: () => {
+				setCountLoading(false);
+			},
 		},
 	);
 
 	return {
-		isCountLoading,
-		isCountRefetching,
+		countLoading,
 		refetchCount,
 	};
 };
