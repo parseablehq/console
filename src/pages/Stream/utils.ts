@@ -74,3 +74,15 @@ export const genColumnsToShow = (opts: {
 	];
 	return headers.filter((header) => !columnsToIgnore.includes(header));
 };
+
+export const isRowHighlighted = (index: number, rowNumber: string) => {
+	if (!rowNumber) return false;
+	const [start, end] = rowNumber.split(':').map(Number);
+	return index >= start && index <= end;
+};
+
+export const isFirstRowInRange = (index: number, rowNumber: string) => {
+	if (!rowNumber) return false;
+	const [start] = rowNumber.split(':').map(Number);
+	return index === start;
+};

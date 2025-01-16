@@ -269,7 +269,7 @@ const initialState: LogsStore = {
 	selectedLog: null,
 	custQuerySearchState: defaultCustQuerySearchState,
 	sideBarOpen: false,
-	viewMode: 'table',
+	viewMode: 'json',
 	modalOpts: {
 		deleteModalOpen: false,
 		alertsModalOpen: false,
@@ -504,17 +504,21 @@ const filterAndSortData = (
 
 const searchAndSortData = (opts: { searchValue: string }, data: Log[]) => {
 	const { searchValue } = opts;
-	const regExp = new RegExp(searchValue, 'i');
 	const filteredData = _.isEmpty(searchValue)
 		? data
 		: (_.reduce(
 				data,
 				(acc: Log[], d: Log) => {
 					const allValues = _.chain(d)
-						.values()
-						.map((e) => _.toString(e))
+						.entries()
+						.map(([key, value]) => [key, _.toString(value)])
 						.value();
-					const doesMatch = _.some(allValues, (str) => regExp.test(str));
+
+					const doesMatch = _.some(
+						allValues,
+						([key, value]) => key.includes(searchValue) || value.includes(searchValue),
+					);
+
 					return doesMatch ? [...acc, d] : acc;
 				},
 				[],
