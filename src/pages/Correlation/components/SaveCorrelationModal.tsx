@@ -85,7 +85,7 @@ const SaveCorrelationModal = () => {
 		updateCorrelationMutation({
 			correlationData: {
 				version: 'v1',
-				id: activeCorrelation?.id,
+				id: savedCorrelationId,
 				tableConfigs: [
 					{
 						selectedFields: selectedFields[streamNames[0]] || [],
@@ -186,7 +186,7 @@ const SaveCorrelationModal = () => {
 			});
 		}
 
-		if (!_.isEmpty(formObject.title) && !_.isEmpty(formObject.version) && savedCorrelationId) {
+		if (!_.isEmpty(formObject.title) && !_.isEmpty(formObject.version) && !savedCorrelationId) {
 			saveCorrelation();
 		} else {
 			updateCorrelation();
@@ -248,7 +248,7 @@ const SaveCorrelationModal = () => {
 					</Box>
 					<Box>
 						<Button miw={100} onClick={onSubmit}>
-							{!savedCorrelationId ? 'Update' : 'Save'}
+							{savedCorrelationId ? 'Update' : 'Save'}
 						</Button>
 					</Box>
 				</Stack>
