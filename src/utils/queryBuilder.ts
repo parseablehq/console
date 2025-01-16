@@ -1,12 +1,8 @@
 import timeRangeUtils from '@/utils/timeRangeUtils';
-import { QueryEngineType } from '@/@types/parseable/api/about';
 
 const { formatDateAsCastType } = timeRangeUtils;
 
-type QueryEngine = QueryEngineType;
-
 type QueryLogs = {
-	queryEngine?: QueryEngine;
 	streamName: string;
 	startTime: Date;
 	endTime: Date;
@@ -19,13 +15,20 @@ type FilterQueryBuilderType = {
 	streamName: string;
 	limit: number;
 	whereClause: string;
-	queryEngine?: QueryEngine;
 	timeRangeCondition?: string;
+};
+
+type CorrelationQueryBuilderType = {
+	streamNames: string[];
+	limit: number;
+	correlationCondition?: string;
+	selectedFields?: string[];
+	startTime: Date;
+	endTime: Date;
 };
 
 //! RESOURCE PATH CONSTANTS
 const PARSEABLE_RESOURCE_PATH = 'query';
-const TRINO_RESOURCE_PATH = 'trinoquery';
 
 const optimizeTime = (date: Date) => {
 	const tempDate = new Date(date);
@@ -35,24 +38,14 @@ const optimizeTime = (date: Date) => {
 };
 
 export class QueryBuilder {
-	queryEngine?: QueryEngine;
 	startTime: Date;
 	endTime: Date;
-	streamName: string;
+	streamName?: string;
 	limit?: number;
 	pageOffset?: number;
 	timePartitionColumn?: string;
 
-	constructor({
-		queryEngine,
-		startTime,
-		endTime,
-		streamName,
-		limit,
-		pageOffset,
-		timePartitionColumn = 'p_timestamp',
-	}: QueryLogs) {
-		this.queryEngine = queryEngine;
+	constructor({ startTime, endTime, streamName, limit, pageOffset, timePartitionColumn = 'p_timestamp' }: QueryLogs) {
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.streamName = streamName;
@@ -68,71 +61,101 @@ export class QueryBuilder {
 		return formatDateAsCastType(optimizeTime(this.endTime));
 	}
 
-	/* eslint-disable no-useless-escape */
-	trinoQuery(): string {
-		const optimizedStartTime = this.getStartTime();
-		const optimizedEndTime = this.getEndTime();
-		const timestampClause = `${this.timePartitionColumn} >= CAST('${optimizedStartTime}' AS TIMESTAMP) AND ${this.timePartitionColumn} < CAST('${optimizedEndTime}' AS TIMESTAMP)`;
-
-		const orderBy = `ORDER BY ${this.timePartitionColumn} DESC`;
-		const offsetPart = typeof this.pageOffset === 'number' ? `OFFSET ${this.pageOffset}` : '';
-
-		return `SELECT * FROM \"${this.streamName}\" WHERE ${timestampClause} ${orderBy} ${offsetPart} LIMIT ${this.limit}`;
-	}
-
 	parseableQuery(): string {
 		const offsetPart = typeof this.pageOffset === 'number' ? `OFFSET ${this.pageOffset}` : '';
+		// eslint-disable-next-line
 		return `SELECT * FROM \"${this.streamName}\" ${offsetPart} LIMIT ${this.limit}`;
 	}
 
 	getQuery(): string {
-		switch (this.queryEngine) {
-			case 'Trino':
-				return this.trinoQuery();
-			default:
-				return this.parseableQuery();
-		}
+		return this.parseableQuery();
 	}
 
 	getResourcePath(): string {
-		switch (this.queryEngine) {
-			case 'Trino':
-				return TRINO_RESOURCE_PATH;
-			default:
-				return PARSEABLE_RESOURCE_PATH;
-		}
+		return PARSEABLE_RESOURCE_PATH;
 	}
 }
 
 export class FilterQueryBuilder {
-	queryEngine?: QueryEngine;
 	whereClause: string;
 	streamName: string;
 	limit: number;
 	timeRangeCondition?: string;
 
-	constructor({ streamName, limit, whereClause, queryEngine, timeRangeCondition = '(1=1)' }: FilterQueryBuilderType) {
-		this.queryEngine = queryEngine;
+	constructor({ streamName, limit, whereClause, timeRangeCondition = '(1=1)' }: FilterQueryBuilderType) {
 		this.whereClause = whereClause;
 		this.streamName = streamName;
 		this.limit = limit;
 		this.timeRangeCondition = timeRangeCondition;
 	}
 
-	getTrinoQuery(): string {
-		return `select * from \"${this.streamName}\" where ${this.whereClause} AND ${this.timeRangeCondition} offset 0 LIMIT ${this.limit}`;
-	}
-
 	getParseableQuery(): string {
+		// eslint-disable-next-line
 		return `select * from \"${this.streamName}\" where ${this.whereClause} LIMIT ${this.limit}`;
 	}
 
 	getQuery(): string {
-		switch (this.queryEngine) {
-			case 'Trino':
-				return this.getTrinoQuery();
-			default:
-				return this.getParseableQuery();
-		}
+		return this.getParseableQuery();
+	}
+}
+
+export class CorrelationQueryBuilder {
+	streamNames: string[];
+	limit: number;
+	correlationCondition?: string;
+	selectedFields?: string[];
+	startTime: Date;
+	endTime: Date;
+
+	constructor({
+		streamNames,
+		limit,
+		correlationCondition,
+		selectedFields,
+		startTime,
+		endTime,
+	}: CorrelationQueryBuilderType) {
+		this.streamNames = streamNames;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.limit = limit;
+		this.correlationCondition = correlationCondition;
+		this.selectedFields = selectedFields;
+	}
+
+	getCorrelationQuery() {
+		const query =
+			this.selectedFields &&
+			/* eslint-disable no-useless-escape */
+			`select ${this.selectedFields
+				.map((field) => {
+					const [streamName, fieldName] = field.split('.');
+					return `"${streamName}"."${fieldName}" as "${field}"`;
+				})
+				.join(', ')} from \"${this.streamNames[0]}\" join \"${this.streamNames[1]}\" on ${
+				this.correlationCondition
+			} offset 0 LIMIT ${this.limit}`;
+		return {
+			startTime: this.startTime,
+			endTime: this.endTime,
+			query,
+		};
+	}
+
+	getParseableQuery() {
+		/* eslint-disable no-useless-escape */
+		const query = `SELECT * FROM \"${this.streamNames[0]}\" LIMIT ${this.limit}`;
+		return {
+			startTime: this.startTime,
+			endTime: this.endTime,
+			query,
+		};
+	}
+	getResourcePath(): string {
+		return PARSEABLE_RESOURCE_PATH;
+	}
+
+	getQuery() {
+		return this.getParseableQuery();
 	}
 }

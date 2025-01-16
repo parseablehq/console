@@ -1,5 +1,5 @@
 .rulesContainer {
-	padding: 1rem;
+	padding: 2rem;
 	justify-content: space-around;
 	/* align-items: center; */
 	border: 2px solid var(--mantine-color-brandPrimary-1);
@@ -212,4 +212,8 @@
 	cursor: pointer;
 	border: 1px var(--mantine-color-gray-2) solid;
 	border-radius: rem(8px);
+}
+
+.label {
+	color: var(--mantine-color-brandPrimary-4);
 }

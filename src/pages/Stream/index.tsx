@@ -1,7 +1,7 @@
 import { Box, Stack } from '@mantine/core';
 import { useDocumentTitle, useHotkeys } from '@mantine/hooks';
 import { FC, useCallback, useEffect } from 'react';
-import LiveLogTable from './Views/LiveTail/LiveLogTable';
+
 import ViewLog from './components/ViewLog';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import SideBar from './components/Sidebar';
@@ -44,7 +44,6 @@ const Stream: FC = () => {
 	const { isStoreSynced } = useParamsController();
 	const [maximized] = useAppStore((store) => store.maximized);
 	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
-	const queryEngine = instanceConfig?.queryEngine;
 	const [, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
 	const { getStreamInfoRefetch, getStreamInfoLoading, getStreamInfoRefetching } = useGetStreamInfo(
 		currentStream || '',
@@ -70,7 +69,7 @@ const Stream: FC = () => {
 	useEffect(() => {
 		if (isStoreSynced) {
 			if (!_.isEmpty(currentStream)) {
-				if (view === 'explore' && queryEngine && queryEngine !== 'Parseable') {
+				if (view === 'explore') {
 					setStreamStore(streamChangeCleanup);
 					getStreamInfoRefetch();
 				} else {
@@ -117,8 +116,6 @@ const Stream: FC = () => {
 					) : (
 						<LogsView schemaLoading={isSchemaFetching} infoLoading={isInfoLoading} />
 					)
-				) : view === 'live-tail' ? (
-					<LiveLogTable />
 				) : (
 					<Management schemaLoading={isSchemaFetching} />
 				)}

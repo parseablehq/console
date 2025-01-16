@@ -8,6 +8,7 @@ import {
 	STREAM_ROUTE,
 	DASHBOARDS_ROUTE,
 	ALERTS_ROUTE,
+	CORRELATION_ROUTE,
 } from '@/constants/routes';
 import FullPageLayout from '@/layouts/FullPageLayout';
 import NotFound from '@/pages/Errors/NotFound';
@@ -23,6 +24,7 @@ import {
 	UsersElement,
 	DashboardsElement,
 	AlertsElement,
+	CorrelationElement,
 } from './elements';
 import AccessSpecificRoute from './AccessSpecificRoute';
 import OIDCNotConFigured from '@/pages/Errors/OIDC';
@@ -35,6 +37,7 @@ const AppRouter: FC = () => {
 					<Route element={<MainLayoutElement />}>
 						<Route path={HOME_ROUTE} element={<HomeElement />} />
 						<Route path={DASHBOARDS_ROUTE} element={<DashboardsElement />} />
+						<Route path={CORRELATION_ROUTE} element={<CorrelationElement />} />
 						<Route element={<AccessSpecificRoute accessRequired={['Users']} />}>
 							<Route path={USERS_MANAGEMENT_ROUTE} element={<UsersElement />} />
 						</Route>

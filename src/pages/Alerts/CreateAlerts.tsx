@@ -88,20 +88,37 @@ const AddRuleGroupBtn = () => {
 
 const ConditionBox = () => {
 	return (
-		<Group w="78%" style={{ border: '1px solid red' }}>
-			<Stack style={{ border: '2px solid red' }}>
-				<Text style={{ position: 'absolute', top: 0, left: '45%' }}>Condition</Text>
-			</Stack>
+		<div
+			className={classes.rulesContainer}
+			style={{
+				width: '78%',
+				position: 'relative',
+			}}>
+			<span
+				className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white px-2 text-sm text-gray-600"
+				style={{
+					position: 'absolute',
+					top: '-7.5%',
+					left: '48%',
+					background: 'white',
+					padding: '0rem 1rem',
+					color: '#4b52ea',
+					fontWeight: 700,
+				}}>
+				Condition
+			</span>
 			<Box w="100%" style={{ display: 'flex', justifyContent: 'end' }}>
 				<Box className={classes.parentCombinatorToggleContainer}>
 					<CombinatorToggle isOrSelected={false} />
 				</Box>
 			</Box>
-			<Select w="32.5%" label="Field" />
-			<Select w="31%" label="Operator" />
-			<TextInput w="33%" label="Value" />
-			<Button leftSection={<IconPlus stroke={1.2} size={'1rem'} />}>Condition</Button>
-		</Group>
+			<Group gap={10}>
+				<Select w="32.5%" label="Field" />
+				<Select w="31%" label="Operator" />
+				<TextInput w="33%" label="Value" />
+				<Button leftSection={<IconPlus stroke={1.2} size={'1rem'} />}>Condition</Button>
+			</Group>
+		</div>
 	);
 };
 
@@ -115,18 +132,21 @@ export default function CreateAlerts() {
 				<AlertTitle />
 				<SelectStream />
 
-				<ScrollArea h="88%" style={{ justifyContent: 'center' }}>
-					<Box h="4rem" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-						<Text>Pills Container</Text>
-					</Box>
+				<ScrollArea h="75%" style={{ justifyContent: 'center' }}>
 					<Stack style={{ justifyContent: 'center', gap: 0 }}>
 						<Stack className={classes.rulesContainer}>
-							<Select w="12%" label="Aggregate" defaultValue={AggregateOptions[0]} data={AggregateOptions} />
+							<Select
+								w="12%"
+								label="Aggregate"
+								defaultValue={AggregateOptions[0]}
+								data={AggregateOptions}
+								styles={{ label: { color: '#4b52ea', fontWeight: 700 } }}
+							/>
 
 							<ConditionBox />
 
-							<Select w="6%" label="Operator" />
-							<TextInput w="10%" label="Value" />
+							<Select w="6%" label="Operator" styles={{ label: { color: '#4b52ea', fontWeight: 700 } }} />
+							<TextInput w="10%" label="Value" styles={{ label: { color: '#4b52ea', fontWeight: 700 } }} />
 						</Stack>
 						<Stack style={{ height: 80, position: 'relative' }}>
 							<Stack className={classes.ruleSetConnector} />
@@ -141,8 +161,7 @@ export default function CreateAlerts() {
 						</Stack>
 						<AddRuleGroupBtn />
 					</Stack>
-					<Divider size="sm"></Divider>
-					<Stack>
+					<Stack pt={20}>
 						<Divider label="Target" />
 						<Group>
 							<TextInput label="Target" w="100%" />

@@ -24,25 +24,54 @@ export const useGetStreamMetadata = () => {
 		async (streams: string[]) => {
 			if (!userRoles) return;
 			setLoading(true);
+			let encounteredError = false;
 			try {
 				// stats
 				const allStatsReqs = streams.map((stream) => getLogStreamStats(stream));
-				const allStatsRes = await Promise.all(allStatsReqs);
+				const statsResults = await Promise.allSettled(allStatsReqs);
 
+				// Notify errors for stats
+				statsResults.forEach((result, index) => {
+					if (result.status === 'rejected') {
+						encounteredError = true;
+						notifyError({
+							message: `Failed to fetch stats for stream: ${streams[index]}`,
+						});
+					}
+				});
 				// retention
 				const streamsWithSettingsAccess = _.filter(streams, (stream) =>
 					_.includes(getStreamsSepcificAccess(userRoles, stream), 'StreamSettings'),
 				);
-				const allretentionReqs = streamsWithSettingsAccess.map((stream) => getLogStreamRetention(stream));
-				const allretentionRes = await Promise.all(allretentionReqs);
+				const allRetentionReqs = streamsWithSettingsAccess.map((stream) => getLogStreamRetention(stream));
+				const retentionResults = await Promise.allSettled(allRetentionReqs);
 
+				// Notify errors for retention
+				retentionResults.forEach((result, index) => {
+					if (result.status === 'rejected') {
+						encounteredError = true;
+						notifyError({
+							message: `Failed to fetch retention for stream: ${streamsWithSettingsAccess[index]}`,
+						});
+					}
+				});
+
+				// Combine results
 				const metadata = streams.reduce((acc, stream, index) => {
+					const statsResult = statsResults[index];
+					const retentionResult = retentionResults.find((_, idx) => streamsWithSettingsAccess[idx] === stream);
+
 					return {
 						...acc,
-						[stream]: { stats: allStatsRes[index]?.data || {}, retention: allretentionRes[index]?.data || [] },
+						[stream]: {
+							stats: statsResult?.status === 'fulfilled' ? statsResult.value.data : {},
+							retention: retentionResult?.status === 'fulfilled' ? retentionResult.value.data : [],
+						},
 					};
 				}, {});
+
 				setMetadata(metadata);
+				setError(encounteredError);
 			} catch {
 				setError(true);
 				setMetadata(null);

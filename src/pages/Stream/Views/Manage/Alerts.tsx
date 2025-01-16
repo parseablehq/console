@@ -674,7 +674,7 @@ const Alerts = (props: {
 		setAlertModalOpen(false);
 	}, []);
 
-	const hideAlerts = !props.hasAlertsAccess || props.isStandAloneMode === false;
+	const hideAlerts = true;
 
 	return (
 		<Stack className={classes.sectionContainer} gap={0} style={{ flex: 1 }}>
@@ -683,7 +683,9 @@ const Alerts = (props: {
 			{props.isError ? (
 				<ErrorView />
 			) : hideAlerts ? (
-				<RestrictedView msg={!props.isStandAloneMode ? 'Alerts is unavailable on distributed mode.' : ''} />
+				<RestrictedView
+					msg={'Alerts are deprecated.  \n New way to set alerts will be available in the next release.'}
+				/>
 			) : (
 				<AlertList
 					selectAlert={selectAlert}

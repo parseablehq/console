@@ -5,7 +5,6 @@ import { FilterQueryBuilder } from '@/utils/queryBuilder';
 import { Field, RuleGroupType, RuleType, formatQuery } from 'react-querybuilder';
 import { LOAD_LIMIT } from './LogsProvider';
 import { timeRangeSQLCondition } from '@/api/query';
-import { QueryEngineType } from '@/@types/parseable/api/about';
 
 // write transformer (for saved filters) if you are updating the operators below
 export const textFieldOperators = [
@@ -136,7 +135,6 @@ type FilterStoreReducers = {
 	updateRule: (store: FilterStore, groupId: string, ruleId: string, updateOpts: RuleUpdateOpts) => ReducerOutput;
 	updateQuery: (store: FilterStore, query: QueryType) => ReducerOutput;
 	parseQuery: (
-		queryEngine: 'Parseable' | 'Trino' | undefined,
 		query: QueryType,
 		currentStream: string,
 		timeRangeOpts?: { startTime: Date; endTime: Date; timePartitionColumn: string },
@@ -147,6 +145,7 @@ type FilterStoreReducers = {
 	toggleSavedFiltersModal: (_store: FilterStore, val: boolean) => ReducerOutput;
 	applySavedFilters: (store: FilterStore, query: QueryType) => ReducerOutput;
 	setAppliedFilterQuery: (store: FilterStore, query: string | undefined) => ReducerOutput;
+	clearAppliedFilterQuery: (_store: FilterStore) => ReducerOutput;
 };
 
 const { Provider: FilterProvider, useStore: useFilterStore } = initContext(initialState);
@@ -256,6 +255,14 @@ const setAppliedFilterQuery = (_store: FilterStore, query: string | undefined) =
 	};
 };
 
+// clears applied filter query from filter store
+const clearAppliedFilterQuery = (_store: FilterStore) => {
+	return {
+		..._store,
+		appliedFilterQuery: '',
+	};
+};
+
 export const noValueOperators = ['null', 'notNull'];
 
 const toggleSubmitBtn = (_store: FilterStore, val: boolean) => {
@@ -266,7 +273,6 @@ const toggleSubmitBtn = (_store: FilterStore, val: boolean) => {
 
 // todo - custom rule processor to prevent converting number strings into numbers for text fields
 const parseQuery = (
-	queryEngine: QueryEngineType,
 	query: QueryType,
 	currentStream: string,
 	timeRangeOpts?: { startTime: Date; endTime: Date; timePartitionColumn: string },
@@ -278,7 +284,6 @@ const parseQuery = (
 		: '(1=1)';
 
 	const filterQueryBuilder = new FilterQueryBuilder({
-		queryEngine,
 		streamName: currentStream,
 		whereClause: where,
 		timeRangeCondition,
@@ -394,6 +399,7 @@ const filterStoreReducers: FilterStoreReducers = {
 	toogleQueryParamsFlag,
 	applySavedFilters,
 	setAppliedFilterQuery,
+	clearAppliedFilterQuery,
 };
 
 export { FilterProvider, useFilterStore, filterStoreReducers };

@@ -8,6 +8,7 @@ import { useFilterStore, filterStoreReducers } from '../../providers/FilterProvi
 
 import { useEffect } from 'react';
 import _ from 'lodash';
+import { AxiosError } from 'axios';
 
 const { setPageAndPageData, setTargetPage, setTargetColumns, setDisabledColumns } = logsStoreReducers;
 const { toogleQueryParamsFlag } = filterStoreReducers;
@@ -15,7 +16,7 @@ const { toogleQueryParamsFlag } = filterStoreReducers;
 const LogsView = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
 	const [, setFilterStore] = useFilterStore((store) => store);
 	const { schemaLoading, infoLoading } = props;
-	const { errorMessage, hasNoData, showTable, isFetchingCount, logsLoading } = useLogsFetcher({
+	const { hasNoData, showTable, isFetchingCount, logsLoading, queryLogsError } = useLogsFetcher({
 		schemaLoading,
 		infoLoading,
 	});
@@ -24,7 +25,7 @@ const LogsView = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
 	const { currentPage, targetPage, headers, targetColumns } = tableOpts;
 	const [viewMode, setLogsStore] = useLogsStore((store) => store.viewMode);
 	const viewOpts = {
-		errorMessage,
+		errorMessage: queryLogsError as AxiosError,
 		hasNoData,
 		showTable,
 		isFetchingCount,

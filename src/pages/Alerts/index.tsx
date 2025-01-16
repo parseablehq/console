@@ -5,7 +5,7 @@ import CreateAlerts from './CreateAlerts';
 export default function Alerts() {
 	useDocumentTitle('Parseable | Alerts');
 	return (
-		<Stack>
+		<Stack style={{ overflowY: 'hidden' }}>
 			<CreateAlerts />
 		</Stack>
 	);

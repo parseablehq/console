@@ -24,6 +24,7 @@ import timeRangeUtils from '@/utils/timeRangeUtils';
 import { IconDotsVertical } from '@tabler/icons-react';
 import { copyTextToClipboard } from '@/utils';
 import { notifySuccess } from '@/utils/notification';
+import { AxiosError } from 'axios';
 
 const { setSelectedLog, setRowNumber } = logsStoreReducers;
 const TableContainer = (props: { children: ReactNode }) => {
@@ -120,9 +121,7 @@ const makeHeaderOpts = (
 									style={{
 										display: isFirstSelectedRow && isFirstColumn ? 'flex' : '',
 									}}>
-									{isSecureHTTPContext
-										? sanitizedValue && <IconDotsVertical stroke={1.2} size={'0.8rem'} color="#545beb" />
-										: null}
+									<IconDotsVertical stroke={1.2} size={'0.8rem'} color="#545beb" />
 								</div>
 								{sanitizedValue}
 								<div className={tableStyles.copyIconContainer}>
@@ -150,9 +149,8 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 	});
 
 	const contextMenuRef = useRef<HTMLDivElement>(null);
-	const [{ orderedHeaders, disabledColumns, pageData, wrapDisabledColumns, rowNumber }, setLogsStore] = useLogsStore(
-		(store) => store.tableOpts,
-	);
+	const [{ orderedHeaders, disabledColumns, pageData, wrapDisabledColumns, rowNumber, pinnedColumns }, setLogsStore] =
+		useLogsStore((store) => store.tableOpts);
 	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);
 	const [fieldTypeMap] = useStreamStore((store) => store.fieldTypeMap);
 	const columns = useMemo(
@@ -292,7 +290,7 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 				enableColumnPinning
 				initialState={{
 					columnPinning: {
-						left: ['rowNumber'],
+						left: pinnedColumns,
 					},
 				}}
 				enableStickyHeader
@@ -300,7 +298,7 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 				layoutMode="grid"
 				state={{
 					columnPinning: {
-						left: ['rowNumber'],
+						left: pinnedColumns,
 					},
 					columnVisibility,
 					columnOrder: orderedHeaders,
@@ -342,20 +340,24 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 
 							return null;
 						})()}
-						<Menu.Item
-							onClick={() => {
-								copyJSON();
-								closeContextMenu();
-							}}>
-							Copy JSON
-						</Menu.Item>
-						<Menu.Item
-							onClick={() => {
-								copyUrl();
-								closeContextMenu();
-							}}>
-							Copy permalink
-						</Menu.Item>
+						{isSecureHTTPContext && (
+							<>
+								<Menu.Item
+									onClick={() => {
+										copyJSON();
+										closeContextMenu();
+									}}>
+									Copy JSON
+								</Menu.Item>
+								<Menu.Item
+									onClick={() => {
+										copyUrl();
+										closeContextMenu();
+									}}>
+									Copy permalink
+								</Menu.Item>
+							</>
+						)}
 					</Menu>
 				</div>
 			)}
@@ -364,7 +366,7 @@ const Table = (props: { primaryHeaderHeight: number }) => {
 };
 
 const LogTable = (props: {
-	errorMessage: string | null;
+	errorMessage: AxiosError;
 	hasNoData: boolean;
 	showTable: boolean;
 	isFetchingCount: boolean;
@@ -415,7 +417,7 @@ const LogTable = (props: {
 					<LoadingView />
 				)
 			) : (
-				<ErrorView message={errorMessage} />
+				<ErrorView message={(errorMessage?.response?.data as string) || 'Failed to query logs'} />
 			)}
 			<Footer loaded={showTable} hasNoData={hasNoData} isFetchingCount={isFetchingCount} />
 		</TableContainer>
