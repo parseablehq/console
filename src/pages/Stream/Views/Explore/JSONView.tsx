@@ -35,13 +35,8 @@ const { setInstantSearchValue, applyInstantSearch, applyJqSearch, setRowNumber, 
 const Item = (props: { header: string | null; value: string; highlight: boolean }) => {
 	return (
 		<span className={classes.itemContainer}>
-			{props.header && (
-				<span style={{ background: props.highlight ? 'yellow' : 'transparent' }} className={classes.itemHeader}>
-					{props.header}:{' '}
-				</span>
-			)}
-			<span className={classes.itemValue}>
-				<span style={{ background: props.highlight ? 'yellow' : 'transparent' }}>{props.value}</span>{' '}
+			<span style={{ background: props.highlight ? 'yellow' : 'transparent' }} className={classes.itemHeader}>
+				{props.header}: {props.value}
 			</span>
 		</span>
 	);
@@ -145,13 +140,12 @@ const Row = (props: {
 const JsonRows = (props: { isSearching: boolean; setContextMenu: any }) => {
 	const [{ pageData, instantSearchValue, rowNumber }, setLogsStore] = useLogsStore((store) => store.tableOpts);
 	const disableHighlight = props.isSearching || _.isEmpty(instantSearchValue) || isJqSearch(instantSearchValue);
-	const regExp = disableHighlight ? null : new RegExp(instantSearchValue, 'i');
 
 	const shouldHighlight = useCallback(
 		(header: string | null, val: number | string | Date | null) => {
-			return !!regExp?.test(_.toString(val)) || !!regExp?.test(_.toString(header));
+			return String(val).includes(instantSearchValue) || String(header).includes(instantSearchValue);
 		},
-		[regExp],
+		[instantSearchValue],
 	);
 
 	const handleRowClick = (index: number, event: React.MouseEvent) => {

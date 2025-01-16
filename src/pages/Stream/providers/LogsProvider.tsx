@@ -504,7 +504,6 @@ const filterAndSortData = (
 
 const searchAndSortData = (opts: { searchValue: string }, data: Log[]) => {
 	const { searchValue } = opts;
-	const regExp = new RegExp(searchValue, 'i');
 	const filteredData = _.isEmpty(searchValue)
 		? data
 		: (_.reduce(
@@ -515,7 +514,10 @@ const searchAndSortData = (opts: { searchValue: string }, data: Log[]) => {
 						.map(([key, value]) => [key, _.toString(value)])
 						.value();
 
-					const doesMatch = _.some(allValues, ([key, value]) => regExp.test(key) || regExp.test(value));
+					const doesMatch = _.some(
+						allValues,
+						([key, value]) => key.includes(searchValue) || value.includes(searchValue),
+					);
 
 					return doesMatch ? [...acc, d] : acc;
 				},
