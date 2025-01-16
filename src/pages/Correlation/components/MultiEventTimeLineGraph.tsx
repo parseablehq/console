@@ -246,8 +246,8 @@ const MultiEventTimeLineGraph = () => {
 		const streamNames = Object.keys(fields);
 		const streamsToFetch = streamNames.filter((streamName) => !Object.keys(streamData).includes(streamName));
 		const totalMinutes = interval / (1000 * 60);
-		const numBins = totalMinutes < 10 ? totalMinutes : totalMinutes < 60 ? 10 : 60;
-		const queries = streamsToFetch.map((streamKey) => {
+		const numBins = Math.trunc(totalMinutes < 10 ? totalMinutes : totalMinutes < 60 ? 10 : 60);
+		const eventTimeLineGraphOpts = streamsToFetch.map((streamKey) => {
 			const logsQuery = {
 				stream: streamKey,
 				startTime: dayjs(startTime).toISOString(),
@@ -256,12 +256,12 @@ const MultiEventTimeLineGraph = () => {
 			};
 			return logsQuery;
 		});
-		Promise.all(queries.map((queryData: any) => fetchGraphDataMutation.mutateAsync(queryData)))
+		Promise.all(eventTimeLineGraphOpts.map((queryData: any) => fetchGraphDataMutation.mutateAsync(queryData)))
 			.then((results) => {
 				setMultipleStreamData((prevData: any) => {
 					const newData = { ...prevData };
 					results.forEach((result, index) => {
-						newData[queries[index].stream] = result;
+						newData[eventTimeLineGraphOpts[index].stream] = result;
 					});
 					return newData;
 				});

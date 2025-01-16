@@ -1,5 +1,5 @@
 import { getQueryResultWithHeaders, getQueryResult, getGraphData } from '@/api/query';
-import { GraphQuery, LogsQuery } from '@/@types/parseable/api/query';
+import { GraphQueryOpts, LogsQuery } from '@/@types/parseable/api/query';
 import { notifications } from '@mantine/notifications';
 import { isAxiosError, AxiosError } from 'axios';
 import { IconCheck } from '@tabler/icons-react';
@@ -53,7 +53,7 @@ export const useQueryResult = () => {
 };
 
 export const useGraphData = () => {
-	const fetchGraphDataHandler = async (data: GraphQuery) => {
+	const fetchGraphDataHandler = async (data: GraphQueryOpts) => {
 		const response = await getGraphData(data);
 		if (response.status !== 200) {
 			throw new Error(response.statusText);

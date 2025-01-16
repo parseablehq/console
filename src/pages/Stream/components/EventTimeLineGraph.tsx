@@ -183,7 +183,7 @@ const EventTimeLineGraph = () => {
 		const adjustedEndTime = dayjs(endTime).startOf('minute');
 
 		const totalMinutes = interval / (1000 * 60);
-		const numBins = Math.ceil(totalMinutes < 10 ? totalMinutes : totalMinutes < 60 ? 10 : 60);
+		const numBins = Math.trunc(totalMinutes < 10 ? totalMinutes : totalMinutes < 60 ? 10 : 60);
 
 		const logsQuery = {
 			stream: localStream,

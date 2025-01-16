@@ -1,6 +1,6 @@
 import { Axios } from './axios';
 import { GRAPH_DATA_URL, LOG_QUERY_URL } from './constants';
-import { GraphQuery, Log, LogsQuery, LogsResponseWithHeaders } from '@/@types/parseable/api/query';
+import { GraphQueryOpts, Log, LogsQuery, LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import { CorrelationQueryBuilder, QueryBuilder } from '@/utils/queryBuilder';
 
@@ -92,6 +92,6 @@ export const getQueryResultWithHeaders = (logsQuery: LogsQuery, query = '') => {
 	return Axios().post<LogsResponseWithHeaders>(endPoint, makeCustomQueryRequestData(logsQuery, query), {});
 };
 
-export const getGraphData = (data: GraphQuery) => {
+export const getGraphData = (data: GraphQueryOpts) => {
 	return Axios().post<LogsResponseWithHeaders>(GRAPH_DATA_URL, data);
 };

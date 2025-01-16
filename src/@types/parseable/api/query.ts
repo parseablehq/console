@@ -5,7 +5,7 @@ export type LogsQuery = {
 	access: string[] | null;
 };
 
-export type GraphQuery = {
+export type GraphQueryOpts = {
 	stream: string;
 	startTime: string;
 	endTime: string;
