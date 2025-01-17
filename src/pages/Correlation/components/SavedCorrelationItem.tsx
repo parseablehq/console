@@ -52,7 +52,7 @@ const SelectedFields: React.FC<{ tableConfigs: TableConfig[] }> = ({ tableConfig
 
 	return (
 		<div className="space-x-1">
-			<span>Selected Fields: </span>
+			<span style={{ fontSize: '11px' }}>Selected Fields: </span>
 			{fields.map((field, index) => (
 				<Fragment key={field.key}>
 					<Code>{field.content}</Code>
@@ -74,7 +74,7 @@ const JoinConditions: React.FC<{ joinConfig: JoinConfig }> = ({ joinConfig }) =>
 
 				return (
 					<div key={`join-${index}`} className="space-x-1">
-						<span>Join Condition:</span>
+						<span style={{ fontSize: '11px' }}>Join Condition:</span>
 						<Code>{`${join.tableName}.${join.field}`}</Code>
 						<span>=</span>
 						<Code>{`${nextJoin.tableName}.${nextJoin.field}`}</Code>
@@ -154,7 +154,7 @@ const SavedCorrelationItem = (props: { item: Correlation }) => {
 				</Stack>
 			</Stack>
 			{showQuery && (
-				<Stack>
+				<Stack gap={0}>
 					<SelectedFields tableConfigs={tableConfigs} />
 					<JoinConditions joinConfig={joinConfig} />
 				</Stack>
