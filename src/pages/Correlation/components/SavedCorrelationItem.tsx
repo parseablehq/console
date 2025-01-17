@@ -1,6 +1,6 @@
 import { Stack, Box, Button, Text, px, Code } from '@mantine/core';
 import { IconClock, IconEye, IconEyeOff, IconTrash, IconX } from '@tabler/icons-react';
-import { useState, useCallback, Fragment } from 'react';
+import { useState, useCallback, Fragment, FC } from 'react';
 import classes from '../styles/SavedCorrelationItem.module.css';
 import { Correlation } from '@/@types/parseable/api/correlation';
 import dayjs from 'dayjs';
@@ -42,7 +42,7 @@ interface JoinConfig {
 	joinConditions: JoinCondition[];
 }
 
-const SelectedFields: React.FC<{ tableConfigs: TableConfig[] }> = ({ tableConfigs }) => {
+const SelectedFields: FC<{ tableConfigs: TableConfig[] }> = ({ tableConfigs }) => {
 	const fields = tableConfigs.flatMap((config) =>
 		config.selectedFields.map((field) => ({
 			key: `${config.tableName}-${field}`,
@@ -63,7 +63,7 @@ const SelectedFields: React.FC<{ tableConfigs: TableConfig[] }> = ({ tableConfig
 	);
 };
 
-const JoinConditions: React.FC<{ joinConfig: JoinConfig }> = ({ joinConfig }) => {
+const JoinConditions: FC<{ joinConfig: JoinConfig }> = ({ joinConfig }) => {
 	return (
 		<>
 			{joinConfig.joinConditions.map((join, index) => {
