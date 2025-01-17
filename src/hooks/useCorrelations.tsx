@@ -22,7 +22,7 @@ const {
 	cleanCorrelationStore,
 	toggleSavedCorrelationsModal,
 } = correlationStoreReducers;
-const { setTimeRange } = appStoreReducers;
+const { setTimeRange, syncTimeRange } = appStoreReducers;
 export const useCorrelationsQuery = () => {
 	const [{ correlationId }, setCorrelatedStore] = useCorrelationStore((store) => store);
 	const [, setAppStore] = useAppStore((store) => store);
@@ -75,6 +75,7 @@ export const useCorrelationsQuery = () => {
 				variables.onSuccess && variables.onSuccess();
 				if (variables.correlationId === correlationId) {
 					setCorrelatedStore(cleanCorrelationStore);
+					setAppStore(syncTimeRange);
 				}
 				fetchCorrelations();
 				setCorrelatedStore((store) => toggleSavedCorrelationsModal(store, false));

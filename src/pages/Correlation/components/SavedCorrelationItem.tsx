@@ -1,6 +1,6 @@
-import { Stack, Box, Button, Text, px } from '@mantine/core';
+import { Stack, Box, Button, Text, px, Code } from '@mantine/core';
 import { IconClock, IconEye, IconEyeOff, IconTrash, IconX } from '@tabler/icons-react';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, Fragment } from 'react';
 import classes from '../styles/SavedCorrelationItem.module.css';
 import { Correlation } from '@/@types/parseable/api/correlation';
 import dayjs from 'dayjs';
@@ -28,9 +28,66 @@ const getTimeRangeLabel = (startTime: string, endTime: string) => {
 	return `${dayjs(startTime).format('hh:mm A DD MMM YY')} to ${dayjs(endTime).format('hh:mm A DD MMM YY')}`;
 };
 
+interface JoinCondition {
+	tableName: string;
+	field: string;
+}
+
+interface TableConfig {
+	tableName: string;
+	selectedFields: string[];
+}
+
+interface JoinConfig {
+	joinConditions: JoinCondition[];
+}
+
+const SelectedFields: React.FC<{ tableConfigs: TableConfig[] }> = ({ tableConfigs }) => {
+	const fields = tableConfigs.flatMap((config) =>
+		config.selectedFields.map((field) => ({
+			key: `${config.tableName}-${field}`,
+			content: `${config.tableName}.${field}`,
+		})),
+	);
+
+	return (
+		<div className="space-x-1">
+			<span>Selected Fields: </span>
+			{fields.map((field, index) => (
+				<Fragment key={field.key}>
+					<Code>{field.content}</Code>
+					{index < fields.length - 1 && <span>,</span>}
+				</Fragment>
+			))}
+		</div>
+	);
+};
+
+const JoinConditions: React.FC<{ joinConfig: JoinConfig }> = ({ joinConfig }) => {
+	return (
+		<>
+			{joinConfig.joinConditions.map((join, index) => {
+				if (index % 2 !== 0) return null;
+
+				const nextJoin = joinConfig.joinConditions[index + 1];
+				if (!nextJoin) return null;
+
+				return (
+					<div key={`join-${index}`} className="space-x-1">
+						<span>Join Condition:</span>
+						<Code>{`${join.tableName}.${join.field}`}</Code>
+						<span>=</span>
+						<Code>{`${nextJoin.tableName}.${nextJoin.field}`}</Code>
+					</div>
+				);
+			})}
+		</>
+	);
+};
+
 const SavedCorrelationItem = (props: { item: Correlation }) => {
 	const {
-		item: { startTime, endTime, id, title, joinConfig },
+		item: { startTime, endTime, id, title, joinConfig, tableConfigs },
 	} = props;
 	const [showDeletePropmt, setShowDeletePrompt] = useState<boolean>(false);
 	const [showQuery, setShowQuery] = useState<boolean>(false);
@@ -98,13 +155,8 @@ const SavedCorrelationItem = (props: { item: Correlation }) => {
 			</Stack>
 			{showQuery && (
 				<Stack>
-					{joinConfig.joinConditions.map((join: { tableName: string; field: string }) => {
-						return (
-							<Text key={join.tableName}>
-								{join.tableName}.{join.field}
-							</Text>
-						);
-					})}
+					<SelectedFields tableConfigs={tableConfigs} />
+					<JoinConditions joinConfig={joinConfig} />
 				</Stack>
 			)}
 		</Stack>

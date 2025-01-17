@@ -505,6 +505,10 @@ const parseType = (type: any): 'text' | 'number' | 'timestamp' | 'list' | 'boole
 };
 
 const setStreamSchema = (store: CorrelationStore, schema: LogStreamSchemaData, streamName: string): ReducerOutput => {
+	if (store.fields && store.fields[streamName]) {
+		return { fields: store.fields };
+	}
+
 	const fieldTypeMap = schema.fields.reduce((acc, field) => {
 		return { ...acc, [field.name]: parseType(field.data_type) };
 	}, {});

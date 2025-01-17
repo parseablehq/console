@@ -23,7 +23,15 @@ interface FormObjectType extends Omit<Correlation, 'correlation_id' | 'version'>
 
 const SaveCorrelationModal = () => {
 	const [
-		{ isSaveCorrelationModalOpen, selectedFields, fields, correlationCondition, activeCorrelation, savedCorrelationId },
+		{
+			isSaveCorrelationModalOpen,
+			selectedFields,
+			fields,
+			correlationCondition,
+			activeCorrelation,
+			savedCorrelationId,
+			correlationId,
+		},
 		setCorrelationData,
 	] = useCorrelationStore((store) => store);
 
@@ -248,7 +256,7 @@ const SaveCorrelationModal = () => {
 					</Box>
 					<Box>
 						<Button miw={100} onClick={onSubmit}>
-							{savedCorrelationId ? 'Update' : 'Save'}
+							{correlationId ? 'Update' : 'Save'}
 						</Button>
 					</Box>
 				</Stack>

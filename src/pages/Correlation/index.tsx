@@ -32,7 +32,7 @@ import SavedCorrelationsButton from './components/SavedCorrelationsBtn';
 import SavedCorrelationsModal from './components/SavedCorrelationsModal';
 import SaveCorrelationModal from './components/SaveCorrelationModal';
 
-const { changeStream } = appStoreReducers;
+const { changeStream, syncTimeRange } = appStoreReducers;
 const {
 	deleteStreamData,
 	setSelectedFields,
@@ -205,6 +205,7 @@ const Correlation = () => {
 		setCorrelationData((store) => setCorrelationId(store, ''));
 		setCorrelationData((store) => setActiveCorrelation(store, null));
 		setIsCorrelationEnabled(false);
+		setAppStore(syncTimeRange);
 	};
 	const openSaveCorrelationModal = useCallback((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		e.stopPropagation();
