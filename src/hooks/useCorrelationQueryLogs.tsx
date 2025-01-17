@@ -1,5 +1,4 @@
 import { getCorrelationQueryLogsWithHeaders } from '@/api/query';
-import { StatusCodes } from 'http-status-codes';
 import useMountedState from './useMountedState';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import _ from 'lodash';
@@ -55,9 +54,9 @@ export const useCorrelationQueryLogs = () => {
 			enabled: false,
 			refetchOnWindowFocus: false,
 			onSuccess: async (responses) => {
-				responses.map((data: { data: LogsResponseWithHeaders; status: StatusCodes }) => {
+				responses.map((data: { data: LogsResponseWithHeaders }) => {
 					const logs = data.data;
-					const isInvalidResponse = _.isEmpty(logs) || _.isNil(logs) || data.status !== StatusCodes.OK;
+					const isInvalidResponse = _.isEmpty(logs) || _.isNil(logs);
 					if (isInvalidResponse) return setError('Failed to query logs');
 
 					const { records, fields } = logs;

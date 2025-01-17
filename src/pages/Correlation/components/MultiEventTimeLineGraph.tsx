@@ -10,6 +10,7 @@ import { LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 import _ from 'lodash';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import { useCorrelationStore } from '../providers/CorrelationProvider';
+import { createStreamQueries, fetchStreamData } from '../utils';
 
 const { makeTimeRangeLabel } = timeRangeUtils;
 const { setTimeRange } = appStoreReducers;
@@ -53,10 +54,10 @@ const calcAverage = (data: LogsResponseWithHeaders | undefined) => {
 	if (!data || !Array.isArray(data?.records)) return 0;
 
 	const { fields, records } = data;
-	if (_.isEmpty(records) || !_.includes(fields, 'log_count')) return 0;
+	if (_.isEmpty(records) || !_.includes(fields, 'count')) return 0;
 
 	const total = records.reduce((acc, d) => {
-		return acc + _.toNumber(d.log_count) || 0;
+		return acc + _.toNumber(d.count) || 0;
 	}, 0);
 	return parseInt(Math.abs(total / records.length).toFixed(0));
 };
@@ -138,73 +139,67 @@ function ChartTooltip({ payload, series }: ChartTooltipProps) {
 
 type LogRecord = {
 	counts_timestamp: string;
-	log_count: number;
+	count: number;
 };
 
 // date_bin removes tz info
 // filling data with empty values where there is no rec
-const parseGraphData = (
-	dataSets: (LogsResponseWithHeaders | undefined)[],
-	startTime: Date,
-	endTime: Date,
-	interval: number,
-) => {
+const parseGraphData = (dataSets: (LogsResponseWithHeaders | undefined)[], interval: number) => {
 	if (!dataSets || !Array.isArray(dataSets)) return [];
 
 	const firstResponse = dataSets[0]?.records || [];
 	const secondResponse = dataSets[1]?.records || [];
-
-	const compactType = getCompactType(interval);
-	const ticksCount = interval < 10 * 60 * 1000 ? interval / (60 * 1000) : interval < 60 * 60 * 1000 ? 10 : 60;
-	const intervalDuration = (endTime.getTime() - startTime.getTime()) / ticksCount;
-
-	const allTimestamps = Array.from(
-		{ length: ticksCount },
-		(_, index) => new Date(startTime.getTime() + index * intervalDuration),
-	);
-
 	const hasSecondDataset = dataSets[1] !== undefined;
 
+	const compactType = getCompactType(interval);
+
 	const isValidRecord = (record: any): record is LogRecord => {
-		return typeof record.counts_timestamp === 'string' && typeof record.log_count === 'number';
+		return (
+			typeof record.start_time === 'string' &&
+			typeof record.end_time === 'string' &&
+			typeof record.count === 'number' &&
+			record.start_time !== null &&
+			record.end_time !== null
+		);
 	};
 
-	const secondResponseMap =
-		secondResponse.length > 0
-			? new Map(
-					secondResponse
-						.filter((entry) => isValidRecord(entry))
-						.map((entry) => {
-							const timestamp = entry.counts_timestamp;
-							if (timestamp != null) {
-								return [new Date(timestamp).getTime(), entry.log_count];
-							}
-							return null;
-						})
-						.filter((entry): entry is [number, number] => entry !== null),
-			  )
-			: new Map();
+	// Process first dataset
+	const validFirstRecords = firstResponse
+		.filter(isValidRecord)
+		.map((record) => ({
+			...record,
+			startDate: record.start_time ? new Date(record.start_time) : new Date(),
+			endDate: record.end_time ? new Date(record.end_time) : new Date(),
+		}))
+		.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
-	const combinedData = allTimestamps.map((ts) => {
-		const firstRecord = firstResponse.find((record) => {
-			if (!isValidRecord(record)) return false;
-			const recordTimestamp = new Date(record.counts_timestamp).getTime();
-			const tsISO = ts.getTime();
-			return recordTimestamp === tsISO;
-		});
+	// Process second dataset
+	const validSecondRecords = secondResponse
+		.filter(isValidRecord)
+		.map((record) => ({
+			...record,
+			startDate: record.start_time ? new Date(record.start_time) : new Date(),
+			endDate: record.end_time ? new Date(record.end_time) : new Date(),
+		}))
+		.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
-		const secondCount = secondResponseMap?.get(ts.toISOString()) ?? 0;
+	// Create a Map for quick lookup of second dataset
+	const secondResponseMap = new Map(
+		validSecondRecords.map((record: any) => [record.startDate.getTime(), record.count]),
+	);
 
+	// Combine the datasets using the first dataset's timestamps as reference points
+	const combinedData = validFirstRecords.map((record: any) => {
 		const defaultOpts: Record<string, any> = {
-			stream: firstRecord?.log_count || 0,
-			minute: ts,
+			stream: record.count,
+			minute: record.startDate,
 			compactType,
-			startTime: dayjs(ts),
-			endTime: dayjs(new Date(ts.getTime() + intervalDuration)),
+			startTime: dayjs(record.startDate),
+			endTime: dayjs(record.endDate),
 		};
 
 		if (hasSecondDataset) {
-			defaultOpts.stream1 = secondCount;
+			defaultOpts.stream1 = secondResponseMap.get(record.startDate.getTime()) ?? 0;
 		}
 
 		return defaultOpts;
@@ -227,7 +222,7 @@ const MultiEventTimeLineGraph = () => {
 	useEffect(() => {
 		setMultipleStreamData((prevData) => {
 			const newData = { ...prevData };
-			const streamDataKeys = Object.keys(streamData);
+			const streamDataKeys = Object.keys(fields);
 			Object.keys(newData).forEach((key) => {
 				if (!streamDataKeys.includes(key)) {
 					delete newData[key];
@@ -235,8 +230,21 @@ const MultiEventTimeLineGraph = () => {
 			});
 			return newData;
 		});
-	}, [streamData]);
+	}, [fields]);
 
+	// Effect for timeRange changes
+	useEffect(() => {
+		if (!fields || Object.keys(fields).length === 0) {
+			setMultipleStreamData({});
+			return;
+		}
+
+		const streamNames = Object.keys(fields);
+		const queries = createStreamQueries(streamNames, startTime, endTime, interval);
+		fetchStreamData(queries, fetchGraphDataMutation, setMultipleStreamData);
+	}, [timeRange]);
+
+	// Effect for fields changes
 	useEffect(() => {
 		if (!fields || Object.keys(fields).length === 0) {
 			setMultipleStreamData({});
@@ -245,38 +253,19 @@ const MultiEventTimeLineGraph = () => {
 
 		const streamNames = Object.keys(fields);
 		const streamsToFetch = streamNames.filter((streamName) => !Object.keys(streamData).includes(streamName));
-		const totalMinutes = interval / (1000 * 60);
-		const numBins = Math.trunc(totalMinutes < 10 ? totalMinutes : totalMinutes < 60 ? 10 : 60);
-		const eventTimeLineGraphOpts = streamsToFetch.map((streamKey) => {
-			const logsQuery = {
-				stream: streamKey,
-				startTime: dayjs(startTime).toISOString(),
-				endTime: dayjs(endTime).add(1, 'minute').toISOString(),
-				numBins,
-			};
-			return logsQuery;
-		});
-		Promise.all(eventTimeLineGraphOpts.map((queryData: any) => fetchGraphDataMutation.mutateAsync(queryData)))
-			.then((results) => {
-				setMultipleStreamData((prevData: any) => {
-					const newData = { ...prevData };
-					results.forEach((result, index) => {
-						newData[eventTimeLineGraphOpts[index].stream] = result;
-					});
-					return newData;
-				});
-			})
-			.catch((error) => {
-				console.error('Error fetching queries:', error);
-			});
-	}, [fields, timeRange]);
+
+		if (streamsToFetch.length === 0) return;
+
+		const queries = createStreamQueries(streamsToFetch, startTime, endTime, interval);
+		fetchStreamData(queries, fetchGraphDataMutation, setMultipleStreamData);
+	}, [fields]);
 
 	const isLoading = fetchGraphDataMutation.isLoading;
 	const avgEventCount = useMemo(() => calcAverage(fetchGraphDataMutation?.data), [fetchGraphDataMutation?.data]);
 	const graphData = useMemo(() => {
 		if (!streamGraphData || streamGraphData.length === 0 || streamGraphData.length !== Object.keys(fields).length)
 			return [];
-		return parseGraphData(streamGraphData, startTime, endTime, interval);
+		return parseGraphData(streamGraphData, interval);
 	}, [streamGraphData]);
 
 	const hasData = Array.isArray(graphData) && graphData.length !== 0;

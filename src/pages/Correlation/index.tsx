@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDocumentTitle } from '@mantine/hooks';
 import { Stack, Box, TextInput, Text, Select, Button, Center, Skeleton, Stepper } from '@mantine/core';
 import { IconTrashX } from '@tabler/icons-react';
@@ -10,7 +10,7 @@ import {
 } from '@/constants/theme';
 import classes from './styles/Correlation.module.css';
 import { useCorrelationQueryLogs } from '@/hooks/useCorrelationQueryLogs';
-import { useGetStreamSchema } from '@/hooks/useGetCorrelationStreamSchema';
+import { useGetMultipleStreamSchemas, useGetStreamSchema } from '@/hooks/useGetCorrelationStreamSchema';
 import { useFetchStreamData } from '@/hooks/useFetchStreamData';
 import { correlationStoreReducers, useCorrelationStore } from './providers/CorrelationProvider';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
@@ -25,32 +25,66 @@ import { StreamSelectBox } from './components/StreamSelectBox';
 import { CorrelationFieldItem } from './components/CorrelationFieldItem';
 import { MaximizeButton } from '../Stream/components/PrimaryToolbar';
 import ShareButton from './components/ShareButton';
+import useParamsController from './hooks/useParamsController';
+import _ from 'lodash';
+import { useCorrelationsQuery } from '@/hooks/useCorrelations';
+import SavedCorrelationsButton from './components/SavedCorrelationsBtn';
+import SavedCorrelationsModal from './components/SavedCorrelationsModal';
+import SaveCorrelationModal from './components/SaveCorrelationModal';
 
-const { changeStream } = appStoreReducers;
-const { deleteStreamData, setSelectedFields, deleteSelectedField, setCorrelationCondition, setIsCorrelatedFlag } =
-	correlationStoreReducers;
+const { changeStream, syncTimeRange } = appStoreReducers;
+const {
+	deleteStreamData,
+	setSelectedFields,
+	deleteSelectedField,
+	setCorrelationCondition,
+	setIsCorrelatedFlag,
+	toggleSaveCorrelationModal,
+	setActiveCorrelation,
+	setCorrelationId,
+} = correlationStoreReducers;
 
 const Correlation = () => {
 	useDocumentTitle('Parseable | Correlation');
 	// State Management Hooks
 	const [userSpecificStreams] = useAppStore((store) => store.userSpecificStreams);
-	const [{ fields, selectedFields, tableOpts, isCorrelatedData }, setCorrelationData] = useCorrelationStore(
-		(store) => store,
-	);
+	const [
+		{
+			fields,
+			selectedFields,
+			tableOpts,
+			isCorrelatedData,
+			activeCorrelation,
+			correlationCondition,
+			correlationId,
+			savedCorrelationId,
+		},
+		setCorrelationData,
+	] = useCorrelationStore((store) => store);
+
+	const { isStoreSynced } = useParamsController();
 	const [timeRange] = useAppStore((store) => store.timeRange);
 	const [currentStream, setAppStore] = useAppStore((store) => store.currentStream);
 	const [maximized] = useAppStore((store) => store.maximized);
 	const { isLoading: schemaLoading } = useGetStreamSchema({
 		streamName: currentStream || '',
 	});
+	const isSavedCorrelation = correlationId !== savedCorrelationId;
+	const streamsToFetch =
+		(isSavedCorrelation && activeCorrelation?.tableConfigs.map((config: { tableName: string }) => config.tableName)) ||
+		[];
+	const { isLoading: multipleSchemasLoading } = useGetMultipleStreamSchemas(streamsToFetch);
+
 	const { getCorrelationData, loading: logsLoading, error: errorMessage } = useCorrelationQueryLogs();
 	const { getFetchStreamData, loading: streamsLoading } = useFetchStreamData();
+	const { fetchCorrelations, getCorrelationByIdMutation } = useCorrelationsQuery();
 
 	// Local State
 	const [searchText, setSearchText] = useState('');
 	const [select1Value, setSelect1Value] = useState<string | null>(null);
 	const [select2Value, setSelect2Value] = useState<string | null>(null);
 	const [isCorrelationEnabled, setIsCorrelationEnabled] = useState<boolean>(false);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	// Derived Constants
 	const primaryHeaderHeight = maximized
@@ -65,6 +99,44 @@ const Correlation = () => {
 		})) ?? [];
 
 	// Effects
+	useEffect(() => {
+		if (isStoreSynced) {
+			fetchCorrelations();
+			setIsLoading(false);
+		}
+	}, [isStoreSynced]);
+
+	useEffect(() => {
+		if (multipleSchemasLoading || !activeCorrelation) return;
+
+		const tableOrder = activeCorrelation?.tableConfigs.reduce((acc, config, index) => {
+			acc[config.tableName] = index;
+			return acc;
+		}, {} as Record<string, number>);
+
+		const sortedJoinConditions = [...(activeCorrelation?.joinConfig.joinConditions || [])].sort(
+			(a, b) => (tableOrder[a.tableName] || 0) - (tableOrder[b.tableName] || 0),
+		);
+
+		if (sortedJoinConditions[0]) {
+			setSelect1Value(sortedJoinConditions[0].field);
+		}
+		if (sortedJoinConditions[1]) {
+			setSelect2Value(sortedJoinConditions[1].field);
+		}
+
+		activeCorrelation?.tableConfigs.flatMap((config) =>
+			config.selectedFields.map((field: string) =>
+				setCorrelationData((store) => setSelectedFields(store, field, config.tableName)),
+			),
+		) || [];
+	}, [activeCorrelation, multipleSchemasLoading]);
+
+	useEffect(() => {
+		if (!isSavedCorrelation || !correlationId) return;
+		getCorrelationByIdMutation(correlationId);
+	}, [correlationId]);
+
 	useEffect(() => {
 		if (currentStream && streamNames.length > 0 && Object.keys(fields).includes(currentStream)) {
 			getFetchStreamData();
@@ -85,7 +157,12 @@ const Correlation = () => {
 
 	useEffect(() => {
 		updateCorrelationCondition();
-	}, [select1Value, select2Value]);
+		if (activeCorrelation && correlationCondition && isSavedCorrelation) {
+			setCorrelationData((store) => setIsCorrelatedFlag(store, true));
+			getCorrelationData();
+		}
+		correlationCondition && setIsCorrelationEnabled(true);
+	}, [select1Value, select2Value, activeCorrelation, correlationCondition]);
 
 	// Utility Functions
 	const filterFields = (fieldsIter: any) => {
@@ -125,16 +202,27 @@ const Correlation = () => {
 		setCorrelationData((store) => setCorrelationCondition(store, ''));
 		setCorrelationData((store) => setSelectedFields(store, '', '', true));
 		setCorrelationData((store) => setIsCorrelatedFlag(store, false));
+		setCorrelationData((store) => setCorrelationId(store, ''));
+		setCorrelationData((store) => setActiveCorrelation(store, null));
 		setIsCorrelationEnabled(false);
+		setAppStore(syncTimeRange);
 	};
+	const openSaveCorrelationModal = useCallback((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		e.stopPropagation();
+		setCorrelationData((store) => toggleSaveCorrelationModal(store, true));
+	}, []);
 
 	// View Flags
-	const hasContentLoaded = !schemaLoading && !logsLoading && !streamsLoading;
+	const hasContentLoaded = !schemaLoading && !logsLoading && !streamsLoading && !multipleSchemasLoading;
 	const hasNoData = hasContentLoaded && !errorMessage && tableOpts.pageData.length === 0;
 	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
 
+	if (isLoading) return;
+
 	return (
 		<Box className={classes.correlationWrapper}>
+			<SavedCorrelationsModal />
+			<SaveCorrelationModal />
 			<div className={classes.correlationSideBarWrapper}>
 				<Text>Streams</Text>
 				<TextInput
@@ -181,7 +269,7 @@ const Correlation = () => {
 										}}
 									/>
 								</div>
-								{logsLoading || schemaLoading || streamsLoading ? (
+								{logsLoading || schemaLoading || streamsLoading || multipleSchemasLoading ? (
 									<Stack style={{ padding: '0.5rem 0.7rem' }}>
 										{Array.from({ length: 8 }).map((_, index) => (
 											<Skeleton key={index} height="24px" />
@@ -202,7 +290,10 @@ const Correlation = () => {
 													dataType={dataType}
 													isSelected={isSelected}
 													onClick={() => {
-														if (isCorrelatedData) setIsCorrelationEnabled(true);
+														if (isCorrelatedData) {
+															setIsCorrelationEnabled(true);
+															setCorrelationData((store) => setIsCorrelatedFlag(store, false));
+														}
 														setCorrelationData((store) => setSelectedFields(store, field, stream));
 													}}
 												/>
@@ -363,12 +454,23 @@ const Correlation = () => {
 							<RefreshNow />
 							<ShareButton />
 							<MaximizeButton />
+
+							<SavedCorrelationsButton />
 						</div>
 						<div style={{ display: 'flex', gap: '5px', alignItems: 'center', height: '25px' }}>
 							<Button
 								className={classes.correlateBtn}
-								variant="filled"
+								variant="outline"
+								disabled={!isCorrelatedData}
+								onClick={(e) => {
+									openSaveCorrelationModal(e);
+								}}>
+								Save
+							</Button>
+							<Button
+								className={classes.correlateBtn}
 								disabled={!isCorrelationEnabled || Object.keys(selectedFields).length === 0}
+								variant="filled"
 								onClick={() => {
 									setCorrelationData((store) => setIsCorrelatedFlag(store, true));
 									setIsCorrelationEnabled(false);

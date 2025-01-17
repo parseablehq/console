@@ -1,7 +1,7 @@
 import { getLogStreamSchema } from '@/api/logStream';
 import { AxiosError, isAxiosError } from 'axios';
 import _ from 'lodash';
-import { useQuery } from 'react-query';
+import { useQueries, useQuery } from 'react-query';
 import { useState } from 'react';
 import { correlationStoreReducers, useCorrelationStore } from '@/pages/Correlation/providers/CorrelationProvider';
 
@@ -41,5 +41,48 @@ export const useGetStreamSchema = (opts: { streamName: string }) => {
 		isLoading,
 		errorMessage,
 		isRefetching,
+	};
+};
+
+// Multiple stream schemas hook
+export const useGetMultipleStreamSchemas = (streams: string[]) => {
+	const [, setCorrelationStore] = useCorrelationStore((_store) => null);
+	const [errors, setErrors] = useState<Record<string, string>>({});
+
+	const queries = useQueries(
+		streams.map((streamName) => ({
+			queryKey: ['stream-schema', streamName],
+			queryFn: () => getLogStreamSchema(streamName),
+			retry: false,
+			enabled: streamName !== '' && streamName !== 'correlatedStream',
+			refetchOnWindowFocus: false,
+			onSuccess: (data: any) => {
+				setErrors((prev) => _.omit(prev, streamName));
+				setCorrelationStore((store) => setStreamSchema(store, data.data, streamName));
+			},
+			onError: (error: AxiosError) => {
+				let errorMessage = 'An unknown error occurred';
+				if (isAxiosError(error) && error.response?.data) {
+					errorMessage = typeof error.response.data === 'string' ? error.response.data : error.message;
+				}
+				setErrors((prev) => ({
+					...prev,
+					[streamName]: errorMessage,
+				}));
+			},
+		})),
+	);
+
+	const isLoading = queries.some((query) => query.isLoading);
+	const isError = queries.some((query) => query.isError);
+	const isSuccess = queries.every((query) => query.isSuccess);
+	const isRefetching = queries.some((query) => query.isRefetching);
+
+	return {
+		isLoading,
+		isError,
+		isSuccess,
+		isRefetching,
+		errors,
 	};
 };

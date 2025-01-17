@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { QueryType } from '@/pages/Stream/providers/FilterProvider';
 import { FilterQueryBuilder } from '@/utils/queryBuilder';
 import { formatQuery } from 'react-querybuilder';
+import { Correlation } from '@/@types/parseable/api/correlation';
 
 export const CORRELATION_LOAD_LIMIT = 1000;
 
@@ -42,6 +43,12 @@ type CorrelationStore = {
 	correlationCondition: string;
 	isCorrelatedData: boolean;
 	allPageData: any;
+	correlationId: string;
+	savedCorrelationId: string;
+	correlations: Correlation[] | null;
+	activeCorrelation: Correlation | null;
+	isSavedCorrelationsModalOpen: boolean;
+	isSaveCorrelationModalOpen: boolean;
 	tableOpts: {
 		disabledColumns: string[];
 		wrapDisabledColumns: string[];
@@ -76,6 +83,13 @@ type CorrelationStoreReducers = {
 	setPageAndPageData: (store: CorrelationStore, pageNo: number, perPage?: number) => ReducerOutput;
 	setIsCorrelatedFlag: (store: CorrelationStore, flag: boolean) => ReducerOutput;
 	parseQuery: (query: QueryType, currentStream: string) => { where: string; parsedQuery: string };
+	setCorrelationId: (store: CorrelationStore, id: string) => ReducerOutput;
+	setCorrelations: (store: CorrelationStore, correlations: Correlation[]) => ReducerOutput;
+	toggleSavedCorrelationsModal: (_store: CorrelationStore, val: boolean) => ReducerOutput;
+	setActiveCorrelation: (_store: CorrelationStore, correlation: Correlation | null) => ReducerOutput;
+	toggleSaveCorrelationModal: (_store: CorrelationStore, val: boolean) => ReducerOutput;
+	cleanCorrelationStore: (store: CorrelationStore) => ReducerOutput;
+	setSavedCorrelationId: (store: CorrelationStore, id: string) => ReducerOutput;
 };
 
 const initialState: CorrelationStore = {
@@ -85,6 +99,12 @@ const initialState: CorrelationStore = {
 	correlationCondition: '',
 	isCorrelatedData: false,
 	allPageData: [],
+	correlationId: '',
+	savedCorrelationId: '',
+	correlations: null,
+	activeCorrelation: null,
+	isSavedCorrelationsModalOpen: false,
+	isSaveCorrelationModalOpen: false,
 	tableOpts: {
 		disabledColumns: [],
 		wrapDisabledColumns: [],
@@ -228,6 +248,58 @@ const generatePaginatedPageData = (
 };
 
 // Reducer Functions
+
+const cleanCorrelationStore = (store: CorrelationStore) => {
+	return {
+		...store,
+		selectedFields: {},
+		correlationCondition: '',
+		correlationId: '',
+		isCorrelatedData: false,
+		fields: {},
+	};
+};
+
+const toggleSaveCorrelationModal = (store: CorrelationStore, val: boolean) => {
+	return {
+		...store,
+		isSaveCorrelationModalOpen: val,
+	};
+};
+
+const toggleSavedCorrelationsModal = (store: CorrelationStore, val: boolean) => {
+	return {
+		...store,
+		isSavedCorrelationsModalOpen: val,
+	};
+};
+
+const setCorrelations = (store: CorrelationStore, correlations: Correlation[]) => {
+	return {
+		...store,
+		correlations,
+	};
+};
+
+const setActiveCorrelation = (store: CorrelationStore, correlation: Correlation | null) => {
+	return {
+		...store,
+		activeCorrelation: correlation,
+	};
+};
+
+const setSavedCorrelationId = (store: CorrelationStore, id: string) => {
+	return {
+		...store,
+		savedCorrelationId: id,
+	};
+};
+const setCorrelationId = (store: CorrelationStore, id: string) => {
+	return {
+		...store,
+		correlationId: id,
+	};
+};
 
 const setIsCorrelatedFlag = (store: CorrelationStore, flag: boolean) => {
 	return {
@@ -433,6 +505,10 @@ const parseType = (type: any): 'text' | 'number' | 'timestamp' | 'list' | 'boole
 };
 
 const setStreamSchema = (store: CorrelationStore, schema: LogStreamSchemaData, streamName: string): ReducerOutput => {
+	if (store.fields && store.fields[streamName]) {
+		return { fields: store.fields };
+	}
+
 	const fieldTypeMap = schema.fields.reduce((acc, field) => {
 		return { ...acc, [field.name]: parseType(field.data_type) };
 	}, {});
@@ -516,6 +592,13 @@ const correlationStoreReducers: CorrelationStoreReducers = {
 	setCorrelationCondition,
 	parseQuery,
 	setIsCorrelatedFlag,
+	setCorrelationId,
+	setCorrelations,
+	toggleSavedCorrelationsModal,
+	toggleSaveCorrelationModal,
+	setActiveCorrelation,
+	cleanCorrelationStore,
+	setSavedCorrelationId,
 };
 
 export { CorrelationProvider, useCorrelationStore, correlationStoreReducers };

@@ -1,0 +1,23 @@
+.savedCorrelatedItemContainer {
+	border-bottom: 1px solid var(--mantine-color-gray-2);
+
+	&:last-of-type {
+		border-bottom: none;
+	}
+}
+
+.inputField {
+	border-radius: rem(8px);
+}
+
+.selectDescription {
+	font-size: 12px;
+	font-weight: 500;
+	color: var(--mantine-color-gray-6);
+}
+
+.selectInput {
+	cursor: pointer;
+	border: 1px var(--mantine-color-gray-2) solid;
+	border-radius: rem(8px);
+}
