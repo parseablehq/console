@@ -54,10 +54,10 @@ const calcAverage = (data: LogsResponseWithHeaders | undefined) => {
 	if (!data || !Array.isArray(data?.records)) return 0;
 
 	const { fields, records } = data;
-	if (_.isEmpty(records) || !_.includes(fields, 'log_count')) return 0;
+	if (_.isEmpty(records) || !_.includes(fields, 'count')) return 0;
 
 	const total = records.reduce((acc, d) => {
-		return acc + _.toNumber(d.log_count) || 0;
+		return acc + _.toNumber(d.count) || 0;
 	}, 0);
 	return parseInt(Math.abs(total / records.length).toFixed(0));
 };
@@ -139,7 +139,7 @@ function ChartTooltip({ payload, series }: ChartTooltipProps) {
 
 type LogRecord = {
 	counts_timestamp: string;
-	log_count: number;
+	count: number;
 };
 
 // date_bin removes tz info
@@ -155,11 +155,11 @@ const parseGraphData = (dataSets: (LogsResponseWithHeaders | undefined)[], inter
 
 	const isValidRecord = (record: any): record is LogRecord => {
 		return (
-			typeof record.counts_start_timestamp === 'string' &&
-			typeof record.counts_end_timestamp === 'string' &&
-			typeof record.log_count === 'number' &&
-			record.counts_start_timestamp !== null &&
-			record.counts_end_timestamp !== null
+			typeof record.start_time === 'string' &&
+			typeof record.end_time === 'string' &&
+			typeof record.count === 'number' &&
+			record.start_time !== null &&
+			record.end_time !== null
 		);
 	};
 
@@ -168,8 +168,8 @@ const parseGraphData = (dataSets: (LogsResponseWithHeaders | undefined)[], inter
 		.filter(isValidRecord)
 		.map((record) => ({
 			...record,
-			startDate: record.counts_start_timestamp ? new Date(record.counts_start_timestamp) : new Date(),
-			endDate: record.counts_end_timestamp ? new Date(record.counts_end_timestamp) : new Date(),
+			startDate: record.start_time ? new Date(record.start_time) : new Date(),
+			endDate: record.end_time ? new Date(record.end_time) : new Date(),
 		}))
 		.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
@@ -178,20 +178,20 @@ const parseGraphData = (dataSets: (LogsResponseWithHeaders | undefined)[], inter
 		.filter(isValidRecord)
 		.map((record) => ({
 			...record,
-			startDate: record.counts_start_timestamp ? new Date(record.counts_start_timestamp) : new Date(),
-			endDate: record.counts_end_timestamp ? new Date(record.counts_end_timestamp) : new Date(),
+			startDate: record.start_time ? new Date(record.start_time) : new Date(),
+			endDate: record.end_time ? new Date(record.end_time) : new Date(),
 		}))
 		.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
 	// Create a Map for quick lookup of second dataset
 	const secondResponseMap = new Map(
-		validSecondRecords.map((record: any) => [record.startDate.getTime(), record.log_count]),
+		validSecondRecords.map((record: any) => [record.startDate.getTime(), record.count]),
 	);
 
 	// Combine the datasets using the first dataset's timestamps as reference points
 	const combinedData = validFirstRecords.map((record: any) => {
 		const defaultOpts: Record<string, any> = {
-			stream: record.log_count,
+			stream: record.count,
 			minute: record.startDate,
 			compactType,
 			startTime: dayjs(record.startDate),
