@@ -142,6 +142,12 @@ export class CorrelationQueryBuilder {
 		};
 	}
 
+	getCountQuery() {
+		return `WITH user_query_count as ( ${
+			this.getCorrelationQuery().query
+		} )SELECT count(*) as count from user_query_count`;
+	}
+
 	getParseableQuery() {
 		/* eslint-disable no-useless-escape */
 		const query = `SELECT * FROM \"${this.streamNames[0]}\" LIMIT ${this.limit}`;

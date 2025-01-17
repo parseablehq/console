@@ -68,6 +68,12 @@ export const getCorrelationQueryLogsWithHeaders = (logsQuery: CorrelationLogs) =
 	return Axios().post<LogsResponseWithHeaders>(endPoint, queryBuilder.getCorrelationQuery(), {});
 };
 
+export const getCorrelationQueryCount = (logsQuery: CorrelationLogs) => {
+	const queryBuilder = new CorrelationQueryBuilder(logsQuery);
+	const endPoint = LOG_QUERY_URL();
+	return Axios().post<Log[]>(endPoint, makeCustomQueryRequestData(logsQuery, queryBuilder.getCountQuery()), {});
+};
+
 export const getStreamDataWithHeaders = (logsQuery: CorrelationLogs) => {
 	const queryBuilder = new CorrelationQueryBuilder(logsQuery);
 	const endPoint = LOG_QUERY_URL({ fields: true }, queryBuilder.getResourcePath());
@@ -76,7 +82,7 @@ export const getStreamDataWithHeaders = (logsQuery: CorrelationLogs) => {
 
 // ------ Custom sql query
 
-const makeCustomQueryRequestData = (logsQuery: LogsQuery, query: string) => {
+const makeCustomQueryRequestData = (logsQuery: LogsQuery | CorrelationLogs, query: string) => {
 	const { startTime, endTime } = logsQuery;
 	return { query, startTime: optimizeTime(startTime), endTime: optimizeTime(endTime) };
 };

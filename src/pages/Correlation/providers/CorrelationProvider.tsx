@@ -90,6 +90,7 @@ type CorrelationStoreReducers = {
 	toggleSaveCorrelationModal: (_store: CorrelationStore, val: boolean) => ReducerOutput;
 	cleanCorrelationStore: (store: CorrelationStore) => ReducerOutput;
 	setSavedCorrelationId: (store: CorrelationStore, id: string) => ReducerOutput;
+	setTotalCount: (store: CorrelationStore, count: number) => ReducerOutput;
 };
 
 const initialState: CorrelationStore = {
@@ -257,6 +258,15 @@ const cleanCorrelationStore = (store: CorrelationStore) => {
 		correlationId: '',
 		isCorrelatedData: false,
 		fields: {},
+	};
+};
+
+const setTotalCount = (store: CorrelationStore, totalCount: number) => {
+	return {
+		tableOpts: {
+			...store.tableOpts,
+			totalCount,
+		},
 	};
 };
 
@@ -599,6 +609,7 @@ const correlationStoreReducers: CorrelationStoreReducers = {
 	setActiveCorrelation,
 	cleanCorrelationStore,
 	setSavedCorrelationId,
+	setTotalCount,
 };
 
 export { CorrelationProvider, useCorrelationStore, correlationStoreReducers };
