@@ -4,12 +4,14 @@ import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
 import { useQueryLogs } from '@/hooks/useQueryLogs';
 import { useFetchCount } from '@/hooks/useQueryResult';
 import { useStreamStore } from '../../providers/StreamProvider';
+import useParamsController from '@/pages/Stream/hooks/useParamsController';
 import _ from 'lodash';
 
 const { setCleanStoreForStreamChange } = logsStoreReducers;
 const { syncTimeRange } = appStoreReducers;
 
 const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean }) => {
+	const { isStoreSynced } = useParamsController();
 	const { schemaLoading, infoLoading } = props;
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const [{ timeRange }, setAppStore] = useAppStore((store) => store);
@@ -19,12 +21,13 @@ const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean })
 	const [{ info }] = useStreamStore((store) => store);
 	const firstEventAt = 'first-event-at' in info ? info['first-event-at'] : undefined;
 
-	const { refetchCount, isCountLoading, isCountRefetching } = useFetchCount();
+	const { refetchCount, countLoading } = useFetchCount();
 	const hasContentLoaded = schemaLoading === false && logsLoading === false;
 	const hasNoData = hasContentLoaded && !queryLogsError && pageData.length === 0;
 	const showTable = hasContentLoaded && !hasNoData && !queryLogsError;
 
 	useEffect(() => {
+		if (!isStoreSynced) return;
 		setAppStore(syncTimeRange);
 		setLogsStore(setCleanStoreForStreamChange);
 	}, [currentStream]);
@@ -52,7 +55,7 @@ const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean })
 		hasContentLoaded,
 		hasNoData,
 		showTable,
-		isFetchingCount: isCountLoading || isCountRefetching,
+		isFetchingCount: countLoading,
 	};
 };
 

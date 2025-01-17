@@ -13,6 +13,8 @@ import Mantine from '@/components/Mantine';
 import { BrowserRouter } from 'react-router-dom';
 import ErrorBoundary from './components/ErrorBoundary';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { Provider } from 'react-redux';
+import { store } from './store';
 
 const queryClient = new QueryClient();
 
@@ -21,7 +23,9 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 		<Mantine>
 			<ErrorBoundary>
 				<BrowserRouter>
-					<App />
+					<Provider store={store}>
+						<App />
+					</Provider>
 				</BrowserRouter>
 			</ErrorBoundary>
 		</Mantine>
