@@ -27,7 +27,7 @@ const TotalLogsCount = (props: { hasTableLoaded: boolean; isFetchingCount: boole
 	if (typeof totalCount !== 'number' || typeof displayedCount !== 'number') return <Stack />;
 	return (
 		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }} gap={6}>
-			{props.hasTableLoaded ? (
+			{!props.isTableEmpty ? (
 				props.isFetchingCount ? (
 					<Loader type="dots" />
 				) : (
@@ -37,9 +37,7 @@ const TotalLogsCount = (props: { hasTableLoaded: boolean; isFetchingCount: boole
 						<Text style={{ fontSize: '0.7rem' }}>records</Text>
 					</>
 				)
-			) : props.isTableEmpty ? null : (
-				<Loader type="dots" />
-			)}
+			) : null}
 		</Stack>
 	);
 };

@@ -21,7 +21,7 @@ const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean })
 	const [{ info }] = useStreamStore((store) => store);
 	const firstEventAt = 'first-event-at' in info ? info['first-event-at'] : undefined;
 
-	const { refetchCount, isCountLoading, isCountRefetching } = useFetchCount();
+	const { refetchCount, countLoading } = useFetchCount();
 	const hasContentLoaded = schemaLoading === false && logsLoading === false;
 	const hasNoData = hasContentLoaded && !queryLogsError && pageData.length === 0;
 	const showTable = hasContentLoaded && !hasNoData && !queryLogsError;
@@ -55,7 +55,7 @@ const useLogsFetcher = (props: { schemaLoading: boolean; infoLoading: boolean })
 		hasContentLoaded,
 		hasNoData,
 		showTable,
-		isFetchingCount: isCountLoading || isCountRefetching,
+		isFetchingCount: countLoading,
 	};
 };
 

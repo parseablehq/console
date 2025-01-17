@@ -1,5 +1,5 @@
-import { getQueryResultWithHeaders, getQueryResult } from '@/api/query';
-import { LogsQuery } from '@/@types/parseable/api/query';
+import { getQueryResultWithHeaders, getQueryResult, getGraphData } from '@/api/query';
+import { GraphQueryOpts, LogsQuery } from '@/@types/parseable/api/query';
 import { notifications } from '@mantine/notifications';
 import { isAxiosError, AxiosError } from 'axios';
 import { IconCheck } from '@tabler/icons-react';
@@ -9,6 +9,7 @@ import { useFilterStore, filterStoreReducers } from '@/pages/Stream/providers/Fi
 import _ from 'lodash';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { notifyError } from '@/utils/notification';
+import { useState } from 'react';
 
 const { parseQuery } = filterStoreReducers;
 
@@ -52,6 +53,29 @@ export const useQueryResult = () => {
 	return { fetchQueryMutation };
 };
 
+export const useGraphData = () => {
+	const fetchGraphDataHandler = async (data: GraphQueryOpts) => {
+		const response = await getGraphData(data);
+		if (response.status !== 200) {
+			throw new Error(response.statusText);
+		}
+		return response.data;
+	};
+
+	const fetchGraphDataMutation = useMutation(fetchGraphDataHandler, {
+		onError: (data: AxiosError) => {
+			if (isAxiosError(data) && data.response) {
+				const error = data.response?.data as string;
+				typeof error === 'string' && notifyError({ message: error });
+			} else if (data.message && typeof data.message === 'string') {
+				notifyError({ message: data.message });
+			}
+		},
+	});
+
+	return { fetchGraphDataMutation };
+};
+
 export const useFetchCount = () => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const { setTotalCount } = logsStoreReducers;
@@ -60,6 +84,7 @@ export const useFetchCount = () => {
 	const [, setLogsStore] = useLogsStore(() => null);
 	const { isQuerySearchActive, custSearchQuery, activeMode } = custQuerySearchState;
 	const [appliedQuery] = useFilterStore((store) => store.appliedQuery);
+	const [countLoading, setCountLoading] = useState(true);
 
 	/* eslint-disable no-useless-escape */
 	const defaultQuery = `select count(*) as count from \"${currentStream}\"`;
@@ -87,13 +112,10 @@ export const useFetchCount = () => {
 		endTime: timeRange.endTime,
 		access: [],
 	};
-	const {
-		isLoading: isCountLoading,
-		isRefetching: isCountRefetching,
-		refetch: refetchCount,
-	} = useQuery(
+	const { refetch: refetchCount } = useQuery(
 		['fetchCount', logsQuery],
 		async () => {
+			setCountLoading(true);
 			const data = await getQueryResult(logsQuery, query);
 			const count = _.first(data.data)?.count;
 			typeof count === 'number' && setLogsStore((store) => setTotalCount(store, count));
@@ -104,12 +126,17 @@ export const useFetchCount = () => {
 			refetchOnWindowFocus: false,
 			retry: false,
 			enabled: false,
+			onSuccess: () => {
+				setCountLoading(false);
+			},
+			onError: () => {
+				setCountLoading(false);
+			},
 		},
 	);
 
 	return {
-		isCountLoading,
-		isCountRefetching,
+		countLoading,
 		refetchCount,
 	};
 };

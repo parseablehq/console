@@ -1,6 +1,6 @@
-import { Button, SegmentedControl, Stack, Tooltip, px, rem } from '@mantine/core';
+import { Button, Stack, px, rem } from '@mantine/core';
 import IconButton from '@/components/Button/IconButton';
-import { IconBraces, IconFilterHeart, IconMaximize, IconTable, IconTrash } from '@tabler/icons-react';
+import { IconFilterHeart, IconMaximize, IconTable, IconTrash } from '@tabler/icons-react';
 import { STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT, STREAM_PRIMARY_TOOLBAR_HEIGHT } from '@/constants/theme';
 import TimeRange from '@/components/Header/TimeRange';
 import RefreshInterval from '@/components/Header/RefreshInterval';
@@ -70,36 +70,23 @@ const ViewToggle = () => {
 		style: { width: rem(20), height: rem(20), display: 'block' },
 		stroke: 1.8,
 	};
-	const onChange = useCallback((val: string) => {
-		if (_.includes(['json', 'table'], val)) {
-			setLogsStore((store) => onToggleView(store, val as 'json' | 'table'));
-		}
-	}, []);
+	const onToggle = useCallback(() => {
+		setLogsStore((store) => onToggleView(store, viewMode === 'table' ? 'json' : 'table'));
+	}, [viewMode]);
+
+	const isActive = viewMode === 'table';
 	return (
-		<SegmentedControl
-			style={{ borderRadius: rem(8) }}
-			withItemsBorders={false}
-			onChange={onChange}
-			value={viewMode}
-			data={[
-				{
-					value: 'table',
-					label: (
-						<Tooltip label="Table View">
-							<IconTable {...iconProps} />
-						</Tooltip>
-					),
-				},
-				{
-					value: 'json',
-					label: (
-						<Tooltip label="JSON View">
-							<IconBraces {...iconProps} />
-						</Tooltip>
-					),
-				},
-			]}
-		/>
+		<Button
+			className={classes.savedFiltersBtn}
+			h="100%"
+			style={{
+				backgroundColor: isActive ? '#535BEB' : 'white',
+				color: isActive ? 'white' : 'black',
+			}}
+			onClick={onToggle}
+			leftSection={<IconTable {...iconProps} />}>
+			Table View
+		</Button>
 	);
 };
 

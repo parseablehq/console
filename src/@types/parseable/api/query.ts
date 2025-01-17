@@ -5,6 +5,13 @@ export type LogsQuery = {
 	access: string[] | null;
 };
 
+export type GraphQueryOpts = {
+	stream: string;
+	startTime: string;
+	endTime: string;
+	numBins: number;
+};
+
 export enum SortOrder {
 	ASCENDING = 1,
 	DESCENDING = -1,
