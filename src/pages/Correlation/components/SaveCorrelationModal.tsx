@@ -50,7 +50,6 @@ const SaveCorrelationModal = () => {
 		const selectedTimeRangeOption = getDefaultTimeRangeOption(timeRangeOptions);
 		if (activeCorrelation !== null) {
 			setFormObject({
-				version: 'v1',
 				title: activeCorrelation.title,
 				isNew: false,
 				isError: false,
@@ -67,7 +66,6 @@ const SaveCorrelationModal = () => {
 			});
 		} else {
 			setFormObject({
-				version: 'v1',
 				title: '',
 				isNew: true,
 				isError: false,
@@ -92,7 +90,6 @@ const SaveCorrelationModal = () => {
 	const updateCorrelation = useCallback(() => {
 		updateCorrelationMutation({
 			correlationData: {
-				version: 'v1',
 				id: savedCorrelationId,
 				tableConfigs: [
 					{
@@ -130,7 +127,6 @@ const SaveCorrelationModal = () => {
 	const saveCorrelation = useCallback(() => {
 		saveCorrelationMutation({
 			correlationData: {
-				version: 'v1',
 				tableConfigs: [
 					{
 						selectedFields: selectedFields[streamNames[0]] || [],
@@ -194,7 +190,7 @@ const SaveCorrelationModal = () => {
 			});
 		}
 
-		if (!_.isEmpty(formObject.title) && !_.isEmpty(formObject.version) && !savedCorrelationId) {
+		if (!_.isEmpty(formObject.title) && !savedCorrelationId) {
 			saveCorrelation();
 		} else {
 			updateCorrelation();
