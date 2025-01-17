@@ -55,10 +55,10 @@ const calcAverage = (data: LogsResponseWithHeaders | undefined) => {
 	if (!data || !Array.isArray(data?.records)) return 0;
 
 	const { fields, records } = data;
-	if (_.isEmpty(records) || !_.includes(fields, 'log_count')) return 0;
+	if (_.isEmpty(records) || !_.includes(fields, 'count')) return 0;
 
 	const total = records.reduce((acc, d) => {
-		return acc + _.toNumber(d.log_count) || 0;
+		return acc + _.toNumber(d.count) || 0;
 	}, 0);
 	return parseInt(Math.abs(total / records.length).toFixed(0));
 };
@@ -74,7 +74,7 @@ type GraphTickItem = {
 
 type LogRecord = {
 	counts_timestamp: string;
-	log_count: number;
+	count: number;
 };
 
 // date_bin removes tz info
@@ -85,9 +85,9 @@ const parseGraphData = (data: LogsResponseWithHeaders | undefined, avg: number, 
 	const { fields, records } = data;
 	if (
 		_.isEmpty(records) ||
-		!_.includes(fields, 'log_count') ||
-		!_.includes(fields, 'counts_start_timestamp') ||
-		!_.includes(fields, 'counts_end_timestamp')
+		!_.includes(fields, 'count') ||
+		!_.includes(fields, 'start_time') ||
+		!_.includes(fields, 'end_time')
 	)
 		return [];
 
@@ -95,11 +95,11 @@ const parseGraphData = (data: LogsResponseWithHeaders | undefined, avg: number, 
 
 	const isValidRecord = (record: any): record is LogRecord => {
 		return (
-			typeof record.counts_start_timestamp === 'string' &&
-			typeof record.counts_end_timestamp === 'string' &&
-			typeof record.log_count === 'number' &&
-			record.counts_start_timestamp &&
-			record.counts_end_timestamp
+			typeof record.start_time === 'string' &&
+			typeof record.end_time === 'string' &&
+			typeof record.count === 'number' &&
+			record.start_time &&
+			record.end_time
 		);
 	};
 
@@ -108,19 +108,19 @@ const parseGraphData = (data: LogsResponseWithHeaders | undefined, avg: number, 
 		.filter(isValidRecord)
 		.map((record) => ({
 			...record,
-			startDate: record.counts_start_timestamp ? new Date(record.counts_start_timestamp) : new Date(),
-			endDate: record.counts_end_timestamp ? new Date(record.counts_end_timestamp) : new Date(),
+			startDate: record.start_time ? new Date(record.start_time) : new Date(),
+			endDate: record.end_time ? new Date(record.end_time) : new Date(),
 		}))
 		.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
 	if (validRecords.length === 0) return [];
 
 	const parsedData = validRecords.map((record: any) => {
-		const aboveAvgCount = record.log_count - avg;
+		const aboveAvgCount = record.count - avg;
 		const aboveAvgPercent = avg > 0 ? parseInt(((aboveAvgCount / avg) * 100).toFixed(2)) : 0;
 
 		return {
-			events: record.log_count,
+			events: record.count,
 			minute: record.startDate,
 			aboveAvgPercent,
 			compactType,
