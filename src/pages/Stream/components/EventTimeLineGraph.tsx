@@ -55,10 +55,10 @@ const calcAverage = (data: LogsResponseWithHeaders | undefined) => {
 	if (!data || !Array.isArray(data?.records)) return 0;
 
 	const { fields, records } = data;
-	if (_.isEmpty(records) || !_.includes(fields, 'log_count')) return 0;
+	if (_.isEmpty(records) || !_.includes(fields, 'count')) return 0;
 
 	const total = records.reduce((acc, d) => {
-		return acc + _.toNumber(d.log_count) || 0;
+		return acc + _.toNumber(d.count) || 0;
 	}, 0);
 	return parseInt(Math.abs(total / records.length).toFixed(0));
 };
@@ -74,64 +74,58 @@ type GraphTickItem = {
 
 type LogRecord = {
 	counts_timestamp: string;
-	log_count: number;
+	count: number;
 };
 
 // date_bin removes tz info
 // filling data with empty values where there is no rec
-const parseGraphData = (
-	data: LogsResponseWithHeaders | undefined,
-	avg: number,
-	startTime: Date,
-	endTime: Date,
-	interval: number,
-): GraphTickItem[] => {
+const parseGraphData = (data: LogsResponseWithHeaders | undefined, avg: number, interval: number): GraphTickItem[] => {
 	if (!data || !Array.isArray(data?.records)) return [];
 
 	const { fields, records } = data;
-	if (_.isEmpty(records) || !_.includes(fields, 'log_count') || !_.includes(fields, 'counts_timestamp')) return [];
+	if (
+		_.isEmpty(records) ||
+		!_.includes(fields, 'count') ||
+		!_.includes(fields, 'start_time') ||
+		!_.includes(fields, 'end_time')
+	)
+		return [];
 
 	const compactType = getCompactType(interval);
-	const ticksCount = interval < 10 * 60 * 1000 ? interval / (60 * 1000) : interval < 60 * 60 * 1000 ? 10 : 60;
-	const intervalDuration = (endTime.getTime() - startTime.getTime()) / ticksCount;
 
 	const isValidRecord = (record: any): record is LogRecord => {
-		return typeof record.counts_timestamp === 'string' && typeof record.log_count === 'number';
+		return (
+			typeof record.start_time === 'string' &&
+			typeof record.end_time === 'string' &&
+			typeof record.count === 'number' &&
+			record.start_time &&
+			record.end_time
+		);
 	};
 
-	const allTimestamps = Array.from(
-		{ length: ticksCount },
-		(_, index) => new Date(startTime.getTime() + index * intervalDuration),
-	);
+	// Filter valid records and sort them by start timestamp
+	const validRecords = records
+		.filter(isValidRecord)
+		.map((record) => ({
+			...record,
+			startDate: record.start_time ? new Date(record.start_time) : new Date(),
+			endDate: record.end_time ? new Date(record.end_time) : new Date(),
+		}))
+		.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
-	const parsedData = allTimestamps.map((ts) => {
-		const countData = records.find((d) => {
-			if (!isValidRecord(d)) return false;
-			const recordTime = new Date(d.counts_timestamp).getTime();
-			const tsTime = ts.getTime();
-			return Math.abs(recordTime - tsTime) < intervalDuration / 2;
-		});
+	if (validRecords.length === 0) return [];
 
-		const defaultOpts = {
-			events: 0,
-			minute: ts,
-			aboveAvgPercent: 0,
-			compactType,
-			startTime: dayjs(ts),
-			endTime: dayjs(new Date(ts.getTime() + intervalDuration)),
-		};
-
-		if (!countData || !isValidRecord(countData)) {
-			return defaultOpts;
-		}
-
-		const aboveAvgCount = countData.log_count - avg;
+	const parsedData = validRecords.map((record: any) => {
+		const aboveAvgCount = record.count - avg;
 		const aboveAvgPercent = avg > 0 ? parseInt(((aboveAvgCount / avg) * 100).toFixed(2)) : 0;
 
 		return {
-			...defaultOpts,
-			events: countData.log_count,
+			events: record.count,
+			minute: record.startDate,
 			aboveAvgPercent,
+			compactType,
+			startTime: dayjs(record.startDate),
+			endTime: dayjs(record.endDate),
 		};
 	});
 
@@ -179,16 +173,13 @@ const EventTimeLineGraph = () => {
 	useEffect(() => {
 		if (!localStream || localStream.length === 0 || !firstEventAt) return;
 
-		const adjustedStartTime = dayjs(startTime).startOf('minute');
-		const adjustedEndTime = dayjs(endTime).startOf('minute');
-
 		const totalMinutes = interval / (1000 * 60);
 		const numBins = Math.trunc(totalMinutes < 10 ? totalMinutes : totalMinutes < 60 ? 10 : 60);
 
 		const logsQuery = {
 			stream: localStream,
-			startTime: adjustedStartTime.toISOString(),
-			endTime: adjustedEndTime.add(1, 'minute').toISOString(),
+			startTime: dayjs(startTime).startOf('minute').toISOString(),
+			endTime: dayjs(endTime).startOf('minute').toISOString(),
 			numBins,
 		};
 
@@ -205,7 +196,7 @@ const EventTimeLineGraph = () => {
 	const avgEventCount = useMemo(() => calcAverage(fetchGraphDataMutation?.data), [fetchGraphDataMutation?.data]);
 	const graphData = useMemo(() => {
 		if (!firstEventAt) return null;
-		return parseGraphData(fetchGraphDataMutation?.data, avgEventCount, startTime, endTime, interval);
+		return parseGraphData(fetchGraphDataMutation?.data, avgEventCount, interval);
 	}, [fetchGraphDataMutation?.data, interval, firstEventAt]);
 	const hasData = Array.isArray(graphData) && graphData.length !== 0;
 	const [, setAppStore] = useAppStore((_store) => null);
