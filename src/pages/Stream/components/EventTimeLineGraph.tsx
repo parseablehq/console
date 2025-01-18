@@ -1,19 +1,16 @@
-import { Paper, Skeleton, Stack, Text } from '@mantine/core';
+import { Skeleton, Stack, Text } from '@mantine/core';
 import classes from '../styles/EventTimeLineGraph.module.css';
 import { useGraphData } from '@/hooks/useQueryResult';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
-import { ChartTooltipProps, AreaChart } from '@mantine/charts';
-import { HumanizeNumber } from '@/utils/formatBytes';
 import { logsStoreReducers, useLogsStore } from '../providers/LogsProvider';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 import _ from 'lodash';
-import timeRangeUtils from '@/utils/timeRangeUtils';
 import { useStreamStore } from '../providers/StreamProvider';
+import AreaChartComponent from './AreaChartComponent';
 
 const { setTimeRange } = appStoreReducers;
-const { makeTimeRangeLabel } = timeRangeUtils;
 const { getCleanStoreForRefetch } = logsStoreReducers;
 
 type CompactInterval = 'minute' | 'day' | 'hour' | 'quarter-hour' | 'half-hour' | 'month';
@@ -132,31 +129,6 @@ const parseGraphData = (data: LogsResponseWithHeaders | undefined, avg: number, 
 	return parsedData;
 };
 
-function ChartTooltip({ payload }: ChartTooltipProps) {
-	if (!payload || (Array.isArray(payload) && payload.length === 0)) return null;
-
-	const { aboveAvgPercent, events, startTime, endTime } = payload[0]?.payload as GraphTickItem;
-	const isAboveAvg = aboveAvgPercent > 0;
-	const label = makeTimeRangeLabel(startTime.toDate(), endTime.toDate());
-
-	return (
-		<Paper px="md" py="sm" withBorder shadow="md" radius="md">
-			<Text fw={600} mb={5}>
-				{label}
-			</Text>
-			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-				<Text>Events</Text>
-				<Text>{events}</Text>
-			</Stack>
-			<Stack mt={4} style={{ flexDirection: 'row' }}>
-				<Text size="sm" c={isAboveAvg ? 'red.6' : 'green.8'}>{`${isAboveAvg ? '+' : ''}${aboveAvgPercent}% ${
-					isAboveAvg ? 'above' : 'below'
-				} average in the given time-range`}</Text>
-			</Stack>
-		</Paper>
-	);
-}
-
 const EventTimeLineGraph = () => {
 	const { fetchGraphDataMutation } = useGraphData();
 	const [currentStream] = useAppStore((store) => store.currentStream);
@@ -223,27 +195,17 @@ const EventTimeLineGraph = () => {
 				w={isLoading ? '98%' : '100%'}
 				style={isLoading ? { marginLeft: '1.8rem', alignSelf: 'center' } : !hasData ? { marginLeft: '1rem' } : {}}>
 				{hasData ? (
-					<AreaChart
-						h="100%"
-						w="100%"
-						data={graphData}
-						dataKey="minute"
-						series={[{ name: 'events', color: 'indigo.5', label: 'Events' }]}
-						tooltipProps={{
-							content: ({ label, payload }) => <ChartTooltip label={label} payload={payload} />,
-							position: { y: -20 },
+					<AreaChartComponent
+						graphData={graphData}
+						avgEventCount={avgEventCount}
+						setTimeRangeFromGraph={setTimeRangeFromGraph}
+						hasData={graphData.length > 0}
+						onZoomOrPanComplete={(start, end) => {
+							setLogStore((store) => getCleanStoreForRefetch(store));
+							setAppStore((store) =>
+								setTimeRange(store, { type: 'custom', startTime: dayjs(start), endTime: dayjs(end) }),
+							);
 						}}
-						valueFormatter={(value) => new Intl.NumberFormat('en-US').format(value)}
-						withXAxis={false}
-						withYAxis={hasData}
-						yAxisProps={{ tickCount: 2, tickFormatter: (value) => `${HumanizeNumber(value)}` }}
-						referenceLines={[{ y: avgEventCount, color: 'gray.5', label: 'Avg' }]}
-						tickLine="none"
-						areaChartProps={{ onClick: setTimeRangeFromGraph, style: { cursor: 'pointer' } }}
-						gridAxis="xy"
-						fillOpacity={0.5}
-						strokeWidth={1.25}
-						dotProps={{ strokeWidth: 1, r: 2.5 }}
 					/>
 				) : (
 					<NoDataView isError={fetchGraphDataMutation.isError} />
