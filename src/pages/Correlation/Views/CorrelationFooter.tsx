@@ -1,6 +1,6 @@
 import { FC, useCallback } from 'react';
 import { usePagination } from '@mantine/hooks';
-import { Box, Center, Group, Menu, Pagination, Stack } from '@mantine/core';
+import { Box, Center, Group, Menu, Pagination, Stack, Tooltip } from '@mantine/core';
 import _ from 'lodash';
 import { Text } from '@mantine/core';
 import { IconSelector } from '@tabler/icons-react';
@@ -9,8 +9,36 @@ import classes from '../styles/Footer.module.css';
 import { LOGS_FOOTER_HEIGHT } from '@/constants/theme';
 import { correlationStoreReducers, useCorrelationStore } from '@/pages/Correlation/providers/CorrelationProvider';
 import { LOG_QUERY_LIMITS, LOAD_LIMIT } from '@/pages/Stream/providers/LogsProvider';
+import { HumanizeNumber } from '@/utils/formatBytes';
 
 const { setCurrentOffset, setCurrentPage, setPageAndPageData } = correlationStoreReducers;
+
+const TotalCount = (props: { totalCount: number }) => {
+	return (
+		<Tooltip label={props.totalCount}>
+			<Text style={{ fontSize: '0.7rem' }}>{HumanizeNumber(props.totalCount)}</Text>
+		</Tooltip>
+	);
+};
+
+const TotalLogsCount = (props: { hasTableLoaded: boolean; isTableEmpty: boolean }) => {
+	const [{ totalCount, perPage, pageData }] = useCorrelationStore((store) => store.tableOpts);
+	const displayedCount = _.size(pageData);
+	const showingCount = displayedCount < perPage ? displayedCount : perPage;
+	if (typeof totalCount !== 'number' || typeof displayedCount !== 'number') return <Stack />;
+
+	return (
+		<Stack style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row' }} gap={6}>
+			{!props.isTableEmpty ? (
+				<>
+					<Text style={{ fontSize: '0.7rem' }}>{`Showing ${showingCount} out of`}</Text>
+					<TotalCount totalCount={totalCount} />
+					<Text style={{ fontSize: '0.7rem' }}>records</Text>
+				</>
+			) : null}
+		</Stack>
+	);
+};
 
 const LimitControl: FC = () => {
 	const [opened, setOpened] = useMountedState(false);
@@ -58,6 +86,7 @@ const LimitControl: FC = () => {
 
 const CorrelationFooter = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: boolean }) => {
 	const [tableOpts, setCorrelationStore] = useCorrelationStore((store) => store.tableOpts);
+	const [isCorrelatedData] = useCorrelationStore((store) => store.isCorrelatedData);
 	const { totalPages, currentOffset, currentPage, perPage, totalCount } = tableOpts;
 
 	const onPageChange = useCallback((page: number) => {
@@ -84,14 +113,14 @@ const CorrelationFooter = (props: { loaded: boolean; hasNoData: boolean; isFetch
 		[currentOffset],
 	);
 
+	console.log('currentOffset', currentOffset);
+	// console.log(LOAD_LIMIT);
+	console.log('totalCount', totalCount);
+
 	return (
 		<Stack className={classes.footerContainer} gap={0} style={{ height: LOGS_FOOTER_HEIGHT }}>
 			<Stack w="100%" justify="center" align="flex-start">
-				{/* <TotalLogsCount
-					hasTableLoaded={props.loaded}
-					isFetchingCount={props.isFetchingCount}
-					isTableEmpty={props.hasNoData}
-				/> */}
+				{isCorrelatedData && <TotalLogsCount hasTableLoaded={props.loaded} isTableEmpty={props.hasNoData} />}
 			</Stack>
 			<Stack w="100%" justify="center">
 				{props.loaded ? (

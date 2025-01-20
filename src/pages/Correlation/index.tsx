@@ -31,6 +31,7 @@ import { useCorrelationsQuery } from '@/hooks/useCorrelations';
 import SavedCorrelationsButton from './components/SavedCorrelationsBtn';
 import SavedCorrelationsModal from './components/SavedCorrelationsModal';
 import SaveCorrelationModal from './components/SaveCorrelationModal';
+import { useCorrelationFetchCount } from './hooks/useCorrelationFetchCount';
 
 const { changeStream, syncTimeRange } = appStoreReducers;
 const {
@@ -78,6 +79,7 @@ const Correlation = () => {
 	const { getCorrelationData, loading: logsLoading, error: errorMessage } = useCorrelationQueryLogs();
 	const { getFetchStreamData, loading: streamsLoading } = useFetchStreamData();
 	const { fetchCorrelations, getCorrelationByIdMutation } = useCorrelationsQuery();
+	const { refetchCount, countLoading } = useCorrelationFetchCount();
 
 	// Local State
 	const [searchText, setSearchText] = useState('');
@@ -149,6 +151,7 @@ const Correlation = () => {
 
 	useEffect(() => {
 		if (isCorrelatedData) {
+			refetchCount();
 			getCorrelationData();
 		} else {
 			getFetchStreamData();
@@ -159,6 +162,7 @@ const Correlation = () => {
 		updateCorrelationCondition();
 		if (activeCorrelation && correlationCondition && isSavedCorrelation) {
 			setCorrelationData((store) => setIsCorrelatedFlag(store, true));
+			refetchCount();
 			getCorrelationData();
 		}
 		correlationCondition && setIsCorrelationEnabled(true);
@@ -474,6 +478,7 @@ const Correlation = () => {
 								onClick={() => {
 									setCorrelationData((store) => setIsCorrelatedFlag(store, true));
 									setIsCorrelationEnabled(false);
+									refetchCount();
 									getCorrelationData();
 								}}>
 								Correlate
@@ -496,7 +501,7 @@ const Correlation = () => {
 							{...{ errorMessage, logsLoading, streamsLoading, showTable, hasNoData }}
 							primaryHeaderHeight={primaryHeaderHeight}
 						/>
-						<CorrelationFooter loaded={showTable} hasNoData={hasNoData} isFetchingCount={true} />
+						<CorrelationFooter loaded={showTable} hasNoData={hasNoData} isFetchingCount={countLoading} />
 					</>
 				)}
 				{Object.keys(selectedFields).length === 0 && (
