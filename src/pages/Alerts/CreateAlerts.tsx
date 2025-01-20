@@ -14,7 +14,6 @@ import {
 	ScrollArea,
 	FloatingIndicator,
 	UnstyledButton,
-	Stepper,
 } from '@mantine/core';
 import classes from './styles/AlertStyles.module.css';
 import { useDocumentTitle } from '@mantine/hooks';
@@ -24,12 +23,17 @@ import { Accordion } from '@mantine/core';
 
 function Demo() {
 	return (
-		<Accordion variant="contained" multiple={true}>
-			<Accordion.Item value="photos">
-				<Accordion.Control icon={<IconPhoto size={20} color="var(--mantine-color-red-6)" />}>
-					Recent photos
+		<Accordion variant="contained" multiple={true} defaultValue={['rules']}>
+			<Accordion.Item value="rules">
+				<Accordion.Control icon={<IconPhoto size={20} color="var(--mantine-color-blue-6)" />}>
+					Create Rules
 				</Accordion.Control>
-				<Accordion.Panel>Content</Accordion.Panel>
+				<Accordion.Panel>
+					{' '}
+					<Stack>
+						<AlertBuilder />
+					</Stack>
+				</Accordion.Panel>
 			</Accordion.Item>
 
 			<Accordion.Item value="print">
@@ -39,9 +43,9 @@ function Demo() {
 				<Accordion.Panel>Content</Accordion.Panel>
 			</Accordion.Item>
 
-			<Accordion.Item value="camera">
+			<Accordion.Item value="target">
 				<Accordion.Control icon={<IconCameraSelfie size={20} color="var(--mantine-color-teal-6)" />}>
-					Camera settings
+					Add Target
 				</Accordion.Control>
 				<Accordion.Panel>Content</Accordion.Panel>
 			</Accordion.Item>
@@ -189,7 +193,7 @@ const ConditionBox = () => {
 
 function AlertBuilder() {
 	return (
-		<Stack h="60vh" style={{ justifyContent: 'center', alignItems: 'center' }}>
+		<Stack h="40vh" style={{ justifyContent: 'center', alignItems: 'center' }}>
 			<ScrollArea
 				w="65%"
 				scrollbars="y"
@@ -256,19 +260,6 @@ function AlertBuilder() {
 	);
 }
 
-function AlertsStepperForm() {
-	const [active, setActive] = useState(0);
-	return (
-		<Stepper active={active} onStepClick={setActive}>
-			<Stepper.Step label="Step 1" description="Create an account" children={<AlertBuilder />} />
-			<Stepper.Step label="Step 2" description="Verify email" children={<Demo />} />
-			<Stepper.Step label="Step 3" description="Get full access" children={<SelectStream />} />
-			<Stepper.Step label="Step 4" description="Verify email" children={<SelectStream />} />
-			<Stepper.Step label="Step 5" description="Get full access" children={<SelectStream />} />
-		</Stepper>
-	);
-}
-
 export default function CreateAlerts() {
 	useDocumentTitle('Parseable | Alerts');
 	return (
@@ -278,12 +269,9 @@ export default function CreateAlerts() {
 			<AlertTitle />
 			<SelectStream />
 			<TypeSelect />
-			{/* <ScrollArea> */}
-			{/* <Stack py={20} style={{ justifyContent: 'center', alignItems: 'center', border: '2px solid red' }}> */}
-			<AlertsStepperForm />
-			{/* </Stack> */}
-			{/* <AlertBuilder /> */}
-			{/* </ScrollArea> */}
+
+			<Demo />
+
 			<Box style={{ display: 'flex', justifyContent: 'end', gap: 10 }}>
 				<Button variant="outline">Discard</Button>
 				<Button>Save Alert</Button>
