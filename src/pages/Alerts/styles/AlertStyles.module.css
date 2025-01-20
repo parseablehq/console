@@ -1,8 +1,8 @@
-.rulesContainer {
-	padding: 2rem;
+.alertFormContainer {
+	padding: 0.5rem;
 	justify-content: space-around;
 	/* align-items: center; */
-	border: 2px solid var(--mantine-color-brandPrimary-1);
+	border: 1px solid var(--mantine-color-brandPrimary-4);
 	border-radius: 0.8rem;
 	flex-direction: row;
 }
