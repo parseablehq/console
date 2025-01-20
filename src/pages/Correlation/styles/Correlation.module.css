@@ -237,3 +237,25 @@
 	font-size: 0.65rem;
 	cursor: pointer;
 }
+
+.savedFiltersBtn {
+	background-color: white;
+	color: var(--mantine-color-gray-7);
+	border: 1px #e9ecef solid;
+	border-radius: rem(8px);
+	font-size: 0.65rem;
+	&:hover {
+		color: black;
+	}
+}
+
+.savedFiltersBtn:hover {
+	background-color: #e0e0e0;
+}
+
+.childCombinatorPill {
+	color: white;
+	background: var(--mantine-color-indigo-4);
+	text-transform: uppercase;
+	font-weight: 700;
+}

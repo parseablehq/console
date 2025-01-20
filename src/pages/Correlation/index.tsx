@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useDocumentTitle } from '@mantine/hooks';
-import { Stack, Box, TextInput, Text, Select, Button, Center, Skeleton, Stepper } from '@mantine/core';
+import { Stack, Box, TextInput, Text, Select, Button, Center, Skeleton, Stepper, Pill } from '@mantine/core';
 import { IconTrashX } from '@tabler/icons-react';
 import {
 	PRIMARY_HEADER_HEIGHT,
@@ -32,6 +32,8 @@ import SavedCorrelationsButton from './components/SavedCorrelationsBtn';
 import SavedCorrelationsModal from './components/SavedCorrelationsModal';
 import SaveCorrelationModal from './components/SaveCorrelationModal';
 import { useCorrelationFetchCount } from './hooks/useCorrelationFetchCount';
+import CorrleationJSONView from './Views/CorrelationJSONView';
+import ViewToggle from './components/CorrelationViewToggle';
 
 const { changeStream, syncTimeRange } = appStoreReducers;
 const {
@@ -61,6 +63,7 @@ const Correlation = () => {
 			correlationCondition,
 			correlationId,
 			savedCorrelationId,
+			viewMode,
 		},
 		setCorrelationData,
 	] = useCorrelationStore((store) => store);
@@ -113,6 +116,7 @@ const Correlation = () => {
 
 	useEffect(() => {
 		if (multipleSchemasLoading || !activeCorrelation) return;
+		setCorrelationData((store) => setSelectedFields(store, '', '', true));
 
 		const tableOrder = activeCorrelation?.tableConfigs.reduce((acc, config, index) => {
 			acc[config.tableName] = index;
@@ -482,6 +486,28 @@ const Correlation = () => {
 							<MaximizeButton />
 
 							<SavedCorrelationsButton />
+							<ViewToggle />
+
+							{isCorrelatedData && (
+								<Stack style={{ flexDirection: 'row' }} gap={8}>
+									<Pill
+										withRemoveButton
+										onRemove={() => {
+											setSelect1Value(null);
+											setSelect2Value(null);
+											setCorrelationData((store) => setCorrelationCondition(store, ''));
+											setCorrelationData((store) => setIsCorrelatedFlag(store, false));
+											setCorrelationData((store) => setCorrelationId(store, ''));
+											setCorrelationData((store) => setActiveCorrelation(store, null));
+											setIsCorrelationEnabled(false);
+											setAppStore(syncTimeRange);
+										}}>
+										<Pill>{correlationCondition?.split('=')[0]?.replace(/"/g, '').trim()}</Pill>
+										<Pill className={classes.childCombinatorPill}>=</Pill>
+										<Pill>{correlationCondition?.split('=')[1]?.replace(/"/g, '').trim()}</Pill>
+									</Pill>
+								</Stack>
+							)}
 						</div>
 						<div style={{ display: 'flex', gap: '5px', alignItems: 'center', height: '25px' }}>
 							<Button
@@ -519,10 +545,18 @@ const Correlation = () => {
 				</Stack>
 				{Object.keys(selectedFields).length > 0 && (
 					<>
-						<CorrelationTable
-							{...{ errorMessage, logsLoading: loadingState, streamsLoading, showTable, hasNoData }}
-							primaryHeaderHeight={primaryHeaderHeight}
-						/>
+						{viewMode === 'table' ? (
+							<>
+								<CorrelationTable
+									{...{ errorMessage, logsLoading: loadingState, streamsLoading, showTable, hasNoData }}
+									primaryHeaderHeight={primaryHeaderHeight}
+								/>
+							</>
+						) : (
+							<CorrleationJSONView
+								{...{ errorMessage, logsLoading: loadingState, streamsLoading, showTable, hasNoData }}
+							/>
+						)}
 						<CorrelationFooter loaded={showTable} hasNoData={hasNoData} isFetchingCount={countLoading} />
 					</>
 				)}

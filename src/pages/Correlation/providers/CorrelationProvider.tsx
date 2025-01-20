@@ -7,6 +7,7 @@ import { QueryType } from '@/pages/Stream/providers/FilterProvider';
 import { FilterQueryBuilder } from '@/utils/queryBuilder';
 import { formatQuery } from 'react-querybuilder';
 import { Correlation } from '@/@types/parseable/api/correlation';
+import { isJqSearch, ViewMode } from '@/pages/Stream/providers/LogsProvider';
 
 export const CORRELATION_LOAD_LIMIT = 1000;
 
@@ -49,6 +50,7 @@ type CorrelationStore = {
 	activeCorrelation: Correlation | null;
 	isSavedCorrelationsModalOpen: boolean;
 	isSaveCorrelationModalOpen: boolean;
+	viewMode: ViewMode;
 	tableOpts: {
 		disabledColumns: string[];
 		wrapDisabledColumns: string[];
@@ -73,7 +75,7 @@ type CorrelationStore = {
 };
 
 type CorrelationStoreReducers = {
-	setStreamData: (store: CorrelationStore, currentStream: string, data: Log[]) => ReducerOutput;
+	setStreamData: (store: CorrelationStore, currentStream: string, data: Log[], jqFilteredData?: Log[]) => ReducerOutput;
 	deleteStreamData: (store: CorrelationStore, currentStream: string) => ReducerOutput;
 	setSelectedFields: (store: CorrelationStore, field: string, streamName: string, clearAll?: boolean) => ReducerOutput;
 	deleteSelectedField: (store: CorrelationStore, field: string, streamName: string) => ReducerOutput;
@@ -94,6 +96,10 @@ type CorrelationStoreReducers = {
 	setTotalCount: (store: CorrelationStore, count: number) => ReducerOutput;
 	setTargetPage: (store: CorrelationStore, target: number | undefined) => ReducerOutput;
 	setPerPage: (store: CorrelationStore, perPage: number) => ReducerOutput;
+	onToggleView: (store: CorrelationStore, viewMode: 'json' | 'table') => ReducerOutput;
+	// applyJqSearch: (store: CorrelationStore, jqFilteredData: any[]) => ReducerOutput;
+	// applyInstantSearch: (store: CorrelationStore) => ReducerOutput;
+	setInstantSearchValue: (store: CorrelationStore, value: string) => ReducerOutput;
 };
 
 const initialState: CorrelationStore = {
@@ -109,6 +115,7 @@ const initialState: CorrelationStore = {
 	activeCorrelation: null,
 	isSavedCorrelationsModalOpen: false,
 	isSaveCorrelationModalOpen: false,
+	viewMode: 'json',
 	tableOpts: {
 		disabledColumns: [],
 		wrapDisabledColumns: [],
@@ -252,7 +259,78 @@ const generatePaginatedPageData = (
 		.filter(Boolean);
 };
 
+const setInstantSearchValue = (store: CorrelationStore, value: string) => {
+	return { tableOpts: { ...store.tableOpts, instantSearchValue: value } };
+};
+
+const searchAndSortData = (opts: { searchValue: string }, data: Log[]) => {
+	const { searchValue } = opts;
+	const filteredData = _.isEmpty(searchValue)
+		? data
+		: (_.reduce(
+				data,
+				(acc: Log[], d: Log) => {
+					const allValues = _.chain(d)
+						.entries()
+						.map(([key, value]) => [key, _.toString(value)])
+						.value();
+
+					const doesMatch = _.some(
+						allValues,
+						([key, value]) => key.includes(searchValue) || value.includes(searchValue),
+					);
+
+					return doesMatch ? [...acc, d] : acc;
+				},
+				[],
+		  ) as Log[]);
+	const sortedData = _.orderBy(filteredData, [defaultSortKey], [defaultSortOrder]);
+	return sortedData;
+};
+
 // Reducer Functions
+
+// const applyJqSearch = (store: CorrelationStore, jqFilteredData: any[]) => {
+// 	const { data, tableOpts } = store;
+// 	const currentPage = 1;
+// 	const newPageSlice = getPageSlice(currentPage, tableOpts.perPage, jqFilteredData);
+
+// 	return {
+// 		data: {
+// 			...data,
+// 			filteredData: jqFilteredData,
+// 		},
+// 		tableOpts: {
+// 			...tableOpts,
+// 			filters: {},
+// 			pageData: newPageSlice,
+// 			currentPage,
+// 			totalPages: getTotalPages(jqFilteredData, tableOpts.perPage),
+// 		},
+// 	};
+// };
+
+// const applyInstantSearch = (store: CorrelationStore) => {
+// 	const { data, tableOpts } = store;
+// 	const { instantSearchValue: searchValue } = tableOpts;
+// 	const filteredData = searchAndSortData({ searchValue }, data.rawData);
+// 	const currentPage = 1;
+// 	const newPageSlice = getPageSlice(currentPage, tableOpts.perPage, filteredData);
+
+// 	return {
+// 		data: {
+// 			...data,
+// 			filteredData,
+// 		},
+// 		tableOpts: {
+// 			...tableOpts,
+// 			filters: {},
+// 			pageData: newPageSlice,
+// 			currentPage,
+// 			totalPages: getTotalPages(filteredData, tableOpts.perPage),
+// 		},
+// 	};
+// };
 
 const cleanCorrelationStore = (store: CorrelationStore) => {
 	return {
@@ -439,15 +517,27 @@ const deleteSelectedField = (store: CorrelationStore, field: string, streamName:
 	};
 };
 
-const setStreamData = (store: CorrelationStore, currentStream: string, data: Log[]): ReducerOutput => {
+const setStreamData = (
+	store: CorrelationStore,
+	currentStream: string,
+	data: Log[],
+	jqFilteredData?: Log[],
+): ReducerOutput => {
 	if (!currentStream) return { fields: store.fields };
+	const { tableOpts, viewMode } = store;
+	const isJsonView = viewMode === 'json';
 	// Update streamData
 	const updatedStreamData = {
 		...store.streamData,
 		[currentStream]: { logData: data },
 	};
 	// Recompute filtered and sliced data for the table
-	const filteredData = filterAndSortData(store.tableOpts, updatedStreamData[currentStream]?.logData || []);
+	const filteredData =
+		isJsonView && !_.isEmpty(tableOpts.instantSearchValue)
+			? isJqSearch(tableOpts.instantSearchValue)
+				? jqFilteredData || []
+				: searchAndSortData({ searchValue: tableOpts.instantSearchValue }, data)
+			: filterAndSortData(tableOpts, data);
 	const currentPage = 1;
 
 	if (store.isCorrelatedData) {
@@ -475,6 +565,29 @@ const setStreamData = (store: CorrelationStore, currentStream: string, data: Log
 			currentPage,
 			totalPages: getTotalPages(filteredData, store.tableOpts.perPage),
 		},
+	};
+};
+
+const onToggleView = (store: CorrelationStore, viewMode: 'json' | 'table') => {
+	const { tableOpts } = store;
+	// const filteredData = filterAndSortData(
+	// 	{ sortOrder: defaultSortOrder, sortKey: defaultSortKey, filters: {} },
+	// 	streamData,
+	// );
+	// const currentPage = tableOpts.currentPage;
+	// const newPageSlice = getPageSlice(currentPage, tableOpts.perPage, filteredData);
+
+	return {
+		...store,
+		tableOpts: {
+			...tableOpts,
+			filters: {},
+			// pageData: newPageSlice,
+			instantSearchValue: '',
+			// currentPage,
+			// totalPages: getTotalPages(filteredData, tableOpts.perPage),
+		},
+		viewMode,
 	};
 };
 
@@ -634,6 +747,10 @@ const correlationStoreReducers: CorrelationStoreReducers = {
 	setTotalCount,
 	setTargetPage,
 	setPerPage,
+	onToggleView,
+	// applyJqSearch,
+	// applyInstantSearch,
+	setInstantSearchValue,
 };
 
 export { CorrelationProvider, useCorrelationStore, correlationStoreReducers };
