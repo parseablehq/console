@@ -43,6 +43,8 @@ const {
 	toggleSaveCorrelationModal,
 	setActiveCorrelation,
 	setCorrelationId,
+	setPageAndPageData,
+	setTargetPage,
 } = correlationStoreReducers;
 
 const Correlation = () => {
@@ -76,7 +78,7 @@ const Correlation = () => {
 		[];
 	const { isLoading: multipleSchemasLoading } = useGetMultipleStreamSchemas(streamsToFetch);
 
-	const { getCorrelationData, loading: logsLoading, error: errorMessage } = useCorrelationQueryLogs();
+	const { getCorrelationData, loadingState, error: errorMessage } = useCorrelationQueryLogs();
 	const { getFetchStreamData, loading: streamsLoading } = useFetchStreamData();
 	const { fetchCorrelations, getCorrelationByIdMutation } = useCorrelationsQuery();
 	const { refetchCount, countLoading } = useCorrelationFetchCount();
@@ -99,6 +101,7 @@ const Correlation = () => {
 			value: stream.name,
 			label: stream.name,
 		})) ?? [];
+	const { currentOffset, pageData, targetPage, currentPage } = tableOpts;
 
 	// Effects
 	useEffect(() => {
@@ -148,6 +151,14 @@ const Correlation = () => {
 	useEffect(() => {
 		getFetchStreamData();
 	}, [isCorrelatedData]);
+
+	useEffect(() => {
+		if (isCorrelatedData) {
+			getCorrelationData();
+		} else {
+			getFetchStreamData();
+		}
+	}, [currentOffset]);
 
 	useEffect(() => {
 		if (isCorrelatedData) {
@@ -217,9 +228,20 @@ const Correlation = () => {
 	}, []);
 
 	// View Flags
-	const hasContentLoaded = !schemaLoading && !logsLoading && !streamsLoading && !multipleSchemasLoading;
-	const hasNoData = hasContentLoaded && !errorMessage && tableOpts.pageData.length === 0;
+	const hasContentLoaded = !schemaLoading && !loadingState && !streamsLoading && !multipleSchemasLoading;
+	const hasNoData = hasContentLoaded && !errorMessage && pageData.length === 0;
 	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
+
+	useEffect(() => {
+		if (!showTable) return;
+
+		if (targetPage) {
+			setCorrelationData((store) => setPageAndPageData(store, targetPage));
+			if (currentPage === targetPage) {
+				setCorrelationData((store) => setTargetPage(store, undefined));
+			}
+		}
+	}, [loadingState, currentPage]);
 
 	if (isLoading) return;
 
@@ -273,7 +295,7 @@ const Correlation = () => {
 										}}
 									/>
 								</div>
-								{logsLoading || schemaLoading || streamsLoading || multipleSchemasLoading ? (
+								{loadingState || schemaLoading || streamsLoading || multipleSchemasLoading ? (
 									<Stack style={{ padding: '0.5rem 0.7rem' }}>
 										{Array.from({ length: 8 }).map((_, index) => (
 											<Skeleton key={index} height="24px" />
@@ -339,7 +361,7 @@ const Correlation = () => {
 							<StreamSelectBox
 								label="Add Stream 2"
 								placeholder="Select Stream 2"
-								disabled={logsLoading}
+								disabled={loadingState}
 								onChange={(value) => addStream(value)}
 								data={streamData.filter((stream) => !streamNames.includes(stream.value))}
 								isFirst={false}
@@ -498,7 +520,7 @@ const Correlation = () => {
 				{Object.keys(selectedFields).length > 0 && (
 					<>
 						<CorrelationTable
-							{...{ errorMessage, logsLoading, streamsLoading, showTable, hasNoData }}
+							{...{ errorMessage, logsLoading: loadingState, streamsLoading, showTable, hasNoData }}
 							primaryHeaderHeight={primaryHeaderHeight}
 						/>
 						<CorrelationFooter loaded={showTable} hasNoData={hasNoData} isFetchingCount={countLoading} />

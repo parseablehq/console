@@ -59,6 +59,7 @@ type CorrelationStore = {
 		displayedCount: number;
 		currentPage: number;
 		perPage: number;
+		targetPage: number | undefined;
 		currentOffset: number;
 		headers: string[];
 		orderedHeaders: string[];
@@ -91,6 +92,8 @@ type CorrelationStoreReducers = {
 	cleanCorrelationStore: (store: CorrelationStore) => ReducerOutput;
 	setSavedCorrelationId: (store: CorrelationStore, id: string) => ReducerOutput;
 	setTotalCount: (store: CorrelationStore, count: number) => ReducerOutput;
+	setTargetPage: (store: CorrelationStore, target: number | undefined) => ReducerOutput;
+	setPerPage: (store: CorrelationStore, perPage: number) => ReducerOutput;
 };
 
 const initialState: CorrelationStore = {
@@ -112,6 +115,7 @@ const initialState: CorrelationStore = {
 		pinnedColumns: [],
 		pageData: [],
 		perPage: 50,
+		targetPage: undefined,
 		totalCount: 0,
 		displayedCount: 0,
 		totalPages: 0,
@@ -288,6 +292,15 @@ const setCorrelations = (store: CorrelationStore, correlations: Correlation[]) =
 	return {
 		...store,
 		correlations,
+	};
+};
+
+const setPerPage = (store: CorrelationStore, perPage: number) => {
+	return {
+		tableOpts: {
+			...store.tableOpts,
+			perPage,
+		},
 	};
 };
 
@@ -485,6 +498,15 @@ const setCurrentOffset = (store: CorrelationStore, currentOffset: number) => {
 	};
 };
 
+const setTargetPage = (store: CorrelationStore, target: number | undefined) => {
+	return {
+		tableOpts: {
+			...store.tableOpts,
+			targetPage: target ? target : undefined,
+		},
+	};
+};
+
 const setCurrentPage = (store: CorrelationStore, currentPage: number) => {
 	return {
 		tableOpts: {
@@ -610,6 +632,8 @@ const correlationStoreReducers: CorrelationStoreReducers = {
 	cleanCorrelationStore,
 	setSavedCorrelationId,
 	setTotalCount,
+	setTargetPage,
+	setPerPage,
 };
 
 export { CorrelationProvider, useCorrelationStore, correlationStoreReducers };

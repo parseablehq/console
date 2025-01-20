@@ -18,6 +18,7 @@ type CorrelationLogs = {
 	startTime: Date;
 	endTime: Date;
 	limit: number;
+	pageOffset: number;
 	correlationCondition?: string;
 	selectedFields?: string[];
 };

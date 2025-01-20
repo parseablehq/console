@@ -25,6 +25,7 @@ type CorrelationQueryBuilderType = {
 	selectedFields?: string[];
 	startTime: Date;
 	endTime: Date;
+	pageOffset: number;
 };
 
 //! RESOURCE PATH CONSTANTS
@@ -106,6 +107,7 @@ export class CorrelationQueryBuilder {
 	selectedFields?: string[];
 	startTime: Date;
 	endTime: Date;
+	pageOffset: number;
 
 	constructor({
 		streamNames,
@@ -114,6 +116,7 @@ export class CorrelationQueryBuilder {
 		selectedFields,
 		startTime,
 		endTime,
+		pageOffset,
 	}: CorrelationQueryBuilderType) {
 		this.streamNames = streamNames;
 		this.startTime = startTime;
@@ -121,6 +124,7 @@ export class CorrelationQueryBuilder {
 		this.limit = limit;
 		this.correlationCondition = correlationCondition;
 		this.selectedFields = selectedFields;
+		this.pageOffset = pageOffset;
 	}
 
 	getCorrelationQuery() {
@@ -134,7 +138,7 @@ export class CorrelationQueryBuilder {
 				})
 				.join(', ')} from \"${this.streamNames[0]}\" join \"${this.streamNames[1]}\" on ${
 				this.correlationCondition
-			} offset 0 LIMIT ${this.limit}`;
+			} OFFSET ${this.pageOffset} LIMIT ${this.limit}`;
 		return {
 			startTime: this.startTime,
 			endTime: this.endTime,
@@ -143,14 +147,17 @@ export class CorrelationQueryBuilder {
 	}
 
 	getCountQuery() {
-		return `WITH user_query_count as ( ${
-			this.getCorrelationQuery().query
-		} )SELECT count(*) as count from user_query_count`;
+		const baseQuery = this.getCorrelationQuery()?.query;
+		if (!baseQuery) {
+			throw new Error('Base query is undefined. Unable to generate count query.');
+		}
+
+		const queryWithoutLimit = baseQuery.replace(/LIMIT \d+/i, '').trim();
+		return `WITH user_query_count as ( ${queryWithoutLimit} ) SELECT count(*) as count FROM user_query_count`;
 	}
 
 	getParseableQuery() {
-		/* eslint-disable no-useless-escape */
-		const query = `SELECT * FROM \"${this.streamNames[0]}\" LIMIT ${this.limit}`;
+		const query = `SELECT * FROM \"${this.streamNames[0]}\" OFFSET ${this.pageOffset} LIMIT ${this.limit}`;
 		return {
 			startTime: this.startTime,
 			endTime: this.endTime,

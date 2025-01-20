@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useEffect } from 'react';
 import { usePagination } from '@mantine/hooks';
 import { Box, Center, Group, Menu, Pagination, Stack, Tooltip } from '@mantine/core';
 import _ from 'lodash';
@@ -87,11 +87,16 @@ const LimitControl: FC = () => {
 const CorrelationFooter = (props: { loaded: boolean; hasNoData: boolean; isFetchingCount: boolean }) => {
 	const [tableOpts, setCorrelationStore] = useCorrelationStore((store) => store.tableOpts);
 	const [isCorrelatedData] = useCorrelationStore((store) => store.isCorrelatedData);
-	const { totalPages, currentOffset, currentPage, perPage, totalCount } = tableOpts;
+	const { totalPages, currentOffset, currentPage, perPage, totalCount, targetPage } = tableOpts;
 
 	const onPageChange = useCallback((page: number) => {
-		setCorrelationStore((store) => setPageAndPageData(store, page));
+		setCorrelationStore((store) => setPageAndPageData(store, page, perPage));
 	}, []);
+
+	useEffect(() => {
+		if (!props.loaded) return;
+		pagination.setPage(targetPage ? targetPage : 1);
+	}, [props.loaded]);
 
 	const pagination = usePagination({ total: totalPages ?? 1, initialPage: 1, onChange: onPageChange });
 	const onChangeOffset = useCallback(
@@ -113,14 +118,12 @@ const CorrelationFooter = (props: { loaded: boolean; hasNoData: boolean; isFetch
 		[currentOffset],
 	);
 
-	console.log('currentOffset', currentOffset);
-	// console.log(LOAD_LIMIT);
-	console.log('totalCount', totalCount);
-
 	return (
 		<Stack className={classes.footerContainer} gap={0} style={{ height: LOGS_FOOTER_HEIGHT }}>
 			<Stack w="100%" justify="center" align="flex-start">
-				{isCorrelatedData && <TotalLogsCount hasTableLoaded={props.loaded} isTableEmpty={props.hasNoData} />}
+				{isCorrelatedData && totalCount > 0 && (
+					<TotalLogsCount hasTableLoaded={props.loaded} isTableEmpty={props.hasNoData} />
+				)}
 			</Stack>
 			<Stack w="100%" justify="center">
 				{props.loaded ? (
