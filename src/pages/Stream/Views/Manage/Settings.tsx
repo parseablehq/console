@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Loader, Modal, NumberInput, Stack, TextInput } from '@mantine/core';
+import { Box, Button, Divider, Group, Loader, Modal, NumberInput, px, Stack, TextInput } from '@mantine/core';
 import classes from '../../styles/Management.module.css';
 import { Text } from '@mantine/core';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
@@ -6,13 +6,16 @@ import { useForm } from '@mantine/form';
 import _ from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useStreamStore } from '../../providers/StreamProvider';
-import { IconCheck, IconTrash, IconX } from '@tabler/icons-react';
+import { IconCheck, IconTrash, IconX, IconReload } from '@tabler/icons-react';
 import { sanitizeBytes, convertGibToBytes } from '@/utils/formatBytes';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import ErrorView from './ErrorView';
 import RestrictedView from '@/components/Misc/RestrictedView';
+import IconButton from '@/components/Button/IconButton';
 
 const { formatDateWithTimezone } = timeRangeUtils;
+
+const renderRefreshIcon = () => <IconReload size={px('1rem')} stroke={1.5} />;
 
 const Header = () => {
 	return (
@@ -168,6 +171,7 @@ const DeleteHotTierModal = (props: {
 
 const HotTierConfig = (props: {
 	updateHotTierInfo: ({ size }: { size: string }) => void;
+	refetchHotTierInfo: () => void;
 	deleteHotTierInfo: ({ onSuccess }: { onSuccess: () => void }) => void;
 	isDeleting: boolean;
 	isUpdating: boolean;
@@ -228,9 +232,17 @@ const HotTierConfig = (props: {
 			/>
 			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between' }} gap={8}>
 				<Text className={classes.fieldTitle}>Hot Tier Storage Size</Text>
-				{!hotTierNotSet && streamType === 'UserDefined' ? (
+				<Group style={{ justifyContent: 'end' }}>
+					<IconButton
+						size={38}
+						renderIcon={renderRefreshIcon}
+						onClick={props.refetchHotTierInfo}
+						tooltipLabel="Refresh now"
+					/>
+					{/* {!hotTierNotSet && streamType === 'UserDefined' ? ( */}
 					<IconTrash onClick={openDeleteModal} stroke={1.2} size="1.2rem" className={classes.deleteIcon} />
-				) : null}
+					{/* ) : null} */}
+				</Group>
 			</Stack>
 			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between', height: '3.8rem' }}>
 				<Stack gap={4} style={{ ...(hotTierNotSet ? { display: 'none' } : {}) }}>
@@ -310,6 +322,7 @@ const Settings = (props: {
 	isLoading: boolean;
 	updateRetentionConfig: ({ config }: { config: any }) => void;
 	updateHotTierInfo: ({ size }: { size: string }) => void;
+	refetchHotTierInfo: () => void;
 	deleteHotTierInfo: ({ onSuccess }: { onSuccess: () => void }) => void;
 	isDeleting: boolean;
 	isUpdating: boolean;
@@ -333,6 +346,7 @@ const Settings = (props: {
 						) : (
 							<>
 								<HotTierConfig
+									refetchHotTierInfo={props.refetchHotTierInfo}
 									updateHotTierInfo={props.updateHotTierInfo}
 									deleteHotTierInfo={props.deleteHotTierInfo}
 									isDeleting={props.isDeleting}
