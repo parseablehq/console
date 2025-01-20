@@ -106,3 +106,13 @@ export const SystemsElement: FC = () => {
 		</SuspensePage>
 	);
 };
+
+const Alerts = lazy(() => import('@/pages/Alerts'));
+
+export const AlertsElement: FC = () => {
+	return (
+		<SuspensePage>
+			<Alerts />
+		</SuspensePage>
+	);
+};

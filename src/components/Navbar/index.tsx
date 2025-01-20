@@ -8,6 +8,7 @@ import {
 	IconHomeStats,
 	IconListDetails,
 	IconLayoutDashboard,
+	IconBell,
 } from '@tabler/icons-react';
 import { FC, useCallback, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
@@ -20,6 +21,7 @@ import {
 	STREAM_ROUTE,
 	DASHBOARDS_ROUTE,
 	CORRELATION_ROUTE,
+	ALERTS_ROUTE,
 } from '@/constants/routes';
 import InfoModal from './infoModal';
 import { getStreamsSepcificAccess, getUserSepcificStreams } from './rolesHandler';
@@ -56,6 +58,12 @@ const navItems = [
 		label: 'Stream',
 		path: '/explore',
 		route: STREAM_ROUTE,
+	},
+	{
+		icon: IconBell,
+		label: 'Alerts',
+		path: '/list',
+		route: ALERTS_ROUTE,
 	},
 	{
 		icon: CorrelationIcon,
@@ -131,6 +139,10 @@ const Navbar: FC = () => {
 				if (shouldRedirectToHome && route === DASHBOARDS_ROUTE) {
 					return navigate('/');
 				}
+				if (shouldRedirectToHome && route === ALERTS_ROUTE) {
+					return navigate('/');
+				}
+
 				return navigate(route);
 			}
 		},

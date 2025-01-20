@@ -12,6 +12,7 @@ export const CLUSTER_ROUTE = '/cluster';
 export const STREAM_ROUTE = '/:streamName/:view?';
 export const DASHBOARDS_ROUTE = '/dashboards';
 export const CORRELATION_ROUTE = '/correlation';
+export const ALERTS_ROUTE = '/alerts';
 
 export const STREAM_VIEWS = [
 	'explore',
@@ -32,5 +33,6 @@ export const PATHS = {
 	cluster: '/cluster',
 	manage: '/:streamName/:view?',
 	dashboards: '/dashboards',
+	alerts: '/alerts',
 	correlation: '/correlation',
 } as { [key: string]: string };
