@@ -1,6 +1,6 @@
 import { Stack, Box, Button, Text, px, Code } from '@mantine/core';
 import { IconClock, IconEye, IconEyeOff, IconTrash, IconX } from '@tabler/icons-react';
-import { useState, useCallback, Fragment, FC } from 'react';
+import { useState, useCallback, FC } from 'react';
 import classes from '../styles/SavedCorrelationItem.module.css';
 import { Correlation } from '@/@types/parseable/api/correlation';
 import dayjs from 'dayjs';
@@ -51,14 +51,13 @@ const SelectedFields: FC<{ tableConfigs: TableConfig[] }> = ({ tableConfigs }) =
 	);
 
 	return (
-		<div className="space-x-1">
-			<span style={{ fontSize: '11px' }}>Selected Fields: </span>
-			{fields.map((field, index) => (
-				<Fragment key={field.key}>
+		<div>
+			<div style={{ fontSize: '11px' }}>Selected Fields: </div>
+			<div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', marginTop: '5px' }}>
+				{fields.map((field) => (
 					<Code>{field.content}</Code>
-					{index < fields.length - 1 && <span>,</span>}
-				</Fragment>
-			))}
+				))}
+			</div>
 		</div>
 	);
 };
@@ -73,8 +72,8 @@ const JoinConditions: FC<{ joinConfig: JoinConfig }> = ({ joinConfig }) => {
 				if (!nextJoin) return null;
 
 				return (
-					<div key={`join-${index}`} className="space-x-1">
-						<span style={{ fontSize: '11px' }}>Join Condition:</span>
+					<div key={`join-${index}`}>
+						<div style={{ fontSize: '11px' }}>Join Condition:</div>
 						<Code>{`${join.tableName}.${join.field}`}</Code>
 						<span>=</span>
 						<Code>{`${nextJoin.tableName}.${nextJoin.field}`}</Code>
@@ -154,7 +153,7 @@ const SavedCorrelationItem = (props: { item: Correlation }) => {
 				</Stack>
 			</Stack>
 			{showQuery && (
-				<Stack gap={0}>
+				<Stack gap={10}>
 					<SelectedFields tableConfigs={tableConfigs} />
 					<JoinConditions joinConfig={joinConfig} />
 				</Stack>

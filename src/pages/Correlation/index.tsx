@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useDocumentTitle } from '@mantine/hooks';
-import { Stack, Box, TextInput, Text, Select, Button, Center, Skeleton, Stepper } from '@mantine/core';
-import { IconTrashX } from '@tabler/icons-react';
+import { Stack, Box, TextInput, Text, Select, Button, Center, Stepper, Badge } from '@mantine/core';
+import { IconTrashX, IconX } from '@tabler/icons-react';
 import {
 	PRIMARY_HEADER_HEIGHT,
 	STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT,
@@ -31,8 +31,12 @@ import { useCorrelationsQuery } from '@/hooks/useCorrelations';
 import SavedCorrelationsButton from './components/SavedCorrelationsBtn';
 import SavedCorrelationsModal from './components/SavedCorrelationsModal';
 import SaveCorrelationModal from './components/SaveCorrelationModal';
+import { useCorrelationFetchCount } from './hooks/useCorrelationFetchCount';
+import CorrleationJSONView from './Views/CorrelationJSONView';
+import ViewToggle from './components/CorrelationViewToggle';
+import dayjs from 'dayjs';
 
-const { changeStream, syncTimeRange } = appStoreReducers;
+const { changeStream, syncTimeRange, setTimeRange } = appStoreReducers;
 const {
 	deleteStreamData,
 	setSelectedFields,
@@ -42,6 +46,8 @@ const {
 	toggleSaveCorrelationModal,
 	setActiveCorrelation,
 	setCorrelationId,
+	setPageAndPageData,
+	setTargetPage,
 } = correlationStoreReducers;
 
 const Correlation = () => {
@@ -58,6 +64,8 @@ const Correlation = () => {
 			correlationCondition,
 			correlationId,
 			savedCorrelationId,
+			viewMode,
+			correlations,
 		},
 		setCorrelationData,
 	] = useCorrelationStore((store) => store);
@@ -75,9 +83,10 @@ const Correlation = () => {
 		[];
 	const { isLoading: multipleSchemasLoading } = useGetMultipleStreamSchemas(streamsToFetch);
 
-	const { getCorrelationData, loading: logsLoading, error: errorMessage } = useCorrelationQueryLogs();
+	const { getCorrelationData, loadingState, error: errorMessage } = useCorrelationQueryLogs();
 	const { getFetchStreamData, loading: streamsLoading } = useFetchStreamData();
-	const { fetchCorrelations, getCorrelationByIdMutation } = useCorrelationsQuery();
+	const { fetchCorrelations } = useCorrelationsQuery();
+	const { refetchCount, countLoading } = useCorrelationFetchCount();
 
 	// Local State
 	const [searchText, setSearchText] = useState('');
@@ -97,6 +106,7 @@ const Correlation = () => {
 			value: stream.name,
 			label: stream.name,
 		})) ?? [];
+	const { currentOffset, pageData, targetPage, currentPage } = tableOpts;
 
 	// Effects
 	useEffect(() => {
@@ -134,8 +144,22 @@ const Correlation = () => {
 
 	useEffect(() => {
 		if (!isSavedCorrelation || !correlationId) return;
-		getCorrelationByIdMutation(correlationId);
-	}, [correlationId]);
+		const activeCorrelation = correlations?.find((correlation) => correlation.id === correlationId) || null;
+		activeCorrelation?.startTime &&
+			activeCorrelation?.endTime &&
+			setAppStore((store) =>
+				setTimeRange(store, {
+					startTime: dayjs(activeCorrelation?.startTime),
+					endTime: dayjs(activeCorrelation?.endTime),
+					type: 'custom',
+				}),
+			);
+		setSelect1Value(null);
+		setSelect2Value(null);
+		setCorrelationData((store) => setCorrelationCondition(store, ''));
+		setCorrelationData((store) => setSelectedFields(store, '', '', true));
+		setCorrelationData((store) => setActiveCorrelation(store, activeCorrelation));
+	}, [correlationId, correlations]);
 
 	useEffect(() => {
 		if (currentStream && streamNames.length > 0 && Object.keys(fields).includes(currentStream)) {
@@ -144,21 +168,17 @@ const Correlation = () => {
 	}, [currentStream, fields]);
 
 	useEffect(() => {
-		getFetchStreamData();
-	}, [isCorrelatedData]);
-
-	useEffect(() => {
 		if (isCorrelatedData) {
 			getCorrelationData();
 		} else {
 			getFetchStreamData();
 		}
-	}, [timeRange]);
+	}, [currentOffset, timeRange]);
 
 	useEffect(() => {
 		updateCorrelationCondition();
 		if (activeCorrelation && correlationCondition && isSavedCorrelation) {
-			setCorrelationData((store) => setIsCorrelatedFlag(store, true));
+			refetchCount();
 			getCorrelationData();
 		}
 		correlationCondition && setIsCorrelationEnabled(true);
@@ -177,7 +197,6 @@ const Correlation = () => {
 			const condition = `"${streamNames[0]}".${select1Value} = "${streamNames[1]}".${select2Value}`;
 			setAppStore((store) => changeStream(store, 'correlatedStream'));
 			setCorrelationData((store) => setCorrelationCondition(store, condition));
-			setIsCorrelationEnabled(true);
 		}
 	};
 
@@ -213,9 +232,20 @@ const Correlation = () => {
 	}, []);
 
 	// View Flags
-	const hasContentLoaded = !schemaLoading && !logsLoading && !streamsLoading && !multipleSchemasLoading;
-	const hasNoData = hasContentLoaded && !errorMessage && tableOpts.pageData.length === 0;
+	const hasContentLoaded = !schemaLoading && !loadingState && !streamsLoading && !multipleSchemasLoading;
+	const hasNoData = hasContentLoaded && !errorMessage && pageData.length === 0;
 	const showTable = hasContentLoaded && !hasNoData && !errorMessage;
+
+	useEffect(() => {
+		if (!showTable) return;
+
+		if (targetPage) {
+			setCorrelationData((store) => setPageAndPageData(store, targetPage));
+			if (currentPage === targetPage) {
+				setCorrelationData((store) => setTargetPage(store, undefined));
+			}
+		}
+	}, [loadingState, currentPage]);
 
 	if (isLoading) return;
 
@@ -236,10 +266,12 @@ const Correlation = () => {
 				/>
 				<div className={classes.streamBox}>
 					{Object.entries(fields).map(([stream, fieldsIter]: [any, any]) => {
+						if (!fieldsIter) return;
 						const filteredFields = filterFields(fieldsIter);
 						const totalStreams = Object.entries(fields).length;
 						const heightPercentage = totalStreams === 1 ? '50%' : `${100 / totalStreams}%`;
 
+						const isLoading = loadingState || schemaLoading || streamsLoading || multipleSchemasLoading;
 						return (
 							<div
 								key={stream}
@@ -269,13 +301,7 @@ const Correlation = () => {
 										}}
 									/>
 								</div>
-								{logsLoading || schemaLoading || streamsLoading || multipleSchemasLoading ? (
-									<Stack style={{ padding: '0.5rem 0.7rem' }}>
-										{Array.from({ length: 8 }).map((_, index) => (
-											<Skeleton key={index} height="24px" />
-										))}
-									</Stack>
-								) : filteredFields.length > 0 ? (
+								{filteredFields.length > 0 ? (
 									<div className={classes.fieldsWrapper}>
 										{filteredFields.map((field: string) => {
 											const isSelected = selectedFields[stream]?.includes(field);
@@ -290,6 +316,7 @@ const Correlation = () => {
 													dataType={dataType}
 													isSelected={isSelected}
 													onClick={() => {
+														if (isLoading) return;
 														if (isCorrelatedData) {
 															setIsCorrelationEnabled(true);
 															setCorrelationData((store) => setIsCorrelatedFlag(store, false));
@@ -335,7 +362,7 @@ const Correlation = () => {
 							<StreamSelectBox
 								label="Add Stream 2"
 								placeholder="Select Stream 2"
-								disabled={logsLoading}
+								disabled={loadingState}
 								onChange={(value) => addStream(value)}
 								data={streamData.filter((stream) => !streamNames.includes(stream.value))}
 								isFirst={false}
@@ -350,7 +377,7 @@ const Correlation = () => {
 				className={classes.selectionWrapper}>
 				<Stack className={classes.topSectionWrapper}>
 					<Stack>
-						<div className={classes.fieldsJoinsWrapper} style={{ height: STREAM_PRIMARY_TOOLBAR_HEIGHT }}>
+						<div className={classes.fieldsJoinsWrapper}>
 							<Text
 								style={{
 									width: '35px',
@@ -437,6 +464,68 @@ const Correlation = () => {
 										onChange={(value) => handleFieldChange(value, false)}
 									/>
 								</div>
+								<div style={{ height: '100%', width: '20%', display: 'flex' }}>
+									{isCorrelatedData && (
+										<Badge
+											variant="outline"
+											color="#535BED"
+											h={'100%'}
+											size="lg"
+											styles={{
+												root: {
+													textTransform: 'none',
+												},
+											}}
+											rightSection={
+												<IconX
+													style={{ cursor: 'pointer' }}
+													size={12}
+													color="#535BED"
+													onClick={() => {
+														setSelect1Value(null);
+														setSelect2Value(null);
+														setCorrelationData((store) => setCorrelationCondition(store, ''));
+														setCorrelationData((store) => setIsCorrelatedFlag(store, false));
+														setCorrelationData((store) => setCorrelationId(store, ''));
+														setCorrelationData((store) => setActiveCorrelation(store, null));
+														setIsCorrelationEnabled(false);
+														setAppStore(syncTimeRange);
+													}}
+												/>
+											}>
+											Join Applied
+										</Badge>
+									)}
+								</div>
+								<div style={{ display: 'flex', gap: '5px', alignItems: 'center', height: '25px' }}>
+									<Button
+										className={classes.correlateBtn}
+										variant="outline"
+										disabled={!isCorrelatedData}
+										onClick={(e) => {
+											openSaveCorrelationModal(e);
+										}}>
+										Save
+									</Button>
+									<Button
+										className={classes.correlateBtn}
+										disabled={!isCorrelationEnabled || Object.keys(selectedFields).length === 0}
+										variant="filled"
+										onClick={() => {
+											setCorrelationData((store) => setIsCorrelatedFlag(store, true));
+											setIsCorrelationEnabled(false);
+											refetchCount();
+											getCorrelationData();
+										}}>
+										Correlate
+									</Button>
+									<Button
+										className={classes.clearBtn}
+										onClick={clearQuery}
+										disabled={streamNames.length == 0 || Object.keys(selectedFields).length === 0}>
+										Clear
+									</Button>
+								</div>
 							</div>
 						</div>
 					</Stack>
@@ -449,41 +538,17 @@ const Correlation = () => {
 						}}>
 						{/* <CorrelationFilters /> */}
 						<div className={classes.logTableControlWrapper}>
-							<TimeRange />
-							<RefreshInterval />
-							<RefreshNow />
-							<ShareButton />
-							<MaximizeButton />
-
-							<SavedCorrelationsButton />
-						</div>
-						<div style={{ display: 'flex', gap: '5px', alignItems: 'center', height: '25px' }}>
-							<Button
-								className={classes.correlateBtn}
-								variant="outline"
-								disabled={!isCorrelatedData}
-								onClick={(e) => {
-									openSaveCorrelationModal(e);
-								}}>
-								Save
-							</Button>
-							<Button
-								className={classes.correlateBtn}
-								disabled={!isCorrelationEnabled || Object.keys(selectedFields).length === 0}
-								variant="filled"
-								onClick={() => {
-									setCorrelationData((store) => setIsCorrelatedFlag(store, true));
-									setIsCorrelationEnabled(false);
-									getCorrelationData();
-								}}>
-								Correlate
-							</Button>
-							<Button
-								className={classes.clearBtn}
-								onClick={clearQuery}
-								disabled={streamNames.length == 0 || Object.keys(selectedFields).length === 0}>
-								Clear
-							</Button>
+							<div style={{ display: 'flex', gap: '10px' }}>
+								<SavedCorrelationsButton />
+								<TimeRange />
+								<RefreshInterval />
+								<RefreshNow />
+							</div>
+							<div style={{ display: 'flex', gap: '10px' }}>
+								<ViewToggle />
+								<ShareButton />
+								<MaximizeButton />
+							</div>
 						</div>
 					</div>
 				</Stack>
@@ -492,11 +557,19 @@ const Correlation = () => {
 				</Stack>
 				{Object.keys(selectedFields).length > 0 && (
 					<>
-						<CorrelationTable
-							{...{ errorMessage, logsLoading, streamsLoading, showTable, hasNoData }}
-							primaryHeaderHeight={primaryHeaderHeight}
-						/>
-						<CorrelationFooter loaded={showTable} hasNoData={hasNoData} isFetchingCount={true} />
+						{viewMode === 'table' ? (
+							<>
+								<CorrelationTable
+									{...{ errorMessage, logsLoading: loadingState, streamsLoading, showTable, hasNoData }}
+									primaryHeaderHeight={primaryHeaderHeight}
+								/>
+							</>
+						) : (
+							<CorrleationJSONView
+								{...{ errorMessage, logsLoading: loadingState, streamsLoading, showTable, hasNoData }}
+							/>
+						)}
+						<CorrelationFooter loaded={showTable} hasNoData={hasNoData} isFetchingCount={countLoading} />
 					</>
 				)}
 				{Object.keys(selectedFields).length === 0 && (
