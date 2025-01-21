@@ -6,7 +6,7 @@ import { useForm } from '@mantine/form';
 import _ from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useStreamStore } from '../../providers/StreamProvider';
-import { IconCheck, IconTrash, IconX, IconReload } from '@tabler/icons-react';
+import { IconCheck, IconX, IconReload } from '@tabler/icons-react';
 import { sanitizeBytes, convertGibToBytes } from '@/utils/formatBytes';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import ErrorView from './ErrorView';
@@ -239,12 +239,9 @@ const HotTierConfig = (props: {
 						onClick={props.refetchHotTierInfo}
 						tooltipLabel="Refresh now"
 					/>
-					{/* {!hotTierNotSet && streamType === 'UserDefined' ? ( */}
-					<IconTrash onClick={openDeleteModal} stroke={1.2} size="1.2rem" className={classes.deleteIcon} />
-					{/* ) : null} */}
 				</Group>
 			</Stack>
-			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between', height: '3.8rem' }}>
+			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between', height: '5.8rem' }}>
 				<Stack gap={4} style={{ ...(hotTierNotSet ? { display: 'none' } : {}) }}>
 					<Text className={classes.fieldDescription}>Oldest Record:</Text>
 					<Text className={classes.fieldDescription}>
@@ -301,6 +298,18 @@ const HotTierConfig = (props: {
 						</Stack>
 						{props.isUpdating && <Loader size="sm" />}
 					</Stack>
+
+					{!hotTierNotSet && streamType === 'UserDefined' ? (
+						<Stack
+							style={{ alignItems: 'flex-end', paddingTop: '0.8rem', ...(hotTierNotSet ? { display: 'none' } : {}) }}>
+							<Box>
+								<Button variant="outline" onClick={openDeleteModal}>
+									Delete
+								</Button>
+							</Box>
+						</Stack>
+					) : null}
+
 					<Stack style={{ alignItems: 'flex-end', ...(!hotTierNotSet ? { display: 'none' } : {}) }}>
 						<Box>
 							<Button onClick={onUpdate} disabled={localSizeValue <= 0} loading={props.isUpdating}>
