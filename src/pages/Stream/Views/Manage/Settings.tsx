@@ -303,7 +303,10 @@ const HotTierConfig = (props: {
 						<Stack
 							style={{ alignItems: 'flex-end', paddingTop: '0.8rem', ...(hotTierNotSet ? { display: 'none' } : {}) }}>
 							<Box>
-								<Button variant="outline" onClick={openDeleteModal}>
+								<Button
+									variant="outline"
+									styles={{ root: { border: '1px solid #EAECEF' }, inner: { color: '#211F1F' } }}
+									onClick={openDeleteModal}>
 									Delete
 								</Button>
 							</Box>
