@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useDocumentTitle } from '@mantine/hooks';
-import { Stack, Box, TextInput, Text, Select, Button, Center, Stepper, Badge } from '@mantine/core';
+import { Stack, Box, TextInput, Text, Select, Button, Center, Stepper, Badge, SelectProps, Group } from '@mantine/core';
 import { IconTrashX, IconX } from '@tabler/icons-react';
 import {
 	PRIMARY_HEADER_HEIGHT,
@@ -22,7 +22,7 @@ import RefreshNow from '@/components/Header/RefreshNow';
 import MultiEventTimeLineGraph from './components/MultiEventTimeLineGraph';
 import { CorrelationEmptyPlaceholder } from './components/CorrelationEmptyPlaceholder';
 import { StreamSelectBox } from './components/StreamSelectBox';
-import { CorrelationFieldItem } from './components/CorrelationFieldItem';
+import { CorrelationFieldItem, dataTypeIcons } from './components/CorrelationFieldItem';
 import { MaximizeButton } from '../Stream/components/PrimaryToolbar';
 import ShareButton from './components/ShareButton';
 import useParamsController from './hooks/useParamsController';
@@ -230,6 +230,26 @@ const Correlation = () => {
 		e.stopPropagation();
 		setCorrelationData((store) => toggleSaveCorrelationModal(store, true));
 	}, []);
+
+	const renderJoinOneOptions: SelectProps['renderOption'] = ({ option }) => {
+		const fieldType = fields[streamNames[0]]?.fieldTypeMap[option.value];
+		return (
+			<div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+				{option.label}
+				{dataTypeIcons('black')[fieldType]}
+			</div>
+		);
+	};
+
+	const renderJoinTwoOptions: SelectProps['renderOption'] = ({ option }) => {
+		const fieldType = fields[streamNames[1]]?.fieldTypeMap[option.value];
+		return (
+			<div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+				{option.label}
+				{dataTypeIcons('black')[fieldType]}
+			</div>
+		);
+	};
 
 	// View Flags
 	const hasContentLoaded = !schemaLoading && !loadingState && !streamsLoading && !multipleSchemasLoading;
@@ -442,6 +462,7 @@ const Correlation = () => {
 										}
 										value={select1Value}
 										onChange={(value) => handleFieldChange(value, true)}
+										renderOption={renderJoinOneOptions}
 									/>
 								</div>
 								<Text size="md"> = </Text>
@@ -462,6 +483,7 @@ const Correlation = () => {
 										}
 										value={select2Value}
 										onChange={(value) => handleFieldChange(value, false)}
+										renderOption={renderJoinTwoOptions}
 									/>
 								</div>
 								<div style={{ height: '100%', width: '20%', display: 'flex' }}>

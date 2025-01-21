@@ -10,7 +10,7 @@ import { Text, Tooltip } from '@mantine/core';
 import classes from '../styles/Correlation.module.css';
 import { useRef } from 'react';
 
-const dataTypeIcons = (iconColor: string): Record<string, JSX.Element> => ({
+export const dataTypeIcons = (iconColor: string): Record<string, JSX.Element> => ({
 	text: <IconLetterASmall size={16} style={{ color: iconColor }} />,
 	timestamp: <IconClockHour5 size={16} style={{ color: iconColor }} />,
 	number: <IconNumber123 size={16} style={{ color: iconColor }} />,
