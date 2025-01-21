@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useDocumentTitle } from '@mantine/hooks';
-import { Stack, Box, TextInput, Text, Select, Button, Center, Stepper, Badge, SelectProps, Group } from '@mantine/core';
+import { Stack, Box, TextInput, Text, Select, Button, Center, Stepper, Badge, SelectProps } from '@mantine/core';
 import { IconTrashX, IconX } from '@tabler/icons-react';
 import {
 	PRIMARY_HEADER_HEIGHT,
@@ -90,8 +90,20 @@ const Correlation = () => {
 
 	// Local State
 	const [searchText, setSearchText] = useState('');
-	const [select1Value, setSelect1Value] = useState<string | null>(null);
-	const [select2Value, setSelect2Value] = useState<string | null>(null);
+	const [select1Value, setSelect1Value] = useState<{
+		value: string | null;
+		dataType?: '' | 'number' | 'boolean' | 'text' | 'timestamp' | 'list' | null;
+	}>({
+		value: null,
+		dataType: '',
+	});
+	const [select2Value, setSelect2Value] = useState<{
+		value: string | null;
+		dataType?: '' | 'number' | 'boolean' | 'text' | 'timestamp' | 'list' | null;
+	}>({
+		value: null,
+		dataType: '',
+	});
 	const [isCorrelationEnabled, setIsCorrelationEnabled] = useState<boolean>(false);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -129,10 +141,10 @@ const Correlation = () => {
 		);
 
 		if (sortedJoinConditions[0]) {
-			setSelect1Value(sortedJoinConditions[0].field);
+			setSelect1Value({ value: sortedJoinConditions[0].field });
 		}
 		if (sortedJoinConditions[1]) {
-			setSelect2Value(sortedJoinConditions[1].field);
+			setSelect2Value({ value: sortedJoinConditions[1].field });
 		}
 
 		activeCorrelation?.tableConfigs.flatMap((config) =>
@@ -154,8 +166,8 @@ const Correlation = () => {
 					type: 'custom',
 				}),
 			);
-		setSelect1Value(null);
-		setSelect2Value(null);
+		setSelect1Value({ value: null, dataType: '' });
+		setSelect2Value({ value: null, dataType: '' });
 		setCorrelationData((store) => setCorrelationCondition(store, ''));
 		setCorrelationData((store) => setSelectedFields(store, '', '', true));
 		setCorrelationData((store) => setActiveCorrelation(store, activeCorrelation));
@@ -193,8 +205,8 @@ const Correlation = () => {
 	};
 
 	const updateCorrelationCondition = () => {
-		if (select1Value && select2Value) {
-			const condition = `"${streamNames[0]}".${select1Value} = "${streamNames[1]}".${select2Value}`;
+		if (select1Value.value && select2Value.value) {
+			const condition = `"${streamNames[0]}".${select1Value.value} = "${streamNames[1]}".${select2Value.value}`;
 			setAppStore((store) => changeStream(store, 'correlatedStream'));
 			setCorrelationData((store) => setCorrelationCondition(store, condition));
 		}
@@ -209,15 +221,18 @@ const Correlation = () => {
 
 	const handleFieldChange = (fieldValue: string | null, isFirstField: boolean) => {
 		if (isFirstField) {
-			setSelect1Value(fieldValue);
+			const fieldType = fieldValue && fields[streamNames[0]]?.fieldTypeMap[fieldValue];
+			console.log(fieldType);
+
+			setSelect1Value({ value: fieldValue, dataType: fieldType });
 		} else {
-			setSelect2Value(fieldValue);
+			setSelect2Value({ value: fieldValue });
 		}
 	};
 
 	const clearQuery = () => {
-		setSelect1Value(null);
-		setSelect2Value(null);
+		setSelect1Value({ value: null, dataType: '' });
+		setSelect2Value({ value: null, dataType: '' });
 		setCorrelationData((store) => setCorrelationCondition(store, ''));
 		setCorrelationData((store) => setSelectedFields(store, '', '', true));
 		setCorrelationData((store) => setIsCorrelatedFlag(store, false));
@@ -315,8 +330,8 @@ const Correlation = () => {
 										onClick={() => {
 											setAppStore((store) => changeStream(store, ''));
 											setCorrelationData((store) => setIsCorrelatedFlag(store, false));
-											setSelect1Value(null);
-											setSelect2Value(null);
+											setSelect1Value({ value: null, dataType: '' });
+											setSelect2Value({ value: null, dataType: '' });
 											setCorrelationData((store) => deleteStreamData(store, stream));
 										}}
 									/>
@@ -460,7 +475,7 @@ const Correlation = () => {
 												  )
 												: []
 										}
-										value={select1Value}
+										value={select1Value.value}
 										onChange={(value) => handleFieldChange(value, true)}
 										renderOption={renderJoinOneOptions}
 									/>
@@ -476,12 +491,15 @@ const Correlation = () => {
 										radius="md"
 										data={
 											streamNames.length > 1
-												? Object.keys(fields[streamNames[1]].fieldTypeMap).filter(
-														(key) => fields[streamNames[1]].fieldTypeMap[key] !== 'list',
-												  )
+												? Object.keys(fields[streamNames[1]].fieldTypeMap).filter((key) => {
+														const dataType = fields[streamNames[1]].fieldTypeMap[key];
+														return (
+															dataType !== 'list' && (!select1Value.dataType || select1Value.dataType === dataType)
+														);
+												  })
 												: []
 										}
-										value={select2Value}
+										value={select2Value.value}
 										onChange={(value) => handleFieldChange(value, false)}
 										renderOption={renderJoinTwoOptions}
 									/>
@@ -504,8 +522,8 @@ const Correlation = () => {
 													size={12}
 													color="#535BED"
 													onClick={() => {
-														setSelect1Value(null);
-														setSelect2Value(null);
+														setSelect1Value({ value: null, dataType: '' });
+														setSelect2Value({ value: null, dataType: '' });
 														setCorrelationData((store) => setCorrelationCondition(store, ''));
 														setCorrelationData((store) => setIsCorrelatedFlag(store, false));
 														setCorrelationData((store) => setCorrelationId(store, ''));
