@@ -246,7 +246,7 @@ const HotTierConfig = (props: {
 					<Stack gap={12}>
 						{streamType === 'UserDefined' ? (
 							<NumberInput
-								w={'50%'}
+								w={hotTierNotSet ? '100%' : '50%'}
 								classNames={{ label: classes.fieldDescription }}
 								placeholder="Size in GiB"
 								key="size"
