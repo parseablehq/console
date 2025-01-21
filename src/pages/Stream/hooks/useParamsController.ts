@@ -167,7 +167,7 @@ const useParamsController = () => {
 			setLogsStore((store) => setPerPage(store, _.toNumber(presentParams.rows)));
 		}
 
-		if (storeAsParams.fields !== presentParams.fields) {
+		if (storeAsParams.fields !== presentParams.fields && !_.isEmpty(presentParams.fields)) {
 			setLogsStore((store) => setTargetColumns(store, joinOrSplit(presentParams.fields) as string[]));
 		}
 
