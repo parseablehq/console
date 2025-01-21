@@ -14,7 +14,7 @@ import { useQuery } from 'react-query';
 import { LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 import { useState } from 'react';
 
-const { setStreamData } = correlationStoreReducers;
+const { setStreamData, setIsCorrelatedFlag } = correlationStoreReducers;
 
 export const useCorrelationQueryLogs = () => {
 	const [error, setError] = useMountedState<string | null>(null);
@@ -68,6 +68,7 @@ export const useCorrelationQueryLogs = () => {
 						notifyError({ message: `${currentStream} doesn't have any fields` });
 					}
 				});
+				setCorrelationStore((store) => setIsCorrelatedFlag(store, true));
 			},
 			onError: (data: AxiosError) => {
 				setLoading(false);

@@ -1,18 +1,11 @@
 import { useMutation, useQuery } from 'react-query';
 import _ from 'lodash';
 
-import {
-	deleteSavedCorrelation,
-	getCorrelationById,
-	getCorrelations,
-	saveCorrelation,
-	updateCorrelation,
-} from '@/api/correlations';
+import { deleteSavedCorrelation, getCorrelations, saveCorrelation, updateCorrelation } from '@/api/correlations';
 import { correlationStoreReducers, useCorrelationStore } from '@/pages/Correlation/providers/CorrelationProvider';
 import { notifyError, notifySuccess } from '@/utils/notification';
 import { AxiosError, isAxiosError } from 'axios';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import dayjs from 'dayjs';
 
 const {
 	setCorrelations,
@@ -22,7 +15,7 @@ const {
 	cleanCorrelationStore,
 	toggleSavedCorrelationsModal,
 } = correlationStoreReducers;
-const { setTimeRange, syncTimeRange } = appStoreReducers;
+const { syncTimeRange } = appStoreReducers;
 export const useCorrelationsQuery = () => {
 	const [{ correlationId }, setCorrelatedStore] = useCorrelationStore((store) => store);
 	const [, setAppStore] = useAppStore((store) => store);
@@ -41,30 +34,6 @@ export const useCorrelationsQuery = () => {
 		onError: () => {
 			setCorrelatedStore((store) => setCorrelations(store, []));
 			notifyError({ message: 'Failed to fetch correlations' });
-		},
-	});
-
-	const {
-		mutate: getCorrelationByIdMutation,
-		isError: fetchCorrelationIdError,
-		isSuccess: fetchCorrelationIdSuccess,
-		isLoading: fetchCorrelationIdLoading,
-	} = useMutation((correlationId: string) => getCorrelationById(correlationId), {
-		onSuccess: (data: any) => {
-			data.data.startTime &&
-				data.data.endTime &&
-				setAppStore((store) =>
-					setTimeRange(store, {
-						startTime: dayjs(data.data.startTime),
-						endTime: dayjs(data.data.endTime),
-						type: 'custom',
-					}),
-				);
-			setCorrelatedStore((store) => setCorrelationId(store, data.data.id));
-			setCorrelatedStore((store) => setActiveCorrelation(store, data.data));
-		},
-		onError: () => {
-			notifyError({ message: 'Failed to fetch correlation' });
 		},
 	});
 
@@ -142,11 +111,6 @@ export const useCorrelationsQuery = () => {
 
 		deleteSavedCorrelationMutation,
 		isDeleting,
-
-		fetchCorrelationIdError,
-		fetchCorrelationIdSuccess,
-		fetchCorrelationIdLoading,
-		getCorrelationByIdMutation,
 
 		saveCorrelationMutation,
 		isCorrelationSaving,

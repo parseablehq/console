@@ -34,8 +34,9 @@ import SaveCorrelationModal from './components/SaveCorrelationModal';
 import { useCorrelationFetchCount } from './hooks/useCorrelationFetchCount';
 import CorrleationJSONView from './Views/CorrelationJSONView';
 import ViewToggle from './components/CorrelationViewToggle';
+import dayjs from 'dayjs';
 
-const { changeStream, syncTimeRange } = appStoreReducers;
+const { changeStream, syncTimeRange, setTimeRange } = appStoreReducers;
 const {
 	deleteStreamData,
 	setSelectedFields,
@@ -64,6 +65,7 @@ const Correlation = () => {
 			correlationId,
 			savedCorrelationId,
 			viewMode,
+			correlations,
 		},
 		setCorrelationData,
 	] = useCorrelationStore((store) => store);
@@ -83,7 +85,7 @@ const Correlation = () => {
 
 	const { getCorrelationData, loadingState, error: errorMessage } = useCorrelationQueryLogs();
 	const { getFetchStreamData, loading: streamsLoading } = useFetchStreamData();
-	const { fetchCorrelations, getCorrelationByIdMutation } = useCorrelationsQuery();
+	const { fetchCorrelations } = useCorrelationsQuery();
 	const { refetchCount, countLoading } = useCorrelationFetchCount();
 
 	// Local State
@@ -116,7 +118,6 @@ const Correlation = () => {
 
 	useEffect(() => {
 		if (multipleSchemasLoading || !activeCorrelation) return;
-		setCorrelationData((store) => setSelectedFields(store, '', '', true));
 
 		const tableOrder = activeCorrelation?.tableConfigs.reduce((acc, config, index) => {
 			acc[config.tableName] = index;
@@ -143,8 +144,22 @@ const Correlation = () => {
 
 	useEffect(() => {
 		if (!isSavedCorrelation || !correlationId) return;
-		getCorrelationByIdMutation(correlationId);
-	}, [correlationId]);
+		const activeCorrelation = correlations?.find((correlation) => correlation.id === correlationId) || null;
+		activeCorrelation?.startTime &&
+			activeCorrelation?.endTime &&
+			setAppStore((store) =>
+				setTimeRange(store, {
+					startTime: dayjs(activeCorrelation?.startTime),
+					endTime: dayjs(activeCorrelation?.endTime),
+					type: 'custom',
+				}),
+			);
+		setSelect1Value(null);
+		setSelect2Value(null);
+		setCorrelationData((store) => setCorrelationCondition(store, ''));
+		setCorrelationData((store) => setSelectedFields(store, '', '', true));
+		setCorrelationData((store) => setActiveCorrelation(store, activeCorrelation));
+	}, [correlationId, correlations]);
 
 	useEffect(() => {
 		if (currentStream && streamNames.length > 0 && Object.keys(fields).includes(currentStream)) {
@@ -162,21 +177,11 @@ const Correlation = () => {
 		} else {
 			getFetchStreamData();
 		}
-	}, [currentOffset]);
-
-	useEffect(() => {
-		if (isCorrelatedData) {
-			refetchCount();
-			getCorrelationData();
-		} else {
-			getFetchStreamData();
-		}
-	}, [timeRange]);
+	}, [currentOffset, timeRange]);
 
 	useEffect(() => {
 		updateCorrelationCondition();
 		if (activeCorrelation && correlationCondition && isSavedCorrelation) {
-			setCorrelationData((store) => setIsCorrelatedFlag(store, true));
 			refetchCount();
 			getCorrelationData();
 		}
@@ -196,7 +201,6 @@ const Correlation = () => {
 			const condition = `"${streamNames[0]}".${select1Value} = "${streamNames[1]}".${select2Value}`;
 			setAppStore((store) => changeStream(store, 'correlatedStream'));
 			setCorrelationData((store) => setCorrelationCondition(store, condition));
-			setIsCorrelationEnabled(true);
 		}
 	};
 
@@ -488,8 +492,8 @@ const Correlation = () => {
 							<SavedCorrelationsButton />
 							<ViewToggle />
 
-							{isCorrelatedData && (
-								<Stack style={{ flexDirection: 'row' }} gap={8}>
+							{isCorrelationEnabled && (
+								<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={8}>
 									<Pill
 										withRemoveButton
 										onRemove={() => {
