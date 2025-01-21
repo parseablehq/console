@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Loader, Modal, NumberInput, Stack, TextInput } from '@mantine/core';
+import { Box, Button, Divider, Group, Loader, Modal, NumberInput, px, Stack, TextInput } from '@mantine/core';
 import classes from '../../styles/Management.module.css';
 import { Text } from '@mantine/core';
 import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
@@ -6,13 +6,16 @@ import { useForm } from '@mantine/form';
 import _ from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useStreamStore } from '../../providers/StreamProvider';
-import { IconCheck, IconTrash, IconX } from '@tabler/icons-react';
+import { IconCheck, IconX, IconReload } from '@tabler/icons-react';
 import { sanitizeBytes, convertGibToBytes } from '@/utils/formatBytes';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 import ErrorView from './ErrorView';
 import RestrictedView from '@/components/Misc/RestrictedView';
+import IconButton from '@/components/Button/IconButton';
 
 const { formatDateWithTimezone } = timeRangeUtils;
+
+const renderRefreshIcon = () => <IconReload size={px('1rem')} stroke={1.5} />;
 
 const Header = () => {
 	return (
@@ -168,6 +171,7 @@ const DeleteHotTierModal = (props: {
 
 const HotTierConfig = (props: {
 	updateHotTierInfo: ({ size }: { size: string }) => void;
+	refetchHotTierInfo: () => void;
 	deleteHotTierInfo: ({ onSuccess }: { onSuccess: () => void }) => void;
 	isDeleting: boolean;
 	isUpdating: boolean;
@@ -228,21 +232,23 @@ const HotTierConfig = (props: {
 			/>
 			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between' }} gap={8}>
 				<Text className={classes.fieldTitle}>Hot Tier Storage Size</Text>
-				{!hotTierNotSet && streamType === 'UserDefined' ? (
-					<IconTrash onClick={openDeleteModal} stroke={1.2} size="1.2rem" className={classes.deleteIcon} />
+				{!hotTierNotSet ? (
+					<Group style={{ justifyContent: 'end' }}>
+						<IconButton
+							size={38}
+							renderIcon={renderRefreshIcon}
+							onClick={props.refetchHotTierInfo}
+							tooltipLabel="Refresh now"
+						/>
+					</Group>
 				) : null}
 			</Stack>
-			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between', height: '3.8rem' }}>
-				<Stack gap={4} style={{ ...(hotTierNotSet ? { display: 'none' } : {}) }}>
-					<Text className={classes.fieldDescription}>Oldest Record:</Text>
-					<Text className={classes.fieldDescription}>
-						{_.isEmpty(oldestEntry) ? 'No Entries Stored' : formatDateWithTimezone(oldestEntry)}
-					</Text>
-				</Stack>
+			<Stack style={{ flexDirection: 'row', height: '6.8rem' }}>
 				<Stack style={{ width: hotTierNotSet ? '100%' : '50%' }} gap={isDirty || hotTierNotSet ? 16 : 4}>
-					<Stack style={{}} gap={12}>
+					<Stack gap={12}>
 						{streamType === 'UserDefined' ? (
 							<NumberInput
+								w={hotTierNotSet ? '100%' : '50%'}
 								classNames={{ label: classes.fieldDescription }}
 								placeholder="Size in GiB"
 								key="size"
@@ -257,7 +263,7 @@ const HotTierConfig = (props: {
 						) : null}
 						<Text
 							className={classes.fieldDescription}
-							ta="end"
+							ta="start"
 							style={{ ...(isDirty || hotTierNotSet ? { display: 'none' } : {}) }}>
 							{humanizedUsedSize} used | {humanizedAvailableSize} available
 						</Text>
@@ -265,7 +271,7 @@ const HotTierConfig = (props: {
 					<Stack
 						style={{
 							flexDirection: 'row',
-							justifyContent: 'flex-end',
+							justifyContent: 'flex-start',
 							...(!isDirty || hotTierNotSet ? { display: 'none' } : {}),
 						}}
 						gap={12}>
@@ -289,6 +295,18 @@ const HotTierConfig = (props: {
 						</Stack>
 						{props.isUpdating && <Loader size="sm" />}
 					</Stack>
+
+					{!hotTierNotSet && streamType === 'UserDefined' ? (
+						<Stack
+							style={{ alignItems: 'flex-start', paddingTop: '0.8rem', ...(hotTierNotSet ? { display: 'none' } : {}) }}>
+							<Box>
+								<Button variant="outline" onClick={openDeleteModal}>
+									Delete
+								</Button>
+							</Box>
+						</Stack>
+					) : null}
+
 					<Stack style={{ alignItems: 'flex-end', ...(!hotTierNotSet ? { display: 'none' } : {}) }}>
 						<Box>
 							<Button onClick={onUpdate} disabled={localSizeValue <= 0} loading={props.isUpdating}>
@@ -296,6 +314,15 @@ const HotTierConfig = (props: {
 							</Button>
 						</Box>
 					</Stack>
+				</Stack>
+				<Divider orientation="vertical" size={2} style={{ ...(hotTierNotSet ? { display: 'none' } : {}) }} />
+				<Stack
+					gap={4}
+					style={{ ...(hotTierNotSet ? { display: 'none' } : { display: 'flex', justifyContent: 'flex-start' }) }}>
+					<Text style={{ fontSize: '11.2px' }}>Oldest Record:</Text>
+					<Text className={classes.fieldDescription}>
+						{_.isEmpty(oldestEntry) ? 'No Entries Stored' : formatDateWithTimezone(oldestEntry)}
+					</Text>
 				</Stack>
 			</Stack>
 		</Stack>
@@ -310,6 +337,7 @@ const Settings = (props: {
 	isLoading: boolean;
 	updateRetentionConfig: ({ config }: { config: any }) => void;
 	updateHotTierInfo: ({ size }: { size: string }) => void;
+	refetchHotTierInfo: () => void;
 	deleteHotTierInfo: ({ onSuccess }: { onSuccess: () => void }) => void;
 	isDeleting: boolean;
 	isUpdating: boolean;
@@ -333,6 +361,7 @@ const Settings = (props: {
 						) : (
 							<>
 								<HotTierConfig
+									refetchHotTierInfo={props.refetchHotTierInfo}
 									updateHotTierInfo={props.updateHotTierInfo}
 									deleteHotTierInfo={props.deleteHotTierInfo}
 									isDeleting={props.isDeleting}

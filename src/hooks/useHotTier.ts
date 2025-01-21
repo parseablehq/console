@@ -63,6 +63,7 @@ export const useHotTier = (streamName: string, hasSettingsAccess: boolean) => {
 	return {
 		getHotTierInfoError,
 		getHotTierInfoLoading,
+		refetchHotTierInfo,
 		updateHotTier,
 		deleteHotTier,
 		isDeleting,
