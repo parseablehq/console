@@ -232,14 +232,16 @@ const HotTierConfig = (props: {
 			/>
 			<Stack style={{ flexDirection: 'row', justifyContent: 'space-between' }} gap={8}>
 				<Text className={classes.fieldTitle}>Hot Tier Storage Size</Text>
-				<Group style={{ justifyContent: 'end' }}>
-					<IconButton
-						size={38}
-						renderIcon={renderRefreshIcon}
-						onClick={props.refetchHotTierInfo}
-						tooltipLabel="Refresh now"
-					/>
-				</Group>
+				{!hotTierNotSet ? (
+					<Group style={{ justifyContent: 'end' }}>
+						<IconButton
+							size={38}
+							renderIcon={renderRefreshIcon}
+							onClick={props.refetchHotTierInfo}
+							tooltipLabel="Refresh now"
+						/>
+					</Group>
+				) : null}
 			</Stack>
 			<Stack style={{ flexDirection: 'row', height: '6.8rem' }}>
 				<Stack style={{ width: hotTierNotSet ? '100%' : '50%' }} gap={isDirty || hotTierNotSet ? 16 : 4}>
