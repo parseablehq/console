@@ -63,12 +63,12 @@ export const useCorrelationQueryLogs = () => {
 					if (fields.length > 0 && !correlationCondition) {
 						return setCorrelationStore((store) => setStreamData(store, currentStream || '', records));
 					} else if (fields.length > 0 && correlationCondition) {
+						setCorrelationStore((store) => setIsCorrelatedFlag(store, true));
 						return setCorrelationStore((store) => setStreamData(store, 'correlatedStream', records));
 					} else {
 						notifyError({ message: `${currentStream} doesn't have any fields` });
 					}
 				});
-				setCorrelationStore((store) => setIsCorrelatedFlag(store, true));
 			},
 			onError: (data: AxiosError) => {
 				setLoading(false);

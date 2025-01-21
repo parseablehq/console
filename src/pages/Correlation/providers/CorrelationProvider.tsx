@@ -26,6 +26,7 @@ type ReducerOutput = {
 	tableOpts?: any;
 	selectedFields?: any;
 	isCorrelatedData?: boolean;
+	rawData?: any;
 };
 
 type CorrelationStore = {
@@ -51,6 +52,8 @@ type CorrelationStore = {
 	isSavedCorrelationsModalOpen: boolean;
 	isSaveCorrelationModalOpen: boolean;
 	viewMode: ViewMode;
+	filteredData: Log[];
+	rawData: Log[];
 	tableOpts: {
 		disabledColumns: string[];
 		wrapDisabledColumns: string[];
@@ -97,8 +100,8 @@ type CorrelationStoreReducers = {
 	setTargetPage: (store: CorrelationStore, target: number | undefined) => ReducerOutput;
 	setPerPage: (store: CorrelationStore, perPage: number) => ReducerOutput;
 	onToggleView: (store: CorrelationStore, viewMode: 'json' | 'table') => ReducerOutput;
-	// applyJqSearch: (store: CorrelationStore, jqFilteredData: any[]) => ReducerOutput;
-	// applyInstantSearch: (store: CorrelationStore) => ReducerOutput;
+	applyJqSearch: (store: CorrelationStore, jqFilteredData: any[]) => ReducerOutput;
+	applyInstantSearch: (store: CorrelationStore) => ReducerOutput;
 	setInstantSearchValue: (store: CorrelationStore, value: string) => ReducerOutput;
 };
 
@@ -115,6 +118,8 @@ const initialState: CorrelationStore = {
 	activeCorrelation: null,
 	isSavedCorrelationsModalOpen: false,
 	isSaveCorrelationModalOpen: false,
+	filteredData: [],
+	rawData: [],
 	viewMode: 'json',
 	tableOpts: {
 		disabledColumns: [],
@@ -289,48 +294,47 @@ const searchAndSortData = (opts: { searchValue: string }, data: Log[]) => {
 };
 
 // Reducer Functions
+const applyJqSearch = (store: CorrelationStore, jqFilteredData: any[]) => {
+	const { tableOpts } = store;
+	const currentPage = 1;
+	const newPageSlice = getPageSlice(currentPage, tableOpts.perPage, jqFilteredData);
 
-// const applyJqSearch = (store: CorrelationStore, jqFilteredData: any[]) => {
-// 	const { data, tableOpts } = store;
-// 	const currentPage = 1;
-// 	const newPageSlice = getPageSlice(currentPage, tableOpts.perPage, jqFilteredData);
+	return {
+		tableOpts: {
+			...tableOpts,
+			filters: {},
+			pageData: newPageSlice,
+			currentPage,
+			totalPages: getTotalPages(jqFilteredData, tableOpts.perPage),
+		},
+	};
+};
 
-// 	return {
-// 		data: {
-// 			...data,
-// 			filteredData: jqFilteredData,
-// 		},
-// 		tableOpts: {
-// 			...tableOpts,
-// 			filters: {},
-// 			pageData: newPageSlice,
-// 			currentPage,
-// 			totalPages: getTotalPages(jqFilteredData, tableOpts.perPage),
-// 		},
-// 	};
-// };
+const applyInstantSearch = (store: CorrelationStore) => {
+	const { tableOpts, rawData, selectedFields, streamData } = store;
+	const { instantSearchValue: searchValue, perPage } = tableOpts;
+	const filteredData = searchAndSortData({ searchValue }, rawData);
+	const currentPage = 1;
+	const newPageSlice = searchValue
+		? getPageSlice(currentPage, tableOpts.perPage, filteredData)
+		: generatePaginatedPageData(store, selectedFields, currentPage, perPage);
 
-// const applyInstantSearch = (store: CorrelationStore) => {
-// 	const { data, tableOpts } = store;
-// 	const { instantSearchValue: searchValue } = tableOpts;
-// 	const filteredData = searchAndSortData({ searchValue }, data.rawData);
-// 	const currentPage = 1;
-// 	const newPageSlice = getPageSlice(currentPage, tableOpts.perPage, filteredData);
-
-// 	return {
-// 		data: {
-// 			...data,
-// 			filteredData,
-// 		},
-// 		tableOpts: {
-// 			...tableOpts,
-// 			filters: {},
-// 			pageData: newPageSlice,
-// 			currentPage,
-// 			totalPages: getTotalPages(filteredData, tableOpts.perPage),
-// 		},
-// 	};
-// };
+	const totalPages = Math.max(
+		...Object.values(streamData).map((stream) =>
+			_.isEmpty(stream?.logData) ? 0 : Math.ceil(_.size(stream?.logData) / perPage),
+		),
+	);
+	return {
+		tableOpts: {
+			...tableOpts,
+			filters: {},
+			pageData: newPageSlice,
+			currentPage,
+			totalPages: searchValue ? getTotalPages(filteredData, tableOpts.perPage) : totalPages,
+		},
+		filteredData: newPageSlice,
+	};
+};
 
 const cleanCorrelationStore = (store: CorrelationStore) => {
 	return {
@@ -424,6 +428,7 @@ const setSelectedFields = (
 	return {
 		...store,
 		selectedFields: updatedSelectedFields,
+		rawData: updatedPageData,
 		tableOpts: {
 			...store.tableOpts,
 			pageData: updatedPageData || [],
@@ -748,8 +753,8 @@ const correlationStoreReducers: CorrelationStoreReducers = {
 	setTargetPage,
 	setPerPage,
 	onToggleView,
-	// applyJqSearch,
-	// applyInstantSearch,
+	applyJqSearch,
+	applyInstantSearch,
 	setInstantSearchValue,
 };
 

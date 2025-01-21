@@ -168,10 +168,6 @@ const Correlation = () => {
 	}, [currentStream, fields]);
 
 	useEffect(() => {
-		getFetchStreamData();
-	}, [isCorrelatedData]);
-
-	useEffect(() => {
 		if (isCorrelatedData) {
 			getCorrelationData();
 		} else {
@@ -274,6 +270,8 @@ const Correlation = () => {
 						const totalStreams = Object.entries(fields).length;
 						const heightPercentage = totalStreams === 1 ? '50%' : `${100 / totalStreams}%`;
 
+						const isLoading = loadingState || schemaLoading || streamsLoading || multipleSchemasLoading;
+						if (!fieldsIter) return;
 						return (
 							<div
 								key={stream}
@@ -303,7 +301,7 @@ const Correlation = () => {
 										}}
 									/>
 								</div>
-								{loadingState || schemaLoading || streamsLoading || multipleSchemasLoading ? (
+								{isLoading ? (
 									<Stack style={{ padding: '0.5rem 0.7rem' }}>
 										{Array.from({ length: 8 }).map((_, index) => (
 											<Skeleton key={index} height="24px" />
@@ -492,7 +490,7 @@ const Correlation = () => {
 							<SavedCorrelationsButton />
 							<ViewToggle />
 
-							{isCorrelationEnabled && (
+							{correlationCondition && (
 								<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={8}>
 									<Pill
 										withRemoveButton

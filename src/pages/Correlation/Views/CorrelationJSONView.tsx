@@ -1,4 +1,4 @@
-import { Box, Stack } from '@mantine/core';
+import { Box, Button, Loader, Stack, TextInput, Text } from '@mantine/core';
 import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import classes from '../../Stream/styles/JSONView.module.css';
 import EmptyBox from '@/components/Empty';
@@ -10,12 +10,14 @@ import {
 } from '@/constants/theme';
 import { Log } from '@/@types/parseable/api/query';
 import _ from 'lodash';
-import { IconCheck, IconCopy, IconDotsVertical } from '@tabler/icons-react';
+import { IconCheck, IconCopy, IconDotsVertical, IconSearch } from '@tabler/icons-react';
 import { copyTextToClipboard } from '@/utils';
 import timeRangeUtils from '@/utils/timeRangeUtils';
-import { useCorrelationStore } from '../providers/CorrelationProvider';
+import { correlationStoreReducers, useCorrelationStore } from '../providers/CorrelationProvider';
 import { ErrorView, LoadingView } from '@/pages/Stream/Views/Explore/LoadingViews';
 import { formatLogTs, isJqSearch } from '@/pages/Stream/providers/LogsProvider';
+import jqSearch from '@/utils/jqSearch';
+import { useHotkeys } from '@mantine/hooks';
 
 type ContextMenuState = {
 	visible: boolean;
@@ -24,7 +26,7 @@ type ContextMenuState = {
 	row: Log | null;
 };
 
-// const { setInstantSearchValue, applyInstantSearch, applyJqSearch } = correlationStoreReducers;
+const { setInstantSearchValue, applyInstantSearch, applyJqSearch } = correlationStoreReducers;
 
 const Item = (props: { header: string | null; value: string; highlight: boolean }) => {
 	return (
@@ -171,105 +173,104 @@ const JsonRows = (props: { isSearching: boolean; setContextMenu: any }) => {
 	);
 };
 
-// const Toolbar = ({
-// 	isSearching,
-// 	setSearching,
-// }: {
-// 	isSearching: boolean;
-// 	setSearching: React.Dispatch<React.SetStateAction<boolean>>;
-// }) => {
-// 	const [localSearchValue, setLocalSearchValue] = useState<string>('');
-// 	const searchInputRef = useRef<HTMLInputElement>(null);
+const Toolbar = ({
+	isSearching,
+	setSearching,
+}: {
+	isSearching: boolean;
+	setSearching: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+	const [localSearchValue, setLocalSearchValue] = useState<string>('');
+	const searchInputRef = useRef<HTMLInputElement>(null);
 
-// 	const [searchValue, setCorrelationData] = useCorrelationStore((store) => store.tableOpts.instantSearchValue);
-// 	const [{ rawData, filteredData }] = useCorrelationStore((store) => store.data);
+	const [searchValue, setCorrelationData] = useCorrelationStore((store) => store.tableOpts.instantSearchValue);
+	const [pageData] = useCorrelationStore((store) => store.tableOpts);
+	const debouncedSearch = useCallback(
+		_.debounce(async (val: string) => {
+			if (val.trim() === '') {
+				setCorrelationData((store) => setInstantSearchValue(store, ''));
+				setCorrelationData(applyInstantSearch);
+			} else {
+				const isJq = isJqSearch(val);
+				if (isJq) {
+					const jqResult = await jqSearch(pageData, val);
+					setCorrelationData((store) => applyJqSearch(store, jqResult));
+				} else {
+					setCorrelationData(applyInstantSearch);
+				}
+			}
+			setSearching(false);
+		}, 500),
+		[pageData],
+	);
 
-// 	const debouncedSearch = useCallback(
-// 		_.debounce(async (val: string) => {
-// 			if (val.trim() === '') {
-// 				setCorrelationData((store) => setInstantSearchValue(store, ''));
-// 				setCorrelationData(applyInstantSearch);
-// 			} else {
-// 				const isJq = isJqSearch(val);
-// 				if (isJq) {
-// 					const jqResult = await jqSearch(rawData, val);
-// 					setCorrelationData((store) => applyJqSearch(store, jqResult));
-// 				} else {
-// 					setCorrelationData(applyInstantSearch);
-// 				}
-// 			}
-// 			setSearching(false);
-// 		}, 500),
-// 		[rawData],
-// 	);
+	const handleSearch = useCallback(() => {
+		if (localSearchValue.trim()) {
+			setSearching(true);
+			setCorrelationData((store) => setInstantSearchValue(store, localSearchValue));
+			debouncedSearch(localSearchValue);
+		}
+	}, [localSearchValue, debouncedSearch, setSearching]);
 
-// 	const handleSearch = useCallback(() => {
-// 		if (localSearchValue.trim()) {
-// 			setSearching(true);
-// 			setCorrelationData((store) => setInstantSearchValue(store, localSearchValue));
-// 			debouncedSearch(localSearchValue);
-// 		}
-// 	}, [localSearchValue, debouncedSearch, setSearching]);
+	const handleInputChange = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			const value = e.target.value;
+			setLocalSearchValue(value);
+			if (value.trim() === '') {
+				debouncedSearch(value);
+			}
+		},
+		[debouncedSearch],
+	);
 
-// 	const handleInputChange = useCallback(
-// 		(e: React.ChangeEvent<HTMLInputElement>) => {
-// 			const value = e.target.value;
-// 			setLocalSearchValue(value);
-// 			if (value.trim() === '') {
-// 				debouncedSearch(value);
-// 			}
-// 		},
-// 		[debouncedSearch],
-// 	);
+	useHotkeys([['mod+K', () => searchInputRef.current?.focus()]]);
 
-// 	useHotkeys([['mod+K', () => searchInputRef.current?.focus()]]);
+	const handleKeyDown = useCallback(
+		(e: React.KeyboardEvent<HTMLInputElement>) => {
+			if (e.key === 'Enter' && !isSearching && localSearchValue.trim()) {
+				handleSearch();
+			}
+		},
+		[isSearching, localSearchValue],
+	);
 
-// 	const handleKeyDown = useCallback(
-// 		(e: React.KeyboardEvent<HTMLInputElement>) => {
-// 			if (e.key === 'Enter' && !isSearching && localSearchValue.trim()) {
-// 				handleSearch();
-// 			}
-// 		},
-// 		[isSearching, localSearchValue],
-// 	);
+	if (_.isEmpty(pageData)) return null;
 
-// 	if (_.isEmpty(rawData)) return null;
+	const inputStyles = {
+		'--input-left-section-width': '2rem',
+		'--input-right-section-width': '6rem',
+		width: '100%',
+	} as React.CSSProperties;
 
-// 	const inputStyles = {
-// 		'--input-left-section-width': '2rem',
-// 		'--input-right-section-width': '6rem',
-// 		width: '100%',
-// 	} as React.CSSProperties;
-
-// 	return (
-// 		<div className={classes.headerWrapper}>
-// 			<TextInput
-// 				leftSection={isSearching ? <Loader size="sm" /> : <IconSearch stroke={2.5} size="0.9rem" />}
-// 				placeholder="Search loaded data with text or jq. For jq input try `jq .[]`"
-// 				value={localSearchValue}
-// 				onChange={handleInputChange}
-// 				onKeyDown={handleKeyDown}
-// 				ref={searchInputRef}
-// 				classNames={{ input: classes.inputField }}
-// 				style={inputStyles}
-// 				rightSection={
-// 					searchValue && !isSearching ? (
-// 						<Text style={{ fontSize: '0.7rem', textAlign: 'end' }} lineClamp={1}>
-// 							{filteredData.length} Matches
-// 						</Text>
-// 					) : null
-// 				}
-// 			/>
-// 			<Button
-// 				onClick={handleSearch}
-// 				disabled={!localSearchValue.trim() || isSearching}
-// 				style={{ width: '10%' }}
-// 				leftSection={<IconSearch stroke={2.5} size="0.9rem" />}>
-// 				Search
-// 			</Button>
-// 		</div>
-// 	);
-// };
+	return (
+		<div className={classes.headerWrapper}>
+			<TextInput
+				leftSection={isSearching ? <Loader size="sm" /> : <IconSearch stroke={2.5} size="0.9rem" />}
+				placeholder="Search loaded data with text or jq. For jq input try `jq .[]`"
+				value={localSearchValue}
+				onChange={handleInputChange}
+				onKeyDown={handleKeyDown}
+				ref={searchInputRef}
+				classNames={{ input: classes.inputField }}
+				style={inputStyles}
+				rightSection={
+					searchValue && !isSearching ? (
+						<Text style={{ fontSize: '0.7rem', textAlign: 'end' }} lineClamp={1}>
+							Matches
+						</Text>
+					) : null
+				}
+			/>
+			<Button
+				onClick={handleSearch}
+				disabled={!localSearchValue.trim() || isSearching}
+				style={{ width: '10%' }}
+				leftSection={<IconSearch stroke={2.5} size="0.9rem" />}>
+				Search
+			</Button>
+		</div>
+	);
+};
 
 const TableContainer = (props: { children: ReactNode }) => {
 	return <Box className={classes.container}>{props.children}</Box>;
@@ -286,10 +287,12 @@ const CorrleationJSONView = (props: { errorMessage: string | null; hasNoData: bo
 
 	const contextMenuRef = useRef<HTMLDivElement>(null);
 	const { errorMessage, hasNoData, showTable } = props;
-	const [isSearching] = useState(false);
+	const [isSearching, setSearching] = useState(false);
 	const primaryHeaderHeight = !maximized
 		? PRIMARY_HEADER_HEIGHT + STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT + STREAM_SECONDARY_TOOLBAR_HRIGHT
 		: 0;
+
+	// const showTableOrLoader = logsLoading || streamsLoading || showTable || !errorMessage || !hasNoData;
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -311,7 +314,7 @@ const CorrleationJSONView = (props: { errorMessage: string | null; hasNoData: bo
 
 	return (
 		<TableContainer>
-			{/* <Toolbar isSearching={isSearching} setSearching={setSearching} /> */}
+			<Toolbar isSearching={isSearching} setSearching={setSearching} />
 			{!errorMessage ? (
 				showTable ? (
 					<Box className={classes.innerContainer} style={{ maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
