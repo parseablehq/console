@@ -2,7 +2,7 @@ import { Button, rem } from '@mantine/core';
 import { correlationStoreReducers, useCorrelationStore } from '../providers/CorrelationProvider';
 import { useCallback } from 'react';
 import { IconTable } from '@tabler/icons-react';
-import classes from '../styles/Correlation.module.css';
+import classes from '../styles/SavedCorrelationsBtn.module.css';
 
 const { onToggleView } = correlationStoreReducers;
 
@@ -19,11 +19,11 @@ const ViewToggle = () => {
 	const isActive = viewMode === 'table';
 	return (
 		<Button
-			className={classes.savedFiltersBtn}
+			className={classes.savedCorrelationsBtn}
 			h="100%"
 			style={{
 				backgroundColor: isActive ? '#535BEB' : 'white',
-				color: isActive ? 'white' : 'black',
+				color: isActive ? 'white' : '#495057',
 			}}
 			onClick={onToggle}
 			leftSection={<IconTable {...iconProps} />}>

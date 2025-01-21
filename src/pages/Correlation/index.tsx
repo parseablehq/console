@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useDocumentTitle } from '@mantine/hooks';
-import { Stack, Box, TextInput, Text, Select, Button, Center, Skeleton, Stepper, Pill } from '@mantine/core';
-import { IconTrashX } from '@tabler/icons-react';
+import { Stack, Box, TextInput, Text, Select, Button, Center, Stepper, Badge } from '@mantine/core';
+import { IconTrashX, IconX } from '@tabler/icons-react';
 import {
 	PRIMARY_HEADER_HEIGHT,
 	STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT,
@@ -266,12 +266,12 @@ const Correlation = () => {
 				/>
 				<div className={classes.streamBox}>
 					{Object.entries(fields).map(([stream, fieldsIter]: [any, any]) => {
+						if (!fieldsIter) return;
 						const filteredFields = filterFields(fieldsIter);
 						const totalStreams = Object.entries(fields).length;
 						const heightPercentage = totalStreams === 1 ? '50%' : `${100 / totalStreams}%`;
 
 						const isLoading = loadingState || schemaLoading || streamsLoading || multipleSchemasLoading;
-						if (!fieldsIter) return;
 						return (
 							<div
 								key={stream}
@@ -301,13 +301,7 @@ const Correlation = () => {
 										}}
 									/>
 								</div>
-								{isLoading ? (
-									<Stack style={{ padding: '0.5rem 0.7rem' }}>
-										{Array.from({ length: 8 }).map((_, index) => (
-											<Skeleton key={index} height="24px" />
-										))}
-									</Stack>
-								) : filteredFields.length > 0 ? (
+								{filteredFields.length > 0 ? (
 									<div className={classes.fieldsWrapper}>
 										{filteredFields.map((field: string) => {
 											const isSelected = selectedFields[stream]?.includes(field);
@@ -322,6 +316,7 @@ const Correlation = () => {
 													dataType={dataType}
 													isSelected={isSelected}
 													onClick={() => {
+														if (isLoading) return;
 														if (isCorrelatedData) {
 															setIsCorrelationEnabled(true);
 															setCorrelationData((store) => setIsCorrelatedFlag(store, false));
@@ -382,7 +377,7 @@ const Correlation = () => {
 				className={classes.selectionWrapper}>
 				<Stack className={classes.topSectionWrapper}>
 					<Stack>
-						<div className={classes.fieldsJoinsWrapper} style={{ height: STREAM_PRIMARY_TOOLBAR_HEIGHT }}>
+						<div className={classes.fieldsJoinsWrapper}>
 							<Text
 								style={{
 									width: '35px',
@@ -469,6 +464,68 @@ const Correlation = () => {
 										onChange={(value) => handleFieldChange(value, false)}
 									/>
 								</div>
+								<div style={{ height: '100%', width: '20%', display: 'flex' }}>
+									{isCorrelatedData && (
+										<Badge
+											variant="outline"
+											color="#535BED"
+											h={'100%'}
+											size="lg"
+											styles={{
+												root: {
+													textTransform: 'none',
+												},
+											}}
+											rightSection={
+												<IconX
+													style={{ cursor: 'pointer' }}
+													size={12}
+													color="#535BED"
+													onClick={() => {
+														setSelect1Value(null);
+														setSelect2Value(null);
+														setCorrelationData((store) => setCorrelationCondition(store, ''));
+														setCorrelationData((store) => setIsCorrelatedFlag(store, false));
+														setCorrelationData((store) => setCorrelationId(store, ''));
+														setCorrelationData((store) => setActiveCorrelation(store, null));
+														setIsCorrelationEnabled(false);
+														setAppStore(syncTimeRange);
+													}}
+												/>
+											}>
+											Join Applied
+										</Badge>
+									)}
+								</div>
+								<div style={{ display: 'flex', gap: '5px', alignItems: 'center', height: '25px' }}>
+									<Button
+										className={classes.correlateBtn}
+										variant="outline"
+										disabled={!isCorrelatedData}
+										onClick={(e) => {
+											openSaveCorrelationModal(e);
+										}}>
+										Save
+									</Button>
+									<Button
+										className={classes.correlateBtn}
+										disabled={!isCorrelationEnabled || Object.keys(selectedFields).length === 0}
+										variant="filled"
+										onClick={() => {
+											setCorrelationData((store) => setIsCorrelatedFlag(store, true));
+											setIsCorrelationEnabled(false);
+											refetchCount();
+											getCorrelationData();
+										}}>
+										Correlate
+									</Button>
+									<Button
+										className={classes.clearBtn}
+										onClick={clearQuery}
+										disabled={streamNames.length == 0 || Object.keys(selectedFields).length === 0}>
+										Clear
+									</Button>
+								</div>
 							</div>
 						</div>
 					</Stack>
@@ -481,64 +538,17 @@ const Correlation = () => {
 						}}>
 						{/* <CorrelationFilters /> */}
 						<div className={classes.logTableControlWrapper}>
-							<TimeRange />
-							<RefreshInterval />
-							<RefreshNow />
-							<ShareButton />
-							<MaximizeButton />
-
-							<SavedCorrelationsButton />
-							<ViewToggle />
-
-							{correlationCondition && (
-								<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={8}>
-									<Pill
-										withRemoveButton
-										onRemove={() => {
-											setSelect1Value(null);
-											setSelect2Value(null);
-											setCorrelationData((store) => setCorrelationCondition(store, ''));
-											setCorrelationData((store) => setIsCorrelatedFlag(store, false));
-											setCorrelationData((store) => setCorrelationId(store, ''));
-											setCorrelationData((store) => setActiveCorrelation(store, null));
-											setIsCorrelationEnabled(false);
-											setAppStore(syncTimeRange);
-										}}>
-										<Pill>{correlationCondition?.split('=')[0]?.replace(/"/g, '').trim()}</Pill>
-										<Pill className={classes.childCombinatorPill}>=</Pill>
-										<Pill>{correlationCondition?.split('=')[1]?.replace(/"/g, '').trim()}</Pill>
-									</Pill>
-								</Stack>
-							)}
-						</div>
-						<div style={{ display: 'flex', gap: '5px', alignItems: 'center', height: '25px' }}>
-							<Button
-								className={classes.correlateBtn}
-								variant="outline"
-								disabled={!isCorrelatedData}
-								onClick={(e) => {
-									openSaveCorrelationModal(e);
-								}}>
-								Save
-							</Button>
-							<Button
-								className={classes.correlateBtn}
-								disabled={!isCorrelationEnabled || Object.keys(selectedFields).length === 0}
-								variant="filled"
-								onClick={() => {
-									setCorrelationData((store) => setIsCorrelatedFlag(store, true));
-									setIsCorrelationEnabled(false);
-									refetchCount();
-									getCorrelationData();
-								}}>
-								Correlate
-							</Button>
-							<Button
-								className={classes.clearBtn}
-								onClick={clearQuery}
-								disabled={streamNames.length == 0 || Object.keys(selectedFields).length === 0}>
-								Clear
-							</Button>
+							<div style={{ display: 'flex', gap: '10px' }}>
+								<SavedCorrelationsButton />
+								<TimeRange />
+								<RefreshInterval />
+								<RefreshNow />
+							</div>
+							<div style={{ display: 'flex', gap: '10px' }}>
+								<ViewToggle />
+								<ShareButton />
+								<MaximizeButton />
+							</div>
 						</div>
 					</div>
 				</Stack>
