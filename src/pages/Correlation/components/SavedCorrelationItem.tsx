@@ -54,8 +54,8 @@ const SelectedFields: FC<{ tableConfigs: TableConfig[] }> = ({ tableConfigs }) =
 		<div>
 			<div style={{ fontSize: '11px' }}>Selected Fields: </div>
 			<div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', marginTop: '5px' }}>
-				{fields.map((field) => (
-					<Code>{field.content}</Code>
+				{fields.map((field, index) => (
+					<Code key={index}>{field.content}</Code>
 				))}
 			</div>
 		</div>

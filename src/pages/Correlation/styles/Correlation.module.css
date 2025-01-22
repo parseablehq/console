@@ -262,3 +262,11 @@
 	text-transform: uppercase;
 	font-weight: 700;
 }
+
+.saveCorrelationIcon {
+	background-color: white;
+	border: 1px solid #e0e0e0;
+	&:hover {
+		background-color: #e0e0e0;
+	}
+}

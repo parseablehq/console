@@ -433,10 +433,12 @@ const setSelectedFields = (
 			...store.tableOpts,
 			pageData: updatedPageData || [],
 			currentPage,
-			totalPages: getTotalPages(
-				filterAndSortData(store.tableOpts, store.streamData[streamName]?.logData || []),
-				store.tableOpts.perPage,
-			),
+			totalPages: store.isCorrelatedData
+				? store.tableOpts.totalPages
+				: getTotalPages(
+						filterAndSortData(store.tableOpts, store.streamData[streamName]?.logData || []),
+						store.tableOpts.perPage,
+				  ),
 		},
 	};
 };
