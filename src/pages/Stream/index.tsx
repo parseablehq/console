@@ -17,7 +17,6 @@ import { Text } from '@mantine/core';
 import { RetryBtn } from '@/components/Button/Retry';
 import LogsView from './Views/Explore/LogsView';
 import { useGetStreamSchema } from '@/hooks/useGetLogStreamSchema';
-import { useGetStreamInfo } from '@/hooks/useGetStreamInfo';
 import useParamsController from './hooks/useParamsController';
 
 const { streamChangeCleanup, toggleSideBar } = streamStoreReducers;
@@ -45,10 +44,6 @@ const Stream: FC = () => {
 	const [maximized] = useAppStore((store) => store.maximized);
 	const [instanceConfig] = useAppStore((store) => store.instanceConfig);
 	const [, setStreamStore] = useStreamStore((store) => store.sideBarOpen);
-	const { getStreamInfoRefetch, getStreamInfoLoading, getStreamInfoRefetching } = useGetStreamInfo(
-		currentStream || '',
-		currentStream !== null,
-	);
 
 	useHotkeys([['mod+/', () => setStreamStore((store) => toggleSideBar(store))]]);
 
@@ -62,7 +57,6 @@ const Stream: FC = () => {
 
 	const fetchSchema = useCallback(() => {
 		setStreamStore(streamChangeCleanup);
-		getStreamInfoRefetch();
 		refetchSchema();
 	}, [currentStream]);
 
@@ -71,7 +65,6 @@ const Stream: FC = () => {
 			if (!_.isEmpty(currentStream)) {
 				if (view === 'explore') {
 					setStreamStore(streamChangeCleanup);
-					getStreamInfoRefetch();
 				} else {
 					fetchSchema();
 				}
@@ -85,9 +78,7 @@ const Stream: FC = () => {
 	if (!_.includes(STREAM_VIEWS, view)) return null;
 
 	const isSchemaFetching = isSchemaRefetching || isSchemaLoading;
-	const isInfoLoading =
-		(!isStoreSynced || getStreamInfoLoading || getStreamInfoRefetching || instanceConfig === null) &&
-		view === 'explore';
+	const isInfoLoading = (!isStoreSynced || instanceConfig === null) && view === 'explore';
 	return (
 		<Box
 			style={{
