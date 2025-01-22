@@ -18,7 +18,7 @@ export const useGetStreamInfo = (currentStream: string, initialFetch: boolean) =
 	} = useQuery(['stream-info', currentStream], () => getLogStreamInfo(currentStream), {
 		retry: false,
 		refetchOnWindowFocus: false,
-		refetchOnMount: true,
+		refetchOnMount: false,
 		enabled: initialFetch,
 		onSuccess: (data) => {
 			setStreamStore((store) => setStreamInfo(store, data));
