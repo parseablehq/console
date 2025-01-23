@@ -10,7 +10,6 @@ import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/Ap
 import { LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 import _ from 'lodash';
 import timeRangeUtils from '@/utils/timeRangeUtils';
-import { useStreamStore } from '../providers/StreamProvider';
 
 const { setTimeRange } = appStoreReducers;
 const { makeTimeRangeLabel } = timeRangeUtils;
@@ -163,15 +162,13 @@ const EventTimeLineGraph = () => {
 	const [{ custSearchQuery }, setLogStore] = useLogsStore((store) => store.custQuerySearchState);
 	const [{ interval, startTime, endTime }] = useAppStore((store) => store.timeRange);
 	const [localStream, setLocalStream] = useState<string | null>('');
-	const [{ info }] = useStreamStore((store) => store);
-	const firstEventAt = 'first-event-at' in info ? info['first-event-at'] : undefined;
 
 	useEffect(() => {
 		setLocalStream(currentStream);
 	}, [currentStream]);
 
 	useEffect(() => {
-		if (!localStream || localStream.length === 0 || !firstEventAt) return;
+		if (!localStream || localStream.length === 0) return;
 
 		const totalMinutes = interval / (1000 * 60);
 		const numBins = Math.trunc(totalMinutes < 10 ? totalMinutes : totalMinutes < 60 ? 10 : 60);
@@ -189,15 +186,13 @@ const EventTimeLineGraph = () => {
 		dayjs(startTime).startOf('minute').toISOString(),
 		dayjs(endTime).startOf('minute').toISOString(),
 		custSearchQuery,
-		firstEventAt,
 	]);
 
 	const isLoading = fetchGraphDataMutation.isLoading;
 	const avgEventCount = useMemo(() => calcAverage(fetchGraphDataMutation?.data), [fetchGraphDataMutation?.data]);
 	const graphData = useMemo(() => {
-		if (!firstEventAt) return null;
 		return parseGraphData(fetchGraphDataMutation?.data, avgEventCount, interval);
-	}, [fetchGraphDataMutation?.data, interval, firstEventAt]);
+	}, [fetchGraphDataMutation?.data, interval]);
 	const hasData = Array.isArray(graphData) && graphData.length !== 0;
 	const [, setAppStore] = useAppStore((_store) => null);
 	const setTimeRangeFromGraph = useCallback((barValue: any) => {
