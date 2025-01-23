@@ -69,7 +69,7 @@ const RuleView = (props: RuleViewType) => {
 	const getUniqueColValues = useMemo(() => {
 		if (!rule.field) return [];
 		return Array.from(
-			new Set(pageData.filter((item) => item[rule.field] !== null).map((item) => String(item[rule.field]))),
+			new Set(pageData.filter((item) => item[rule.field] != null).map((item) => String(item[rule.field]))),
 		);
 	}, [pageData, rule.field]);
 
