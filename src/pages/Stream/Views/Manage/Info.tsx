@@ -1,4 +1,4 @@
-import { Group, Stack, Text } from '@mantine/core';
+import { Group, Loader, Stack, Text } from '@mantine/core';
 import classes from '../../styles/Management.module.css';
 import { useStreamStore } from '../../providers/StreamProvider';
 import _ from 'lodash';
@@ -6,6 +6,7 @@ import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import UpdateTimePartitionLimit from './UpdateTimePartitionLimit';
 import UpdateCustomPartitionField from './UpdateCustomPartitionField';
 import timeRangeUtils from '@/utils/timeRangeUtils';
+import ErrorView from './ErrorView';
 
 const { formatDateWithTimezone } = timeRangeUtils;
 
@@ -42,7 +43,7 @@ const InfoItem = (props: { title: string; value: string; fullWidth?: boolean }) 
 	);
 };
 
-const InfoData = () => {
+const InfoData = (props: { isLoading: boolean }) => {
 	const [info] = useStreamStore((store) => store.info);
 	const [currentStream] = useAppStore((store) => store.currentStream);
 
@@ -59,33 +60,44 @@ const InfoData = () => {
 
 	return (
 		<Stack style={{ flex: 1 }}>
-			<Stack style={{ flex: 1, padding: '1.5rem', justifyContent: 'space-between' }}>
-				<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-					<InfoItem title="Name" value={currentStream || ''} />
-					<InfoItem title="Created At" value={createdAtWithTz} />
-					<InfoItem title="First Event At" value={firstEventAtWithTz} />
+			{props.isLoading ? (
+				<Stack style={{ flex: 1, width: '100%', alignItems: 'center', justifyContent: 'center' }}>
+					<Stack style={{ alignItems: 'center' }}>
+						<Loader />
+					</Stack>
 				</Stack>
-				<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-					<InfoItem title="Schema Type" value={staticSchemaFlag} />
-					<InfoItem title="Time Partition Field" value={timePartition} />
-					<UpdateTimePartitionLimit timePartition={timePartition} currentStream={currentStream ? currentStream : ''} />
+			) : (
+				<Stack style={{ flex: 1, padding: '1.5rem', justifyContent: 'space-between' }}>
+					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+						<InfoItem title="Name" value={currentStream || ''} />
+						<InfoItem title="Created At" value={createdAtWithTz} />
+						<InfoItem title="First Event At" value={firstEventAtWithTz} />
+					</Stack>
+					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+						<InfoItem title="Schema Type" value={staticSchemaFlag} />
+						<InfoItem title="Time Partition Field" value={timePartition} />
+						<UpdateTimePartitionLimit
+							timePartition={timePartition}
+							currentStream={currentStream ? currentStream : ''}
+						/>
+					</Stack>
+					<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+						<UpdateCustomPartitionField
+							currentStream={currentStream ? currentStream : ''}
+							timePartition={timePartition}
+						/>
+					</Stack>
 				</Stack>
-				<Stack gap={0} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-					<UpdateCustomPartitionField
-						currentStream={currentStream ? currentStream : ''}
-						timePartition={timePartition}
-					/>
-				</Stack>
-			</Stack>
+			)}
 		</Stack>
 	);
 };
 
-const Info = () => {
+const Info = (props: { isLoading: boolean; isError: boolean }) => {
 	return (
 		<Stack className={classes.sectionContainer} gap={0}>
 			<Header />
-			<InfoData />
+			{props.isError ? <ErrorView /> : <InfoData isLoading={props.isLoading} />}
 		</Stack>
 	);
 };
