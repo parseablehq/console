@@ -90,7 +90,12 @@ const Row = (props: {
 
 	return (
 		<Stack
-			style={{ flexDirection: 'row', background: isRowHighlighted ? '#E8EDFE' : 'white' }}
+			style={{
+				flexDirection: 'row',
+				background: isRowHighlighted ? '#E8EDFE' : 'white',
+				paddingLeft: showEllipses ? '5px' : '',
+				gap: showEllipses ? '5px' : '',
+			}}
 			className={classes.rowContainer}
 			gap={0}>
 			{showEllipses && (
