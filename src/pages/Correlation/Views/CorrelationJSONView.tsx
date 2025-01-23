@@ -314,7 +314,7 @@ const CorrleationJSONView = (props: { errorMessage: string | null; hasNoData: bo
 
 	return (
 		<TableContainer>
-			<Toolbar isSearching={isSearching} setSearching={setSearching} />
+			{/* <Toolbar isSearching={isSearching} setSearching={setSearching} /> */}
 			{!errorMessage ? (
 				showTable ? (
 					<Box className={classes.innerContainer} style={{ maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
@@ -322,7 +322,7 @@ const CorrleationJSONView = (props: { errorMessage: string | null; hasNoData: bo
 							className={classes.innerContainer}
 							style={{ display: 'flex', flexDirection: 'row', maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
 							<Stack gap={0} style={{ width: '100%' }}>
-								<Stack style={{ overflowY: 'scroll' }}>
+								<Stack>
 									<JsonRows isSearching={isSearching} setContextMenu={setContextMenu} />
 								</Stack>
 							</Stack>
