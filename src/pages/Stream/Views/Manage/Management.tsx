@@ -44,6 +44,7 @@ const Management = (props: { schemaLoading: boolean }) => {
 						isLoading={isHotTierLoading || isRetentionLoading}
 						updateRetentionConfig={getRetentionConfig.updateLogStreamRetention}
 						updateHotTierInfo={hotTierFetch.updateHotTier}
+						refetchHotTierInfo={hotTierFetch.refetchHotTierInfo}
 						deleteHotTierInfo={hotTierFetch.deleteHotTier}
 						isDeleting={hotTierFetch.isDeleting}
 						isUpdating={hotTierFetch.isUpdating}
