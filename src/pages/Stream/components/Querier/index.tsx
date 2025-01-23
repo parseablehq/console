@@ -107,6 +107,20 @@ const QuerierModal = (props: {
 		}
 	}, [showQueryBuilder]);
 
+	useEffect(() => {
+		const handleKeyPress = (event: { key: string }) => {
+			if (event.key === 'Escape') {
+				onClose();
+			}
+		};
+
+		window.addEventListener('keydown', handleKeyPress);
+
+		return () => {
+			window.removeEventListener('keydown', handleKeyPress);
+		};
+	}, []);
+
 	return (
 		<Modal
 			opened={showQueryBuilder}
