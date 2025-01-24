@@ -1,8 +1,5 @@
-import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { AxiosError, isAxiosError } from 'axios';
-import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
-import { notifyError, notifySuccess } from '@/utils/notification';
-import { useMutation, useQuery } from 'react-query';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import {
 	createLogStream,
 	deleteLogStream,
@@ -10,7 +7,10 @@ import {
 	getLogStreamList,
 	updateLogStream,
 } from '@/api/logStream';
+import { notifyError, notifySuccess } from '@/utils/notification';
+import { useMutation, useQuery } from 'react-query';
 
+import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
 
 type CreateStreamOpts = {
 	streamName: string;
