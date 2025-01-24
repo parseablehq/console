@@ -1,3 +1,19 @@
+import _ from 'lodash';
+import styles from './styles/CreateStreamModal.module.css';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { CreatableSelect } from '@/components/Misc/CreatableSelect';
+import {
+	FC,
+	useCallback,
+	useEffect,
+	useState
+	} from 'react';
+import { GetInputPropsReturnType, UseFormReturnType } from 'node_modules/@mantine/form/lib/types';
+import { IconInfoCircleFilled, IconPlus } from '@tabler/icons-react';
+import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
+import { notifyError } from '@/utils/notification';
+import { useForm } from '@mantine/form';
+import { useLogStream } from '@/hooks/useLogStream';
 import {
 	ActionIcon,
 	Box,
@@ -18,17 +34,7 @@ import {
 	ThemeIcon,
 	Tooltip,
 } from '@mantine/core';
-import { FC, useCallback, useEffect, useState } from 'react';
-import styles from './styles/CreateStreamModal.module.css';
-import { useLogStream } from '@/hooks/useLogStream';
-import { useForm } from '@mantine/form';
-import { IconInfoCircleFilled, IconPlus } from '@tabler/icons-react';
-import _ from 'lodash';
-import { CreatableSelect } from '@/components/Misc/CreatableSelect';
-import { useAppStore, appStoreReducers } from '@/layouts/MainLayout/providers/AppProvider';
-import { GetInputPropsReturnType, UseFormReturnType } from 'node_modules/@mantine/form/lib/types';
-import { notifyError } from '@/utils/notification';
-import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
+
 
 const { toggleCreateStreamModal } = appStoreReducers;
 
@@ -461,9 +467,7 @@ const DetectSchemaSection = (props: { form: StreamFormType }) => {
 		} catch (e) {
 			console.error('Error parsing json', e);
 		}
-		if (!_.isArray(logRecords)) {
-			return notifyError({ message: 'Invalid JSON' });
-		} else if (_.isEmpty(logRecords)) {
+		if (_.isEmpty(logRecords)) {
 			return notifyError({ message: 'No records found' });
 		} else if (_.size(logRecords) > 10) {
 			return notifyError({ message: 'More than 10 records found' });

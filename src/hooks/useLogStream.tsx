@@ -1,15 +1,16 @@
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { AxiosError, isAxiosError } from 'axios';
+import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
+import { notifyError, notifySuccess } from '@/utils/notification';
 import { useMutation, useQuery } from 'react-query';
 import {
-	deleteLogStream,
-	getLogStreamList,
 	createLogStream,
-	updateLogStream,
+	deleteLogStream,
 	detectLogStreamSchema,
+	getLogStreamList,
+	updateLogStream,
 } from '@/api/logStream';
-import { AxiosError, isAxiosError } from 'axios';
-import { notifyError, notifySuccess } from '@/utils/notification';
-import { LogStreamSchemaData } from '@/@types/parseable/api/stream';
-import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+
 
 type CreateStreamOpts = {
 	streamName: string;
@@ -40,7 +41,7 @@ export const useLogStream = () => {
 		isError: detectLogStreamSchemaIsError,
 		isLoading: detectLogStreamSchemaIsLoading,
 	} = useMutation(
-		(data: { sampleLogs: any[]; onSuccess: (data: LogStreamSchemaData) => void }) =>
+		(data: { sampleLogs: Record<string, any>; onSuccess: (data: LogStreamSchemaData) => void }) =>
 			detectLogStreamSchema(data.sampleLogs),
 		{
 			onSuccess: (data, variables) => {
