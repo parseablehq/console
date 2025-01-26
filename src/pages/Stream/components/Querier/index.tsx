@@ -1,19 +1,20 @@
-import { Group, Menu, Modal, Stack, px, Tooltip, Tabs } from '@mantine/core';
-import { IconChevronDown, IconCodeCircle, IconFilter, IconFilterEdit, IconFilterPlus } from '@tabler/icons-react';
-import classes from '../../styles/Querier.module.css';
-import { Text } from '@mantine/core';
 import { FilterQueryBuilder, QueryPills } from './FilterQueryBuilder';
+import { Group, Menu, Modal, Stack, Tabs, Tooltip, px } from '@mantine/core';
+import { IconChevronDown, IconCodeCircle, IconFilter, IconFilterEdit, IconFilterPlus } from '@tabler/icons-react';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { filterStoreReducers, noValueOperators, useFilterStore } from '../../providers/FilterProvider';
+import { logsStoreReducers, useLogsStore } from '../../providers/LogsProvider';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 import { AppliedSQLQuery } from './QueryEditor';
 import QueryCodeEditor from './QueryCodeEditor';
-import { useLogsStore, logsStoreReducers } from '../../providers/LogsProvider';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { filterStoreReducers, noValueOperators, useFilterStore } from '../../providers/FilterProvider';
-import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { useStreamStore } from '../../providers/StreamProvider';
 import SaveFilterModal from './SaveFilterModal';
 import SavedFiltersModal from './SavedFiltersModal';
+import { Text } from '@mantine/core';
 import _ from 'lodash';
+import classes from '../../styles/Querier.module.css';
 import useParamsController from '@/pages/Stream/hooks/useParamsController';
+import { useStreamStore } from '../../providers/StreamProvider';
 
 const { setFields, parseQuery, storeAppliedQuery, resetFilters, toggleSubmitBtn, toggleSaveFiltersModal } =
 	filterStoreReducers;
@@ -275,8 +276,10 @@ const Querier = () => {
 							justifyContent: 'center',
 							padding: '0 1rem',
 						}}>
-						<Text style={{ fontSize: '0.65rem', fontWeight: 600 }}>{getLabel(viewMode)}</Text>
-						<IconChevronDown size={px('1rem')} stroke={1.8} />
+						<Text style={{ fontSize: '0.65rem', fontWeight: 500 }} c="#495057">
+							{getLabel(viewMode)}
+						</Text>
+						<IconChevronDown color="#495057" size={px('1rem')} stroke={1.5} />
 					</Stack>
 				</Menu.Target>
 				<Menu.Dropdown>

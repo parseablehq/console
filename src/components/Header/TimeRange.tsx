@@ -1,17 +1,18 @@
-import useMountedState from '@/hooks/useMountedState';
 import { Box, Button, Divider, Menu, NumberInput, Stack, Text, Tooltip, px } from '@mantine/core';
 import { DatePicker, TimeInput } from '@mantine/dates';
-import { IconCalendarEvent, IconCheck, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
-import dayjs from 'dayjs';
-import type { FC } from 'react';
 import { Fragment, useCallback, useMemo, useRef, useState } from 'react';
-import { FIXED_DURATIONS } from '@/constants/timeConstants';
-import classes from './styles/LogQuery.module.css';
-import { useOuterClick } from '@/hooks/useOuterClick';
-import _ from 'lodash';
-import timeRangeUtils from '@/utils/timeRangeUtils';
+import { IconCalendarEvent, IconCheck, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
 import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
+
+import type { FC } from 'react';
+import { FIXED_DURATIONS } from '@/constants/timeConstants';
+import _ from 'lodash';
+import classes from './styles/LogQuery.module.css';
+import dayjs from 'dayjs';
+import timeRangeUtils from '@/utils/timeRangeUtils';
+import useMountedState from '@/hooks/useMountedState';
+import { useOuterClick } from '@/hooks/useOuterClick';
 
 const { getRelativeStartAndEndDate } = timeRangeUtils;
 const { setTimeRange, setshiftInterval } = appStoreReducers;
@@ -131,7 +132,7 @@ const TimeRange: FC = () => {
 				<Stack className={classes.timeRangeBtnContainer}>
 					<Tooltip label={`${shiftLabelPrefix} Back`}>
 						<Stack className={classes.timeRangeCtrlIcon} onClick={() => shiftTimeRange('left')}>
-							<IconChevronLeft stroke={2} size="1rem" style={{ cursor: 'pointer' }} />
+							<IconChevronLeft color="#495057" stroke={1.5} size="1rem" style={{ cursor: 'pointer' }} />
 						</Stack>
 					</Tooltip>
 					<Stack style={{ flexDirection: 'row', alignItems: 'center' }} gap={0}>
@@ -143,12 +144,12 @@ const TimeRange: FC = () => {
 							</Text>
 						)}
 						<Stack onClick={toggleMenu} px={10} className="calenderIcon">
-							<IconCalendarEvent size={px('1rem')} stroke={1.5} style={{ cursor: 'pointer' }} />
+							<IconCalendarEvent color="#495057" size={px('1rem')} stroke={1.5} style={{ cursor: 'pointer' }} />
 						</Stack>
 					</Stack>
 					<Tooltip label={`${shiftLabelPrefix} Forward`}>
 						<Stack className={classes.timeRangeCtrlIcon} onClick={() => shiftTimeRange('right')}>
-							<IconChevronRight stroke={2} size="1rem" style={{ cursor: 'pointer' }} />
+							<IconChevronRight color="#495057" stroke={1.5} size="1rem" style={{ cursor: 'pointer' }} />
 						</Stack>
 					</Tooltip>
 				</Stack>
