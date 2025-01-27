@@ -379,7 +379,7 @@ const JsonView = (props: {
 						<Box
 							className={classes.innerContainer}
 							style={{ display: 'flex', flexDirection: 'row', maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
-							<Stack gap={0}>
+							<Stack gap={0} style={{ width: '100%' }}>
 								<Stack style={{ overflowY: 'scroll' }}>
 									<JsonRows isSearching={isSearching} setContextMenu={setContextMenu} />
 								</Stack>
