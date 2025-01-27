@@ -1,27 +1,28 @@
 import { Button, Stack, px, rem } from '@mantine/core';
-import IconButton from '@/components/Button/IconButton';
 import { IconFilterHeart, IconMaximize, IconTable, IconTrash } from '@tabler/icons-react';
 import { STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT, STREAM_PRIMARY_TOOLBAR_HEIGHT } from '@/constants/theme';
-import TimeRange from '@/components/Header/TimeRange';
+import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { filterStoreReducers, useFilterStore } from '../providers/FilterProvider';
+import { logsStoreReducers, useLogsStore } from '../providers/LogsProvider';
+import { useCallback, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+
+import { CorrelationIcon } from '@/components/Navbar/components/CorrelationIcon';
+import IconButton from '@/components/Button/IconButton';
+import Querier from './Querier';
 import RefreshInterval from '@/components/Header/RefreshInterval';
 import RefreshNow from '@/components/Header/RefreshNow';
-import Querier from './Querier';
-import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { useCallback, useEffect } from 'react';
-import StreamDropdown from '@/components/Header/StreamDropdown';
-import { notifications } from '@mantine/notifications';
-import { useNavigate, useParams } from 'react-router-dom';
-import _ from 'lodash';
-import StreamingButton from '@/components/Header/StreamingButton';
 import ShareButton from '@/components/Header/ShareButton';
-import { useLogsStore, logsStoreReducers } from '../providers/LogsProvider';
-import { filterStoreReducers, useFilterStore } from '../providers/FilterProvider';
+import StreamDropdown from '@/components/Header/StreamDropdown';
+import StreamingButton from '@/components/Header/StreamingButton';
+import TimeRange from '@/components/Header/TimeRange';
+import _ from 'lodash';
 import classes from './styles/PrimaryToolbar.module.css';
-import { CorrelationIcon } from '@/components/Navbar/components/CorrelationIcon';
+import { notifications } from '@mantine/notifications';
 
 const { toggleDeleteModal, onToggleView } = logsStoreReducers;
 const { toggleSavedFiltersModal } = filterStoreReducers;
-const renderMaximizeIcon = () => <IconMaximize size={px('1rem')} stroke={1.5} />;
+const renderMaximizeIcon = () => <IconMaximize color="#495057" size={px('1rem')} stroke={1.5} />;
 const renderDeleteIcon = () => <IconTrash data-id="delete-stream-btn" size={px('1rem')} stroke={1.5} />;
 
 export const MaximizeButton = () => {
@@ -52,7 +53,7 @@ const AddCorrelationButton = () => {
 			className={classes.savedFiltersBtn}
 			h="100%"
 			onClick={() => navigate('/correlation')}
-			leftSection={<CorrelationIcon stroke={'#000000'} strokeWidth={1} />}>
+			leftSection={<CorrelationIcon stroke={'#495057'} strokeWidth={1} />}>
 			Correlate
 		</Button>
 	);
@@ -81,7 +82,7 @@ const ViewToggle = () => {
 			h="100%"
 			style={{
 				backgroundColor: isActive ? '#535BEB' : 'white',
-				color: isActive ? 'white' : 'black',
+				color: isActive ? 'white' : '#495057',
 			}}
 			onClick={onToggle}
 			leftSection={<IconTable {...iconProps} />}>

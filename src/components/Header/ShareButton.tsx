@@ -1,13 +1,14 @@
-import { Stack, Menu, px } from '@mantine/core';
-import { IconCopy, IconShare, IconFileTypeCsv, IconBraces } from '@tabler/icons-react';
-import IconButton from '../Button/IconButton';
-import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import { useCallback } from 'react';
-import { copyTextToClipboard } from '@/utils';
+import { IconBraces, IconCopy, IconFileTypeCsv, IconShare } from '@tabler/icons-react';
+import { Menu, Stack, px } from '@mantine/core';
 import { downloadDataAsCSV, downloadDataAsJson } from '@/utils/exportHelpers';
 import { makeExportData, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
 
-const renderShareIcon = () => <IconShare size={px('1rem')} stroke={1.5} />;
+import IconButton from '../Button/IconButton';
+import { copyTextToClipboard } from '@/utils';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { useCallback } from 'react';
+
+const renderShareIcon = () => <IconShare color="#495057" size={px('1rem')} stroke={1.5} />;
 
 export default function ShareButton() {
 	const [isSecureHTTPContext] = useAppStore((store) => store.isSecureHTTPContext);

@@ -1,13 +1,14 @@
 import { Button, Menu, Text, Tooltip, px } from '@mantine/core';
 import { IconRefresh, IconRefreshOff } from '@tabler/icons-react';
-import ms from 'ms';
-import type { FC } from 'react';
-import { useEffect, useMemo, useRef } from 'react';
-import { REFRESH_INTERVALS } from '@/constants/timeConstants';
-import classes from './styles/LogQuery.module.css';
-import { useLogsStore, logsStoreReducers } from '@/pages/Stream/providers/LogsProvider';
-import _ from 'lodash';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { logsStoreReducers, useLogsStore } from '@/pages/Stream/providers/LogsProvider';
+import { useEffect, useMemo, useRef } from 'react';
+
+import type { FC } from 'react';
+import { REFRESH_INTERVALS } from '@/constants/timeConstants';
+import _ from 'lodash';
+import classes from './styles/LogQuery.module.css';
+import ms from 'ms';
 
 const { setRefreshInterval, getCleanStoreForRefetch } = logsStoreReducers;
 const { syncTimeRange } = appStoreReducers;
@@ -66,14 +67,18 @@ const RefreshInterval: FC = () => {
 
 					return (
 						<Menu.Item key={interval} onClick={() => onSelectedInterval(interval)}>
-							<Text>{ms(interval)}</Text>
+							<Text style={{ fontSize: '0.65rem', fontWeight: 500 }} c="#495057">
+								{ms(interval)}
+							</Text>
 						</Menu.Item>
 					);
 				})}
 
 				{refreshInterval !== null && (
 					<Menu.Item onClick={() => onSelectedInterval(null)}>
-						<Text>Off</Text>
+						<Text style={{ fontSize: '0.65rem', fontWeight: 500 }} c="#495057">
+							Off
+						</Text>
 					</Menu.Item>
 				)}
 			</Menu.Dropdown>

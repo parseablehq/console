@@ -4,6 +4,7 @@
 	border: 1px #e9ecef solid;
 	border-radius: rem(8px);
 	font-size: 0.65rem;
+	font-weight: 500;
 	&:hover {
 		color: black;
 	}
