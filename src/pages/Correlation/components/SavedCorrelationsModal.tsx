@@ -23,6 +23,19 @@ const SavedCorrelationsModal = () => {
 	}, []);
 
 	const hasNoSavedFilters = _.isEmpty(correlations) || _.isNil(correlations) || fetchCorrelationsError;
+	useEffect(() => {
+		const handleKeyPress = (event: { key: string }) => {
+			if (event.key === 'Escape') {
+				closeModal();
+			}
+		};
+
+		window.addEventListener('keydown', handleKeyPress);
+
+		return () => {
+			window.removeEventListener('keydown', handleKeyPress);
+		};
+	}, []);
 
 	return (
 		<Modal
