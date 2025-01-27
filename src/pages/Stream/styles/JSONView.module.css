@@ -15,8 +15,7 @@
 }
 
 .actionIconContainer {
-	position: absolute;
-	left: 0px;
+	height: fit-content;
 	cursor: pointer;
 	padding: 1px 0px;
 	border-radius: 4px;
