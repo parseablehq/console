@@ -196,7 +196,7 @@ const Correlation = () => {
 		}
 	}, [loadingState, currentPage]);
 
-	if (isLoading || !Object.keys(fields)) return;
+	if (isLoading || !Object.keys(fields) || !Object.keys(selectedFields)) return;
 
 	return (
 		<Box className={classes.correlationWrapper}>

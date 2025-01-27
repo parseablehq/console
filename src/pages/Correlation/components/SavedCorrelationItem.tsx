@@ -1,14 +1,15 @@
-import { Stack, Box, Button, Text, px, Code } from '@mantine/core';
+import { Box, Button, Code, Stack, Text, px } from '@mantine/core';
+import { FC, useCallback, useState } from 'react';
 import { IconClock, IconEye, IconEyeOff, IconTrash, IconX } from '@tabler/icons-react';
-import { useState, useCallback, FC } from 'react';
-import classes from '../styles/SavedCorrelationItem.module.css';
-import { Correlation } from '@/@types/parseable/api/correlation';
-import dayjs from 'dayjs';
-import IconButton from '@/components/Button/IconButton';
-import { useCorrelationsQuery } from '@/hooks/useCorrelations';
 import { correlationStoreReducers, useCorrelationStore } from '../providers/CorrelationProvider';
 
-const { toggleSavedCorrelationsModal, setCorrelationId } = correlationStoreReducers;
+import { Correlation } from '@/@types/parseable/api/correlation';
+import IconButton from '@/components/Button/IconButton';
+import classes from '../styles/SavedCorrelationItem.module.css';
+import dayjs from 'dayjs';
+import { useCorrelationsQuery } from '@/hooks/useCorrelations';
+
+const { toggleSavedCorrelationsModal, setCorrelationId, cleanCorrelationStore } = correlationStoreReducers;
 
 const renderDeleteIcon = () => <IconTrash size={px('1rem')} stroke={1.5} />;
 const renderCloseIcon = () => <IconX size={px('1rem')} stroke={1.5} />;
@@ -105,6 +106,7 @@ const SavedCorrelationItem = (props: { item: Correlation }) => {
 	}, []);
 
 	const onCorrelationAppy = useCallback(() => {
+		setCorrelationData(cleanCorrelationStore);
 		setCorrelationData((store) => setCorrelationId(store, id));
 		closeModal();
 	}, []);
