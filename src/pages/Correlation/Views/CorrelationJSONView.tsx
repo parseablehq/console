@@ -220,7 +220,7 @@ const CorrleationJSONView = (props: { errorMessage: string | null; hasNoData: bo
 							className={classes.innerContainer}
 							style={{ display: 'flex', flexDirection: 'row', maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
 							<Stack gap={0} style={{ width: '100%' }}>
-								<Stack>
+								<Stack style={{ overflowY: 'scroll' }}>
 									<JsonRows isSearching={isSearching} setContextMenu={setContextMenu} />
 								</Stack>
 							</Stack>

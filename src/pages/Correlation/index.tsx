@@ -52,10 +52,10 @@ const Correlation = () => {
 
 	const { isStoreSynced } = useParamsController();
 	const [timeRange] = useAppStore((store) => store.timeRange);
-	const [currentStream, setAppStore] = useAppStore((store) => store.currentStream);
+	const [streamForCorrelation, setAppStore] = useAppStore((store) => store.streamForCorrelation);
 	const [maximized] = useAppStore((store) => store.maximized);
 	const { isLoading: schemaLoading } = useGetStreamSchema({
-		streamName: currentStream || '',
+		streamName: streamForCorrelation || '',
 	});
 	const isSavedCorrelation = correlationId !== savedCorrelationId;
 	const streamsToFetch =
@@ -148,10 +148,10 @@ const Correlation = () => {
 	}, [correlationId, correlations]);
 
 	useEffect(() => {
-		if (currentStream && streamNames.length > 0 && Object.keys(fields).includes(currentStream)) {
+		if (streamForCorrelation && streamNames.length > 0 && Object.keys(fields).includes(streamForCorrelation)) {
 			getFetchStreamData();
 		}
-	}, [currentStream, fields]);
+	}, [streamForCorrelation, fields]);
 
 	useEffect(() => {
 		if (isCorrelatedData) {
@@ -196,7 +196,7 @@ const Correlation = () => {
 		}
 	}, [loadingState, currentPage]);
 
-	if (isLoading) return;
+	if (isLoading || !Object.keys(fields)) return;
 
 	return (
 		<Box className={classes.correlationWrapper}>
