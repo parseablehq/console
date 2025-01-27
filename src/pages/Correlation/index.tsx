@@ -27,7 +27,7 @@ import { useDocumentTitle } from '@mantine/hooks';
 import { useFetchStreamData } from '@/hooks/useFetchStreamData';
 import useParamsController from './hooks/useParamsController';
 
-const { changeStream, setTimeRange } = appStoreReducers;
+const { setStreamForCorrelation, setTimeRange } = appStoreReducers;
 const { setSelectedFields, setCorrelationCondition, setActiveCorrelation, setPageAndPageData, setTargetPage } =
 	correlationStoreReducers;
 
@@ -173,7 +173,7 @@ const Correlation = () => {
 	const updateCorrelationCondition = () => {
 		if (select1Value.value && select2Value.value) {
 			const condition = `"${streamNames[0]}".${select1Value.value} = "${streamNames[1]}".${select2Value.value}`;
-			setAppStore((store) => changeStream(store, 'correlatedStream'));
+			setAppStore((store) => setStreamForCorrelation(store, 'correlatedStream'));
 			setCorrelationData((store) => setCorrelationCondition(store, condition));
 		}
 	};

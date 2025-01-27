@@ -9,7 +9,7 @@ import classes from '../styles/SavedCorrelationItem.module.css';
 import dayjs from 'dayjs';
 import { useCorrelationsQuery } from '@/hooks/useCorrelations';
 
-const { toggleSavedCorrelationsModal, setCorrelationId, cleanCorrelationStore } = correlationStoreReducers;
+const { toggleSavedCorrelationsModal, setCorrelationId } = correlationStoreReducers;
 
 const renderDeleteIcon = () => <IconTrash size={px('1rem')} stroke={1.5} />;
 const renderCloseIcon = () => <IconX size={px('1rem')} stroke={1.5} />;
@@ -106,7 +106,6 @@ const SavedCorrelationItem = (props: { item: Correlation }) => {
 	}, []);
 
 	const onCorrelationAppy = useCallback(() => {
-		setCorrelationData(cleanCorrelationStore);
 		setCorrelationData((store) => setCorrelationId(store, id));
 		closeModal();
 	}, []);

@@ -1,13 +1,14 @@
-import { TextInput, Text } from '@mantine/core';
-import { IconTrashX } from '@tabler/icons-react';
-import classes from '../styles/Correlation.module.css';
-import { CorrelationFieldItem } from './CorrelationFieldItem';
-import { StreamSelectBox } from './StreamSelectBox';
-import { correlationStoreReducers, useCorrelationStore } from '../providers/CorrelationProvider';
 import { FC, useState } from 'react';
+import { Text, TextInput } from '@mantine/core';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import { correlationStoreReducers, useCorrelationStore } from '../providers/CorrelationProvider';
 
-const { changeStream } = appStoreReducers;
+import { CorrelationFieldItem } from './CorrelationFieldItem';
+import { IconTrashX } from '@tabler/icons-react';
+import { StreamSelectBox } from './StreamSelectBox';
+import classes from '../styles/Correlation.module.css';
+
+const { setStreamForCorrelation } = appStoreReducers;
 const { setIsCorrelatedFlag, setSelectedFields, deleteStreamData } = correlationStoreReducers;
 
 interface CorrelationSideBarProps {
@@ -50,7 +51,7 @@ export const CorrelationSidebar: FC<CorrelationSideBarProps> = ({
 	};
 	const addStream = (value: string | null) => {
 		if (value) {
-			setAppStore((store) => changeStream(store, value));
+			setAppStore((store) => setStreamForCorrelation(store, value));
 		}
 	};
 
@@ -94,7 +95,7 @@ export const CorrelationSidebar: FC<CorrelationSideBarProps> = ({
 									cursor="pointer"
 									size={14}
 									onClick={() => {
-										setAppStore((store) => changeStream(store, ''));
+										setAppStore((store) => setStreamForCorrelation(store, ''));
 										setCorrelationData((store) => setIsCorrelatedFlag(store, false));
 										setSelect1Value({ value: null, dataType: '' });
 										setSelect2Value({ value: null, dataType: '' });
