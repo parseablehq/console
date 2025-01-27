@@ -1,30 +1,31 @@
-import { useEffect, useState } from 'react';
-import { useDocumentTitle } from '@mantine/hooks';
-import { Stack, Box, Center, Stepper } from '@mantine/core';
+import { Box, Center, Stack, Stepper } from '@mantine/core';
 import {
 	PRIMARY_HEADER_HEIGHT,
 	STREAM_PRIMARY_TOOLBAR_CONTAINER_HEIGHT,
 	STREAM_SECONDARY_TOOLBAR_HRIGHT,
 } from '@/constants/theme';
-import classes from './styles/Correlation.module.css';
-import { useCorrelationQueryLogs } from '@/hooks/useCorrelationQueryLogs';
-import { useGetMultipleStreamSchemas, useGetStreamSchema } from '@/hooks/useGetCorrelationStreamSchema';
-import { useFetchStreamData } from '@/hooks/useFetchStreamData';
-import { correlationStoreReducers, useCorrelationStore } from './providers/CorrelationProvider';
 import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import CorrelationTable from './Views/CorrelationTable';
-import CorrelationFooter from './Views/CorrelationFooter';
+import { correlationStoreReducers, useCorrelationStore } from './providers/CorrelationProvider';
+import { useEffect, useState } from 'react';
+import { useGetMultipleStreamSchemas, useGetStreamSchema } from '@/hooks/useGetCorrelationStreamSchema';
+
 import { CorrelationEmptyPlaceholder } from './components/CorrelationEmptyPlaceholder';
-import useParamsController from './hooks/useParamsController';
-import _ from 'lodash';
-import { useCorrelationsQuery } from '@/hooks/useCorrelations';
-import SavedCorrelationsModal from './components/SavedCorrelationsModal';
-import SaveCorrelationModal from './components/SaveCorrelationModal';
-import { useCorrelationFetchCount } from './hooks/useCorrelationFetchCount';
-import CorrleationJSONView from './Views/CorrelationJSONView';
-import dayjs from 'dayjs';
-import { CorrelationToolbar } from './components/CorrelationToolbar';
+import CorrelationFooter from './Views/CorrelationFooter';
 import { CorrelationSidebar } from './components/CorrelationSideBar';
+import CorrelationTable from './Views/CorrelationTable';
+import { CorrelationToolbar } from './components/CorrelationToolbar';
+import CorrleationJSONView from './Views/CorrelationJSONView';
+import SaveCorrelationModal from './components/SaveCorrelationModal';
+import SavedCorrelationsModal from './components/SavedCorrelationsModal';
+import _ from 'lodash';
+import classes from './styles/Correlation.module.css';
+import dayjs from 'dayjs';
+import { useCorrelationFetchCount } from './hooks/useCorrelationFetchCount';
+import { useCorrelationQueryLogs } from '@/hooks/useCorrelationQueryLogs';
+import { useCorrelationsQuery } from '@/hooks/useCorrelations';
+import { useDocumentTitle } from '@mantine/hooks';
+import { useFetchStreamData } from '@/hooks/useFetchStreamData';
+import useParamsController from './hooks/useParamsController';
 
 const { changeStream, setTimeRange } = appStoreReducers;
 const { setSelectedFields, setCorrelationCondition, setActiveCorrelation, setPageAndPageData, setTargetPage } =

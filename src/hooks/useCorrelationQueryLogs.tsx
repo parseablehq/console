@@ -69,6 +69,7 @@ export const useCorrelationQueryLogs = () => {
 						notifyError({ message: `${currentStream} doesn't have any fields` });
 					}
 				});
+				setCorrelationStore((store) => setIsCorrelatedFlag(store, true));
 			},
 			onError: (data: AxiosError) => {
 				setLoading(false);
