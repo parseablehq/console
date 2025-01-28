@@ -1,18 +1,19 @@
-import { getCorrelationQueryLogsWithHeaders } from '@/api/query';
-import useMountedState from './useMountedState';
-import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import _ from 'lodash';
-import { AxiosError } from 'axios';
-import { useStreamStore } from '@/pages/Stream/providers/StreamProvider';
 import {
 	CORRELATION_LOAD_LIMIT,
 	correlationStoreReducers,
 	useCorrelationStore,
 } from '@/pages/Correlation/providers/CorrelationProvider';
-import { notifyError } from '@/utils/notification';
-import { useQuery } from 'react-query';
+
+import { AxiosError } from 'axios';
 import { LogsResponseWithHeaders } from '@/@types/parseable/api/query';
+import _ from 'lodash';
+import { getCorrelationQueryLogsWithHeaders } from '@/api/query';
+import { notifyError } from '@/utils/notification';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import useMountedState from './useMountedState';
+import { useQuery } from 'react-query';
 import { useState } from 'react';
+import { useStreamStore } from '@/pages/Stream/providers/StreamProvider';
 
 const { setStreamData, setIsCorrelatedFlag } = correlationStoreReducers;
 
@@ -69,7 +70,6 @@ export const useCorrelationQueryLogs = () => {
 						notifyError({ message: `${currentStream} doesn't have any fields` });
 					}
 				});
-				setCorrelationStore((store) => setIsCorrelatedFlag(store, true));
 			},
 			onError: (data: AxiosError) => {
 				setLoading(false);
