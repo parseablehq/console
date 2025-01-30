@@ -28,8 +28,15 @@ import { useFetchStreamData } from '@/hooks/useFetchStreamData';
 import useParamsController from './hooks/useParamsController';
 
 const { setStreamForCorrelation, setTimeRange } = appStoreReducers;
-const { setSelectedFields, setCorrelationCondition, setActiveCorrelation, setPageAndPageData, setTargetPage } =
-	correlationStoreReducers;
+import { getLogStreamSchema } from '@/api/logStream';
+const {
+	setSelectedFields,
+	setCorrelationCondition,
+	setActiveCorrelation,
+	setPageAndPageData,
+	setTargetPage,
+	setStreamSchema,
+} = correlationStoreReducers;
 
 const Correlation = () => {
 	useDocumentTitle('Parseable | Correlation');
@@ -62,6 +69,7 @@ const Correlation = () => {
 		(isSavedCorrelation && activeCorrelation?.tableConfigs.map((config: { tableName: string }) => config.tableName)) ||
 		[];
 	const { isLoading: multipleSchemasLoading } = useGetMultipleStreamSchemas(streamsToFetch);
+	const [schemaLoad, setSchemaLoad] = useState<boolean>(false);
 
 	const { getCorrelationData, loadingState, error: errorMessage } = useCorrelationQueryLogs();
 	const { getFetchStreamData, loading: streamsLoading } = useFetchStreamData();
@@ -140,6 +148,22 @@ const Correlation = () => {
 					type: 'custom',
 				}),
 			);
+		if (!activeCorrelation) return;
+
+		const fetchSchema = async (streamName: string) => {
+			setSchemaLoad(true);
+			try {
+				const schema = await getLogStreamSchema(streamName);
+				setCorrelationData((store) => setStreamSchema(store, schema.data, streamName));
+			} catch (error) {
+				console.log(error);
+			} finally {
+				setSchemaLoad(false);
+			}
+		};
+		const streamNames = activeCorrelation.tableConfigs.map((config: { tableName: string }) => config.tableName);
+		streamNames.forEach(async (el) => await fetchSchema(el));
+
 		setSelect1Value({ value: null, dataType: '' });
 		setSelect2Value({ value: null, dataType: '' });
 		setCorrelationData((store) => setCorrelationCondition(store, ''));
@@ -154,21 +178,22 @@ const Correlation = () => {
 	}, [streamForCorrelation, fields]);
 
 	useEffect(() => {
-		if (isCorrelatedData) {
+		if (isCorrelatedData && !schemaLoad) {
 			getCorrelationData();
 		} else {
 			getFetchStreamData();
 		}
-	}, [currentOffset, timeRange]);
+	}, [currentOffset, timeRange, schemaLoad]);
 
 	useEffect(() => {
+		if (schemaLoad) return;
 		updateCorrelationCondition();
 		if (activeCorrelation && correlationCondition && isSavedCorrelation) {
 			refetchCount();
 			getCorrelationData();
 		}
 		correlationCondition && setIsCorrelationEnabled(true);
-	}, [select1Value, select2Value, activeCorrelation, correlationCondition]);
+	}, [select1Value, select2Value, activeCorrelation, correlationCondition, schemaLoad]);
 
 	const updateCorrelationCondition = () => {
 		if (select1Value.value && select2Value.value) {
@@ -196,14 +221,14 @@ const Correlation = () => {
 		}
 	}, [loadingState, currentPage]);
 
-	if (isLoading || !Object.keys(fields) || !Object.keys(selectedFields)) return;
+	if (isLoading || schemaLoad || !Object.keys(fields) || !Object.keys(selectedFields)) return;
 
 	return (
 		<Box className={classes.correlationWrapper}>
 			<SavedCorrelationsModal />
 			<SaveCorrelationModal />
 			<CorrelationSidebar
-				isLoading={isStreamsLoading}
+				isLoading={isStreamsLoading || multipleSchemasLoading}
 				loadingState={loadingState}
 				setSelect1Value={setSelect1Value}
 				setSelect2Value={setSelect2Value}
