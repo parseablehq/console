@@ -8,7 +8,7 @@ import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/Ap
 const { getCleanStoreForRefetch } = logsStoreReducers;
 const { syncTimeRange } = appStoreReducers;
 
-const renderRefreshIcon = () => <IconReload size={px('1rem')} stroke={1.5} />;
+const renderRefreshIcon = () => <IconReload color="#495057" size={px('1rem')} stroke={1.5} />;
 
 const RefreshNow: FC = () => {
 	const [, setLogsStore] = useLogsStore(() => null);

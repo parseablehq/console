@@ -90,7 +90,12 @@ const Row = (props: {
 
 	return (
 		<Stack
-			style={{ flexDirection: 'row', background: isRowHighlighted ? '#E8EDFE' : 'white' }}
+			style={{
+				flexDirection: 'row',
+				background: isRowHighlighted ? '#E8EDFE' : 'white',
+				paddingLeft: showEllipses ? '5px' : '',
+				gap: showEllipses ? '5px' : '',
+			}}
 			className={classes.rowContainer}
 			gap={0}>
 			{showEllipses && (
@@ -374,7 +379,7 @@ const JsonView = (props: {
 						<Box
 							className={classes.innerContainer}
 							style={{ display: 'flex', flexDirection: 'row', maxHeight: `calc(100vh - ${primaryHeaderHeight}px )` }}>
-							<Stack gap={0}>
+							<Stack gap={0} style={{ width: '100%' }}>
 								<Stack style={{ overflowY: 'scroll' }}>
 									<JsonRows isSearching={isSearching} setContextMenu={setContextMenu} />
 								</Stack>

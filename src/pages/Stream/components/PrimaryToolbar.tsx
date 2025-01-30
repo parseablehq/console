@@ -21,7 +21,7 @@ import { notifications } from '@mantine/notifications';
 
 const { toggleDeleteModal, onToggleView } = logsStoreReducers;
 const { toggleSavedFiltersModal } = filterStoreReducers;
-const renderMaximizeIcon = () => <IconMaximize size={px('1rem')} stroke={1.5} />;
+const renderMaximizeIcon = () => <IconMaximize color="#495057" size={px('1rem')} stroke={1.5} />;
 const renderDeleteIcon = () => <IconTrash data-id="delete-stream-btn" size={px('1rem')} stroke={1.5} />;
 
 export const MaximizeButton = () => {
@@ -67,7 +67,7 @@ const ViewToggle = () => {
 			h="100%"
 			style={{
 				backgroundColor: isActive ? '#535BEB' : 'white',
-				color: isActive ? 'white' : 'black',
+				color: isActive ? 'white' : '#495057',
 			}}
 			onClick={onToggle}
 			leftSection={<IconTable {...iconProps} />}>
