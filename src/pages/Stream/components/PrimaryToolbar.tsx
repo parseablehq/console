@@ -5,9 +5,8 @@ import { appStoreReducers, useAppStore } from '@/layouts/MainLayout/providers/Ap
 import { filterStoreReducers, useFilterStore } from '../providers/FilterProvider';
 import { logsStoreReducers, useLogsStore } from '../providers/LogsProvider';
 import { useCallback, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
-import { CorrelationIcon } from '@/components/Navbar/components/CorrelationIcon';
 import IconButton from '@/components/Button/IconButton';
 import Querier from './Querier';
 import RefreshInterval from '@/components/Header/RefreshInterval';
@@ -41,20 +40,6 @@ const SavedFiltersButton = () => {
 			leftSection={<IconFilterHeart size={px('1rem')} stroke={1.5} />}
 			onClick={onClick}>
 			Saved Filters
-		</Button>
-	);
-};
-
-const AddCorrelationButton = () => {
-	const navigate = useNavigate();
-
-	return (
-		<Button
-			className={classes.savedFiltersBtn}
-			h="100%"
-			onClick={() => navigate('/correlation')}
-			leftSection={<CorrelationIcon stroke={'#495057'} strokeWidth={1} />}>
-			Correlate
 		</Button>
 	);
 };
@@ -117,7 +102,6 @@ const PrimaryToolbar = () => {
 			{view === 'explore' ? (
 				<Stack style={{ flexDirection: 'row', height: STREAM_PRIMARY_TOOLBAR_HEIGHT }} w="100%">
 					<StreamDropdown />
-					<AddCorrelationButton />
 					<Querier />
 					<SavedFiltersButton />
 					<TimeRange />

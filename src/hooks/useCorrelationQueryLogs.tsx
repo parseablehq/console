@@ -1,19 +1,21 @@
-import { getCorrelationQueryLogsWithHeaders } from '@/api/query';
-import useMountedState from './useMountedState';
-import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
-import _ from 'lodash';
-import { AxiosError } from 'axios';
-import { useStreamStore } from '@/pages/Stream/providers/StreamProvider';
 import {
 	CORRELATION_LOAD_LIMIT,
 	correlationStoreReducers,
 	useCorrelationStore,
 } from '@/pages/Correlation/providers/CorrelationProvider';
-import { notifyError } from '@/utils/notification';
-import { useQuery } from 'react-query';
-import { LogsResponseWithHeaders } from '@/@types/parseable/api/query';
 
-const { setStreamData } = correlationStoreReducers;
+import { AxiosError } from 'axios';
+import { LogsResponseWithHeaders } from '@/@types/parseable/api/query';
+import _ from 'lodash';
+import { getCorrelationQueryLogsWithHeaders } from '@/api/query';
+import { notifyError } from '@/utils/notification';
+import { useAppStore } from '@/layouts/MainLayout/providers/AppProvider';
+import useMountedState from './useMountedState';
+import { useQuery } from 'react-query';
+import { useState } from 'react';
+import { useStreamStore } from '@/pages/Stream/providers/StreamProvider';
+
+const { setStreamData, setIsCorrelatedFlag } = correlationStoreReducers;
 
 export const useCorrelationQueryLogs = () => {
 	const [error, setError] = useMountedState<string | null>(null);
@@ -22,6 +24,7 @@ export const useCorrelationQueryLogs = () => {
 	const [currentStream] = useAppStore((store) => store.currentStream);
 	const timePartitionColumn = _.get(streamInfo, 'time_partition', 'p_timestamp');
 	const [timeRange] = useAppStore((store) => store.timeRange);
+	const [loadingState, setLoading] = useState<boolean>(true);
 	const [
 		{
 			tableOpts: { currentOffset },
@@ -39,13 +42,10 @@ export const useCorrelationQueryLogs = () => {
 		correlationCondition: correlationCondition,
 	};
 
-	const {
-		isLoading: logsLoading,
-		isRefetching: logsRefetching,
-		refetch: getCorrelationData,
-	} = useQuery(
+	const { refetch: getCorrelationData } = useQuery(
 		['fetch-logs', defaultQueryOpts],
 		async () => {
+			setLoading(true);
 			const queryOpts = { ...defaultQueryOpts, streamNames };
 			const response = await getCorrelationQueryLogsWithHeaders(queryOpts);
 			return [response];
@@ -54,6 +54,7 @@ export const useCorrelationQueryLogs = () => {
 			enabled: false,
 			refetchOnWindowFocus: false,
 			onSuccess: async (responses) => {
+				setLoading(false);
 				responses.map((data: { data: LogsResponseWithHeaders }) => {
 					const logs = data.data;
 					const isInvalidResponse = _.isEmpty(logs) || _.isNil(logs);
@@ -63,6 +64,7 @@ export const useCorrelationQueryLogs = () => {
 					if (fields.length > 0 && !correlationCondition) {
 						return setCorrelationStore((store) => setStreamData(store, currentStream || '', records));
 					} else if (fields.length > 0 && correlationCondition) {
+						setCorrelationStore((store) => setIsCorrelatedFlag(store, true));
 						return setCorrelationStore((store) => setStreamData(store, 'correlatedStream', records));
 					} else {
 						notifyError({ message: `${currentStream} doesn't have any fields` });
@@ -70,6 +72,7 @@ export const useCorrelationQueryLogs = () => {
 				});
 			},
 			onError: (data: AxiosError) => {
+				setLoading(false);
 				const errorMessage = data.response?.data as string;
 				setError(_.isString(errorMessage) && !_.isEmpty(errorMessage) ? errorMessage : 'Failed to query logs');
 			},
@@ -78,7 +81,7 @@ export const useCorrelationQueryLogs = () => {
 
 	return {
 		error,
-		loading: logsLoading || logsRefetching,
+		loadingState,
 		getCorrelationData,
 	};
 };

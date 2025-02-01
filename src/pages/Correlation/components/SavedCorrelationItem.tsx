@@ -1,14 +1,15 @@
-import { Stack, Box, Button, Text, px, Code } from '@mantine/core';
+import { Box, Button, Code, Stack, Text, px } from '@mantine/core';
+import { FC, useCallback, useState } from 'react';
 import { IconClock, IconEye, IconEyeOff, IconTrash, IconX } from '@tabler/icons-react';
-import { useState, useCallback, Fragment, FC } from 'react';
-import classes from '../styles/SavedCorrelationItem.module.css';
-import { Correlation } from '@/@types/parseable/api/correlation';
-import dayjs from 'dayjs';
-import IconButton from '@/components/Button/IconButton';
-import { useCorrelationsQuery } from '@/hooks/useCorrelations';
 import { correlationStoreReducers, useCorrelationStore } from '../providers/CorrelationProvider';
 
-const { toggleSavedCorrelationsModal, setCorrelationId } = correlationStoreReducers;
+import { Correlation } from '@/@types/parseable/api/correlation';
+import IconButton from '@/components/Button/IconButton';
+import classes from '../styles/SavedCorrelationItem.module.css';
+import dayjs from 'dayjs';
+import { useCorrelationsQuery } from '@/hooks/useCorrelations';
+
+const { toggleSavedCorrelationsModal, setCorrelationId, cleanCorrelationStore } = correlationStoreReducers;
 
 const renderDeleteIcon = () => <IconTrash size={px('1rem')} stroke={1.5} />;
 const renderCloseIcon = () => <IconX size={px('1rem')} stroke={1.5} />;
@@ -51,14 +52,13 @@ const SelectedFields: FC<{ tableConfigs: TableConfig[] }> = ({ tableConfigs }) =
 	);
 
 	return (
-		<div className="space-x-1">
-			<span style={{ fontSize: '11px' }}>Selected Fields: </span>
-			{fields.map((field, index) => (
-				<Fragment key={field.key}>
-					<Code>{field.content}</Code>
-					{index < fields.length - 1 && <span>,</span>}
-				</Fragment>
-			))}
+		<div>
+			<div style={{ fontSize: '11px' }}>Selected Fields: </div>
+			<div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', marginTop: '5px' }}>
+				{fields.map((field, index) => (
+					<Code key={index}>{field.content}</Code>
+				))}
+			</div>
 		</div>
 	);
 };
@@ -73,8 +73,8 @@ const JoinConditions: FC<{ joinConfig: JoinConfig }> = ({ joinConfig }) => {
 				if (!nextJoin) return null;
 
 				return (
-					<div key={`join-${index}`} className="space-x-1">
-						<span style={{ fontSize: '11px' }}>Join Condition:</span>
+					<div key={`join-${index}`}>
+						<div style={{ fontSize: '11px' }}>Join Condition:</div>
 						<Code>{`${join.tableName}.${join.field}`}</Code>
 						<span>=</span>
 						<Code>{`${nextJoin.tableName}.${nextJoin.field}`}</Code>
@@ -106,6 +106,7 @@ const SavedCorrelationItem = (props: { item: Correlation }) => {
 	}, []);
 
 	const onCorrelationAppy = useCallback(() => {
+		setCorrelationData(cleanCorrelationStore);
 		setCorrelationData((store) => setCorrelationId(store, id));
 		closeModal();
 	}, []);
@@ -154,7 +155,7 @@ const SavedCorrelationItem = (props: { item: Correlation }) => {
 				</Stack>
 			</Stack>
 			{showQuery && (
-				<Stack gap={0}>
+				<Stack gap={10}>
 					<SelectedFields tableConfigs={tableConfigs} />
 					<JoinConditions joinConfig={joinConfig} />
 				</Stack>

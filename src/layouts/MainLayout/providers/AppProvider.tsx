@@ -1,11 +1,12 @@
-import { LogStreamData } from '@/@types/parseable/api/stream';
-import initContext from '@/utils/initContext';
-import { AboutData } from '@/@types/parseable/api/about';
-import _ from 'lodash';
-import { AxiosResponse } from 'axios';
-import { SavedFilterType } from '@/@types/parseable/api/savedFilters';
 import { FIXED_DURATIONS, FixedDuration } from '@/constants/timeConstants';
 import dayjs, { Dayjs } from 'dayjs';
+
+import { AboutData } from '@/@types/parseable/api/about';
+import { AxiosResponse } from 'axios';
+import { LogStreamData } from '@/@types/parseable/api/stream';
+import { SavedFilterType } from '@/@types/parseable/api/savedFilters';
+import _ from 'lodash';
+import initContext from '@/utils/initContext';
 import timeRangeUtils from '@/utils/timeRangeUtils';
 
 const { makeTimeRangeLabel } = timeRangeUtils;
@@ -57,6 +58,7 @@ type AppStore = {
 	helpModalOpen: boolean;
 	createStreamModalOpen: boolean;
 	currentStream: null | string;
+	streamForCorrelation: null | string;
 	userRoles: UserRoles | null;
 	userSpecificStreams: null | LogStreamData;
 	userAccessMap: { [key: string]: boolean };
@@ -76,6 +78,7 @@ type AppStoreReducers = {
 	toggleMaximize: (store: AppStore) => ReducerOutput;
 	toggleHelpModal: (store: AppStore, val?: boolean) => ReducerOutput;
 	changeStream: (store: AppStore, stream: string) => ReducerOutput;
+	setStreamForCorrelation: (store: AppStore, stream: string) => ReducerOutput;
 	setUserRoles: (store: AppStore, roles: UserRoles | null) => ReducerOutput;
 	setshiftInterval: (store: AppStore, interval: number) => ReducerOutput;
 	syncTimeRange: (store: AppStore) => ReducerOutput;
@@ -93,6 +96,7 @@ const initialState: AppStore = {
 	maximized: false,
 	helpModalOpen: false,
 	currentStream: null,
+	streamForCorrelation: null,
 	userRoles: null,
 	userSpecificStreams: null,
 	userAccessMap: {},
@@ -208,6 +212,10 @@ const changeStream = (store: AppStore, stream: string) => {
 	return { currentStream: stream, activeSavedFilters };
 };
 
+const setStreamForCorrelation = (_store: AppStore, stream: string) => {
+	return { streamForCorrelation: stream };
+};
+
 const setUserRoles = (_store: AppStore, roles: UserRoles | null) => {
 	return { userRoles: roles };
 };
@@ -240,6 +248,7 @@ const appStoreReducers: AppStoreReducers = {
 	toggleMaximize,
 	toggleHelpModal,
 	changeStream,
+	setStreamForCorrelation,
 	setUserRoles,
 	setUserSpecificStreams,
 	setUserAccessMap,
