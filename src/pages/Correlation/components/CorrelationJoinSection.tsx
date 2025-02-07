@@ -85,8 +85,6 @@ export const CorrelationJoinSection: FC<CorrelationJoinSectionProps> = ({
 	const handleFieldChange = (fieldValue: string | null, isFirstField: boolean) => {
 		if (isFirstField) {
 			const fieldType = fieldValue && fields[streamNames[0]]?.fieldTypeMap[fieldValue];
-			console.log(fieldType);
-
 			setSelect1Value({ value: fieldValue, dataType: fieldType });
 		} else {
 			setSelect2Value({ value: fieldValue });
