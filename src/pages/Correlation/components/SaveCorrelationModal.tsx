@@ -43,7 +43,7 @@ const SaveCorrelationModal = () => {
 
 	const streamNames = Object.keys(fields);
 
-	const joins = correlationCondition.split('=');
+	const joins = correlationCondition.split('=').map((part) => part.replace(/"/g, '').trim());
 
 	useEffect(() => {
 		const timeRangeOptions = makeTimeRangeOptions({ selected: null, current: timeRange });
@@ -101,18 +101,16 @@ const SaveCorrelationModal = () => {
 						tableName: streamNames[1],
 					},
 				],
-				joinConfig: {
-					joinConditions: [
-						{
-							tableName: streamNames[0],
-							field: joins[0].split('.')[1].trim(),
-						},
-						{
-							tableName: streamNames[1],
-							field: joins[1].split('.')[1].trim(),
-						},
-					],
-				},
+				joinConditions: [
+					{
+						tableName: streamNames[0],
+						field: joins[0].split('.').slice(1).join('.').trim(),
+					},
+					{
+						tableName: streamNames[1],
+						field: joins[1].split('.').slice(1).join('.').trim(),
+					},
+				],
 				filter: null,
 				startTime: formObject?.selectedTimeRangeOption.time_filter?.from,
 				endTime: formObject?.selectedTimeRangeOption.time_filter?.to,
@@ -141,11 +139,11 @@ const SaveCorrelationModal = () => {
 					joinConditions: [
 						{
 							tableName: streamNames[0],
-							field: joins[0].split('.')[1].trim(),
+							field: joins[0].split('.').slice(1).join('.').trim(),
 						},
 						{
 							tableName: streamNames[1],
-							field: joins[1].split('.')[1].trim(),
+							field: joins[1].split('.').slice(1).join('.').trim(),
 						},
 					],
 				},

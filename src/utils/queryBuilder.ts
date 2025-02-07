@@ -133,7 +133,9 @@ export class CorrelationQueryBuilder {
 			/* eslint-disable no-useless-escape */
 			`select ${this.selectedFields
 				.map((field) => {
-					const [streamName, fieldName] = field.split('.');
+					const parts = field.split('.');
+					const streamName = parts.shift();
+					const fieldName = parts.join('.');
 					return `"${streamName}"."${fieldName}" as "${field}"`;
 				})
 				.join(', ')} from \"${this.streamNames[0]}\" join \"${this.streamNames[1]}\" on ${

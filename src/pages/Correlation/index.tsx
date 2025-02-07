@@ -17,7 +17,6 @@ import { CorrelationToolbar } from './components/CorrelationToolbar';
 import CorrleationJSONView from './Views/CorrelationJSONView';
 import SaveCorrelationModal from './components/SaveCorrelationModal';
 import SavedCorrelationsModal from './components/SavedCorrelationsModal';
-import _ from 'lodash';
 import classes from './styles/Correlation.module.css';
 import dayjs from 'dayjs';
 import { useCorrelationFetchCount } from './hooks/useCorrelationFetchCount';
@@ -197,7 +196,7 @@ const Correlation = () => {
 
 	const updateCorrelationCondition = () => {
 		if (select1Value.value && select2Value.value) {
-			const condition = `"${streamNames[0]}".${select1Value.value} = "${streamNames[1]}".${select2Value.value}`;
+			const condition = `"${streamNames[0]}"."${select1Value.value}" = "${streamNames[1]}"."${select2Value.value}"`;
 			setAppStore((store) => setStreamForCorrelation(store, 'correlatedStream'));
 			setCorrelationData((store) => setCorrelationCondition(store, condition));
 		}
