@@ -300,7 +300,7 @@ const CustomPartitionField = (props: {
 						<IconInfoCircleFilled className={styles.infoTooltipIcon} stroke={1.4} height={14} width={14} />
 					</Tooltip>
 				</Stack>
-				<Text className={styles.fieldDescription}>Select 3 columns to partition the events</Text>
+				<Text className={styles.fieldDescription}>Select only 1 column to partition the events</Text>
 			</Stack>
 			<TagsInput
 				placeholder={
@@ -308,12 +308,12 @@ const CustomPartitionField = (props: {
 						? shouldDisable
 							? 'Add Columns to the Schema'
 							: 'Select column from the list'
-						: 'Add upto 3 columns'
+						: 'Add only 1 field'
 				}
 				data={props.partitionFields}
 				mt={6}
 				onChange={(val) => props.onChangeValue('customPartitionFields', val)}
-				maxTags={3}
+				maxTags={1}
 				error={props.error}
 			/>
 		</Stack>
