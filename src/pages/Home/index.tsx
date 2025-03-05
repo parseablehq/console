@@ -225,16 +225,8 @@ const BigNumber = (props: { label: string; value: any; color?: string }) => {
 	);
 };
 
-const bytesStringToInteger = (str: string) => {
-	if (!str || typeof str !== 'string') return null;
-
-	const strChuncks = str?.split(' ');
-	return Array.isArray(strChuncks) && !isNaN(Number(strChuncks[0])) ? parseInt(strChuncks[0]) : null;
-};
-
 const sanitizeBytes = (str: any) => {
-	const size = bytesStringToInteger(str);
-	return size ? formatBytes(size) : '–';
+	return formatBytes(str) || '–';
 };
 
 type StreamInfoProps = {

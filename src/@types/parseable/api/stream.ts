@@ -11,17 +11,17 @@ export type LogStreamStat = {
 	ingestion: {
 		count: number;
 		format: string;
-		size: string;
+		size: number;
 		lifetime_count: number;
-		lifetime_size: string;
+		lifetime_size: number;
 		deleted_count: number;
-		deleted_size: string;
+		deleted_size: number;
 	};
 	storage: {
 		format: string;
-		size: string;
-		lifetime_size: string;
-		deleted_size: string;
+		size: number;
+		lifetime_size: number;
+		deleted_size: number;
 	};
 	stream: string;
 	time: string;
