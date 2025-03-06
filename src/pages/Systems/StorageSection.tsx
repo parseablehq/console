@@ -147,20 +147,20 @@ const StorageSection = () => {
 };
 
 const makeOverallStorageSectionProps = (record: IngestorQueryRecord | null) => {
-	const storageSize = formatBytes(_.get(record, 'parseable_storage_size_data', 0));
-	const lifetimeStorageSize = formatBytes(_.get(record, 'parseable_lifetime_storage_size_data', 0));
-	const deletedStorageSize = formatBytes(_.get(record, 'parseable_deleted_storage_size_data', 0));
-	const ingestedSize = formatBytes(_.get(record, 'parseable_events_ingested_size', 0));
-	const lifetimeIngestedSize = formatBytes(_.get(record, 'parseable_lifetime_events_ingested_size', 0));
+	const storageSize = _.get(record, 'parseable_storage_size_data', 0);
+	const lifetimeStorageSize = _.get(record, 'parseable_lifetime_storage_size.data', 0);
+	const deletedStorageSize = _.get(record, 'parseable_deleted_storage_size.data', 0);
+	const ingestedSize = _.get(record, 'parseable_events_ingested_size', 0);
+	const lifetimeIngestedSize = _.get(record, 'parseable_lifetime_events_ingested_size', 0);
 	const lifetimeCompressionRate = calcCompressionRate(lifetimeStorageSize, lifetimeIngestedSize);
 	const activeCompressionRate = calcCompressionRate(storageSize, ingestedSize);
 
 	return {
-		storageSize,
-		lifetimeIngestedSize,
-		lifetimeStorageSize,
-		deletedStorageSize,
-		ingestedSize,
+		storageSize: formatBytes(storageSize),
+		lifetimeIngestedSize: formatBytes(lifetimeIngestedSize),
+		lifetimeStorageSize: formatBytes(lifetimeStorageSize),
+		deletedStorageSize: formatBytes(deletedStorageSize),
+		ingestedSize: formatBytes(ingestedSize),
 		lifetimeCompressionRate,
 		activeCompressionRate,
 	};

@@ -2,7 +2,7 @@ import { Loader, Stack, Text } from '@mantine/core';
 import classes from '../../styles/Management.module.css';
 import { useStreamStore } from '../../providers/StreamProvider';
 import _ from 'lodash';
-import { calcCompressionRate, sanitizeBytes, sanitizeEventsCount } from '@/utils/formatBytes';
+import { calcCompressionRate, formatBytes, HumanizeNumber } from '@/utils/formatBytes';
 import { IconArrowDown } from '@tabler/icons-react';
 import ErrorView from './ErrorView';
 
@@ -41,9 +41,9 @@ const StatsTableHeaderRow = () => {
 };
 
 const defaultEventCountData = {
-	count: '-',
-	lifetime_count: '-',
-	deleted_count: '-',
+	count: 0,
+	lifetime_count: 0,
+	deleted_count: 0,
 };
 
 const EventsCountRow = () => {
@@ -60,17 +60,17 @@ const EventsCountRow = () => {
 			</Stack>
 			<Stack w={bigNoWidth}>
 				<Text ta="center" className={classes.bigNoText}>
-					{sanitizeEventsCount(eventsData.count)}
+					{HumanizeNumber(eventsData.count)}
 				</Text>
 			</Stack>
 			<Stack w={bigNoWidth}>
 				<Text ta="center" className={classes.bigNoText}>
-					{sanitizeEventsCount(eventsData.lifetime_count)}
+					{HumanizeNumber(eventsData.lifetime_count)}
 				</Text>
 			</Stack>
 			<Stack w={bigNoWidth}>
 				<Text ta="center" className={classes.bigNoText}>
-					{sanitizeEventsCount(eventsData.deleted_count)}
+					{HumanizeNumber(eventsData.deleted_count)}
 				</Text>
 			</Stack>
 		</Stack>
@@ -78,9 +78,9 @@ const EventsCountRow = () => {
 };
 
 const defaultIngestedSizeData = {
-	size: '-',
-	lifetime_size: '-',
-	deleted_size: '-',
+	size: 0,
+	lifetime_size: 0,
+	deleted_size: 0,
 };
 
 const IngestedSizeRow = () => {
@@ -97,17 +97,17 @@ const IngestedSizeRow = () => {
 			</Stack>
 			<Stack w={bigNoWidth}>
 				<Text ta="center" className={classes.bigNoText}>
-					{sanitizeBytes(ingestionData.size)}
+					{formatBytes(ingestionData.size)}
 				</Text>
 			</Stack>
 			<Stack w={bigNoWidth}>
 				<Text ta="center" className={classes.bigNoText}>
-					{sanitizeBytes(ingestionData.lifetime_size)}
+					{formatBytes(ingestionData.lifetime_size)}
 				</Text>
 			</Stack>
 			<Stack w={bigNoWidth}>
 				<Text ta="center" className={classes.bigNoText}>
-					{sanitizeBytes(ingestionData.deleted_size)}
+					{formatBytes(ingestionData.deleted_size)}
 				</Text>
 			</Stack>
 		</Stack>
@@ -115,9 +115,9 @@ const IngestedSizeRow = () => {
 };
 
 const defaultStorageData = {
-	size: '-',
-	lifetime_size: '-',
-	deleted_size: '-',
+	size: 0,
+	lifetime_size: 0,
+	deleted_size: 0,
 };
 
 const StorageSizeRow = () => {
@@ -138,7 +138,7 @@ const StorageSizeRow = () => {
 			</Stack>
 			<Stack w={bigNoWidth} gap={0} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
 				<Text ta="center" className={classes.bigNoText}>
-					{sanitizeBytes(storageData.size)}
+					{formatBytes(storageData.size)}
 				</Text>
 				<Stack
 					gap={0}
@@ -156,12 +156,12 @@ const StorageSizeRow = () => {
 			</Stack>
 			<Stack w={bigNoWidth}>
 				<Text ta="center" className={classes.bigNoText}>
-					{sanitizeBytes(storageData.lifetime_size)}
+					{formatBytes(storageData.lifetime_size)}
 				</Text>
 			</Stack>
 			<Stack w={bigNoWidth}>
 				<Text ta="center" className={classes.bigNoText}>
-					{sanitizeBytes(storageData.deleted_size)}
+					{formatBytes(storageData.deleted_size)}
 				</Text>
 			</Stack>
 		</Stack>

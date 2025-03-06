@@ -47,17 +47,12 @@ export const sanitizeBytes = (str: any) => {
 	return size ? formatBytes(size) : '0 bytes';
 };
 
-export const calcCompressionRate = (storageSize: string, ingestionSize: string) => {
-	const parsedStorageSize = bytesStringToInteger(storageSize);
-	const parsedIngestionSize = bytesStringToInteger(ingestionSize);
+export const calcCompressionRate = (storageSize: number, ingestionSize: number): string => {
+	if (ingestionSize === 0) return '0%';
 
-	if (parsedIngestionSize === null || parsedStorageSize === null) return '–';
-
-	if (parsedIngestionSize === 0) return '0%';
-
-	const rate = 100 - (parsedStorageSize / parsedIngestionSize) * 100;
+	const rate = 100 - (storageSize / ingestionSize) * 100;
 
 	if (rate <= 0) return '0%';
 
-	return `${rate.toPrecision(4)}%`;
+	return `${rate.toFixed(2)}%`;
 };
