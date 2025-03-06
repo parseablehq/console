@@ -156,11 +156,11 @@ const makeOverallStorageSectionProps = (record: IngestorQueryRecord | null) => {
 	const activeCompressionRate = calcCompressionRate(storageSize, ingestedSize);
 
 	return {
-		storageSize,
-		lifetimeIngestedSize,
-		lifetimeStorageSize,
-		deletedStorageSize,
-		ingestedSize,
+		storageSize: formatBytes(storageSize),
+		lifetimeIngestedSize: formatBytes(lifetimeIngestedSize),
+		lifetimeStorageSize: formatBytes(lifetimeStorageSize),
+		deletedStorageSize: formatBytes(deletedStorageSize),
+		ingestedSize: formatBytes(ingestedSize),
 		lifetimeCompressionRate,
 		activeCompressionRate,
 	};
